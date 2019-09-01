@@ -67,40 +67,46 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         pool.add(function: function)
     }
 
-    static var tables: [SDSTableMetadata] {
-        return [
-            // Key-Value Stores
-            SDSKeyValueStore.table,
+    static let tables: [SDSTableMetadata] = [
+        // Key-Value Stores
+        SDSKeyValueStore.table,
 
-            // Models
-            TSThread.table,
-            TSInteraction.table,
-            StickerPack.table,
-            InstalledSticker.table,
-            KnownStickerPack.table,
-            TSAttachment.table,
-            SSKJobRecord.table,
-            OWSMessageContentJob.table,
-            OWSRecipientIdentity.table,
-            ExperienceUpgrade.table,
-            OWSDisappearingMessagesConfiguration.table,
-            SignalRecipient.table,
-            SignalAccount.table,
-            OWSUserProfile.table,
-            TSRecipientReadReceipt.table,
-            OWSLinkedDeviceReadReceipt.table,
-            OWSDevice.table,
-            OWSContactQuery.table
-            // NOTE: We don't include OWSMessageDecryptJob,
-            // since we should never use it with GRDB.
-        ]
-    }
+        // Models
+        TSThread.table,
+        TSInteraction.table,
+        StickerPack.table,
+        InstalledSticker.table,
+        KnownStickerPack.table,
+        TSAttachment.table,
+        SSKJobRecord.table,
+        OWSMessageContentJob.table,
+        OWSRecipientIdentity.table,
+        ExperienceUpgrade.table,
+        OWSDisappearingMessagesConfiguration.table,
+        SignalRecipient.table,
+        SignalAccount.table,
+        OWSUserProfile.table,
+        TSRecipientReadReceipt.table,
+        OWSLinkedDeviceReadReceipt.table,
+        OWSDevice.table,
+        OWSContactQuery.table
+        // NOTE: We don't include OWSMessageDecryptJob,
+        // since we should never use it with GRDB.
+    ]
 
     lazy var migrator: DatabaseMigrator = {
         var migrator = DatabaseMigrator()
         migrator.registerMigration("create initial schema") { db in
             for table in GRDBDatabaseStorageAdapter.tables {
                 try table.createTable(database: db)
+
+                guard nil != (table.columns.first { $0.columnName == "uniqueId" }) else {
+                    continue
+                }
+
+                let tableName = table.tableName
+                let indexName = "index_\(tableName)_on_uniqueId"
+                try db.create(index: indexName, on: tableName, columns: ["uniqueId"])
             }
 
             try db.create(index: "index_interactions_on_threadUniqueId_and_id",
@@ -123,10 +129,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                                     JobRecordRecord.columnName(.status),
                                     JobRecordRecord.columnName(.id)])
 
-            try db.create(index: "index_jobs_on_uniqueId",
-                          on: JobRecordRecord.databaseTableName,
-                          columns: [JobRecordRecord.columnName(.uniqueId)])
-
             // View Once
             try db.create(index: "index_interactions_on_view_once",
                           on: InteractionRecord.databaseTableName,
@@ -148,23 +150,11 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                             InteractionRecord.columnName(.errorType)
                 ])
 
-            try db.create(index: "index_message_content_job_on_uniqueId",
-                          on: MessageContentJobRecord.databaseTableName,
-                          columns: [
-                            MessageContentJobRecord.columnName(.uniqueId)
-                ])
-
             // Media Gallery Indices
             try db.create(index: "index_attachments_on_albumMessageId",
                           on: AttachmentRecord.databaseTableName,
                           columns: [AttachmentRecord.columnName(.albumMessageId),
                                     AttachmentRecord.columnName(.recordType)])
-
-            try db.create(index: "index_attachments_on_uniqueId",
-                          on: AttachmentRecord.databaseTableName,
-                          columns: [
-                            AttachmentRecord.columnName(.uniqueId)
-                ])
 
             try db.create(index: "index_interactions_on_uniqueId_and_threadUniqueId",
                           on: InteractionRecord.databaseTableName,
@@ -199,18 +189,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                 columns: [SignalRecipientRecord.columnName(.recipientUUID)]
             )
 
-            try db.create(
-                index: "index_signal_recipients_on_uniqueId",
-                on: SignalRecipientRecord.databaseTableName,
-                columns: [SignalRecipientRecord.columnName(.uniqueId)]
-            )
-
-            try db.create(
-                index: "index_signal_recipient_identities_on_uniqueId",
-                on: RecipientIdentityRecord.databaseTableName,
-                columns: [RecipientIdentityRecord.columnName(.uniqueId)]
-            )
-
             // Thread Indices
             try db.create(
                 index: "index_thread_on_contactPhoneNumber",
@@ -219,7 +197,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             )
 
             try db.create(
-                index: "index_tsthread_on_contactUUID",
+                index: "index_thread_on_contactUUID",
                 on: ThreadRecord.databaseTableName,
                 columns: [ThreadRecord.columnName(.contactUUID)]
             )
