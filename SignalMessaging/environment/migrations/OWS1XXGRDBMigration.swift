@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 import SignalServiceKit
 
 extension StorageCoordinatorState: CustomStringConvertible {

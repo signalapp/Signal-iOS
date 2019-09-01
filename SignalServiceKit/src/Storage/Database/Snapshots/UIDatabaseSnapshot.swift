@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 
 /// Anything 
 public protocol DatabaseSnapshotDelegate: AnyObject {

@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 import SignalServiceKit
 
 @objc
@@ -476,7 +476,7 @@ public protocol GRDBMigrator {
 
 // MARK: -
 
-public class GRDBKeyValueStoreMigrator<T> : GRDBMigrator {
+public class GRDBKeyValueStoreMigrator<T>: GRDBMigrator {
     private let label: String
     private let finder: LegacyKeyValueFinder<T>
     private let memorySamplerRatio: Float
@@ -506,7 +506,7 @@ public class GRDBKeyValueStoreMigrator<T> : GRDBMigrator {
 
 // MARK: -
 
-public class GRDBUnorderedRecordMigrator<T> : GRDBMigrator where T: SDSModel {
+public class GRDBUnorderedRecordMigrator<T>: GRDBMigrator where T: SDSModel {
     private let label: String
     private let finder: LegacyUnorderedFinder<T>
     private let memorySamplerRatio: Float

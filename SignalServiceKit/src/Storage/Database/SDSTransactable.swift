@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 import PromiseKit
 
 // A base class for SDSDatabaseStorage and SDSAnyDatabaseQueue.

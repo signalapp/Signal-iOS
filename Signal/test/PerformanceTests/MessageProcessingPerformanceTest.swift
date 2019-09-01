@@ -4,7 +4,7 @@
 
 import XCTest
 @testable import SignalServiceKit
-import GRDBCipher
+import GRDB
 
 class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
