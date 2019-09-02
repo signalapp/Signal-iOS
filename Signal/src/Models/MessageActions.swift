@@ -42,7 +42,7 @@ struct MessageActionBuilder {
     static func deleteMessage(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
         return MenuAction(image: #imageLiteral(resourceName: "ic_trash"),
                           title: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE", comment: "Action sheet button title"),
-                          subtitle: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE", comment: "Action sheet button subtitle"),
+                          subtitle: nil,
                           block: { (_) in
                             conversationViewItem.deleteAction()
         })
