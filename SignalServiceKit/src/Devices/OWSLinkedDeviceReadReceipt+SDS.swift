@@ -566,9 +566,9 @@ class OWSLinkedDeviceReadReceiptSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Base class properties
-        let linkedDeviceReadReceiptSchemaVersion: UInt = model.linkedDeviceReadReceiptSchemaVersion
-        let messageIdTimestamp: UInt64 = model.messageIdTimestamp
-        let readTimestamp: UInt64 = model.readTimestamp
+        let linkedDeviceReadReceiptSchemaVersion: UInt = serializationSafeUInt(model.linkedDeviceReadReceiptSchemaVersion)
+        let messageIdTimestamp: UInt64 = serializationSafeUInt64(model.messageIdTimestamp)
+        let readTimestamp: UInt64 = serializationSafeUInt64(model.readTimestamp)
         let senderPhoneNumber: String? = model.senderPhoneNumber
         let senderUUID: String? = model.senderUUID
 

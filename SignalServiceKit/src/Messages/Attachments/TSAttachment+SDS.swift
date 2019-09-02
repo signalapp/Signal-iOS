@@ -41,7 +41,7 @@ public struct AttachmentRecord: SDSRecord {
     public let cachedAudioDurationSeconds: Double?
     public let cachedImageHeight: Double?
     public let cachedImageWidth: Double?
-    public let creationTimestamp: Date?
+    public let creationTimestamp: Double?
     public let digest: Data?
     public let isUploaded: Bool?
     public let isValidImageCached: Bool?
@@ -239,7 +239,10 @@ extension TSAttachment {
             let cachedAudioDurationSeconds: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.cachedAudioDurationSeconds, name: "cachedAudioDurationSeconds", conversion: { NSNumber(value: $0) })
             let cachedImageHeight: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.cachedImageHeight, name: "cachedImageHeight", conversion: { NSNumber(value: $0) })
             let cachedImageWidth: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.cachedImageWidth, name: "cachedImageWidth", conversion: { NSNumber(value: $0) })
-            let creationTimestamp: Date = try SDSDeserialization.required(record.creationTimestamp, name: "creationTimestamp")
+            guard let creationTimestampInterval: Double = record.creationTimestamp else {
+               throw SDSError.missingRequiredField
+            }
+            let creationTimestamp: Date = SDSDeserialization.requiredDoubleAsDate(creationTimestampInterval, name: "creationTimestamp")
             let digest: Data? = SDSDeserialization.optionalData(record.digest, name: "digest")
             let isUploaded: Bool = try SDSDeserialization.required(record.isUploaded, name: "isUploaded")
             let isValidImageCached: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.isValidImageCached, name: "isValidImageCached", conversion: { NSNumber(value: $0) })
@@ -332,7 +335,7 @@ extension TSAttachmentSerializer {
     static let cachedAudioDurationSecondsColumn = SDSColumnMetadata(columnName: "cachedAudioDurationSeconds", columnType: .double, isOptional: true, columnIndex: 13)
     static let cachedImageHeightColumn = SDSColumnMetadata(columnName: "cachedImageHeight", columnType: .double, isOptional: true, columnIndex: 14)
     static let cachedImageWidthColumn = SDSColumnMetadata(columnName: "cachedImageWidth", columnType: .double, isOptional: true, columnIndex: 15)
-    static let creationTimestampColumn = SDSColumnMetadata(columnName: "creationTimestamp", columnType: .int64, isOptional: true, columnIndex: 16)
+    static let creationTimestampColumn = SDSColumnMetadata(columnName: "creationTimestamp", columnType: .double, isOptional: true, columnIndex: 16)
     static let digestColumn = SDSColumnMetadata(columnName: "digest", columnType: .blob, isOptional: true, columnIndex: 17)
     static let isUploadedColumn = SDSColumnMetadata(columnName: "isUploaded", columnType: .int, isOptional: true, columnIndex: 18)
     static let isValidImageCachedColumn = SDSColumnMetadata(columnName: "isValidImageCached", columnType: .int, isOptional: true, columnIndex: 19)
@@ -775,21 +778,21 @@ class TSAttachmentSerializer: SDSSerializer {
 
         // Base class properties
         let albumMessageId: String? = model.albumMessageId
-        let attachmentSchemaVersion: UInt = model.attachmentSchemaVersion
+        let attachmentSchemaVersion: UInt = serializationSafeUInt(model.attachmentSchemaVersion)
         let attachmentType: TSAttachmentType = model.attachmentType
         let byteCount: UInt32 = model.byteCount
         let caption: String? = model.caption
         let contentType: String = model.contentType
         let encryptionKey: Data? = model.encryptionKey
         let isDownloaded: Bool = model.isDownloaded
-        let serverId: UInt64 = model.serverId
+        let serverId: UInt64 = serializationSafeUInt64(model.serverId)
         let sourceFilename: String? = model.sourceFilename
 
         // Subclass properties
         let cachedAudioDurationSeconds: Double? = nil
         let cachedImageHeight: Double? = nil
         let cachedImageWidth: Double? = nil
-        let creationTimestamp: Date? = nil
+        let creationTimestamp: Double? = nil
         let digest: Data? = nil
         let isUploaded: Bool? = nil
         let isValidImageCached: Bool? = nil

@@ -578,7 +578,7 @@ class OWSBackupFragmentSerializer: SDSSerializer {
         let encryptionKey: Data = model.encryptionKey
         let recordName: String = model.recordName
         let relativeFilePath: String? = model.relativeFilePath
-        let uncompressedDataLength: UInt64? = archiveOptionalNSNumber(model.uncompressedDataLength, conversion: { $0.uint64Value })
+        let uncompressedDataLength: UInt64? = archiveOptionalNSNumber(model.uncompressedDataLength, conversion: { serializationSafeUInt64($0.uint64Value) })
 
         return BackupFragmentRecord(id: id, recordType: recordType, uniqueId: uniqueId, attachmentId: attachmentId, downloadFilePath: downloadFilePath, encryptionKey: encryptionKey, recordName: recordName, relativeFilePath: relativeFilePath, uncompressedDataLength: uncompressedDataLength)
     }

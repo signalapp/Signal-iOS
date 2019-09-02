@@ -61,8 +61,8 @@ class TSOutgoingMessageSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Base class properties
-        let receivedAtTimestamp: UInt64 = model.receivedAtTimestamp
-        let timestamp: UInt64 = model.timestamp
+        let receivedAtTimestamp: UInt64 = serializationSafeUInt64(model.receivedAtTimestamp)
+        let timestamp: UInt64 = serializationSafeUInt64(model.timestamp)
         let threadUniqueId: String = model.uniqueThreadId
 
         // Subclass properties
@@ -84,8 +84,8 @@ class TSOutgoingMessageSerializer: SDSSerializer {
         let envelopeData: Data? = nil
         let errorMessageSchemaVersion: UInt? = nil
         let errorType: TSErrorMessageType? = nil
-        let expireStartedAt: UInt64? = model.expireStartedAt
-        let expiresAt: UInt64? = model.expiresAt
+        let expireStartedAt: UInt64? = serializationSafeUInt64(model.expireStartedAt)
+        let expiresAt: UInt64? = serializationSafeUInt64(model.expiresAt)
         let expiresInSeconds: UInt32? = model.expiresInSeconds
         let groupMetaMessage: TSGroupMetaMessage? = model.groupMetaMessage
         let hasAddToContactsOffer: Bool? = nil
@@ -107,14 +107,14 @@ class TSOutgoingMessageSerializer: SDSSerializer {
         let messageSticker: Data? = optionalArchive(model.messageSticker)
         let messageType: TSInfoMessageType? = nil
         let mostRecentFailureText: String? = model.mostRecentFailureText
-        let outgoingMessageSchemaVersion: UInt? = model.outgoingMessageSchemaVersion
+        let outgoingMessageSchemaVersion: UInt? = serializationSafeUInt(model.outgoingMessageSchemaVersion)
         let preKeyBundle: Data? = nil
         let protocolVersion: UInt? = nil
         let quotedMessage: Data? = optionalArchive(model.quotedMessage)
         let read: Bool? = nil
         let recipientAddress: Data? = nil
         let recipientAddressStates: Data? = optionalArchive(model.recipientAddressStates)
-        let schemaVersion: UInt? = model.schemaVersion
+        let schemaVersion: UInt? = serializationSafeUInt(model.schemaVersion)
         let sender: Data? = nil
         let serverTimestamp: UInt64? = nil
         let sourceDeviceId: UInt32? = nil

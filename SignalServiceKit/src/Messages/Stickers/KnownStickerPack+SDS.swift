@@ -26,7 +26,7 @@ public struct KnownStickerPackRecord: SDSRecord {
     public let uniqueId: String
 
     // Base class properties
-    public let dateCreated: Date
+    public let dateCreated: Double
     public let info: Data
     public let referenceCount: Int
 
@@ -89,7 +89,8 @@ extension KnownStickerPack {
         case .knownStickerPack:
 
             let uniqueId: String = record.uniqueId
-            let dateCreated: Date = record.dateCreated
+            let dateCreatedInterval: Double = record.dateCreated
+            let dateCreated: Date = SDSDeserialization.requiredDoubleAsDate(dateCreatedInterval, name: "dateCreated")
             let infoSerialized: Data = record.info
             let info: StickerPackInfo = try SDSDeserialization.unarchive(infoSerialized, name: "info")
             let referenceCount: Int = record.referenceCount
@@ -142,7 +143,7 @@ extension KnownStickerPackSerializer {
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
     // Base class properties
-    static let dateCreatedColumn = SDSColumnMetadata(columnName: "dateCreated", columnType: .int64, columnIndex: 3)
+    static let dateCreatedColumn = SDSColumnMetadata(columnName: "dateCreated", columnType: .double, columnIndex: 3)
     static let infoColumn = SDSColumnMetadata(columnName: "info", columnType: .blob, columnIndex: 4)
     static let referenceCountColumn = SDSColumnMetadata(columnName: "referenceCount", columnType: .int64, columnIndex: 5)
 
@@ -553,7 +554,7 @@ class KnownStickerPackSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Base class properties
-        let dateCreated: Date = model.dateCreated
+        let dateCreated: Double = archiveDate(model.dateCreated)
         let info: Data = requiredArchive(model.info)
         let referenceCount: Int = model.referenceCount
 

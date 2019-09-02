@@ -26,7 +26,7 @@ public struct MessageContentJobRecord: SDSRecord {
     public let uniqueId: String
 
     // Base class properties
-    public let createdAt: Date
+    public let createdAt: Double
     public let envelopeData: Data
     public let plaintextData: Data?
     public let wasReceivedByUD: Bool
@@ -92,7 +92,8 @@ extension OWSMessageContentJob {
         case .messageContentJob:
 
             let uniqueId: String = record.uniqueId
-            let createdAt: Date = record.createdAt
+            let createdAtInterval: Double = record.createdAt
+            let createdAt: Date = SDSDeserialization.requiredDoubleAsDate(createdAtInterval, name: "createdAt")
             let envelopeData: Data = record.envelopeData
             let plaintextData: Data? = SDSDeserialization.optionalData(record.plaintextData, name: "plaintextData")
             let wasReceivedByUD: Bool = record.wasReceivedByUD
@@ -146,7 +147,7 @@ extension OWSMessageContentJobSerializer {
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
     // Base class properties
-    static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .int64, columnIndex: 3)
+    static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .double, columnIndex: 3)
     static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob, columnIndex: 4)
     static let plaintextDataColumn = SDSColumnMetadata(columnName: "plaintextData", columnType: .blob, isOptional: true, columnIndex: 5)
     static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, columnIndex: 6)
@@ -559,7 +560,7 @@ class OWSMessageContentJobSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Base class properties
-        let createdAt: Date = model.createdAt
+        let createdAt: Double = archiveDate(model.createdAt)
         let envelopeData: Data = model.envelopeData
         let plaintextData: Data? = model.plaintextData
         let wasReceivedByUD: Bool = model.wasReceivedByUD

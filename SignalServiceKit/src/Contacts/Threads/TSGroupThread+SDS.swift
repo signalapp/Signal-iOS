@@ -61,14 +61,14 @@ class TSGroupThreadSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Base class properties
-        let archivalDate: Date? = model.archivalDate
-        let archivedAsOfMessageSortId: UInt64? = archiveOptionalNSNumber(model.archivedAsOfMessageSortId, conversion: { $0.uint64Value })
+        let archivalDate: Double? = archiveOptionalDate(model.archivalDate)
+        let archivedAsOfMessageSortId: UInt64? = archiveOptionalNSNumber(model.archivedAsOfMessageSortId, conversion: { serializationSafeUInt64($0.uint64Value) })
         let conversationColorName: String = model.conversationColorName.rawValue
-        let creationDate: Date? = model.creationDate
+        let creationDate: Double? = archiveOptionalDate(model.creationDate)
         let isArchivedByLegacyTimestampForSorting: Bool = model.isArchivedByLegacyTimestampForSorting
-        let lastMessageDate: Date? = model.lastMessageDate
+        let lastMessageDate: Double? = archiveOptionalDate(model.lastMessageDate)
         let messageDraft: String? = model.messageDraft
-        let mutedUntilDate: Date? = model.mutedUntilDate
+        let mutedUntilDate: Double? = archiveOptionalDate(model.mutedUntilDate)
         let shouldThreadBeVisible: Bool = model.shouldThreadBeVisible
 
         // Subclass properties

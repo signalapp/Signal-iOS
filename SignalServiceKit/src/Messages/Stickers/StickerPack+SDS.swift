@@ -28,7 +28,7 @@ public struct StickerPackRecord: SDSRecord {
     // Base class properties
     public let author: String?
     public let cover: Data
-    public let dateCreated: Date
+    public let dateCreated: Double
     public let info: Data
     public let isInstalled: Bool
     public let items: Data
@@ -104,7 +104,8 @@ extension StickerPack {
             let author: String? = record.author
             let coverSerialized: Data = record.cover
             let cover: StickerPackItem = try SDSDeserialization.unarchive(coverSerialized, name: "cover")
-            let dateCreated: Date = record.dateCreated
+            let dateCreatedInterval: Double = record.dateCreated
+            let dateCreated: Date = SDSDeserialization.requiredDoubleAsDate(dateCreatedInterval, name: "dateCreated")
             let infoSerialized: Data = record.info
             let info: StickerPackInfo = try SDSDeserialization.unarchive(infoSerialized, name: "info")
             let isInstalled: Bool = record.isInstalled
@@ -166,7 +167,7 @@ extension StickerPackSerializer {
     // Base class properties
     static let authorColumn = SDSColumnMetadata(columnName: "author", columnType: .unicodeString, isOptional: true, columnIndex: 3)
     static let coverColumn = SDSColumnMetadata(columnName: "cover", columnType: .blob, columnIndex: 4)
-    static let dateCreatedColumn = SDSColumnMetadata(columnName: "dateCreated", columnType: .int64, columnIndex: 5)
+    static let dateCreatedColumn = SDSColumnMetadata(columnName: "dateCreated", columnType: .double, columnIndex: 5)
     static let infoColumn = SDSColumnMetadata(columnName: "info", columnType: .blob, columnIndex: 6)
     static let isInstalledColumn = SDSColumnMetadata(columnName: "isInstalled", columnType: .int, columnIndex: 7)
     static let itemsColumn = SDSColumnMetadata(columnName: "items", columnType: .blob, columnIndex: 8)
@@ -585,7 +586,7 @@ class StickerPackSerializer: SDSSerializer {
         // Base class properties
         let author: String? = model.author
         let cover: Data = requiredArchive(model.cover)
-        let dateCreated: Date = model.dateCreated
+        let dateCreated: Double = archiveDate(model.dateCreated)
         let info: Data = requiredArchive(model.info)
         let isInstalled: Bool = model.isInstalled
         let items: Data = requiredArchive(model.items)

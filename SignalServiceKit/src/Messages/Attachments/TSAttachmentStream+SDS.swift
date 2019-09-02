@@ -62,21 +62,21 @@ class TSAttachmentStreamSerializer: SDSSerializer {
 
         // Base class properties
         let albumMessageId: String? = model.albumMessageId
-        let attachmentSchemaVersion: UInt = model.attachmentSchemaVersion
+        let attachmentSchemaVersion: UInt = serializationSafeUInt(model.attachmentSchemaVersion)
         let attachmentType: TSAttachmentType = model.attachmentType
         let byteCount: UInt32 = model.byteCount
         let caption: String? = model.caption
         let contentType: String = model.contentType
         let encryptionKey: Data? = model.encryptionKey
         let isDownloaded: Bool = model.isDownloaded
-        let serverId: UInt64 = model.serverId
+        let serverId: UInt64 = serializationSafeUInt64(model.serverId)
         let sourceFilename: String? = model.sourceFilename
 
         // Subclass properties
         let cachedAudioDurationSeconds: Double? = archiveOptionalNSNumber(model.cachedAudioDurationSeconds, conversion: { $0.doubleValue })
         let cachedImageHeight: Double? = archiveOptionalNSNumber(model.cachedImageHeight, conversion: { $0.doubleValue })
         let cachedImageWidth: Double? = archiveOptionalNSNumber(model.cachedImageWidth, conversion: { $0.doubleValue })
-        let creationTimestamp: Date? = model.creationTimestamp
+        let creationTimestamp: Double? = archiveOptionalDate(model.creationTimestamp)
         let digest: Data? = model.digest
         let isUploaded: Bool? = model.isUploaded
         let isValidImageCached: Bool? = archiveOptionalNSNumber(model.isValidImageCached, conversion: { $0.boolValue })

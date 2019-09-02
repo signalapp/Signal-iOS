@@ -61,8 +61,8 @@ class TSErrorMessageSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Base class properties
-        let receivedAtTimestamp: UInt64 = model.receivedAtTimestamp
-        let timestamp: UInt64 = model.timestamp
+        let receivedAtTimestamp: UInt64 = serializationSafeUInt64(model.receivedAtTimestamp)
+        let timestamp: UInt64 = serializationSafeUInt64(model.timestamp)
         let threadUniqueId: String = model.uniqueThreadId
 
         // Subclass properties
@@ -82,10 +82,10 @@ class TSErrorMessageSerializer: SDSSerializer {
         let createdInExistingGroup: Bool? = nil
         let customMessage: String? = nil
         let envelopeData: Data? = nil
-        let errorMessageSchemaVersion: UInt? = model.errorMessageSchemaVersion
+        let errorMessageSchemaVersion: UInt? = serializationSafeUInt(model.errorMessageSchemaVersion)
         let errorType: TSErrorMessageType? = model.errorType
-        let expireStartedAt: UInt64? = model.expireStartedAt
-        let expiresAt: UInt64? = model.expiresAt
+        let expireStartedAt: UInt64? = serializationSafeUInt64(model.expireStartedAt)
+        let expiresAt: UInt64? = serializationSafeUInt64(model.expiresAt)
         let expiresInSeconds: UInt32? = model.expiresInSeconds
         let groupMetaMessage: TSGroupMetaMessage? = nil
         let hasAddToContactsOffer: Bool? = nil
@@ -114,7 +114,7 @@ class TSErrorMessageSerializer: SDSSerializer {
         let read: Bool? = model.wasRead
         let recipientAddress: Data? = optionalArchive(model.recipientAddress)
         let recipientAddressStates: Data? = nil
-        let schemaVersion: UInt? = model.schemaVersion
+        let schemaVersion: UInt? = serializationSafeUInt(model.schemaVersion)
         let sender: Data? = nil
         let serverTimestamp: UInt64? = nil
         let sourceDeviceId: UInt32? = nil

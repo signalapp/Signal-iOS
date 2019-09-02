@@ -61,8 +61,8 @@ class TSIncomingMessageSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Base class properties
-        let receivedAtTimestamp: UInt64 = model.receivedAtTimestamp
-        let timestamp: UInt64 = model.timestamp
+        let receivedAtTimestamp: UInt64 = serializationSafeUInt64(model.receivedAtTimestamp)
+        let timestamp: UInt64 = serializationSafeUInt64(model.timestamp)
         let threadUniqueId: String = model.uniqueThreadId
 
         // Subclass properties
@@ -84,8 +84,8 @@ class TSIncomingMessageSerializer: SDSSerializer {
         let envelopeData: Data? = nil
         let errorMessageSchemaVersion: UInt? = nil
         let errorType: TSErrorMessageType? = nil
-        let expireStartedAt: UInt64? = model.expireStartedAt
-        let expiresAt: UInt64? = model.expiresAt
+        let expireStartedAt: UInt64? = serializationSafeUInt64(model.expireStartedAt)
+        let expiresAt: UInt64? = serializationSafeUInt64(model.expiresAt)
         let expiresInSeconds: UInt32? = model.expiresInSeconds
         let groupMetaMessage: TSGroupMetaMessage? = nil
         let hasAddToContactsOffer: Bool? = nil
@@ -93,7 +93,7 @@ class TSIncomingMessageSerializer: SDSSerializer {
         let hasBlockOffer: Bool? = nil
         let hasLegacyMessageState: Bool? = nil
         let hasSyncedTranscript: Bool? = nil
-        let incomingMessageSchemaVersion: UInt? = model.incomingMessageSchemaVersion
+        let incomingMessageSchemaVersion: UInt? = serializationSafeUInt(model.incomingMessageSchemaVersion)
         let infoMessageSchemaVersion: UInt? = nil
         let isFromLinkedDevice: Bool? = nil
         let isLocalChange: Bool? = nil
@@ -114,9 +114,9 @@ class TSIncomingMessageSerializer: SDSSerializer {
         let read: Bool? = model.wasRead
         let recipientAddress: Data? = nil
         let recipientAddressStates: Data? = nil
-        let schemaVersion: UInt? = model.schemaVersion
+        let schemaVersion: UInt? = serializationSafeUInt(model.schemaVersion)
         let sender: Data? = nil
-        let serverTimestamp: UInt64? = archiveOptionalNSNumber(model.serverTimestamp, conversion: { $0.uint64Value })
+        let serverTimestamp: UInt64? = archiveOptionalNSNumber(model.serverTimestamp, conversion: { serializationSafeUInt64($0.uint64Value) })
         let sourceDeviceId: UInt32? = model.sourceDeviceId
         let storedMessageState: TSOutgoingMessageState? = nil
         let storedShouldStartExpireTimer: Bool? = model.storedShouldStartExpireTimer

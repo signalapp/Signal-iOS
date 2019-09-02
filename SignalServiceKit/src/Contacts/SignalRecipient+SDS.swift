@@ -562,7 +562,7 @@ class SignalRecipientSerializer: SDSSerializer {
         // Base class properties
         let devices: Data = requiredArchive(model.devices)
         let recipientPhoneNumber: String? = model.recipientPhoneNumber
-        let recipientSchemaVersion: UInt = model.recipientSchemaVersion
+        let recipientSchemaVersion: UInt = serializationSafeUInt(model.recipientSchemaVersion)
         let recipientUUID: String? = model.recipientUUID
 
         return SignalRecipientRecord(id: id, recordType: recordType, uniqueId: uniqueId, devices: devices, recipientPhoneNumber: recipientPhoneNumber, recipientSchemaVersion: recipientSchemaVersion, recipientUUID: recipientUUID)
