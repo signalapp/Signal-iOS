@@ -273,7 +273,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
     OWSLogInfo(@"\t WAL file size: %@", [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath_WAL]);
 
     // Protect the entire new database directory.
-    [OWSFileSystem protectFileOrFolderAtPath:self.sharedDataDatabaseDirPath];
+    [OWSFileSystem protectFileOrFolderAtPath:self.ensureSharedDataDatabaseFilePath];
 }
 
 + (NSString *)legacyDatabaseDirPath
@@ -283,8 +283,12 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
 
 + (NSString *)sharedDataDatabaseDirPath
 {
-    NSString *databaseDirPath = [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"database"];
+    return [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"database"];
+}
 
++ (NSString *)ensureSharedDataDatabaseFilePath
+{
+    NSString *databaseDirPath = self.sharedDataDatabaseDirPath;
     if (![OWSFileSystem ensureDirectoryExists:databaseDirPath]) {
         OWSFail(@"Could not create new database directory");
     }
@@ -323,17 +327,17 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
 
 + (NSString *)sharedDataDatabaseFilePath
 {
-    return [self.sharedDataDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename];
+    return [self.ensureSharedDataDatabaseFilePath stringByAppendingPathComponent:self.databaseFilename];
 }
 
 + (NSString *)sharedDataDatabaseFilePath_SHM
 {
-    return [self.sharedDataDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
+    return [self.ensureSharedDataDatabaseFilePath stringByAppendingPathComponent:self.databaseFilename_SHM];
 }
 
 + (NSString *)sharedDataDatabaseFilePath_WAL
 {
-    return [self.sharedDataDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
+    return [self.ensureSharedDataDatabaseFilePath stringByAppendingPathComponent:self.databaseFilename_WAL];
 }
 
 + (nullable NSError *)migrateToSharedData

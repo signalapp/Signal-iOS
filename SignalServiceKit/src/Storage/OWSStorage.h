@@ -108,6 +108,11 @@ typedef void (^OWSStorageMigrationBlock)(void);
 
 + (void)storeDatabaseCipherKeySpec:(NSData *)cipherKeySpecData;
 
+#pragma mark - Reset
+
++ (void)deleteDatabaseFiles;
++ (void)deleteDBKeys;
+
 @end
 
 NS_ASSUME_NONNULL_END

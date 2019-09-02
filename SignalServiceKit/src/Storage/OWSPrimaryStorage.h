@@ -40,6 +40,9 @@ extern NSString *const OWSUIDatabaseConnectionNotificationsKey;
 + (NSString *)sharedDataDatabaseFilePath_SHM;
 + (NSString *)sharedDataDatabaseFilePath_WAL;
 
++ (NSString *)legacyDatabaseDirPath;
++ (NSString *)sharedDataDatabaseDirPath;
+
 #pragma mark - Misc.
 
 // POST GRDB TODO: Remove this method.

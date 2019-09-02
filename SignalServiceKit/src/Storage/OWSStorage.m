@@ -794,6 +794,9 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     [OWSFileSystem deleteFile:[OWSPrimaryStorage sharedDataDatabaseFilePath]];
     [OWSFileSystem deleteFile:[OWSPrimaryStorage sharedDataDatabaseFilePath_SHM]];
     [OWSFileSystem deleteFile:[OWSPrimaryStorage sharedDataDatabaseFilePath_WAL]];
+    // NOTE: It's NOT safe to delete OWSPrimaryStorage.legacyDatabaseDirPath
+    //       which is the app document dir.
+    [OWSFileSystem deleteContentsOfDirectory:OWSPrimaryStorage.sharedDataDatabaseDirPath];
 }
 
 - (void)closeStorageForTests

@@ -142,6 +142,32 @@ extension YDBToGRDBMigration {
         ]
 
         try self.migrate(migratorGroups: migratorGroups)
+
+        removeYdb()
+    }
+
+    func removeYdb() {
+        guard !FeatureFlags.preserveYdb else {
+            return
+        }
+        guard FeatureFlags.storageMode != .grdbThrowawayIfMigrating else {
+            return
+        }
+
+        guard let primaryStorage = primaryStorage else {
+            owsFail("Missing primaryStorage.")
+        }
+        let ydbReadConnection = primaryStorage.newDatabaseConnection()
+        ydbReadConnection.readWrite { ydbTransaction in
+            // Note: we deliberately _DO NOT_ deserialize the
+            // models as we delete them from YDB. That would
+            // have undesired side effects, e.g. deleting
+            // attachments on disk.
+            ydbTransaction.removeAllObjectsInAllCollections()
+        }
+
+        OWSStorage.deleteDatabaseFiles()
+        OWSStorage.deleteDBKeys()
     }
 
     func migrate(migratorGroups: [GRDBMigratorGroup]) throws {
