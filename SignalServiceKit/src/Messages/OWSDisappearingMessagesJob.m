@@ -231,7 +231,7 @@ void AssertIsOnDisappearingMessagesQueue()
         disappearingMessagesConfiguration.durationSeconds = duration;
     }
 
-    if (!disappearingMessagesConfiguration.dictionaryValueDidChange) {
+    if (![disappearingMessagesConfiguration hasChangedWithTransaction:transaction]) {
         return;
     }
 
