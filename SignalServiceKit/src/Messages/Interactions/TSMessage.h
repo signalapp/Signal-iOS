@@ -93,7 +93,7 @@ typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
 - (void)saveFriendRequestStatus:(LKMessageFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 - (void)saveFriendRequestExpiresAt:(u_int64_t)expiresAt withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 
-#pragma mark - Group chat
+#pragma mark - Group Chat
 
 - (void)saveGroupChatMessageID:(uint64_t)serverMessageID in:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 

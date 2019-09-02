@@ -491,7 +491,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return self.isFriendRequest && self.friendRequestStatus != LKMessageFriendRequestStatusSendingOrFailed;
 }
 
-#pragma mark - Group chat
+#pragma mark - Group Chat
 
 - (BOOL) isGroupChatMessage {
     return self.groupChatMessageID > 0;
