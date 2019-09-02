@@ -1182,11 +1182,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         
         // Make sure it's a public chat message
         TSMessage *message = (TSMessage *)self.interaction;
-        if (!message.isPublicChatMessage) return;
+        if (!message.isGroupChatMessage) return;
         
         // Delete the message
         BOOL isSentByUser = (interationType == OWSInteractionType_OutgoingMessage);
-        [[LKGroupChatAPI deleteMessageWithID:message.publicChatMessageID forGroup:LKGroupChatAPI.publicChatServerID onServer:LKGroupChatAPI.publicChatServer isSentByUser:isSentByUser].catch(^(NSError *error) {
+        [[LKGroupChatAPI deleteMessageWithID:message.isGroupChatMessage forGroup:LKGroupChatAPI.publicChatServerID onServer:LKGroupChatAPI.publicChatServer isSentByUser:isSentByUser].catch(^(NSError *error) {
             // Roll back
             [self.interaction save];
         }) retainUntilComplete];
@@ -1247,7 +1247,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     
     // Make sure it's a public chat message
     TSMessage *message = (TSMessage *)self.interaction;
-    if (!message.isPublicChatMessage) return false;
+    if (!message.isGroupChatMessage) return false;
     
     // Only allow deletion on incoming messages if the user has moderation permission
     if (interationType == OWSInteractionType_IncomingMessage) {

@@ -39,20 +39,15 @@ typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
 @property (nonatomic, readonly, nullable) OWSContact *contactShare;
 @property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
 // Loki friend request handling
-// ========
 @property (nonatomic) LKMessageFriendRequestStatus friendRequestStatus;
 @property (nonatomic, readonly) NSString *friendRequestStatusDescription;
 @property (nonatomic) uint64_t friendRequestExpiresAt;
 @property (nonatomic, readonly) BOOL isFriendRequest;
 @property (nonatomic, readonly) BOOL hasFriendRequestStatusMessage;
 @property (nonatomic) BOOL isP2P;
-// ========
-
-// Public Chat
-// ========
-@property (nonatomic) uint64_t publicChatMessageID;
-@property (nonatomic, readonly) BOOL isPublicChatMessage;
-// ========
+// Group chat
+@property (nonatomic) uint64_t groupChatMessageID;
+@property (nonatomic, readonly) BOOL isGroupChatMessage;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
@@ -98,9 +93,9 @@ typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
 - (void)saveFriendRequestStatus:(LKMessageFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 - (void)saveFriendRequestExpiresAt:(u_int64_t)expiresAt withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 
-#pragma mark - Public Chat
+#pragma mark - Group chat
 
-- (void)savePublicChatMessageID:(uint64_t)serverMessageId withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
+- (void)saveGroupChatMessageID:(uint64_t)serverMessageID in:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 
 @end
 

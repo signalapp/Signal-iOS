@@ -71,7 +71,7 @@ public final class LokiGroupChatPoller : NSObject {
         let message = TSOutgoingMessage(outgoingMessageWithTimestamp: message.timestamp, in: groupThread, messageBody: message.body, attachmentIds: [], expiresInSeconds: 0, expireStartedAt: 0, isVoiceMessage: false, groupMetaMessage: .deliver, quotedMessage: nil, contactShare: nil, linkPreview: nil)
         storage.newDatabaseConnection().readWrite { transaction in
             message.update(withSentRecipient: group.server, wasSentByUD: false, transaction: transaction)
-            message.savePublicChatMessageID(messageServerID, with: transaction)
+            message.saveGroupChatMessageID(messageServerID, in: transaction)
             
             guard let messageID = message.uniqueId else {
                 owsFailDebug("[Loki] Outgoing public chat message should have a unique id set")

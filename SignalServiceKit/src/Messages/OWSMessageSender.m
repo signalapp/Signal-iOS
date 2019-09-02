@@ -1117,7 +1117,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [[LKGroupChatAPI sendMessage:groupMessage toGroup:LKGroupChatAPI.publicChatServerID onServer:LKGroupChatAPI.publicChatServer]
         .thenOn(OWSDispatch.sendingQueue, ^(LKGroupMessage *groupMessage) {
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                [message savePublicChatMessageID:groupMessage.serverID withTransaction:transaction];
+                [message saveGroupChatMessageID:groupMessage.serverID in:transaction];
                 [OWSPrimaryStorage.sharedManager setIDForMessageWithServerID:groupMessage.serverID to:message.uniqueId in:transaction];
             }];
             [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:false wasSentByWebsocket:false];
