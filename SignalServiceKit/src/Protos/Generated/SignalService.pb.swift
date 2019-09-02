@@ -2502,7 +2502,7 @@ struct SignalServiceProtos_GroupDetails {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-/// Internal type - DO NOT SEND
+/// Internal - DO NOT SEND
 struct SignalServiceProtos_PublicChatInfo {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -3178,7 +3178,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     9: .same(proto: "contact"),
     10: .same(proto: "preview"),
     101: .same(proto: "profile"),
-    900: .same(proto: "publicChatInfo"),
+    999: .same(proto: "publicChatInfo"),
   ]
 
   fileprivate class _StorageClass {
@@ -3238,7 +3238,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 9: try decoder.decodeRepeatedMessageField(value: &_storage._contact)
         case 10: try decoder.decodeRepeatedMessageField(value: &_storage._preview)
         case 101: try decoder.decodeSingularMessageField(value: &_storage._profile)
-        case 900: try decoder.decodeSingularMessageField(value: &_storage._publicChatInfo)
+        case 999: try decoder.decodeSingularMessageField(value: &_storage._publicChatInfo)
         default: break
         }
       }
@@ -3281,7 +3281,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         try visitor.visitSingularMessageField(value: v, fieldNumber: 101)
       }
       if let v = _storage._publicChatInfo {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 900)
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 999)
       }
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -5157,7 +5157,7 @@ extension SignalServiceProtos_GroupDetails.Avatar: SwiftProtobuf.Message, SwiftP
 extension SignalServiceProtos_PublicChatInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".PublicChatInfo"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "serverId"),
+    1: .same(proto: "serverID"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {

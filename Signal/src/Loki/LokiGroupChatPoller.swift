@@ -7,7 +7,7 @@ public final class LokiGroupChatPoller : NSObject {
     private var hasStarted = false
     
     private let pollForNewMessagesInterval: TimeInterval = 4
-    private let pollForDeletedMessagesInterval: TimeInterval = 32 * 60
+    private let pollForDeletedMessagesInterval: TimeInterval = 20
     
     private let storage = OWSPrimaryStorage.shared()
     private let ourHexEncodedPubKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey

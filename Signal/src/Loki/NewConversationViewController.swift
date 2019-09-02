@@ -105,6 +105,10 @@ final class NewConversationViewController : OWSViewController, OWSQRScannerDeleg
             let alert = UIAlertController(title: NSLocalizedString("Invalid Public Key", comment: ""), message: NSLocalizedString("Please check the public key you entered and try again.", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
             presentAlert(alert)
+        } else if OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey == hexEncodedPublicKey {
+            let alert = UIAlertController(title: NSLocalizedString("Can't Start Conversation", comment: ""), message: NSLocalizedString("Please enter the public key of the person you'd like to message.", comment: ""), preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+            presentAlert(alert)
         } else {
             let thread = TSContactThread.getOrCreateThread(contactId: hexEncodedPublicKey)
             SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)

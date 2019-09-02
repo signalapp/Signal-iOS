@@ -2,6 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
+#import "AppDelegate.h"
 #import "AppSettingsViewController.h"
 #import "AboutTableViewController.h"
 #import "AdvancedSettingsTableViewController.h"
@@ -533,7 +534,8 @@
         [ThreadUtil deleteAllContent];
         [SSKEnvironment.shared.identityManager clearIdentityKey];
         [LKAPI clearRandomSnodePool];
-        [LKAPI stopLongPolling];
+        AppDelegate *appDelegate = (AppDelegate *)UIApplication.sharedApplication.delegate;
+        [appDelegate stopLongPollerIfNeeded];
         [SSKEnvironment.shared.tsAccountManager resetForReregistration];
         UIViewController *rootViewController = [[OnboardingController new] initialViewController];
         OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:rootViewController];

@@ -1402,6 +1402,11 @@ NS_ASSUME_NONNULL_BEGIN
                                        thread:oldGroupThread
                                      envelope:envelope
                                   transaction:transaction];
+                
+                if (dataMessage.publicChatInfo != nil && dataMessage.publicChatInfo.hasServerID) {
+                    [self.primaryStorage setIDForMessageWithServerID:dataMessage.publicChatInfo.serverID to:incomingMessage.uniqueId in:transaction];
+                }
+                
                 return incomingMessage;
             }
             default: {
