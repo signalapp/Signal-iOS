@@ -203,8 +203,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (OWSPrimaryStorage *)primaryStorage
 {
-    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
-    
     return SSKEnvironment.shared.primaryStorage;
 }
 
@@ -1171,25 +1169,25 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (void)deleteAction
 {
-    // Delete it optimistically
     [self.interaction remove];
     
     if (self.isGroupThread) {
-        // If it's RSS then skip
+        // Skip if the thread is an RSS feed
         TSGroupThread *groupThread = (TSGroupThread *)self.interaction.thread;
         if (groupThread.isRSSFeed) return;
         
         // Only allow deletion on incoming and outgoing messages
         OWSInteractionType interationType = self.interaction.interactionType;
-        if (interationType != OWSInteractionType_OutgoingMessage && interationType != OWSInteractionType_IncomingMessage) return;
+        if (interationType != OWSInteractionType_IncomingMessage && interationType != OWSInteractionType_OutgoingMessage) return;
         
-        // Check that we have the server id for the message
+        // Make sure it's a public chat message
         TSMessage *message = (TSMessage *)self.interaction;
         if (!message.isPublicChatMessage) return;
         
         // Delete the message
-        [[LKGroupChatAPI deleteMessageWithServerID:message.publicChatMessageID forGroup:LKGroupChatAPI.publicChatServerID onServer:LKGroupChatAPI.publicChatServer isOurOwnMessage:interationType == OWSInteractionType_OutgoingMessage].catch(^(NSError *error) {
-            // If we fail then add the interaction back in
+        BOOL isSentByUser = (interationType == OWSInteractionType_OutgoingMessage);
+        [[LKGroupChatAPI deleteMessageWithID:message.publicChatMessageID forGroup:LKGroupChatAPI.publicChatServerID onServer:LKGroupChatAPI.publicChatServer isSentByUser:isSentByUser].catch(^(NSError *error) {
+            // Roll back
             [self.interaction save];
         }) retainUntilComplete];
     }
@@ -1235,11 +1233,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return NO;
 }
 
-- (BOOL)canDeleteGroupMessage
+- (BOOL)userCanDeleteGroupMessage
 {
     if (!self.isGroupThread) return false;
     
-    // Make sure it's a public chat and not an rss feed
+    // Ensure the thread is a public chat and not an RSS feed
     TSGroupThread *groupThread = (TSGroupThread *)self.interaction.thread;
     if (groupThread.isRSSFeed) return false;
     
@@ -1251,7 +1249,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     TSMessage *message = (TSMessage *)self.interaction;
     if (!message.isPublicChatMessage) return false;
     
-    // Don't allow deletion if we're not mods on incoming messages
+    // Only allow deletion on incoming messages if the user has moderation permission
     if (interationType == OWSInteractionType_IncomingMessage) {
         __block BOOL isModerator;
         [[self primaryStorage].dbReadWriteConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {

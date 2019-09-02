@@ -164,6 +164,8 @@
     [transaction removeObjectForKey:serviceNode inCollection:LKLastMessageHashCollection];
 }
 
+# pragma mark - Group Chat
+
 - (void)setIDForMessageWithServerID:(NSUInteger)serverID to:(NSString *)messageID in:(YapDatabaseReadWriteTransaction *)transaction {
     NSString *key = [NSString stringWithFormat:@"%@", @(serverID)];
     [transaction setObject:messageID forKey:key inCollection:LKMessageIDCollection];

@@ -127,7 +127,7 @@ public final class LokiGroupChatPoller : NSObject {
     
     private func pollForModerationPermission() {
         let group = self.group
-        let _ = LokiGroupChatAPI.isCurrentUserMod(on: group.server).done { [storage] isModerator in
+        let _ = LokiGroupChatAPI.userHasModerationPermission(for: group.serverID, on: group.server).done { [storage] isModerator in
             storage.dbReadWriteConnection.readWrite { transaction in
                 storage.setIsModerator(isModerator, for: UInt(group.serverID), on: group.server, in: transaction)
             }

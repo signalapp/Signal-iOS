@@ -11,7 +11,7 @@ public final class LokiGroupChatAPI : NSObject {
     // MARK: Public Chat
     @objc public static let publicChatServer = "https://chat.lokinet.org"
     @objc public static let publicChatMessageType = "network.loki.messenger.publicChat"
-    @objc public static let publicChatServerID: UInt = 1
+    @objc public static let publicChatServerID: UInt64 = 1
     
     // MARK: Convenience
     private static var userDisplayName: String {
@@ -28,7 +28,7 @@ public final class LokiGroupChatAPI : NSObject {
     
     // MARK: Error
     public enum Error : Swift.Error {
-        case tokenParsingFailed, tokenDecryptionFailed, messageParsingFailed, deletionParsingFailed, jsonParsingFailed
+        case parsingFailed, decryptionFailed
     }
     
     // MARK: Database
@@ -87,7 +87,7 @@ public final class LokiGroupChatAPI : NSObject {
         return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
             guard let json = rawResponse as? JSON, let base64EncodedChallenge = json["cipherText64"] as? String, let base64EncodedServerPublicKey = json["serverPubKey64"] as? String,
                 let challenge = Data(base64Encoded: base64EncodedChallenge), var serverPublicKey = Data(base64Encoded: base64EncodedServerPublicKey) else {
-                throw Error.tokenParsingFailed
+                throw Error.parsingFailed
             }
             // Discard the "05" prefix if needed
             if (serverPublicKey.count == 33) {
@@ -97,7 +97,7 @@ public final class LokiGroupChatAPI : NSObject {
             // The challenge is prefixed by the 16 bit IV
             guard let tokenAsData = try? DiffieHellman.decrypt(challenge, publicKey: serverPublicKey, privateKey: userKeyPair.privateKey),
                 let token = String(bytes: tokenAsData, encoding: .utf8) else {
-                throw Error.tokenDecryptionFailed
+                throw Error.decryptionFailed
             }
             return token
         }
@@ -136,7 +136,7 @@ public final class LokiGroupChatAPI : NSObject {
         return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
             guard let json = rawResponse as? JSON, let rawMessages = json["data"] as? [JSON] else {
                 print("[Loki] Couldn't parse messages for group chat with ID: \(group) on server: \(server) from: \(rawResponse).")
-                throw Error.messageParsingFailed
+                throw Error.parsingFailed
             }
             return rawMessages.flatMap { message in
                 guard let annotations = message["annotations"] as? [JSON], let annotation = annotations.first, let value = annotation["value"] as? JSON,
@@ -167,7 +167,7 @@ public final class LokiGroupChatAPI : NSObject {
                 guard let json = rawResponse as? JSON, let messageAsJSON = json["data"] as? JSON, let serverID = messageAsJSON["id"] as? UInt64, let body = messageAsJSON["text"] as? String,
                     let dateAsString = messageAsJSON["created_at"] as? String, let date = dateFormatter.date(from: dateAsString) else {
                     print("[Loki] Couldn't parse message for group chat with ID: \(group) on server: \(server) from: \(rawResponse).")
-                    throw Error.messageParsingFailed
+                    throw Error.parsingFailed
                 }
                 let timestamp = UInt64(date.timeIntervalSince1970) * 1000
                 return LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: userHexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp)
@@ -194,7 +194,7 @@ public final class LokiGroupChatAPI : NSObject {
         return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
             guard let json = rawResponse as? JSON, let deletions = json["data"] as? [JSON] else {
                 print("[Loki] Couldn't parse deleted messages for group chat with ID: \(group) on server: \(server) from: \(rawResponse).")
-                throw Error.deletionParsingFailed
+                throw Error.parsingFailed
             }
             return deletions.flatMap { deletion in
                 guard let serverID = deletion["id"] as? UInt64, let messageServerID = deletion["message_id"] as? UInt64 else {
@@ -208,43 +208,30 @@ public final class LokiGroupChatAPI : NSObject {
         }
     }
     
-    public static func deleteMessageWithServerID(_ messageServerID: UInt, for group: UInt64, on server: String, isOurOwnMessage: Bool = true) -> Promise<Void> {
+    public static func deleteMessage(with messageID: UInt, for group: UInt64, on server: String, isSentByUser: Bool) -> Promise<Void> {
         return getAuthToken(for: server).then { token -> Promise<Void> in
-            let modTag = isOurOwnMessage ? "" : "[Mod]"
-            print("[Loki]\(modTag) Deleting message with server ID: \(messageServerID) for group chat with ID: \(group) on server: \(server).")
-        
-            let endpoint = isOurOwnMessage ? "\(server)/channels/\(group)/messages/\(messageServerID)" : "\(server)/loki/v1/moderation/message/\(messageServerID)"
-            let url = URL(string: endpoint)!
+            let isModerationRequest = !isSentByUser
+            print("[Loki] Deleting message with ID: \(messageID) for group chat with ID: \(group) on server: \(server) (isModerationRequest = \(isModerationRequest)).")
+            let urlAsString = isSentByUser ? "\(server)/channels/\(group)/messages/\(messageID)" : "\(server)/loki/v1/moderation/message/\(messageID)"
+            let url = URL(string: urlAsString)!
             let request = TSRequest(url: url, method: "DELETE", parameters: [:])
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-            return TSNetworkManager.shared().makePromise(request: request).map { result -> Void in
-                print("[Loki]\(modTag) Deleted message \(messageServerID) on server \(server).")
-            }.recover { error in
-                 // If we got 404 or 410 then message doesn't exist on the server
-                if let error = error as? NetworkManagerError, error.statusCode == 404 || error.statusCode == 410 {
-                    print("[Loki]\(modTag) Message \(messageServerID) was already deleted on the server.")
-                    return
-                }
-
-                print("[Loki]\(modTag) Failed to delete message \(messageServerID) on server \(server).")
-                throw error
+            return TSNetworkManager.shared().makePromise(request: request).done { result -> Void in
+                print("[Loki] Deleted message with ID: \(messageID) on server: \(server).")
             }
         }
-       
     }
     
-    public static func isCurrentUserMod(on server: String) -> Promise<Bool> {
+    public static func userHasModerationPermission(for group: UInt64, on server: String) -> Promise<Bool> {
         return getAuthToken(for: server).then { token -> Promise<Bool> in
             let url = URL(string: "\(server)/loki/v1/user_info")!
             let request = TSRequest(url: url)
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
             return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
                 guard let json = rawResponse as? JSON, let data = json["data"] as? JSON else {
-                    print("[Loki] Couldn't parse json for user info.")
-                    throw Error.jsonParsingFailed
+                    print("[Loki] Couldn't parse moderation permission for group chat with ID: \(group) on server: \(server) from: \(rawResponse).")
+                    throw Error.parsingFailed
                 }
-                
-                // moderator_status is not set for users that are not mods
                 return data["moderator_status"] as? Bool ?? false
             }
         }
@@ -261,8 +248,8 @@ public final class LokiGroupChatAPI : NSObject {
         return AnyPromise.from(sendMessage(message, to: group, on: server))
     }
     
-    @objc (deleteMessageWithServerID:forGroup:onServer:isOurOwnMessage:)
-    public static func objc_deleteMessageWithServerID(_ messageServerID: UInt, for group: UInt64, on server: String, ourMessage: Bool = true) -> AnyPromise {
-        return AnyPromise.from(deleteMessageWithServerID(messageServerID, for: group, on: server, isOurOwnMessage: ourMessage))
+    @objc (deleteMessageWithID:forGroup:onServer:isSentByUser:)
+    public static func objc_deleteMessage(with messageID: UInt, for group: UInt64, on server: String, isSentByUser: Bool) -> AnyPromise {
+        return AnyPromise.from(deleteMessage(with: messageID, for: group, on: server, isSentByUser: isSentByUser))
     }
 }

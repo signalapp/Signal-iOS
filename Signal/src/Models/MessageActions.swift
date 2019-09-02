@@ -86,7 +86,7 @@ class ConversationViewItemActions: NSObject {
             actions.append(copyTextAction)
         }
 
-        if !isGroup || conversationViewItem.canDeleteGroupMessage {
+        if !isGroup || conversationViewItem.userCanDeleteGroupMessage {
             let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(deleteAction)
         }

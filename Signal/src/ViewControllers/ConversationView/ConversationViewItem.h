@@ -67,7 +67,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly, nullable) OWSQuotedReplyModel *quotedReply;
 
 @property (nonatomic, readonly) BOOL isGroupThread;
-@property (nonatomic, readonly) BOOL canDeleteGroupMessage;
+@property (nonatomic, readonly) BOOL userCanDeleteGroupMessage;
 
 @property (nonatomic, readonly) BOOL hasBodyText;
 

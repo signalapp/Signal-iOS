@@ -305,8 +305,7 @@ class ColorPickerView: UIView, ColorViewDelegate {
 
 @objc
 private class MockConversationViewItem: NSObject, ConversationViewItem {
-    var canDeleteGroupMessage: Bool = false
-    
+    var userCanDeleteGroupMessage: Bool = false
     var interaction: TSInteraction = TSMessage()
     var interactionType: OWSInteractionType = OWSInteractionType.unknown
     var quotedReply: OWSQuotedReplyModel?
