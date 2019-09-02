@@ -218,7 +218,7 @@ public final class LokiGroupChatAPI : NSObject {
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
             return TSNetworkManager.shared().makePromise(request: request).done { result -> Void in
                 print("[Loki] Deleted message with ID: \(messageID) on server: \(server).")
-            }
+            }.retryingIfNeeded(maxRetryCount: maxRetryCount)
         }
     }
     
