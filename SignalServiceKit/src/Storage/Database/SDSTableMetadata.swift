@@ -117,10 +117,8 @@ public class SDSTableMetadata: NSObject {
                 case .int:
                     column = table.column(columnMetadata.columnName, .integer)
                 case .int64:
-                    // GRDB TODO: What's the right column type here?
                     column = table.column(columnMetadata.columnName, .integer)
                 case .double:
-                    // GRDB TODO: What's the right column type here?
                     column = table.column(columnMetadata.columnName, .double)
                 }
 
