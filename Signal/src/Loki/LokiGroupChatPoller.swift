@@ -4,11 +4,16 @@ public final class LokiGroupChatPoller : NSObject {
     private let group: LokiGroupChat
     private var pollForNewMessagesTimer: Timer? = nil
     private var pollForDeletedMessagesTimer: Timer? = nil
+    private var pollForModerationPermissionTimer: Timer? = nil
     private var hasStarted = false
+    private let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
     
+    // MARK: Settings
     private let pollForNewMessagesInterval: TimeInterval = 4
     private let pollForDeletedMessagesInterval: TimeInterval = 20
+    private let pollForModerationPermissionInterval: TimeInterval = 10 * 60
     
+    // MARK: Lifecycle
     @objc(initForGroup:)
     public init(for group: LokiGroupChat) {
         self.group = group
@@ -20,42 +25,80 @@ public final class LokiGroupChatPoller : NSObject {
         pollForNewMessagesTimer = Timer.scheduledTimer(withTimeInterval: pollForNewMessagesInterval, repeats: true) { [weak self] _ in self?.pollForNewMessages() }
         pollForNewMessages() // Perform initial update
         pollForDeletedMessagesTimer = Timer.scheduledTimer(withTimeInterval: pollForDeletedMessagesInterval, repeats: true) { [weak self] _ in self?.pollForDeletedMessages() }
+        pollForModerationPermissionTimer = Timer.scheduledTimer(withTimeInterval: pollForModerationPermissionInterval, repeats: true) { [weak self] _ in self?.pollForModerationPermission() }
         hasStarted = true
     }
     
     @objc public func stop() {
         pollForNewMessagesTimer?.invalidate()
         pollForDeletedMessagesTimer?.invalidate()
+        pollForModerationPermissionTimer?.invalidate()
         hasStarted = false
     }
     
+    // MARK: Polling
     private func pollForNewMessages() {
+        // Prepare
         let group = self.group
-        let _ = LokiGroupChatAPI.getMessages(for: group.serverID, on: group.server).done { messages in
-            messages.reversed().forEach { message in
-                let senderHexEncodedPublicKey = message.hexEncodedPublicKey
-                let endIndex = senderHexEncodedPublicKey.endIndex
-                let cutoffIndex = senderHexEncodedPublicKey.index(endIndex, offsetBy: -8)
-                let senderDisplayName = "\(message.displayName) (...\(senderHexEncodedPublicKey[cutoffIndex..<endIndex]))"
-                let id = group.id.data(using: String.Encoding.utf8)!
-                let x1 = SSKProtoGroupContext.builder(id: id, type: .deliver)
-                x1.setName(group.displayName)
-                let x2 = SSKProtoDataMessage.builder()
-                x2.setTimestamp(message.timestamp)
-                x2.setGroup(try! x1.build())
-                x2.setBody(message.body)
-                let messageServerID = message.serverID!
+        let userHexEncodedPublicKey = self.userHexEncodedPublicKey
+        // Processing logic for incoming messages
+        func processIncomingMessage(_ message: LokiGroupMessage) {
+            let senderHexEncodedPublicKey = message.hexEncodedPublicKey
+            let endIndex = senderHexEncodedPublicKey.endIndex
+            let cutoffIndex = senderHexEncodedPublicKey.index(endIndex, offsetBy: -8)
+            let senderDisplayName = "\(message.displayName) (...\(senderHexEncodedPublicKey[cutoffIndex..<endIndex]))"
+            let id = group.id.data(using: String.Encoding.utf8)!
+            let x1 = SSKProtoGroupContext.builder(id: id, type: .deliver)
+            x1.setName(group.displayName)
+            let x2 = SSKProtoDataMessage.builder()
+            x2.setTimestamp(message.timestamp)
+            x2.setGroup(try! x1.build())
+            x2.setBody(message.body)
+            if let messageServerID = message.serverID {
                 let publicChatInfo = SSKProtoPublicChatInfo.builder()
                 publicChatInfo.setServerID(messageServerID)
                 x2.setPublicChatInfo(try! publicChatInfo.build())
-                let x3 = SSKProtoContent.builder()
-                x3.setDataMessage(try! x2.build())
-                let x4 = SSKProtoEnvelope.builder(type: .ciphertext, timestamp: message.timestamp)
-                x4.setSource(senderDisplayName)
-                x4.setSourceDevice(OWSDevicePrimaryDeviceId)
-                x4.setContent(try! x3.build().serializedData())
-                OWSPrimaryStorage.shared().dbReadWriteConnection.readWrite { transaction in
-                    SSKEnvironment.shared.messageManager.throws_processEnvelope(try! x4.build(), plaintextData: try! x3.build().serializedData(), wasReceivedByUD: false, transaction: transaction)
+            }
+            let x3 = SSKProtoContent.builder()
+            x3.setDataMessage(try! x2.build())
+            let x4 = SSKProtoEnvelope.builder(type: .ciphertext, timestamp: message.timestamp)
+            x4.setSource(senderDisplayName)
+            x4.setSourceDevice(OWSDevicePrimaryDeviceId)
+            x4.setContent(try! x3.build().serializedData())
+            let storage = OWSPrimaryStorage.shared()
+            storage.dbReadWriteConnection.readWrite { transaction in
+                SSKEnvironment.shared.messageManager.throws_processEnvelope(try! x4.build(), plaintextData: try! x3.build().serializedData(), wasReceivedByUD: false, transaction: transaction)
+            }
+        }
+        // Processing logic for outgoing messages
+        func processOutgoingMessage(_ message: LokiGroupMessage) {
+            guard let messageServerID = message.serverID else { return }
+            let storage = OWSPrimaryStorage.shared()
+            var isDuplicate = false
+            storage.dbReadConnection.read { transaction in
+                let id = storage.getIDForMessage(withServerID: UInt(messageServerID), in: transaction)
+                isDuplicate = id != nil
+            }
+            guard !isDuplicate else { return }
+            guard let groupID = group.id.data(using: .utf8) else { return }
+            let thread = TSGroupThread.getOrCreateThread(withGroupId: groupID)
+            let message = TSOutgoingMessage(outgoingMessageWithTimestamp: message.timestamp, in: thread, messageBody: message.body, attachmentIds: [], expiresInSeconds: 0,
+                expireStartedAt: 0, isVoiceMessage: false, groupMetaMessage: .deliver, quotedMessage: nil, contactShare: nil, linkPreview: nil)
+            storage.dbReadWriteConnection.readWrite { transaction in
+                message.update(withSentRecipient: group.server, wasSentByUD: false, transaction: transaction)
+                message.saveGroupChatMessageID(messageServerID, in: transaction)
+                guard let messageID = message.uniqueId else { return print("[Loki] Failed to save group message.") }
+                storage.setIDForMessageWithServerID(UInt(messageServerID), to: messageID, in: transaction)
+            }
+        }
+        // Poll
+        let _ = LokiGroupChatAPI.getMessages(for: group.serverID, on: group.server).done { messages in
+            messages.reversed().forEach { message in
+                let senderHexEncodedPublicKey = message.hexEncodedPublicKey
+                if (senderHexEncodedPublicKey != userHexEncodedPublicKey) {
+                    processIncomingMessage(message)
+                } else {
+                    processOutgoingMessage(message)
                 }
             }
         }
@@ -70,6 +113,16 @@ public final class LokiGroupChatPoller : NSObject {
                 deletedMessageIDs.forEach { messageID in
                     TSMessage.fetch(uniqueId: messageID)?.remove(with: transaction)
                 }
+            }
+        }
+    }
+    
+    private func pollForModerationPermission() {
+        let group = self.group
+        let _ = LokiGroupChatAPI.userHasModerationPermission(for: group.serverID, on: group.server).done { isModerator in
+            let storage = OWSPrimaryStorage.shared()
+            storage.dbReadWriteConnection.readWrite { transaction in
+                storage.setIsModerator(isModerator, for: UInt(group.serverID), on: group.server, in: transaction)
             }
         }
     }

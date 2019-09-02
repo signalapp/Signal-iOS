@@ -9,11 +9,14 @@
 #import "OWSMessageHeaderView.h"
 #import "OWSSystemMessageCell.h"
 #import "Session-Swift.h"
+#import "AnyPromise.h"
 #import <SignalMessaging/OWSUnreadIndicator.h>
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/TSInteraction.h>
+#import <SignalServiceKit/SSKEnvironment.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -196,6 +199,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             _authorConversationColorName = nil;
             break;
     }
+}
+
+- (OWSPrimaryStorage *)primaryStorage
+{
+    return SSKEnvironment.shared.primaryStorage;
 }
 
 - (NSString *)itemId
@@ -1162,6 +1170,27 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 - (void)deleteAction
 {
     [self.interaction remove];
+    
+    if (self.isGroupThread) {
+        // Skip if the thread is an RSS feed
+        TSGroupThread *groupThread = (TSGroupThread *)self.interaction.thread;
+        if (groupThread.isRSSFeed) return;
+        
+        // Only allow deletion on incoming and outgoing messages
+        OWSInteractionType interationType = self.interaction.interactionType;
+        if (interationType != OWSInteractionType_IncomingMessage && interationType != OWSInteractionType_OutgoingMessage) return;
+        
+        // Make sure it's a public chat message
+        TSMessage *message = (TSMessage *)self.interaction;
+        if (!message.isGroupChatMessage) return;
+        
+        // Delete the message
+        BOOL isSentByUser = (interationType == OWSInteractionType_OutgoingMessage);
+        [[LKGroupChatAPI deleteMessageWithID:message.isGroupChatMessage forGroup:LKGroupChatAPI.publicChatServerID onServer:LKGroupChatAPI.publicChatServer isSentByUser:isSentByUser].catch(^(NSError *error) {
+            // Roll back
+            [self.interaction save];
+        }) retainUntilComplete];
+    }
 }
 
 - (BOOL)hasBodyTextActionContent
@@ -1202,6 +1231,34 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
     }
     return NO;
+}
+
+- (BOOL)userCanDeleteGroupMessage
+{
+    if (!self.isGroupThread) return false;
+    
+    // Ensure the thread is a public chat and not an RSS feed
+    TSGroupThread *groupThread = (TSGroupThread *)self.interaction.thread;
+    if (groupThread.isRSSFeed) return false;
+    
+    // Only allow deletion on incoming and outgoing messages
+    OWSInteractionType interationType = self.interaction.interactionType;
+    if (interationType != OWSInteractionType_OutgoingMessage && interationType != OWSInteractionType_IncomingMessage) return false;
+    
+    // Make sure it's a public chat message
+    TSMessage *message = (TSMessage *)self.interaction;
+    if (!message.isGroupChatMessage) return false;
+    
+    // Only allow deletion on incoming messages if the user has moderation permission
+    if (interationType == OWSInteractionType_IncomingMessage) {
+        __block BOOL isModerator;
+        [[self primaryStorage].dbReadWriteConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            isModerator = [[self primaryStorage] isModeratorForGroup:LKGroupChatAPI.publicChatServerID onServer:LKGroupChatAPI.publicChatServer in:transaction];
+        }];
+        if (!isModerator) return false;
+    }
+
+    return true;
 }
 
 @end

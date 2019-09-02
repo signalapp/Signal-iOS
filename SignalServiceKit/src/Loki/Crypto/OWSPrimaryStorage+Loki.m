@@ -19,6 +19,7 @@
 #define LKReceivedMessageHashesKey @"LKReceivedMessageHashesKey"
 #define LKReceivedMessageHashesCollection @"LKReceivedMessageHashesCollection"
 #define LKMessageIDCollection @"LKMessageIDCollection"
+#define LKModerationPermissionCollection @"LKModerationPermissionCollection"
 
 @implementation OWSPrimaryStorage (Loki)
 
@@ -163,14 +164,26 @@
     [transaction removeObjectForKey:serviceNode inCollection:LKLastMessageHashCollection];
 }
 
+# pragma mark - Group Chat
+
 - (void)setIDForMessageWithServerID:(NSUInteger)serverID to:(NSString *)messageID in:(YapDatabaseReadWriteTransaction *)transaction {
     NSString *key = [NSString stringWithFormat:@"%@", @(serverID)];
     [transaction setObject:messageID forKey:key inCollection:LKMessageIDCollection];
 }
 
-- (NSString *)getIDForMessageWithServerID:(NSUInteger)serverID in:(YapDatabaseReadTransaction *)transaction {
+- (NSString *_Nullable)getIDForMessageWithServerID:(NSUInteger)serverID in:(YapDatabaseReadTransaction *)transaction {
     NSString *key = [NSString stringWithFormat:@"%@", @(serverID)];
     return [transaction objectForKey:key inCollection:LKMessageIDCollection];
+}
+
+- (void)setIsModerator:(BOOL)isModerator forGroup:(NSUInteger)group onServer:(NSString *)server in:(YapDatabaseReadWriteTransaction *)transaction {
+    NSString *key = [NSString stringWithFormat:@"%@.%@", server, @(group)];
+    [transaction setBool:isModerator forKey:key inCollection:LKModerationPermissionCollection];
+}
+
+- (BOOL)isModeratorForGroup:(NSUInteger)group onServer:(NSString *)server in:(YapDatabaseReadTransaction *)transaction NS_SWIFT_NAME(isModerator(for:on:in:)) {
+    NSString *key = [NSString stringWithFormat:@"%@.%@", server, @(group)];
+    return [transaction boolForKey:key inCollection:LKModerationPermissionCollection defaultValue:false];
 }
 
 @end

@@ -2615,17 +2615,17 @@
 		B8439518228510E9000563FE /* Loki */ = {
 			isa = PBXGroup;
 			children = (
+				B821F2F72272CED3002C88C0 /* AccountDetailsViewController.swift */,
 				B8162F0222891AD600D46544 /* FriendRequestView.swift */,
 				B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */,
-				B89841E222B7579F00B1BDC6 /* NewConversationViewController.swift */,
-				B821F2F72272CED3002C88C0 /* AccountDetailsViewController.swift */,
-				B821F2F92272CEEE002C88C0 /* SeedViewController.swift */,
-				24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */,
 				B845B4D3230CD09000D759F0 /* LokiGroupChatPoller.swift */,
+				24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */,
 				B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */,
+				B89841E222B7579F00B1BDC6 /* NewConversationViewController.swift */,
 				B825848A230F94FE001B41CB /* QRCodeViewController.swift */,
 				B8258491230FA5DA001B41CB /* ScanQRCodeViewController.h */,
 				B8258492230FA5E9001B41CB /* ScanQRCodeViewController.m */,
+				B821F2F92272CEEE002C88C0 /* SeedViewController.swift */,
 			);
 			path = Loki;
 			sourceTree = "<group>";

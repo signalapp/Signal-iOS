@@ -1360,7 +1360,7 @@ NS_ASSUME_NONNULL_BEGIN
                     envelopeAddress(envelope),
                     groupId,
                     (unsigned long)timestamp);
-
+                
                 // Legit usage of senderTimestamp when creating an incoming group message record
                 TSIncomingMessage *incomingMessage =
                     [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
@@ -1377,6 +1377,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 wasReceivedByUD:wasReceivedByUD];
                 
                 if (envelope.isPtpMessage) { incomingMessage.isP2P = YES; }
+                if (dataMessage.publicChatInfo && dataMessage.publicChatInfo.hasServerID) { incomingMessage.groupChatMessageID = dataMessage.publicChatInfo.serverID; }
 
                 NSArray<TSAttachmentPointer *> *attachmentPointers =
                     [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments

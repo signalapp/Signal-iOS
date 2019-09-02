@@ -84,6 +84,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _linkPreview = linkPreview;
     _friendRequestStatus = LKMessageFriendRequestStatusNone;
     _friendRequestExpiresAt = 0;
+    _groupChatMessageID = -1;
 
     return self;
 }
@@ -488,6 +489,23 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (BOOL)hasFriendRequestStatusMessage
 {
     return self.isFriendRequest && self.friendRequestStatus != LKMessageFriendRequestStatusSendingOrFailed;
+}
+
+#pragma mark - Group Chat
+
+- (BOOL) isGroupChatMessage {
+    return self.groupChatMessageID > 0;
+}
+
+- (void)saveGroupChatMessageID:(uint64_t)serverMessageID in:(YapDatabaseReadWriteTransaction *_Nullable)transaction {
+    self.groupChatMessageID = serverMessageID;
+    if (transaction == nil) {
+        [self save];
+        [self.dbReadWriteConnection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:^{}];
+    } else {
+        [self saveWithTransaction:transaction];
+        [transaction.connection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:^{}];
+    }
 }
 
 @end
