@@ -29,6 +29,19 @@ public extension SDSSerializer {
         return conversion(value)
     }
 
+    // MARK: - Date
+
+    func archiveOptionalDate(_ value: Date?) -> Double? {
+        guard let value = value else {
+            return nil
+        }
+        return archiveDate(value)
+    }
+
+    func archiveDate(_ value: Date) -> Double {
+        return value.timeIntervalSince1970
+    }
+
     // MARK: - Blob
 
     func optionalArchive(_ value: Any?) -> Data? {
@@ -40,5 +53,30 @@ public extension SDSSerializer {
 
     func requiredArchive(_ value: Any) -> Data {
         return NSKeyedArchiver.archivedData(withRootObject: value)
+    }
+
+    // MARK: - Safe Numerics
+
+    func serializationSafeUInt(_ value: UInt) -> UInt {
+        guard UInt.max > Int64.max else {
+            return value
+        }
+        guard value < Int64.max else {
+            if !CurrentAppContext().isRunningTests {
+                owsFailDebug("Invalid value: \(value)")
+            }
+            return UInt(Int64.max)
+        }
+        return value
+    }
+
+    func serializationSafeUInt64(_ value: UInt64) -> UInt64 {
+        guard value < Int64.max else {
+            if !CurrentAppContext().isRunningTests {
+                owsFailDebug("Invalid value: \(value)")
+            }
+            return UInt64(Int64.max)
+        }
+        return value
     }
 }

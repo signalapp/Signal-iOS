@@ -242,8 +242,14 @@ class TypeInfo:
             return '.int'
         elif self._swift_type == 'String':
             return '.unicodeString'
+        elif self._objc_type == 'NSDate *':
+            # Persist Dates as NSTimeInterval timeIntervalSince1970.
+            return '.double'
         elif self._swift_type == 'Date':
-            return '.int64'
+            # Persist Dates as NSTimeInterval timeIntervalSince1970.
+            fail('Unknown type(0):', self._swift_type)
+            # return '.double'
+            # return '.int64'
         elif self._swift_type == 'Data':
             return '.blob'
         elif self._swift_type in ('Boolouble', 'Bool'):
@@ -289,8 +295,10 @@ class TypeInfo:
         deserialization_conversion = ''
         if self._swift_type == 'String':
             deserialization_not_optional = 'required'
+        elif self._objc_type == 'NSDate *':
+            pass
         elif self._swift_type == 'Date':
-            deserialization_not_optional = 'required'
+            fail('Unknown type(0):', self._swift_type)
         elif self.is_codable:
             deserialization_not_optional = 'required'
         elif self._swift_type == 'Data':
@@ -356,6 +364,26 @@ class TypeInfo:
                     # '   %s = NSNumber(value: value)' % ( value_name, ),
                     # '}',
                 ]
+        elif self._objc_type == 'NSDate *':
+            # Persist Dates as NSTimeInterval timeIntervalSince1970.
+            
+            value_expr = 'record.%s' % ( property.column_source(), )
+            interval_name = '%sInterval' % ( str(value_name), )
+            if did_force_optional:
+                serialized_statements = [
+                         'guard let %s: Double = %s else {' % ( interval_name, value_expr, ), 
+                        '   throw SDSError.missingRequiredField',
+                        '}',
+                     ]
+            elif is_optional:
+                serialized_statements = [ 'let %s: Double? = %s' % ( interval_name, value_expr, ), ]
+            else:
+                serialized_statements = [ 'let %s: Double = %s' % ( interval_name, value_expr, ), ]
+            if is_optional:
+                value_statement = 'let %s: Date? = SDSDeserialization.optionalDoubleAsDate(%s, name: "%s")' % ( value_name, interval_name, value_name, )
+            else:
+                value_statement = 'let %s: Date = SDSDeserialization.requiredDoubleAsDate(%s, name: "%s")' % ( value_name, interval_name, value_name, )
+            return serialized_statements + [ value_statement,]
         else:
             value_statement = 'let %s: %s = %s' % ( value_name, initializer_param_type, value_expr, )
         return [value_statement,]
@@ -375,6 +403,11 @@ class TypeInfo:
                 return 'optionalArchive(%s)' % ( value_expr, )
             else:
                 return 'requiredArchive(%s)' % ( value_expr, )
+        elif self._objc_type == 'NSDate *':
+            if is_optional or did_force_optional:
+                return 'archiveOptionalDate(%s)' % ( value_expr, )
+            else:
+                return 'archiveDate(%s)' % ( value_expr, )
         elif self._objc_type == 'NSNumber *':
         # elif self.is_numeric():
             conversion_map = {
@@ -395,11 +428,32 @@ class TypeInfo:
             conversion_method = conversion_map[self.swift_type()]
             if conversion_method is None:
                 fail('Could not convert:', self.swift_type())
-            serialization_conversion = '{ $0.%s }' % ( conversion_method, )
+            serialization_conversion = '$0.%s' % ( conversion_method, )
+            if self.swift_type() == 'UInt64':
+                serialization_conversion = 'serializationSafeUInt64(%s)' % ( serialization_conversion, )
+            elif self.swift_type() == 'UInt':
+                serialization_conversion = 'serializationSafeUInt(%s)' % ( serialization_conversion, )
+            serialization_conversion = '{ %s }' % ( serialization_conversion, )
             if is_optional or did_force_optional:
                 return 'archiveOptionalNSNumber(%s, conversion: %s)' % ( value_expr, serialization_conversion, )
             else:
                 return 'archiveNSNumber(%s, conversion: %s)' % ( value_expr, serialization_conversion, )
+        elif self.swift_type() == 'UInt64':
+            value_expr = 'serializationSafeUInt64(%s)' % ( value_expr, )
+        elif self.swift_type() == 'UInt':
+            value_expr = 'serializationSafeUInt(%s)' % ( value_expr, )
+        
+        # # print 'property', property.swift_type_safe()
+        # record_field_type = property.record_field_type()
+        #
+        # optional_value = ''
+        # if property.swift_identifier() in initializer_value_names:
+        #     did_force_optional = (property.name not in root_base_property_names) and (not property.is_optional)
+        #     model_accessor = accessor_name_for_property(property)
+        #     value_expr = property.serialize_record_invocation('model.%s' % ( model_accessor, ), did_force_optional)
+        #
+        #     if record_field_type in ('UInt64', 'UInt',):
+        #         value_expr = 'min(%s(Int64.max), %s)' % ( record_field_type, value_expr, )
 
         return value_expr
     
@@ -429,7 +483,11 @@ class ParsedProperty:
         elif objc_type == 'NSString *':
             return 'String'
         elif objc_type == 'NSDate *':
-            return 'Date'
+            # Persist Dates as NSTimeInterval timeIntervalSince1970.
+            return 'Double'
+            # return '.double'
+            # return 'UInt64'
+            # return 'Date'
         elif objc_type == 'NSData *':
             return 'Data'
         elif objc_type == 'BOOL':
@@ -1624,6 +1682,7 @@ class %sSerializer: SDSSerializer {
             did_force_optional = (property.name not in root_base_property_names) and (not property.is_optional)
             model_accessor = accessor_name_for_property(property)
             value_expr = property.serialize_record_invocation('model.%s' % ( model_accessor, ), did_force_optional)
+                        
             optional_value = ' = %s' % ( value_expr, )
         else:
             optional_value = ' = nil'

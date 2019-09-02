@@ -66,40 +66,51 @@ class TestModelTests: SSKBaseTestSwift {
         self.write { transaction in
 
             // SQLite doesn't support numeric values larger than Int64.max;
-            // UInt64.max for example is not valid.
-            let uint64Max: UInt64 = UInt64(Int64.max)
+            // UInt64.max for example is not valid.  Our serialization
+            let uint64MaxUnsafe: UInt64 = UInt64.max
+            let uint64MaxSafe: UInt64 = UInt64(Int64.max)
+            XCTAssertLessThanOrEqual(uint64MaxSafe, uint64MaxUnsafe)
             let int64Max: Int64 = Int64.max
-            let nsUintMax: UInt = NSUIntegerMaxValue() < Int64.max ? NSUIntegerMaxValue() : UInt(Int64.max)
+            let nsUintMaxUnsafe: UInt = NSUIntegerMaxValue()
+            let nsUintMaxSafe: UInt = NSUIntegerMaxValue() < Int64.max ? NSUIntegerMaxValue() : UInt(Int64.max)
+            XCTAssertLessThanOrEqual(nsUintMaxSafe, nsUintMaxUnsafe)
             let nsIntMax: Int = NSIntegerMax
             let nsNumberUsingInt64 = int64Max
-            let nsNumberUsingUInt64 = uint64Max
+            let nsNumberUsingUInt64Unsafe = uint64MaxUnsafe
+            let nsNumberUsingUInt64Safe = uint64MaxSafe
+            XCTAssertLessThanOrEqual(nsNumberUsingUInt64Safe, nsNumberUsingUInt64Unsafe)
+            let dateMax = Date(timeIntervalSince1970: Double.greatestFiniteMagnitude)
 
             writeModel.anyUpdate(transaction: transaction) { model in
                 model.doubleValue = Double.greatestFiniteMagnitude
                 model.floatValue = Float.greatestFiniteMagnitude
-                model.uint64Value = uint64Max
+                model.uint64Value = uint64MaxUnsafe
                 model.int64Value = int64Max
-                model.nsuIntegerValue = nsUintMax
+                model.nsuIntegerValue = nsUintMaxUnsafe
                 model.nsIntegerValue = nsIntMax
                 model.nsNumberValueUsingInt64 = NSNumber(value: nsNumberUsingInt64)
-                model.nsNumberValueUsingUInt64 = NSNumber(value: nsNumberUsingUInt64)
+                model.nsNumberValueUsingUInt64 = NSNumber(value: nsNumberUsingUInt64Unsafe)
+                model.dateValue = dateMax
             }
 
             let readModel = TestModel.anyFetch(uniqueId: writeModel.uniqueId, transaction: transaction)!
             XCTAssertFalse(writeModel === readModel)
             XCTAssertEqual(Double.greatestFiniteMagnitude, readModel.doubleValue)
             XCTAssertEqual(Float.greatestFiniteMagnitude, readModel.floatValue)
-            XCTAssertEqual(uint64Max, readModel.uint64Value)
+            XCTAssertEqual(uint64MaxSafe, readModel.uint64Value)
             XCTAssertEqual(int64Max, readModel.int64Value)
-            XCTAssertEqual(nsUintMax, readModel.nsuIntegerValue)
+            XCTAssertEqual(nsUintMaxSafe, readModel.nsuIntegerValue)
             XCTAssertEqual(nsIntMax, readModel.nsIntegerValue)
             XCTAssertEqual(NSNumber(value: nsNumberUsingInt64), readModel.nsNumberValueUsingInt64)
-            XCTAssertEqual(NSNumber(value: nsNumberUsingUInt64), readModel.nsNumberValueUsingUInt64)
+            XCTAssertEqual(NSNumber(value: nsNumberUsingUInt64Safe), readModel.nsNumberValueUsingUInt64)
+            XCTAssertEqual(dateMax, readModel.dateValue)
         }
 
         // MARK: - Min values
 
         self.write { transaction in
+
+            let dateMin = Date(timeIntervalSince1970: Double.leastNormalMagnitude)
 
             writeModel.anyUpdate(transaction: transaction) { model in
                 model.doubleValue = Double.leastNormalMagnitude
@@ -108,6 +119,7 @@ class TestModelTests: SSKBaseTestSwift {
                 model.int64Value = Int64.min
                 model.nsuIntegerValue = UInt.min
                 model.nsIntegerValue = Int.min
+                model.dateValue = dateMin
             }
 
             let readModel = TestModel.anyFetch(uniqueId: writeModel.uniqueId, transaction: transaction)!
@@ -118,6 +130,7 @@ class TestModelTests: SSKBaseTestSwift {
             XCTAssertEqual(Int64.min, readModel.int64Value)
             XCTAssertEqual(UInt.min, readModel.nsuIntegerValue)
             XCTAssertEqual(Int.min, readModel.nsIntegerValue)
+            XCTAssertEqual(dateMin, readModel.dateValue)
         }
 
         // MARK: - Date rounding/precision

@@ -26,7 +26,7 @@ public struct TestModelRecord: SDSRecord {
     public let uniqueId: String
 
     // Base class properties
-    public let dateValue: Date?
+    public let dateValue: Double?
     public let doubleValue: Double
     public let floatValue: Float
     public let int64Value: Int64
@@ -107,7 +107,8 @@ extension TestModel {
         case .testModel:
 
             let uniqueId: String = record.uniqueId
-            let dateValue: Date? = record.dateValue
+            let dateValueInterval: Double? = record.dateValue
+            let dateValue: Date? = SDSDeserialization.optionalDoubleAsDate(dateValueInterval, name: "dateValue")
             let doubleValue: Double = record.doubleValue
             let floatValue: Float = record.floatValue
             let int64Value: Int64 = record.int64Value
@@ -171,7 +172,7 @@ extension TestModelSerializer {
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
-    static let dateValueColumn = SDSColumnMetadata(columnName: "dateValue", columnType: .int64, isOptional: true, columnIndex: 3)
+    static let dateValueColumn = SDSColumnMetadata(columnName: "dateValue", columnType: .double, isOptional: true, columnIndex: 3)
     static let doubleValueColumn = SDSColumnMetadata(columnName: "doubleValue", columnType: .double, columnIndex: 4)
     static let floatValueColumn = SDSColumnMetadata(columnName: "floatValue", columnType: .double, columnIndex: 5)
     static let int64ValueColumn = SDSColumnMetadata(columnName: "int64Value", columnType: .int64, columnIndex: 6)
@@ -489,20 +490,11 @@ public extension TestModel {
 
 public extension TestModel {
     class func grdbFetchCursor(sql: String,
-                               arguments: [DatabaseValueConvertible]?,
+                               arguments: StatementArguments = StatementArguments(),
                                transaction: GRDBReadTransaction) -> TestModelCursor {
-        var statementArguments: StatementArguments?
-        if let arguments = arguments {
-            guard let statementArgs = StatementArguments(arguments) else {
-                owsFailDebug("Could not convert arguments.")
-                return TestModelCursor(cursor: nil)
-            }
-            statementArguments = statementArgs
-        }
-        let database = transaction.database
         do {
-            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
-            let cursor = try TestModelRecord.fetchCursor(statement, arguments: statementArguments)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
+            let cursor = try TestModelRecord.fetchCursor(transaction.database, sqlRequest)
             return TestModelCursor(cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
@@ -512,13 +504,12 @@ public extension TestModel {
     }
 
     class func grdbFetchOne(sql: String,
-                            arguments: StatementArguments,
+                            arguments: StatementArguments = StatementArguments(),
                             transaction: GRDBReadTransaction) -> TestModel? {
         assert(sql.count > 0)
 
         do {
-            // There are significant perf benefits to using a cached statement.
-            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             guard let record = try TestModelRecord.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }
@@ -551,15 +542,15 @@ class TestModelSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Base class properties
-        let dateValue: Date? = model.dateValue
+        let dateValue: Double? = archiveOptionalDate(model.dateValue)
         let doubleValue: Double = model.doubleValue
         let floatValue: Float = model.floatValue
         let int64Value: Int64 = model.int64Value
         let nsIntegerValue: Int = model.nsIntegerValue
         let nsNumberValueUsingInt64: Int64? = archiveOptionalNSNumber(model.nsNumberValueUsingInt64, conversion: { $0.int64Value })
-        let nsNumberValueUsingUInt64: UInt64? = archiveOptionalNSNumber(model.nsNumberValueUsingUInt64, conversion: { $0.uint64Value })
-        let nsuIntegerValue: UInt = model.nsuIntegerValue
-        let uint64Value: UInt64 = model.uint64Value
+        let nsNumberValueUsingUInt64: UInt64? = archiveOptionalNSNumber(model.nsNumberValueUsingUInt64, conversion: { serializationSafeUInt64($0.uint64Value) })
+        let nsuIntegerValue: UInt = serializationSafeUInt(model.nsuIntegerValue)
+        let uint64Value: UInt64 = serializationSafeUInt64(model.uint64Value)
 
         return TestModelRecord(id: id, recordType: recordType, uniqueId: uniqueId, dateValue: dateValue, doubleValue: doubleValue, floatValue: floatValue, int64Value: int64Value, nsIntegerValue: nsIntegerValue, nsNumberValueUsingInt64: nsNumberValueUsingInt64, nsNumberValueUsingUInt64: nsNumberValueUsingUInt64, nsuIntegerValue: nsuIntegerValue, uint64Value: uint64Value)
     }
