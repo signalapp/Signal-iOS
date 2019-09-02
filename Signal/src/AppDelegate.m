@@ -70,7 +70,6 @@ static NSTimeInterval launchStartedAt;
 @property (nonatomic) LKGroupChatPoller *lokiPublicChatPoller;
 @property (nonatomic) LKRSSFeedPoller *lokiNewsFeedPoller;
 @property (nonatomic) LKRSSFeedPoller *lokiMessengerUpdatesFeedPoller;
-@property (nonatomic) LKGroupChatModPoller *lokiModPoller;
 
 @end
 
@@ -1571,7 +1570,6 @@ static NSTimeInterval launchStartedAt;
 - (void)createGroupChatPollersIfNeeded
 {
     if (self.lokiPublicChatPoller == nil) { self.lokiPublicChatPoller = [[LKGroupChatPoller alloc] initForGroup:self.lokiPublicChat]; }
-    if (self.lokiModPoller == nil) { self.lokiModPoller = [[LKGroupChatModPoller alloc] initForGroup:self.lokiPublicChat]; }
 }
 
 - (void)createRSSFeedPollersIfNeeded
@@ -1584,7 +1582,6 @@ static NSTimeInterval launchStartedAt;
 {
     [self createGroupChatPollersIfNeeded];
     [self.lokiPublicChatPoller startIfNeeded];
-    [self.lokiModPoller startIfNeeded];
 }
 
 - (void)startRSSFeedPollersIfNeeded

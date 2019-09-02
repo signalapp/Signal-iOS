@@ -1255,7 +1255,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     if (interationType == OWSInteractionType_IncomingMessage) {
         __block BOOL isModerator;
         [[self primaryStorage].dbReadWriteConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            isModerator = [[self primaryStorage] getIsModeratorForServer:LKGroupChatAPI.publicChatServer transaction:transaction];
+            isModerator = [[self primaryStorage] isModeratorForGroup:LKGroupChatAPI.publicChatServerID onServer:LKGroupChatAPI.publicChatServer in:transaction];
         }];
         if (!isModerator) return false;
     }

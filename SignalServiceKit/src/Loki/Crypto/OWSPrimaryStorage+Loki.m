@@ -19,7 +19,7 @@
 #define LKReceivedMessageHashesKey @"LKReceivedMessageHashesKey"
 #define LKReceivedMessageHashesCollection @"LKReceivedMessageHashesCollection"
 #define LKMessageIDCollection @"LKMessageIDCollection"
-#define LKModeratorCollection @"LKModerationCollection"
+#define LKModerationPermissionCollection @"LKModerationPermissionCollection"
 
 @implementation OWSPrimaryStorage (Loki)
 
@@ -174,12 +174,14 @@
     return [transaction objectForKey:key inCollection:LKMessageIDCollection];
 }
 
-- (void)setIsModerator:(BOOL)isModerator forServer:(NSString *)server transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    [transaction setBool:isModerator forKey:server inCollection:LKModeratorCollection];
+- (void)setIsModerator:(BOOL)isModerator forGroup:(NSUInteger)group onServer:(NSString *)server in:(YapDatabaseReadWriteTransaction *)transaction {
+    NSString *key = [NSString stringWithFormat:@"%@.%@", server, @(group)];
+    [transaction setBool:isModerator forKey:key inCollection:LKModerationPermissionCollection];
 }
 
-- (BOOL)getIsModeratorForServer:(NSString *)server transaction:(YapDatabaseReadTransaction *)transaction {
-    return [transaction boolForKey:server inCollection:LKModeratorCollection defaultValue:false];
+- (BOOL)isModeratorForGroup:(NSUInteger)group onServer:(NSString *)server in:(YapDatabaseReadTransaction *)transaction NS_SWIFT_NAME(isModerator(for:on:in:)) {
+    NSString *key = [NSString stringWithFormat:@"%@.%@", server, @(group)];
+    return [transaction boolForKey:key inCollection:LKModerationPermissionCollection defaultValue:false];
 }
 
 @end
