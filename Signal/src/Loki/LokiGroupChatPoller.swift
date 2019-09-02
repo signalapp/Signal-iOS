@@ -4,10 +4,12 @@ public final class LokiGroupChatPoller : NSObject {
     private let group: LokiGroupChat
     private var pollForNewMessagesTimer: Timer? = nil
     private var pollForDeletedMessagesTimer: Timer? = nil
+    private var pollForModerationPermissionTimer: Timer? = nil
     private var hasStarted = false
     
     private let pollForNewMessagesInterval: TimeInterval = 4
     private let pollForDeletedMessagesInterval: TimeInterval = 20
+    private let pollForModerationPermissionInterval: TimeInterval = 10 * 60
     
     private let storage = OWSPrimaryStorage.shared()
     private let ourHexEncodedPubKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
@@ -23,12 +25,14 @@ public final class LokiGroupChatPoller : NSObject {
         pollForNewMessagesTimer = Timer.scheduledTimer(withTimeInterval: pollForNewMessagesInterval, repeats: true) { [weak self] _ in self?.pollForNewMessages() }
         pollForNewMessages() // Perform initial update
         pollForDeletedMessagesTimer = Timer.scheduledTimer(withTimeInterval: pollForDeletedMessagesInterval, repeats: true) { [weak self] _ in self?.pollForDeletedMessages() }
+        pollForModerationPermissionTimer = Timer.scheduledTimer(withTimeInterval: pollForModerationPermissionInterval, repeats: true) { [weak self] _ in self?.pollForModerationPermission() }
         hasStarted = true
     }
     
     @objc public func stop() {
         pollForNewMessagesTimer?.invalidate()
         pollForDeletedMessagesTimer?.invalidate()
+        pollForModerationPermissionTimer?.invalidate()
         hasStarted = false
     }
     
@@ -117,6 +121,16 @@ public final class LokiGroupChatPoller : NSObject {
                 deletedMessageIDs.forEach { messageID in
                     TSMessage.fetch(uniqueId: messageID)?.remove(with: transaction)
                 }
+            }
+        }
+    }
+    
+    private func pollForModerationPermission() {
+        let group = self.group
+        let _ = LokiGroupChatAPI.isCurrentUserMod(on: group.server).done { [weak self] isModerator in
+            guard let self = self else { return }
+            self.storage.dbReadWriteConnection.readWrite { transaction in
+                self.storage.setIsModerator(isModerator, for: group.server, transaction: transaction)
             }
         }
     }
