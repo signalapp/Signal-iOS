@@ -71,6 +71,13 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
     return self.state;
 }
 
+- (BOOL)isMigrating
+{
+    StorageCoordinatorState state = self.state;
+    return (state == StorageCoordinatorStateBeforeYDBToGRDBMigration
+        || state == StorageCoordinatorStateDuringYDBToGRDBMigration);
+}
+
 - (void)configure
 {
     OWSLogInfo(@"storageMode: %@", SSKFeatureFlags.storageModeDescription);
