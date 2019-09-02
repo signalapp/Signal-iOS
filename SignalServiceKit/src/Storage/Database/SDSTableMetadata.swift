@@ -87,8 +87,16 @@ public class SDSTableMetadata: NSObject {
 
     // MARK: - Table Creation
 
+    public var hasValidTableName: Bool {
+        // Only allow a-z, 0-9, and underscore
+        let regex = try! NSRegularExpression(pattern: "^[a-zA-Z0-9_]+$", options: [])
+        return regex.hasMatch(input: tableName)
+    }
+
     public func createTable(database: Database) throws {
-        // GRDB TODO: Assert that table name is valid.
+        if !hasValidTableName {
+            owsFailDebug("Invalid table name: \(tableName)")
+        }
 
         try database.create(table: tableName) { (table) in
             for columnMetadata in self.columns {
