@@ -1153,7 +1153,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     OWSAssertDebug(address.isValid);
 
-    NSString *_Nullable name = [self cachedLastNameForAddress:address];
+    NSString *_Nullable name = [self cachedContactNameForAddress:address];
 
     if (name.length == 0) {
         name = [self profileNameForAddress:address];
