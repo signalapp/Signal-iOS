@@ -220,28 +220,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)clearHasDismissedOffers
 {
-    [OWSPrimaryStorage.dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            NSMutableArray<TSContactThread *> *contactThreads = [NSMutableArray new];
-            [transaction
-                enumerateKeysAndObjectsInCollection:[TSThread collection]
-                                         usingBlock:^(NSString *_Nonnull key, id _Nonnull object, BOOL *_Nonnull stop) {
-                                             TSThread *thread = object;
-                                             if (thread.isGroupThread) {
-                                                 return;
-                                             }
-                                             TSContactThread *contactThread = object;
-                                             [contactThreads addObject:contactThread];
-                                         }];
-            for (TSContactThread *contactThread in contactThreads) {
-                if (contactThread.hasDismissedOffers) {
-                    [contactThread anyUpdateContactThreadWithTransaction:transaction.asAnyWrite
-                                                                   block:^(TSContactThread *thread) {
-                                                                       thread.hasDismissedOffers = NO;
-                                                                   }];
-                }
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        NSMutableArray<TSContactThread *> *contactThreads = [NSMutableArray new];
+        [TSThread anyEnumerateWithTransaction:transaction
+                                        block:^(TSThread *thread, BOOL *stop) {
+                                            if (thread.isGroupThread) {
+                                                return;
+                                            }
+                                            TSContactThread *contactThread = (TSContactThread *)thread;
+                                            [contactThreads addObject:contactThread];
+                                        }];
+
+        for (TSContactThread *contactThread in contactThreads) {
+            if (contactThread.hasDismissedOffers) {
+                [contactThread anyUpdateContactThreadWithTransaction:transaction
+                                                               block:^(TSContactThread *thread) {
+                                                                   thread.hasDismissedOffers = NO;
+                                                               }];
             }
-        }];
+        }
+    }];
 }
 
 + (void)sendEncryptedDatabase:(TSThread *)thread
