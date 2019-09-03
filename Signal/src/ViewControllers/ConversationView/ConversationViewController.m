@@ -205,8 +205,11 @@ typedef enum : NSUInteger {
 @property (nonatomic, nullable) MenuActionsViewController *menuActionsViewController;
 @property (nonatomic) CGFloat extraContentInsetPadding;
 @property (nonatomic) CGFloat contentInsetBottom;
+@property (nonatomic) CGFloat contentOffsetAdjustment;
 
 @property (nonatomic, nullable) MessageRequestView *messageRequestView;
+
+@property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
 
 @end
 
@@ -624,6 +627,9 @@ typedef enum : NSUInteger {
     [self.collectionView applyScrollViewInsetsFix];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _collectionView);
 
+    self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyBoard)];
+    [self.collectionView addGestureRecognizer:self.tapGestureRecognizer];
+
     _inputToolbar = [[ConversationInputToolbar alloc] initWithConversationStyle:self.conversationStyle];
     self.inputToolbar.inputToolbarDelegate = self;
     self.inputToolbar.inputTextViewDelegate = self;
@@ -653,7 +659,7 @@ typedef enum : NSUInteger {
     BOOL result = [super becomeFirstResponder];
 
     if (result) {
-        [self.inputToolbar ensureFirstResponderState];
+        [self.inputToolbar clearDesiredKeyboard];
     }
 
     return result;
@@ -2124,11 +2130,16 @@ typedef enum : NSUInteger {
         return;
     }
 
+    CGPoint contentOffset = self.collectionView.contentOffset;
+    contentOffset.y -= self.contentOffsetAdjustment;
+    self.collectionView.contentOffset = contentOffset;
+
     UIEdgeInsets contentInset = self.collectionView.contentInset;
     contentInset.top -= self.extraContentInsetPadding;
     contentInset.bottom -= self.extraContentInsetPadding;
     self.collectionView.contentInset = contentInset;
 
+    self.contentOffsetAdjustment = 0;
     self.menuActionsViewController = nil;
     self.extraContentInsetPadding = 0;
 }
@@ -2149,6 +2160,7 @@ typedef enum : NSUInteger {
         OWSFailDebug(@"Missing contentOffset.");
         return;
     }
+    self.contentOffsetAdjustment += contentOffset.CGPointValue.y - self.collectionView.contentOffset.y;
     [self.collectionView setContentOffset:contentOffset.CGPointValue animated:animated];
 }
 
@@ -2447,8 +2459,6 @@ typedef enum : NSUInteger {
 - (void)didTapAudioViewItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream
 {
     [self prepareAudioPlayerForViewItem:viewItem attachmentStream:attachmentStream];
-
-    [self dismissKeyBoard];
 
     // Resume from where we left off
     [self.audioAttachmentPlayer setCurrentTime:viewItem.audioProgressSeconds];
@@ -3833,6 +3843,10 @@ typedef enum : NSUInteger {
     BOOL wasScrolledToBottom = [self isScrolledToBottom];
 
     void (^adjustInsets)(void) = ^(void) {
+        // Changing the contentInset can change the contentOffset, so make sure we
+        // stash the current value before making any changes.
+        CGFloat oldYOffset = self.collectionView.contentOffset.y;
+
         if (!UIEdgeInsetsEqualToEdgeInsets(self.collectionView.contentInset, newInsets)) {
             self.collectionView.contentInset = newInsets;
         }
@@ -3858,13 +3872,16 @@ typedef enum : NSUInteger {
             // If we were scrolled away from the bottom, shift the content in lockstep with the
             // keyboard, up to the limits of the content bounds.
             CGFloat insetChange = newInsets.bottom - oldInsets.bottom;
-            CGFloat oldYOffset = self.collectionView.contentOffset.y;
-            CGFloat newYOffset = CGFloatClamp(oldYOffset + insetChange, 0, self.safeContentHeight);
-            CGPoint newOffset = CGPointMake(0, newYOffset);
 
-            // If the user is dismissing the keyboard via interactive scrolling, any additional conset offset feels
-            // redundant, so we only adjust content offset when *presenting* the keyboard (i.e. when insetChange > 0).
-            if (insetChange > 0 && newYOffset > keyboardEndFrame.origin.y) {
+            // Only update the content offset if the inset has changed.
+            if (insetChange != 0) {
+                // The content offset can go negative, up to the size of the top layout guide.
+                // This accounts for the extended layout under the navigation bar.
+                CGFloat minYOffset = -self.topLayoutGuide.length;
+
+                CGFloat newYOffset = CGFloatClamp(oldYOffset + insetChange, minYOffset, self.safeContentHeight);
+                CGPoint newOffset = CGPointMake(0, newYOffset);
+
                 [self.collectionView setContentOffset:newOffset animated:NO];
             }
         }
@@ -4568,6 +4585,13 @@ typedef enum : NSUInteger {
     cell.conversationStyle = self.conversationStyle;
 
     [cell loadForDisplay];
+
+    // This must happen after load for display, since the tap
+    // gesture doesn't get added to a view until this point.
+    if ([cell isKindOfClass:[OWSMessageCell class]]) {
+        OWSMessageCell *messageCell = (OWSMessageCell *)cell;
+        [self.tapGestureRecognizer requireGestureRecognizerToFail:messageCell.tapGestureRecognizer];
+    }
 
 #ifdef DEBUG
     // TODO: Confirm with nancy if this will work.

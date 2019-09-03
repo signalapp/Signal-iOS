@@ -50,6 +50,7 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 // of a conversation view message cell.
 - (void)addGestureHandlers;
 
+- (BOOL)willHandleTapGesture:(UITapGestureRecognizer *)sender;
 - (void)handleTapGesture:(UITapGestureRecognizer *)sender;
 - (BOOL)handlePanGesture:(UIPanGestureRecognizer *)sender;
 

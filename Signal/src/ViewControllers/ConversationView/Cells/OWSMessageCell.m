@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
 
+@property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
 @property (nonatomic) UIPanGestureRecognizer *panGestureRecognizer;
 @property (nonatomic) UIView *swipeableContentView;
 @property (nonatomic) UIImageView *swipeToReplyImageView;
@@ -74,9 +75,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.contentView.userInteractionEnabled = YES;
 
-    UITapGestureRecognizer *tap =
-        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
-    [self addGestureRecognizer:tap];
+    self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                        action:@selector(handleTapGesture:)];
+    self.tapGestureRecognizer.delegate = self;
 
     UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
@@ -86,7 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                           action:@selector(handlePanGesture:)];
     self.panGestureRecognizer.delegate = self;
     [self.contentView addGestureRecognizer:self.panGestureRecognizer];
-    [tap requireGestureRecognizerToFail:self.panGestureRecognizer];
+    [self.tapGestureRecognizer requireGestureRecognizerToFail:self.panGestureRecognizer];
 
     [self setupSwipeContainer];
 }
@@ -173,6 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
     [messageView loadContent];
     [self.contentView addSubview:messageView];
     [messageView autoPinBottomToSuperviewMarginWithInset:0];
+    [messageView addGestureRecognizer:self.tapGestureRecognizer];
 
     if (self.viewItem.hasCellHeader) {
         CGFloat headerHeight =
@@ -536,6 +538,8 @@ NS_ASSUME_NONNULL_BEGIN
         // to avoid conflicts with the conversation view scroll view.
         CGPoint velocity = [self.panGestureRecognizer velocityInView:self];
         return fabs(velocity.x) > fabs(velocity.y);
+    } else if (gestureRecognizer == self.tapGestureRecognizer) {
+        return [self.messageView willHandleTapGesture:self.tapGestureRecognizer];
     }
 
     return YES;
