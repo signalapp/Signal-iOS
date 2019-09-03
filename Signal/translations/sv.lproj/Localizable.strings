@@ -2835,7 +2835,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Granska säkerhetsnummer";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Svep för att avbryta";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Dra för att avbryta";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "Röstmeddelande";
