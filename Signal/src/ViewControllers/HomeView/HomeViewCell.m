@@ -525,9 +525,9 @@ NS_ASSUME_NONNULL_BEGIN
         } else if (SSKFeatureFlags.profileDisplayChanges) {
             name = [self.contactsManager displayNameForAddress:thread.contactAddress];
         } else {
-            attributedName = [self.contactsManager attributedContactOrProfileNameForAddress:thread.contactAddress
-                                                                                primaryFont:self.nameFont
-                                                                              secondaryFont:self.nameSecondaryFont];
+            attributedName = [self.contactsManager attributedLegacyDisplayNameForAddress:thread.contactAddress
+                                                                             primaryFont:self.nameFont
+                                                                           secondaryFont:self.nameSecondaryFont];
         }
     }
 

@@ -51,11 +51,19 @@ NS_ASSUME_NONNULL_BEGIN
                       colorName:(ConversationColorName)colorName
                        diameter:(NSUInteger)diameter
 {
-    // Name for avatar initials.
-    NSString *_Nullable name = [OWSContactAvatarBuilder.contactsManager displayNameForAddress:address];
 
-    if (name.length == 0) {
-        name = address.stringForDisplay;
+
+    // Name for avatar initials.
+    NSString *_Nullable name;
+
+    if (SSKFeatureFlags.profileDisplayChanges) {
+        name = [OWSContactAvatarBuilder.contactsManager displayNameForAddress:address];
+    } else {
+        name = [OWSContactAvatarBuilder.contactsManager contactOrProfileNameForAddress:address];
+
+        if (name.length == 0) {
+            name = address.stringForDisplay;
+        }
     }
 
     return [self initWithAddress:address name:name colorName:colorName diameter:diameter];

@@ -1368,9 +1368,9 @@ typedef enum : NSUInteger {
             name = [self.contactsManager displayNameForAddress:thread.contactAddress];
         } else {
             attributedName =
-                [self.contactsManager attributedContactOrProfileNameForAddress:thread.contactAddress
-                                                                   primaryFont:self.headerView.titlePrimaryFont
-                                                                 secondaryFont:self.headerView.titleSecondaryFont];
+                [self.contactsManager attributedLegacyDisplayNameForAddress:thread.contactAddress
+                                                                primaryFont:self.headerView.titlePrimaryFont
+                                                              secondaryFont:self.headerView.titleSecondaryFont];
         }
 
         // If the user is in the system contacts, show a badge
