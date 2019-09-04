@@ -169,7 +169,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     OWSNavigationController *approvalModal =
         [AttachmentApprovalViewController wrappedInNavControllerWithAttachments:self.attachments approvalDelegate:self];
-    [self presentViewController:approvalModal animated:YES completion:nil];
+    [self presentFullScreenViewController:approvalModal animated:YES completion:nil];
 }
 
 - (BOOL)tryToShareAsMessageText

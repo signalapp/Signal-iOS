@@ -736,7 +736,7 @@ extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
 
         let pdfView = PdfViewController(attachmentStream: attachmentStream)
         let navigationController = OWSNavigationController(rootViewController: pdfView)
-        present(navigationController, animated: true)
+        presentFullScreen(navigationController, animated: true)
     }
 
     func didTapTruncatedTextMessage(_ conversationItem: ConversationViewItem) {

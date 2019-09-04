@@ -161,6 +161,14 @@ public extension UIViewController {
                         completion()
         })
     }
+
+    /// A convenience function to present a modal view full screen, not using
+    /// the default card style added in iOS 13.
+    @objc(presentFullScreenViewController:animated:completion:)
+    func presentFullScreen(_ viewControllerToPresent: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
+        viewControllerToPresent.modalPresentationStyle = .fullScreen
+        present(viewControllerToPresent, animated: animated, completion: completion)
+    }
 }
 
 // MARK: -

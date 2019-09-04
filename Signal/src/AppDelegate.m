@@ -712,9 +712,9 @@ static NSTimeInterval launchStartedAt;
                 }];
 
                 [frontmostViewController
-                    presentViewController:[[OWSNavigationController alloc] initWithRootViewController:setupVC]
-                                 animated:YES
-                               completion:nil];
+                    presentFullScreenViewController:[[OWSNavigationController alloc] initWithRootViewController:setupVC]
+                                           animated:YES
+                                         completion:nil];
             } else if ([OWS2FAManager sharedManager].isDueForReminder) {
                 UIViewController *frontmostViewController = UIApplication.sharedApplication.frontmostViewController;
                 OWSAssertDebug(frontmostViewController);
@@ -724,6 +724,7 @@ static NSTimeInterval launchStartedAt;
                     reminderVC = [OWSPinReminderViewController new];
                 } else {
                     reminderVC = [OWS2FAReminderViewController wrappedInNavController];
+                    reminderVC.modalPresentationStyle = UIModalPresentationFullScreen;
                 }
 
                 if ([frontmostViewController isKindOfClass:[reminderVC class]]) {

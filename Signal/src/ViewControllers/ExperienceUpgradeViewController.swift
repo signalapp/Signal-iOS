@@ -310,6 +310,11 @@ public class ExperienceUpgradeViewController: OWSViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
+        // Don't allow interactive dismissal.
+        if #available(iOS 13, *) {
+            isModalInPresentation = true
+        }
+
         addDismissGesture()
     }
 

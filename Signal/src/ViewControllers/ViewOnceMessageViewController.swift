@@ -80,7 +80,7 @@ class ViewOnceMessageViewController: OWSViewController {
                                                                 }
 
                                                                 let view = ViewOnceMessageViewController(content: content)
-                                                                fromViewController.present(view, animated: true)
+                                                                fromViewController.presentFullScreen(view, animated: true)
                                                             })
                                                         }
         }
@@ -226,8 +226,6 @@ class ViewOnceMessageViewController: OWSViewController {
     override public func loadView() {
         self.view = UIView()
         view.backgroundColor = UIColor.ows_black
-
-        self.modalPresentationStyle = .overFullScreen
 
         let contentView = UIView()
         view.addSubview(contentView)

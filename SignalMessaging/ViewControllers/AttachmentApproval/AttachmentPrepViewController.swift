@@ -443,9 +443,7 @@ extension AttachmentPrepViewController: ImageEditorViewDelegate {
             owsFailDebug("navigationBar was nil or unexpected class")
         }
 
-        self.present(navigationController, animated: false) {
-            // Do nothing.
-        }
+        self.presentFullScreen(navigationController, animated: false)
     }
 
     public func imageEditorUpdateNavigationBar() {

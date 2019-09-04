@@ -48,10 +48,10 @@ extension CallUIAdaptee {
 
             if let presentedViewController = presentingViewController.presentedViewController {
                 presentedViewController.dismiss(animated: false) {
-                    presentingViewController.present(callViewController, animated: true)
+                    presentingViewController.presentFullScreen(callViewController, animated: true)
                 }
             } else {
-                presentingViewController.present(callViewController, animated: true)
+                presentingViewController.presentFullScreen(callViewController, animated: true)
             }
         }
     }
