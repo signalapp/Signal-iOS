@@ -95,7 +95,7 @@ public class SDSTableMetadata: NSObject {
 
     public func createTable(database: Database) throws {
         if !hasValidTableName {
-            owsFailDebug("Invalid table name: \(tableName)")
+            owsFail("Invalid table name: \(tableName)")
         }
 
         try database.create(table: tableName) { (table) in
