@@ -91,6 +91,7 @@ final class NewConversationViewController : OWSViewController, OWSQRScannerDeleg
     }
     
     func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {
+        Analytics.shared.track("QR Code Scanned")
         let hexEncodedPublicKey = string
         startNewConversationIfPossible(with: hexEncodedPublicKey)
     }
@@ -111,6 +112,7 @@ final class NewConversationViewController : OWSViewController, OWSQRScannerDeleg
             presentAlert(alert)
         } else {
             let thread = TSContactThread.getOrCreateThread(contactId: hexEncodedPublicKey)
+            Analytics.shared.track("New Conversation Started")
             SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
             presentingViewController!.dismiss(animated: true, completion: nil)
         }

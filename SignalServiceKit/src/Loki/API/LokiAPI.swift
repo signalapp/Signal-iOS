@@ -76,7 +76,7 @@ public final class LokiAPI : NSObject {
             return lokiMessage.calculatePoW().then { lokiMessageWithPoW in
                 return getTargetSnodes(for: destination).map { swarm in
                     return Set(swarm.map { target in
-                        sendLokiMessage(lokiMessageWithPoW, to: target).map { rawResponse in
+                        sendLokiMessage(lokiMessageWithPoW, to: target).map { rawResponse -> Any in
                             if let json = rawResponse as? JSON, let powDifficulty = json["difficulty"] as? Int {
                                 guard powDifficulty != LokiAPI.powDifficulty else { return rawResponse }
                                 print("[Loki] Setting proof of work difficulty to \(powDifficulty).")
@@ -87,7 +87,7 @@ public final class LokiAPI : NSObject {
                             return rawResponse
                         }
                     })
-                }.retryingIfNeeded(maxRetryCount: maxRetryCount)
+                }
             }
         }
         if let peer = LokiP2PAPI.getInfo(for: destination), (lokiMessage.isPing || peer.isOnline) {

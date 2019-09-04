@@ -17,3 +17,10 @@ public enum BuildConfiguration : CustomStringConvertible {
         }
     }
 }
+
+@objc public final class LKBuildConfiguration : NSObject {
+    
+    override private init() { }
+    
+    @objc public static var current: String { return BuildConfiguration.current.description }
+}

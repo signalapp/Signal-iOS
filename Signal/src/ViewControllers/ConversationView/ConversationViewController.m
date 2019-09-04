@@ -611,6 +611,16 @@ typedef enum : NSUInteger {
     [self loadDraftInCompose];
     [self applyTheme];
     [self.conversationViewModel viewDidLoad];
+    
+    if (self.thread.isGroupThread) {
+        if (self.isRSSFeed) {
+            [LKAnalytics.shared track:@"RSS Feed Opened"];
+        } else {
+            [LKAnalytics.shared track:@"Loki Public Chat Opened"];
+        }
+    } else {
+        [LKAnalytics.shared track:@"Conversation Opened"];
+    }
 }
 
 - (void)createContents
