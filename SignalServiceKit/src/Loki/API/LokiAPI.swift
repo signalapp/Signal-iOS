@@ -87,7 +87,7 @@ public final class LokiAPI : NSObject {
                             return rawResponse
                         }
                     })
-                }
+                }.retryingIfNeeded(maxRetryCount: maxRetryCount)
             }
         }
         if let peer = LokiP2PAPI.getInfo(for: destination), (lokiMessage.isPing || peer.isOnline) {
