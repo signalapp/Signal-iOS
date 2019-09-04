@@ -21,7 +21,7 @@ class ComposeViewController: OWSViewController {
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(dismissPressed))
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(imageResource: "btnGroup--white"), style: .plain, target: self, action: #selector(newGroupPressed))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "btnGroup--white"), style: .plain, target: self, action: #selector(newGroupPressed))
     }
 
     @objc func dismissPressed() {

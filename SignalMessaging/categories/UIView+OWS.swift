@@ -487,8 +487,8 @@ public extension UIImageView {
 @objc
 public extension UISearchBar {
     var textField: UITextField? {
-        // TODO: iOS 13 – a public accessor for this textField as been added in iOS 13,
-        // once we start building with that SDK switch to using it for 13+
+        if #available(iOS 13, *) { return searchTextField }
+
         guard let textField = self.value(forKey: "_searchField") as? UITextField else {
             owsFailDebug("Couldn't find UITextField.")
             return nil

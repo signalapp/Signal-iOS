@@ -93,7 +93,7 @@ public class LocationPicker: UIViewController {
         title = NSLocalizedString("LOCATION_PICKER_TITLE", comment: "The title for the location picker view")
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: #imageLiteral(imageResource: "x-24").withRenderingMode(.alwaysTemplate),
+            image: UIImage(named: "x-24")?.withRenderingMode(.alwaysTemplate),
             style: .plain,
             target: self,
             action: #selector(cancelButtonPressed)
