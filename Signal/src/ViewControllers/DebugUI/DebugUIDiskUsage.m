@@ -56,14 +56,15 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray new];
-        [TSAttachment anyEnumerateWithTransaction:transaction
-                                            block:^(TSAttachment *attachment, BOOL *stop) {
-                                                if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-                                                    return;
-                                                }
-                                                TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
-                                                [attachmentStreams addObject:attachmentStream];
-                                            }];
+        [TSAttachment anyUnbatchedEnumerateWithTransaction:transaction
+                                                     block:^(TSAttachment *attachment, BOOL *stop) {
+                                                         if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+                                                             return;
+                                                         }
+                                                         TSAttachmentStream *attachmentStream
+                                                             = (TSAttachmentStream *)attachment;
+                                                         [attachmentStreams addObject:attachmentStream];
+                                                     }];
 
         OWSLogInfo(@"Saving %zd attachment streams.", attachmentStreams.count);
 

@@ -206,7 +206,7 @@ class ConversationPickerViewController: OWSViewController {
                 addThread(thread)
             }
 
-            SignalAccount.anyEnumerate(transaction: transaction) { signalAccount, _ in
+            SignalAccount.anyUnbatchedEnumerate(transaction: transaction) { signalAccount, _ in
                 let address = signalAccount.recipientAddress
                 guard !seenAddresses.contains(address) else {
                     return

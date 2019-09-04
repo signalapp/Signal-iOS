@@ -222,14 +222,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         NSMutableArray<TSContactThread *> *contactThreads = [NSMutableArray new];
-        [TSThread anyEnumerateWithTransaction:transaction
-                                        block:^(TSThread *thread, BOOL *stop) {
-                                            if (thread.isGroupThread) {
-                                                return;
-                                            }
-                                            TSContactThread *contactThread = (TSContactThread *)thread;
-                                            [contactThreads addObject:contactThread];
-                                        }];
+        [TSThread anyUnbatchedEnumerateWithTransaction:transaction
+                                                 block:^(TSThread *thread, BOOL *stop) {
+                                                     if (thread.isGroupThread) {
+                                                         return;
+                                                     }
+                                                     TSContactThread *contactThread = (TSContactThread *)thread;
+                                                     [contactThreads addObject:contactThread];
+                                                 }];
 
         for (TSContactThread *contactThread in contactThreads) {
             if (contactThread.hasDismissedOffers) {

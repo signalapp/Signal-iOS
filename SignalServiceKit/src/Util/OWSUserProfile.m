@@ -540,15 +540,15 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 {
     NSString *profileAvatarsDirPath = self.profileAvatarsDirPath;
     NSMutableSet<NSString *> *profileAvatarFilePaths = [NSMutableSet new];
-    [OWSUserProfile anyEnumerateWithTransaction:transaction
-                                          block:^(OWSUserProfile *userProfile, BOOL *stop) {
-                                              if (!userProfile.avatarFileName) {
-                                                  return;
-                                              }
-                                              NSString *filePath = [profileAvatarsDirPath
-                                                  stringByAppendingPathComponent:userProfile.avatarFileName];
-                                              [profileAvatarFilePaths addObject:filePath];
-                                          }];
+    [OWSUserProfile anyBatchedEnumerateWithTransaction:transaction
+                                                 block:^(OWSUserProfile *userProfile, BOOL *stop) {
+                                                     if (!userProfile.avatarFileName) {
+                                                         return;
+                                                     }
+                                                     NSString *filePath = [profileAvatarsDirPath
+                                                         stringByAppendingPathComponent:userProfile.avatarFileName];
+                                                     [profileAvatarFilePaths addObject:filePath];
+                                                 }];
     return [profileAvatarFilePaths copy];
 }
 

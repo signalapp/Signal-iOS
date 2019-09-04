@@ -184,21 +184,23 @@ NS_ASSUME_NONNULL_BEGIN
     __block unsigned long long attachmentSizeTotal = 0;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         [TSInteraction
-            anyEnumerateWithTransaction:transaction
-                                  block:^(TSInteraction *interaction, BOOL *stop) {
-                                      interactionCount++;
-                                      NSData *_Nullable data = [NSKeyedArchiver archivedDataWithRootObject:interaction];
-                                      OWSAssertDebug(data);
-                                      ows_add_overflow(interactionSizeTotal, data.length, &interactionSizeTotal);
-                                  }];
+            anyBatchedEnumerateWithTransaction:transaction
+                                         block:^(TSInteraction *interaction, BOOL *stop) {
+                                             interactionCount++;
+                                             NSData *_Nullable data =
+                                                 [NSKeyedArchiver archivedDataWithRootObject:interaction];
+                                             OWSAssertDebug(data);
+                                             ows_add_overflow(interactionSizeTotal, data.length, &interactionSizeTotal);
+                                         }];
         [TSAttachment
-            anyEnumerateWithTransaction:transaction
-                                  block:^(TSAttachment *attachment, BOOL *stop) {
-                                      attachmentCount++;
-                                      NSData *_Nullable data = [NSKeyedArchiver archivedDataWithRootObject:attachment];
-                                      OWSAssertDebug(data);
-                                      ows_add_overflow(attachmentSizeTotal, data.length, &attachmentSizeTotal);
-                                  }];
+            anyBatchedEnumerateWithTransaction:transaction
+                                         block:^(TSAttachment *attachment, BOOL *stop) {
+                                             attachmentCount++;
+                                             NSData *_Nullable data =
+                                                 [NSKeyedArchiver archivedDataWithRootObject:attachment];
+                                             OWSAssertDebug(data);
+                                             ows_add_overflow(attachmentSizeTotal, data.length, &attachmentSizeTotal);
+                                         }];
     }];
 
     OWSLogInfo(@"interactionCount: %llu", interactionCount);

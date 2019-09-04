@@ -25,7 +25,7 @@ public class OWS115EnsureProfileAvatars: YDBDatabaseMigration {
     override public func runUp(with transaction: YapDatabaseReadWriteTransaction) {
         Bench(title: "\(self.logTag)") {
             var profilesWithMissingAvatars: [String] = []
-            OWSUserProfile.anyEnumerate(transaction: transaction.asAnyWrite) { profile, _ in
+            OWSUserProfile.anyBatchedEnumerate(transaction: transaction.asAnyWrite) { profile, _ in
                 guard let filename = profile.avatarFileName else {
                     return
                 }

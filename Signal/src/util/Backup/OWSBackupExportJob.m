@@ -492,117 +492,118 @@ NS_ASSUME_NONNULL_BEGIN
     __block NSUInteger copiedMisc = 0;
     self.unsavedAttachmentExports = [NSMutableArray new];
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        [TSThread anyEnumerateWithTransaction:transaction
-                                        block:^(TSThread *object, BOOL *stop) {
-                                            NSString *collection = TSThread.collection;
-                                            SignalIOSProtoBackupSnapshotBackupEntityType entityType
-                                                = SignalIOSProtoBackupSnapshotBackupEntityTypeThread;
+        [TSThread anyBatchedEnumerateWithTransaction:transaction
+                                               block:^(TSThread *object, BOOL *stop) {
+                                                   NSString *collection = TSThread.collection;
+                                                   SignalIOSProtoBackupSnapshotBackupEntityType entityType
+                                                       = SignalIOSProtoBackupSnapshotBackupEntityTypeThread;
 
-                                            if (self.isComplete) {
-                                                *stop = YES;
-                                                return;
-                                            }
-                                            copiedThreads++;
-                                            if (![exportStream writeObject:object
-                                                                collection:collection
-                                                                       key:object.uniqueId
-                                                                entityType:entityType]) {
-                                                *stop = YES;
-                                                aborted = YES;
-                                                return;
-                                            }
-                                        }];
+                                                   if (self.isComplete) {
+                                                       *stop = YES;
+                                                       return;
+                                                   }
+                                                   copiedThreads++;
+                                                   if (![exportStream writeObject:object
+                                                                       collection:collection
+                                                                              key:object.uniqueId
+                                                                       entityType:entityType]) {
+                                                       *stop = YES;
+                                                       aborted = YES;
+                                                       return;
+                                                   }
+                                               }];
         if (aborted) {
             return;
         }
         [TSAttachment
-            anyEnumerateWithTransaction:transaction
-                                  block:^(TSAttachment *object, BOOL *stop) {
-                                      NSString *collection = TSAttachment.collection;
-                                      SignalIOSProtoBackupSnapshotBackupEntityType entityType
-                                          = SignalIOSProtoBackupSnapshotBackupEntityTypeAttachment;
+            anyBatchedEnumerateWithTransaction:transaction
+                                         block:^(TSAttachment *object, BOOL *stop) {
+                                             NSString *collection = TSAttachment.collection;
+                                             SignalIOSProtoBackupSnapshotBackupEntityType entityType
+                                                 = SignalIOSProtoBackupSnapshotBackupEntityTypeAttachment;
 
-                                      if (self.isComplete) {
-                                          *stop = YES;
-                                          return;
-                                      }
+                                             if (self.isComplete) {
+                                                 *stop = YES;
+                                                 return;
+                                             }
 
-                                      TSYapDatabaseObject *objectToWrite = object;
-                                      // No need to backup the contents (e.g. the file on disk)
-                                      // of attachment pointers.
-                                      // After a restore, users will be able "tap to retry".
-                                      if ([object isKindOfClass:[TSAttachmentStream class]]) {
-                                          TSAttachmentStream *attachmentStream = (TSAttachmentStream *)object;
-                                          NSString *_Nullable filePath = attachmentStream.originalFilePath;
-                                          if (!filePath || ![NSFileManager.defaultManager fileExistsAtPath:filePath]) {
-                                              OWSFailDebug(@"attachment is missing file.");
-                                              return;
-                                          }
+                                             TSYapDatabaseObject *objectToWrite = object;
+                                             // No need to backup the contents (e.g. the file on disk)
+                                             // of attachment pointers.
+                                             // After a restore, users will be able "tap to retry".
+                                             if ([object isKindOfClass:[TSAttachmentStream class]]) {
+                                                 TSAttachmentStream *attachmentStream = (TSAttachmentStream *)object;
+                                                 NSString *_Nullable filePath = attachmentStream.originalFilePath;
+                                                 if (!filePath
+                                                     || ![NSFileManager.defaultManager fileExistsAtPath:filePath]) {
+                                                     OWSFailDebug(@"attachment is missing file.");
+                                                     return;
+                                                 }
 
-                                          // OWSAttachmentExport is used to lazily write an encrypted copy of the
-                                          // attachment to disk.
-                                          OWSAttachmentExport *attachmentExport =
-                                              [[OWSAttachmentExport alloc] initWithBackupIO:self.backupIO
-                                                                               attachmentId:attachmentStream.uniqueId
-                                                                         attachmentFilePath:filePath];
-                                          [self.unsavedAttachmentExports addObject:attachmentExport];
+                                                 // OWSAttachmentExport is used to lazily write an encrypted copy of the
+                                                 // attachment to disk.
+                                                 OWSAttachmentExport *attachmentExport = [[OWSAttachmentExport alloc]
+                                                       initWithBackupIO:self.backupIO
+                                                           attachmentId:attachmentStream.uniqueId
+                                                     attachmentFilePath:filePath];
+                                                 [self.unsavedAttachmentExports addObject:attachmentExport];
 
 
-                                          // Convert attachment streams to pointers,
-                                          // since we'll need to restore them.
-                                          objectToWrite = [[TSAttachmentPointer alloc]
-                                              initForRestoreWithAttachmentStream:attachmentStream];
-                                      }
+                                                 // Convert attachment streams to pointers,
+                                                 // since we'll need to restore them.
+                                                 objectToWrite = [[TSAttachmentPointer alloc]
+                                                     initForRestoreWithAttachmentStream:attachmentStream];
+                                             }
 
-                                      copiedAttachments++;
-                                      if (![exportStream writeObject:objectToWrite
-                                                          collection:collection
-                                                                 key:object.uniqueId
-                                                          entityType:entityType]) {
-                                          *stop = YES;
-                                          aborted = YES;
-                                          return;
-                                      }
-                                  }];
+                                             copiedAttachments++;
+                                             if (![exportStream writeObject:objectToWrite
+                                                                 collection:collection
+                                                                        key:object.uniqueId
+                                                                 entityType:entityType]) {
+                                                 *stop = YES;
+                                                 aborted = YES;
+                                                 return;
+                                             }
+                                         }];
         if (aborted) {
             return;
         }
 
         // Interactions refer to threads and attachments, so copy after them.
-        [TSInteraction
-            anyEnumerateWithTransaction:transaction
-                                  block:^(TSInteraction *object, BOOL *stop) {
-                                      NSString *collection = TSInteraction.collection;
-                                      SignalIOSProtoBackupSnapshotBackupEntityType entityType
-                                          = SignalIOSProtoBackupSnapshotBackupEntityTypeInteraction;
+        [TSInteraction anyBatchedEnumerateWithTransaction:transaction
+                                                    block:^(TSInteraction *object, BOOL *stop) {
+                                                        NSString *collection = TSInteraction.collection;
+                                                        SignalIOSProtoBackupSnapshotBackupEntityType entityType
+                                                            = SignalIOSProtoBackupSnapshotBackupEntityTypeInteraction;
 
-                                      if (self.isComplete) {
-                                          *stop = YES;
-                                          return;
-                                      }
+                                                        if (self.isComplete) {
+                                                            *stop = YES;
+                                                            return;
+                                                        }
 
-                                      // Ignore both kinds of disappearing messages.
-                                      if ([object isKindOfClass:[TSMessage class]]) {
-                                          TSMessage *message = (TSMessage *)object;
-                                          if (message.hasPerConversationExpiration || message.isViewOnceMessage) {
-                                              return;
-                                          }
-                                      }
-                                      // Ignore dynamic interactions.
-                                      if (object.isDynamicInteraction) {
-                                          return;
-                                      }
+                                                        // Ignore both kinds of disappearing messages.
+                                                        if ([object isKindOfClass:[TSMessage class]]) {
+                                                            TSMessage *message = (TSMessage *)object;
+                                                            if (message.hasPerConversationExpiration
+                                                                || message.isViewOnceMessage) {
+                                                                return;
+                                                            }
+                                                        }
+                                                        // Ignore dynamic interactions.
+                                                        if (object.isDynamicInteraction) {
+                                                            return;
+                                                        }
 
-                                      copiedInteractions++;
-                                      if (![exportStream writeObject:object
-                                                          collection:collection
-                                                                 key:object.uniqueId
-                                                          entityType:entityType]) {
-                                          *stop = YES;
-                                          aborted = YES;
-                                          return;
-                                      }
-                                  }];
+                                                        copiedInteractions++;
+                                                        if (![exportStream writeObject:object
+                                                                            collection:collection
+                                                                                   key:object.uniqueId
+                                                                            entityType:entityType]) {
+                                                            *stop = YES;
+                                                            aborted = YES;
+                                                            return;
+                                                        }
+                                                    }];
         if (aborted) {
             return;
         }

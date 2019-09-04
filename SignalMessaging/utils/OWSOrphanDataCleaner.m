@@ -329,29 +329,30 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     NSMutableSet<NSString *> *activeStickerFilePaths = [NSMutableSet new];
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         [TSAttachmentStream
-            anyEnumerateWithTransaction:transaction
-                                  block:^(TSAttachment *attachment, BOOL *stop) {
-                                      if (!self.isMainAppAndActive) {
-                                          shouldAbort = YES;
-                                          *stop = YES;
-                                          return;
-                                      }
-                                      if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-                                          return;
-                                      }
-                                      [allAttachmentIds addObject:attachment.uniqueId];
+            anyBatchedEnumerateWithTransaction:transaction
+                                         block:^(TSAttachment *attachment, BOOL *stop) {
+                                             if (!self.isMainAppAndActive) {
+                                                 shouldAbort = YES;
+                                                 *stop = YES;
+                                                 return;
+                                             }
+                                             if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+                                                 return;
+                                             }
+                                             [allAttachmentIds addObject:attachment.uniqueId];
 
-                                      TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
-                                      attachmentStreamCount++;
-                                      NSString *_Nullable filePath = [attachmentStream originalFilePath];
-                                      if (filePath) {
-                                          [allAttachmentFilePaths addObject:filePath];
-                                      } else {
-                                          OWSFailDebug(@"attachment has no file path.");
-                                      }
+                                             TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+                                             attachmentStreamCount++;
+                                             NSString *_Nullable filePath = [attachmentStream originalFilePath];
+                                             if (filePath) {
+                                                 [allAttachmentFilePaths addObject:filePath];
+                                             } else {
+                                                 OWSFailDebug(@"attachment has no file path.");
+                                             }
 
-                                      [allAttachmentFilePaths addObjectsFromArray:attachmentStream.allThumbnailPaths];
-                                  }];
+                                             [allAttachmentFilePaths
+                                                 addObjectsFromArray:attachmentStream.allThumbnailPaths];
+                                         }];
 
         if (shouldAbort) {
             return;
@@ -359,25 +360,26 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
         threadIds = [NSSet setWithArray:[TSThread anyAllUniqueIdsWithTransaction:transaction]];
 
-        [TSInteraction anyEnumerateWithTransaction:transaction
-                                             block:^(TSInteraction *interaction, BOOL *stop) {
-                                                 if (!self.isMainAppAndActive) {
-                                                     shouldAbort = YES;
-                                                     *stop = YES;
-                                                     return;
-                                                 }
-                                                 if (interaction.uniqueThreadId.length < 1
-                                                     || ![threadIds containsObject:interaction.uniqueThreadId]) {
-                                                     [orphanInteractionIds addObject:interaction.uniqueId];
-                                                 }
+        [TSInteraction
+            anyBatchedEnumerateWithTransaction:transaction
+                                         block:^(TSInteraction *interaction, BOOL *stop) {
+                                             if (!self.isMainAppAndActive) {
+                                                 shouldAbort = YES;
+                                                 *stop = YES;
+                                                 return;
+                                             }
+                                             if (interaction.uniqueThreadId.length < 1
+                                                 || ![threadIds containsObject:interaction.uniqueThreadId]) {
+                                                 [orphanInteractionIds addObject:interaction.uniqueId];
+                                             }
 
-                                                 if (![interaction isKindOfClass:[TSMessage class]]) {
-                                                     return;
-                                                 }
+                                             if (![interaction isKindOfClass:[TSMessage class]]) {
+                                                 return;
+                                             }
 
-                                                 TSMessage *message = (TSMessage *)interaction;
-                                                 [allMessageAttachmentIds addObjectsFromArray:message.allAttachmentIds];
-                                             }];
+                                             TSMessage *message = (TSMessage *)interaction;
+                                             [allMessageAttachmentIds addObjectsFromArray:message.allAttachmentIds];
+                                         }];
 
         if (shouldAbort) {
             return;

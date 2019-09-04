@@ -750,7 +750,7 @@ public class StickerManager: NSObject {
     @objc
     public class func allKnownStickerPacks(transaction: SDSAnyReadTransaction) -> [KnownStickerPack] {
         var result = [KnownStickerPack]()
-        KnownStickerPack.anyEnumerate(transaction: transaction) { (knownStickerPack, _) in
+        KnownStickerPack.anyUnbatchedEnumerate(transaction: transaction) { (knownStickerPack, _) in
             result.append(knownStickerPack)
         }
         return result
@@ -1034,7 +1034,7 @@ public class StickerManager: NSObject {
                 }
 
                 var stickersToUninstall = [InstalledSticker]()
-                InstalledSticker.anyEnumerate(transaction: transaction) { (sticker, _) in
+                InstalledSticker.anyUnbatchedEnumerate(transaction: transaction) { (sticker, _) in
                     guard let pack = stickerPackMap[sticker.info.packInfo.asKey()] else {
                         stickersToUninstall.append(sticker)
                         return
