@@ -89,7 +89,7 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static var storageMode: StorageMode {
-        return .grdbTests
+        return .ydb
     }
 
     // Don't enable this flag in production.

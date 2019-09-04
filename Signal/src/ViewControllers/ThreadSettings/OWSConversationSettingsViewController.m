@@ -1128,16 +1128,20 @@ const CGFloat kIconViewLength = 24;
 {
     [super viewWillDisappear:animated];
 
+    __block BOOL shouldSave;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        shouldSave = [self.disappearingMessagesConfiguration hasChangedWithTransaction:transaction];
+    }];
+    if (!shouldSave) {
+        // Every time we change the configuration we notify the contact and
+        // create an update interaction.
+        //
+        // We don't want to do either if these are unmodified defaults
+        // of if nothing has changed.
+        return;
+    }
+
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        BOOL shouldSave = [self.disappearingMessagesConfiguration hasChangedWithTransaction:transaction];
-        if (!shouldSave) {
-            // Every time we change the configuration we notify the contact and
-            // create an update interaction.
-            //
-            // We don't want to do either if these are unmodified defaults
-            // of if nothing has changed.
-            return;
-        }
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
