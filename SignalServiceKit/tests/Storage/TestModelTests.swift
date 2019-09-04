@@ -67,6 +67,8 @@ class TestModelTests: SSKBaseTestSwift {
 
             // SQLite doesn't support numeric values larger than Int64.max;
             // UInt64.max for example is not valid.  Our serialization
+            // will round these "unsafe" values to "safe" values, i.e.
+            // the max valid value.
             let uint64MaxUnsafe: UInt64 = UInt64.max
             let uint64MaxSafe: UInt64 = UInt64(Int64.max)
             XCTAssertLessThanOrEqual(uint64MaxSafe, uint64MaxUnsafe)
