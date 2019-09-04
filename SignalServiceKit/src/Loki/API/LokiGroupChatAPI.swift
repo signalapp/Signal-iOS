@@ -178,7 +178,13 @@ public final class LokiGroupChatAPI : NSObject {
                 storage.dbReadWriteConnection.removeObject(forKey: server, inCollection: authTokenCollection)
             }
             throw error
-        }.retryingIfNeeded(maxRetryCount: maxRetryCount)
+        }.retryingIfNeeded(maxRetryCount: maxRetryCount).map { message in
+            Analytics.shared.track("Group Message Sent")
+            return message
+        }.recover { error -> Promise<LokiGroupMessage> in
+            Analytics.shared.track("Failed to Send Group Message")
+            throw error
+        }
     }
     
     public static func getDeletedMessageServerIDs(for group: UInt64, on server: String) -> Promise<[UInt64]> {

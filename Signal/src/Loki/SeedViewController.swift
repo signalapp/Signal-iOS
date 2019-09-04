@@ -207,6 +207,7 @@ final class SeedViewController : OnboardingBaseViewController {
 
     @objc private func registerOrRestore() {
         var seed: Data
+        let mode = self.mode
         switch mode {
         case .register: seed = self.seed
         case .restore:
@@ -232,6 +233,10 @@ final class SeedViewController : OnboardingBaseViewController {
         accountManager.phoneNumberAwaitingVerification = hexEncodedPublicKey
         accountManager.didRegister()
         let onSuccess = { [weak self] in
+            switch mode {
+            case .register: Analytics.shared.track("Seed Created")
+            case .restore: Analytics.shared.track("Seed Restored")
+            }
             guard let strongSelf = self else { return }
             strongSelf.onboardingController.verificationDidComplete(fromView: strongSelf)
             UserDefaults.standard.set(true, forKey: "didUpdateForMainnet")
