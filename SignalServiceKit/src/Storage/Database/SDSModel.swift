@@ -127,11 +127,11 @@ public extension SDSModel {
             let cursor = try String.fetchCursor(transaction.database,
                                                 sql: sql)
             var stop: ObjCBool = false
-            try batchedLoop(batchSize: batchSize,
-                            conditionBlock: {
+            try Batching.loop(batchSize: batchSize,
+                              conditionBlock: {
                                 return !stop.boolValue
             },
-                            loopBlock: {
+                              loopBlock: {
                                 guard let uniqueId = try cursor.next() else {
                                     stop = true
                                     return
@@ -140,41 +140,6 @@ public extension SDSModel {
             })
         } catch let error as NSError {
             owsFailDebug("Couldn't fetch uniqueIds: \(error)")
-        }
-    }
-}
-
-// MARK: -
-
-public extension SDSModel {
-    // Break loop cycles into batches, releasing stale objects
-    // after each batch to avoid out of memory errors.
-    //
-    // If batchSize == 0, no batching is done and no
-    // autoreleasepool is used.
-    static func batchedLoop(batchSize: UInt,
-                            conditionBlock: () -> Bool,
-                            loopBlock: () throws -> Void) throws {
-        guard batchSize > 0 else {
-            // No batching.
-            while true {
-                guard conditionBlock() else {
-                    return
-                }
-                try loopBlock()
-            }
-        }
-
-        // With batching.
-        while true {
-            try autoreleasepool {
-                for _ in 0..<batchSize {
-                    guard conditionBlock() else {
-                        return
-                    }
-                    try loopBlock()
-                }
-            }
         }
     }
 }

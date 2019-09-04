@@ -1291,9 +1291,7 @@ public extension %(class_name)s {
     // Records are not visited in any particular order.
     class func anyBatchedEnumerate(transaction: SDSAnyReadTransaction,
                                      block: @escaping (%s, UnsafeMutablePointer<ObjCBool>) -> Void) {
-        let kDefaultBatchSize: UInt = 10 * 1000
-        
-        anyEnumerate(transaction: transaction, batchSize: kDefaultBatchSize, block: block)
+        anyEnumerate(transaction: transaction, batchSize: Batching.kDefaultBatchSize, block: block)
     }
 
     // Traverses all records.
@@ -1316,16 +1314,16 @@ public extension %(class_name)s {
             do {
                 let cursor = %s.grdbFetchCursor(transaction: grdbTransaction)
                 var stop: ObjCBool = false
-                try batchedLoop(batchSize: batchSize,
-                                conditionBlock: {
-                                    return !stop.boolValue
+                try Batching.loop(batchSize: batchSize,
+                                  conditionBlock: {
+                                      return !stop.boolValue
                 },
-                    loopBlock: {
-                        guard let value = try cursor.next() else {
-                            stop = true
-                            return
-                        }
-                        block(value, &stop)
+                                  loopBlock: {
+                                      guard let value = try cursor.next() else {
+                                          stop = true
+                                          return
+                                      }
+                                      block(value, &stop)
                 })
             } catch let error {
                 owsFailDebug("Couldn't fetch models: \(error)")
@@ -1344,9 +1342,7 @@ public extension %(class_name)s {
     // Traverses all records' unique ids.
     // Records are not visited in any particular order.
     class func anyBatchedEnumerateUniqueIds(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
-        let kDefaultBatchSize: UInt = 10 * 1000
-        
-        anyEnumerateUniqueIds(transaction: transaction, batchSize: kDefaultBatchSize, block: block)
+        anyEnumerateUniqueIds(transaction: transaction, batchSize: Batching.kDefaultBatchSize, block: block)
     }
     
     // Traverses all records' unique ids.
@@ -1434,20 +1430,19 @@ public extension %(class_name)s {
         let uniqueIds = anyAllUniqueIds(transaction: transaction)
         
         var index: Int = 0
-        let kDefaultBatchSize: UInt = 10 * 1000
         do {
-            try batchedLoop(batchSize: kDefaultBatchSize,
-                            conditionBlock: {
-                                return index < uniqueIds.count
+            try Batching.loop(batchSize: Batching.kDefaultBatchSize,
+                              conditionBlock: {
+                                  return index < uniqueIds.count
             },
-                            loopBlock: {
-                                let uniqueId = uniqueIds[index]
-                                index = index + 1
-                                guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {
-                                    owsFailDebug("Missing instance.")
-                                    return
-                                }
-                                instance.anyRemove(transaction: transaction)
+                              loopBlock: {
+                                  let uniqueId = uniqueIds[index]
+                                  index = index + 1
+                                  guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+                                      owsFailDebug("Missing instance.")
+                                      return
+                                  }
+                                  instance.anyRemove(transaction: transaction)
             })
         } catch {
             owsFailDebug("Error: \(error)")
