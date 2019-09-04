@@ -36,16 +36,17 @@ NS_SWIFT_NAME(init(uniqueId:durationSeconds:enabled:));
 @property (nonatomic) uint32_t durationSeconds;
 @property (nonatomic, readonly) NSUInteger durationIndex;
 @property (nonatomic, readonly) NSString *durationString;
-@property (nonatomic, readonly) BOOL dictionaryValueDidChange;
-
-// GRDB TODO: We might be able to find a better way to avoid saving defaults
-// than isNewRecord.
-@property (readonly, getter=isNewRecord) BOOL newRecord;
 
 + (instancetype)fetchOrBuildDefaultWithThreadId:(NSString *)threadId transaction:(SDSAnyReadTransaction *)transaction;
 
 + (NSArray<NSNumber *> *)validDurationsSeconds;
 + (uint32_t)maxDurationSeconds;
+
++ (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationForThreadId:(NSString *)threadId
+                                                                           transaction:
+                                                                               (SDSAnyReadTransaction *)transaction;
+
+- (BOOL)hasChangedWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

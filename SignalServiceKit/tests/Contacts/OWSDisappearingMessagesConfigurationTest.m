@@ -4,6 +4,7 @@
 
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "SSKBaseTestObjC.h"
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,54 +15,209 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDisappearingMessagesConfigurationTest
 
-- (void)testDictionaryValueDidChange
+- (void)testUpsert
 {
-    OWSDisappearingMessagesConfiguration *configuration =
-        [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:@"fake-thread-id"
-                                                               enabled:YES
-                                                       durationSeconds:10];
-    XCTAssertFalse(configuration.dictionaryValueDidChange);
-
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [configuration anyInsertWithTransaction:transaction];
+        NSString *threadId = @"fake-thread-id-1";
+
+        XCTAssertNil([OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:threadId transaction:transaction]);
+        XCTAssertNotNil(
+            [OWSDisappearingMessagesConfiguration disappearingMessagesConfigurationForThreadId:threadId
+                                                                                   transaction:transaction]);
+
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration disappearingMessagesConfigurationForThreadId:threadId
+                                                                                   transaction:transaction];
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [configuration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+        XCTAssertNotNil([OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:threadId transaction:transaction]);
+        XCTAssertNotNil(
+            [OWSDisappearingMessagesConfiguration disappearingMessagesConfigurationForThreadId:threadId
+                                                                                   transaction:transaction]);
     }];
-    XCTAssertFalse(configuration.dictionaryValueDidChange);
-
-    configuration.enabled = NO;
-    XCTAssertTrue(configuration.dictionaryValueDidChange);
-
-    configuration.enabled = YES;
-    XCTAssertFalse(configuration.dictionaryValueDidChange);
-
-    __block OWSDisappearingMessagesConfiguration *reloadedConfiguration;
-    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        reloadedConfiguration =
-            [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:@"fake-thread-id" transaction:transaction];
-    }];
-    XCTAssertNotNil(reloadedConfiguration); // Sanity Check.
-    XCTAssertFalse(reloadedConfiguration.dictionaryValueDidChange);
-
-    reloadedConfiguration.durationSeconds = 30;
-    XCTAssertTrue(reloadedConfiguration.dictionaryValueDidChange);
-
-    reloadedConfiguration.durationSeconds = 10;
-    XCTAssertFalse(reloadedConfiguration.dictionaryValueDidChange);
 }
 
-- (void)testDontStoreEphemeralProperties
+- (void)testDefaultVsEnabledIsChanged
 {
-    OWSDisappearingMessagesConfiguration *configuration =
-        [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:@"fake-thread-id"
-                                                               enabled:YES
-                                                       durationSeconds:10];
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        NSString *threadId = @"fake-thread-id-1";
 
+        XCTAssertNil([OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:threadId transaction:transaction]);
+        XCTAssertNotNil(
+            [OWSDisappearingMessagesConfiguration disappearingMessagesConfigurationForThreadId:threadId
+                                                                                   transaction:transaction]);
 
-    // Unfortunately this test will break every time you add, remove, or rename a property, but on the
-    // plus side it has a chance of catching when you indadvertently remove our ephemeral properties
-    // from our Mantle storage blacklist.
-    NSArray<NSString *> *expected = @[ @"enabled", @"durationSeconds", @"uniqueId" ];
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration disappearingMessagesConfigurationForThreadId:threadId
+                                                                                   transaction:transaction];
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+        configuration.enabled = YES;
+        XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
+    }];
+}
 
-    XCTAssertEqualObjects(expected, [configuration.dictionaryValue allKeys]);
+- (void)testDefaultVsNonDefaultDurationIsChanged
+{
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        NSString *threadId = @"fake-thread-id-2";
+
+        XCTAssertNil([OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:threadId transaction:transaction]);
+        XCTAssertNotNil(
+            [OWSDisappearingMessagesConfiguration disappearingMessagesConfigurationForThreadId:threadId
+                                                                                   transaction:transaction]);
+
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration disappearingMessagesConfigurationForThreadId:threadId
+                                                                                   transaction:transaction];
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+        configuration.durationSeconds = kWeekInterval;
+        XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
+    }];
+}
+
+- (void)testDefaultVsAllNonDefaultsIsChanged
+{
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        NSString *threadId = @"fake-thread-id-3";
+
+        XCTAssertNil([OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:threadId transaction:transaction]);
+        XCTAssertNotNil(
+            [OWSDisappearingMessagesConfiguration disappearingMessagesConfigurationForThreadId:threadId
+                                                                                   transaction:transaction]);
+
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration disappearingMessagesConfigurationForThreadId:threadId
+                                                                                   transaction:transaction];
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+        configuration.enabled = YES;
+        configuration.durationSeconds = kWeekInterval;
+        XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
+    }];
+}
+
+- (void)testDefaultVsNotEnabledIsNotChanged
+{
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        NSString *threadId = @"fake-thread-id-4";
+
+        XCTAssertNil([OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:threadId transaction:transaction]);
+        XCTAssertNotNil(
+            [OWSDisappearingMessagesConfiguration disappearingMessagesConfigurationForThreadId:threadId
+                                                                                   transaction:transaction]);
+
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration disappearingMessagesConfigurationForThreadId:threadId
+                                                                                   transaction:transaction];
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+        configuration.enabled = NO;
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+    }];
+}
+
+- (void)testDefaultVsDefaultDurationIsNotChanged
+{
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        NSString *threadId = @"fake-thread-id-1";
+
+        XCTAssertNil([OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:threadId transaction:transaction]);
+        XCTAssertNotNil(
+            [OWSDisappearingMessagesConfiguration disappearingMessagesConfigurationForThreadId:threadId
+                                                                                   transaction:transaction]);
+
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration disappearingMessagesConfigurationForThreadId:threadId
+                                                                                   transaction:transaction];
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+        configuration.durationSeconds = OWSDisappearingMessagesConfigurationDefaultExpirationDuration;
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+    }];
+}
+
+- (void)testMultipleWrites
+{
+    NSString *threadId = @"fake-thread-id-1";
+
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        XCTAssertNil([OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:threadId transaction:transaction]);
+        XCTAssertNotNil(
+            [OWSDisappearingMessagesConfiguration disappearingMessagesConfigurationForThreadId:threadId
+                                                                                   transaction:transaction]);
+
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration disappearingMessagesConfigurationForThreadId:threadId
+                                                                                   transaction:transaction];
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [configuration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+
+        configuration.enabled = YES;
+
+        XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [configuration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+
+        configuration.durationSeconds = kWeekInterval;
+
+        XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [configuration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+    }];
+
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration disappearingMessagesConfigurationForThreadId:threadId
+                                                                                   transaction:transaction];
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+
+        configuration.durationSeconds = kDayInterval;
+
+        XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [configuration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+    }];
+
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration disappearingMessagesConfigurationForThreadId:threadId
+                                                                                   transaction:transaction];
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+
+        configuration.enabled = NO;
+
+        XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [configuration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+    }];
 }
 
 @end

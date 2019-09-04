@@ -9,16 +9,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSDisappearingMessagesConfiguration ()
-
-// Transient record lifecycle attributes.
-//
-// GRDB TODO: Ensure this is working with GRDB. Add tests?
-@property (atomic) NSDictionary *originalDictionaryValue;
-@property (atomic, getter=isNewRecord) BOOL newRecord;
-
-@end
-
 @implementation OWSDisappearingMessagesConfiguration
 
 - (instancetype)initDefaultWithThreadId:(NSString *)threadId
@@ -32,9 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self = [super initWithCoder:coder];
 
-    _originalDictionaryValue = [self dictionaryValue];
-    _newRecord = NO;
-
     return self;
 }
 
@@ -47,8 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     _enabled = isEnabled;
     _durationSeconds = seconds;
-    _newRecord = YES;
-    _originalDictionaryValue = self.dictionaryValue;
 
     return self;
 }
@@ -73,20 +58,12 @@ NS_ASSUME_NONNULL_BEGIN
     _durationSeconds = durationSeconds;
     _enabled = enabled;
 
-    [self sdsFinalizeDisappearingMessagesConfiguration];
-
     return self;
 }
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
-
-- (void)sdsFinalizeDisappearingMessagesConfiguration
-{
-    _originalDictionaryValue = [self dictionaryValue];
-    _newRecord = NO;
-}
 
 + (instancetype)fetchOrBuildDefaultWithThreadId:(NSString *)threadId transaction:(SDSAnyReadTransaction *)transaction
 {
@@ -142,44 +119,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Dirty Tracking
 
-+ (MTLPropertyStorage)storageBehaviorForPropertyWithKey:(NSString *)propertyKey
++ (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationForThreadId:(NSString *)threadId
+                                                                           transaction:
+                                                                               (SDSAnyReadTransaction *)transaction
 {
-    // Don't persist transient properties
-    if ([propertyKey isEqualToString:@"originalDictionaryValue"]
-        ||[propertyKey isEqualToString:@"newRecord"]) {
-        return MTLPropertyStorageNone;
-    } else {
-        return [super storageBehaviorForPropertyWithKey:propertyKey];
-    }
+    OWSAssertDebug(threadId.length > 0);
+    OWSAssertDebug(transaction != nil);
+
+    return [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:threadId transaction:transaction];
 }
 
-- (BOOL)dictionaryValueDidChange
+- (BOOL)hasChangedWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    return ![self.originalDictionaryValue isEqual:[self dictionaryValue]];
-}
-
-- (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [super ydb_saveWithTransaction:transaction];
-
-    self.originalDictionaryValue = [self dictionaryValue];
-    self.newRecord = NO;
-}
-
-- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [super anyDidInsertWithTransaction:transaction];
-
-    self.originalDictionaryValue = [self dictionaryValue];
-    self.newRecord = NO;
-}
-
-- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [super anyDidUpdateWithTransaction:transaction];
-
-    self.originalDictionaryValue = [self dictionaryValue];
-    self.newRecord = NO;
+    OWSDisappearingMessagesConfiguration *oldConfiguration =
+        [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:self.uniqueId transaction:transaction];
+    return ![self.dictionaryValue isEqual:[oldConfiguration dictionaryValue]];
 }
 
 @end

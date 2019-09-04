@@ -452,7 +452,8 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 - (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationWithTransaction:
     (SDSAnyReadTransaction *)transaction
 {
-    return [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:self.uniqueId transaction:transaction];
+    return [OWSDisappearingMessagesConfiguration disappearingMessagesConfigurationForThreadId:self.uniqueId
+                                                                                  transaction:transaction];
 }
 
 - (uint32_t)disappearingMessagesDurationWithTransaction:(SDSAnyReadTransaction *)transaction
