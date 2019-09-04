@@ -23,9 +23,12 @@ public final class LokiGroupChatPoller : NSObject {
     @objc public func startIfNeeded() {
         if hasStarted { return }
         pollForNewMessagesTimer = Timer.scheduledTimer(withTimeInterval: pollForNewMessagesInterval, repeats: true) { [weak self] _ in self?.pollForNewMessages() }
-        pollForNewMessages() // Perform initial update
         pollForDeletedMessagesTimer = Timer.scheduledTimer(withTimeInterval: pollForDeletedMessagesInterval, repeats: true) { [weak self] _ in self?.pollForDeletedMessages() }
         pollForModerationPermissionTimer = Timer.scheduledTimer(withTimeInterval: pollForModerationPermissionInterval, repeats: true) { [weak self] _ in self?.pollForModerationPermission() }
+        // Perform initial updates
+        pollForNewMessages()
+        pollForDeletedMessages()
+        pollForModerationPermission()
         hasStarted = true
     }
     
