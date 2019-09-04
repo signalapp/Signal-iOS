@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		241C6314231F64C000B4198E /* JazzIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C630E231F5AAC00B4198E /* JazzIcon.swift */; };
+		241C6315231F64CE00B4198E /* CGFloat+Rounding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C6312231F5F1D00B4198E /* CGFloat+Rounding.swift */; };
+		241C6316231F64CE00B4198E /* UIColor+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C6310231F5C4400B4198E /* UIColor+Helper.swift */; };
 		24A830A22293CD0100F4CAC0 /* LokiP2PServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */; };
 		2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */; };
 		3403B95D20EA9527001A1F44 /* OWSContactShareButtonsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3403B95B20EA9526001A1F44 /* OWSContactShareButtonsView.m */; };
@@ -660,6 +663,9 @@
 		0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.test.xcconfig"; sourceTree = "<group>"; };
 		1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.test.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.test.xcconfig"; sourceTree = "<group>"; };
+		241C630E231F5AAC00B4198E /* JazzIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JazzIcon.swift; sourceTree = "<group>"; };
+		241C6310231F5C4400B4198E /* UIColor+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Helper.swift"; sourceTree = "<group>"; };
+		241C6312231F5F1D00B4198E /* CGFloat+Rounding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGFloat+Rounding.swift"; sourceTree = "<group>"; };
 		24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokiP2PServer.swift; sourceTree = "<group>"; };
 		264242150E87D10A357DB07B /* Pods_SignalMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3403B95B20EA9526001A1F44 /* OWSContactShareButtonsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactShareButtonsView.m; sourceTree = "<group>"; };
@@ -1652,6 +1658,7 @@
 				4C948FF62146EB4800349F0D /* BlockListCache.swift */,
 				343D3D991E9283F100165CA4 /* BlockListUIUtils.h */,
 				343D3D9A1E9283F100165CA4 /* BlockListUIUtils.m */,
+				241C6312231F5F1D00B4198E /* CGFloat+Rounding.swift */,
 				3466087120E550F300AFFE73 /* ConversationStyle.swift */,
 				34480B4D1FD0A7A300BC14EF /* DebugLogger.h */,
 				34480B4E1FD0A7A300BC14EF /* DebugLogger.m */,
@@ -1684,6 +1691,7 @@
 				45360B8C1F9521F800FA666C /* Searcher.swift */,
 				346129BD1FD2068600532771 /* ThreadUtil.h */,
 				346129BE1FD2068600532771 /* ThreadUtil.m */,
+				241C6310231F5C4400B4198E /* UIColor+Helper.swift */,
 				340872BE22393CF900CB25B0 /* UIGestureRecognizer+OWS.swift */,
 				4C858A51212DC5E1001B45D3 /* UIImage+OWS.swift */,
 				B97940251832BD2400BD66CB /* UIUtil.h */,
@@ -2633,6 +2641,7 @@
 		B846365922B7417900AF1514 /* Loki */ = {
 			isa = PBXGroup;
 			children = (
+				241C630E231F5AAC00B4198E /* JazzIcon.swift */,
 				B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */,
 			);
 			path = Loki;
@@ -3493,6 +3502,7 @@
 				34AC0A1C211B39EA00997B47 /* OWSFlatButton.swift in Sources */,
 				340872D822397F4600CB25B0 /* AttachmentCaptionViewController.swift in Sources */,
 				34C3C7932040B0DD0000134C /* OWSAudioPlayer.m in Sources */,
+				241C6316231F64CE00B4198E /* UIColor+Helper.swift in Sources */,
 				34AC09E5211B39B100997B47 /* ScreenLockViewController.m in Sources */,
 				34AC09F7211B39B100997B47 /* MediaMessageView.swift in Sources */,
 				34BBC858220C7ADA00857249 /* ImageEditorContents.swift in Sources */,
@@ -3569,6 +3579,7 @@
 				346129A61FD1F09100532771 /* OWSContactsManager.m in Sources */,
 				4541B71D209D3B7A0008608F /* ContactShareViewModel.swift in Sources */,
 				4C618199219DF03A009BD6B5 /* OWSButton.swift in Sources */,
+				241C6314231F64C000B4198E /* JazzIcon.swift in Sources */,
 				4598198F204E2F28009414F2 /* OWS108CallLoggingPreference.m in Sources */,
 				34AC09F3211B39B100997B47 /* NewNonContactConversationViewController.m in Sources */,
 				4C3E245C21F29FCE000AE092 /* Toast.swift in Sources */,
@@ -3586,6 +3597,7 @@
 				34BBC85A220C7ADA00857249 /* ImageEditorTextItem.swift in Sources */,
 				34641E182088D7E900E2EDE5 /* OWSScreenLock.swift in Sources */,
 				346129721FD1D74C00532771 /* SignalKeyingStorage.m in Sources */,
+				241C6315231F64CE00B4198E /* CGFloat+Rounding.swift in Sources */,
 				349EA07C2162AEA800F7B17F /* OWS111UDAttributesMigration.swift in Sources */,
 				34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */,
 				459B775C207BA46C0071D0AB /* OWSQuotedReplyModel.m in Sources */,

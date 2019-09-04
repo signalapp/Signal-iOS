@@ -1,0 +1,37 @@
+extension UIColor {
+    
+    public func adjust(hueBy hue: CGFloat = 0, saturationBy saturation: CGFloat = 0, brightnessBy brightness: CGFloat = 0) -> UIColor {
+        
+        var currentHue: CGFloat = 0.0
+        var currentSaturation: CGFloat = 0.0
+        var currentBrigthness: CGFloat = 0.0
+        var currentAlpha: CGFloat = 0.0
+        
+        if getHue(&currentHue, saturation: &currentSaturation, brightness: &currentBrigthness, alpha: &currentAlpha) {
+            return UIColor(hue: currentHue + hue,
+                           saturation: currentSaturation + saturation,
+                           brightness: currentBrigthness + brightness,
+                           alpha: currentAlpha)
+        } else {
+            return self
+        }
+    }
+    
+    convenience init(red: Int, green: Int, blue: Int, a: CGFloat = 1.0) {
+        self.init(
+            red: CGFloat(red) / 255.0,
+            green: CGFloat(green) / 255.0,
+            blue: CGFloat(blue) / 255.0,
+            alpha: a
+        )
+    }
+    
+    convenience init(rgb: Int, a: CGFloat = 1.0) {
+        self.init(
+            red: (rgb >> 16) & 0xFF,
+            green: (rgb >> 8) & 0xFF,
+            blue: rgb & 0xFF,
+            a: a
+        )
+    }
+}

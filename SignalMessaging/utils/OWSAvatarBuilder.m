@@ -30,7 +30,7 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
     OWSAvatarBuilder *avatarBuilder;
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        return [LKIdenticon generateIconWithString:contactThread.contactIdentifier size:CGSizeMake(diameter, diameter)];
+        return [LKIdenticon generateIconWithString:contactThread.contactIdentifier size:((CGFloat)diameter)];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         avatarBuilder = [[OWSGroupAvatarBuilder alloc] initWithThread:(TSGroupThread *)thread diameter:diameter];
     } else {
