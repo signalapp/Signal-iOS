@@ -18,7 +18,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .beta
+let build: FeatureBuild = .production
 
 /// By centralizing feature flags here and documenting their rollout plan, it's easier to review
 /// which feature flags are in play.
