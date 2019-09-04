@@ -1337,14 +1337,12 @@ public extension %(class_name)s {
         swift_body += '''
     // Traverses all records' unique ids.
     // Records are not visited in any particular order.
-    // Traversal aborts if the visitor returns false.
     class func anyUnbatchedEnumerateUniqueIds(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
         anyEnumerateUniqueIds(transaction: transaction, batchSize: 0, block: block)
     }
     
     // Traverses all records' unique ids.
     // Records are not visited in any particular order.
-    // Traversal aborts if the visitor returns false.
     class func anyBatchedEnumerateUniqueIds(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
         let kDefaultBatchSize: UInt = 10 * 1000
         
@@ -1353,7 +1351,6 @@ public extension %(class_name)s {
     
     // Traverses all records' unique ids.
     // Records are not visited in any particular order.
-    // Traversal aborts if the visitor returns false.
     //
     // If batchSize > 0, the enumeration is performed in autoreleased batches.
     class func anyEnumerateUniqueIds(transaction: SDSAnyReadTransaction,

@@ -355,8 +355,27 @@ public extension OWSUserProfile {
 
     // Traverses all records.
     // Records are not visited in any particular order.
-    // Traversal aborts if the visitor returns false.
-    class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (OWSUserProfile, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    class func anyUnbatchedEnumerate(transaction: SDSAnyReadTransaction,
+                                     block: @escaping (OWSUserProfile, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        anyEnumerate(transaction: transaction, batchSize: 0, block: block)
+    }
+
+    // Traverses all records.
+    // Records are not visited in any particular order.
+    class func anyBatchedEnumerate(transaction: SDSAnyReadTransaction,
+                                     block: @escaping (OWSUserProfile, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        let kDefaultBatchSize: UInt = 10 * 1000
+
+        anyEnumerate(transaction: transaction, batchSize: kDefaultBatchSize, block: block)
+    }
+
+    // Traverses all records.
+    // Records are not visited in any particular order.
+    //
+    // If batchSize > 0, the enumeration is performed in autoreleased batches.
+    class func anyEnumerate(transaction: SDSAnyReadTransaction,
+                            batchSize: UInt,
+                            block: @escaping (OWSUserProfile, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             OWSUserProfile.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -370,12 +389,17 @@ public extension OWSUserProfile {
             do {
                 let cursor = OWSUserProfile.grdbFetchCursor(transaction: grdbTransaction)
                 var stop: ObjCBool = false
-                while let value = try cursor.next() {
-                    block(value, &stop)
-                    guard !stop.boolValue else {
-                        break
-                    }
-                }
+                try batchedLoop(batchSize: batchSize,
+                                conditionBlock: {
+                                    return !stop.boolValue
+                },
+                    loopBlock: {
+                        guard let value = try cursor.next() else {
+                            stop = true
+                            return
+                        }
+                        block(value, &stop)
+                })
             } catch let error {
                 owsFailDebug("Couldn't fetch models: \(error)")
             }
@@ -384,8 +408,25 @@ public extension OWSUserProfile {
 
     // Traverses all records' unique ids.
     // Records are not visited in any particular order.
-    // Traversal aborts if the visitor returns false.
-    class func anyEnumerateUniqueIds(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    class func anyUnbatchedEnumerateUniqueIds(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        anyEnumerateUniqueIds(transaction: transaction, batchSize: 0, block: block)
+    }
+
+    // Traverses all records' unique ids.
+    // Records are not visited in any particular order.
+    class func anyBatchedEnumerateUniqueIds(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        let kDefaultBatchSize: UInt = 10 * 1000
+
+        anyEnumerateUniqueIds(transaction: transaction, batchSize: kDefaultBatchSize, block: block)
+    }
+
+    // Traverses all records' unique ids.
+    // Records are not visited in any particular order.
+    //
+    // If batchSize > 0, the enumeration is performed in autoreleased batches.
+    class func anyEnumerateUniqueIds(transaction: SDSAnyReadTransaction,
+                                     batchSize: UInt,
+                                     block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             ydbTransaction.enumerateKeys(inCollection: OWSUserProfile.collection()) { (uniqueId, stop) in
@@ -397,6 +438,7 @@ public extension OWSUserProfile {
                     SELECT \(userProfileColumn: .uniqueId)
                     FROM \(UserProfileRecord.databaseTableName)
                 """,
+                batchSize: batchSize,
                 block: block)
         }
     }
@@ -404,7 +446,7 @@ public extension OWSUserProfile {
     // Does not order the results.
     class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [OWSUserProfile] {
         var result = [OWSUserProfile]()
-        anyEnumerate(transaction: transaction) { (model, _) in
+        anyUnbatchedEnumerate(transaction: transaction) { (model, _) in
             result.append(model)
         }
         return result
@@ -413,7 +455,7 @@ public extension OWSUserProfile {
     // Does not order the results.
     class func anyAllUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
         var result = [String]()
-        anyEnumerateUniqueIds(transaction: transaction) { (uniqueId, _) in
+        anyUnbatchedEnumerateUniqueIds(transaction: transaction) { (uniqueId, _) in
             result.append(uniqueId)
         }
         return result
@@ -451,12 +493,25 @@ public extension OWSUserProfile {
         // To avoid mutationDuringEnumerationException, we need
         // to remove the instances outside the enumeration.
         let uniqueIds = anyAllUniqueIds(transaction: transaction)
-        for uniqueId in uniqueIds {
-            guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {
-                owsFailDebug("Missing instance.")
-                continue
-            }
-            instance.anyRemove(transaction: transaction)
+
+        var index: Int = 0
+        let kDefaultBatchSize: UInt = 10 * 1000
+        do {
+            try batchedLoop(batchSize: kDefaultBatchSize,
+                            conditionBlock: {
+                                return index < uniqueIds.count
+            },
+                            loopBlock: {
+                                let uniqueId = uniqueIds[index]
+                                index = index + 1
+                                guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+                                    owsFailDebug("Missing instance.")
+                                    return
+                                }
+                                instance.anyRemove(transaction: transaction)
+            })
+        } catch {
+            owsFailDebug("Error: \(error)")
         }
 
         if shouldBeIndexedForFTS {
