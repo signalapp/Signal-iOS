@@ -46,6 +46,7 @@
 #import <SignalServiceKit/TSSocketManager.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <sys/utsname.h>
+#import <Mixpanel/Mixpanel.h>
 
 @import WebRTC;
 @import Intents;
@@ -348,6 +349,9 @@ static NSTimeInterval launchStartedAt;
 //        NSLog(@"[Loki] Failed to start P2P server.");
 //    }
   
+    // Loki - Set up beta analytics
+    [Mixpanel sharedInstanceWithToken:@"0410357303b7b6b45b740e6f0e6d34be"];
+    
     return YES;
 }
 

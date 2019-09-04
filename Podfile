@@ -62,7 +62,6 @@ def shared_pods
   pod 'PureLayout', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true
   pod 'YYImage', :inhibit_warnings => true
-  pod 'CryptoSwift', :inhibit_warnings => true
   pod 'IGIdenticon', :inhibit_warnings => true
 end
 
@@ -72,8 +71,10 @@ target 'Signal' do
   pod 'SSZipArchive', :inhibit_warnings => true
 
   # Loki
-  pod 'GCDWebServer', '~> 3.0'
-  pod 'FeedKit', '~> 8.1'
+  pod 'GCDWebServer', '~> 3.0', :inhibit_warnings => true
+  pod 'FeedKit', '~> 8.1', :inhibit_warnings => true
+  pod 'CryptoSwift', '~> 1.0', :inhibit_warnings => true
+  pod 'Mixpanel', '~> 3.4', :inhibit_warnings => true
 
   target 'SignalTests' do
     inherit! :search_paths
