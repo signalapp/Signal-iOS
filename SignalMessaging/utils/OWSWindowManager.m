@@ -236,7 +236,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     // "Return to call" should remain at the top of the screen.
     CGRect windowFrame = UIScreen.mainScreen.bounds;
     windowFrame.size.height = OWSWindowManagerCallBannerHeight();
-    UIWindow *window = [[UIWindow alloc] initWithFrame:windowFrame];
+    UIWindow *window = [[OWSWindow alloc] initWithFrame:windowFrame];
     window.hidden = YES;
     window.windowLevel = UIWindowLevel_ReturnToCall();
     window.opaque = YES;
@@ -261,7 +261,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
         // On iOS9, 10 overriding the `windowLevel` getter does not cause the
         // window to be displayed above the keyboard, but setting the window
         // level works.
-        window = [[UIWindow alloc] initWithFrame:rootWindow.bounds];
+        window = [[OWSWindow alloc] initWithFrame:rootWindow.bounds];
         window.windowLevel = UIWindowLevel_MessageActions();
     }
 
@@ -276,7 +276,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     OWSAssertIsOnMainThread();
     OWSAssertDebug(rootWindow);
 
-    UIWindow *window = [[UIWindow alloc] initWithFrame:rootWindow.bounds];
+    UIWindow *window = [[OWSWindow alloc] initWithFrame:rootWindow.bounds];
     window.hidden = YES;
     window.windowLevel = UIWindowLevel_CallView();
     window.opaque = YES;
