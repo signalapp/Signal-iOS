@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 
 @objc
 public class FullTextSearchFinder: NSObject {

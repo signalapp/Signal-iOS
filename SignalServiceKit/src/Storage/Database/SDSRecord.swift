@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 
 public protocol SDSRecord: Codable, FetchableRecord, PersistableRecord {
     var id: Int64? { get set }

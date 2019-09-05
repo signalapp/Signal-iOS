@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 
 @objc
 public class GRDBDatabaseStorageAdapter: NSObject {
@@ -616,8 +616,9 @@ private struct GRDBStorage {
 
             return true
         })
-        configuration.passphraseBlock = { try keyspec.fetchString() }
         configuration.prepareDatabase = { (db: Database) in
+            let keyspec = try keyspec.fetchString()
+            try db.execute(sql: "PRAGMA key = \"\(keyspec)\"")
             try db.execute(sql: "PRAGMA cipher_plaintext_header_size = 32")
         }
         self.configuration = configuration

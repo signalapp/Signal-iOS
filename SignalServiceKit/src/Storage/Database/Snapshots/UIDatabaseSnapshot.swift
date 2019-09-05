@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 
 /// Anything 
 public protocol DatabaseSnapshotDelegate: AnyObject {
@@ -127,7 +127,23 @@ public class UIDatabaseObserver: NSObject {
                 }
             }
 
-            let newSnapshot = try! pool.makeSnapshot()
+            guard let newSnapshot: DatabaseSnapshot = {
+                do {
+                    return try pool.makeSnapshot()
+                } catch {
+                    if CurrentAppContext().isRunningTests {
+                        // SQLite error 14
+                        ///Can happen during tests wherein we sometimes delete
+                        // the db.
+                        Logger.warn("failed to make new snapshot")
+                    } else {
+                        owsFail("failed to make new snapshot")
+                    }
+                }
+                return nil
+                }() else {
+                    return
+            }
 
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }

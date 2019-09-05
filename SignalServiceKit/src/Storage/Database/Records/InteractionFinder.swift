@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 
 protocol InteractionFinderAdapter {
     associatedtype ReadTransaction

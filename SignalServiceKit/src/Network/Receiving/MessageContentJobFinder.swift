@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 
 protocol MessageContentJobFinder {
     associatedtype ReadTransaction

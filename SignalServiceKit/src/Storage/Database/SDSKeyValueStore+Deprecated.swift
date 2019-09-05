@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import GRDBCipher
+import GRDB
 import SignalCoreKit
 
 // TODO: Remove this extension.
@@ -19,7 +19,6 @@ public extension SDSKeyValueStore {
     // MARK: -
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
-    @objc
     func getString(_ key: String) -> String? {
         return databaseStorage.readReturningResult { (transaction) in
             return self.getString(key, transaction: transaction)
@@ -27,7 +26,6 @@ public extension SDSKeyValueStore {
     }
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
-    @objc
     func setString(_ value: String?, key: String) {
         return databaseStorage.write { (transaction) in
             return self.setString(value, key: key, transaction: transaction)
@@ -37,7 +35,6 @@ public extension SDSKeyValueStore {
     // MARK: - Date
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
-    @objc
     func getDate(_ key: String) -> Date? {
         return databaseStorage.readReturningResult { (transaction) in
             return self.getDate(key, transaction: transaction)
@@ -45,7 +42,6 @@ public extension SDSKeyValueStore {
     }
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
-    @objc
     func setDate(_ value: Date, key: String) {
         return databaseStorage.write { (transaction) in
             return self.setDate(value, key: key, transaction: transaction)
@@ -55,7 +51,6 @@ public extension SDSKeyValueStore {
     // MARK: - Bool
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
-    @objc
     func getBool(_ key: String, defaultValue: Bool) -> Bool {
         return databaseStorage.readReturningResult { (transaction) in
             return self.getBool(key, defaultValue: defaultValue, transaction: transaction)
@@ -63,7 +58,6 @@ public extension SDSKeyValueStore {
     }
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
-    @objc
     func setBool(_ value: Bool, key: String) {
         return databaseStorage.write { (transaction) in
             return self.setBool(value, key: key, transaction: transaction)
@@ -74,7 +68,6 @@ public extension SDSKeyValueStore {
 
     // TODO: Handle numerics more generally.
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
-    @objc
     func getUInt(_ key: String, defaultValue: UInt) -> UInt {
         return databaseStorage.readReturningResult { (transaction) in
             return self.getUInt(key, defaultValue: defaultValue, transaction: transaction)
@@ -82,7 +75,6 @@ public extension SDSKeyValueStore {
     }
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
-    @objc
     func setUInt(_ value: UInt, key: String) {
         return databaseStorage.write { (transaction) in
             return self.setUInt(value, key: key, transaction: transaction)
@@ -92,7 +84,6 @@ public extension SDSKeyValueStore {
     // MARK: - Data
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
-    @objc
     func getData(_ key: String) -> Data? {
         return databaseStorage.readReturningResult { (transaction) in
             return self.getData(key, transaction: transaction)
@@ -100,7 +91,6 @@ public extension SDSKeyValueStore {
     }
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
-    @objc
     func setData(_ value: Data?, key: String) {
         return databaseStorage.write { (transaction) in
             return self.setData(value, key: key, transaction: transaction)
@@ -110,7 +100,6 @@ public extension SDSKeyValueStore {
     // MARK: - Numeric
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
-    @objc
     func getInt(_ key: String, defaultValue: Int) -> Int {
         return databaseStorage.readReturningResult { (transaction) in
             return self.getInt(key, defaultValue: defaultValue, transaction: transaction)
@@ -118,7 +107,6 @@ public extension SDSKeyValueStore {
     }
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
-    @objc
     func setInt(_ value: Int, key: String) {
         return databaseStorage.write { (transaction) in
             return self.setInt(value, key: key, transaction: transaction)
@@ -128,7 +116,6 @@ public extension SDSKeyValueStore {
     // MARK: - Numeric
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
-    @objc
     func getUInt64(_ key: String, defaultValue: UInt64) -> UInt64 {
         return databaseStorage.readReturningResult { (transaction) in
             return self.getUInt64(key, defaultValue: defaultValue, transaction: transaction)
@@ -136,7 +123,6 @@ public extension SDSKeyValueStore {
     }
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
-    @objc
     func setUInt64(_ value: UInt64, key: String) {
         return databaseStorage.write { (transaction) in
             return self.setUInt64(value, key: key, transaction: transaction)
@@ -146,7 +132,6 @@ public extension SDSKeyValueStore {
     // MARK: - Object
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
-    @objc
     func getObject(_ key: String) -> Any? {
         return databaseStorage.readReturningResult { (transaction) in
             return self.getObject(key, transaction: transaction)
@@ -154,14 +139,12 @@ public extension SDSKeyValueStore {
     }
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
-    @objc
     func setObject(_ value: Any?, key: String) {
         return databaseStorage.write { (transaction) in
             return self.setObject(value, key: key, transaction: transaction)
         }
     }
 
-    @objc
     func removeValue(forKey key: String) {
         return databaseStorage.write { (transaction) in
             return self.removeValue(forKey: key, transaction: transaction)
