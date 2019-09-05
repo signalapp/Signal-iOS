@@ -1,6 +1,5 @@
 extension UIColor {
-    
-    public func adjust(hueBy hue: CGFloat = 0, saturationBy saturation: CGFloat = 0, brightnessBy brightness: CGFloat = 0) -> UIColor {
+    public func adjust(hueBy degrees: CGFloat) -> UIColor {
         
         var currentHue: CGFloat = 0.0
         var currentSaturation: CGFloat = 0.0
@@ -8,10 +7,15 @@ extension UIColor {
         var currentAlpha: CGFloat = 0.0
         
         if getHue(&currentHue, saturation: &currentSaturation, brightness: &currentBrigthness, alpha: &currentAlpha) {
-            return UIColor(hue: currentHue + hue,
-                           saturation: currentSaturation + saturation,
-                           brightness: currentBrigthness + brightness,
-                           alpha: currentAlpha)
+            // Round values so we get closer values to Desktop
+            let currentHueDegrees = (currentHue * 360.0).rounded()
+            let normalizedDegrees = fmod(degrees, 360.0).rounded()
+            let newHue = (currentHueDegrees + normalizedDegrees) / 360.0
+            
+            return UIColor(hue: newHue,
+                           saturation: currentSaturation,
+                           brightness: currentBrigthness,
+                           alpha: 1.0)
         } else {
             return self
         }
