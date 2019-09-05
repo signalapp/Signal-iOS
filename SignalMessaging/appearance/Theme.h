@@ -7,6 +7,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_CLOSED_ENUM(NSUInteger, ThemeMode) {
+    ThemeMode_System,
+    ThemeMode_Light,
+    ThemeMode_Dark,
+};
+
 extern NSString *const ThemeDidChangeNotification;
 
 @class SDSKeyValueStore;
@@ -19,7 +25,9 @@ extern NSString *const ThemeDidChangeNotification;
 
 @property (class, readonly, atomic) BOOL isDarkThemeEnabled;
 
-+ (void)setIsDarkThemeEnabled:(BOOL)value;
++ (ThemeMode)getOrFetchCurrentTheme;
++ (void)setCurrentTheme:(ThemeMode)mode;
++ (void)systemThemeChanged;
 
 @property (class, readonly, nonatomic) UIColor *backgroundColor;
 @property (class, readonly, nonatomic) UIColor *primaryColor;

@@ -31,6 +31,23 @@ public class OWSWindow: UIWindow {
         guard #available(iOS 13, *) else { return }
 
         // Ensure system UI elements use the appropriate styling for the selected theme.
-        overrideUserInterfaceStyle = Theme.isDarkThemeEnabled ? .dark : .light
+        switch Theme.getOrFetchCurrentTheme() {
+        case .light:
+            overrideUserInterfaceStyle = .light
+        case .dark:
+            overrideUserInterfaceStyle = .dark
+        case .system:
+            overrideUserInterfaceStyle = .unspecified
+        }
+    }
+
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        guard #available(iOS 13, *) else { return }
+
+        if previousTraitCollection?.userInterfaceStyle != traitCollection.userInterfaceStyle {
+            Theme.systemThemeChanged()
+        }
     }
 }

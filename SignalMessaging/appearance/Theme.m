@@ -12,12 +12,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const ThemeDidChangeNotification = @"ThemeDidChangeNotification";
 
-NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
-
+NSString *const ThemeKeyLegacyThemeEnabled = @"ThemeKeyThemeEnabled";
+NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 @interface Theme ()
 
 @property (nonatomic) NSNumber *isDarkThemeEnabledNumber;
+@property (nonatomic) NSNumber *cachedCurrentThemeNumber;
 
 @end
 
@@ -50,6 +51,8 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return instance;
 }
 
+#pragma mark -
+
 + (BOOL)isDarkThemeEnabled
 {
     return [self.sharedInstance isDarkThemeEnabled];
@@ -59,43 +62,146 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 {
     OWSAssertIsOnMainThread();
 
-    if (!CurrentAppContext().isMainApp) {
-        // Ignore theme in app extensions.
-        return NO;
-    }
-
     if (self.isDarkThemeEnabledNumber == nil) {
-        __block BOOL isDarkThemeEnabled;
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            isDarkThemeEnabled =
-                [Theme.keyValueStore getBool:ThemeKeyThemeEnabled defaultValue:NO transaction:transaction];
-        }];
+        BOOL isDarkThemeEnabled;
+
+        if (!CurrentAppContext().isMainApp) {
+            // Always respect the system theme in extensions
+            isDarkThemeEnabled = self.isSystemDarkThemeEnabled;
+        } else {
+            switch ([self getOrFetchCurrentTheme]) {
+                case ThemeMode_System:
+                    isDarkThemeEnabled = self.isSystemDarkThemeEnabled;
+                    break;
+                case ThemeMode_Dark:
+                    isDarkThemeEnabled = YES;
+                    break;
+                case ThemeMode_Light:
+                    isDarkThemeEnabled = NO;
+                    break;
+            }
+        }
+
         self.isDarkThemeEnabledNumber = @(isDarkThemeEnabled);
     }
 
     return self.isDarkThemeEnabledNumber.boolValue;
 }
 
-+ (void)setIsDarkThemeEnabled:(BOOL)value
++ (ThemeMode)getOrFetchCurrentTheme
 {
-    return [self.sharedInstance setIsDarkThemeEnabled:value];
+    return [self.sharedInstance getOrFetchCurrentTheme];
 }
 
-- (void)setIsDarkThemeEnabled:(BOOL)value
+- (ThemeMode)getOrFetchCurrentTheme
+{
+    if (self.cachedCurrentThemeNumber) {
+        return self.cachedCurrentThemeNumber.unsignedIntegerValue;
+    }
+
+    __block ThemeMode currentMode;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        BOOL hasDefinedMode = [Theme.keyValueStore hasValueForKey:ThemeKeyCurrentMode transaction:transaction];
+        if (!hasDefinedMode) {
+            // If the theme has not yet been defined, check if the user ever manually changed
+            // themes in a legacy app version. If so, preserve their selection. Otherwise,
+            // default to matching the system theme.
+            if (![Theme.keyValueStore hasValueForKey:ThemeKeyLegacyThemeEnabled transaction:transaction]) {
+                currentMode = ThemeMode_System;
+            } else {
+                BOOL isLegacyModeDark = [Theme.keyValueStore getBool:ThemeKeyLegacyThemeEnabled
+                                                        defaultValue:NO
+                                                         transaction:transaction];
+                currentMode = isLegacyModeDark ? ThemeMode_Dark : ThemeMode_Light;
+            }
+        } else {
+            currentMode = [Theme.keyValueStore getUInt:ThemeKeyCurrentMode
+                                          defaultValue:ThemeMode_System
+                                           transaction:transaction];
+        }
+    }];
+
+    self.cachedCurrentThemeNumber = @(currentMode);
+    return currentMode;
+}
+
++ (void)setCurrentTheme:(ThemeMode)mode
+{
+    [self.sharedInstance setCurrentTheme:mode];
+}
+
+- (void)setCurrentTheme:(ThemeMode)mode
 {
     OWSAssertIsOnMainThread();
 
-    self.isDarkThemeEnabledNumber = @(value);
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [Theme.keyValueStore setBool:value key:ThemeKeyThemeEnabled transaction:transaction];
+        [Theme.keyValueStore setUInt:mode key:ThemeKeyCurrentMode transaction:transaction];
     }];
 
+    NSNumber *previousMode = self.isDarkThemeEnabledNumber;
+
+    switch (mode) {
+        case ThemeMode_Light:
+            self.isDarkThemeEnabledNumber = @(NO);
+            break;
+        case ThemeMode_Dark:
+            self.isDarkThemeEnabledNumber = @(YES);
+            break;
+        case ThemeMode_System:
+            self.isDarkThemeEnabledNumber = @(self.isSystemDarkThemeEnabled);
+            break;
+    }
+
+    self.cachedCurrentThemeNumber = @(mode);
+
+    if (![previousMode isEqual:self.isDarkThemeEnabledNumber]) {
+        [self themeDidChange];
+    }
+}
+
+- (BOOL)isSystemDarkThemeEnabled
+{
+    if (@available(iOS 13, *)) {
+        return UITraitCollection.currentTraitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+    } else {
+        return NO;
+    }
+}
+
+#pragma mark -
+
++ (void)systemThemeChanged
+{
+    [self.sharedInstance systemThemeChanged];
+}
+
+- (void)systemThemeChanged
+{
+    // Do nothing, since we haven't setup the theme yet.
+    if (self.isDarkThemeEnabledNumber == nil) {
+        return;
+    }
+
+    // Theme can only be changed externally when in system mode.
+    if ([self getOrFetchCurrentTheme] != ThemeMode_System) {
+        return;
+    }
+
+    // The system them has changed since the user was last in the app.
+    self.isDarkThemeEnabledNumber = @(self.isSystemDarkThemeEnabled);
+    [self themeDidChange];
+}
+
+- (void)themeDidChange
+{
     [UIUtil setupSignalAppearence];
 
     [UIView performWithoutAnimation:^{
         [[NSNotificationCenter defaultCenter] postNotificationName:ThemeDidChangeNotification object:nil userInfo:nil];
     }];
 }
+
+#pragma mark -
 
 + (UIColor *)backgroundColor
 {
