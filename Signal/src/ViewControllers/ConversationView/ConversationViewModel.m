@@ -21,6 +21,8 @@
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSThread.h>
+#import <SignalServiceKit/TSGroupThread.h>
+#import <SignalServiceKit/TSGroupModel.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
@@ -1509,11 +1511,27 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 }
                 if (shouldShowSenderName) {
                     senderName = [self.contactsManager
-                        attributedContactOrProfileNameForPhoneIdentifier:incomingSenderId
-                                                       primaryAttributes:[OWSMessageBubbleView
-                                                                             senderNamePrimaryAttributes]
-                                                     secondaryAttributes:[OWSMessageBubbleView
-                                                                             senderNameSecondaryAttributes]];
+                                  attributedContactOrProfileNameForPhoneIdentifier:incomingSenderId
+                                  primaryAttributes:[OWSMessageBubbleView
+                                                     senderNamePrimaryAttributes]
+                                  secondaryAttributes:[OWSMessageBubbleView
+                                                       senderNameSecondaryAttributes]];
+                    
+                    if ([self.thread isKindOfClass:[TSGroupThread class]]) {
+                        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+                        NSData *groupId = groupThread.groupModel.groupId;
+                        NSString *stringGroupId = [[NSString alloc] initWithData:groupId encoding:NSUTF8StringEncoding];
+                        
+                        if (stringGroupId != nil) {
+                            NSString __block *displayName;
+                            [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                               displayName = [transaction objectForKey:incomingSenderId inCollection:stringGroupId];
+                            }];
+                            if (displayName != nil) {
+                                senderName = [[NSAttributedString alloc] initWithString:displayName attributes:[OWSMessageBubbleView senderNamePrimaryAttributes]];
+                            }
+                        }
+                    }
                 }
 
                 // Show the sender avatar for incoming group messages unless

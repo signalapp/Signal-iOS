@@ -1,6 +1,12 @@
 
 import CryptoSwift
 
+extension String {
+    func matches(_ regex: String) -> Bool {
+        return self.range(of: regex, options: .regularExpression, range: nil, locale: nil) != nil
+    }
+}
+
 private class RNG {
     private var seed: UInt
     private var initial: UInt
@@ -59,8 +65,11 @@ public class JazzIcon {
     }
     
     convenience init(seed: String, colours: [UIColor]? = nil) {
-        let hash = seed.md5()
-        guard let number = UInt(hash.substring(to: min(hash.count, 12)), radix: 16) else {
+        // Ensure we have a correct hash
+        var hash = seed
+        if !hash.matches("^[0-9A-Fa-f]+$") || hash.count < 12 { hash = seed.sha512() }
+        
+        guard let number = UInt(hash.substring(to: 12), radix: 16) else {
             owsFailDebug("[JazzIcon] Failed to generate number from seed string: \(seed)")
             self.init(seed: 1234, colours: colours)
             return
