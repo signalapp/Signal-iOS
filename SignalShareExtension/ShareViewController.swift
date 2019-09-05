@@ -106,6 +106,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         })
 
         let shareViewNavigationController = OWSNavigationController()
+        shareViewNavigationController.presentationController?.delegate = self
         self.shareViewNavigationController = shareViewNavigationController
 
         let loadViewController = SAELoadViewController(delegate: self)
@@ -515,7 +516,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         self.dismiss(animated: true) { [weak self] in
             AssertIsOnMainThread()
             guard let strongSelf = self else { return }
-            strongSelf.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+            strongSelf.extensionContext!.cancelRequest(withError: NSError())
         }
     }
 
@@ -1038,6 +1039,12 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // If video file already existed on disk as an mp4, then the host app didn't need to
         // apply any conversion, so no need to relocate the app.
         return !itemProvider.registeredTypeIdentifiers.contains(kUTTypeMPEG4 as String)
+    }
+}
+
+extension ShareViewController: UIAdaptivePresentationControllerDelegate {
+    public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        shareViewWasCancelled()
     }
 }
 

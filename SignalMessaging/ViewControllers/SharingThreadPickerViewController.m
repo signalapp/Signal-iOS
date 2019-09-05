@@ -169,7 +169,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     OWSNavigationController *approvalModal =
         [AttachmentApprovalViewController wrappedInNavControllerWithAttachments:self.attachments approvalDelegate:self];
-    [self presentFullScreenViewController:approvalModal animated:YES completion:nil];
+    [self presentViewController:approvalModal animated:YES completion:nil];
 }
 
 - (BOOL)tryToShareAsMessageText
@@ -427,7 +427,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     [self.progressView autoPinWidthToSuperviewWithMargin:24];
     [self.progressView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:progressAlert.view withOffset:4];
 #ifdef DEBUG
-    if (@available(iOS 13, *)) {
+    if (@available(iOS 14, *)) {
         // TODO: Congratulations! You survived to see another iOS release.
         OWSFailDebug(@"Make sure the progress view still looks good, and increment the version canary.");
     }

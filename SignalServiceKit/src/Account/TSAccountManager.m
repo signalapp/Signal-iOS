@@ -159,6 +159,10 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
             [self.databaseStorage addDatabaseStorageObserver:self];
         }
         [[self updateAccountAttributesIfNecessary] retainUntilComplete];
+
+        if (!CurrentAppContext().isMainApp) {
+            [self.databaseStorage addDatabaseStorageObserver:self];
+        }
     }];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
