@@ -287,7 +287,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             // SAE runs as long as it needs.
             // TODO ALBUMS - send album via SAE
 
-            [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
                 outgoingMessage = [ThreadUtil sendMessageNonDurablyWithText:messageText
                                                            mediaAttachments:attachments
                                                                    inThread:self.thread
