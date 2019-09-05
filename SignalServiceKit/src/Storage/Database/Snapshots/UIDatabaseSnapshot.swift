@@ -7,20 +7,21 @@ import GRDB
 
 /// Anything 
 public protocol DatabaseSnapshotDelegate: AnyObject {
-    // Called on the Database serial write queue before `databaseSnapshotWillUpdate`
-    //
-    // Use this callback to prepare state from the just-committed
-    // database which will be passed along in your DidUpdate hooks
-    func databaseSnapshotSourceDidCommit(db: Database)
 
-    // The following are called on the Main Thread
-    func databaseSnapshotWillUpdate()
-    func databaseSnapshotDidUpdate()
-    func databaseSnapshotDidUpdateExternally()
-}
+    // MARK: - Transaction Lifecycle
 
-@objc
-public protocol ObjCDatabaseSnapshotDelegate: AnyObject {
+    /// Called on the DatabaseSnapshotSerial queue durign the transaction
+    /// so the DatabaseSnapshotDelegate can accrue information about changes
+    /// as they occur.
+
+    func snapshotTransactionDidChange(with event: DatabaseEvent)
+    func snapshotTransactionDidCommit(db: Database)
+    func snapshotTransactionDidRollback(db: Database)
+
+    // MARK: - Snapshot LifeCycle (Post Commit)
+
+    /// Called on the Main Thread after the transaction has committed
+
     func databaseSnapshotWillUpdate()
     func databaseSnapshotDidUpdate()
     func databaseSnapshotDidUpdateExternally()
@@ -95,17 +96,11 @@ public class UIDatabaseObserver: NSObject {
         return _snapshotDelegates.compactMap { $0.value }
     }
 
-    @objc
-    public func appendSnapshotDelegate(_ snapshotDelegate: ObjCDatabaseSnapshotDelegate) {
-        let wrapper: DatabaseSnapshotDelegate = ObjCDatabaseSnapshotDelegateWrapper(snapshotDelegate)
-        _snapshotDelegates = _snapshotDelegates.filter { $0.value != nil} + [Weak(value: wrapper)]
-    }
-
     public func appendSnapshotDelegate(_ snapshotDelegate: DatabaseSnapshotDelegate) {
         _snapshotDelegates = _snapshotDelegates.filter { $0.value != nil} + [Weak(value: snapshotDelegate)]
     }
 
-    private var observer: TransactionObserver?
+    let pool: DatabasePool
     internal var latestSnapshot: DatabaseSnapshot {
         didSet {
             AssertIsOnMainThread()
@@ -113,55 +108,9 @@ public class UIDatabaseObserver: NSObject {
     }
 
     init(pool: DatabasePool) throws {
+        self.pool = pool
         self.latestSnapshot = try pool.makeSnapshot()
         super.init()
-
-        let observation = DatabaseRegionObservation(tracking: DatabaseRegion.fullDatabase)
-        self.observer = try observation.start(in: pool) { [weak self] (database: Database) in
-            guard let self = self else { return }
-
-            UIDatabaseObserver.serializedSync { [weak self] in
-                guard let self = self else { return }
-                for delegate in self.snapshotDelegates {
-                    delegate.databaseSnapshotSourceDidCommit(db: database)
-                }
-            }
-
-            let getNewSnapshot: () -> DatabaseSnapshot? = {
-                do {
-                    return try pool.makeSnapshot()
-                } catch {
-                    if CurrentAppContext().isRunningTests {
-                        // SQLite error 14
-                        ///Can happen during tests wherein we sometimes delete
-                        // the db.
-                        Logger.warn("failed to make new snapshot")
-                    } else {
-                        owsFail("failed to make new snapshot")
-                    }
-                }
-                return nil
-            }
-
-            guard let newSnapshot = getNewSnapshot() else {
-                return
-            }
-
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                Logger.verbose("databaseSnapshotWillUpdate")
-                for delegate in self.snapshotDelegates {
-                    delegate.databaseSnapshotWillUpdate()
-                }
-
-                self.latestSnapshot = newSnapshot
-
-                Logger.verbose("databaseSnapshotDidUpdate")
-                for delegate in self.snapshotDelegates {
-                    delegate.databaseSnapshotDidUpdate()
-                }
-            }
-        }
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didReceiveCrossProcessNotification),
@@ -180,32 +129,68 @@ public class UIDatabaseObserver: NSObject {
     }
 }
 
-private class ObjCDatabaseSnapshotDelegateWrapper {
-    let objCDatabaseSnapshotDelegate: ObjCDatabaseSnapshotDelegate
-    init(_ objCDatabaseSnapshotDelegate: ObjCDatabaseSnapshotDelegate) {
-        self.objCDatabaseSnapshotDelegate = objCDatabaseSnapshotDelegate
-    }
-}
+extension UIDatabaseObserver: TransactionObserver {
 
-extension ObjCDatabaseSnapshotDelegateWrapper: DatabaseSnapshotDelegate {
-    func databaseSnapshotSourceDidCommit(db: Database) {
-        // Currently no objc delegates will need to handle the commit
-        // Doing so would be slightly complicated since `Database` is Swift only.
-        owsFailDebug("not implemented.")
+    public func observes(eventsOfKind eventKind: DatabaseEventKind) -> Bool {
+        return true
     }
 
-    func databaseSnapshotWillUpdate() {
-        AssertIsOnMainThread()
-        objCDatabaseSnapshotDelegate.databaseSnapshotWillUpdate()
+    public func databaseDidChange(with event: DatabaseEvent) {
+        UIDatabaseObserver.serializedSync {
+            for snapshotDelegate in snapshotDelegates {
+                snapshotDelegate.snapshotTransactionDidChange(with: event)
+            }
+        }
     }
 
-    func databaseSnapshotDidUpdate() {
-        AssertIsOnMainThread()
-        objCDatabaseSnapshotDelegate.databaseSnapshotDidUpdate()
+    public func databaseDidCommit(_ db: Database) {
+        UIDatabaseObserver.serializedSync {
+            for snapshotDelegate in snapshotDelegates {
+                snapshotDelegate.snapshotTransactionDidCommit(db: db)
+            }
+        }
+
+        let getNewSnapshot: () -> DatabaseSnapshot? = {
+            do {
+                return try self.pool.makeSnapshot()
+            } catch {
+                if CurrentAppContext().isRunningTests {
+                    // SQLite error 14
+                    ///Can happen during tests wherein we sometimes delete
+                    // the db.
+                    Logger.warn("failed to make new snapshot")
+                } else {
+                    owsFail("failed to make new snapshot")
+                }
+            }
+            return nil
+        }
+
+        guard let newSnapshot = getNewSnapshot() else {
+            return
+        }
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            Logger.verbose("databaseSnapshotWillUpdate")
+            for delegate in self.snapshotDelegates {
+                delegate.databaseSnapshotWillUpdate()
+            }
+
+            self.latestSnapshot = newSnapshot
+
+            Logger.verbose("databaseSnapshotDidUpdate")
+            for delegate in self.snapshotDelegates {
+                delegate.databaseSnapshotDidUpdate()
+            }
+        }
     }
 
-    func databaseSnapshotDidUpdateExternally() {
-        AssertIsOnMainThread()
-        objCDatabaseSnapshotDelegate.databaseSnapshotDidUpdateExternally()
+    public func databaseDidRollback(_ db: Database) {
+        UIDatabaseObserver.serializedSync {
+            for snapshotDelegate in snapshotDelegates {
+                snapshotDelegate.snapshotTransactionDidRollback(db: db)
+            }
+        }
     }
 }

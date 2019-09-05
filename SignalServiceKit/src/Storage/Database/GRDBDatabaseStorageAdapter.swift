@@ -346,10 +346,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         uiDatabaseObserver.appendSnapshotDelegate(genericDatabaseObserver)
 
         try pool.write { db in
-            db.add(transactionObserver: homeViewDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
-            db.add(transactionObserver: conversationViewDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
-            db.add(transactionObserver: mediaGalleryDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
-            db.add(transactionObserver: genericDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
+            db.add(transactionObserver: uiDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
         }
 
         SDSDatabaseStorage.shared.observation.set(grdbStorage: self)

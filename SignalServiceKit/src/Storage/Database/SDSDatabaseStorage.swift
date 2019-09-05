@@ -230,16 +230,18 @@ public class SDSDatabaseStorage: SDSTransactable {
             let uniqueId = interaction.uniqueId
             yap.touchObject(forKey: uniqueId, inCollection: TSInteraction.collection())
         case .grdbWrite(let grdb):
-            if let conversationViewDatabaseObserver = grdbStorage.conversationViewDatabaseObserver {
-                conversationViewDatabaseObserver.didTouch(interaction: interaction, transaction: grdb)
-            } else if AppReadiness.isAppReady() {
-                owsFailDebug("conversationViewDatabaseObserver was unexpectedly nil")
-            }
-            if let genericDatabaseObserver = grdbStorage.genericDatabaseObserver {
-                genericDatabaseObserver.didTouch(interactionId: interaction.uniqueId,
-                                                 transaction: grdb)
-            } else if AppReadiness.isAppReady() {
-                owsFailDebug("genericDatabaseObserver was unexpectedly nil")
+            UIDatabaseObserver.serializedSync {
+                if let conversationViewDatabaseObserver = grdbStorage.conversationViewDatabaseObserver {
+                    conversationViewDatabaseObserver.didTouch(interaction: interaction, transaction: grdb)
+                } else if AppReadiness.isAppReady() {
+                    owsFailDebug("conversationViewDatabaseObserver was unexpectedly nil")
+                }
+                if let genericDatabaseObserver = grdbStorage.genericDatabaseObserver {
+                    genericDatabaseObserver.didTouch(interactionId: interaction.uniqueId,
+                                                     transaction: grdb)
+                } else if AppReadiness.isAppReady() {
+                    owsFailDebug("genericDatabaseObserver was unexpectedly nil")
+                }
             }
         }
     }
@@ -255,18 +257,18 @@ public class SDSDatabaseStorage: SDSTransactable {
         case .yapWrite(let yap):
             yap.touchObject(forKey: threadId, inCollection: TSThread.collection())
         case .grdbWrite(let grdb):
-            if let homeViewDatabaseObserver = grdbStorage.homeViewDatabaseObserver {
-                homeViewDatabaseObserver.didTouch(threadId: threadId, transaction: grdb)
-            } else if AppReadiness.isAppReady() {
-                owsFailDebug("homeViewDatabaseObserver was unexpectedly nil")
+            UIDatabaseObserver.serializedSync {
+                if let homeViewDatabaseObserver = grdbStorage.homeViewDatabaseObserver {
+                    homeViewDatabaseObserver.didTouch(threadId: threadId, transaction: grdb)
+                } else if AppReadiness.isAppReady() {
+                    owsFailDebug("homeViewDatabaseObserver was unexpectedly nil")
+                }
+                if let genericDatabaseObserver = grdbStorage.genericDatabaseObserver {
+                    genericDatabaseObserver.didTouchThread(transaction: grdb)
+                } else if AppReadiness.isAppReady() {
+                    owsFailDebug("genericDatabaseObserver was unexpectedly nil")
+                }
             }
-            if let genericDatabaseObserver = grdbStorage.genericDatabaseObserver {
-                genericDatabaseObserver.didTouchThread(transaction: grdb)
-            } else if AppReadiness.isAppReady() {
-                owsFailDebug("genericDatabaseObserver was unexpectedly nil")
-            }
-
-            // GRDB TODO: I believe we need to update conversation view here as well.
         }
     }
 

@@ -143,10 +143,8 @@ public class GRDBGenericDatabaseObserver: NSObject {
         // Note: We don't actually use the `transaction` param, but touching must happen within
         // a write transaction in order for the touch machinery to notify it's observers
         // in the expected way.
-
-        UIDatabaseObserver.serializedSync {
-            pendingChanges.tableNames.insert(TSThread.table.tableName)
-        }
+        AssertIsOnUIDatabaseObserverSerialQueue()
+        pendingChanges.tableNames.insert(TSThread.table.tableName)
     }
 
     // internal - should only be called by DatabaseStorage
@@ -154,59 +152,29 @@ public class GRDBGenericDatabaseObserver: NSObject {
         // Note: We don't actually use the `transaction` param, but touching must happen within
         // a write transaction in order for the touch machinery to notify it's observers
         // in the expected way.
-
-        UIDatabaseObserver.serializedSync {
-            pendingChanges.interactionIds.insert(interactionId)
-
-            pendingChanges.tableNames.insert(TSInteraction.table.tableName)
-        }
-    }
-}
-
-// MARK: -
-
-extension GRDBGenericDatabaseObserver: TransactionObserver {
-
-    public func observes(eventsOfKind eventKind: DatabaseEventKind) -> Bool {
-        // Observe everything.
-        return true
-    }
-
-    public func databaseDidChange(with event: DatabaseEvent) {
-        UIDatabaseObserver.serializedSync {
-            _ = pendingChanges.tableNames.insert(event.tableName)
-
-            if event.tableName == InteractionRecord.databaseTableName {
-                _ = pendingChanges.interactionRowIds.insert(event.rowID)
-            }
-        }
-    }
-
-    public func databaseDidCommit(_ db: Database) {
-        // no - op
-
-        // Although this class is a TransactionObserver, it is also a delegate
-        // (DatabaseSnapshotDelegate) of another TransactionObserver, the UIDatabaseObserver.
-        //
-        // We use our own TransactionObserver methods to collect details about the changes,
-        // but we wait for the UIDatabaseObserver's TransactionObserver methods to inform our own
-        // delegate of these details in sync with when the UI DB Snapshot is updated
-        // (via DatabaseSnapshotDelegate).
-    }
-
-    public func databaseDidRollback(_ db: Database) {
-        owsFailDebug("test this if we ever use it")
-
-        UIDatabaseObserver.serializedSync {
-            pendingChanges = PendingChanges()
-        }
+        AssertIsOnUIDatabaseObserverSerialQueue()
+        pendingChanges.interactionIds.insert(interactionId)
+        pendingChanges.tableNames.insert(TSInteraction.table.tableName)
     }
 }
 
 // MARK: -
 
 extension GRDBGenericDatabaseObserver: DatabaseSnapshotDelegate {
-    public func databaseSnapshotSourceDidCommit(db: Database) {
+
+    // MARK: - Transaction Lifecycle
+
+    public func snapshotTransactionDidChange(with event: DatabaseEvent) {
+        AssertIsOnUIDatabaseObserverSerialQueue()
+
+        _ = pendingChanges.tableNames.insert(event.tableName)
+
+        if event.tableName == InteractionRecord.databaseTableName {
+            _ = pendingChanges.interactionRowIds.insert(event.rowID)
+        }
+    }
+
+    public func snapshotTransactionDidCommit(db: Database) {
         AssertIsOnUIDatabaseObserverSerialQueue()
 
         do {
@@ -223,6 +191,14 @@ extension GRDBGenericDatabaseObserver: DatabaseSnapshotDelegate {
             }
         }
     }
+
+    public func snapshotTransactionDidRollback(db: Database) {
+        owsFailDebug("test this if we ever use it")
+        AssertIsOnUIDatabaseObserverSerialQueue()
+        pendingChanges = PendingChanges()
+    }
+
+    // MARK: - Snapshot LifeCycle (Post Commit)
 
     public func databaseSnapshotWillUpdate() {
         AssertIsOnMainThread()
