@@ -231,13 +231,13 @@ public class SDSDatabaseStorage: SDSTransactable {
             yap.touchObject(forKey: uniqueId, inCollection: TSInteraction.collection())
         case .grdbWrite(let grdb):
             if let conversationViewDatabaseObserver = grdbStorage.conversationViewDatabaseObserver {
-                conversationViewDatabaseObserver.touch(interaction: interaction, transaction: grdb)
+                conversationViewDatabaseObserver.didTouch(interaction: interaction, transaction: grdb)
             } else if AppReadiness.isAppReady() {
                 owsFailDebug("conversationViewDatabaseObserver was unexpectedly nil")
             }
             if let genericDatabaseObserver = grdbStorage.genericDatabaseObserver {
-                genericDatabaseObserver.touchInteraction(interactionId: interaction.uniqueId,
-                                                         transaction: grdb)
+                genericDatabaseObserver.didTouch(interactionId: interaction.uniqueId,
+                                                 transaction: grdb)
             } else if AppReadiness.isAppReady() {
                 owsFailDebug("genericDatabaseObserver was unexpectedly nil")
             }
@@ -256,12 +256,12 @@ public class SDSDatabaseStorage: SDSTransactable {
             yap.touchObject(forKey: threadId, inCollection: TSThread.collection())
         case .grdbWrite(let grdb):
             if let homeViewDatabaseObserver = grdbStorage.homeViewDatabaseObserver {
-                homeViewDatabaseObserver.touch(threadId: threadId, transaction: grdb)
+                homeViewDatabaseObserver.didTouch(threadId: threadId, transaction: grdb)
             } else if AppReadiness.isAppReady() {
                 owsFailDebug("homeViewDatabaseObserver was unexpectedly nil")
             }
             if let genericDatabaseObserver = grdbStorage.genericDatabaseObserver {
-                genericDatabaseObserver.touchThread(transaction: grdb)
+                genericDatabaseObserver.didTouchThread(transaction: grdb)
             } else if AppReadiness.isAppReady() {
                 owsFailDebug("genericDatabaseObserver was unexpectedly nil")
             }

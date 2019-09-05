@@ -91,8 +91,8 @@ public class HomeViewDatabaseObserver: NSObject {
         return result
     }
 
-    @objc
-    public func touch(thread: TSThread, transaction: GRDBWriteTransaction) {
+    // internal - should only be called by DatabaseStorage
+    func didTouch(thread: TSThread, transaction: GRDBWriteTransaction) {
         // Note: We don't actually use the `transaction` param, but touching must happen within
         // a write transaction in order for the touch machinery to notify it's observers
         // in the expected way.
@@ -103,8 +103,8 @@ public class HomeViewDatabaseObserver: NSObject {
         }
     }
 
-    @objc
-    public func touch(threadId: String, transaction: GRDBWriteTransaction) {
+    // internal - should only be called by DatabaseStorage
+    func didTouch(threadId: String, transaction: GRDBWriteTransaction) {
         // Note: We don't actually use the `transaction` param, but touching must happen within
         // a write transaction in order for the touch machinery to notify it's observers
         // in the expected way.

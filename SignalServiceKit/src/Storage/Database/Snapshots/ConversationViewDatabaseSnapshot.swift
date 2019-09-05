@@ -26,8 +26,8 @@ public class ConversationViewDatabaseObserver: NSObject {
         _snapshotDelegates = _snapshotDelegates.filter { $0.value != nil} + [Weak(value: snapshotDelegate)]
     }
 
-    @objc
-    public func touch(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
+    // internal - should only be called by DatabaseStorage
+    func didTouch(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
         // Note: We don't actually use the `transaction` param, but touching must happen within
         // a write transaction in order for the touch machinery to notify it's observers
         // in the expected way.

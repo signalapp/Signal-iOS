@@ -138,8 +138,8 @@ public class GRDBGenericDatabaseObserver: NSObject {
         return Set(convertedIds).union(pendingChanges.interactionIds)
     }
 
-    @objc
-    public func touchThread(transaction: GRDBWriteTransaction) {
+    // internal - should only be called by DatabaseStorage
+    func didTouchThread(transaction: GRDBWriteTransaction) {
         // Note: We don't actually use the `transaction` param, but touching must happen within
         // a write transaction in order for the touch machinery to notify it's observers
         // in the expected way.
@@ -149,8 +149,8 @@ public class GRDBGenericDatabaseObserver: NSObject {
         }
     }
 
-    @objc
-    public func touchInteraction(interactionId: String, transaction: GRDBWriteTransaction) {
+    // internal - should only be called by DatabaseStorage
+    func didTouch(interactionId: String, transaction: GRDBWriteTransaction) {
         // Note: We don't actually use the `transaction` param, but touching must happen within
         // a write transaction in order for the touch machinery to notify it's observers
         // in the expected way.
