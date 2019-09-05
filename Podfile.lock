@@ -29,6 +29,8 @@ PODS:
   - CocoaLumberjack (3.5.3):
     - CocoaLumberjack/Core (= 3.5.3)
   - CocoaLumberjack/Core (3.5.3)
+  - Crashlytics (3.13.1):
+    - Fabric (~> 1.10.1)
   - CryptoSwift (1.0.0)
   - Curve25519Kit (2.1.0):
     - CocoaLumberjack
@@ -36,10 +38,17 @@ PODS:
   - Curve25519Kit/Tests (2.1.0):
     - CocoaLumberjack
     - SignalCoreKit
+  - Fabric (1.10.1)
   - FeedKit (8.1.1)
+  - FirebaseCore (6.0.2):
+    - GoogleUtilities/Environment (~> 6.0)
+    - GoogleUtilities/Logger (~> 6.0)
   - GCDWebServer (3.5.2):
     - GCDWebServer/Core (= 3.5.2)
   - GCDWebServer/Core (3.5.2)
+  - GoogleUtilities/Environment (6.2.0)
+  - GoogleUtilities/Logger (6.2.0):
+    - GoogleUtilities/Environment
   - GRKOpenSSLFramework (1.0.2.12)
   - HKDFKit (0.0.4):
     - CocoaLumberjack
@@ -197,10 +206,13 @@ DEPENDENCIES:
   - AFNetworking
   - AxolotlKit (from `https://github.com/signalapp/SignalProtocolKit.git`, branch `master`)
   - AxolotlKit/Tests (from `https://github.com/signalapp/SignalProtocolKit.git`, branch `master`)
+  - Crashlytics (~> 3.13)
   - CryptoSwift (~> 1.0)
   - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit`)
   - Curve25519Kit/Tests (from `https://github.com/signalapp/Curve25519Kit`)
+  - Fabric (~> 1.10)
   - FeedKit (~> 8.1)
+  - FirebaseCore (~> 6.0)
   - GCDWebServer (~> 3.0)
   - GRKOpenSSLFramework (from `https://github.com/signalapp/GRKOpenSSLFramework`)
   - HKDFKit (from `https://github.com/signalapp/HKDFKit.git`)
@@ -227,9 +239,13 @@ SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - AFNetworking
     - CocoaLumberjack
+    - Crashlytics
     - CryptoSwift
+    - Fabric
     - FeedKit
+    - FirebaseCore
     - GCDWebServer
+    - GoogleUtilities
     - IGIdenticon
     - libPhoneNumber-iOS
     - Mixpanel
@@ -301,10 +317,14 @@ SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
   AxolotlKit: bb02741a93400b915df1be3365ad13d3768b0103
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
+  Crashlytics: 5aa8e90dcbf2f34898b4f5a0037787531246cca0
   CryptoSwift: d81eeaa59dc5a8d03720fe919a6fd07b51f7439f
   Curve25519Kit: b3e77b7152ebe95fee2b3fb6c955449492bc14f7
+  Fabric: f6f21452846788bb44595d73e9909d79d328e617
   FeedKit: 3418eed25f0b493b205b4de1b8511ac21d413fa9
+  FirebaseCore: b0f0262acebfa540e5f97b3832dbb13186980822
   GCDWebServer: ead88cd14596dd4eae4f5830b8877c87c8728990
+  GoogleUtilities: 996e0db07153674fd1b54b220fda3a3dc3547cba
   GRKOpenSSLFramework: 8a3735ad41e7dc1daff460467bccd32ca5d6ae3e
   HKDFKit: 3b6dbbb9d59c221cc6c52c3aa915700cbf24e376
   IGIdenticon: 5790befde4fe56296927c72c0efed3d07b21de8e
@@ -325,6 +345,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: 0666e8fade5ac5ba48d0b3c9cb83b2095d1b3cef
+PODFILE CHECKSUM: 1240a47686acf0d2d7e61e6ec3a925fbded184fa
 
 COCOAPODS: 1.5.3

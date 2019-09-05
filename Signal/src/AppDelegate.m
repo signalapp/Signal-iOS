@@ -47,6 +47,7 @@
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <sys/utsname.h>
 #import <Mixpanel/Mixpanel.h>
+#import <FirebaseCore/FirebaseCore.h>
 
 @import WebRTC;
 @import Intents;
@@ -355,6 +356,7 @@ static NSTimeInterval launchStartedAt;
         NSDictionary *properties = @{ @"configuration" : LKBuildConfiguration.current };
         [Mixpanel.sharedInstance track:event properties:properties];
     };
+    [FIRApp configure];
     
     return YES;
 }
