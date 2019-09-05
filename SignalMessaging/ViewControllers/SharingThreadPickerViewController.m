@@ -75,6 +75,8 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 {
     [super viewDidLoad];
 
+    self.view.backgroundColor = Theme.backgroundColor;
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(attachmentUploadProgress:)
                                                  name:kAttachmentUploadProgressNotification
@@ -95,31 +97,13 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     UIView *header = [UIView new];
     header.backgroundColor = Theme.backgroundColor;
 
-    UIButton *cancelShareButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [header addSubview:cancelShareButton];
-
-    [cancelShareButton setTitle:[CommonStrings cancelButton] forState:UIControlStateNormal];
-    cancelShareButton.userInteractionEnabled = YES;
-
-    [cancelShareButton autoPinEdgeToSuperviewMargin:ALEdgeLeading];
-    [cancelShareButton autoPinEdgeToSuperviewMargin:ALEdgeBottom];
-    [cancelShareButton setCompressionResistanceHigh];
-    [cancelShareButton setContentHuggingHigh];
-
-    [cancelShareButton addTarget:self
-                          action:@selector(didTapCancelShareButton)
-                forControlEvents:UIControlEventTouchUpInside];
-
     [header addSubview:searchBar];
-    [searchBar autoPinEdge:ALEdgeLeading toEdge:ALEdgeTrailing ofView:cancelShareButton withOffset:6];
-    [searchBar autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
-    [searchBar autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [searchBar autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [searchBar autoPinEdgesToSuperviewEdges];
 
     UIView *borderView = [UIView new];
     [header addSubview:borderView];
 
-    borderView.backgroundColor = [UIColor colorWithRGBHex:0xbbbbbb];
+    borderView.backgroundColor = Theme.cellSeparatorColor;
     [borderView autoSetDimension:ALDimensionHeight toSize:0.5];
     [borderView autoPinWidthToSuperview];
     [borderView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
@@ -251,12 +235,6 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 - (void)dismissPressed:(id)sender
 {
     OWSLogDebug(@"tapped dismiss share button");
-    [self cancelShareExperience];
-}
-
-- (void)didTapCancelShareButton
-{
-    OWSLogDebug(@"tapped cancel share button");
     [self cancelShareExperience];
 }
 
