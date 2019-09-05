@@ -68,7 +68,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
         // Don't proceed if dependency failed - surface the dependency's error.
         NSError *_Nullable dependencyError = dependentOperation.failingError;
         if (dependencyError != nil) {
-            return dependencyError;
+//            return dependencyError;
         }
     }
 

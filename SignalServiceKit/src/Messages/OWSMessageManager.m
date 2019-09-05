@@ -1406,6 +1406,19 @@ NS_ASSUME_NONNULL_BEGIN
                 if (dataMessage.publicChatInfo != nil && dataMessage.publicChatInfo.hasServerID) {
                     [self.primaryStorage setIDForMessageWithServerID:dataMessage.publicChatInfo.serverID to:incomingMessage.uniqueId in:transaction];
                 }
+
+                if (linkPreview != nil) {
+                    [OWSLinkPreview tryToBuildPreviewInfoObjcWithPreviewUrl:linkPreview.urlString]
+                    .thenOn(dispatch_get_main_queue(), ^(OWSLinkPreviewDraft *linkPreviewDraft) {
+                        if (linkPreviewDraft.jpegImageData == nil) { return; }
+                        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                            NSString *attachmentID = [OWSLinkPreview buildValidatedLinkPreviewFromInfo:linkPreviewDraft transaction:transaction error:nil].imageAttachmentId;
+                            linkPreview.imageAttachmentId = attachmentID;
+                            incomingMessage.linkPreview = linkPreview;
+                            [incomingMessage saveWithTransaction:transaction];
+                        }];
+                    });
+                };
                 
                 return incomingMessage;
             }
@@ -1491,6 +1504,19 @@ NS_ASSUME_NONNULL_BEGIN
                                thread:thread
                              envelope:envelope
                           transaction:transaction];
+
+        if (linkPreview != nil) {
+            [OWSLinkPreview tryToBuildPreviewInfoObjcWithPreviewUrl:linkPreview.urlString]
+            .thenOn(dispatch_get_main_queue(), ^(OWSLinkPreviewDraft *linkPreviewDraft) {
+                if (linkPreviewDraft.jpegImageData == nil) { return; }
+                [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    NSString *attachmentID = [OWSLinkPreview buildValidatedLinkPreviewFromInfo:linkPreviewDraft transaction:transaction error:nil].imageAttachmentId;
+                    linkPreview.imageAttachmentId = attachmentID;
+                    incomingMessage.linkPreview = linkPreview;
+                    [incomingMessage saveWithTransaction:transaction];
+                }];
+            });
+        };
         
         return incomingMessage;
     }

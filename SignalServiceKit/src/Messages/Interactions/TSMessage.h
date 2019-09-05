@@ -37,7 +37,7 @@ typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
 @property (nonatomic, readonly) BOOL isExpiringMessage;
 @property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
 @property (nonatomic, readonly, nullable) OWSContact *contactShare;
-@property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
+@property (nonatomic, nullable) OWSLinkPreview *linkPreview;
 // Loki friend request handling
 @property (nonatomic) LKMessageFriendRequestStatus friendRequestStatus;
 @property (nonatomic, readonly) NSString *friendRequestStatusDescription;

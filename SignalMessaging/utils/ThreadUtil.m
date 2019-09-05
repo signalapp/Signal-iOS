@@ -138,7 +138,6 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                           }];
 }
 
-// Loki: TODO Disable attachment and link preview for now
 + (TSOutgoingMessage *)buildOutgoingMessageWithText:(nullable NSString *)fullMessageText
                                    mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
                                              thread:(TSThread *)thread
