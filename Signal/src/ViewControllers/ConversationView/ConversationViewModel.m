@@ -1634,10 +1634,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                         senderName = [[NSAttributedString alloc] initWithString:accessibilityAuthorName];
                     } else {
                         senderName = [self.contactsManager
-                            attributedContactOrProfileNameForAddress:incomingSenderAddress
-                                                   primaryAttributes:[OWSMessageBubbleView senderNamePrimaryAttributes]
-                                                 secondaryAttributes:[OWSMessageBubbleView
-                                                                         senderNameSecondaryAttributes]];
+                            attributedLegacyDisplayNameForAddress:incomingSenderAddress
+                                                primaryAttributes:[OWSMessageBubbleView senderNamePrimaryAttributes]
+                                              secondaryAttributes:[OWSMessageBubbleView senderNameSecondaryAttributes]];
                     }
                 }
 

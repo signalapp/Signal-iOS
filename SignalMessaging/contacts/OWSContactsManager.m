@@ -1144,7 +1144,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 #pragma mark -
 
-- (NSString *)contactOrProfileNameForAddress:(SignalServiceAddress *)address
+- (NSString *)legacyDisplayNameForAddress:(SignalServiceAddress *)address
 {
     OWSAssertDebug(address.isValid);
 
@@ -1167,25 +1167,25 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return address.stringForDisplay;
 }
 
-- (NSAttributedString *)attributedContactOrProfileNameForAddress:(SignalServiceAddress *)address
-                                                     primaryFont:(UIFont *)primaryFont
-                                                   secondaryFont:(UIFont *)secondaryFont
+- (NSAttributedString *)attributedLegacyDisplayNameForAddress:(SignalServiceAddress *)address
+                                                  primaryFont:(UIFont *)primaryFont
+                                                secondaryFont:(UIFont *)secondaryFont
 {
     OWSAssertDebug(primaryFont);
     OWSAssertDebug(secondaryFont);
 
-    return [self attributedContactOrProfileNameForAddress:address
-                                        primaryAttributes:@{
-                                            NSFontAttributeName : primaryFont,
-                                        }
-                                      secondaryAttributes:@{
-                                          NSFontAttributeName : secondaryFont,
-                                      }];
+    return [self attributedLegacyDisplayNameForAddress:address
+                                     primaryAttributes:@{
+                                         NSFontAttributeName : primaryFont,
+                                     }
+                                   secondaryAttributes:@{
+                                       NSFontAttributeName : secondaryFont,
+                                   }];
 }
 
-- (NSAttributedString *)attributedContactOrProfileNameForAddress:(SignalServiceAddress *)address
-                                               primaryAttributes:(NSDictionary *)primaryAttributes
-                                             secondaryAttributes:(NSDictionary *)secondaryAttributes
+- (NSAttributedString *)attributedLegacyDisplayNameForAddress:(SignalServiceAddress *)address
+                                            primaryAttributes:(NSDictionary *)primaryAttributes
+                                          secondaryAttributes:(NSDictionary *)secondaryAttributes
 {
     OWSAssertDebug(address.isValid);
     OWSAssertDebug(primaryAttributes.count > 0);
@@ -1217,18 +1217,44 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [[NSAttributedString alloc] initWithString:address.stringForDisplay attributes:primaryAttributes];
 }
 
-- (nullable NSString *)formattedProfileNameForAddress:(SignalServiceAddress *)address
+- (nullable NSString *)profileNameForAddress:(SignalServiceAddress *)address
 {
+    OWSAssertDebug(address.isValid);
+
     __block NSString *_Nullable profileName;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         profileName = [self.profileManager profileNameForAddress:address transaction:transaction];
     }];
 
     if (profileName.length > 0) {
+        return profileName;
+    }
+
+    return nil;
+}
+
+- (nullable NSString *)formattedProfileNameForAddress:(SignalServiceAddress *)address
+{
+    NSString *_Nullable profileName = [self profileNameForAddress:address];
+
+    if (profileName.length > 0) {
         return [@"~" stringByAppendingString:profileName];
     }
 
     return nil;
+}
+
+- (nullable NSString *)contactOrProfileNameForAddress:(SignalServiceAddress *)address
+{
+    OWSAssertDebug(address.isValid);
+
+    NSString *_Nullable name = [self cachedContactNameForAddress:address];
+
+    if (name.length == 0) {
+        name = [self profileNameForAddress:address];
+    }
+
+    return name;
 }
 
 NS_ASSUME_NONNULL_END

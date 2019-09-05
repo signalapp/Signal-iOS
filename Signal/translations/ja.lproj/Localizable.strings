@@ -2835,7 +2835,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "安全番号を確認する";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "スライドして取り消す";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "スライドしてキャンセル";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "音声メッセージ";
