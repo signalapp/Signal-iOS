@@ -127,7 +127,7 @@ public class UIDatabaseObserver: NSObject {
                 }
             }
 
-            guard let newSnapshot: DatabaseSnapshot = {
+            let getNewSnapshot: () -> DatabaseSnapshot? = {
                 do {
                     return try pool.makeSnapshot()
                 } catch {
@@ -141,8 +141,10 @@ public class UIDatabaseObserver: NSObject {
                     }
                 }
                 return nil
-                }() else {
-                    return
+            }
+
+            guard let newSnapshot = getNewSnapshot() else {
+                return
             }
 
             DispatchQueue.main.async { [weak self] in
