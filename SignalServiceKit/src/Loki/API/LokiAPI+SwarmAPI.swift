@@ -74,6 +74,9 @@ public extension LokiAPI {
                     return LokiAPITarget(address: "https://\(address)", port: UInt16(port))
                 })
                 return randomSnodePool.randomElement()!
+            }.recover { error -> Promise<LokiAPITarget> in
+                Analytics.shared.track("Seed Node Failed")
+                throw error
             }
         } else {
             return Promise<LokiAPITarget> { seal in
@@ -126,6 +129,7 @@ internal extension Promise {
                     let newFailureCount = oldFailureCount + 1
                     LokiAPI.failureCount[target] = newFailureCount
                     print("[Loki] Couldn't reach snode at: \(target); setting failure count to \(newFailureCount).")
+                    Analytics.shared.track("Unreachable Snode")
                     if newFailureCount >= LokiAPI.failureThreshold {
                         print("[Loki] Failure threshold reached for: \(target); dropping it.")
                         LokiAPI.dropIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey) // Remove it from the swarm cache associated with the given public key
@@ -135,6 +139,7 @@ internal extension Promise {
                 case 421:
                     // The snode isn't associated with the given public key anymore
                     print("[Loki] Invalidating swarm for: \(hexEncodedPublicKey).")
+                    Analytics.shared.track("Migrated Snode")
                     LokiAPI.dropIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey)
                 case 432:
                     // The PoW difficulty is too low
