@@ -189,9 +189,19 @@ class DatabaseSnapshotBlockDelegate {
 }
 
 extension DatabaseSnapshotBlockDelegate: DatabaseSnapshotDelegate {
-    func databaseSnapshotSourceDidCommit(db: Database) {
+
+    // MARK: - Transaction Lifecycle
+
+    func snapshotTransactionDidChange(with event: DatabaseEvent) { /* no-op */ }
+
+    func snapshotTransactionDidCommit(db: Database) {
         block(db)
     }
+
+    func snapshotTransactionDidRollback(db: Database) { /* no-op */ }
+
+    // MARK: - Snapshot LifeCycle (Post Commit)
+
     func databaseSnapshotWillUpdate() { /* no-op */ }
     func databaseSnapshotDidUpdate() { /* no-op */ }
     func databaseSnapshotDidUpdateExternally() { /* no-op */ }

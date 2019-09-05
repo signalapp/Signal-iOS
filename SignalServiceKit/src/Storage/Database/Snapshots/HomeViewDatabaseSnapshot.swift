@@ -91,65 +91,38 @@ public class HomeViewDatabaseObserver: NSObject {
         return result
     }
 
-    @objc
-    public func touch(thread: TSThread, transaction: GRDBWriteTransaction) {
+    // internal - should only be called by DatabaseStorage
+    func didTouch(thread: TSThread, transaction: GRDBWriteTransaction) {
         // Note: We don't actually use the `transaction` param, but touching must happen within
         // a write transaction in order for the touch machinery to notify it's observers
         // in the expected way.
-
-        UIDatabaseObserver.serializedSync {
-            let rowId = RowId(thread.rowId)
-            pendingThreadChanges.rowIds.insert(rowId)
-        }
+        AssertIsOnUIDatabaseObserverSerialQueue()
+        let rowId = RowId(thread.rowId)
+        pendingThreadChanges.rowIds.insert(rowId)
     }
 
-    @objc
-    public func touch(threadId: String, transaction: GRDBWriteTransaction) {
+    // internal - should only be called by DatabaseStorage
+    func didTouch(threadId: String, transaction: GRDBWriteTransaction) {
         // Note: We don't actually use the `transaction` param, but touching must happen within
         // a write transaction in order for the touch machinery to notify it's observers
         // in the expected way.
-
-        UIDatabaseObserver.serializedSync {
-            pendingThreadChanges.uniqueIds.insert(threadId)
-        }
-    }
-}
-
-extension HomeViewDatabaseObserver: TransactionObserver {
-
-    public func observes(eventsOfKind eventKind: DatabaseEventKind) -> Bool {
-        return eventKind.tableName == ThreadRecord.databaseTableName
-    }
-
-    public func databaseDidChange(with event: DatabaseEvent) {
-        Logger.verbose("")
-        UIDatabaseObserver.serializedSync {
-            _ = pendingThreadChanges.rowIds.insert(event.rowID)
-        }
-    }
-
-    public func databaseDidCommit(_ db: Database) {
-        // no - op
-
-        // Although this class is a TransactionObserver, it is also a delegate
-        // (DatabaseSnapshotDelegate) of another TransactionObserver, the UIDatabaseObserver.
-        //
-        // We use our own TransactionObserver methods to collect details about the changes,
-        // but we wait for the UIDatabaseObserver's TransactionObserver methods to inform our own
-        // delegate of these details in sync with when the UI DB Snapshot is updated
-        // (via DatabaseSnapshotDelegate).
-    }
-
-    public func databaseDidRollback(_ db: Database) {
-        owsFailDebug("test this if we ever use it")
-        UIDatabaseObserver.serializedSync {
-            pendingThreadChanges = CollectionChanges()
-        }
+        AssertIsOnUIDatabaseObserverSerialQueue()
+        pendingThreadChanges.uniqueIds.insert(threadId)
     }
 }
 
 extension HomeViewDatabaseObserver: DatabaseSnapshotDelegate {
-    public func databaseSnapshotSourceDidCommit(db: Database) {
+
+    // MARK: - Transaction Lifecycle
+
+    public func snapshotTransactionDidChange(with event: DatabaseEvent) {
+        AssertIsOnUIDatabaseObserverSerialQueue()
+        if event.tableName == ThreadRecord.databaseTableName {
+            _ = pendingThreadChanges.rowIds.insert(event.rowID)
+        }
+    }
+
+    public func snapshotTransactionDidCommit(db: Database) {
         AssertIsOnUIDatabaseObserverSerialQueue()
         do {
             let pendingThreadChanges = self.pendingThreadChanges
@@ -165,6 +138,14 @@ extension HomeViewDatabaseObserver: DatabaseSnapshotDelegate {
             }
         }
     }
+
+    public func snapshotTransactionDidRollback(db: Database) {
+        owsFailDebug("test this if we ever use it")
+        AssertIsOnUIDatabaseObserverSerialQueue()
+        pendingThreadChanges = CollectionChanges()
+    }
+
+    // MARK: - Snapshot LifeCycle (Post Commit)
 
     public func databaseSnapshotWillUpdate() {
         AssertIsOnMainThread()

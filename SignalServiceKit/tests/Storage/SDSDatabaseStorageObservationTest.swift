@@ -209,14 +209,6 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
         self.yapWrite { transaction in
             self.databaseStorage.touch(thread: someThread!, transaction: transaction.asAnyWrite)
-
-            // touch(...) alone won't trigger a new snapshot update,
-            // so we do an arbitrary write.
-            //
-            // GRDB TODO: We could modify the touch() methods to
-            //            trigger a new snapshot update.
-            keyValueStore.setBool(false, key: "test", transaction: transaction.asAnyWrite)
-
             Logger.verbose("Touch complete")
         }
 
@@ -232,7 +224,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertTrue(lastChange.didUpdateInteractionsOrThreads)
             XCTAssertFalse(lastChange.didUpdateModel(collection: OWSDevice.collection()))
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
-            XCTAssertTrue(lastChange.didUpdate(keyValueStore: keyValueStore))
+            XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
             XCTAssertFalse(lastChange.didUpdate(interactionId: lastMessage!.uniqueId))
             XCTAssertFalse(lastChange.didUpdate(interactionId: UUID().uuidString))
@@ -244,14 +236,6 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
         self.yapWrite { transaction in
             self.databaseStorage.touch(interaction: lastMessage!, transaction: transaction.asAnyWrite)
-
-            // touch(...) alone won't trigger a new snapshot update,
-            // so we do an arbitrary write.
-            //
-            // GRDB TODO: We could modify the touch() methods to
-            //            trigger a new snapshot update.
-            keyValueStore.setBool(false, key: "test", transaction: transaction.asAnyWrite)
-
             Logger.verbose("Touch complete")
         }
 
@@ -267,7 +251,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertTrue(lastChange.didUpdateInteractionsOrThreads)
             XCTAssertFalse(lastChange.didUpdateModel(collection: OWSDevice.collection()))
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
-            XCTAssertTrue(lastChange.didUpdate(keyValueStore: keyValueStore))
+            XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
             XCTAssertTrue(lastChange.didUpdate(interactionId: lastMessage!.uniqueId))
             XCTAssertFalse(lastChange.didUpdate(interactionId: UUID().uuidString))
@@ -401,14 +385,6 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
         self.yapAsyncWrite { transaction in
             self.databaseStorage.touch(thread: someThread!, transaction: transaction.asAnyWrite)
-
-            // touch(...) alone won't trigger a new snapshot update,
-            // so we do an arbitrary write.
-            //
-            // GRDB TODO: We could modify the touch() methods to
-            //            trigger a new snapshot update.
-            keyValueStore.setBool(false, key: "test", transaction: transaction.asAnyWrite)
-
             Logger.verbose("Touch complete")
         }
 
@@ -424,7 +400,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertTrue(lastChange.didUpdateInteractionsOrThreads)
             XCTAssertFalse(lastChange.didUpdateModel(collection: OWSDevice.collection()))
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
-            XCTAssertTrue(lastChange.didUpdate(keyValueStore: keyValueStore))
+            XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
             XCTAssertFalse(lastChange.didUpdate(interactionId: lastMessage!.uniqueId))
             XCTAssertFalse(lastChange.didUpdate(interactionId: UUID().uuidString))
@@ -436,14 +412,6 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
         self.yapAsyncWrite { transaction in
             self.databaseStorage.touch(interaction: lastMessage!, transaction: transaction.asAnyWrite)
-
-            // touch(...) alone won't trigger a new snapshot update,
-            // so we do an arbitrary write.
-            //
-            // GRDB TODO: We could modify the touch() methods to
-            //            trigger a new snapshot update.
-            keyValueStore.setBool(false, key: "test", transaction: transaction.asAnyWrite)
-
             Logger.verbose("Touch complete")
         }
 
@@ -459,7 +427,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertTrue(lastChange.didUpdateInteractionsOrThreads)
             XCTAssertFalse(lastChange.didUpdateModel(collection: OWSDevice.collection()))
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
-            XCTAssertTrue(lastChange.didUpdate(keyValueStore: keyValueStore))
+            XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
             XCTAssertTrue(lastChange.didUpdate(interactionId: lastMessage!.uniqueId))
             XCTAssertFalse(lastChange.didUpdate(interactionId: UUID().uuidString))
@@ -591,14 +559,6 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
         self.write { transaction in
             self.databaseStorage.touch(thread: someThread!, transaction: transaction)
-
-            // touch(...) alone won't trigger a new snapshot update,
-            // so we do an arbitrary write.
-            //
-            // GRDB TODO: We could modify the touch() methods to
-            //            trigger a new snapshot update.
-            keyValueStore.setBool(false, key: "test", transaction: transaction)
-
             Logger.verbose("Touch complete")
         }
 
@@ -614,8 +574,8 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertTrue(lastChange.didUpdateInteractionsOrThreads)
             XCTAssertFalse(lastChange.didUpdateModel(collection: OWSDevice.collection()))
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
-            XCTAssertTrue(lastChange.didUpdate(keyValueStore: keyValueStore))
-            XCTAssertTrue(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
+            XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
+            XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
             XCTAssertFalse(lastChange.didUpdate(interactionId: lastMessage!.uniqueId))
             XCTAssertFalse(lastChange.didUpdate(interactionId: UUID().uuidString))
             XCTAssertFalse(lastChange.didUpdate(interactionId: "not a valid interaction id"))
@@ -626,14 +586,6 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
         self.write { transaction in
             self.databaseStorage.touch(interaction: lastMessage!, transaction: transaction)
-
-            // touch(...) alone won't trigger a new snapshot update,
-            // so we do an arbitrary write.
-            //
-            // GRDB TODO: We could modify the touch() methods to
-            //            trigger a new snapshot update.
-            keyValueStore.setBool(false, key: "test", transaction: transaction)
-
             Logger.verbose("Touch complete")
         }
 
@@ -649,8 +601,8 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertTrue(lastChange.didUpdateInteractionsOrThreads)
             XCTAssertFalse(lastChange.didUpdateModel(collection: OWSDevice.collection()))
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
-            XCTAssertTrue(lastChange.didUpdate(keyValueStore: keyValueStore))
-            XCTAssertTrue(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
+            XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
+            XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
             XCTAssertTrue(lastChange.didUpdate(interactionId: lastMessage!.uniqueId))
             XCTAssertFalse(lastChange.didUpdate(interactionId: UUID().uuidString))
             XCTAssertFalse(lastChange.didUpdate(interactionId: "not a valid interaction id"))
@@ -779,14 +731,6 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
         self.asyncWrite { transaction in
             self.databaseStorage.touch(thread: someThread!, transaction: transaction)
-
-            // touch(...) alone won't trigger a new snapshot update,
-            // so we do an arbitrary write.
-            //
-            // GRDB TODO: We could modify the touch() methods to
-            //            trigger a new snapshot update.
-            keyValueStore.setBool(false, key: "test", transaction: transaction)
-
             Logger.verbose("Touch complete")
         }
 
@@ -802,8 +746,8 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertTrue(lastChange.didUpdateInteractionsOrThreads)
             XCTAssertFalse(lastChange.didUpdateModel(collection: OWSDevice.collection()))
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
-            XCTAssertTrue(lastChange.didUpdate(keyValueStore: keyValueStore))
-            XCTAssertTrue(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
+            XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
+            XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
             XCTAssertFalse(lastChange.didUpdate(interactionId: lastMessage!.uniqueId))
             XCTAssertFalse(lastChange.didUpdate(interactionId: UUID().uuidString))
             XCTAssertFalse(lastChange.didUpdate(interactionId: "not a valid interaction id"))
@@ -814,14 +758,6 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
         self.asyncWrite { transaction in
             self.databaseStorage.touch(interaction: lastMessage!, transaction: transaction)
-
-            // touch(...) alone won't trigger a new snapshot update,
-            // so we do an arbitrary write.
-            //
-            // GRDB TODO: We could modify the touch() methods to
-            //            trigger a new snapshot update.
-            keyValueStore.setBool(false, key: "test", transaction: transaction)
-
             Logger.verbose("Touch complete")
         }
 
@@ -837,8 +773,8 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertTrue(lastChange.didUpdateInteractionsOrThreads)
             XCTAssertFalse(lastChange.didUpdateModel(collection: OWSDevice.collection()))
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
-            XCTAssertTrue(lastChange.didUpdate(keyValueStore: keyValueStore))
-            XCTAssertTrue(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
+            XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
+            XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
             XCTAssertTrue(lastChange.didUpdate(interactionId: lastMessage!.uniqueId))
             XCTAssertFalse(lastChange.didUpdate(interactionId: UUID().uuidString))
             XCTAssertFalse(lastChange.didUpdate(interactionId: "not a valid interaction id"))
