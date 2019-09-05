@@ -553,7 +553,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         if (SSKFeatureFlags.profileDisplayChanges) {
             quotedAuthor = [contactsManager displayNameForAddress:self.quotedMessage.authorAddress];
         } else {
-            quotedAuthor = [contactsManager contactOrProfileNameForAddress:self.quotedMessage.authorAddress];
+            quotedAuthor = [contactsManager legacyDisplayNameForAddress:self.quotedMessage.authorAddress];
         }
         quotedAuthorText = [NSString
             stringWithFormat:
