@@ -18,7 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
  * recipientId is nil when building "sent" sync messages for messages
  * sent to groups.
  */
-- (nullable SSKProtoDataMessage *)buildDataMessage:(SignalServiceAddress *_Nullable)address;
+- (nullable SSKProtoDataMessage *)buildDataMessage:(SignalServiceAddress *_Nullable)address
+                                            thread:(TSThread *)thread
+                                       transaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 
@@ -83,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoSyncMessageSentBuilder *sentBuilder = [SSKProtoSyncMessageSent builder];
     [sentBuilder setTimestamp:self.timestamp];
@@ -108,7 +110,12 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
     } else {
-        dataMessage = [self.message buildDataMessage:self.sentRecipientAddress];
+        // TODO we could hang messageThread on `self` like we do with `self.message`
+        // to avoid this fetch.
+        TSThread *messageThread = [self.message threadWithTransaction:transaction];
+        dataMessage = [self.message buildDataMessage:self.sentRecipientAddress
+                                              thread:messageThread
+                                         transaction:transaction];
     }
 
     if (!dataMessage) {

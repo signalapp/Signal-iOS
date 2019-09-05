@@ -6,42 +6,45 @@ import Foundation
 import XCTest
 import SignalServiceKit
 
-@objc
 public class PerformanceBaseTest: XCTestCase {
 
-    // MARK: -
+    // MARK: Hooks
 
-    @objc
     public override func setUp() {
         super.setUp()
 
         ClearCurrentAppContextForTests()
         SetCurrentAppContext(TestAppContext())
+        SDSDatabaseStorage.shouldLogDBQueries = false
 
         MockSSKEnvironment.activate()
     }
 
-    @objc
     public override func tearDown() {
+        SDSDatabaseStorage.shouldLogDBQueries = true
         super.tearDown()
     }
 
-    @objc
+    // MARK: - Dependencies
+
     public var databaseStorage: SDSDatabaseStorage {
         return SDSDatabaseStorage.shared
     }
 
-    @objc
+    var storageCoordinator: StorageCoordinator {
+        return SSKEnvironment.shared.storageCoordinator
+    }
+
+    // MARK: Helpers
+
     public func read(_ block: @escaping (SDSAnyReadTransaction) -> Void) {
         return databaseStorage.read(block: block)
     }
 
-    @objc
     public func write(_ block: @escaping (SDSAnyWriteTransaction) -> Void) {
         return databaseStorage.write(block: block)
     }
 
-    @objc
     public func asyncWrite(_ block: @escaping (SDSAnyWriteTransaction) -> Void) {
         return databaseStorage.asyncWrite(block: block)
     }

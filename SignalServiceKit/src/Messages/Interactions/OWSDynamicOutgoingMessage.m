@@ -55,6 +55,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
+                                 thread:(TSThread *)thread
+                            transaction:(SDSAnyReadTransaction *)transaction
 {
     NSData *plainTextData = self.block(recipient);
     OWSAssertDebug(plainTextData);

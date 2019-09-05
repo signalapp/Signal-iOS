@@ -8,22 +8,6 @@ import SignalServiceKit
 
 class SDSPerformanceTest: PerformanceBaseTest {
 
-    // MARK: - Dependencies
-
-    var storageCoordinator: StorageCoordinator {
-        return SSKEnvironment.shared.storageCoordinator
-    }
-
-    // MARK: -
-
-    override func setUp() {
-        super.setUp()
-        // Logging queries is expensive and affects the results of this test.
-        // This is restored in tearDown().
-        SDSDatabaseStorage.shouldLogDBQueries = false
-        storageCoordinator.useGRDBForTests()
-    }
-
     // MARK: - Insert Messages
 
     func testYDBPerf_insertMessages() {

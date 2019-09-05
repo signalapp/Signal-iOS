@@ -110,7 +110,7 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
         }
     }
 
-    func test_localClient() {
+    func test_localClient_receives() {
         SSKEnvironment.shared.identityManager.generateNewIdentityKey()
         SSKEnvironment.shared.tsAccountManager.registerForTests(withLocalNumber: "+13235551234",
                                                                 uuid: UUID())
@@ -130,6 +130,33 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
             let decrypted = try! self.runner.decrypt(cipherMessage: cipherMessage,
                                                      recipientClient: localClient,
                                                      senderAccountId: self.bobClient.accountId(transaction: transaction),
+                                                     protocolContext: transaction)
+
+            let decryptedText = String(data: decrypted, encoding: .utf8)!
+            XCTAssertEqual(plaintext, decryptedText)
+        }
+    }
+
+    func test_localClient_sends() {
+        SSKEnvironment.shared.identityManager.generateNewIdentityKey()
+        SSKEnvironment.shared.tsAccountManager.registerForTests(withLocalNumber: "+13235551234",
+                                                                uuid: UUID())
+        let localClient = LocalSignalClient()
+
+        write { transaction in
+            try! self.runner.initialize(senderClient: localClient,
+                                        recipientClient: self.bobClient,
+                                        transaction: transaction)
+
+            let plaintext = "Those who stands for nothing will fall for anything"
+            let cipherMessage = try! self.runner.encrypt(plaintext: plaintext.data(using: .utf8)!,
+                                                         senderClient: localClient,
+                                                         recipientAccountId: self.bobClient.accountId(transaction: transaction),
+                                                         protocolContext: transaction)
+
+            let decrypted = try! self.runner.decrypt(cipherMessage: cipherMessage,
+                                                     recipientClient: self.bobClient,
+                                                     senderAccountId: localClient.accountId(transaction: transaction),
                                                      protocolContext: transaction)
 
             let decryptedText = String(data: decrypted, encoding: .utf8)!

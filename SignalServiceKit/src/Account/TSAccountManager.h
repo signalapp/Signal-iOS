@@ -154,7 +154,7 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 - (BOOL)isManualMessageFetchEnabled;
 - (void)setIsManualMessageFetchEnabled:(BOOL)value;
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 - (void)registerForTestsWithLocalNumber:(NSString *)localNumber uuid:(NSUUID *)uuid;
 #endif
 

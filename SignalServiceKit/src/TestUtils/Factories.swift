@@ -96,8 +96,8 @@ public class ContactThreadFactory: NSObject, Factory {
 
     @objc
     public func create(transaction: SDSAnyWriteTransaction) -> TSContactThread {
-        let threadId = generateContactThreadId()
-        let thread = TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(phoneNumber: threadId), transaction: transaction)
+        let thread = TSContactThread.getOrCreateThread(withContactAddress: contactAddressBuilder(),
+                                                       transaction: transaction)
 
         let incomingMessageFactory = IncomingMessageFactory()
         incomingMessageFactory.threadCreator = { _ in return thread }
@@ -116,10 +116,11 @@ public class ContactThreadFactory: NSObject, Factory {
         return thread
     }
 
-    // MARK: Generators
+    // MARK: Dependent Factories
 
-    public func generateContactThreadId() -> String {
-        return CommonGenerator.e164()
+    @objc
+    public var contactAddressBuilder: () -> SignalServiceAddress = {
+        return CommonGenerator.address()
     }
 }
 
@@ -363,7 +364,7 @@ public class IncomingMessageFactory: NSObject, Factory {
 }
 
 @objc
-class GroupThreadFactory: NSObject, Factory {
+public class GroupThreadFactory: NSObject, Factory {
 
     @objc
     public var messageCount: UInt = 0
@@ -372,7 +373,6 @@ class GroupThreadFactory: NSObject, Factory {
     public func create(transaction: SDSAnyWriteTransaction) -> TSGroupThread {
         let thread = TSGroupThread.getOrCreateThread(with: groupModelBuilder(self),
                                                      transaction: transaction)
-        thread.anyInsert(transaction: transaction)
 
         let incomingMessageFactory = IncomingMessageFactory()
         incomingMessageFactory.threadCreator = { _ in return thread }
@@ -396,7 +396,7 @@ class GroupThreadFactory: NSObject, Factory {
     @objc
     public var groupModelBuilder: (GroupThreadFactory) -> TSGroupModel = { groupThreadFactory in
         return TSGroupModel(title: groupThreadFactory.titleBuilder(),
-                            members: groupThreadFactory.membersBuilder(),
+                            members: groupThreadFactory.memberAddressesBuilder(),
                             image: groupThreadFactory.imageBuilder(),
                             groupId: groupThreadFactory.groupIdBuilder())
     }
@@ -417,14 +417,14 @@ class GroupThreadFactory: NSObject, Factory {
     }
 
     @objc
-    public var membersBuilder: () -> [SignalServiceAddress] = {
+    public var memberAddressesBuilder: () -> [SignalServiceAddress] = {
         let groupSize = arc4random_uniform(10)
         return (0..<groupSize).map { _ in  CommonGenerator.address(hasPhoneNumber: Bool.random()) }
     }
 }
 
 @objc
-class AttachmentStreamFactory: NSObject, Factory {
+public class AttachmentStreamFactory: NSObject, Factory {
 
     @objc
     class public func create(contentType: String, dataSource: DataSource) -> TSAttachmentStream {
