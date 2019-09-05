@@ -399,15 +399,17 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                                                            addObjectsFromArray:message.allAttachmentIds];
                                                    }];
 
-        [OWSBroadcastMediaMessageJobRecord anyEnumerateWithTransaction:transaction
-                                                                 block:^(SSKJobRecord *jobRecord, BOOL *stopPtr) {
-                                                                     if (![jobRecord isKindOfClass:OWSBroadcastMediaMessageJobRecord.class]) {
-                                                                         OWSFailDebug(@"unexpeted jobRecord: %@", jobRecord);
-                                                                     }
-                                                                     OWSBroadcastMediaMessageJobRecord *broadcastJobRecord = (OWSBroadcastMediaMessageJobRecord *)jobRecord;
-                                                                     [allMessageAttachmentIds
-                                                                      addObjectsFromArray:broadcastJobRecord.attachmentIdMap.allKeys];
-                                                                 }];
+        [SSKJobRecord
+            anyEnumerateWithTransaction:transaction
+                                  block:^(SSKJobRecord *jobRecord, BOOL *stopPtr) {
+                                      if (![jobRecord isKindOfClass:OWSBroadcastMediaMessageJobRecord.class]) {
+                                          return;
+                                      }
+                                      OWSBroadcastMediaMessageJobRecord *broadcastJobRecord
+                                          = (OWSBroadcastMediaMessageJobRecord *)jobRecord;
+                                      [allMessageAttachmentIds
+                                          addObjectsFromArray:broadcastJobRecord.attachmentIdMap.allKeys];
+                                  }];
 
         if (shouldAbort) {
             return;
