@@ -30,6 +30,9 @@ public class OWSWindow: UIWindow {
     private func applyTheme() {
         guard #available(iOS 13, *) else { return }
 
+        // TODO Xcode 11: Delete this once we're compling only in Xcode 11
+        #if swift(>=5.1)
+
         // Ensure system UI elements use the appropriate styling for the selected theme.
         switch Theme.getOrFetchCurrentTheme() {
         case .light:
@@ -39,6 +42,8 @@ public class OWSWindow: UIWindow {
         case .system:
             overrideUserInterfaceStyle = .unspecified
         }
+
+        #endif
     }
 
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

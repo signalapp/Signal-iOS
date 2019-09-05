@@ -161,11 +161,16 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 - (BOOL)isSystemDarkThemeEnabled
 {
+    // TODO Xcode 11: Delete this once we're compling only in Xcode 11
+#ifdef __IPHONE_13_0
     if (@available(iOS 13, *)) {
         return UITraitCollection.currentTraitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
     } else {
         return NO;
     }
+#else
+    return NO;
+#endif
 }
 
 #pragma mark -

@@ -310,10 +310,15 @@ public class ExperienceUpgradeViewController: OWSViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
+        // TODO Xcode 11: Delete this once we're compling only in Xcode 11
+        #if swift(>=5.1)
+
         // Don't allow interactive dismissal.
         if #available(iOS 13, *) {
             isModalInPresentation = true
         }
+
+        #endif
 
         addDismissGesture()
     }
