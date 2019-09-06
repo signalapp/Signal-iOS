@@ -54,15 +54,15 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
     return self;
 }
 
-- (BOOL)hasYdbFile
++ (BOOL)hasYdbFile
 {
     NSString *ydbFilePath = OWSPrimaryStorage.sharedDataDatabaseFilePath;
     return [OWSFileSystem fileOrFolderExistsAtPath:ydbFilePath];
 }
 
-- (BOOL)hasGrdbFile
++ (BOOL)hasGrdbFile
 {
-    NSString *grdbFilePath = self.databaseStorage.grdbDatabaseFileUrl.path;
+    NSString *grdbFilePath = SDSDatabaseStorage.grdbDatabaseFileUrl.path;
     return [OWSFileSystem fileOrFolderExistsAtPath:grdbFilePath];
 }
 
@@ -78,10 +78,10 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
     // NOTE: By now, any move of YDB from the "app container"
     //       to the "shared container" should be complete, so
     //       we can ignore the "legacy" database files.
-    BOOL hasYdbFile = self.hasYdbFile;
+    BOOL hasYdbFile = self.class.hasYdbFile;
     OWSLogVerbose(@"hasYdbFile: %d", hasYdbFile);
 
-    BOOL hasGrdbFile = self.hasGrdbFile;
+    BOOL hasGrdbFile = self.class.hasGrdbFile;
     OWSLogVerbose(@"hasGrdbFile: %d", hasGrdbFile);
 
     switch (SSKFeatureFlags.storageMode) {
