@@ -1260,7 +1260,12 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                         [self downloadAvatarForUserProfile:latestUserProfile];
                     }
                 } else if (error) {
-                    OWSLogError(@"avatar download for %@ failed with error: %@", userProfile.address, error);
+                    if ([response isKindOfClass:NSHTTPURLResponse.class]
+                        && ((NSHTTPURLResponse *)response).statusCode == 403) {
+                        OWSLogInfo(@"no avatar for: %@", userProfile.address);
+                    } else {
+                        OWSLogError(@"avatar download for %@ failed with error: %@", userProfile.address, error);
+                    }
                 } else if (!encryptedData) {
                     OWSLogError(@"avatar encrypted data for %@ could not be read.", userProfile.address);
                 } else if (!decryptedData) {
