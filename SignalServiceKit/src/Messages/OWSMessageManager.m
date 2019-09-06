@@ -1406,7 +1406,19 @@ NS_ASSUME_NONNULL_BEGIN
                 if (dataMessage.publicChatInfo != nil && dataMessage.publicChatInfo.hasServerID) {
                     [self.primaryStorage setIDForMessageWithServerID:dataMessage.publicChatInfo.serverID to:incomingMessage.uniqueId in:transaction];
                 }
-                
+
+                NSString *url = [OWSLinkPreview previewURLForRawBodyText:incomingMessage.body];
+                if (url != nil) {
+                    [OWSLinkPreview tryToBuildPreviewInfoObjcWithPreviewUrl:url]
+                    .thenOn(dispatch_get_main_queue(), ^(OWSLinkPreviewDraft *linkPreviewDraft) {
+                        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                            OWSLinkPreview *linkPreview = [OWSLinkPreview buildValidatedLinkPreviewFromInfo:linkPreviewDraft transaction:transaction error:nil];
+                            incomingMessage.linkPreview = linkPreview;
+                            [incomingMessage saveWithTransaction:transaction];
+                        }];
+                    });
+                }
+
                 return incomingMessage;
             }
             default: {
@@ -1491,6 +1503,19 @@ NS_ASSUME_NONNULL_BEGIN
                                thread:thread
                              envelope:envelope
                           transaction:transaction];
+
+        if (linkPreview != nil) {
+            [OWSLinkPreview tryToBuildPreviewInfoObjcWithPreviewUrl:linkPreview.urlString]
+            .thenOn(dispatch_get_main_queue(), ^(OWSLinkPreviewDraft *linkPreviewDraft) {
+                if (linkPreviewDraft.jpegImageData == nil) { return; }
+                [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    NSString *attachmentID = [OWSLinkPreview buildValidatedLinkPreviewFromInfo:linkPreviewDraft transaction:transaction error:nil].imageAttachmentId;
+                    linkPreview.imageAttachmentId = attachmentID;
+                    incomingMessage.linkPreview = linkPreview;
+                    [incomingMessage saveWithTransaction:transaction];
+                }];
+            });
+        };
         
         return incomingMessage;
     }

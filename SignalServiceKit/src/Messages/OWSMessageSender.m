@@ -1978,6 +1978,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }
 
+    /*
     if (message.linkPreview.imageAttachmentId != nil) {
         TSAttachment *attachment =
             [TSAttachment fetchObjectWithUniqueID:message.linkPreview.imageAttachmentId transaction:transaction];
@@ -1987,6 +1988,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             OWSFailDebug(@"unexpected attachment: %@", attachment);
         }
     }
+     */
 
     // All outgoing messages should be saved at the time they are enqueued.
     [message saveWithTransaction:transaction];

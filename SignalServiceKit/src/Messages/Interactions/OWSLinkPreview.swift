@@ -158,7 +158,8 @@ public class OWSLinkPreview: MTLModel {
                 title = normalizedTitle
             }
         }
-
+        
+        /*
         var imageAttachmentId: String?
         if let imageProto = previewProto.image {
             if let imageAttachmentPointer = TSAttachmentPointer(fromProto: imageProto, albumMessage: nil) {
@@ -169,8 +170,9 @@ public class OWSLinkPreview: MTLModel {
                 throw LinkPreviewError.invalidInput
             }
         }
+         */
 
-        let linkPreview = OWSLinkPreview(urlString: urlString, title: title, imageAttachmentId: imageAttachmentId)
+        let linkPreview = OWSLinkPreview(urlString: urlString, title: title, imageAttachmentId: nil)
 
         guard linkPreview.isValid() else {
             Logger.error("Preview has neither title nor image.")
@@ -431,6 +433,11 @@ public class OWSLinkPreview: MTLModel {
     @objc
     public class func previewUrl(forRawBodyText body: String?, selectedRange: NSRange) -> String? {
         return previewUrl(forMessageBodyText: body, selectedRange: selectedRange)
+    }
+
+    @objc
+    public class func previewURL(forRawBodyText body: String?) -> String? {
+        return previewUrl(forMessageBodyText: body, selectedRange: nil)
     }
 
     public class func previewUrl(forMessageBodyText body: String?, selectedRange: NSRange?) -> String? {
