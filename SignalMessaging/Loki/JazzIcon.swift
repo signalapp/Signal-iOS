@@ -18,9 +18,10 @@ private class RNG {
     }
     
     func next() -> Int {
-        let seed = (self.seed * 16807) % 2147483647
-        self.seed = seed
-        return seed
+        // Casting to Int64 incase number goes above Int32
+        let seed = (Int64(self.seed) * 16807) % 2147483647
+        self.seed = Int(seed)
+        return self.seed
     }
     
     func nextFloat() -> Float {
