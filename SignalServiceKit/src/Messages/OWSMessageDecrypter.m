@@ -596,12 +596,14 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
 - (void)processException:(NSException *)exception envelope:(SSKProtoEnvelope *)envelope
 {
+    NSString *logString = [NSString stringWithFormat:@"Got exception: %@ of type: %@ with reason: %@",
+                                    exception.description,
+                                    exception.name,
+                                    exception.reason];
     if ([exception.name isEqualToString:DuplicateMessageException]) {
-        OWSLogInfo(
-            @"Got exception: %@ of type: %@ with reason: %@", exception.description, exception.name, exception.reason);
+        OWSLogInfo(@"%@", logString);
     } else {
-        OWSLogError(
-            @"Got exception: %@ of type: %@ with reason: %@", exception.description, exception.name, exception.reason);
+        OWSLogError(@"%@", logString);
     }
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
