@@ -133,7 +133,7 @@ public class JazzIcon {
         var currentIndex = array.count
         var mutated = array
         while (currentIndex > 0) {
-            let randomIndex = Int(generator.next()) % currentIndex
+            let randomIndex = generator.next() % currentIndex
             currentIndex -= 1
             mutated.swapAt(currentIndex, randomIndex)
         }
