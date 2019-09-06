@@ -39,24 +39,41 @@ public class LogPickerViewController: OWSTableViewController {
     }
 
     private func buildLogsSection() -> OWSTableSection {
-        guard let logUrls = FileManager.default.enumerator(at: logDirUrl, includingPropertiesForKeys: nil) else {
+        guard let directoryEnumerator = FileManager.default.enumerator(at: logDirUrl, includingPropertiesForKeys: nil) else {
             owsFailDebug("logUrls was unexpectedly nil")
             return OWSTableSection(title: "No Log URLs", items: [])
         }
 
-        var logItems: [OWSTableItem] = []
-        for case let logUrl as URL in logUrls {
-            logItems.append(OWSTableItem(title: logUrl.lastPathComponent) { [weak self] in
-                guard let self = self else { return }
-                let logVC = LogViewController(logUrl: logUrl)
+        let logUrls: [URL] = directoryEnumerator.compactMap { $0 as? URL }
+        let sortedUrls = logUrls.sorted { (a, b) -> Bool in
+            return a.lastPathComponent > b.lastPathComponent
+        }
 
-                guard let navigationController = self.navigationController else {
-                    owsFailDebug("navigationController was unexpectedly nil")
-                    return
+        let logItems: [OWSTableItem] = sortedUrls.map { logUrl in
+            return OWSTableItem(
+                customCellBlock: { () -> UITableViewCell in
+                    let cell = OWSTableItem.newCell()
+                    guard let textLabel = cell.textLabel else {
+                        owsFailDebug("textLabel was unexpectedly nil")
+                        return cell
+                    }
+                    textLabel.lineBreakMode = .byTruncatingHead
+                    textLabel.text = logUrl.lastPathComponent
+
+                    return cell
+                },
+                actionBlock: { [weak self] in
+                    guard let self = self else { return }
+                    let logVC = LogViewController(logUrl: logUrl)
+
+                    guard let navigationController = self.navigationController else {
+                        owsFailDebug("navigationController was unexpectedly nil")
+                        return
+                    }
+
+                    navigationController.pushViewController(logVC, animated: true)
                 }
-
-                navigationController.pushViewController(logVC, animated: true)
-            })
+            )
         }
 
         return OWSTableSection(title: "Error Logs", items: logItems)
@@ -86,10 +103,21 @@ public class LogViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override public func loadView() {
-        let textView = UITextView()
-        self.view = textView
+    let textView = UITextView()
 
+    override public func loadView() {
+        self.view = textView
+        loadLogText()
+    }
+
+    override public func viewDidLoad() {
+        super.viewDidLoad()
+        navigationItem.rightBarButtonItem =  UIBarButtonItem(barButtonSystemItem: .trash,
+                                                             target: self,
+                                                             action: #selector(didTapTrash(_:)))
+    }
+
+    func loadLogText() {
         do {
             // This is super crude, but:
             // 1. generally we should haven't a ton of logged errors
@@ -100,6 +128,17 @@ public class LogViewController: UIViewController {
             textView.text = String(data: logData, encoding: .utf8)
         } catch {
             textView.text = "Failed to load log data: \(error)"
+        }
+    }
+
+    @objc
+    func didTapTrash(_ sender: UIBarButtonItem) {
+        // truncate logUrl
+        do {
+            try NSData().write(to: logUrl)
+            loadLogText()
+        } catch {
+            owsFailDebug("error: \(error)")
         }
     }
 }
