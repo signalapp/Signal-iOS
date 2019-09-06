@@ -435,6 +435,11 @@ public class OWSLinkPreview: MTLModel {
         return previewUrl(forMessageBodyText: body, selectedRange: selectedRange)
     }
 
+    @objc
+    public class func previewURL(forRawBodyText body: String?) -> String? {
+        return previewUrl(forMessageBodyText: body, selectedRange: nil)
+    }
+
     public class func previewUrl(forMessageBodyText body: String?, selectedRange: NSRange?) -> String? {
         AssertIsOnMainThread()
 

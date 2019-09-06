@@ -1407,19 +1407,18 @@ NS_ASSUME_NONNULL_BEGIN
                     [self.primaryStorage setIDForMessageWithServerID:dataMessage.publicChatInfo.serverID to:incomingMessage.uniqueId in:transaction];
                 }
 
-                if (linkPreview != nil) {
-                    [OWSLinkPreview tryToBuildPreviewInfoObjcWithPreviewUrl:linkPreview.urlString]
+                NSString *url = [OWSLinkPreview previewURLForRawBodyText:incomingMessage.body];
+                if (url != nil) {
+                    [OWSLinkPreview tryToBuildPreviewInfoObjcWithPreviewUrl:url]
                     .thenOn(dispatch_get_main_queue(), ^(OWSLinkPreviewDraft *linkPreviewDraft) {
-                        if (linkPreviewDraft.jpegImageData == nil) { return; }
                         [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                            NSString *attachmentID = [OWSLinkPreview buildValidatedLinkPreviewFromInfo:linkPreviewDraft transaction:transaction error:nil].imageAttachmentId;
-                            linkPreview.imageAttachmentId = attachmentID;
+                            OWSLinkPreview *linkPreview = [OWSLinkPreview buildValidatedLinkPreviewFromInfo:linkPreviewDraft transaction:transaction error:nil];
                             incomingMessage.linkPreview = linkPreview;
                             [incomingMessage saveWithTransaction:transaction];
                         }];
                     });
-                };
-                
+                }
+
                 return incomingMessage;
             }
             default: {
