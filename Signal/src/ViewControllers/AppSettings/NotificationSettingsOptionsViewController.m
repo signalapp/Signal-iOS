@@ -36,6 +36,7 @@
         [section addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
                                  UITableViewCell *cell = [OWSTableItem newCell];
+                                 cell.tintColor = UIColor.lokiGreen;
                                  [[cell textLabel] setText:[prefs nameForNotificationPreviewType:notificationType]];
                                  if (selectedNotifType == notificationType) {
                                      cell.accessoryType = UITableViewCellAccessoryCheckmark;
