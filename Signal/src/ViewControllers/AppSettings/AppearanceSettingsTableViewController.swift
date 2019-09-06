@@ -17,43 +17,31 @@ class AppearanceSettingsTableViewController: OWSTableViewController {
     func updateTableContents() {
         let contents = OWSTableContents()
 
-        let section = OWSTableSection()
+        let themeSection = OWSTableSection()
+        themeSection.headerTitle = NSLocalizedString("SETTINGS_APPEARANCE_THEME_TITLE",
+                                                     comment: "The title for the theme section in the appearance settings.")
 
-        let themeItem = OWSTableItem.disclosureItem(withText: "Theme", detailText: currentThemeName) { [weak self] in
-            self?.showThemeChoices()
-        }
-        section.add(themeItem)
+        themeSection.add(appearanceItem(.system))
+        themeSection.add(appearanceItem(.light))
+        themeSection.add(appearanceItem(.dark))
+
+        contents.addSection(themeSection)
 
         // TODO iOS 13 – maybe expose the preferred language settings here to match android
         // It not longer seems to exist in iOS 13.1 so not sure if Apple got rid of it
         // or it has just temporarily been disabled.
 
-        contents.addSection(section)
-
         self.contents = contents
     }
 
-    func showThemeChoices() {
-        let vc = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-
-        let systemButton = UIAlertAction(title: nameForTheme(.system), style: .default) { [weak self] _ in
-            self?.changeTheme(.system)
-        }
-        vc.addAction(systemButton)
-
-        let lightButton = UIAlertAction(title: nameForTheme(.light), style: .default) { [weak self] _ in
-            self?.changeTheme(.light)
-        }
-        vc.addAction(lightButton)
-
-        let darkButton = UIAlertAction(title: nameForTheme(.dark), style: .default) { [weak self] _ in
-            self?.changeTheme(.dark)
-        }
-        vc.addAction(darkButton)
-
-        vc.addAction(OWSAlerts.cancelAction)
-
-        presentFullScreen(vc, animated: true)
+    func appearanceItem(_ mode: ThemeMode) -> OWSTableItem {
+        return OWSTableItem(
+            text: nameForTheme(mode),
+            actionBlock: { [weak self] in
+                self?.changeTheme(mode)
+            },
+            accessoryType: Theme.getOrFetchCurrentTheme() == mode ? .checkmark : .none
+        )
     }
 
     func changeTheme(_ mode: ThemeMode) {

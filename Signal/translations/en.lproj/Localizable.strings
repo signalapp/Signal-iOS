@@ -2285,6 +2285,9 @@
 /* table cell label */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Error Logs";
 
+/* The title for the theme section in the appearance settings. */
+"SETTINGS_APPEARANCE_THEME_TITLE" = "Theme";
+
 /* The title for the appearance settings. */
 "SETTINGS_APPEARANCE_TITLE" = "Appearance";
 
