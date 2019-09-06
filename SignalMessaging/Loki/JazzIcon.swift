@@ -8,15 +8,16 @@ extension String {
 }
 
 private class RNG {
-    private var seed: UInt
-    private var initial: UInt
+    private var seed: Int
+    private var initial: Int
     
-    init(seed: UInt) {
+    init(seed: Int) {
         self.seed = seed % 2147483647
+        if (self.seed <= 0) { self.seed += 2147483646 }
         self.initial = self.seed
     }
     
-    func next() -> UInt {
+    func next() -> Int {
         let seed = (self.seed * 16807) % 2147483647
         self.seed = seed
         return seed
@@ -57,7 +58,7 @@ public class JazzIcon {
     private let shapeCount = 4
     private let wobble = 30
     
-    init(seed: UInt, colours: [UIColor]? = nil) {
+    init(seed: Int, colours: [UIColor]? = nil) {
         self.generator = RNG(seed: seed)
         if let colours = colours {
             self.colours = colours
@@ -69,7 +70,7 @@ public class JazzIcon {
         var hash = seed
         if !hash.matches("^[0-9A-Fa-f]+$") || hash.count < 12 { hash = seed.sha512() }
         
-        guard let number = UInt(hash.substring(to: 12), radix: 16) else {
+        guard let number = Int(hash.substring(to: 12), radix: 16) else {
             owsFailDebug("[JazzIcon] Failed to generate number from seed string: \(seed)")
             self.init(seed: 1234, colours: colours)
             return
