@@ -180,7 +180,7 @@
                                                   [weakSelf showInviteFlow];
                                               }]];
 
-    // TODO Xcode 11: Delete this once we're compling only in Xcode 11
+    // TODO Xcode 11: Delete this once we're compiling only in Xcode 11
 #ifdef __IPHONE_13_0
     // Starting with iOS 13, show an appearance section to allow setting the app theme
     // to match the "system" dark/light mode settings and to adjust the app specific
@@ -560,7 +560,7 @@
 
 - (void)updateRightBarButtonForTheme
 {
-    // TODO Xcode 11: Delete this once we're compling only in Xcode 11
+    // TODO Xcode 11: Delete this once we're compiling only in Xcode 11
 #ifdef __IPHONE_13_0
     if (@available(iOS 13, *)) {
         // Don't show the moon button in iOS 13+, theme settings are now in a menu

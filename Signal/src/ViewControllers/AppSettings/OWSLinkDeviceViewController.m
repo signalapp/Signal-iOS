@@ -31,8 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidLoad];
 
-    self.view.backgroundColor = Theme.backgroundColor;
-
     UIImage *heroImage = [UIImage imageNamed:@"ic_devices_ios"];
     OWSAssertDebug(heroImage);
     UIImageView *heroImageView = [[UIImageView alloc] initWithImage:heroImage];
@@ -41,7 +39,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.scanningInstructionsLabel = [UILabel new];
     self.scanningInstructionsLabel.text = NSLocalizedString(@"LINK_DEVICE_SCANNING_INSTRUCTIONS",
         @"QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes");
-    self.scanningInstructionsLabel.textColor = Theme.primaryColor;
     self.scanningInstructionsLabel.font = UIFont.ows_dynamicTypeCaption1Font;
     self.scanningInstructionsLabel.numberOfLines = 0;
     self.scanningInstructionsLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -117,6 +114,14 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.qrScanningController startCapture];
     });
+}
+
+- (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection
+{
+    [super traitCollectionDidChange:previousTraitCollection];
+
+    self.view.backgroundColor = Theme.backgroundColor;
+    self.scanningInstructionsLabel.textColor = Theme.primaryColor;
 }
 
 #pragma mark - OWSQRScannerDelegate

@@ -495,7 +495,7 @@ public extension UIImageView {
 @objc
 public extension UISearchBar {
     var textField: UITextField? {
-        // TODO Xcode 11: Delete this once we're compling only in Xcode 11
+        // TODO Xcode 11: Delete this once we're compiling only in Xcode 11
         #if swift(>=5.1)
         if #available(iOS 13, *) { return searchTextField }
         #endif

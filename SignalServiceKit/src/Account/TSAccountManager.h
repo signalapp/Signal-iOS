@@ -36,7 +36,7 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 
 #pragma mark - Initializers
 
-+ (instancetype)sharedInstance;
++ (TSAccountManager *)sharedInstance;
 
 - (void)warmCaches;
 

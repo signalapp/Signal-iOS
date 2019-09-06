@@ -161,7 +161,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 - (BOOL)isSystemDarkThemeEnabled
 {
-    // TODO Xcode 11: Delete this once we're compling only in Xcode 11
+    // TODO Xcode 11: Delete this once we're compiling only in Xcode 11
 #ifdef __IPHONE_13_0
     if (@available(iOS 13, *)) {
         return UITraitCollection.currentTraitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
@@ -192,7 +192,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
         return;
     }
 
-    // The system them has changed since the user was last in the app.
+    // The system theme has changed since the user was last in the app.
     self.isDarkThemeEnabledNumber = @(self.isSystemDarkThemeEnabled);
     [self themeDidChange];
 }

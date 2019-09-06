@@ -178,7 +178,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-+ (instancetype)sharedInstance
++ (TSAccountManager *)sharedInstance
 {
     OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
     
@@ -435,8 +435,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 + (nullable SignalServiceAddress *)localAddress
 {
-    // TODO Xcode 11: Figure out a better way to deal with this, we shouldn't need to cast it.
-    return (SignalServiceAddress * _Nullable)[[self sharedInstance] localAddress];
+    return [[self sharedInstance] localAddress];
 }
 
 - (nullable SignalServiceAddress *)localAddress
