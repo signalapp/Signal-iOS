@@ -10,9 +10,14 @@ extension UIColor {
             // Round values so we get closer values to Desktop
             let currentHueDegrees = (currentHue * 360.0).rounded()
             let normalizedDegrees = fmod(degrees, 360.0).rounded()
-            let newHue = (currentHueDegrees + normalizedDegrees) / 360.0
             
-            return UIColor(hue: newHue,
+            // Make sure we're in the range 0 to 360
+            var newHue = fmod(currentHueDegrees + normalizedDegrees, 360.0)
+            if (newHue < 0) { newHue = 360 + newHue }
+            
+            let decimalHue = (currentHueDegrees + normalizedDegrees) / 360.0
+            
+            return UIColor(hue: decimalHue,
                            saturation: currentSaturation,
                            brightness: currentBrigthness,
                            alpha: 1.0)
