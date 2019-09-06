@@ -819,17 +819,16 @@ public class LinkPreviewView: UIStackView {
     public func addBorderViews(bubbleView: OWSBubbleView) {
         if let heroImageView = self.heroImageView {
             let borderView = OWSBubbleShapeView(draw: ())
-            borderView.strokeColor = Theme.primaryColor
-            borderView.strokeThickness = CGHairlineWidth()
+            borderView.strokeColor = UIColor.clear
+            borderView.strokeThickness = 0
             heroImageView.addSubview(borderView)
             bubbleView.addPartnerView(borderView)
             borderView.ows_autoPinToSuperviewEdges()
         }
         if let sentBodyView = self.sentBodyView {
             let borderView = OWSBubbleShapeView(draw: ())
-            let borderColor = UIColor(rgbHex: Theme.isDarkThemeEnabled ? 0x0F1012 : 0xD5D6D6)
-            borderView.strokeColor = borderColor
-            borderView.strokeThickness = CGHairlineWidth()
+            borderView.strokeColor = UIColor.clear
+            borderView.strokeThickness = 0
             sentBodyView.addSubview(borderView)
             bubbleView.addPartnerView(borderView)
             borderView.ows_autoPinToSuperviewEdges()
