@@ -76,7 +76,7 @@ public class LogPickerViewController: OWSTableViewController {
             )
         }
 
-        return OWSTableSection(title: "Error Logs", items: logItems)
+        return OWSTableSection(title: "View Logs", items: logItems)
     }
 
     @objc
@@ -112,9 +112,12 @@ public class LogViewController: UIViewController {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.rightBarButtonItem =  UIBarButtonItem(barButtonSystemItem: .trash,
-                                                             target: self,
-                                                             action: #selector(didTapTrash(_:)))
+        navigationItem.rightBarButtonItems = [UIBarButtonItem(barButtonSystemItem: .action,
+                                                              target: self,
+                                                              action: #selector(didTapShare(_:))),
+                                              UIBarButtonItem(barButtonSystemItem: .trash,
+                                                              target: self,
+                                                              action: #selector(didTapTrash(_:)))]
     }
 
     func loadLogText() {
@@ -140,5 +143,12 @@ public class LogViewController: UIViewController {
         } catch {
             owsFailDebug("error: \(error)")
         }
+    }
+
+    @objc
+    func didTapShare(_ sender: UIBarButtonItem) {
+        let logText = textView.text ?? "Empty Log"
+        let vc = UIActivityViewController(activityItems: [logText], applicationActivities: [])
+        present(vc, animated: true)
     }
 }
