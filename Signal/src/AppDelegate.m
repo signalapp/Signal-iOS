@@ -336,26 +336,41 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    if (![self.storageCoordinator isDatabasePasswordAccessible]) {
-        OWSLogInfo(@"exiting because we are in the background and the database password is not accessible.");
-
-        UILocalNotification *notification = [UILocalNotification new];
-        NSString *messageFormat = NSLocalizedString(@"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT",
-            @"Lock screen notification text presented after user powers on their device without unlocking. Embeds "
-            @"{{device model}} (either 'iPad' or 'iPhone')");
-        notification.alertBody = [NSString stringWithFormat:messageFormat, UIDevice.currentDevice.localizedModel];
-
-        // Make sure we clear any existing notifications so that they don't start stacking up
-        // if the user receives multiple pushes.
-        [UIApplication.sharedApplication cancelAllLocalNotifications];
-        [UIApplication.sharedApplication setApplicationIconBadgeNumber:0];
-
-        [[UIApplication sharedApplication] scheduleLocalNotification:notification];
-        [UIApplication.sharedApplication setApplicationIconBadgeNumber:1];
-
-        [DDLog flushLog];
-        exit(0);
+    // someone currently using yap
+    if (StorageCoordinator.hasYdbFile && !SSKPreferences.isYdbMigrated
+        && OWSPrimaryStorage.isDatabasePasswordAccessible) {
+        return;
     }
+
+    // someone who migrated from yap to grdb needs the GRDB spec
+    if (SSKPreferences.isYdbMigrated && GRDBDatabaseStorageAdapter.isKeyAccessible) {
+        return;
+    }
+
+    // someone who never used yap needs the GRDB spec
+    if (!StorageCoordinator.hasYdbFile && StorageCoordinator.hasGrdbFile
+        && GRDBDatabaseStorageAdapter.isKeyAccessible) {
+        return;
+    }
+
+    OWSLogInfo(@"exiting because we are in the background and the database password is not accessible.");
+
+    UILocalNotification *notification = [UILocalNotification new];
+    NSString *messageFormat = NSLocalizedString(@"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT",
+        @"Lock screen notification text presented after user powers on their device without unlocking. Embeds "
+        @"{{device model}} (either 'iPad' or 'iPhone')");
+    notification.alertBody = [NSString stringWithFormat:messageFormat, UIDevice.currentDevice.localizedModel];
+
+    // Make sure we clear any existing notifications so that they don't start stacking up
+    // if the user receives multiple pushes.
+    [UIApplication.sharedApplication cancelAllLocalNotifications];
+    [UIApplication.sharedApplication setApplicationIconBadgeNumber:0];
+
+    [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+    [UIApplication.sharedApplication setApplicationIconBadgeNumber:1];
+
+    [DDLog flushLog];
+    exit(0);
 }
 
 - (void)showLaunchFailureUI:(NSError *)error

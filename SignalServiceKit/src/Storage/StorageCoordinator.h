@@ -29,6 +29,9 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
 - (void)migrationYDBToGRDBWillBegin;
 - (void)migrationYDBToGRDBDidComplete;
 
+@property (class, nonatomic, readonly) BOOL hasYdbFile;
+@property (class, nonatomic, readonly) BOOL hasGrdbFile;
+
 - (BOOL)isDatabasePasswordAccessible;
 
 #ifdef TESTABLE_BUILD
