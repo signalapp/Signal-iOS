@@ -5,10 +5,10 @@
 "ACCEPT_NEW_IDENTITY_ACTION" = "Accepta el número de seguretat nou";
 
 /* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Trucada Signal";
+"ACTION_AUDIO_CALL" = "Trucada Loki Messenger";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Convida al Signal";
+"ACTION_INVITE" = "Convida al Loki Messenger";
 
 /* Label for 'send message' button in contact view.
    Label for button that lets you send a message to a contact. */
@@ -60,7 +60,7 @@
 "APN_Message" = "Nou missatge!";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "El Signal no es pot iniciar. Envieu els informes de depuració a support@signal.org perquè puguem provar de solucionar-ho.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "El Loki Messenger no es pot iniciar. Envieu els informes de depuració a support@signal.org perquè puguem provar de solucionar-ho.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Error";
@@ -75,13 +75,13 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Ja és disponible la versió %@ a l'App Store.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Una nova versió del Signal està disponible";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Una nova versió del Loki Messenger està disponible";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Actualitza";
 
 /* Name of application */
-"APPLICATION_NAME" = "Signal";
+"APPLICATION_NAME" = "Loki Messenger";
 
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "Arxiva";
@@ -309,7 +309,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Torna a trucar";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Podeu activar l'accés al micròfon a la Configuració de l'iOS per a poder telefonar i enviar missatges de veu al Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Podeu activar l'accés al micròfon a la Configuració de l'iOS per a poder telefonar i enviar missatges de veu al Loki Messenger.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Es necessita accés al micròfon";
@@ -330,7 +330,7 @@
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Sense resposta";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
-"CALL_STATUS_FORMAT" = "Signal %@";
+"CALL_STATUS_FORMAT" = "Loki Messenger %@";
 
 /* Label for call button for alert offering to call a user. */
 "CALL_USER_ALERT_CALL_BUTTON" = "Truca";
@@ -360,10 +360,10 @@
 "CALL_VIEW_MUTE_LABEL" = "Silencia";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Podeu activar la integració amb les telefonades d'iOS a la configuració de privadesa del Signal per a respondre les telefonades entrants des de la pantalla de bloqueig.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Podeu activar la integració amb les telefonades d'iOS a la configuració de privadesa del Loki Messenger per a respondre les telefonades entrants des de la pantalla de bloqueig.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Podeu activar la integració amb les telefonades d'iOS a la configuració de privadesa del Signal per a veure el nom i el número de les telefonades entrants.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Podeu activar la integració amb les telefonades d'iOS a la configuració de privadesa del Loki Messenger per a veure el nom i el número de les telefonades entrants.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Ara no";
@@ -387,7 +387,7 @@
 "CALLBACK_BUTTON_TITLE" = "Torna-li la trucada";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Usuari del Signal";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Usuari del Loki Messenger";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "L'usuari no es pot verificar fins que no intercanvieu missatges.";
@@ -411,13 +411,13 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Restaura";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal no ha pogut determinar l'estat del compte iCloud. Identifica't amb teu compte iCloud als ajustos d'iOS per fer la còpia de seguretat de les dades de Signal";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Loki Messenger no ha pogut determinar l'estat del compte iCloud. Identifica't amb teu compte iCloud als ajustos d'iOS per fer la còpia de seguretat de les dades de Loki Messenger";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "No hi ha compte iCloud. Identifica't amb teu compte iCloud als ajustos d'iOS per fer la còpia de seguretat de les dades de Signal";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "No hi ha compte iCloud. Identifica't amb teu compte iCloud als ajustos d'iOS per fer la còpia de seguretat de les dades de Loki Messenger";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal no ha obtingut permís per accedir a les còpies de seguretat del teu compte iCloud. Dóna accés a Signal als ajustos d'iOS per fer la còpia de seguretat de les dades de Signal.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Loki Messenger no ha obtingut permís per accedir a les còpies de seguretat del teu compte iCloud. Dóna accés a Loki Messenger als ajustos d'iOS per fer la còpia de seguretat de les dades de Loki Messenger.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Trieu el color dels missatges enviats en aquesta conversa.";
@@ -441,7 +441,7 @@
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Convida";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Podeu activar l'accés als contactes a la Configuració de l'iOS per a veure quins contactes són usuaris del Signal.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Podeu activar l'accés als contactes a la Configuració de l'iOS per a veure quins contactes són usuaris del Loki Messenger.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "S'eliminaran els missatges i deixareu d'estar registrat al servidor. L'aplicació es tancarà una vegada s'eliminin les dades.";
@@ -748,9 +748,9 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Torna a registrar aquest número de telèfon";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Dispositiu desenregistrat. El número de telèfon pot ser registrat amb Signal en un altre dispositiu. Toca per tornar a registrar.";
+"DEREGISTRATION_WARNING" = "Dispositiu desenregistrat. El número de telèfon pot ser registrat amb Loki Messenger en un altre dispositiu. Toca per tornar a registrar.";
 
-/* {{Short Date}} when device last communicated with Signal Server. */
+/* {{Short Date}} when device last communicated with Loki Messenger Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Darrera connexió: %@";
 
 /* {{Short Date}} when device was linked. */
@@ -780,11 +780,11 @@
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Ubicació per a l'elusió de la censura";
 
-/* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+/* Alert body for when the user has just tried to edit a contacts after declining to give Loki Messenger contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Podeu activar l'accés a la Configuració de l'iOS.";
 
-/* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "El Signal necessita accés als contactes per a editar la seva informació";
+/* Alert title for when the user has just tried to edit a contacts after declining to give Loki Messenger contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "El Loki Messenger necessita accés als contactes per a editar la seva informació";
 
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Edita el grup";
@@ -819,14 +819,14 @@
 /* No comment provided by engineer. */
 "EDIT_TXT" = "Edita";
 
-/* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Ep,\n\nÚltimament he estat utilitzant el Signal per mantenir les meves converses privades a l'iPhone. M'agradaria que també te l'instal·lessis, per què puguem estar segurs que som els únics que podem llegir els missatges que ens hi enviem.\n\nPots baixar-te-la de l'App Store d'Apple o de la Play Store d'Android: %@\n\nEl Signal funciona com la resta d'aplicacions de missatgeria. Podem enviar-nos fotos i vídeos, fer trucades, i crear grups. La millor part és que ningú més pot veure tot això, ni tan sols la gent que ha creat el Signal!\n\nPots obtenir més informació sobre Open Whisper Systems, la gent que ha creat el Signal, aquí: %@";
+/* body of email sent to contacts when inviting to install Loki Messenger. Embeds {{link to install Loki Messenger}} and {{link to the Loki Messenger home page}} */
+"EMAIL_INVITE_BODY" = "Ep,\n\nÚltimament he estat utilitzant el Loki Messenger per mantenir les meves converses privades a l'iPhone. M'agradaria que també te l'instal·lessis, per què puguem estar segurs que som els únics que podem llegir els missatges que ens hi enviem.\n\nPots baixar-te-la de l'App Store d'Apple o de la Play Store d'Android: %@\n\nEl Loki Messenger funciona com la resta d'aplicacions de missatgeria. Podem enviar-nos fotos i vídeos, fer trucades, i crear grups. La millor part és que ningú més pot veure tot això, ni tan sols la gent que ha creat el Loki Messenger!\n\nPots obtenir més informació sobre Open Whisper Systems, la gent que ha creat el Loki Messenger, aquí: %@";
 
-/* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Canviem-nos al Signal";
+/* subject of email sent to contacts when inviting to install Loki Messenger */
+"EMAIL_INVITE_SUBJECT" = "Canviem-nos al Loki Messenger";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Cap dels vostres contactes té Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Cap dels vostres contactes té Loki Messenger.";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Per què no convideu algú?";
@@ -853,13 +853,13 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Els PIN no coincideixen.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Introduïu un PIN com a Pany de Registre. Se us demanarà la pròxima vegada que registreu aquest número de telèfon al Signal.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Introduïu un PIN com a Pany de Registre. Se us demanarà la pròxima vegada que registreu aquest número de telèfon al Loki Messenger.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Per a més seguretat, activeu el PIN com a Pany de Registre, que se us demanarà quan vullgueu tornar a registrar aquest número de telèfon al Signal.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Per a més seguretat, activeu el PIN com a Pany de Registre, que se us demanarà quan vullgueu tornar a registrar aquest número de telèfon al Loki Messenger.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "S'ha activat el Pany de Registre. Caldrà que introduïu el PIN quan torneu a registrar el número de telèfon al Signal.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "S'ha activat el Pany de Registre. Caldrà que introduïu el PIN quan torneu a registrar el número de telèfon al Loki Messenger.";
 
 /* Title for the 'enable two factor auth PIN' views. */
 "ENABLE_2FA_VIEW_TITLE" = "Pany de Registre";
@@ -885,8 +885,8 @@
 /* Error message indicating that message send failed due to failed attachment write */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Error al escriure i enviar fitxer adjunt.";
 
-/* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal no s'ha pogut conectar a Internet. Torna-ho a intentar.";
+/* Generic error used whenever Loki Messenger can't contact the server */
+"ERROR_DESCRIPTION_NO_INTERNET" = "Loki Messenger no s'ha pogut conectar a Internet. Torna-ho a intentar.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Ha fallat l'enviament del missatge, no hi ha recipients vàlids.";
@@ -901,7 +901,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Resposta invàlida del servei";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Aquest dispositiu ja no està registrat amb el teu numéro de telèfon. Torna a installar Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Aquest dispositiu ja no està registrat amb el teu numéro de telèfon. Torna a installar Loki Messenger.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Error del servidor. Proveu de nou més tard.";
@@ -910,10 +910,10 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "S'ha produït un error desconegut.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "El contacte no és usuari del Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "El contacte no és usuari del Loki Messenger.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Error amb el fitxer adjunt. Torna'l a demanar després d'actualitzar Signal a la darrera versió.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Error amb el fitxer adjunt. Torna'l a demanar després d'actualitzar Loki Messenger a la darrera versió.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Rebut un missatge duplicat.";
@@ -1062,16 +1062,16 @@
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Cerca";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Alguns dels vostres contactes ja són al Signal, inclòs %@.";
+/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Loki Messenger contact.  Embeds {{The name of 1 of your Loki Messenger contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Alguns dels vostres contactes ja són al Loki Messenger, inclòs %@.";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Alguns dels vostres contactes ja són al Signal, inclosos %@i %@.";
+/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Loki Messenger contacts.  Embeds {{The names of 2 of your Loki Messenger contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Alguns dels vostres contactes ja són al Loki Messenger, inclosos %@i %@.";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Alguns dels vostres contactes ja són al Signal, inclosos %@, %@i %@.";
+/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Loki Messenger contacts.  Embeds {{The names of 3 of your Loki Messenger contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Alguns dels vostres contactes ja són al Loki Messenger, inclosos %@, %@i %@.";
 
-/* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
+/* A label offering to start a new conversation with your contacts, if you have no Loki Messenger contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Comenceu la primera conversa aquí.";
 
 /* Format string when search returns no results. Embeds {{search term}} */
@@ -1081,7 +1081,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Arxiva";
 
 /* Title for the home view's default mode. */
-"HOME_VIEW_TITLE_INBOX" = "Signal";
+"HOME_VIEW_TITLE_INBOX" = "Loki Messenger";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "No podeu compartir més de %@ elements.";
@@ -1111,7 +1111,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Proporcioneu alguna cosa a la safata d'entrada perquè us escriguin. Comenceu enviant un missatge a alguna amistat.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Podeu activar l'accés als contactes a la Configuració de l'iOS per veure els noms dels contactes a la llista de converses del Signal.";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Podeu activar l'accés als contactes a la Configuració de l'iOS per veure els noms dels contactes a la llista de converses del Loki Messenger.";
 
 /* info message text in conversation view */
 "INCOMING_CALL" = "Telefonada rebuda";
@@ -1129,13 +1129,13 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Fitxer d'àudio no vàlid.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Podeu activar l'accés als contactes a la Configuració de l'iOS per convidar les amistats al  Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Podeu activar l'accés als contactes a la Configuració de l'iOS per convidar les amistats al  Loki Messenger.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Doneu accés als contactes";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Convideu els amics al Signal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Convideu els amics al Loki Messenger";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Cerca";
@@ -1317,7 +1317,7 @@
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "S'ha llegit";
 
-/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
+/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Loki Messenger account. */
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "S'ha omès";
 
 /* Label indicating that a message failed to send. */
@@ -1376,17 +1376,17 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Podeu activar l'accés a la càmera a la Configuració de l'iOS per fer videotrucades amb el Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Podeu activar l'accés a la càmera a la Configuració de l'iOS per fer videotrucades amb el Loki Messenger.";
 
 /* Alert title
    Alert title when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_TITLE" = "El Signal necessita accedir a la càmera.";
+"MISSING_CAMERA_PERMISSION_TITLE" = "El Loki Messenger necessita accedir a la càmera.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Podeu activar aquest permís a la Configuració de l'iOS.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "El Signal necessita accés a les fotografies per a aquesta funció.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "El Loki Messenger necessita accés a les fotografies per a aquesta funció.";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "No podeu enllaçar cap més dispositiu.";
@@ -1478,7 +1478,7 @@
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Sense nom ni contingut";
 
-/* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
+/* Table cell switch label. When disabled, Loki Messenger will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "Sona si l'aplicació està oberta";
 
 /* Label for settings UI that allows user to change the notification sound. */
@@ -1521,7 +1521,7 @@
 "ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "Ara no";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "El Signal us pot permetre saber quan us arriba un missatge (i de qui és).";
+"ONBOARDING_PERMISSIONS_TITLE" = "El Loki Messenger us pot permetre saber quan us arriba un missatge (i de qui és).";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Per començar, introduïu el número de telèfon.";
@@ -1530,7 +1530,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "El número no és vàlid";
 
 /* Explanation in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_EXPLANATION" = "Els perfils del Signal estan encriptats d'extrem a extrem i el servei del Signal no té mai accés a aquesta informació.";
+"ONBOARDING_PROFILE_EXPLANATION" = "Els perfils del Loki Messenger estan encriptats d'extrem a extrem i el servei del Loki Messenger no té mai accés a aquesta informació.";
 
 /* Placeholder text for the profile name in the 'onboarding profile' view. */
 "ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "El nom";
@@ -1586,8 +1586,8 @@
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha establit el temps dels missatges efímers en %@.";
 
-/* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "El Signal està patint problemes tècnics. Este treballant per a recuperar el servei tan ràpid com sigui possible.";
+/* Label warning the user that the Loki Messenger service may be down. */
+"OUTAGE_WARNING" = "El Loki Messenger està patint problemes tècnics. Este treballant per a recuperar el servei tan ràpid com sigui possible.";
 
 /* info message text in conversation view */
 "OUTGOING_CALL" = "Telefonada feta";
@@ -1680,19 +1680,19 @@
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "El número del porta-retalls no sembla el número de seguretat correcte per a aquesta conversa.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "El Signal no ha pogut trobar cap número de seguretat al porta-retalls. L'heu copiat correctament?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "El Loki Messenger no ha pogut trobar cap número de seguretat al porta-retalls. L'heu copiat correctament?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Cada parell d'usuaris del Signal comparteixen uns números de seguretat únics. Comproveu que %@ mostra *el vostre* número.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Cada parell d'usuaris del Loki Messenger comparteixen uns números de seguretat únics. Comproveu que %@ mostra *el vostre* número.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Esteu utilitzant una versió antiga del Signal. Cal que l'actualitzeu abans de verificar.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Esteu utilitzant una versió antiga del Loki Messenger. Cal que l'actualitzeu abans de verificar.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "El vostre contacte està utilitzant una versió antiga del Signal. Cal que l'actualitzi abans de verificar.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "El vostre contacte està utilitzant una versió antiga del Loki Messenger. Cal que l'actualitzi abans de verificar.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "El codi escanejat no sembla un número de seguretat. Teniu la versió més nova de Signal?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "El codi escanejat no sembla un número de seguretat. Teniu la versió més nova de Loki Messenger?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Si voleu verificar la seguretat del xifratge extrem a extrem amb %@, compareu els números de sobre amb els números del seu dispositiu.\n\nTambé podeu escanejar el codi del seu telèfon, o demanar-li que escanegi el vostre.";
@@ -1731,7 +1731,7 @@
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Avatar";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "El perfil de Signal serà visible per a tots els contactes, quan inicieu converses noves i quan el compartiu amb altres usuaris i grups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "El perfil de Loki Messenger serà visible per a tots els contactes, quan inicieu converses noves i quan el compartiu amb altres usuaris i grups.";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Toqueu aquí per saber-ne més.";
@@ -1797,7 +1797,7 @@
 "REGISTER_2FA_FORGOT_PIN" = "He oblidat el PIN.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "El registre d'aquest número de telèfon serà possible sense el PIN de bloqueig de registre 7 dies després des de l'última activitat del número de telèfon al Signal.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "El registre d'aquest número de telèfon serà possible sense el PIN de bloqueig de registre 7 dies després des de l'última activitat del número de telèfon al Loki Messenger.";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Tramet";
@@ -1830,13 +1830,13 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "No podem activar el vostre compte fins que no verifiqueu el codi que us hem enviat.";
 
 /* alert body when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_BODY" = "Registrar-se ara inhabilitarà el Signal a la resta de dispositius registrats a aquest número de telèfon.";
+"REGISTRATION_IPAD_CONFIRM_BODY" = "Registrar-se ara inhabilitarà el Loki Messenger a la resta de dispositius registrats a aquest número de telèfon.";
 
 /* button text to proceed with registration when on an iPad */
 "REGISTRATION_IPAD_CONFIRM_BUTTON" = "Registra aquest iPad";
 
 /* alert title when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_TITLE" = "Ja teniu un compte al Signal?";
+"REGISTRATION_IPAD_CONFIRM_TITLE" = "Ja teniu un compte al Loki Messenger?";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "El format del número de telèfon no és compatible, contacteu amb el suport.";
@@ -1875,13 +1875,13 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "El número de telèfon que voleu registrar ja s'ha registrat en un altre servidor, cancel·leu aquell registre i proveu-ho de nou.";
 
 /* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "El bloqueig de registre està habilitat per al vostre número de telèfon.  Per a ajudar-vos a memoritzar el PIN de bloqueig de registre, el Signal us demanarà periòdicament que el confirmeu.";
+"REMINDER_2FA_BODY" = "El bloqueig de registre està habilitat per al vostre número de telèfon.  Per a ajudar-vos a memoritzar el PIN de bloqueig de registre, el Loki Messenger us demanarà periòdicament que el confirmeu.";
 
 /* Body header for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY_HEADER" = "Recordatori:";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "El bloqueig de registre ajuda a protegir el número de telèfon d'intents de registre no autoritzats. Aquesta funció es pot inhabilitar en qualsevol moment a la configuració de privadesa del Signal.";
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "El bloqueig de registre ajuda a protegir el número de telèfon d'intents de registre no autoritzats. Aquesta funció es pot inhabilitar en qualsevol moment a la configuració de privadesa del Loki Messenger.";
 
 /* Navbar title for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_NAV_TITLE" = "Escriviu el PIN de bloqueig del registre";
@@ -1908,7 +1908,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Envia-ho de totes maneres";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Els nostres números de seguretat del Signal:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Els nostres números de seguretat del Loki Messenger:\n%@";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Els números de seguretat amb %@ ha canviat. Potser voleu verificar-los.";
@@ -1940,14 +1940,14 @@
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Heu d'habilitar un codi contrasenya a la configuració d'iOS per usar el bloqueig de pantalla.";
 
-/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Autenticació per obrir el Signal";
+/* Description of how and why Loki Messenger iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Autenticació per obrir el Loki Messenger";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Ha fallat l'autenticació.";
 
-/* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Desbloca el Signal";
+/* Label for button on lock screen that lets users unlock Loki Messenger. */
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Desbloca el Loki Messenger";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Cerca per nom o número";
@@ -1986,9 +1986,9 @@
 "SEND_INVITE_FAILURE" = "Ha fallat l'enviament de la invitació, torneu a provar-ho més tard.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "Heu convidat la vostra amistat a utilitzar el Signal!";
+"SEND_INVITE_SUCCESS" = "Heu convidat la vostra amistat a utilitzar el Loki Messenger!";
 
-/* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
+/* Text for button to send a Loki Messenger invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Convida via SMS: %@";
 
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
@@ -2007,7 +2007,7 @@
 "SEND_SMS_CONFIRM_TITLE" = "Convidar a un amic via SMS segur?";
 
 /* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "Voleu convidar aquest número al Signal:";
+"SEND_SMS_INVITE_TITLE" = "Voleu convidar aquest número al Loki Messenger:";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "Quant a";
@@ -2028,7 +2028,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Ubicació: %@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "En activar-ho, el Signal provarà d'eludir la censura. No activeu aquesta característica si no sou a una ubicació on el Signal és censurat.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "En activar-ho, el Loki Messenger provarà d'eludir la censura. No activeu aquesta característica si no sou a una ubicació on el Loki Messenger és censurat.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "L'elusió de la censura s'ha activat basant-se en el número de telèfon del vostre compte.";
@@ -2039,8 +2039,8 @@
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "L'elusió de la censura només es pot activar si esteu connectat a internet.";
 
-/* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "L'elusió de la censura no és necessària: ja esteu connectat al servei del Signal.";
+/* Table footer for the 'censorship circumvention' section shown when the app is connected to the Loki Messenger service. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "L'elusió de la censura no és necessària: ja esteu connectat al servei del Loki Messenger.";
 
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Elusió de la censura";
@@ -2108,8 +2108,8 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Afegeix un usuari bloquejat";
 
-/* A label that indicates the user has no Signal contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "No teniu cap contacte al Signal.";
+/* A label that indicates the user has no Loki Messenger contacts. */
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "No teniu cap contacte al Loki Messenger.";
 
 /* A label that indicates the user's search has no matching results. */
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "No hi ha cap resultat";
@@ -2121,13 +2121,13 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Transmet sempre les telefonades";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Redirigeix totes les trucades a través d'un servidor de Signal per evitar revelar l'adreça IP al contacte. Habilitar-ho reduirà la qualitat de la trucada.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Redirigeix totes les trucades a través d'un servidor de Loki Messenger per evitar revelar l'adreça IP al contacte. Habilitar-ho reduirà la qualitat de la trucada.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Neteja l'historial de la conversa";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nAmb llicència de GPLv3";
+"SETTINGS_COPYRIGHT" = "Copyright Loki Messenger Messenger\nAmb llicència de GPLv3";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Elimina el compte";
@@ -2211,7 +2211,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Temps d'espera de la pantalla de bloqueig";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Desbloqueja la pantalla de Signal fent servir Touch ID, Face ID o el codi d'accés. Podeu continuar contestant les trucades entrants i rebre notificacions de missatges mentre la pantalla de bloqueig està activada. Els paràmetres de les notificacions de Signal permeten personalitzar la informació que es mostra.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Desbloqueja la pantalla de Loki Messenger fent servir Touch ID, Face ID o el codi d'accés. Podeu continuar contestant les trucades entrants i rebre notificacions de missatges mentre la pantalla de bloqueig està activada. Els paràmetres de les notificacions de Loki Messenger permeten personalitzar la informació que es mostra.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Pantalla de bloqueig";
@@ -2223,10 +2223,10 @@
 "SETTINGS_SCREEN_SECURITY" = "Activa la seguretat de pantalla";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Prevé que la visualització prèvia del Signal aparegui a la multitasca.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Prevé que la visualització prèvia del Loki Messenger aparegui a la multitasca.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "La integració amb iOS mostra les telefonades de Signal a la pantalla de bloqueig i a l'historial de telefonades del sistema. Podeu mostrar el nom i el número del vostre contacte. Si l'iCloud es troba activat, l'historial es compartirà amb Apple.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "La integració amb iOS mostra les telefonades de Loki Messenger a la pantalla de bloqueig i a l'historial de telefonades del sistema. Podeu mostrar el nom i el número del vostre contacte. Si l'iCloud es troba activat, l'historial es compartirà amb Apple.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "Notificacions";
@@ -2298,13 +2298,13 @@
 "SHARE_EXTENSION_LOADING" = "S'està carregant...";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Obriu l'aplicació de Signal per registrar-vos.";
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Obriu l'aplicació de Loki Messenger per registrar-vos.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Sense registrar";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Obriu l'aplicació de Signal per actualitzar-la o registrar-vos.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Obriu l'aplicació de Loki Messenger per actualitzar-la o registrar-vos.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "No està a punt";
@@ -2315,11 +2315,11 @@
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "S'està pujant...";
 
-/* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
+/* Shown when trying to share content to a Loki Messenger user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "No s'ha pogut preparar l'adjunt";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "Comparteix a Signal";
+"SHARE_EXTENSION_VIEW_TITLE" = "Comparteix a Loki Messenger";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Mostra el número de seguretat";
@@ -2327,8 +2327,8 @@
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Mostra la conversa";
 
-/* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "Et convide a instal·lar el Signal! Ací tens l'enllaç:";
+/* body sent to contacts when inviting to Install Loki Messenger */
+"SMS_INVITE_BODY" = "Et convide a instal·lar el Loki Messenger! Ací tens l'enllaç:";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Cap";
@@ -2415,7 +2415,7 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Voleu desenllaçar «%@»?";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "Signal no ha pogut desenllaçar el dispositiu.";
+"UNLINKING_FAILED_ALERT_TITLE" = "Loki Messenger no ha pogut desenllaçar el dispositiu.";
 
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "Dispositiu sense nom";
@@ -2451,7 +2451,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Ara les previsualitzacions d'enllaços opcionals estan disponibles per a alguns dels llocs més populars d'Internet.";
 
 /* Subtitle for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "Podeu habilitar o inhabilitar aquesta opció quan vulgueu a la configuració del Signal (Privadesa > Envia previsualitzacions d'enllaços).";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "Podeu habilitar o inhabilitar aquesta opció quan vulgueu a la configuració del Loki Messenger (Privadesa > Envia previsualitzacions d'enllaços).";
 
 /* Header for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Previsualitzacions d'enllaços";
@@ -2469,7 +2469,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Configureu el perfil";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Ara podeu compartir un nom i una foto de perfil amb les amistats del Signal.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Ara podeu compartir un nom i una foto de perfil amb les amistats del Loki Messenger.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "A punt per a un primer pla?";
@@ -2490,13 +2490,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "S'introdueixen els indicadors de tecleig";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "El Signal és compatible amb les telefonades de vídeo segures. Feu una telefonada normal, toqueu el botó de la càmera i saludeu.";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "El Loki Messenger és compatible amb les telefonades de vídeo segures. Feu una telefonada normal, toqueu el botó de la càmera i saludeu.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Telefonades de Vídeo Segures!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "El Signal necessitarà aviat l'iOS 10 o posterior. Actualitzeu-lo a la Configuració del sistema >> General >> Actualitzacions.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "El Loki Messenger necessitarà aviat l'iOS 10 o posterior. Actualitzeu-lo a la Configuració del sistema >> General >> Actualitzacions.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Actualitzeu l'iOS";
@@ -2535,7 +2535,7 @@
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Missatge de veu";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Completeu la configuració al Signal Desktop.";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Completeu la configuració al Loki Messenger Desktop.";
 
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Heu desactivat els missatges efímers.";

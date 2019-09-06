@@ -5,10 +5,10 @@
 "ACCEPT_NEW_IDENTITY_ACTION" = "Priimti naują saugumo numerį";
 
 /* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Signal skambutis";
+"ACTION_AUDIO_CALL" = "Loki Messenger skambutis";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Pakviesti į Signal";
+"ACTION_INVITE" = "Pakviesti į Loki Messenger";
 
 /* Label for 'send message' button in contact view.
    Label for button that lets you send a message to a contact. */
@@ -60,7 +60,7 @@
 "APN_Message" = "Nauja žinutė!";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Nepavyksta paleisti Signal. Prašome išsiųsti derinimo žurnalą į support@signal.org, kad galėtume pašalinti su šia problema susijusius nesklandumus.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Nepavyksta paleisti Loki Messenger. Prašome išsiųsti derinimo žurnalą į support@signal.org, kad galėtume pašalinti su šia problema susijusius nesklandumus.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Klaida";
@@ -75,13 +75,13 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Versija %@ yra prieinama App Store.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Yra prieinama nauja Signal versija";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Yra prieinama nauja Loki Messenger versija";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Atnaujinti";
 
 /* Name of application */
-"APPLICATION_NAME" = "Signal";
+"APPLICATION_NAME" = "Loki Messenger";
 
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "Archyvuoti";
@@ -309,7 +309,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Skambinti vėl";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Norėdami Signal skambinti ir įrašinėti balso žinutes, iOS nustatymų programėlėje galite įjungti prieigą prie mikrofono.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Norėdami Loki Messenger skambinti ir įrašinėti balso žinutes, iOS nustatymų programėlėje galite įjungti prieigą prie mikrofono.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Reikalinga prieiga prie mikrofono";
@@ -330,7 +330,7 @@
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Nėra atsakymo";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
-"CALL_STATUS_FORMAT" = "Signal %@";
+"CALL_STATUS_FORMAT" = "Loki Messenger %@";
 
 /* Label for call button for alert offering to call a user. */
 "CALL_USER_ALERT_CALL_BUTTON" = "Skambinti";
@@ -360,10 +360,10 @@
 "CALL_VIEW_MUTE_LABEL" = "Nutildyti";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Norėdami užrakto ekrane atsiliepti į gaunamuosius skambučius, galite savo Signal privatumo nustatymuose įjungti iOS skambučių integraciją.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Norėdami užrakto ekrane atsiliepti į gaunamuosius skambučius, galite savo Loki Messenger privatumo nustatymuose įjungti iOS skambučių integraciją.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Norėdami užrakto ekrane, gaunamuosiuose skambučiuose matyti vardą ir telefono numerį, galite savo Signal privatumo nustatymuose įjungti iOS skambučių integraciją.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Norėdami užrakto ekrane, gaunamuosiuose skambučiuose matyti vardą ir telefono numerį, galite savo Loki Messenger privatumo nustatymuose įjungti iOS skambučių integraciją.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Ne dabar";
@@ -387,7 +387,7 @@
 "CALLBACK_BUTTON_TITLE" = "Perskambinti";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal naudotojas";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Loki Messenger naudotojas";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Šis naudotojas negali būti patvirtintas tol, kol jūs neapsikeitėte su juo žinutėmis.";
@@ -411,13 +411,13 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Atkurti";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal nepavyko nustatyti jūsų iCloud paskyros būsenos. iOS nustatymų programėlėje prisijunkite prie savo iCloud paskyros, norėdami pasidaryti atsarginę Signal duomenų kopiją.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Loki Messenger nepavyko nustatyti jūsų iCloud paskyros būsenos. iOS nustatymų programėlėje prisijunkite prie savo iCloud paskyros, norėdami pasidaryti atsarginę Loki Messenger duomenų kopiją.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "Nėra iCloud paskyros. iOS nustatymų programėlėje prisijunkite prie savo iCloud paskyros, norėdami pasidaryti atsarginę Signal duomenų kopiją.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Nėra iCloud paskyros. iOS nustatymų programėlėje prisijunkite prie savo iCloud paskyros, norėdami pasidaryti atsarginę Loki Messenger duomenų kopiją.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Norint daryti atsargines kopijas, Signal buvo uždrausta prieiga prie jūsų iCloud paskyros. Norėdami pasidaryti atsarginę savo Signal duomenų kopiją, iOS nustatymų programėlėje suteikite Signal prieigą prie savo iCloud paskyros.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Norint daryti atsargines kopijas, Loki Messenger buvo uždrausta prieiga prie jūsų iCloud paskyros. Norėdami pasidaryti atsarginę savo Loki Messenger duomenų kopiją, iOS nustatymų programėlėje suteikite Loki Messenger prieigą prie savo iCloud paskyros.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Pasirinkite šiame pokalbyje išsiunčiamųjų žinučių spalvą.";
@@ -441,7 +441,7 @@
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Pakviesti";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Norėdami matyti, kurie iš jūsų kontaktų yra Signal naudotojai, iOS nustatymų programėlėje galite įjungti prieigą prie kontaktų.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Norėdami matyti, kurie iš jūsų kontaktų yra Loki Messenger naudotojai, iOS nustatymų programėlėje galite įjungti prieigą prie kontaktų.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Tai atstatys programą, ištrinant jūsų žinutes ir išregistruojant jus iš serverio. Užbaigus šį procesą, programa bus užverta.";
@@ -748,9 +748,9 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Iš naujo registruoti šį telefono numerį";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Įrenginys daugiau nebėra registruotas. Jūsų telefono numeris gali būti registruojamas su Signal kitame įrenginyje. Bakstelėkite, norėdami registruoti iš naujo.";
+"DEREGISTRATION_WARNING" = "Įrenginys daugiau nebėra registruotas. Jūsų telefono numeris gali būti registruojamas su Loki Messenger kitame įrenginyje. Bakstelėkite, norėdami registruoti iš naujo.";
 
-/* {{Short Date}} when device last communicated with Signal Server. */
+/* {{Short Date}} when device last communicated with Loki Messenger Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Paskutinį kartą aktyvus: %@";
 
 /* {{Short Date}} when device was linked. */
@@ -780,11 +780,11 @@
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Cenzūravimo apėjimo vieta";
 
-/* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+/* Alert body for when the user has just tried to edit a contacts after declining to give Loki Messenger contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Prieigą galite įjungti iOS nustatymų programėlėje.";
 
-/* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Norint taisyti kontaktinę informaciją, Signal reikia kontaktų prieigos";
+/* Alert title for when the user has just tried to edit a contacts after declining to give Loki Messenger contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Norint taisyti kontaktinę informaciją, Loki Messenger reikia kontaktų prieigos";
 
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Taisyti grupę";
@@ -819,14 +819,14 @@
 /* No comment provided by engineer. */
 "EDIT_TXT" = "Taisyti";
 
-/* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Labas,\n\nPaskutiniu metu, tam kad savo iPhone telefone išlaikyčiau pokalbius privačius, aš naudoju Signal. Norėčiau, kad ir tu įsidiegtum šią programėlę, taigi, tokiu būdu mes galėtume būti tikri, kad tik tu ir aš galime skaityti savo žinutes ir girdėti savo skambučius.\n\nSignal yra prieinama iPhone ir Android telefonams. Atsisiųsk ją iš čia: %@\n\nSignal veikia panašiai kaip tavo dabartinė susirašinėjimo programėlė. Mes galime siųsti paveikslus ir vaizdo įrašus, skambinti ir pradėti grupės pokalbius. Geriausia yra tai, kad niekas negali to pamatyti, netgi žmonės, kurie sukūrė Signal!\n\nGali daugiau paskaityti apie Open Whisper Systems (žmones, kurie sukūrė Signal) čia: %@";
+/* body of email sent to contacts when inviting to install Loki Messenger. Embeds {{link to install Loki Messenger}} and {{link to the Loki Messenger home page}} */
+"EMAIL_INVITE_BODY" = "Labas,\n\nPaskutiniu metu, tam kad savo iPhone telefone išlaikyčiau pokalbius privačius, aš naudoju Loki Messenger. Norėčiau, kad ir tu įsidiegtum šią programėlę, taigi, tokiu būdu mes galėtume būti tikri, kad tik tu ir aš galime skaityti savo žinutes ir girdėti savo skambučius.\n\nLoki Messenger yra prieinama iPhone ir Android telefonams. Atsisiųsk ją iš čia: %@\n\nLoki Messenger veikia panašiai kaip tavo dabartinė susirašinėjimo programėlė. Mes galime siųsti paveikslus ir vaizdo įrašus, skambinti ir pradėti grupės pokalbius. Geriausia yra tai, kad niekas negali to pamatyti, netgi žmonės, kurie sukūrė Loki Messenger!\n\nGali daugiau paskaityti apie Open Whisper Systems (žmones, kurie sukūrė Loki Messenger) čia: %@";
 
-/* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Persijunkime į Signal";
+/* subject of email sent to contacts when inviting to install Loki Messenger */
+"EMAIL_INVITE_SUBJECT" = "Persijunkime į Loki Messenger";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Nei vienas iš jūsų kontaktų neturi Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Nei vienas iš jūsų kontaktų neturi Loki Messenger.";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Kodėl gi jums ko nors nepakvietus?";
@@ -853,13 +853,13 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN nesutampa.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Įveskite Registracijos užrakto PIN. Kita kartą jums registruojant šį telefono numerį su Signal, jūsų bus prašoma įvesti šį PIN.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Įveskite Registracijos užrakto PIN. Kita kartą jums registruojant šį telefono numerį su Loki Messenger, jūsų bus prašoma įvesti šį PIN.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Padidintam saugumui, įjunkite Registracijos užraktą, kurio bus reikalaujama norint vėl registruoti šį telefono numerį su Signal.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Padidintam saugumui, įjunkite Registracijos užraktą, kurio bus reikalaujama norint vėl registruoti šį telefono numerį su Loki Messenger.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registracijos užraktas įjungtas. Kitą kartą vėl registruodami savo telefono numerį su Signal, turėsite įvesti savo PIN.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registracijos užraktas įjungtas. Kitą kartą vėl registruodami savo telefono numerį su Loki Messenger, turėsite įvesti savo PIN.";
 
 /* Title for the 'enable two factor auth PIN' views. */
 "ENABLE_2FA_VIEW_TITLE" = "Registracijos užraktas";
@@ -885,8 +885,8 @@
 /* Error message indicating that message send failed due to failed attachment write */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Nepavyko įrašyti ir išsiųsti priedo.";
 
-/* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal nepavyko prisijungti prie interneto. Bandykite dar kartą.";
+/* Generic error used whenever Loki Messenger can't contact the server */
+"ERROR_DESCRIPTION_NO_INTERNET" = "Loki Messenger nepavyko prisijungti prie interneto. Bandykite dar kartą.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Žinutės išsiuntimas nepavyko dėl teisingų gavėjų trūkumo.";
@@ -901,7 +901,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Neteisingas atsakymas iš paslaugos.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Šis įrenginys daugiau nebėra registruotas su jūsų telefono numeriu. Įdiekite Signal iš naujo.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Šis įrenginys daugiau nebėra registruotas su jūsų telefono numeriu. Įdiekite Loki Messenger iš naujo.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverio klaida. Prašome vėliau bandyti dar kartą.";
@@ -910,10 +910,10 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Įvyko nežinoma klaida.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontaktas nėra Signal naudotojas.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontaktas nėra Loki Messenger naudotojas.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Priedo nesėkmė: Paprašykite šio kontakto, kad atsinaujintų Signal į naujausią versiją ir išsiųstų savo žinutę dar kartą.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Priedo nesėkmė: Paprašykite šio kontakto, kad atsinaujintų Loki Messenger į naujausią versiją ir išsiųstų savo žinutę dar kartą.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Gauta dviguba žinutė.";
@@ -1062,16 +1062,16 @@
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Ieškoti";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Kai kurie jūsų kontaktai, įskaitant %@, jau yra Signal.";
+/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Loki Messenger contact.  Embeds {{The name of 1 of your Loki Messenger contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Kai kurie jūsų kontaktai, įskaitant %@, jau yra Loki Messenger.";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Kai kurie jūsų kontaktai, įskaitant %@ ir %@, jau yra Signal";
+/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Loki Messenger contacts.  Embeds {{The names of 2 of your Loki Messenger contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Kai kurie jūsų kontaktai, įskaitant %@ ir %@, jau yra Loki Messenger";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Kai kurie jūsų kontaktai, įskaitant %@, %@ ir %@, jau yra Signal";
+/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Loki Messenger contacts.  Embeds {{The names of 3 of your Loki Messenger contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Kai kurie jūsų kontaktai, įskaitant %@, %@ ir %@, jau yra Loki Messenger";
 
-/* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
+/* A label offering to start a new conversation with your contacts, if you have no Loki Messenger contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Pradėkite savo pirmąjį pokalbį čia.";
 
 /* Format string when search returns no results. Embeds {{search term}} */
@@ -1081,7 +1081,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Archyvuoti";
 
 /* Title for the home view's default mode. */
-"HOME_VIEW_TITLE_INBOX" = "Signal";
+"HOME_VIEW_TITLE_INBOX" = "Loki Messenger";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Negalite dalintis daugiau nei %@ elementais.";
@@ -1111,7 +1111,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Pradėkite, bendraudami su draugais.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Norėdami savo Signal pokalbių sąraše matyti kontaktų vardus, iOS nustatymų programėlėje galite įjungti prieigą prie kontaktų.";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Norėdami savo Loki Messenger pokalbių sąraše matyti kontaktų vardus, iOS nustatymų programėlėje galite įjungti prieigą prie kontaktų.";
 
 /* info message text in conversation view */
 "INCOMING_CALL" = "Gaunamasis skambutis";
@@ -1129,13 +1129,13 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Neteisingas garso failas.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Norėdami kviesti savo draugus prisijungti prie Signal, iOS nustatymų programėlėje galite įjungti prieigą prie kontaktų.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Norėdami kviesti savo draugus prisijungti prie Loki Messenger, iOS nustatymų programėlėje galite įjungti prieigą prie kontaktų.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Leisti kontaktų prieigą";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Pakviesti draugus į Signal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Pakviesti draugus į Loki Messenger";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Ieškoti";
@@ -1317,7 +1317,7 @@
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Perskaitytos";
 
-/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
+/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Loki Messenger account. */
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Praleista";
 
 /* Label indicating that a message failed to send. */
@@ -1376,17 +1376,17 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Norėdami Signal atlikti vaizdo skambučius, iOS nustatymų programėlėje galite įjungti prieigą prie kameros.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Norėdami Loki Messenger atlikti vaizdo skambučius, iOS nustatymų programėlėje galite įjungti prieigą prie kameros.";
 
 /* Alert title
    Alert title when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Signal reikalinga prieiga prie jūsų kameros.";
+"MISSING_CAMERA_PERMISSION_TITLE" = "Loki Messenger reikalinga prieiga prie jūsų kameros.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Šį leidimą galite įjungti iOS nustatymų programėlėje.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Norint naudoti šią ypatybę, Signal reikia prieigos prie jūsų nuotraukų.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Norint naudoti šią ypatybę, Loki Messenger reikia prieigos prie jūsų nuotraukų.";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Jūs nebegalite susieti daugiau įrenginių.";
@@ -1478,7 +1478,7 @@
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Jokio vardo ar turinio";
 
-/* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
+/* Table cell switch label. When disabled, Loki Messenger will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "Groti, kol programa atverta";
 
 /* Label for settings UI that allows user to change the notification sound. */
@@ -1521,7 +1521,7 @@
 "ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "Ne dabar";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Signal gali jums pranešti, kai gaunate žinutę (ir nuo ko jinai yra)";
+"ONBOARDING_PERMISSIONS_TITLE" = "Loki Messenger gali jums pranešti, kai gaunate žinutę (ir nuo ko jinai yra)";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Norėdami pradėti, įveskite savo telefono numerį";
@@ -1530,7 +1530,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Neteisingas numeris";
 
 /* Explanation in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_EXPLANATION" = "Signal profiliai yra užšifruoti ištisiniu būdu, o Signal paslauga niekada neturi prieigos prie šios informacijos.";
+"ONBOARDING_PROFILE_EXPLANATION" = "Loki Messenger profiliai yra užšifruoti ištisiniu būdu, o Loki Messenger paslauga niekada neturi prieigos prie šios informacijos.";
 
 /* Placeholder text for the profile name in the 'onboarding profile' view. */
 "ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Jūsų vardas";
@@ -1586,8 +1586,8 @@
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ nustatė išnykstančių žinučių laiką į %@.";
 
-/* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "Signal patiria techninius nesklandumus. Mes sunkiai dirbame, kad kaip įmanoma greičiau atkurtume paslaugą.";
+/* Label warning the user that the Loki Messenger service may be down. */
+"OUTAGE_WARNING" = "Loki Messenger patiria techninius nesklandumus. Mes sunkiai dirbame, kad kaip įmanoma greičiau atkurtume paslaugą.";
 
 /* info message text in conversation view */
 "OUTGOING_CALL" = "Išsiunčiamasis skambutis";
@@ -1680,19 +1680,19 @@
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Jūsų iškarpinėje esantis numeris neatrodo kaip teisingas šiam pokalbiui skirtas numeris.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal nepavyko jūsų iškarpinėje rasti jokio saugumo numerio. Ar jūs teisingai jį nukopijavote?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Loki Messenger nepavyko jūsų iškarpinėje rasti jokio saugumo numerio. Ar jūs teisingai jį nukopijavote?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Kiekviena Signal naudotojų pora dalinasi individualiu saugumo numeriu. Pakartotinai patikrinkite ar %@ rodo *jūsų* individualų saugumo numerį.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Kiekviena Loki Messenger naudotojų pora dalinasi individualiu saugumo numeriu. Pakartotinai patikrinkite ar %@ rodo *jūsų* individualų saugumo numerį.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Jūs naudojate seną Signal versiją. Prieš galėdami patvirtinti, turite atnaujinti programėlę.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Jūs naudojate seną Loki Messenger versiją. Prieš galėdami patvirtinti, turite atnaujinti programėlę.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Jūsų bičiulis naudoja seną Signal versiją. Prieš jums galint patvirtinti, jis turi atnaujinti programėlę.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Jūsų bičiulis naudoja seną Loki Messenger versiją. Prieš jums galint patvirtinti, jis turi atnaujinti programėlę.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Nuskenuotas kodas nėra panašus į saugumo numerį. Ar judu naudojate naujausią Signal versiją?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Nuskenuotas kodas nėra panašus į saugumo numerį. Ar judu naudojate naujausią Loki Messenger versiją?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Jeigu norite patvirtinti savo ištisinio perdavimo šifravimo su %@ saugumą, tuomet palyginkite aukščiau esančius skaičius su jo/jos įrenginyje esančiais skaičiais.\n\nKitu atveju, galite nuskenuoti jo/jos telefone esantį kodą arba paprašyti, kad jis/ji nuskenuotų jūsų kodą.";
@@ -1731,7 +1731,7 @@
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Avataras";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Jūsų Signal profilis bus matomas jūsų kontaktams, kai inicijuosite naujus pokalbius, o taip pat, kai bendrinsite jį su kitais naudotojais ir grupėmis.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Jūsų Loki Messenger profilis bus matomas jūsų kontaktams, kai inicijuosite naujus pokalbius, o taip pat, kai bendrinsite jį su kitais naudotojais ir grupėmis.";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Bakstelėkite čia, norėdami sužinoti daugiau.";
@@ -1797,7 +1797,7 @@
 "REGISTER_2FA_FORGOT_PIN" = "Aš pamiršau savo PIN.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Šio telefono numerio registracija be jūsų Registracijos užrakto PIN bus įmanoma praėjus 7 dienoms nuo to laiko, kai telefono numeris paskutinį kartą buvo aktyvus Signal.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Šio telefono numerio registracija be jūsų Registracijos užrakto PIN bus įmanoma praėjus 7 dienoms nuo to laiko, kai telefono numeris paskutinį kartą buvo aktyvus Loki Messenger.";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Pateikti";
@@ -1830,13 +1830,13 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Mes negalime aktyvuoti jūsų paskyros tol, kol nepatvirtinsite kodo, kurį jums išsiuntėme.";
 
 /* alert body when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_BODY" = "Registravimas dabar išjungs Signal bet kuriame kitame, su šiuo telefono numeriu registruotame, įrenginyje.";
+"REGISTRATION_IPAD_CONFIRM_BODY" = "Registravimas dabar išjungs Loki Messenger bet kuriame kitame, su šiuo telefono numeriu registruotame, įrenginyje.";
 
 /* button text to proceed with registration when on an iPad */
 "REGISTRATION_IPAD_CONFIRM_BUTTON" = "Registruoti šį iPad";
 
 /* alert title when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_TITLE" = "Jau turite Signal paskyrą?";
+"REGISTRATION_IPAD_CONFIRM_TITLE" = "Jau turite Loki Messenger paskyrą?";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Šis telefono numerio formatas yra nepalaikomas, susisiekite su palaikymu.";
@@ -1875,13 +1875,13 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Telefono numeris, kurį bandote užregistruoti jau buvo užregistruotas kitame serveryje, prašome jį iš ten išregistruoti ir bandyti dar kartą.";
 
 /* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "Jūsų telefono numeriui yra įjungtas Registracijos užraktas. Norint jums padėti įsiminti Registracijos užrakto PIN, Signal periodiškai prašys jūsų jį patvirtinti.";
+"REMINDER_2FA_BODY" = "Jūsų telefono numeriui yra įjungtas Registracijos užraktas. Norint jums padėti įsiminti Registracijos užrakto PIN, Loki Messenger periodiškai prašys jūsų jį patvirtinti.";
 
 /* Body header for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY_HEADER" = "Priminimas:";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registracijos užraktas padeda apsaugoti jūsų telefono numerį nuo neteisėtų registracijos bandymų. Ši ypatybė bet kuriuo metu gali būti išjungta jūsų Signal privatumo nustatymuose.";
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registracijos užraktas padeda apsaugoti jūsų telefono numerį nuo neteisėtų registracijos bandymų. Ši ypatybė bet kuriuo metu gali būti išjungta jūsų Loki Messenger privatumo nustatymuose.";
 
 /* Navbar title for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_NAV_TITLE" = "Įveskite savo Registracijos užrakto PIN";
@@ -1908,7 +1908,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Vis tiek siųsti";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Mūsų Signal saugumo numeris:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Mūsų Loki Messenger saugumo numeris:\n%@";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Jūsų saugumo numeris, skirtas kontaktui %@ pasikeitė. Jūs, tikriausiai, norėtumėte jį patvirtinti.";
@@ -1940,14 +1940,14 @@
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Norėdami naudotis Ekrano užraktu, privalote iOS nustatymuose įjungti slaptą kodą.";
 
-/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Norėdami atverti Signal, patvirtinkite tapatybę.";
+/* Description of how and why Loki Messenger iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Norėdami atverti Loki Messenger, patvirtinkite tapatybę.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Tapatybės nustatymas nepavyko";
 
-/* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Atrakinti Signal";
+/* Label for button on lock screen that lets users unlock Loki Messenger. */
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Atrakinti Loki Messenger";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Ieškokite vardo ar numerio";
@@ -1986,9 +1986,9 @@
 "SEND_INVITE_FAILURE" = "Pakvietimo išsiuntimas nepavyko, prašome vėliau bandyti dar kartą.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "Jūs pakvietėte savo draugą naudotis Signal!";
+"SEND_INVITE_SUCCESS" = "Jūs pakvietėte savo draugą naudotis Loki Messenger!";
 
-/* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
+/* Text for button to send a Loki Messenger invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Siųsti pakvietimą SMS žinute: %@";
 
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
@@ -2007,7 +2007,7 @@
 "SEND_SMS_CONFIRM_TITLE" = "Pakviesti draugą, naudojant nesaugiąją SMS?";
 
 /* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "Ar norėtumėte pakviesti šį numerį į Signal: ";
+"SEND_SMS_INVITE_TITLE" = "Ar norėtumėte pakviesti šį numerį į Loki Messenger: ";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "Apie";
@@ -2028,7 +2028,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Vieta: %@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Jei įjungta, Signal bandys apeiti cenzūravimą. Neįjunkite šios ypatybės, nebent esate vietoje, kurioje Signal yra cenzūruojama.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Jei įjungta, Loki Messenger bandys apeiti cenzūravimą. Neįjunkite šios ypatybės, nebent esate vietoje, kurioje Loki Messenger yra cenzūruojama.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Cenzūravimo apėjimas buvo aktyvuotas pagal jūsų paskyros telefono numerį.";
@@ -2039,8 +2039,8 @@
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Cenzūravimo apėjimas gali būti aktyvuotas tik prisijungus prie interneto.";
 
-/* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Cenzūravimo apėjimas nėra būtinas; jūs jau esate prisijungę prie Signal paslaugos.";
+/* Table footer for the 'censorship circumvention' section shown when the app is connected to the Loki Messenger service. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Cenzūravimo apėjimas nėra būtinas; jūs jau esate prisijungę prie Loki Messenger paslaugos.";
 
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Cenzūravimo apėjimas";
@@ -2108,8 +2108,8 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Pridėti užblokuotą naudotoją";
 
-/* A label that indicates the user has no Signal contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Jūs neturite Signal kontaktų.";
+/* A label that indicates the user has no Loki Messenger contacts. */
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Jūs neturite Loki Messenger kontaktų.";
 
 /* A label that indicates the user's search has no matching results. */
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Nėra paieškos rezultatų";
@@ -2121,13 +2121,13 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Visada retransliuoti skambučius";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Retransliuoti visus skambučius per Signal serverį, kad išvengtumėte savo IP adreso atskleidimo savo kontaktui. Įjungus, pablogės skambučio kokybė.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Retransliuoti visus skambučius per Loki Messenger serverį, kad išvengtumėte savo IP adreso atskleidimo savo kontaktui. Įjungus, pablogės skambučio kokybė.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Išvalyti pokalbių istoriją";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Autorių teisės Signal pokalbių programa \n Licencijuota pagal GPLv3";
+"SETTINGS_COPYRIGHT" = "Autorių teisės Loki Messenger pokalbių programa \n Licencijuota pagal GPLv3";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Ištrinti paskyrą";
@@ -2211,7 +2211,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Ekrano užrakto laiko limitas";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Atrakinkite Signal ekraną, naudodami Touch ID, Face ID ar savo iOS įrenginio slaptą kodą. Kol yra įjungtas Ekrano užraktas, vis dar galite atsiliepti į gaunamuosius skambučius ir gauti pranešimus apie žinutes. Signal programėlės pranešimų nustatymai leidžia jums tinkinti informaciją, kuri bus rodoma.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Atrakinkite Loki Messenger ekraną, naudodami Touch ID, Face ID ar savo iOS įrenginio slaptą kodą. Kol yra įjungtas Ekrano užraktas, vis dar galite atsiliepti į gaunamuosius skambučius ir gauti pranešimus apie žinutes. Loki Messenger programėlės pranešimų nustatymai leidžia jums tinkinti informaciją, kuri bus rodoma.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Ekrano užraktas";
@@ -2223,10 +2223,10 @@
 "SETTINGS_SCREEN_SECURITY" = "Įjungti ekrano saugumą";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Neleisti Signal peržiūroms atsirasti programėlių perjungiklyje.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Neleisti Loki Messenger peržiūroms atsirasti programėlių perjungiklyje.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS skambučių integracija rodo Signal skambučius jūsų užrakto ekrane ir sistemos skambučių žurnale. Pasirinktinai, gali būti rodomi jūsų kontakto vardas ir numeris. Jeigu iCloud yra įjungta, tuomet šis skambučių žurnalas bus bendrinamas su Apple.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS skambučių integracija rodo Loki Messenger skambučius jūsų užrakto ekrane ir sistemos skambučių žurnale. Pasirinktinai, gali būti rodomi jūsų kontakto vardas ir numeris. Jeigu iCloud yra įjungta, tuomet šis skambučių žurnalas bus bendrinamas su Apple.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "Pranešimai";
@@ -2298,13 +2298,13 @@
 "SHARE_EXTENSION_LOADING" = "Įkeliama…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Norėdami registruoti, paleiskite Signal programėlę.";
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Norėdami registruoti, paleiskite Loki Messenger programėlę.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Neregistruota";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Norėdami atnaujinti ar registruoti, paleiskite Signal programėlę.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Norėdami atnaujinti ar registruoti, paleiskite Loki Messenger programėlę.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Nepasiruošę";
@@ -2315,11 +2315,11 @@
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Įkeliama…";
 
-/* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
+/* Shown when trying to share content to a Loki Messenger user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Nepavyko paruošti priedo";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "Bendrinti į Signal";
+"SHARE_EXTENSION_VIEW_TITLE" = "Bendrinti į Loki Messenger";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Rodyti saugumo numerį";
@@ -2327,8 +2327,8 @@
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Rodyti pokalbį";
 
-/* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "Siūlau tau įdiegti Signal! Štai čia yra nuoroda:";
+/* body sent to contacts when inviting to Install Loki Messenger */
+"SMS_INVITE_BODY" = "Siūlau tau įdiegti Loki Messenger! Štai čia yra nuoroda:";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Nėra";
@@ -2415,13 +2415,13 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Atsieti \"%@\"?";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "Signal nepavyko atsieti jūsų įrenginio.";
+"UNLINKING_FAILED_ALERT_TITLE" = "Loki Messenger nepavyko atsieti jūsų įrenginio.";
 
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "Įrenginys be pavadinimo";
 
 /* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Nepavyko išregistruoti iš Signal.";
+"UNREGISTER_SIGNAL_FAIL" = "Nepavyko išregistruoti iš Loki Messenger.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Gautas nepalaikomas priedo tipas.";
@@ -2451,7 +2451,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Dabar yra palaikomos pasirinktinos populiariausių svetainių internete nuorodų peržiūros.";
 
 /* Subtitle for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "Šią ypatybę galite bet kuriuo metu įjungti ar išjungti savo Signal nustatymuose (Privatumas > Siųsti nuorodų peržiūras).";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "Šią ypatybę galite bet kuriuo metu įjungti ar išjungti savo Loki Messenger nustatymuose (Privatumas > Siųsti nuorodų peržiūras).";
 
 /* Header for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Nuorodų peržiūros";
@@ -2469,7 +2469,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Nusistatyti savo profilį";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Dabar, naudodami Signal, su savo draugais galite bendrinti savo profilio nuotrauką ir vardą.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Dabar, naudodami Loki Messenger, su savo draugais galite bendrinti savo profilio nuotrauką ir vardą.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Pasiruošę artimesniam bendravimui?";
@@ -2490,13 +2490,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Pristatome rašymo indikatorius";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Dabar, Signal palaiko saugius vaizdo skambučius. Tiesiog, pradėkite skambutį kaip įprasta, bakstelėkite kameros mygtuką ir pamojuokite.";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Dabar, Loki Messenger palaiko saugius vaizdo skambučius. Tiesiog, pradėkite skambutį kaip įprasta, bakstelėkite kameros mygtuką ir pamojuokite.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Sveiki, saugūs vaizdo skambučiai!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal greitu metu reikalaus iOS 10 ar naujesnės. Atsinaujinkite Nustatymų (angl. Settings) programėlėje >> Bendra (angl. General) >> Programinės įrangos atnaujinimas (angl. Software Update).";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Loki Messenger greitu metu reikalaus iOS 10 ar naujesnės. Atsinaujinkite Nustatymų (angl. Settings) programėlėje >> Bendra (angl. General) >> Programinės įrangos atnaujinimas (angl. Software Update).";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Atnaujinkite iOS";
@@ -2535,7 +2535,7 @@
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Balso žinutė";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Užbaikite sąranką darbalaukiui skirtoje Signal programoje.";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Užbaikite sąranką darbalaukiui skirtoje Loki Messenger programoje.";
 
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Jūs išjungėte išnykstančias žinutes.";

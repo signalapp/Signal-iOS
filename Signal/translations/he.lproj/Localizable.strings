@@ -5,10 +5,10 @@
 "ACCEPT_NEW_IDENTITY_ACTION" = "אשר מספר ביטחון חדש";
 
 /* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "שיחת Signal";
+"ACTION_AUDIO_CALL" = "שיחת Loki Messenger";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "הזמן אל Signal";
+"ACTION_INVITE" = "הזמן אל Loki Messenger";
 
 /* Label for 'send message' button in contact view.
    Label for button that lets you send a message to a contact. */
@@ -60,7 +60,7 @@
 "APN_Message" = "הודעה חדשה!";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal אינו יכול להיות מופעל. אנא שלח יומן ניפוי תקלים אל support@signal.org כך שנוכל לפתור סוגייה זו.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Loki Messenger אינו יכול להיות מופעל. אנא שלח יומן ניפוי תקלים אל support@signal.org כך שנוכל לפתור סוגייה זו.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "שגיאה";
@@ -75,13 +75,13 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "גרסה %@ זמינה כעת להורדה מחנות האפליקציות";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "גרסה חדשה של Signal זמינה";
+"APP_UPDATE_NAG_ALERT_TITLE" = "גרסה חדשה של Loki Messenger זמינה";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "עדכן";
 
 /* Name of application */
-"APPLICATION_NAME" = "Signal";
+"APPLICATION_NAME" = "Loki Messenger";
 
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "ארכב";
@@ -309,7 +309,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "חייג שוב";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "אתה יכול לאפשר גישה אל מיקרופון ביישום הגדרות של iOS כדי לבצע שיחות ולהקליט הודעות קוליות ב־Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "אתה יכול לאפשר גישה אל מיקרופון ביישום הגדרות של iOS כדי לבצע שיחות ולהקליט הודעות קוליות ב־Loki Messenger.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "נדרשת גישה למיקרופון";
@@ -330,7 +330,7 @@
 "CALL_SCREEN_STATUS_NO_ANSWER" = "אין מענה";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
-"CALL_STATUS_FORMAT" = "Signal %@";
+"CALL_STATUS_FORMAT" = "Loki Messenger %@";
 
 /* Label for call button for alert offering to call a user. */
 "CALL_USER_ALERT_CALL_BUTTON" = "חייג";
@@ -360,10 +360,10 @@
 "CALL_VIEW_MUTE_LABEL" = "השתק";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "אתה יכול לאפשר מיזוג שיחות iOS בהגדרות פְּרָטִיּוּת של Signal שלך כדי לענות לשיחות נכנסות מתוך מסך הנעילה שלך.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "אתה יכול לאפשר מיזוג שיחות iOS בהגדרות פְּרָטִיּוּת של Loki Messenger שלך כדי לענות לשיחות נכנסות מתוך מסך הנעילה שלך.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "אתה יכול לאפשר מיזוג שיחות iOS בהגדרות פְּרָטִיּוּת של Signal שלך כדי לראות את השם ומספר הטלפון עבור שיחות נכנסות.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "אתה יכול לאפשר מיזוג שיחות iOS בהגדרות פְּרָטִיּוּת של Loki Messenger שלך כדי לראות את השם ומספר הטלפון עבור שיחות נכנסות.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "לא עכשיו";
@@ -387,7 +387,7 @@
 "CALLBACK_BUTTON_TITLE" = "חייג חזרה";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "משתמש Signal";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "משתמש Loki Messenger";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "משתמש זה לא יכול להיות מוודא עד שלא תחליף איתו הודעות.";
@@ -411,13 +411,13 @@
 "CHECK_FOR_BACKUP_RESTORE" = "שחזר";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal לא היה יכול לקבוע את מעמד חשבון iCloud שלך. התחבר אל חשבון iCloud שלך ביישום הגדרות של iOS כדי לגבות את נתוני Signal שלך.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Loki Messenger לא היה יכול לקבוע את מעמד חשבון iCloud שלך. התחבר אל חשבון iCloud שלך ביישום הגדרות של iOS כדי לגבות את נתוני Loki Messenger שלך.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "אין חשבון iCloud. התחבר אל חשבון iCloud שלך ביישום הגדרות של iOS כדי לגבות את נתוני Signal שלך.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "אין חשבון iCloud. התחבר אל חשבון iCloud שלך ביישום הגדרות של iOS כדי לגבות את נתוני Loki Messenger שלך.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal לא הותר לקבל גישה אל חשבון iCloud שלך עבור גיבויים. הענק אל Signal גישה אל חשבון iCloud שלך ביישום הגדרות של iOS כדי לגבות את נתוני Signal שלך.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Loki Messenger לא הותר לקבל גישה אל חשבון iCloud שלך עבור גיבויים. הענק אל Loki Messenger גישה אל חשבון iCloud שלך ביישום הגדרות של iOS כדי לגבות את נתוני Loki Messenger שלך.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "בחר את הצבע של הודעות יוצאות בשיחה זו.";
@@ -441,7 +441,7 @@
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "הזמן";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "אתה יכול לאפשר גישה אל אנשי קשר ביישום הגדרות של iOS כדי לראות אילו מאנשי הקשר שלך הם משתמשי Signal.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "אתה יכול לאפשר גישה אל אנשי קשר ביישום הגדרות של iOS כדי לראות אילו מאנשי הקשר שלך הם משתמשי Loki Messenger.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "זה יאפס את היישום ע\"י מחיקת ההודעות שלך וביטול הרישום שלך עם השרת. היישום ייסגר לאחר שתהליך זה יושלם.";
@@ -748,9 +748,9 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "רשום מחדש מספר טלפון זה";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "מכשיר אינו רשום יותר. מספר הטלפון שלך יכול להירשם עם Signal על מכשיר שונה. הקש כדי לרשום מחדש.";
+"DEREGISTRATION_WARNING" = "מכשיר אינו רשום יותר. מספר הטלפון שלך יכול להירשם עם Loki Messenger על מכשיר שונה. הקש כדי לרשום מחדש.";
 
-/* {{Short Date}} when device last communicated with Signal Server. */
+/* {{Short Date}} when device last communicated with Loki Messenger Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "פעיל לאחרונה: %@";
 
 /* {{Short Date}} when device was linked. */
@@ -780,11 +780,11 @@
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "מיקום עקיפת צנזורה";
 
-/* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+/* Alert body for when the user has just tried to edit a contacts after declining to give Loki Messenger contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "אתה יכול לאפשר גישה ביישום הגדרות של iOS.";
 
-/* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal צריך גישה לאנשי הקשר כדי לערוך מידע איש קשר";
+/* Alert title for when the user has just tried to edit a contacts after declining to give Loki Messenger contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Loki Messenger צריך גישה לאנשי הקשר כדי לערוך מידע איש קשר";
 
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "ערוך קבוצה";
@@ -819,14 +819,14 @@
 /* No comment provided by engineer. */
 "EDIT_TXT" = "ערוך";
 
-/* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "שלום,\n\nלאחרונה אני משתמש ב-Signal כדי לשמור על השיחות ב-iPhone שלי פרטיות. אני רוצה שגם תתקין אותו, ככה שנוכל להיות בטוחים שרק אתה ואני יכולים לקרוא את ההודעות שלנו או לשמוע את השיחות שלנו.\n\nSignal זמין עבור iPhone ו-Android. השג אותו כאן: %@\n\nSignal עובד כמו יישום ההתכתבויות הקיים שלך. אנחנו יכולים לשלוח תמונות ווידיאוים, לבצע שיחות ולהתחיל התכתבויות קבוצתיות. החלק הכי טוב הוא שאף אחד לא יכול לראות שום דבר מזה, אפילו לא האנשים שיוצרים את Signal!\n\nאתה יכול לקרוא עוד אודות Open Whisper Systems, האנשים שיוצרים את Signal, כאן: %@";
+/* body of email sent to contacts when inviting to install Loki Messenger. Embeds {{link to install Loki Messenger}} and {{link to the Loki Messenger home page}} */
+"EMAIL_INVITE_BODY" = "שלום,\n\nלאחרונה אני משתמש ב-Loki Messenger כדי לשמור על השיחות ב-iPhone שלי פרטיות. אני רוצה שגם תתקין אותו, ככה שנוכל להיות בטוחים שרק אתה ואני יכולים לקרוא את ההודעות שלנו או לשמוע את השיחות שלנו.\n\nLoki Messenger זמין עבור iPhone ו-Android. השג אותו כאן: %@\n\nLoki Messenger עובד כמו יישום ההתכתבויות הקיים שלך. אנחנו יכולים לשלוח תמונות ווידיאוים, לבצע שיחות ולהתחיל התכתבויות קבוצתיות. החלק הכי טוב הוא שאף אחד לא יכול לראות שום דבר מזה, אפילו לא האנשים שיוצרים את Loki Messenger!\n\nאתה יכול לקרוא עוד אודות Open Whisper Systems, האנשים שיוצרים את Loki Messenger, כאן: %@";
 
-/* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "בוא נחליף אל Signal";
+/* subject of email sent to contacts when inviting to install Loki Messenger */
+"EMAIL_INVITE_SUBJECT" = "בוא נחליף אל Loki Messenger";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "לאף אחד מאנשי הקשר שלך אין Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "לאף אחד מאנשי הקשר שלך אין Loki Messenger.";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "למה אינך מזמין מישהו?";
@@ -853,13 +853,13 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN אינו תואם.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "הכנס PIN נעילת הרשמה. תתבקש להכניס PIN זה בפעם הבאה שתירשם עם מספר טלפון זה ב־Signal.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "הכנס PIN נעילת הרשמה. תתבקש להכניס PIN זה בפעם הבאה שתירשם עם מספר טלפון זה ב־Loki Messenger.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "למען אבטחה מוגברת, אפשר PIN נעילת הרשמה שיידרש על מנת להירשם שוב עם מספר טלפון זה ב־Signal.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "למען אבטחה מוגברת, אפשר PIN נעילת הרשמה שיידרש על מנת להירשם שוב עם מספר טלפון זה ב־Loki Messenger.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "נעילת הרשמה מאופשרת. תצטרך להכניס את ה־PIN שלך כשתירשם שוב עם מספר הטלפון שלך שוב ב־Signal.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "נעילת הרשמה מאופשרת. תצטרך להכניס את ה־PIN שלך כשתירשם שוב עם מספר הטלפון שלך שוב ב־Loki Messenger.";
 
 /* Title for the 'enable two factor auth PIN' views. */
 "ENABLE_2FA_VIEW_TITLE" = "נעילת הרשמה";
@@ -885,8 +885,8 @@
 /* Error message indicating that message send failed due to failed attachment write */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "נכשל בכתיבה ובשליחה של צרופה.";
 
-/* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal לא היה יכול להתחבר לאינטרנט. אנא נסה שוב.";
+/* Generic error used whenever Loki Messenger can't contact the server */
+"ERROR_DESCRIPTION_NO_INTERNET" = "Loki Messenger לא היה יכול להתחבר לאינטרנט. אנא נסה שוב.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "שליחת ההודעה נכשלה עקב העדר מקבלים תקפים.";
@@ -901,7 +901,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "תגובה בלתי תקפה משירות.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "מכשיר זה אינו רשום יותר עם מספר הטלפון שלך. אנא התקן מחדש את Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "מכשיר זה אינו רשום יותר עם מספר הטלפון שלך. אנא התקן מחדש את Loki Messenger.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "שגיאת שרת. נסה שוב מאוחר יותר.";
@@ -910,10 +910,10 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "התרחשה שגיאה לא ידועה";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "איש הקשר הוא אינו משתמש Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "איש הקשר הוא אינו משתמש Loki Messenger.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "כישלון צרופה: בקש מאיש קשר זה לשלוח את הודעתו שוב לאחר עדכון אל הגרסה האחרונה של Signal.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "כישלון צרופה: בקש מאיש קשר זה לשלוח את הודעתו שוב לאחר עדכון אל הגרסה האחרונה של Loki Messenger.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "התקבלה הודעה כפולה.";
@@ -1062,16 +1062,16 @@
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "חיפוש";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "כמה מאנשי הקשר שלך כבר ב־Signal, כולל %@.";
+/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Loki Messenger contact.  Embeds {{The name of 1 of your Loki Messenger contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "כמה מאנשי הקשר שלך כבר ב־Loki Messenger, כולל %@.";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "כמה מאנשי הקשר שלך כבר ב־Signal, כולל %@ ו%@";
+/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Loki Messenger contacts.  Embeds {{The names of 2 of your Loki Messenger contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "כמה מאנשי הקשר שלך כבר ב־Loki Messenger, כולל %@ ו%@";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "כמה מאנשי הקשר שלך כבר ב־Signal, כולל %@, %@ ו%@";
+/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Loki Messenger contacts.  Embeds {{The names of 3 of your Loki Messenger contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "כמה מאנשי הקשר שלך כבר ב־Loki Messenger, כולל %@, %@ ו%@";
 
-/* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
+/* A label offering to start a new conversation with your contacts, if you have no Loki Messenger contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "התחל את השיחה הראשונה שלך כאן.";
 
 /* Format string when search returns no results. Embeds {{search term}} */
@@ -1081,7 +1081,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "ארכיון";
 
 /* Title for the home view's default mode. */
-"HOME_VIEW_TITLE_INBOX" = "Signal";
+"HOME_VIEW_TITLE_INBOX" = "Loki Messenger";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "אינך יכול לשתף יותר מן %@ פריטים.";
@@ -1111,7 +1111,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "תן לתיבת הדואר הנכנס שלך משהו לכתוב עליו בית. התחל ע\"י שליחת הודעה לחבר.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "אתה יכול לאפשר גישה אל אנשי קשר ביישום הגדרות של iOS כדי לראות שמות אנשי קשר ברשימת שיחות Signal שלך.";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "אתה יכול לאפשר גישה אל אנשי קשר ביישום הגדרות של iOS כדי לראות שמות אנשי קשר ברשימת שיחות Loki Messenger שלך.";
 
 /* info message text in conversation view */
 "INCOMING_CALL" = "שיחה נכנסת";
@@ -1129,13 +1129,13 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "קובץ שמע בלתי תקף.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "אתה יכול לאפשר גישה אל אנשי קשר ביישום הגדרות של iOS כדי להזמין את חבריך להצטרף אל Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "אתה יכול לאפשר גישה אל אנשי קשר ביישום הגדרות של iOS כדי להזמין את חבריך להצטרף אל Loki Messenger.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "אפשר גישה לאנשי קשר";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "הזמן חברים אל Signal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "הזמן חברים אל Loki Messenger";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "חיפוש";
@@ -1317,7 +1317,7 @@
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "נקרא";
 
-/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
+/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Loki Messenger account. */
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "מדולג";
 
 /* Label indicating that a message failed to send. */
@@ -1376,17 +1376,17 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "אתה יכול לאפשר גישה אל מצלמה ביישום הגדרות של iOS כדי לבצע שיחות וידיאו ב־Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "אתה יכול לאפשר גישה אל מצלמה ביישום הגדרות של iOS כדי לבצע שיחות וידיאו ב־Loki Messenger.";
 
 /* Alert title
    Alert title when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Signal צריך לקבל גישה למצלמה שלך.";
+"MISSING_CAMERA_PERMISSION_TITLE" = "Loki Messenger צריך לקבל גישה למצלמה שלך.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "אתה יכול לאפשר הרשאה זו ביישום הגדרות של iOS.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal דורש גישה אל התצלומים שלך עבור מאפיין זה.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Loki Messenger דורש גישה אל התצלומים שלך עבור מאפיין זה.";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "אינך יכול לקשר עוד מכשירים כלשהם.";
@@ -1478,7 +1478,7 @@
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "אין שם או תוכן";
 
-/* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
+/* Table cell switch label. When disabled, Loki Messenger will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "נגן בזמן שהיישום פתוח";
 
 /* Label for settings UI that allows user to change the notification sound. */
@@ -1521,7 +1521,7 @@
 "ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "לא עכשיו";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Signal יכול ליידע אותך כאשר תקבל הודעה (וממי היא)";
+"ONBOARDING_PERMISSIONS_TITLE" = "Loki Messenger יכול ליידע אותך כאשר תקבל הודעה (וממי היא)";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "הכנס את מספר הטלפון שלך כדי להתחיל";
@@ -1530,7 +1530,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "מספר בלתי תקף";
 
 /* Explanation in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_EXPLANATION" = "פרופילי Signal מוצפנים מקצה לקצה ולשירות Signal אין אף פעם גישה אל מידע זה.";
+"ONBOARDING_PROFILE_EXPLANATION" = "פרופילי Loki Messenger מוצפנים מקצה לקצה ולשירות Loki Messenger אין אף פעם גישה אל מידע זה.";
 
 /* Placeholder text for the profile name in the 'onboarding profile' view. */
 "ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "שמך";
@@ -1586,8 +1586,8 @@
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ הגדיר את זמן ההודעות הנעלמות אל %@.";
 
-/* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "Signal חווה קשיים טכניים. אנו עובדים קשה כדי לשחזר את השירות מהר ככל האפשר.";
+/* Label warning the user that the Loki Messenger service may be down. */
+"OUTAGE_WARNING" = "Loki Messenger חווה קשיים טכניים. אנו עובדים קשה כדי לשחזר את השירות מהר ככל האפשר.";
 
 /* info message text in conversation view */
 "OUTGOING_CALL" = "שיחה יוצאת";
@@ -1680,19 +1680,19 @@
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "המספר בלוח העריכה שלך לא נראה כמו מספר הביטחון הנכון עבור שיחה זו.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal לא היה יכול למצוא מספר ביטחון כלשהו בלוח העריכה שלך. האם העתקת אותו כראוי?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Loki Messenger לא היה יכול למצוא מספר ביטחון כלשהו בלוח העריכה שלך. האם העתקת אותו כראוי?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "כל זוג של משתמשי Signal משתף מספר ביטחון נבדל. בדוק שוב כי %@ מציג את מספר הביטחון הנבדל *שלך*.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "כל זוג של משתמשי Loki Messenger משתף מספר ביטחון נבדל. בדוק שוב כי %@ מציג את מספר הביטחון הנבדל *שלך*.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "אתה מריץ גרסה ישנה של Signal. אתה צריך לעדכן גרסה לפני שתוכל לוודא.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "אתה מריץ גרסה ישנה של Loki Messenger. אתה צריך לעדכן גרסה לפני שתוכל לוודא.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "השותף שלך מריץ גרסה ישנה של Signal. הוא צריך לעדכן גרסה לפני שתוכל לוודא.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "השותף שלך מריץ גרסה ישנה של Loki Messenger. הוא צריך לעדכן גרסה לפני שתוכל לוודא.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "הקוד הסרוק לא נראה כמו מספר ביטחון. האם שניכם על גרסה מעודכנת של Signal?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "הקוד הסרוק לא נראה כמו מספר ביטחון. האם שניכם על גרסה מעודכנת של Loki Messenger?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "אם אתה רוצה לוודא את האבטחה של הצפנת קצה-אל-הקצה שלך עם %@, השווה את המספרים למעלה עם המספרים במכשיר שלו.\n\nלחלופין, אתה יכול לסרוק את הקוד בטלפון שלו, או לבקש ממנו לסרוק את הקוד שלך.";
@@ -1797,7 +1797,7 @@
 "REGISTER_2FA_FORGOT_PIN" = "שכחתי את ה־PIN שלי.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "הרשמת מספר טלפון זה תהיה אפשרית ללא PIN נעילת ההרשמה שלך בחלוף 7 ימים מאז שמספר הטלפון היה פעיל ב־Signal.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "הרשמת מספר טלפון זה תהיה אפשרית ללא PIN נעילת ההרשמה שלך בחלוף 7 ימים מאז שמספר הטלפון היה פעיל ב־Loki Messenger.";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "הגש";
@@ -1830,13 +1830,13 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "אנחנו לא יכולים לשפעל את החשבון שלך עד שלא תוודא את הקוד ששלחנו אליך.";
 
 /* alert body when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_BODY" = "רישום עכשיו ישבית את Signal על מכשיר אחר כלשהו הרשום כרגע עם מספר טלפון זה.";
+"REGISTRATION_IPAD_CONFIRM_BODY" = "רישום עכשיו ישבית את Loki Messenger על מכשיר אחר כלשהו הרשום כרגע עם מספר טלפון זה.";
 
 /* button text to proceed with registration when on an iPad */
 "REGISTRATION_IPAD_CONFIRM_BUTTON" = "רשום iPad זה";
 
 /* alert title when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_TITLE" = "יש לך כבר חשבון Signal?";
+"REGISTRATION_IPAD_CONFIRM_TITLE" = "יש לך כבר חשבון Loki Messenger?";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "תסדיר זה של מספר הטלפון אינו נתמך. אנא צור קשר עם התמיכה.";
@@ -1875,13 +1875,13 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "מספר הטלפון שאתה מנסה לרשום כבר נרשם בשרת אחר, אנא בטל רישום משם ונסה שוב.";
 
 /* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "נעילת הרשמה מאופשרת עבור מספר הטלפון שלך. כדי לעזור לך לשנן את PIN נעילת ההרשמה שלך, Signal ישאל אותך מדי פעם לאמת אותו.";
+"REMINDER_2FA_BODY" = "נעילת הרשמה מאופשרת עבור מספר הטלפון שלך. כדי לעזור לך לשנן את PIN נעילת ההרשמה שלך, Loki Messenger ישאל אותך מדי פעם לאמת אותו.";
 
 /* Body header for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY_HEADER" = "תזכורת:";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "נעילת הרשמה עוזרת להגן על מספר הטלפון שלך מפני ניסיונות הרשמה בלתי מורשים. מאפיין זה יכול להיות מושבת בכל זמן שהוא בהגדרות הַפְּרָטִיוּת של Signal.";
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "נעילת הרשמה עוזרת להגן על מספר הטלפון שלך מפני ניסיונות הרשמה בלתי מורשים. מאפיין זה יכול להיות מושבת בכל זמן שהוא בהגדרות הַפְּרָטִיוּת של Loki Messenger.";
 
 /* Navbar title for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_NAV_TITLE" = "הכנס את PIN נעילת ההרשמה שלך";
@@ -1908,7 +1908,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "שלח בכל זאת";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "מספר ביטחון Signal שלנו:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "מספר ביטחון Loki Messenger שלנו:\n%@";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "מספר הביטחון שלך עם %@ השתנה. מומלץ לוודא אותו.";
@@ -1940,14 +1940,14 @@
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "אתה חייב לאפשר קוד גישה בהגדרות iOS שלך על מנת להשתמש בנעילת מסך.";
 
-/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "אמת כדי לפתוח את Signal.";
+/* Description of how and why Loki Messenger iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "אמת כדי לפתוח את Loki Messenger.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "אימות נכשל";
 
-/* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "בטל נעילת Signal";
+/* Label for button on lock screen that lets users unlock Loki Messenger. */
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "בטל נעילת Loki Messenger";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "חפש לפי שם או מספר";
@@ -1986,9 +1986,9 @@
 "SEND_INVITE_FAILURE" = "שליחת ההזמנה נכשלה, אנא נסה שוב מאוחר יותר.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "הזמנת את חברך להשתמש ב־Signal!";
+"SEND_INVITE_SUCCESS" = "הזמנת את חברך להשתמש ב־Loki Messenger!";
 
-/* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
+/* Text for button to send a Loki Messenger invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "הזמן דרך מסרון: %@";
 
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
@@ -2007,7 +2007,7 @@
 "SEND_SMS_CONFIRM_TITLE" = "להזמין חבר דרך מסרון בלתי־מאובטח?";
 
 /* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "האם תרצה להזמין את המספר הבא אל Signal:";
+"SEND_SMS_INVITE_TITLE" = "האם תרצה להזמין את המספר הבא אל Loki Messenger:";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "אודות";
@@ -2028,7 +2028,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "מיקום: %@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "אם מאופשר, Signal ינסה לעקוף צנזורה. אל תאפשר מאפיין זה אלא אם אתה במיקום שבו Signal מצונזר.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "אם מאופשר, Loki Messenger ינסה לעקוף צנזורה. אל תאפשר מאפיין זה אלא אם אתה במיקום שבו Loki Messenger מצונזר.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "עקיפת צנזורה שופעלה על סמך מספר הטלפון של חשבונך.";
@@ -2039,8 +2039,8 @@
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "עקיפת צנזורה יכולה להשתפעל בעת התחברות לאינטרנט.";
 
-/* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "עקיפת צנזורה אינה הכרחית; אתה מחובר כבר אל השירות Signal.";
+/* Table footer for the 'censorship circumvention' section shown when the app is connected to the Loki Messenger service. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "עקיפת צנזורה אינה הכרחית; אתה מחובר כבר אל השירות Loki Messenger.";
 
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "עקיפת צנזורה";
@@ -2108,8 +2108,8 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "הוסף משתמש חסום";
 
-/* A label that indicates the user has no Signal contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "אין לך אנשי קשר ב־Signal.";
+/* A label that indicates the user has no Loki Messenger contacts. */
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "אין לך אנשי קשר ב־Loki Messenger.";
 
 /* A label that indicates the user's search has no matching results. */
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "אין תוצאות חיפוש";
@@ -2121,13 +2121,13 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "שדר מחדש שיחות תמיד";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "שדר מחדש את כל השיחות דרך שרת Signal כדי למנוע את חשיפת כתובת ה־IP שלך אל איש הקשר שלך. אפשור יפחית איכות שיחות.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "שדר מחדש את כל השיחות דרך שרת Loki Messenger כדי למנוע את חשיפת כתובת ה־IP שלך אל איש הקשר שלך. אפשור יפחית איכות שיחות.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "נקה היסטורית שיחות";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "זכויות יוצרים Signal Messenger \n ברשיון תחת GPLv3";
+"SETTINGS_COPYRIGHT" = "זכויות יוצרים Loki Messenger Messenger \n ברשיון תחת GPLv3";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "מחק חשבון";
@@ -2211,7 +2211,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "פסק זמן לנעילת מסך";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "בטל נעילת מסך Signal ע\"י שימוש ב־Touch ID, Face ID, או קוד גישה במכשיר iOS שלך. אתה עדין יכול לענות לשיחות נכנסות ולקבל התראות הודעה בעת שנעילת מסך מאופשרת. הגדרות ההתראה של Signal מתירות לך להתאים אישית את המידע המוצג.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "בטל נעילת מסך Loki Messenger ע\"י שימוש ב־Touch ID, Face ID, או קוד גישה במכשיר iOS שלך. אתה עדין יכול לענות לשיחות נכנסות ולקבל התראות הודעה בעת שנעילת מסך מאופשרת. הגדרות ההתראה של Loki Messenger מתירות לך להתאים אישית את המידע המוצג.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "נעילת מסך";
@@ -2223,10 +2223,10 @@
 "SETTINGS_SCREEN_SECURITY" = "אפשר אבטחת מסך";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "מנע מן קדם־תצוגות של Signal להופיע במחליף היישומים.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "מנע מן קדם־תצוגות של Loki Messenger להופיע במחליף היישומים.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "מיזוג שיחות iOS מראה שיחות Signal על מסך הנעילה שלך ובהיסטורית השיחות של המערכת שלך. אתה יכול להראות את השם והמספר של איש הקשר שלך. אם iCloud מאופשר, היסטורית שיחות זו תשותף עם Apple.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "מיזוג שיחות iOS מראה שיחות Loki Messenger על מסך הנעילה שלך ובהיסטורית השיחות של המערכת שלך. אתה יכול להראות את השם והמספר של איש הקשר שלך. אם iCloud מאופשר, היסטורית שיחות זו תשותף עם Apple.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "התראות";
@@ -2298,13 +2298,13 @@
 "SHARE_EXTENSION_LOADING" = "טוען...";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "הפעל את היישום Signal כדי להירשם.";
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "הפעל את היישום Loki Messenger כדי להירשם.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "לא רשום";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "הפעל את היישום Signal כדי לעדכן או להירשם.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "הפעל את היישום Loki Messenger כדי לעדכן או להירשם.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "לא מוכן";
@@ -2315,11 +2315,11 @@
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "מעלה...";
 
-/* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
+/* Shown when trying to share content to a Loki Messenger user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "לא היה ניתן להכין צרופה";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "שתף ב־Signal";
+"SHARE_EXTENSION_VIEW_TITLE" = "שתף ב־Loki Messenger";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "הראה מספר ביטחון";
@@ -2327,8 +2327,8 @@
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "הראה שיחה";
 
-/* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "אני מזמין אותך להתקין Signal! הנה הקישור:";
+/* body sent to contacts when inviting to Install Loki Messenger */
+"SMS_INVITE_BODY" = "אני מזמין אותך להתקין Loki Messenger! הנה הקישור:";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "ללא";
@@ -2415,13 +2415,13 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "לבטל קישור \"%@\"?";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "Signal לא היה יכול לבטל את קישור המכשיר שלך.";
+"UNLINKING_FAILED_ALERT_TITLE" = "Loki Messenger לא היה יכול לבטל את קישור המכשיר שלך.";
 
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "מכשיר ללא שם";
 
 /* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "נכשל בביטול הרישום מ־Signal.";
+"UNREGISTER_SIGNAL_FAIL" = "נכשל בביטול הרישום מ־Loki Messenger.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "התקבל סוג בלתי נתמך של צרופה.";
@@ -2451,7 +2451,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "קדם־תצוגות רשותיות של קישורים נתמכות כעת עבור כמה מהאתרים הפופולריים ביותר באינטרנט.";
 
 /* Subtitle for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "אתה יכול להשבית או לאפשר מאפיין זה בכל זמן בהגדרות Signal שלך (פרטיות > שלח קדם־תצוגות של קישורים).";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "אתה יכול להשבית או לאפשר מאפיין זה בכל זמן בהגדרות Loki Messenger שלך (פרטיות > שלח קדם־תצוגות של קישורים).";
 
 /* Header for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "קדם־תצוגות של קישורים";
@@ -2469,7 +2469,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "הגדר את הפרופיל שלך";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "אתה יכול כעת לשתף תצלום ושם של פרופיל עם חבריך ב-Signal.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "אתה יכול כעת לשתף תצלום ושם של פרופיל עם חבריך ב-Loki Messenger.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "מוכן לתקריב שלך?";
@@ -2490,13 +2490,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "היכרות עם מחווני הקלדה";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal תומך כעת בשיחות וידיאו מאובטחות. פשוט התחל שיחה כרגיל, הקש על כפתור המצלמה, ונופף לשלום.";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Loki Messenger תומך כעת בשיחות וידיאו מאובטחות. פשוט התחל שיחה כרגיל, הקש על כפתור המצלמה, ונופף לשלום.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "שלום שיחות וידיאו מאובטחות!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal ידרוש בקרוב iOS 10 ומעלה. אנא שדרג דרך יישום הגדרות >> כללי >> עדכוני תוכנה.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Loki Messenger ידרוש בקרוב iOS 10 ומעלה. אנא שדרג דרך יישום הגדרות >> כללי >> עדכוני תוכנה.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "שדרג את iOS";
@@ -2535,7 +2535,7 @@
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "הודעה קולית";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "השלם התקנה ב־Signal שולחן עבודה.";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "השלם התקנה ב־Loki Messenger שולחן עבודה.";
 
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "הִשְׁבַּת הודעות נעלמות.";

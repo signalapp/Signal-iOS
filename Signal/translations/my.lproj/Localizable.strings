@@ -5,10 +5,10 @@
 "ACCEPT_NEW_IDENTITY_ACTION" = "လုံခြုံရေးနံပါတ်အသစ်ကိုလက်ခံသည် ";
 
 /* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Signal ဖုန်းခေါ်ဆိုမှု";
+"ACTION_AUDIO_CALL" = "Loki Messenger ဖုန်းခေါ်ဆိုမှု";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Signal သို့ ဖိတ်ခေါ်မည်";
+"ACTION_INVITE" = "Loki Messenger သို့ ဖိတ်ခေါ်မည်";
 
 /* Label for 'send message' button in contact view.
    Label for button that lets you send a message to a contact. */
@@ -60,7 +60,7 @@
 "APN_Message" = "သတင်းစကားအသစ် ";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send a debug log to support@signal.org so that we can troubleshoot this issue.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Loki Messenger can't launch. Please send a debug log to support@signal.org so that we can troubleshoot this issue.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "အမှားဖြစ်နေသည်";
@@ -75,13 +75,13 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "ဗားရှင်း %@ကို  App Store တွင်ရရှိနိုင်ပါသည်။ ";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Signal Is Available";
+"APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Loki Messenger Is Available";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "မွမ်းမံ ";
 
 /* Name of application */
-"APPLICATION_NAME" = "Signal";
+"APPLICATION_NAME" = "Loki Messenger";
 
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "မှတ်တမ်း ";
@@ -309,7 +309,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Call Again";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "You can enable microphone access in the iOS Settings app to make calls and record voice messages in Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "You can enable microphone access in the iOS Settings app to make calls and record voice messages in Loki Messenger.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "မိုက်ခရိုဖုန်းချိတ်ဆက်ရန်လိုအပ်သည် ";
@@ -330,7 +330,7 @@
 "CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
-"CALL_STATUS_FORMAT" = "Signal%@";
+"CALL_STATUS_FORMAT" = "Loki Messenger%@";
 
 /* Label for call button for alert offering to call a user. */
 "CALL_USER_ALERT_CALL_BUTTON" = "ဖုန်းခေါ်ဆိုမှု ";
@@ -360,10 +360,10 @@
 "CALL_VIEW_MUTE_LABEL" = "အသံတိတ်ထားမည်";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can enable iOS Call Integration in your Signal privacy settings to answer incoming calls from your lock screen.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can enable iOS Call Integration in your Loki Messenger privacy settings to answer incoming calls from your lock screen.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "You can enable iOS Call Integration in your Signal privacy settings to see the name and phone number for incoming calls.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "You can enable iOS Call Integration in your Loki Messenger privacy settings to see the name and phone number for incoming calls.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "ဟင့်အင်း ";
@@ -387,7 +387,7 @@
 "CALLBACK_BUTTON_TITLE" = "ပြန်ခေါ်မည် ";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal အသုံးပြုသူ ";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Loki Messenger အသုံးပြုသူ ";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "သူနှင့် စာတိုအဆက်အသွယ်မပြုပဲ ယင်းသူကို ဆန်းစစ်အတည်ပြုမရပါ။ ";
@@ -411,13 +411,13 @@
 "CHECK_FOR_BACKUP_RESTORE" = "ပြန်သိမ်းသည်";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Loki Messenger could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Loki Messenger data.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Loki Messenger data.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Loki Messenger was denied access your iCloud account for backups. Grant Loki Messenger access to your iCloud Account in the iOS settings app to backup your Loki Messenger data.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Choose the color of outgoing messages in this conversation.";
@@ -441,7 +441,7 @@
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "ဖိတ်ခေါ်သည် ";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see which of your contacts are Signal users.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see which of your contacts are Loki Messenger users.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "This will reset the application by deleting your messages and unregistering you with the server. The app will close after this process is complete.";
@@ -748,9 +748,9 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "ဤဖုန်းနံပါတ်ကို မှတ်ပုံပြန်တင်ပါ";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "ဤပစ္စည်းဖြင့် မှတ်ပုံတင်ထားခြင်းမရှိတော့ပါ။ ဤဖုန်းနံပါတ်ဖြင့် တခြားဖုန်းတွင် Signal ကို မှတ်ပုံတင်ထားကောင်း ထားနိုင်ပါသည်။ ပြန်လည်မှတ်ပုံတင်ရန် ဒီမှာနှိပ်ပါ။";
+"DEREGISTRATION_WARNING" = "ဤပစ္စည်းဖြင့် မှတ်ပုံတင်ထားခြင်းမရှိတော့ပါ။ ဤဖုန်းနံပါတ်ဖြင့် တခြားဖုန်းတွင် Loki Messenger ကို မှတ်ပုံတင်ထားကောင်း ထားနိုင်ပါသည်။ ပြန်လည်မှတ်ပုံတင်ရန် ဒီမှာနှိပ်ပါ။";
 
-/* {{Short Date}} when device last communicated with Signal Server. */
+/* {{Short Date}} when device last communicated with Loki Messenger Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "%@ကသုံးခဲ့သည် ";
 
 /* {{Short Date}} when device was linked. */
@@ -780,11 +780,11 @@
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "ပိတ်ဆို့မှုဖြတ်ကျော်နေရာ ";
 
-/* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+/* Alert body for when the user has just tried to edit a contacts after declining to give Loki Messenger contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "You can enable access in the iOS Settings app.";
 
-/* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "သူ၏အချက်အလက်ကို တည်းဖြတ်ရန် Signal ကလိပ်စာစာအုပ်ကို ချိတ်ဆက်ရန်လိုအပ်သည် ";
+/* Alert title for when the user has just tried to edit a contacts after declining to give Loki Messenger contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "သူ၏အချက်အလက်ကို တည်းဖြတ်ရန် Loki Messenger ကလိပ်စာစာအုပ်ကို ချိတ်ဆက်ရန်လိုအပ်သည် ";
 
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "အဖွဲ့ကိုတည်းဖြတ်သည် ";
@@ -819,14 +819,14 @@
 /* No comment provided by engineer. */
 "EDIT_TXT" = "တည်းဖြတ်သည် ";
 
-/* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "ဟေး\n\niPhone မှာ သီးသန့် ကိုယ်ရေးစကားပြောဝိုင်းအတွက် Signal သုံးပါတယ်။ မင်းကိုလဲ သုံးကြည့်စေချင်တယ်၊ ဒါဆိုရင် တို့တွေ စိတ်ချရတဲ့ဆက်သွယ်ရေးလမ်းကြောင်းနဲ့ သတင်းစကားပို့နိုင်သလို ဖုန်းခေါ်ဆိုမှုပြုလုပ်နိုင်မယ်။ \n\nSignal ကို iPhones နှင့် Android မှာသုံးနိုင်ပါတယ်။ %@ ရယူပါ။ \n\nSignal ကမူလပါလာတဲ့ စာတို app နဲ့ဆင်တူပါတယ်။ ဓါတ်ပုံ နှင့် ဗွီဒီယို တွေပို့နိုင်တယ်၊ ဖုန်းခေါ်နိုင်တယ်၊ အဖွဲ့လိုက်စကားဝိုင်းတွေပြောနိုင်တယ်။ အကောင်းဆုံးကတော့ တို့တွေရဲ့ပြောစကားတွေကိုတို့တွေကိုယ်တိုင်ကလွဲပြီး  Signal ဖန်တီးသူတွေအပါအဝင် တခြားဘယ်သူမှ ကြည့်လို့မရနိုင်တာပဲ။ \n\nSignal ကိုဖန်တီးတဲ့သူတွေဖြစ်တဲ့ Open Whisper Systems အကြောင်းကို ဒီနေရာမှာ %@ဖတ်ကြည့်နိုင်ပါတယ်။ ";
+/* body of email sent to contacts when inviting to install Loki Messenger. Embeds {{link to install Loki Messenger}} and {{link to the Loki Messenger home page}} */
+"EMAIL_INVITE_BODY" = "ဟေး\n\niPhone မှာ သီးသန့် ကိုယ်ရေးစကားပြောဝိုင်းအတွက် Loki Messenger သုံးပါတယ်။ မင်းကိုလဲ သုံးကြည့်စေချင်တယ်၊ ဒါဆိုရင် တို့တွေ စိတ်ချရတဲ့ဆက်သွယ်ရေးလမ်းကြောင်းနဲ့ သတင်းစကားပို့နိုင်သလို ဖုန်းခေါ်ဆိုမှုပြုလုပ်နိုင်မယ်။ \n\nLoki Messenger ကို iPhones နှင့် Android မှာသုံးနိုင်ပါတယ်။ %@ ရယူပါ။ \n\nLoki Messenger ကမူလပါလာတဲ့ စာတို app နဲ့ဆင်တူပါတယ်။ ဓါတ်ပုံ နှင့် ဗွီဒီယို တွေပို့နိုင်တယ်၊ ဖုန်းခေါ်နိုင်တယ်၊ အဖွဲ့လိုက်စကားဝိုင်းတွေပြောနိုင်တယ်။ အကောင်းဆုံးကတော့ တို့တွေရဲ့ပြောစကားတွေကိုတို့တွေကိုယ်တိုင်ကလွဲပြီး  Loki Messenger ဖန်တီးသူတွေအပါအဝင် တခြားဘယ်သူမှ ကြည့်လို့မရနိုင်တာပဲ။ \n\nLoki Messenger ကိုဖန်တီးတဲ့သူတွေဖြစ်တဲ့ Open Whisper Systems အကြောင်းကို ဒီနေရာမှာ %@ဖတ်ကြည့်နိုင်ပါတယ်။ ";
 
-/* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Signal ကိုပြောင်းသုံးကြပါစို့ ";
+/* subject of email sent to contacts when inviting to install Loki Messenger */
+"EMAIL_INVITE_SUBJECT" = "Loki Messenger ကိုပြောင်းသုံးကြပါစို့ ";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "သင့်မိတ်ဆွေတစ်ယောက်မှ Signal တွင်မရှိပါ ";
+"EMPTY_CONTACTS_LABEL_LINE1" = "သင့်မိတ်ဆွေတစ်ယောက်မှ Loki Messenger တွင်မရှိပါ ";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "သူများတွေကို ဖိတ်ရအောင်နော် ";
@@ -853,13 +853,13 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN ကိုက်ညီမူမရှိပါ";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "မှတ်ပုံတင်ခြင်း lock PIN ကိုထည့်သွင်းပါ။ Signal ကို ဤဖုန်းနံပါတ်ဖြင့် နောက်တစ်ကြိမ် မှတ်ပုံတင်ပါက ဤ PIN ကိုထည့်သွင်းပေးရမည်။";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "မှတ်ပုံတင်ခြင်း lock PIN ကိုထည့်သွင်းပါ။ Loki Messenger ကို ဤဖုန်းနံပါတ်ဖြင့် နောက်တစ်ကြိမ် မှတ်ပုံတင်ပါက ဤ PIN ကိုထည့်သွင်းပေးရမည်။";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "တိုးမြှင့်လိုက်သောလုံခြုံရေးကြောင့် ဤဖုန်းနံပါတ်ဖြင့် Signal တွင် မှတ်ပုံတင်လိုပါက မှတ်ပုံတင်ခြင်း lock PIN ကို ထည့်သွင်းခွင့်ပြုပေးထားရမည်။";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "တိုးမြှင့်လိုက်သောလုံခြုံရေးကြောင့် ဤဖုန်းနံပါတ်ဖြင့် Loki Messenger တွင် မှတ်ပုံတင်လိုပါက မှတ်ပုံတင်ခြင်း lock PIN ကို ထည့်သွင်းခွင့်ပြုပေးထားရမည်။";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "မှတ်ပုံတင်ခြင်း lock ကို ဖွင့်ထားပါသည်။ သင်၏ PIN ကို နောက်တစ်ကြိမ် ဤဖုန်းနံပါတ်ဖြင့် Signal တွင် မှတ်ပုံတင်သည့်အခါ ထည့်သွင်းပေးရမည်။";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "မှတ်ပုံတင်ခြင်း lock ကို ဖွင့်ထားပါသည်။ သင်၏ PIN ကို နောက်တစ်ကြိမ် ဤဖုန်းနံပါတ်ဖြင့် Loki Messenger တွင် မှတ်ပုံတင်သည့်အခါ ထည့်သွင်းပေးရမည်။";
 
 /* Title for the 'enable two factor auth PIN' views. */
 "ENABLE_2FA_VIEW_TITLE" = "မှတ်ပုံတင်ခြင်း lock";
@@ -885,8 +885,8 @@
 /* Error message indicating that message send failed due to failed attachment write */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Failed to write and send attachment.";
 
-/* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try again.";
+/* Generic error used whenever Loki Messenger can't contact the server */
+"ERROR_DESCRIPTION_NO_INTERNET" = "Loki Messenger was unable to connect to the internet. Please try again.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "လက်ခံမည့်သူ အကျုံးမဝင်သောကြောင့် စာပို့ခြင်း မအောင်မြင်ပါ။";
@@ -901,7 +901,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "ဝန်ဆောင်မှုထံမှ သင့်လျော်မှုမရှိသော တုံ့ပြန်မှု။";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "This device is no longer registered with your phone number. Please reinstall Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "This device is no longer registered with your phone number. Please reinstall Loki Messenger.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "ဆာဗာပြဿနာ။ ထပ်မံ ကြိုးစားကြည့်ပါ။ ";
@@ -910,10 +910,10 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "အကျိုးအကြောင်းမသိသည့် ပြဿနာ ဖြစ်လာသည်။";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "သူသည် Signal အသုံးပြုသူ မဟုတ်ပါ။";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "သူသည် Loki Messenger အသုံးပြုသူ မဟုတ်ပါ။";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Attachment failure: Ask this contact to send their message again after updating to the latest version of Signal.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Attachment failure: Ask this contact to send their message again after updating to the latest version of Loki Messenger.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Received a duplicate message.";
@@ -1062,16 +1062,16 @@
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "ရှာရန်";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Some of your contacts are already on Signal, including %@.";
+/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Loki Messenger contact.  Embeds {{The name of 1 of your Loki Messenger contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Some of your contacts are already on Loki Messenger, including %@.";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@ and %@";
+/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Loki Messenger contacts.  Embeds {{The names of 2 of your Loki Messenger contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Some of your contacts are already on Loki Messenger, including %@ and %@";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@, %@ and %@";
+/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Loki Messenger contacts.  Embeds {{The names of 3 of your Loki Messenger contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Some of your contacts are already on Loki Messenger, including %@, %@ and %@";
 
-/* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
+/* A label offering to start a new conversation with your contacts, if you have no Loki Messenger contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first conversation here.";
 
 /* Format string when search returns no results. Embeds {{search term}} */
@@ -1081,7 +1081,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "မှတ်တမ်း ";
 
 /* Title for the home view's default mode. */
-"HOME_VIEW_TITLE_INBOX" = "Signal";
+"HOME_VIEW_TITLE_INBOX" = "Loki Messenger";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
@@ -1111,7 +1111,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "သင့်စာတိုက်ထဲတွင် ရေးစရာတစ်ခုခုထည့်ပါ။ သူငယ်ချင်းတစ်ယောက်စီ စာတိုပေးပို့ခြင်းဖြင့် စသုံးပါ။";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see contact names in your Signal conversation list.";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see contact names in your Loki Messenger conversation list.";
 
 /* info message text in conversation view */
 "INCOMING_CALL" = "အဝင်ဖုန်းလာသည်";
@@ -1129,13 +1129,13 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "ဖိုင်စနစ်မှားနေသော အသံဖိုင်";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "You can enable contacts access in the iOS Settings app to invite your friends to join Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "You can enable contacts access in the iOS Settings app to invite your friends to join Loki Messenger.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "လိပ်စာစာရင်းကို ဝင်ရောက်ခွင့်ပြုသည်";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "သူငယ်ချင်းများကို Signal အသုံးပြုဖို့ ဖိတ်ရန်";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "သူငယ်ချင်းများကို Loki Messenger အသုံးပြုဖို့ ဖိတ်ရန်";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "ရှာရန်";
@@ -1317,7 +1317,7 @@
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "ဖတ်ပြီး";
 
-/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
+/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Loki Messenger account. */
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "မဖတ်ဘဲ ကျော်သွားသော";
 
 /* Label indicating that a message failed to send. */
@@ -1376,17 +1376,17 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app to make video calls in Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app to make video calls in Loki Messenger.";
 
 /* Alert title
    Alert title when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_TITLE" = "သင်၏ ကင်မရာအား Signal မှအသုံးပြုလိုပါသည်။";
+"MISSING_CAMERA_PERMISSION_TITLE" = "သင်၏ ကင်မရာအား Loki Messenger မှအသုံးပြုလိုပါသည်။";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal requires access to your photos for this feature.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Loki Messenger requires access to your photos for this feature.";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "You cannot link any more devices.";
@@ -1478,7 +1478,7 @@
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "နာမည် သို့မဟုတ် အကြောင်းအရာများ မရှိပါ";
 
-/* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
+/* Table cell switch label. When disabled, Loki Messenger will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "အပ်ပလီကေးရှင်းကို ဖွင့်ထားသည့်အချိန်မှသာ ဖွင့်ပါ";
 
 /* Label for settings UI that allows user to change the notification sound. */
@@ -1521,7 +1521,7 @@
 "ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "မအားသေးပါ";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Signal can let you know when you get a message (and who it is from)";
+"ONBOARDING_PERMISSIONS_TITLE" = "Loki Messenger can let you know when you get a message (and who it is from)";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Enter your phone number to get started";
@@ -1530,7 +1530,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "နံပါတ် မှားနေသည်";
 
 /* Explanation in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_EXPLANATION" = "Signal profiles are end-to-end encrypted and the Signal service never has access to this information.";
+"ONBOARDING_PROFILE_EXPLANATION" = "Loki Messenger profiles are end-to-end encrypted and the Loki Messenger service never has access to this information.";
 
 /* Placeholder text for the profile name in the 'onboarding profile' view. */
 "ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Your Name";
@@ -1586,8 +1586,8 @@
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@က သတင်းစကားပျောက်ကွယ်ရန်အချိန်ကို %@ဟုသတ်မှတ်သည်။ ";
 
-/* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "Signal သည် နည်းပညာပိုင်းဆိုင်ရာ အခက်အခဲများ ကြုံတွေ့နေပါသည်။ ဝန်ဆောင်မှုများကို အမြန်ဆုံးပြန်လည်စတင်နိုင်ရန် ကျွနု်ပ်တို့ကြိုးစားနေပါသည်။";
+/* Label warning the user that the Loki Messenger service may be down. */
+"OUTAGE_WARNING" = "Loki Messenger သည် နည်းပညာပိုင်းဆိုင်ရာ အခက်အခဲများ ကြုံတွေ့နေပါသည်။ ဝန်ဆောင်မှုများကို အမြန်ဆုံးပြန်လည်စတင်နိုင်ရန် ကျွနု်ပ်တို့ကြိုးစားနေပါသည်။";
 
 /* info message text in conversation view */
 "OUTGOING_CALL" = "ဖုန်းခေါ်ဆိုမှု";
@@ -1686,13 +1686,13 @@
 "PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "အသုံးပြုသူ အတွဲတိုင်းတွင် တူညီသော လုံခြုံရေးနံပါတ်များရှိကြသည်။ %@ သည် သင်တို့ ၂ ယောက်၏ တူညီသော လုံခြုံရေးနံပါတ်ကိုပြနေပါသည်။";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "သင့် Signal ဗားရှင်းဟောင်းနေပြီ။ အတည်မပြုခင် အဆင့်မြှင့်ပါ။ ";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "သင့် Loki Messenger ဗားရှင်းဟောင်းနေပြီ။ အတည်မပြုခင် အဆင့်မြှင့်ပါ။ ";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "သင့်မိတ်ဆွေသည် Signal ဗားရှင်းအဟောင်းကို အသုံးပြုထားပါသည်။ အတည်ပြုမှုမပြုလုပ်ခင် ဗားရှင်းမြှင့်ခိုင်းလိုက်ပါ။";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "သင့်မိတ်ဆွေသည် Loki Messenger ဗားရှင်းအဟောင်းကို အသုံးပြုထားပါသည်။ အတည်ပြုမှုမပြုလုပ်ခင် ဗားရှင်းမြှင့်ခိုင်းလိုက်ပါ။";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "The scanned code doesn't look like a safety number. Are you both on an up-to-date version of Signal?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "The scanned code doesn't look like a safety number. Are you both on an up-to-date version of Loki Messenger?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "%@ဖြင့် end to end encrypt လုပ်ထားခြင်းအား အတည်ပြုလိုပါက အထပ်တွင်ပေါ်နေသော ဂဏန်းများကို သူ့ဖုန်းတွင်ပေါ်သောဂဏန်းများဖြင့်နှိုင်းယှဉ်ကြည့်ပါ။\n\nနောက်တစ်မျိုးမှာ QR code အချင်းချင်းကို စကန်ဖတ်ပြီး နှိုင်းယှဉ်ကြည့်ပါ။";
@@ -1797,7 +1797,7 @@
 "REGISTER_2FA_FORGOT_PIN" = "PIN ကို မေ့သွားပြီ။";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Signal ကို ဤဖုန်းနံပါတ်ဖြင့် နောက်ဆုံး အသုံးပြုပြီး ၇ ရက်အကြာတွင် မှတ်ပုံတင်မှု ပိတ်ထားခြင်း PIN ကို အသုံးပြုစရာမလိုဘဲ ဤဖုန်းနံပါတ်ဖြင့် မှတ်ပုံတင်နိုင်ပါသည်။";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Loki Messenger ကို ဤဖုန်းနံပါတ်ဖြင့် နောက်ဆုံး အသုံးပြုပြီး ၇ ရက်အကြာတွင် မှတ်ပုံတင်မှု ပိတ်ထားခြင်း PIN ကို အသုံးပြုစရာမလိုဘဲ ဤဖုန်းနံပါတ်ဖြင့် မှတ်ပုံတင်နိုင်ပါသည်။";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "တင်မည်";
@@ -1830,13 +1830,13 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "ပို့လိုက်သည့် ကုဒ်ဖြင့် အတည်မပြုနိုင်ပါက သင့်ကိုယ်ပိုင်စာရင်း ကိုအတည်ပြုပေးလို့ မရပါ။";
 
 /* alert body when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_BODY" = "ယခုမှတ်ပုံတင်လိုက်ခြင်းသည် လက်ရှိဖုန်းနံပါတ်ဖြင့် မှတ်ပုံတင်ထားသော အခြားစက်ပစ္စည်းအားလုံးရှိ Signal ကို ပိတ်လိုက်မည်ဖြစ်သည်။";
+"REGISTRATION_IPAD_CONFIRM_BODY" = "ယခုမှတ်ပုံတင်လိုက်ခြင်းသည် လက်ရှိဖုန်းနံပါတ်ဖြင့် မှတ်ပုံတင်ထားသော အခြားစက်ပစ္စည်းအားလုံးရှိ Loki Messenger ကို ပိတ်လိုက်မည်ဖြစ်သည်။";
 
 /* button text to proceed with registration when on an iPad */
 "REGISTRATION_IPAD_CONFIRM_BUTTON" = "ဒီ iP​ad ကို မှတ်ပုံတင်မည်";
 
 /* alert title when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_TITLE" = "Signal အကောင့် ဖွင့်ပြီးသားလား?";
+"REGISTRATION_IPAD_CONFIRM_TITLE" = "Loki Messenger အကောင့် ဖွင့်ပြီးသားလား?";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "ဤဖုန်းနံပါတ်အမျိုးအစားကို အထောက်အပံ့မပေးပါ။ ကျေးဇူးပြုပြီး အကူအညီပေးသည့်အဖွဲ့ကို ဆက်သွယ်ပါ။";
@@ -1875,13 +1875,13 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "သင်စာရင်းသွင်းရန်ကြိုးစားနေသည့် ဖုန်းနံပါတ်သည် အခြားဆာဗာတွင် စာရင်းသွင်းပြီး ဖြစ်ပါသည်။ ယင်းဆာဗာမှ ပြန်ထွက်၍ ထပ်မံကြိုးစားကြည့်ပါ။ ";
 
 /* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "သင့်ဖုန်းအတွက် မှတ်ပုံတင်မှု ပိတ်ထားခြင်း ကိုဖွင့်ထားပါသည်။ သင်၏ မှတ်ပုံတင်မှု ပိတ်ထားသည့် PIN ကို မှတ်မိစေရန်အတွက် Signal မှ သင့်ကို မကြာခဏ အတည်ပြုခိုင်းပါလိမ့်မည်။";
+"REMINDER_2FA_BODY" = "သင့်ဖုန်းအတွက် မှတ်ပုံတင်မှု ပိတ်ထားခြင်း ကိုဖွင့်ထားပါသည်။ သင်၏ မှတ်ပုံတင်မှု ပိတ်ထားသည့် PIN ကို မှတ်မိစေရန်အတွက် Loki Messenger မှ သင့်ကို မကြာခဏ အတည်ပြုခိုင်းပါလိမ့်မည်။";
 
 /* Body header for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY_HEADER" = "သတိပေးချက်";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "မှတ်ပုံတင်ခြင်း ပိတ်ထားမှုသည် သင်၏ဖုန်းကို အသိအမှတ်မပြုထားသော မှတ်ပုံတင်မှုများပြုလုပ်ခြင်းမှ ကာကွယ်ပေးပါသည်။ ဤဝန်ဆောင်မှုကို သင်၏ Signal ကိုယ်ရေးအချက်အလက်များလုံခြုံမှုအပြင်အဆင်များတွင် အချိန်မရွေးပိတ်ထားနိုင်ပါသည်။";
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "မှတ်ပုံတင်ခြင်း ပိတ်ထားမှုသည် သင်၏ဖုန်းကို အသိအမှတ်မပြုထားသော မှတ်ပုံတင်မှုများပြုလုပ်ခြင်းမှ ကာကွယ်ပေးပါသည်။ ဤဝန်ဆောင်မှုကို သင်၏ Loki Messenger ကိုယ်ရေးအချက်အလက်များလုံခြုံမှုအပြင်အဆင်များတွင် အချိန်မရွေးပိတ်ထားနိုင်ပါသည်။";
 
 /* Navbar title for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_NAV_TITLE" = "မှတ်ပုံတင်ထားသော PIN မှားယွင်းနေပါသည်";
@@ -1908,7 +1908,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "ပို့သာ ပို့လိုက်ပါ";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "ကိုယ်တို့ရဲ့ Signal လုံခြုံရေးနံပါတ် \n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "ကိုယ်တို့ရဲ့ Loki Messenger လုံခြုံရေးနံပါတ် \n%@";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "သင်နှင့် %@ ၏ လုံခြုံရေးနံပါတ် ပြောင်းသွားသည်။ အတည်ပြုလိုက ပြုနိုင်ပါသည်။";
@@ -1940,14 +1940,14 @@
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "မျက်နှာပြင်သော့ခတ်ရန်အတွက် သင်၏ IOS အပြင်အဆင်အတွင်း၌ လျှို့ဝှက်နံပါတ်ကို အသုံးပြုကို ပြုထားရမည် ဖြစ်သည်။ ";
 
-/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Signal သို့ ဝင်ရောက်ရန် မှန်ကန်ကြောင်း အထောက်အထားပြပါ။";
+/* Description of how and why Loki Messenger iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Loki Messenger သို့ ဝင်ရောက်ရန် မှန်ကန်ကြောင်း အထောက်အထားပြပါ။";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "မှန်ကန်ကြောင်းအထောက်အထားပြခြင်း မအောင်မြင်ပါ။";
 
-/* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal ကို ပြန်ဖြည်ပါ";
+/* Label for button on lock screen that lets users unlock Loki Messenger. */
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Loki Messenger ကို ပြန်ဖြည်ပါ";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "အမည် သို့မဟုတ် နံပါတ်နှင့် ရှာပါ";
@@ -1986,9 +1986,9 @@
 "SEND_INVITE_FAILURE" = "ဖိတ်လို့မရပါ၊ နောက်တကြိမ် ကြိုးစားကြည့်ပါ။";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "You invited your friend to use Signal!";
+"SEND_INVITE_SUCCESS" = "You invited your friend to use Loki Messenger!";
 
-/* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
+/* Text for button to send a Loki Messenger invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "SMS မှ တဆင့် ဖိတ်ပါ %@";
 
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
@@ -2007,7 +2007,7 @@
 "SEND_SMS_CONFIRM_TITLE" = "သူငယ်ချင်းကို မလုံခြုံသည့် SMS မှ ဖိတ်မလား?";
 
 /* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "အဆိုပါနံပါတ်ကို Signal ကို ဖိတ်ချင်ပါသလား";
+"SEND_SMS_INVITE_TITLE" = "အဆိုပါနံပါတ်ကို Loki Messenger ကို ဖိတ်ချင်ပါသလား";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "အကြောင်း";
@@ -2028,7 +2028,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "တည်နေရာ၊ %@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "ဒါကိုဖွင့်ထားပါက signal အနေဖြင့် ပိတ်ထားခြင်းများကို ကျော်သွားရန်ကြိုးစားပါလိမ့်မည်။ Signal အားပိတ်ထားသောနေရာတွင်အသုံးပြုနေခြင်းမဟုတ်ပါက ဒါကိုသုံးရန်မလိုပါ။";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "ဒါကိုဖွင့်ထားပါက signal အနေဖြင့် ပိတ်ထားခြင်းများကို ကျော်သွားရန်ကြိုးစားပါလိမ့်မည်။ Loki Messenger အားပိတ်ထားသောနေရာတွင်အသုံးပြုနေခြင်းမဟုတ်ပါက ဒါကိုသုံးရန်မလိုပါ။";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "သင့်ကိုယ်ပိုင်စာရင်း ၏ဖုန်းနံပါတ်အပေါ် မူတည်၍ ဆင်ဆာဖြတ်တောက်မှုရှောင်ကွင်းခြင်းကို ပြုလုပ်ပြီး ဖြစ်သည်။";
@@ -2039,8 +2039,8 @@
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "ဆင်ဆာဖြတ်တောက်မှု ရှောင်ကွင်းခြင်းကို အင်တာနက် ချိတ်ထားမှသာ သုံးလို့ရမည်။";
 
-/* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Signal ကို ချိတ်ဆက်ပြီးသား ဖြစ်သောကြောင့် ဆင်ဆာဖြတ်တောက်မှု ရှောင်ကွင်းခြင်းကို မလိုအပ်ပါ။";
+/* Table footer for the 'censorship circumvention' section shown when the app is connected to the Loki Messenger service. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Loki Messenger ကို ချိတ်ဆက်ပြီးသား ဖြစ်သောကြောင့် ဆင်ဆာဖြတ်တောက်မှု ရှောင်ကွင်းခြင်းကို မလိုအပ်ပါ။";
 
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "ဆင်ဆာဖြတ်တောက်မှုရှောင်ကွင်းခြင်း";
@@ -2108,8 +2108,8 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Blocked User";
 
-/* A label that indicates the user has no Signal contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Signal ပေါ်တွင် သင့်လိပ်စာစာရင်းထဲမှ လူတစ်ယောက်မှ မရှိပါ။";
+/* A label that indicates the user has no Loki Messenger contacts. */
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Loki Messenger ပေါ်တွင် သင့်လိပ်စာစာရင်းထဲမှ လူတစ်ယောက်မှ မရှိပါ။";
 
 /* A label that indicates the user's search has no matching results. */
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "ရှာဖွေလို့ မရပါ";
@@ -2121,13 +2121,13 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "ဖုန်းခေါ်ဆိုမှုများကို လွှဲပြောင်းပါ";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through a Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through a Loki Messenger server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "စကားမှတ်တမ်းများကို ရှင်းလင်းမည်";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \n Licensed under the GPLv3";
+"SETTINGS_COPYRIGHT" = "Copyright Loki Messenger Messenger \n Licensed under the GPLv3";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "ကိုယ်ပိုင်စာရင်း ကိုဖျက်ပါ";
@@ -2211,7 +2211,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "မျက်နှာပြင်လုံခြုံရေးသတ်မှတ်ချိန်ကျော်လွန်သွားပါပြီ";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Signal ကို Touch ID၊ Face ID သို့မဟုတ် သင်၏ iOS ဖုန်းပစ္စည်း၏ စကားဝှက်ဖြင့် ဖွင့်ပါ။ မျက်နှာပြင်ပိတ်ထားသော်လည်း အဝင်ဖုန်းများနှင့် စာတိုပေးပို့မှု သတိပေးချက်အားလုံးကို ဖြေဆိုနိုင်သည်။ Signal ၏ သတိပေးချက်အပြင်အဆင်များသည် ပြသလိုသည့် သတင်းအချက်ကိုသာရွေးချယ်ထားနိုင်သည်။";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Loki Messenger ကို Touch ID၊ Face ID သို့မဟုတ် သင်၏ iOS ဖုန်းပစ္စည်း၏ စကားဝှက်ဖြင့် ဖွင့်ပါ။ မျက်နှာပြင်ပိတ်ထားသော်လည်း အဝင်ဖုန်းများနှင့် စာတိုပေးပို့မှု သတိပေးချက်အားလုံးကို ဖြေဆိုနိုင်သည်။ Loki Messenger ၏ သတိပေးချက်အပြင်အဆင်များသည် ပြသလိုသည့် သတင်းအချက်ကိုသာရွေးချယ်ထားနိုင်သည်။";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "မျက်နှာပြင် သော့ခတ်ခြင်း";
@@ -2223,10 +2223,10 @@
 "SETTINGS_SCREEN_SECURITY" = "မျက်နှာပြင်လုံခြုံရေးကို လုပ်ဆောင်ပါ";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Signal အစမ်းကြည့်ရှုခြင်းကို app switcher တွင်မပေါ်ရန် ပိတ်ထားသည်။ ";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Loki Messenger အစမ်းကြည့်ရှုခြင်းကို app switcher တွင်မပေါ်ရန် ပိတ်ထားသည်။ ";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS ဖုန်းခေါ်ဆိုမှုကို ချိတ်ထားခြင်းက Signal မှ ဖုန်းခေါ်ဆိုမှုများကို သင်၏ သော့ချထားသည့် မျက်နှာပြင်တွင် ပြမည်ဖြစ်ပြီး ဖုန်း၏ ဖုန်းခေါ်ဆိုထားမှု စာရင်းထဲတွင်လည်း ပြမည်ဖြစ်သည်။ သင်၏လိပ်စာစာရင်း အမည်နှင့် နံပါတ်ပြခြင်း/ မပြခြင်းကို ရွေးချယ်နိုင်ပါသည်။ iCloud ကို လုပ်ဆောင်ထားပါက ဖုန်းခေါ်ဆိုထားသည့် စာရင်းသည် Apple နှင့် မျှဝေထားမည် ဖြစ်သည်။ဖြစ်သည်။";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS ဖုန်းခေါ်ဆိုမှုကို ချိတ်ထားခြင်းက Loki Messenger မှ ဖုန်းခေါ်ဆိုမှုများကို သင်၏ သော့ချထားသည့် မျက်နှာပြင်တွင် ပြမည်ဖြစ်ပြီး ဖုန်း၏ ဖုန်းခေါ်ဆိုထားမှု စာရင်းထဲတွင်လည်း ပြမည်ဖြစ်သည်။ သင်၏လိပ်စာစာရင်း အမည်နှင့် နံပါတ်ပြခြင်း/ မပြခြင်းကို ရွေးချယ်နိုင်ပါသည်။ iCloud ကို လုပ်ဆောင်ထားပါက ဖုန်းခေါ်ဆိုထားသည့် စာရင်းသည် Apple နှင့် မျှဝေထားမည် ဖြစ်သည်။ဖြစ်သည်။";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "အသိပေးချက်များ";
@@ -2298,13 +2298,13 @@
 "SHARE_EXTENSION_LOADING" = "Loading…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Signal app ကိုဖွင့်ပြီး မှတ်ပုံတင်ပါ";
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Loki Messenger app ကိုဖွင့်ပြီး မှတ်ပုံတင်ပါ";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "မှတ်ပုံတင်ထားခြင်း မရှိပါ";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Signal app ကိုဖွင့်ပြီး update လုပ်ပါ သို့မဟုတ် မှတ်ပုံတင်ပါ";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Loki Messenger app ကိုဖွင့်ပြီး update လုပ်ပါ သို့မဟုတ် မှတ်ပုံတင်ပါ";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "အဆင်သင့်မဖြစ်သေးပါ";
@@ -2315,11 +2315,11 @@
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "တင်ပို့နေပါသည်။";
 
-/* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
+/* Shown when trying to share content to a Loki Messenger user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "ပူးတွဲဖိုင်ကို ပြင်ဆင်၍ မရပါ";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "Signal တွင် ဝေမျှမည်";
+"SHARE_EXTENSION_VIEW_TITLE" = "Loki Messenger တွင် ဝေမျှမည်";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "လုံခြုံရေးနံပါတ်ကို ပြပါ";
@@ -2327,8 +2327,8 @@
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "စကားဝိုင်းကို ပြပါ";
 
-/* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "Signal ကို ထည့်သွင်းဖို့အတွက် လှမ်းဖိတ်တာပါ။ လင့်က ဒီမှာ ";
+/* body sent to contacts when inviting to Install Loki Messenger */
+"SMS_INVITE_BODY" = "Loki Messenger ကို ထည့်သွင်းဖို့အတွက် လှမ်းဖိတ်တာပါ။ လင့်က ဒီမှာ ";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "ဘယ်ဟာမျှ မဟုတ်သော";
@@ -2415,13 +2415,13 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "\"%@\" ချိတ်ဆက်မှု ဖြုတ်မယ်?";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "သင့်ဖုန်း/ကွန်ပျူတာကို Signal မှ ချိတ်ဆက်မှုကို ဖြုတ်လို့မရ ဖြစ်နေသည်။";
+"UNLINKING_FAILED_ALERT_TITLE" = "သင့်ဖုန်း/ကွန်ပျူတာကို Loki Messenger မှ ချိတ်ဆက်မှုကို ဖြုတ်လို့မရ ဖြစ်နေသည်။";
 
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "အမည်မရှိသော ဖုန်း/ကွန်ပျူတာ";
 
 /* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Signal မှ ထွက်ရန် လုပ်ဆောင်မှု အဆင်မ​ပြေပါ။";
+"UNREGISTER_SIGNAL_FAIL" = "Loki Messenger မှ ထွက်ရန် လုပ်ဆောင်မှု အဆင်မ​ပြေပါ။";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "ဖွင့်မရသော ပူးတွဲဖိုင်အမျိုးအစားကို လက်ခံရရှိသည်။";
@@ -2451,7 +2451,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Optional link previews are now supported for some of the most popular sites on the Internet.";
 
 /* Subtitle for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "You can disable or enable this feature anytime in your Signal settings (Privacy > Send link previews).";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "You can disable or enable this feature anytime in your Loki Messenger settings (Privacy > Send link previews).";
 
 /* Header for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Link Previews";
@@ -2469,7 +2469,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "ကိုယ့်ရဲ့ အချက်အလက်ကို တပ်ဆင်ပါ";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "အခုဆိုရင် Signal ပေါ်မှာ ကိုယ့်ရဲ့ ပုံနဲ့ နာမည်ကို သူငယ်ချင်းတွေနဲ့ မျှဝေလို့ ရပါပြီ။";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "အခုဆိုရင် Loki Messenger ပေါ်မှာ ကိုယ့်ရဲ့ ပုံနဲ့ နာမည်ကို သူငယ်ချင်းတွေနဲ့ မျှဝေလို့ ရပါပြီ။";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "အနီးကပ်အတွက် အဆင်သင့်ဖြစ်ပြီလား?";
@@ -2490,13 +2490,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Introducing Typing Indicators";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal မှ ဗီဒီယိုခေါ်ဆိုမှု ရပါပြီ။ သာမန်ခေါ်ဆိုမှုလိုမျိုးပဲ ကင်မရာကို နှိပ်ပါ ပြီးရင် စပြောလို့ ရပါပြီ။";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Loki Messenger မှ ဗီဒီယိုခေါ်ဆိုမှု ရပါပြီ။ သာမန်ခေါ်ဆိုမှုလိုမျိုးပဲ ကင်မရာကို နှိပ်ပါ ပြီးရင် စပြောလို့ ရပါပြီ။";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "မင်္ဂလာပါ လုံခြုံမှုရှိတဲ့ ဗီဒီယိုခေါ်ဆိုမှုရေ!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 10 or later. Please upgrade in Settings app >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Loki Messenger will soon require iOS 10 or later. Please upgrade in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "iOS ကို မြှင့်ပါ";
@@ -2535,7 +2535,7 @@
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "အသံသတင်းစကား";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "ကွန်ပျူတာတွင် Signal ကို အပြီးတပ်ဆင်ပါ။";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "ကွန်ပျူတာတွင် Loki Messenger ကို အပြီးတပ်ဆင်ပါ။";
 
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "စာများ ပျက်သွားစေရန် လုပ်ထားချက်ကို ရပ်လိုက်သည်။";
