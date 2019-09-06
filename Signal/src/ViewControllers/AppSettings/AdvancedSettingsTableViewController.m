@@ -323,8 +323,7 @@ NS_ASSUME_NONNULL_BEGIN
     [DDLog flushLog];
     NSURL *errorLogsDir = DebugLogger.sharedLogger.errorLogsDir;
     LogPickerViewController *logPicker = [[LogPickerViewController alloc] initWithLogDirUrl:errorLogsDir];
-    OWSNavigationController *modal = [[OWSNavigationController alloc] initWithRootViewController:logPicker];
-    [self presentViewController:modal animated:YES completion:nil];
+    [self.navigationController pushViewController:logPicker animated:YES];
 }
 
 @end

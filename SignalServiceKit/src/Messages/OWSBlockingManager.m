@@ -430,8 +430,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 // This method should only be called from within a synchronized block.
 - (void)ensureLazyInitialization
 {
-    OWSLogVerbose(@"");
-
     if (_blockedPhoneNumberSet != nil) {
         OWSAssertDebug(_blockedGroupMap);
         OWSAssertDebug(_blockedUUIDSet);
@@ -440,6 +438,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         return;
     }
 
+    OWSLogVerbose(@"");
     __block NSArray<NSString *> *_Nullable blockedPhoneNumbers;
     __block NSArray<NSString *> *blockedUUIDs;
     __block NSDictionary<NSData *, TSGroupModel *> *storedBlockedGroupMap;

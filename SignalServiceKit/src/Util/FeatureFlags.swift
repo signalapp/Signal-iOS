@@ -100,7 +100,7 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
-    public static var audibleErrorLogging = build.includes(.qa)
+    public static var audibleErrorLogging = build.includes(.internalPreview)
 
     @objc
     public static var storageModeDescription: String {
