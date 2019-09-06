@@ -154,11 +154,10 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
     OWSSingletonAssert();
 
-    if (!CurrentAppContext().isMainApp) {
-        [self.databaseStorage addDatabaseStorageObserver:self];
-    }
-
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        if (!CurrentAppContext().isMainApp) {
+            [self.databaseStorage addDatabaseStorageObserver:self];
+        }
         [[self updateAccountAttributesIfNecessary] retainUntilComplete];
     }];
 
