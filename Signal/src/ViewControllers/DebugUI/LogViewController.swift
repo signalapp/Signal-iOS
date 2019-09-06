@@ -25,14 +25,28 @@ public class LogPickerViewController: OWSTableViewController {
 
     public func updateTableContents() {
         let contents = OWSTableContents()
-        var items: [OWSTableItem] = []
+        contents.addSection(buildPreferenceSection())
+        contents.addSection(buildLogsSection())
+        self.contents = contents
+    }
+
+    private func buildPreferenceSection() -> OWSTableSection {
+        let enableItem = OWSTableItem.switch(withText: "🚂 Play Sound When Errors Occur",
+                                             isOn: { OWSPreferences.isAudibleErrorLoggingEnabled() },
+                                             target: self,
+                                             selector: #selector(didToggleAudiblePreference(_:)))
+        return OWSTableSection(title: "Preferences", items: [enableItem])
+    }
+
+    private func buildLogsSection() -> OWSTableSection {
         guard let logUrls = FileManager.default.enumerator(at: logDirUrl, includingPropertiesForKeys: nil) else {
             owsFailDebug("logUrls was unexpectedly nil")
-            return
+            return OWSTableSection(title: "No Log URLs", items: [])
         }
 
+        var logItems: [OWSTableItem] = []
         for case let logUrl as URL in logUrls {
-            items.append(OWSTableItem(title: logUrl.lastPathComponent) { [weak self] in
+            logItems.append(OWSTableItem(title: logUrl.lastPathComponent) { [weak self] in
                 guard let self = self else { return }
                 let logVC = LogViewController(logUrl: logUrl)
 
@@ -45,9 +59,15 @@ public class LogPickerViewController: OWSTableViewController {
             })
         }
 
-        let section = OWSTableSection(title: "Log Files", items: items)
-        contents.addSection(section)
-        self.contents = contents
+        return OWSTableSection(title: "Error Logs", items: logItems)
+    }
+
+    @objc
+    func didToggleAudiblePreference(_ sender: UISwitch) {
+        OWSPreferences.setIsAudibleErrorLoggingEnabled(sender.isOn)
+        if sender.isOn {
+            ErrorLogger.playAlertSound()
+        }
     }
 }
 
