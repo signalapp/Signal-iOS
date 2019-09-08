@@ -690,6 +690,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (phoneNumbersSection.itemCount > 0) {
+        hasSearchResults = YES;
         [sections addObject:phoneNumbersSection];
     }
 
