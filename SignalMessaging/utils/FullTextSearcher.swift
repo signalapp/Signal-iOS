@@ -264,6 +264,16 @@ public class FullTextSearcher: NSObject {
             }
         }
 
+        if !signalContacts.contains(where: { $0.signalAccount.recipientAddress.isLocalAddress }) {
+            if let localAddress = TSAccountManager.localAddress {
+                let localAccount = SignalAccount(address: localAddress)
+                let localResult = ContactSearchResult(signalAccount: localAccount)
+                signalContacts.append(localResult)
+            } else {
+                owsFailDebug("localAddress was unexpectedly nil")
+            }
+        }
+
         // Order contact results by display name.
         signalContacts.sort()
 
