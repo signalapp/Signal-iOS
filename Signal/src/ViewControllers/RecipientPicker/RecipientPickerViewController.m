@@ -426,7 +426,7 @@ NS_ASSUME_NONNULL_BEGIN
             [contents addSection:section];
         }
     } else {
-        // Count the none collated sections, before we add our collated sections.
+        // Count the non-collated sections, before we add our collated sections.
         // Later we'll need to offset which sections our collation indexes reference
         // by this amount. e.g. otherwise the "B" index will reference names starting with "A"
         // And the "A" index will reference the static non-collated section(s).
@@ -1033,8 +1033,16 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *searchText = self.searchText;
 
-    __weak __typeof(self) weakSelf = self;
+    if (searchText.length <= 2) {
+        if (self.searchResults != ComposeScreenSearchResultSet.empty) {
+            self.searchResults = ComposeScreenSearchResultSet.empty;
+            [self updateSearchPhoneNumbers];
+            [self updateTableContents];
+        }
+        return;
+    }
 
+    __weak __typeof(self) weakSelf = self;
     [self.databaseStorage
         asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
             self.searchResults = [self.fullTextSearcher searchForComposeScreenWithSearchText:searchText
