@@ -233,7 +233,7 @@ public class SDSDatabaseStorage: SDSTransactable {
                     owsFailDebug("conversationViewDatabaseObserver was unexpectedly nil")
                 }
                 if let genericDatabaseObserver = grdbStorage.genericDatabaseObserver {
-                    genericDatabaseObserver.didTouch(interactionId: interaction.uniqueId,
+                    genericDatabaseObserver.didTouch(interaction: interaction,
                                                      transaction: grdb)
                 } else if AppReadiness.isAppReady() {
                     owsFailDebug("genericDatabaseObserver was unexpectedly nil")

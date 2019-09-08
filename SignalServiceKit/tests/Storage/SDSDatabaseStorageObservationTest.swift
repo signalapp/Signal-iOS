@@ -175,12 +175,15 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
         mockObserver.set(expectation: self.expectation(description: "Database Storage Observer"))
 
         var lastMessage: TSInteraction?
+        var unsavedMessage: TSInteraction?
         self.yapWrite { transaction in
             let recipient = SignalServiceAddress(phoneNumber: "+12345678900")
             let thread = TSContactThread.getOrCreateThread(withContactAddress: recipient, transaction: transaction.asAnyWrite)
             let message = TSOutgoingMessage(in: thread, messageBody: "Hello Alice", attachmentId: nil)
             message.anyInsert(transaction: transaction.asAnyWrite)
             lastMessage = message
+
+            unsavedMessage = TSOutgoingMessage(in: thread, messageBody: "Goodbyte Alice", attachmentId: nil)
 
             Logger.verbose("write 3 complete")
         }
@@ -199,9 +202,8 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
-            XCTAssertTrue(lastChange.didUpdate(interactionId: lastMessage!.uniqueId))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: UUID().uuidString))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: "not a valid interaction id"))
+            XCTAssertTrue(lastChange.didUpdate(interaction: lastMessage!))
+            XCTAssertFalse(lastChange.didUpdate(interaction: unsavedMessage!))
         }
         mockObserver.clear()
 
@@ -226,9 +228,8 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: lastMessage!.uniqueId))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: UUID().uuidString))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: "not a valid interaction id"))
+            XCTAssertFalse(lastChange.didUpdate(interaction: lastMessage!))
+            XCTAssertFalse(lastChange.didUpdate(interaction: unsavedMessage!))
         }
         mockObserver.clear()
 
@@ -253,9 +254,8 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
-            XCTAssertTrue(lastChange.didUpdate(interactionId: lastMessage!.uniqueId))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: UUID().uuidString))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: "not a valid interaction id"))
+            XCTAssertTrue(lastChange.didUpdate(interaction: lastMessage!))
+            XCTAssertFalse(lastChange.didUpdate(interaction: unsavedMessage!))
         }
         mockObserver.clear()
     }
@@ -351,12 +351,15 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
         mockObserver.set(expectation: self.expectation(description: "Database Storage Observer"))
 
         var lastMessage: TSInteraction?
+        var unsavedMessage: TSInteraction?
         self.yapAsyncWrite { transaction in
             let recipient = SignalServiceAddress(phoneNumber: "+12345678900")
             let thread = TSContactThread.getOrCreateThread(withContactAddress: recipient, transaction: transaction.asAnyWrite)
             let message = TSOutgoingMessage(in: thread, messageBody: "Hello Alice", attachmentId: nil)
             message.anyInsert(transaction: transaction.asAnyWrite)
             lastMessage = message
+
+            unsavedMessage = TSOutgoingMessage(in: thread, messageBody: "Goodbyte Alice", attachmentId: nil)
 
             Logger.verbose("write 3 complete")
         }
@@ -375,9 +378,8 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
-            XCTAssertTrue(lastChange.didUpdate(interactionId: lastMessage!.uniqueId))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: UUID().uuidString))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: "not a valid interaction id"))
+            XCTAssertTrue(lastChange.didUpdate(interaction: lastMessage!))
+            XCTAssertFalse(lastChange.didUpdate(interaction: unsavedMessage!))
         }
         mockObserver.clear()
 
@@ -402,9 +404,8 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: lastMessage!.uniqueId))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: UUID().uuidString))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: "not a valid interaction id"))
+            XCTAssertFalse(lastChange.didUpdate(interaction: lastMessage!))
+            XCTAssertFalse(lastChange.didUpdate(interaction: unsavedMessage!))
         }
         mockObserver.clear()
 
@@ -429,9 +430,8 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
-            XCTAssertTrue(lastChange.didUpdate(interactionId: lastMessage!.uniqueId))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: UUID().uuidString))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: "not a valid interaction id"))
+            XCTAssertTrue(lastChange.didUpdate(interaction: lastMessage!))
+            XCTAssertFalse(lastChange.didUpdate(interaction: unsavedMessage!))
         }
         mockObserver.clear()
     }
@@ -525,12 +525,16 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
         mockObserver.set(expectation: self.expectation(description: "Database Storage Observer"))
 
         var lastMessage: TSInteraction?
+        var unsavedMessage: TSInteraction?
         self.write { transaction in
             let recipient = SignalServiceAddress(phoneNumber: "+12345678900")
             let thread = TSContactThread.getOrCreateThread(withContactAddress: recipient, transaction: transaction)
             let message = TSOutgoingMessage(in: thread, messageBody: "Hello Alice", attachmentId: nil)
             message.anyInsert(transaction: transaction)
+            message.anyReload(transaction: transaction)
             lastMessage = message
+
+            unsavedMessage = TSOutgoingMessage(in: thread, messageBody: "Goodbyte Alice", attachmentId: nil)
 
             Logger.verbose("write 3 complete")
         }
@@ -549,9 +553,8 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
-            XCTAssertTrue(lastChange.didUpdate(interactionId: lastMessage!.uniqueId))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: UUID().uuidString))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: "not a valid interaction id"))
+            XCTAssertTrue(lastChange.didUpdate(interaction: lastMessage!))
+            XCTAssertFalse(lastChange.didUpdate(interaction: unsavedMessage!))
         }
         mockObserver.clear()
 
@@ -576,9 +579,8 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: lastMessage!.uniqueId))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: UUID().uuidString))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: "not a valid interaction id"))
+            XCTAssertFalse(lastChange.didUpdate(interaction: lastMessage!))
+            XCTAssertFalse(lastChange.didUpdate(interaction: unsavedMessage!))
         }
         mockObserver.clear()
 
@@ -603,9 +605,8 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
-            XCTAssertTrue(lastChange.didUpdate(interactionId: lastMessage!.uniqueId))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: UUID().uuidString))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: "not a valid interaction id"))
+            XCTAssertTrue(lastChange.didUpdate(interaction: lastMessage!))
+            XCTAssertFalse(lastChange.didUpdate(interaction: unsavedMessage!))
         }
         mockObserver.clear()
     }
@@ -697,12 +698,16 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
         mockObserver.set(expectation: self.expectation(description: "Database Storage Observer"))
 
         var lastMessage: TSInteraction?
+        var unsavedMessage: TSInteraction?
         self.asyncWrite { transaction in
             let recipient = SignalServiceAddress(phoneNumber: "+12345678900")
             let thread = TSContactThread.getOrCreateThread(withContactAddress: recipient, transaction: transaction)
             let message = TSOutgoingMessage(in: thread, messageBody: "Hello Alice", attachmentId: nil)
             message.anyInsert(transaction: transaction)
+            message.anyReload(transaction: transaction)
             lastMessage = message
+
+            unsavedMessage = TSOutgoingMessage(in: thread, messageBody: "Goodbyte Alice", attachmentId: nil)
 
             Logger.verbose("write 3 complete")
         }
@@ -721,9 +726,8 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
-            XCTAssertTrue(lastChange.didUpdate(interactionId: lastMessage!.uniqueId))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: UUID().uuidString))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: "not a valid interaction id"))
+            XCTAssertTrue(lastChange.didUpdate(interaction: lastMessage!))
+            XCTAssertFalse(lastChange.didUpdate(interaction: unsavedMessage!))
         }
         mockObserver.clear()
 
@@ -748,9 +752,8 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: lastMessage!.uniqueId))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: UUID().uuidString))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: "not a valid interaction id"))
+            XCTAssertFalse(lastChange.didUpdate(interaction: lastMessage!))
+            XCTAssertFalse(lastChange.didUpdate(interaction: unsavedMessage!))
         }
         mockObserver.clear()
 
@@ -775,9 +778,8 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
             XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
-            XCTAssertTrue(lastChange.didUpdate(interactionId: lastMessage!.uniqueId))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: UUID().uuidString))
-            XCTAssertFalse(lastChange.didUpdate(interactionId: "not a valid interaction id"))
+            XCTAssertTrue(lastChange.didUpdate(interaction: lastMessage!))
+            XCTAssertFalse(lastChange.didUpdate(interaction: unsavedMessage!))
         }
         mockObserver.clear()
     }

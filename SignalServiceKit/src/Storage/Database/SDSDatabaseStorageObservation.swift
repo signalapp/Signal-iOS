@@ -16,32 +16,32 @@ public class SDSDatabaseStorageChange: NSObject {
 
     // MARK: -
 
-    // In the GRDB case, we collect modified collections and interactions.
-    let updatedCollections: Set<String>
-    let updatedInteractionIds: Set<String>
+    enum ChangeSet {
+        // In the GRDB case, we collect modified collections and interactions.
+        case grdb(updatedCollections: Set<String>, updatedInteractionIds: Set<Int64>)
 
-    // In the YDB case, we use notifications to lazy-evaluate.
-    let ydbNotifications: [Notification]?
+        // In the YDB case, we use notifications to lazy-evaluate.
+        case ydb(notifications: [Notification])
+    }
+
+    private let changeSet: ChangeSet
 
     // OWSPrimaryStorage sometimes posts notifications even if
     // no write has occurred.  The tests (only) need to ignore these.
     #if DEBUG
     @objc
     public var isEmptyYDBChange: Bool {
-        guard let ydbNotifications = ydbNotifications,
-                ydbNotifications.isEmpty else {
-                    return false
+        switch changeSet {
+        case .grdb:
+            return false
+        case .ydb(notifications: let notifications):
+            return notifications.isEmpty
         }
-        return true
     }
     #endif
 
-    required init(updatedCollections: Set<String>,
-                  updatedInteractionIds: Set<String>,
-                  ydbNotifications: [Notification]? = nil) {
-        self.updatedCollections = updatedCollections
-        self.updatedInteractionIds = updatedInteractionIds
-        self.ydbNotifications = ydbNotifications
+    required init(_ changeSet: ChangeSet) {
+        self.changeSet = changeSet
     }
 
     @objc
@@ -60,19 +60,18 @@ public class SDSDatabaseStorageChange: NSObject {
     }
 
     private func didUpdate(collection: String) -> Bool {
-        if updatedCollections.contains(collection) {
-            return true
+        switch changeSet {
+        case .grdb(updatedCollections: let updatedCollections, updatedInteractionIds: _):
+            return updatedCollections.contains(collection)
+        case .ydb(notifications: let notifications):
+            guard let primaryStorage = self.primaryStorage else {
+                owsFailDebug("Missing primaryStorage.")
+                return false
+            }
+            let connection = primaryStorage.uiDatabaseConnection
+            return connection.hasChange(forCollection: collection, in: notifications) ||
+                connection.didClearCollection(collection, in: notifications)
         }
-        guard let ydbNotifications = ydbNotifications else {
-            return false
-        }
-        guard let primaryStorage = self.primaryStorage else {
-            owsFailDebug("Missing primaryStorage.")
-            return false
-        }
-        let connection = primaryStorage.uiDatabaseConnection
-        return connection.hasChange(forCollection: collection, in: ydbNotifications) ||
-            connection.didClearCollection(collection, in: ydbNotifications)
     }
 
     // Note that this method should only be used for model
@@ -92,22 +91,21 @@ public class SDSDatabaseStorageChange: NSObject {
                 didUpdate(collection: SDSKeyValueStore.dataStoreCollection))
     }
 
-    @objc(didUpdateInteractionId:)
-    public func didUpdate(interactionId: String) -> Bool {
-        if updatedInteractionIds.contains(interactionId) {
-            return true
+    @objc(didUpdateInteraction:)
+    public func didUpdate(interaction: TSInteraction) -> Bool {
+        switch changeSet {
+        case .grdb(updatedCollections: _, updatedInteractionIds: let updatedInteractionIds):
+            return updatedInteractionIds.contains(Int64(interaction.sortId))
+        case .ydb(notifications: let notifications):
+            guard let primaryStorage = self.primaryStorage else {
+                owsFailDebug("Missing primaryStorage.")
+                return false
+            }
+            let connection = primaryStorage.uiDatabaseConnection
+            return connection.hasChange(forKey: interaction.uniqueId,
+                                        inCollection: TSInteraction.collection(),
+                                        in: notifications)
         }
-        guard let ydbNotifications = ydbNotifications else {
-            return false
-        }
-        guard let primaryStorage = self.primaryStorage else {
-            owsFailDebug("Missing primaryStorage.")
-            return false
-        }
-        let connection = primaryStorage.uiDatabaseConnection
-        return connection.hasChange(forKey: interactionId,
-                                    inCollection: TSInteraction.collection(),
-                                    in: ydbNotifications)
     }
 }
 
@@ -237,11 +235,7 @@ extension SDSDatabaseStorageObservation {
             return
         }
 
-        let updatedCollections = Set<String>()
-        let updatedInteractionIds = Set<String>()
-        let change = SDSDatabaseStorageChange(updatedCollections: updatedCollections,
-                                              updatedInteractionIds: updatedInteractionIds,
-                                              ydbNotifications: notifications)
+        let change = SDSDatabaseStorageChange(.ydb(notifications: notifications))
         notifyDidUpdate(change: change)
     }
 
@@ -262,11 +256,11 @@ extension SDSDatabaseStorageObservation: GRDBGenericDatabaseObserverDelegate {
     }
 
     func genericDatabaseSnapshotDidUpdate(updatedCollections: Set<String>,
-                                          updatedInteractionIds: Set<String>) {
+                                          updatedInteractionIds: Set<Int64>) {
         AssertIsOnMainThread()
 
-        let change = SDSDatabaseStorageChange(updatedCollections: updatedCollections,
-                                              updatedInteractionIds: updatedInteractionIds)
+        let change = SDSDatabaseStorageChange(.grdb(updatedCollections: updatedCollections,
+                                                    updatedInteractionIds: updatedInteractionIds))
         notifyDidUpdate(change: change)
     }
 

@@ -9,7 +9,7 @@ import GRDB
 public protocol GRDBGenericDatabaseObserverDelegate: AnyObject {
     func genericDatabaseSnapshotWillUpdate()
     func genericDatabaseSnapshotDidUpdate(updatedCollections: Set<String>,
-                                          updatedInteractionIds: Set<String>)
+                                          updatedInteractionIds: Set<Int64>)
     func genericDatabaseSnapshotDidUpdateExternally()
     func genericDatabaseSnapshotDidReset()
 }
@@ -36,9 +36,9 @@ public class GRDBGenericDatabaseObserver: NSObject {
     private struct PendingChanges {
         var collections: Set<String> = Set()
         var tableNames: Set<String> = Set()
-        var interactionIds: Set<String> = Set()
-        var interactionRowIds: Set<Int64> = Set()
+        var interactionIds: Set<Int64> = Set()
     }
+
     private var _pendingChanges = PendingChanges()
     private var pendingChanges: PendingChanges {
         get {
@@ -55,14 +55,9 @@ public class GRDBGenericDatabaseObserver: NSObject {
 
     private struct CommittedChanges {
         let collections: Set<String>
-        let interactionIds: Set<String>
-
-        init(collections: Set<String>,
-             interactionIds: Set<String>) {
-            self.collections = collections
-            self.interactionIds = interactionIds
-        }
+        let interactionIds: Set<Int64>
     }
+
     private typealias CollectionName = String
     private var _committedChanges: CommittedChanges?
     private var committedChanges: CommittedChanges? {
@@ -89,7 +84,7 @@ public class GRDBGenericDatabaseObserver: NSObject {
 
     private func committedChanges(forPendingChanges pendingChanges: PendingChanges, db: Database) throws -> CommittedChanges {
         return CommittedChanges(collections: collections(forPendingChanges: pendingChanges, db: db),
-                                interactionIds: try interactionIds(forPendingChanges: pendingChanges, db: db))
+                                interactionIds: pendingChanges.interactionIds)
     }
 
     private func collections(forPendingChanges pendingChanges: PendingChanges, db: Database) -> Set<String> {
@@ -113,30 +108,7 @@ public class GRDBGenericDatabaseObserver: NSObject {
         return allCollections
     }
 
-    private func interactionIds(forPendingChanges pendingChanges: PendingChanges, db: Database) throws -> Set<String> {
-        let updatedRowIds = pendingChanges.interactionRowIds
-        guard updatedRowIds.count > 0 else {
-            return pendingChanges.interactionIds
-        }
-
-        // If necessary, convert GRDB rowIds to interaction ids.
-        guard updatedRowIds.count < UIDatabaseObserver.kMaxIncrementalRowChanges else {
-            owsFailDebug("Too many updatedRowIds for incremental update.")
-            throw DatabaseObserverError.changeTooLarge
-        }
-
-        let commaSeparatedRowIds = updatedRowIds.map { String($0) }.joined(separator: ", ")
-        let rowIdsSQL = "(\(commaSeparatedRowIds))"
-        let sql = """
-        SELECT \(interactionColumn: .uniqueId)
-        FROM \(InteractionRecord.databaseTableName)
-        WHERE rowid IN \(rowIdsSQL)
-        """
-
-        let convertedIds = try String.fetchAll(db, sql: sql, arguments: [])
-        assert(convertedIds.count == updatedRowIds.count)
-        return Set(convertedIds).union(pendingChanges.interactionIds)
-    }
+    private typealias RowId = Int64
 
     // internal - should only be called by DatabaseStorage
     func didTouchThread(transaction: GRDBWriteTransaction) {
@@ -148,12 +120,13 @@ public class GRDBGenericDatabaseObserver: NSObject {
     }
 
     // internal - should only be called by DatabaseStorage
-    func didTouch(interactionId: String, transaction: GRDBWriteTransaction) {
+    func didTouch(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
         // Note: We don't actually use the `transaction` param, but touching must happen within
         // a write transaction in order for the touch machinery to notify it's observers
         // in the expected way.
         AssertIsOnUIDatabaseObserverSerialQueue()
-        pendingChanges.interactionIds.insert(interactionId)
+        let rowId = RowId(interaction.sortId)
+        pendingChanges.interactionIds.insert(rowId)
         pendingChanges.tableNames.insert(TSInteraction.table.tableName)
     }
 }
@@ -170,7 +143,7 @@ extension GRDBGenericDatabaseObserver: DatabaseSnapshotDelegate {
         _ = pendingChanges.tableNames.insert(event.tableName)
 
         if event.tableName == InteractionRecord.databaseTableName {
-            _ = pendingChanges.interactionRowIds.insert(event.rowID)
+            _ = pendingChanges.interactionIds.insert(event.rowID)
         }
     }
 
