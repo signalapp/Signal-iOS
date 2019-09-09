@@ -149,8 +149,6 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     NSDate *_Nullable archivalDate = [coder decodeObjectOfClass:NSDate.class forKey:@"archivalDate"];
     _isArchivedByLegacyTimestampForSorting =
         [self.class legacyIsArchivedWithLastMessageDate:lastMessageDate archivalDate:archivalDate];
-    
-    _friendRequestStatus = LKThreadFriendRequestStatusNone;
 
     return self;
 }
