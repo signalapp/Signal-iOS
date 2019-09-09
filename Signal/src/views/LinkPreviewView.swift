@@ -657,6 +657,7 @@ public class LinkPreviewView: UIStackView {
         cancelButton.tintColor = Theme.secondaryColor
         cancelButton.setContentHuggingHigh()
         cancelButton.setCompressionResistanceHigh()
+        cancelButton.isHidden = true
         cancelStack.addArrangedSubview(cancelButton)
 
         rightStack.addArrangedSubview(cancelStack)
