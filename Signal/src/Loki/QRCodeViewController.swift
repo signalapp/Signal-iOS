@@ -6,6 +6,7 @@ final class QRCodeViewController : OWSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = UIColor.lokiDarkestGray()
         let stackView = UIStackView(arrangedSubviews: [])
         stackView.axis = .vertical
         stackView.spacing = 32

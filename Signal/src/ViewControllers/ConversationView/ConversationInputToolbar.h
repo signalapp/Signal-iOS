@@ -78,6 +78,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable, readonly) OWSLinkPreviewDraft *linkPreviewDraft;
 
+- (void)hideInputMethod;
+
 @end
 
 NS_ASSUME_NONNULL_END

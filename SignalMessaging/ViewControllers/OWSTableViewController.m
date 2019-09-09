@@ -217,6 +217,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
         cell.textLabel.text = text;
         cell.accessoryType = accessoryType;
         cell.accessibilityIdentifier = accessibilityIdentifier;
+        cell.tintColor = UIColor.lokiGreen;
         return cell;
     };
     return item;

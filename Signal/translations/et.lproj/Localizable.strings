@@ -8,7 +8,7 @@
 "ACTION_AUDIO_CALL" = "SIgnali kõne";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Kutsu Signalisse";
+"ACTION_INVITE" = "Kutsu Loki Messengerisse";
 
 /* Label for 'send message' button in contact view.
    Label for button that lets you send a message to a contact. */
@@ -60,7 +60,7 @@
 "APN_Message" = "Uus sõnum!";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal ei saa käivituda. Palun saada silumislogi aadressile support@signal.org, et saaksime proovida seda olukorda lahendada.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Loki Messenger ei saa käivituda. Palun saada silumislogi aadressile support@signal.org, et saaksime proovida seda olukorda lahendada.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Tõrge";
@@ -75,13 +75,13 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Versioon %@ on nüüd App Store'is saadaval.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Uus Signali versioon on saadaval";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Uus Loki Messengeri versioon on saadaval";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Uuenda";
 
 /* Name of application */
-"APPLICATION_NAME" = "Signal";
+"APPLICATION_NAME" = "Loki Messenger";
 
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "Arhiveeri";
@@ -309,7 +309,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Helista uuesti";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Kõnede ja häälsõnumite tegemiseks on vaja anda rakenduses Settings anda Signal-ile ligipääs mikrofonile.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Kõnede ja häälsõnumite tegemiseks on vaja anda rakenduses Settings anda Loki Messenger-ile ligipääs mikrofonile.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Ligipääs mikrofonile on vajalik";
@@ -330,7 +330,7 @@
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Vastust pole";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
-"CALL_STATUS_FORMAT" = "Signal %@";
+"CALL_STATUS_FORMAT" = "Loki Messenger %@";
 
 /* Label for call button for alert offering to call a user. */
 "CALL_USER_ALERT_CALL_BUTTON" = "Helista";
@@ -360,10 +360,10 @@
 "CALL_VIEW_MUTE_LABEL" = "Vaigista";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Sul on võimalik Signal-i privaatsussätetes lubada iOSi kõnedega integreerimist, et saaksid vastata sissetulevatele kõnedele lukustusekraanilt.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Sul on võimalik Loki Messenger-i privaatsussätetes lubada iOSi kõnedega integreerimist, et saaksid vastata sissetulevatele kõnedele lukustusekraanilt.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Sul on võimalik Signal-i privaatsussätetes lubada iOSi kõnedega integreerimist, et näha sissetulevate kõnede nime ja telefoninumbrit.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Sul on võimalik Loki Messenger-i privaatsussätetes lubada iOSi kõnedega integreerimist, et näha sissetulevate kõnede nime ja telefoninumbrit.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Mitte praegu";
@@ -387,7 +387,7 @@
 "CALLBACK_BUTTON_TITLE" = "Helista tagasi";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signali kasutaja";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Loki Messengeri kasutaja";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Seda kasutajat pole võimalik kinnitada kuni sa pole temaga sõnumeid vahetanud.";
@@ -411,13 +411,13 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Taasta";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal-il ei õnnestunud tuvastada sinu iCloudi konto olekut. Signal-i andmetest varukoopia tegemiseks pead iOSi sätetes logima sisse iCloudi kontole.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Loki Messenger-il ei õnnestunud tuvastada sinu iCloudi konto olekut. Loki Messenger-i andmetest varukoopia tegemiseks pead iOSi sätetes logima sisse iCloudi kontole.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "iCloudi konto puudub. Signal-i andmetest varukoopia tegemiseks pead iOSi sätetes logima sisse iCloudi kontole.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "iCloudi konto puudub. Loki Messenger-i andmetest varukoopia tegemiseks pead iOSi sätetes logima sisse iCloudi kontole.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal-ile ei antud varukoopiate tegemiseks juurdepääsu sinu iCloudi kontole. Signal-i andmetest varukoopia tegemiseks pead iOSi sätetes andma Signal-ile juurdepääs oma iCloudi kontole.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Loki Messenger-ile ei antud varukoopiate tegemiseks juurdepääsu sinu iCloudi kontole. Loki Messenger-i andmetest varukoopia tegemiseks pead iOSi sätetes andma Loki Messenger-ile juurdepääs oma iCloudi kontole.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Vali sellesse vestlusesse saadetavate sõnumite värv.";
@@ -441,7 +441,7 @@
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Kutsu";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Sul on võimalik iOSi sätetes lubada ligipääs kontaktidele, et näha, kes sinu kontaktidest on Signal-i kasutajad.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Sul on võimalik iOSi sätetes lubada ligipääs kontaktidele, et näha, kes sinu kontaktidest on Loki Messenger-i kasutajad.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "See toiming lähtestab rakenduse, kustutades kõik sõnumid ja eemaldades serverist sinu registreerimise. Rakendus sulgub pärast andmete kustutamist.";
@@ -748,9 +748,9 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Registreeri see telefoninumber uuesti";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Seade ei ole enam registreeritud. Sinu telefoninumber võib olla registreeritud Signalis mõne teise seadmega. Klõpsa uuesti registreerimiseks.";
+"DEREGISTRATION_WARNING" = "Seade ei ole enam registreeritud. Sinu telefoninumber võib olla registreeritud Loki Messengeris mõne teise seadmega. Klõpsa uuesti registreerimiseks.";
 
-/* {{Short Date}} when device last communicated with Signal Server. */
+/* {{Short Date}} when device last communicated with Loki Messenger Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Viimati aktiivne: %@";
 
 /* {{Short Date}} when device was linked. */
@@ -780,11 +780,11 @@
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Tsenseerimisest möödahiilimise asukoht";
 
-/* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+/* Alert body for when the user has just tried to edit a contacts after declining to give Loki Messenger contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Ligipääsu on võimalik anda rakenduses Settings.";
 
-/* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Kontakti info muutmiseks vajab Signal ligipääsu kontaktidele";
+/* Alert title for when the user has just tried to edit a contacts after declining to give Loki Messenger contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Kontakti info muutmiseks vajab Loki Messenger ligipääsu kontaktidele";
 
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Muuda gruppi";
@@ -819,14 +819,14 @@
 /* No comment provided by engineer. */
 "EDIT_TXT" = "Muuda";
 
-/* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Tervist!\n\nOlen viimasel ajal kasutanud vestluste iPhone'is privaatsena hoidmiseks rakendust Signal. Soovin, et sinagi paigaldaks selle, et saaksime kindlad olla, et ainult sina ja mina saame meie sõnumeid lugeda ning kõnesid kuulda.\n\nSignal on saadaval iPhone'ile ja Androidile. Paigalda saab siit: %@\n\nSignal töötab nagu teisedki sõnumirakendused: võimaldab saata pilte ja videosid, teha kõnesid ja alustada grupivestlusi. Parim selle juures on, et mitte keegi teine ei saa seda näha, isegi mitte Signali loojad!\n\nLoe täpsemalt Signali loojate Open Whisper Systemsi kohta siit: %@";
+/* body of email sent to contacts when inviting to install Loki Messenger. Embeds {{link to install Loki Messenger}} and {{link to the Loki Messenger home page}} */
+"EMAIL_INVITE_BODY" = "Tervist!\n\nOlen viimasel ajal kasutanud vestluste iPhone'is privaatsena hoidmiseks rakendust Loki Messenger. Soovin, et sinagi paigaldaks selle, et saaksime kindlad olla, et ainult sina ja mina saame meie sõnumeid lugeda ning kõnesid kuulda.\n\nLoki Messenger on saadaval iPhone'ile ja Androidile. Paigalda saab siit: %@\n\nLoki Messenger töötab nagu teisedki sõnumirakendused: võimaldab saata pilte ja videosid, teha kõnesid ja alustada grupivestlusi. Parim selle juures on, et mitte keegi teine ei saa seda näha, isegi mitte Loki Messengeri loojad!\n\nLoe täpsemalt Loki Messengeri loojate Open Whisper Systemsi kohta siit: %@";
 
-/* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Lülitume Signalile";
+/* subject of email sent to contacts when inviting to install Loki Messenger */
+"EMAIL_INVITE_SUBJECT" = "Lülitume Loki Messengerile";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Ükski sinu kontaktidest ei kasuta Signalit.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Ükski sinu kontaktidest ei kasuta Loki Messengerit.";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Miks mitte kutsuda keegi?";
@@ -853,13 +853,13 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Vale PIN-kood.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Sisesta registreerimisluku PIN-kood. Seda PIN-koodi küsitakse sinult järgmisel korral, kui registreerid seda telefoninumbrit Signalis.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Sisesta registreerimisluku PIN-kood. Seda PIN-koodi küsitakse sinult järgmisel korral, kui registreerid seda telefoninumbrit Loki Messengeris.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Turvalisuse tõstmiseks luba registreerimisluku PIN-kood, mida nõutakse selle telefoninumbri Signalis uuesti registreerimisel.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Turvalisuse tõstmiseks luba registreerimisluku PIN-kood, mida nõutakse selle telefoninumbri Loki Messengeris uuesti registreerimisel.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registreerimislukk on lubatud. Pead sisestama PIN-koodi, kui registreerid selle telefoninumbri Signalis uuesti.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registreerimislukk on lubatud. Pead sisestama PIN-koodi, kui registreerid selle telefoninumbri Loki Messengeris uuesti.";
 
 /* Title for the 'enable two factor auth PIN' views. */
 "ENABLE_2FA_VIEW_TITLE" = "Registreerimislukk";
@@ -885,8 +885,8 @@
 /* Error message indicating that message send failed due to failed attachment write */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Manuse kirjutamine ja saatmine ei õnnestunud.";
 
-/* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal-il ei õnnestunud internetti ühenduda. Palun proovi uuesti.";
+/* Generic error used whenever Loki Messenger can't contact the server */
+"ERROR_DESCRIPTION_NO_INTERNET" = "Loki Messenger-il ei õnnestunud internetti ühenduda. Palun proovi uuesti.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Sõnumi saatmine ei õnnestunud kehtivate saajate puudumise tõttu.";
@@ -901,7 +901,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Vigane vastus teenuselt.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "See seade ei ole enam sinu telefoninumbriga registreeritud. Palun paigalda Signal uuesti.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "See seade ei ole enam sinu telefoninumbriga registreeritud. Palun paigalda Loki Messenger uuesti.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serveri tõrge. Palun proovi hiljem uuesti.";
@@ -910,10 +910,10 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Ilmnes tundmatu tõrge.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt ei ole Signali kasutaja.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt ei ole Loki Messengeri kasutaja.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Manuse tõrge: palu sellel kontaktil saata see sõnum uuesti pärast Signal-i uuendamist uusimale versioonile.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Manuse tõrge: palu sellel kontaktil saata see sõnum uuesti pärast Loki Messenger-i uuendamist uusimale versioonile.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Saabus duplikaatsõnum.";
@@ -1062,16 +1062,16 @@
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Otsi";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Some of your contacts are already on Signal, including %@.";
+/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Loki Messenger contact.  Embeds {{The name of 1 of your Loki Messenger contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Some of your contacts are already on Loki Messenger, including %@.";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@ and %@";
+/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Loki Messenger contacts.  Embeds {{The names of 2 of your Loki Messenger contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Some of your contacts are already on Loki Messenger, including %@ and %@";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@, %@ and %@";
+/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Loki Messenger contacts.  Embeds {{The names of 3 of your Loki Messenger contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Some of your contacts are already on Loki Messenger, including %@, %@ and %@";
 
-/* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
+/* A label offering to start a new conversation with your contacts, if you have no Loki Messenger contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first conversation here.";
 
 /* Format string when search returns no results. Embeds {{search term}} */
@@ -1081,7 +1081,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Arhiiv";
 
 /* Title for the home view's default mode. */
-"HOME_VIEW_TITLE_INBOX" = "Signal";
+"HOME_VIEW_TITLE_INBOX" = "Loki Messenger";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Sa ei saa jagada rohkem kui %@ üksust.";
@@ -1111,7 +1111,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Lisa oma postkasti midagi, näiteks alusta sõbraga sõnumite vahetamist.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Sul on võimalik iOSi sätetes lubada juurdepääs kontaktidele, et näha Signal-i vestluste nimekirjas kontaktide nimesid.";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Sul on võimalik iOSi sätetes lubada juurdepääs kontaktidele, et näha Loki Messenger-i vestluste nimekirjas kontaktide nimesid.";
 
 /* info message text in conversation view */
 "INCOMING_CALL" = "Sissetulev kõne";
@@ -1129,13 +1129,13 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Vigane audiofail.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Sul on võimalik iOSi sätetes lubada juurdepääs kontaktidele, et saaksid kutsuda sõpru Signal-it kasutama.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Sul on võimalik iOSi sätetes lubada juurdepääs kontaktidele, et saaksid kutsuda sõpru Loki Messenger-it kasutama.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Ligipääs kontaktidele";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Kutsu sõpru Signalisse";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Kutsu sõpru Loki Messengerisse";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Otsi";
@@ -1317,7 +1317,7 @@
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Loetud";
 
-/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
+/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Loki Messenger account. */
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Vahele jäetud";
 
 /* Label indicating that a message failed to send. */
@@ -1376,17 +1376,17 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Sul on võimalik iOSi sätetes lubada juurdepääs kaamerale, et teha Signal-iga videokõnesid.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Sul on võimalik iOSi sätetes lubada juurdepääs kaamerale, et teha Loki Messenger-iga videokõnesid.";
 
 /* Alert title
    Alert title when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Signal vajab ligipääsu sinu kaamerale.";
+"MISSING_CAMERA_PERMISSION_TITLE" = "Loki Messenger vajab ligipääsu sinu kaamerale.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Sul on võimalik lubada see õigus iOSi sätete rakenduses.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal vajab selle funktsiooni kasutamiseks ligipääsu sinu fotodele.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Loki Messenger vajab selle funktsiooni kasutamiseks ligipääsu sinu fotodele.";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Rohkem seadmeid pole võimalik ühendada.";
@@ -1478,7 +1478,7 @@
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Nimi või sisu puudub";
 
-/* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
+/* Table cell switch label. When disabled, Loki Messenger will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "Mängi, kui rakendus on avatud";
 
 /* Label for settings UI that allows user to change the notification sound. */
@@ -1521,7 +1521,7 @@
 "ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "Mitte praegu";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Signal can let you know when you get a message (and who it is from)";
+"ONBOARDING_PERMISSIONS_TITLE" = "Loki Messenger can let you know when you get a message (and who it is from)";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Sisesta alustamiseks oma telefoninumber";
@@ -1530,7 +1530,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Vigane number";
 
 /* Explanation in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_EXPLANATION" = "Signal profiles are end-to-end encrypted and the Signal service never has access to this information.";
+"ONBOARDING_PROFILE_EXPLANATION" = "Loki Messenger profiles are end-to-end encrypted and the Loki Messenger service never has access to this information.";
 
 /* Placeholder text for the profile name in the 'onboarding profile' view. */
 "ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Your Name";
@@ -1586,8 +1586,8 @@
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ määras kaduvate sõnumite ajaks %@.";
 
-/* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "Signalil on hetkel tehnilisi raskusi. Tegeleme tõsiselt teenuse taastamisega nii kiiresti kui võimalik.";
+/* Label warning the user that the Loki Messenger service may be down. */
+"OUTAGE_WARNING" = "Loki Messengeril on hetkel tehnilisi raskusi. Tegeleme tõsiselt teenuse taastamisega nii kiiresti kui võimalik.";
 
 /* info message text in conversation view */
 "OUTGOING_CALL" = "Väljuv kõne";
@@ -1680,19 +1680,19 @@
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Lõikepuhvris olev number ei paista olema korrektne selle vestluse turvanumber.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal ei leidnud sinu lõikepuhvrist ühtegi turvanumbrit. Kas sa kopeerisid selle korrektselt?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Loki Messenger ei leidnud sinu lõikepuhvrist ühtegi turvanumbrit. Kas sa kopeerisid selle korrektselt?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Iga Signali kasutajate paar omab eraldi turvanumbrit. Kontrolli üle, kas %@ näitab *sinu* kindlat turvanumbrit.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Iga Loki Messengeri kasutajate paar omab eraldi turvanumbrit. Kontrolli üle, kas %@ näitab *sinu* kindlat turvanumbrit.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Sa kasutad Signali vana versiooni. Kinnitamiseks pead kõigepealt rakendust uuendama.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Sa kasutad Loki Messengeri vana versiooni. Kinnitamiseks pead kõigepealt rakendust uuendama.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Sinu kaaslane kasutab Signali vana versiooni. Ta peab kinnitamiseks kõigepealt rakendust uuendama.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Sinu kaaslane kasutab Loki Messengeri vana versiooni. Ta peab kinnitamiseks kõigepealt rakendust uuendama.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skannitud kood ei paista olema turvanumber. Kas te mõlemad kasutate uusimat Signal-i versiooni?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skannitud kood ei paista olema turvanumber. Kas te mõlemad kasutate uusimat Loki Messenger-i versiooni?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Kui soovid kinnitada otspunktkrüpteerimist kasutajaga %@, siis võrdle ülalolevaid numbreid numbritega nende seadmes.\n\nTeise võimalusena saad skannida koodi tema telefonist või paluda tal sinu koodi skannida..";
@@ -1731,7 +1731,7 @@
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Pilt";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Sinu Signali profiil on sinu kontaktidele nähtav, kui alustad uusi vestlusi või kui jagad seda teiste kasutajate ja gruppidega.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Sinu Loki Messengeri profiil on sinu kontaktidele nähtav, kui alustad uusi vestlusi või kui jagad seda teiste kasutajate ja gruppidega.";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Rohkema info saamiseks klõpsa siia.";
@@ -1797,7 +1797,7 @@
 "REGISTER_2FA_FORGOT_PIN" = "Ma unustasin PIN-koodi.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Selle telefoninumbri registreerimine ilma registreerimisluku PIN-koodita on võimalik pärast 7 päeva möödumist telefoninumbri viimasest aktiivsusest Signalis.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Selle telefoninumbri registreerimine ilma registreerimisluku PIN-koodita on võimalik pärast 7 päeva möödumist telefoninumbri viimasest aktiivsusest Loki Messengeris.";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Sisesta";
@@ -1830,13 +1830,13 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Sinu kontot pole võimalik aktiveerida enne kui oled kinnitanud koodi, mille sulle saatsime.";
 
 /* alert body when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_BODY" = "Praegu registreerimine keelab Signali kõigis teistes praegu selle telefoninumbriga registreeritud seadmetes.";
+"REGISTRATION_IPAD_CONFIRM_BODY" = "Praegu registreerimine keelab Loki Messengeri kõigis teistes praegu selle telefoninumbriga registreeritud seadmetes.";
 
 /* button text to proceed with registration when on an iPad */
 "REGISTRATION_IPAD_CONFIRM_BUTTON" = "Registreeri see iPad";
 
 /* alert title when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_TITLE" = "Kas sul juba on Signali konto?";
+"REGISTRATION_IPAD_CONFIRM_TITLE" = "Kas sul juba on Loki Messengeri konto?";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "See telefoninumber pole toetatud, palun võta ühendust kasutajatoega.";
@@ -1875,13 +1875,13 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Telefoninumber, mida soovid registreerida on juba registreeritud teise serverisse. Palun eemalda registreerimine sealt ja proovi uuesti.";
 
 /* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "Registreerimislukk on aktiveeritud Su numbrile. Signal küsib registreerimisluku PIN-koodi perioodiliselt, et see Sul meeles püsiks.";
+"REMINDER_2FA_BODY" = "Registreerimislukk on aktiveeritud Su numbrile. Loki Messenger küsib registreerimisluku PIN-koodi perioodiliselt, et see Sul meeles püsiks.";
 
 /* Body header for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY_HEADER" = "Meeldetuletus:";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registreerimislukk aitab kaitsta sinu telefoninumbrit lubamatute registreerimiskatsete eest. Seda funktsiooni on võimalik igal ajal keelata Signali privaatsuse sätete all.";
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registreerimislukk aitab kaitsta sinu telefoninumbrit lubamatute registreerimiskatsete eest. Seda funktsiooni on võimalik igal ajal keelata Loki Messengeri privaatsuse sätete all.";
 
 /* Navbar title for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_NAV_TITLE" = "Sisesta registreerimisluku PIN-kood";
@@ -1908,7 +1908,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Saada ikkagi";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Meie Signali turvanumber:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Meie Loki Messengeri turvanumber:\n%@";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Sinu turvanumber kasutajaga %@ on muutunud. Soovitame seda kinnitada.";
@@ -1940,14 +1940,14 @@
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Ekraaniluku kasutamiseks pead lubama iOSi sätetes ekraani lukustamise.";
 
-/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Signali avamiseks pead autentima.";
+/* Description of how and why Loki Messenger iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Loki Messengeri avamiseks pead autentima.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Autentimine ei õnnestunud";
 
-/* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Ava Signal";
+/* Label for button on lock screen that lets users unlock Loki Messenger. */
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Ava Loki Messenger";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Otsi nime või numbri järgi";
@@ -1986,9 +1986,9 @@
 "SEND_INVITE_FAILURE" = "Kutse saatmine ei õnnestunud, palun proovi hiljem uuesti.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "Sa kutsusid oma sõbra Signal-it kasutama!";
+"SEND_INVITE_SUCCESS" = "Sa kutsusid oma sõbra Loki Messenger-it kasutama!";
 
-/* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
+/* Text for button to send a Loki Messenger invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Kutsu SMS abil: %@";
 
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
@@ -2007,7 +2007,7 @@
 "SEND_SMS_CONFIRM_TITLE" = "Kas kutsuda sõber ebaturvalise SMS abil?";
 
 /* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "Kas sa soovid seda numbrit kutsuda Signalit kasutama?";
+"SEND_SMS_INVITE_TITLE" = "Kas sa soovid seda numbrit kutsuda Loki Messengerit kasutama?";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "Teave";
@@ -2028,7 +2028,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Asukoht: %@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Kui on lubatud, siis püüab Signal tsenseerimisest mööda hiilida. Luba see funktsioon vaid siis, kui oled kohas, kus Signal on tsenseeritud.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Kui on lubatud, siis püüab Loki Messenger tsenseerimisest mööda hiilida. Luba see funktsioon vaid siis, kui oled kohas, kus Loki Messenger on tsenseeritud.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Tsenseerimisest möödahiilimine on aktiveeritud sinu konto telefoninumbri järgi.";
@@ -2039,8 +2039,8 @@
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Tsenseerimisest möödahiilimist saab aktiveerida ainult Internetis olles.";
 
-/* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Tsenseerimisest möödahiilimine pole vajalik, sa oled juba Signali teenusega ühendatud.";
+/* Table footer for the 'censorship circumvention' section shown when the app is connected to the Loki Messenger service. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Tsenseerimisest möödahiilimine pole vajalik, sa oled juba Loki Messengeri teenusega ühendatud.";
 
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Tsenseerimisest möödahiilimine";
@@ -2108,8 +2108,8 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Lisa blokeeritud kasutaja";
 
-/* A label that indicates the user has no Signal contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Sul pole Signalis kontakte.";
+/* A label that indicates the user has no Loki Messenger contacts. */
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Sul pole Loki Messengeris kontakte.";
 
 /* A label that indicates the user's search has no matching results. */
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Otsingu tulemusi pole";
@@ -2121,13 +2121,13 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Alati edastada kõned";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Vahenda kõik kõned läbi Signal-i serveri, et hoiduda enda IP-aadressi paljastamisest oma kontaktile. Selle lubamine vähendab kõne kvaliteeti.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Vahenda kõik kõned läbi Loki Messenger-i serveri, et hoiduda enda IP-aadressi paljastamisest oma kontaktile. Selle lubamine vähendab kõne kvaliteeti.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Tühjenda suhtluste ajalugu";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Autoriõigus Signal Messenger \nLitsentsitud GPLv3 litsentsiga";
+"SETTINGS_COPYRIGHT" = "Autoriõigus Loki Messenger Messenger \nLitsentsitud GPLv3 litsentsiga";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Kustuta konto";
@@ -2211,7 +2211,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Ekraaniluku aegumine";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Ava Signali ekraan, kasutades Touch ID-d, Face ID-d või oma iOS seadme salasõna. Kui ekraanilukk on lubatud, on sul võimalik vastata sissetulevatele kõnedele ja saada teavitusi sõnumite kohta. Signali teavituste sätted võimaldavad kuvatavat teavet kohandada.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Ava Loki Messengeri ekraan, kasutades Touch ID-d, Face ID-d või oma iOS seadme salasõna. Kui ekraanilukk on lubatud, on sul võimalik vastata sissetulevatele kõnedele ja saada teavitusi sõnumite kohta. Loki Messengeri teavituste sätted võimaldavad kuvatavat teavet kohandada.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Ekraanilukk";
@@ -2223,10 +2223,10 @@
 "SETTINGS_SCREEN_SECURITY" = "Luba ekraani turvalisus";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Enneta Signali eelvaadete ilmumist rakenduste vahetajas";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Enneta Loki Messengeri eelvaadete ilmumist rakenduste vahetajas";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOSi kõnede integratsioon näitab Signali kõnesid sinu lukustusekraanil ja süsteemi kõneajaloos. Lisaks on võimalik näidata kontakti nime ja numbrit. Kui iCloud on lubatud, siis jagatakse kõnede ajalugu Apple'iga.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOSi kõnede integratsioon näitab Loki Messengeri kõnesid sinu lukustusekraanil ja süsteemi kõneajaloos. Lisaks on võimalik näidata kontakti nime ja numbrit. Kui iCloud on lubatud, siis jagatakse kõnede ajalugu Apple'iga.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "Teavitused";
@@ -2298,13 +2298,13 @@
 "SHARE_EXTENSION_LOADING" = "Laadimine...";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Registreerimiseks käivita Signal rakendus.";
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Registreerimiseks käivita Loki Messenger rakendus.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Pole registreeritud";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Uuendamiseks või registreerimiseks käivita rakendus Signal.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Uuendamiseks või registreerimiseks käivita rakendus Loki Messenger.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Pole valmis";
@@ -2315,11 +2315,11 @@
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Üleslaadimine...";
 
-/* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
+/* Shown when trying to share content to a Loki Messenger user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Manuse ettevalmistamine pole võimalik";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "Jaga Signalis";
+"SHARE_EXTENSION_VIEW_TITLE" = "Jaga Loki Messengeris";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Näita turvanumbrit";
@@ -2327,8 +2327,8 @@
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Näita vestlust";
 
-/* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "Kutsun sind Signalit paigaldama. Siin on veebilink:";
+/* body sent to contacts when inviting to Install Loki Messenger */
+"SMS_INVITE_BODY" = "Kutsun sind Loki Messengerit paigaldama. Siin on veebilink:";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Puudub";
@@ -2415,13 +2415,13 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Kas eemaldada ühendus \"%@\"?";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "Signalil ei õnnestunud sinu seadme ühendust eemaldada.";
+"UNLINKING_FAILED_ALERT_TITLE" = "Loki Messengeril ei õnnestunud sinu seadme ühendust eemaldada.";
 
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "Nimetu seade";
 
 /* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Signalist registreerimise eemaldamine ei õnnestunud.";
+"UNREGISTER_SIGNAL_FAIL" = "Loki Messengerist registreerimise eemaldamine ei õnnestunud.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Saabus mittetoetatud tüüpi manus.";
@@ -2451,7 +2451,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Valikulised linkide eelvaated on nüüd toetatud populaarseimate saitide puhul.";
 
 /* Subtitle for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "Seda funktsiooni on võimalik igal ajal keelata või lubada Signali sätetes (Privaatsus > Saada linkide eelvaateid).";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "Seda funktsiooni on võimalik igal ajal keelata või lubada Loki Messengeri sätetes (Privaatsus > Saada linkide eelvaateid).";
 
 /* Header for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Linkide eelvaated";
@@ -2469,7 +2469,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Seadista profiil";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Nüüd saad Signalis jagada profiili fotot ja nime oma sõpradega.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Nüüd saad Loki Messengeris jagada profiili fotot ja nime oma sõpradega.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Kas oled foto tegemiseks valmis?";
@@ -2490,13 +2490,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Tutvustame sisestamisindikaatoreid";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal toetab nüüd turvalist videokõnet. Alusta kõnet nagu tavaliselt, klõpsa kaameranuppu ja lehvita tervituseks.";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Loki Messenger toetab nüüd turvalist videokõnet. Alusta kõnet nagu tavaliselt, klõpsa kaameranuppu ja lehvita tervituseks.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Tere, turvalised videokõned!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 10 or later. Please upgrade in Settings app >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Loki Messenger will soon require iOS 10 or later. Please upgrade in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Uuenda iOSi";
@@ -2535,7 +2535,7 @@
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Häälsõnum";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Lõpeta paigaldus Signal Desktopis.";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Lõpeta paigaldus Loki Messenger Desktopis.";
 
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Sa keelasid kaduvad sõnumid.";

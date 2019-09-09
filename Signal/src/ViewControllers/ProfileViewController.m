@@ -118,7 +118,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     UILabel *nameLabel = [UILabel new];
     nameLabel.text = NSLocalizedString(@"Display Name", @"");
     nameLabel.textColor = Theme.primaryColor;
-    nameLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
+    nameLabel.font = [UIFont ows_regularFontWithSize:fontSizePoints];
     [nameRow addSubview:nameLabel];
     [nameLabel autoPinLeadingToSuperviewMargin];
     [nameLabel autoPinHeightToSuperviewWithMargin:5.f];
@@ -130,14 +130,15 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         nameTextField = [OWSTextField new];
     }
     _nameTextField = nameTextField;
-    nameTextField.font = [UIFont ows_mediumFontWithSize:18.f];
-    nameTextField.textColor = [UIColor ows_materialBlueColor];
+    nameTextField.font = [UIFont ows_regularFontWithSize:18.f];
+    nameTextField.textColor = UIColor.whiteColor;
+    nameTextField.tintColor = UIColor.lokiGreen;
     nameTextField.placeholder = NSLocalizedString(
         @"PROFILE_VIEW_NAME_DEFAULT_TEXT", @"Default text for the profile name field of the profile view.");
     nameTextField.delegate = self;
     nameTextField.text = [OWSProfileManager.sharedManager localProfileName];
     nameTextField.textAlignment = NSTextAlignmentRight;
-    nameTextField.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
+    nameTextField.font = [UIFont ows_regularFontWithSize:fontSizePoints];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, nameTextField);
     [nameTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
     [nameRow addSubview:nameTextField];

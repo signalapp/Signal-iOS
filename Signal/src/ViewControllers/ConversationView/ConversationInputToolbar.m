@@ -61,6 +61,7 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic, readonly) UIButton *voiceMemoButton;
 @property (nonatomic, readonly) UIView *quotedReplyWrapper;
 @property (nonatomic, readonly) UIView *linkPreviewWrapper;
+@property (nonatomic, readonly) UIView *borderView;
 
 @property (nonatomic) CGFloat textViewHeight;
 @property (nonatomic, readonly) NSLayoutConstraint *textViewHeightConstraint;
@@ -120,7 +121,7 @@ const CGFloat kMaxTextViewHeight = 98;
         self.backgroundColor = Theme.toolbarBackgroundColor;
     } else {
         CGFloat alpha = OWSNavigationBar.backgroundBlurMutingFactor;
-        self.backgroundColor = UIColor.lokiDarkerGray;
+        self.backgroundColor = [UIColor.lokiDarkerGray colorWithAlphaComponent:alpha];
 
         UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:Theme.barBlurEffect];
         blurEffectView.layer.zPosition = -1;
@@ -250,17 +251,17 @@ const CGFloat kMaxTextViewHeight = 98;
     // The border must reside _outside_ of vStackWrapper so
     // that it doesn't run afoul of its clipping, so we can't
     // use addBorderViewWithColor.
-    UIView *borderView = [UIView new];
-    borderView.userInteractionEnabled = NO;
-    borderView.backgroundColor = UIColor.clearColor;
-    borderView.opaque = NO;
-    borderView.layer.borderColor = Theme.secondaryColor.CGColor;
-    borderView.layer.borderWidth = CGHairlineWidth();
-    borderView.layer.cornerRadius = vStackRounding;
-    [self addSubview:borderView];
-    [borderView autoPinToEdgesOfView:vStackWrapper];
-    [borderView setCompressionResistanceLow];
-    [borderView setContentHuggingLow];
+    _borderView = [UIView new];
+    self.borderView.userInteractionEnabled = NO;
+    self.borderView.backgroundColor = UIColor.clearColor;
+    self.borderView.opaque = NO;
+    self.borderView.layer.borderColor = Theme.secondaryColor.CGColor;
+    self.borderView.layer.borderWidth = CGHairlineWidth();
+    self.borderView.layer.cornerRadius = vStackRounding;
+    [self addSubview:self.borderView];
+    [self.borderView autoPinToEdgesOfView:vStackWrapper];
+    [self.borderView setCompressionResistanceLow];
+    [self.borderView setContentHuggingLow];
 
     [self ensureShouldShowVoiceMemoButtonAnimated:NO doLayout:NO];
 }
@@ -1067,6 +1068,12 @@ const CGFloat kMaxTextViewHeight = 98;
 
     self.inputLinkPreview = nil;
     [self clearLinkPreviewStateAndView];
+}
+
+- (void)hideInputMethod
+{
+    self.hStack.hidden = YES;
+    self.borderView.hidden = YES;
 }
 
 @end

@@ -579,11 +579,15 @@ typedef enum : NSUInteger {
         return;
     }
 
-    if (self.userLeftGroup || self.isRSSFeed) {
+    if (self.userLeftGroup) {
         self.inputToolbar.hidden = YES; // user has requested they leave the group. further sends disallowed
         [self dismissKeyBoard];
     } else {
         self.inputToolbar.hidden = NO;
+    }
+
+    if (self.isRSSFeed) {
+        [self.inputToolbar hideInputMethod];
     }
 }
 

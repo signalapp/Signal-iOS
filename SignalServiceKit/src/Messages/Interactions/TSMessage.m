@@ -48,8 +48,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
  */
 @property (nonatomic, readonly) NSUInteger schemaVersion;
 
-@property (nonatomic, nullable) OWSLinkPreview *linkPreview;
-
 @end
 
 #pragma mark -

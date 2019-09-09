@@ -231,8 +231,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)scrollButtonBackgroundColor
 {
-    return Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.25f alpha:1.f]
-                                    : [UIColor colorWithWhite:0.95f alpha:1.f];
+    return UIColor.lokiDarkerGray;
 }
 
 @end
