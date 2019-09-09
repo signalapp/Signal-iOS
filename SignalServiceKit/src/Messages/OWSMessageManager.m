@@ -1386,9 +1386,8 @@ NS_ASSUME_NONNULL_BEGIN
                     [pointer saveWithTransaction:transaction];
                     [incomingMessage.attachmentIds addObject:pointer.uniqueId];
                 }
-
-                // Loki: Do this before the check below
-                [self handleFriendRequestMessageIfNeededWithEnvelope:envelope message:incomingMessage thread:oldGroupThread transaction:transaction];
+                
+                // Loki: Don't process friend requests in the group chats
                 
                 if (body.length == 0 && attachmentPointers.count < 1 && !contact) {
                     OWSLogWarn(@"ignoring empty incoming message from: %@ for group: %@ with timestamp: %lu",
@@ -1528,8 +1527,8 @@ NS_ASSUME_NONNULL_BEGIN
 // The difference between this function and `handleFriendRequestAcceptIfNeededWithEnvelope:` is that this will setup the incoming message for display to the user
 // While `handleFriendRequestAcceptIfNeededWithEnvelope:` handles friend request accepting logic and doesn't need a message
 - (void)handleFriendRequestMessageIfNeededWithEnvelope:(SSKProtoEnvelope *)envelope message:(TSIncomingMessage *)message thread:(TSThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    // Check if it's a friend request message
-    if (envelope.type != SSKProtoEnvelopeTypeFriendRequest) return;
+    // Check if it's a friend request message and make sure it's not a group message
+    if (envelope.isGroupChatMessage || envelope.type != SSKProtoEnvelopeTypeFriendRequest) return;
     
     if (thread.hasCurrentUserSentFriendRequest) {
         // This can happen if Alice sent Bob a friend request, Bob declined, but then Bob changed his
@@ -1564,13 +1563,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleFriendRequestAcceptIfNeededWithEnvelope:(SSKProtoEnvelope *)envelope transaction:(YapDatabaseReadWriteTransaction *)transaction {
     // If we get any other envelope type then we can assume that we had to use signal cipher decryption
     // and that means we must have a session with the other person.
-    if (envelope.type == SSKProtoEnvelopeTypeFriendRequest) return;
+    // We also need to ensure that we're contacting the person directly and not through a public chat
+    if (envelope.isGroupChatMessage || envelope.type == SSKProtoEnvelopeTypeFriendRequest) return;
     
     // If we're already friends then there's no point in continuing
     // TODO: We'll need to fix this up if we ever start using Sync messages
     // Currently it'll use `envelope.source` but with sync messages we need to use the message sender id
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
-    if (thread.isContactFriend) return;
+    if (thread.isContactFriend || thread.friendRequestStatus == LKThreadFriendRequestStatusNone) return;
     
     // Become happy friends and go on great adventures
     [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];
