@@ -1504,21 +1504,25 @@ NS_ASSUME_NONNULL_BEGIN
                                thread:thread
                              envelope:envelope
                           transaction:transaction];
-
-        if (linkPreview != nil) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [OWSLinkPreview tryToBuildPreviewInfoObjcWithPreviewUrl:linkPreview.urlString]
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSString *linkPreviewURL;
+            if (linkPreview != nil) {
+                linkPreviewURL = linkPreview.urlString;
+            } else {
+                linkPreviewURL = [OWSLinkPreview previewURLForRawBodyText:incomingMessage.body];
+            }
+            if (linkPreviewURL != nil) {
+                [OWSLinkPreview tryToBuildPreviewInfoObjcWithPreviewUrl:linkPreviewURL]
                 .thenOn(dispatch_get_main_queue(), ^(OWSLinkPreviewDraft *linkPreviewDraft) {
-                    if (linkPreviewDraft.jpegImageData == nil) { return; }
                     [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        NSString *attachmentID = [OWSLinkPreview buildValidatedLinkPreviewFromInfo:linkPreviewDraft transaction:transaction error:nil].imageAttachmentId;
-                        linkPreview.imageAttachmentId = attachmentID;
+                        OWSLinkPreview *linkPreview = [OWSLinkPreview buildValidatedLinkPreviewFromInfo:linkPreviewDraft transaction:transaction error:nil];
                         incomingMessage.linkPreview = linkPreview;
                         [incomingMessage saveWithTransaction:transaction];
                     }];
                 });
-            });
-        };
+            }
+        });
         
         return incomingMessage;
     }
