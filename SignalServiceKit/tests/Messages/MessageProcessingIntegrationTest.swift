@@ -113,7 +113,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         }
         observer.appendSnapshotDelegate(snapshotDelegate)
 
-        let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient)
+        let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
         envelopeBuilder.setSourceE164(bobClient.e164Identifier!)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
         messageReceiver.handleReceivedEnvelopeData(envelopeData)
@@ -170,7 +170,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         }
         observer.appendSnapshotDelegate(snapshotDelegate)
 
-        let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient)
+        let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
         envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
         messageReceiver.handleReceivedEnvelopeData(envelopeData)
