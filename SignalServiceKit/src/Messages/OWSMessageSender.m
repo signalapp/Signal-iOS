@@ -1544,7 +1544,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             
             // A friend request means we don't have a session with the person
             // There's no point to check for it
-            Boolean isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
+            BOOL isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
             if (!isFriendRequest) {
                 [self throws_ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
             }
