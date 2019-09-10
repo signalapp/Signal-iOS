@@ -28,10 +28,12 @@ public class Batching: NSObject {
         }
 
         // With batching.
-        while true {
+        var stop = false
+        while !stop {
             try autoreleasepool {
                 for _ in 0..<batchSize {
                     guard conditionBlock() else {
+                        stop = true
                         return
                     }
                     try loopBlock()
