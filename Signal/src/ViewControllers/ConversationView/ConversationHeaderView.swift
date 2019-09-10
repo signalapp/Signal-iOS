@@ -97,10 +97,8 @@ public class ConversationHeaderView: UIStackView {
         self.addArrangedSubview(avatarView)
         self.addArrangedSubview(textRows)
 
-        if (!thread.isGroupThread()) {
-            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapView))
-            self.addGestureRecognizer(tapGesture)
-        }
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapView))
+        self.addGestureRecognizer(tapGesture)
     }
 
     required public init(coder: NSCoder) {

@@ -551,6 +551,7 @@ const CGFloat kIconViewLength = 24;
                             UISlider *slider = [UISlider new];
                             slider.maximumValue = (float)(strongSelf.disappearingMessagesDurations.count - 1);
                             slider.minimumValue = 0;
+                            slider.tintColor = UIColor.lokiGreen;
                             slider.continuous = YES; // NO fires change event only once you let go
                             slider.value = strongSelf.disappearingMessagesConfiguration.durationIndex;
                             [slider addTarget:strongSelf
@@ -600,6 +601,7 @@ const CGFloat kIconViewLength = 24;
 
     // Group settings section.
 
+    /*
     if (self.isGroupThread) {
         NSArray *groupItems = @[
             [OWSTableItem
@@ -651,6 +653,7 @@ const CGFloat kIconViewLength = 24;
                                                                    @"Conversation settings table section title")
                                                          items:groupItems]];
     }
+     */
 
     // Mute thread section.
 
@@ -703,78 +706,80 @@ const CGFloat kIconViewLength = 24;
                             [weakSelf.navigationController pushViewController:vc animated:YES];
                         }]];
 
-        [mainSection
-            addItem:
-                [OWSTableItem
-                    itemWithCustomCellBlock:^{
-                        UITableViewCell *cell =
-                            [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
-                        [OWSTableItem configureCell:cell];
-                        OWSConversationSettingsViewController *strongSelf = weakSelf;
-                        OWSCAssertDebug(strongSelf);
-                        cell.preservesSuperviewLayoutMargins = YES;
-                        cell.contentView.preservesSuperviewLayoutMargins = YES;
-                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        if (!self.thread.isGroupThread) {
+            [mainSection
+                addItem:
+                    [OWSTableItem
+                        itemWithCustomCellBlock:^{
+                            UITableViewCell *cell =
+                                [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
+                            [OWSTableItem configureCell:cell];
+                            OWSConversationSettingsViewController *strongSelf = weakSelf;
+                            OWSCAssertDebug(strongSelf);
+                            cell.preservesSuperviewLayoutMargins = YES;
+                            cell.contentView.preservesSuperviewLayoutMargins = YES;
+                            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
-                        UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_mute_thread"];
+                            UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_mute_thread"];
 
-                        UILabel *rowLabel = [UILabel new];
-                        rowLabel.text = NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_LABEL",
-                            @"label for 'mute thread' cell in conversation settings");
-                        rowLabel.textColor = [Theme primaryColor];
-                        rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
-                        rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+                            UILabel *rowLabel = [UILabel new];
+                            rowLabel.text = NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_LABEL",
+                                @"label for 'mute thread' cell in conversation settings");
+                            rowLabel.textColor = [Theme primaryColor];
+                            rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
+                            rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
-                        NSString *muteStatus = NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_NOT_MUTED",
-                            @"Indicates that the current thread is not muted.");
-                        NSDate *mutedUntilDate = strongSelf.thread.mutedUntilDate;
-                        NSDate *now = [NSDate date];
-                        if (mutedUntilDate != nil && [mutedUntilDate timeIntervalSinceDate:now] > 0) {
-                            NSCalendar *calendar = [NSCalendar currentCalendar];
-                            NSCalendarUnit calendarUnits = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
-                            NSDateComponents *muteUntilComponents =
-                                [calendar components:calendarUnits fromDate:mutedUntilDate];
-                            NSDateComponents *nowComponents = [calendar components:calendarUnits fromDate:now];
-                            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-                            if (nowComponents.year != muteUntilComponents.year
-                                || nowComponents.month != muteUntilComponents.month
-                                || nowComponents.day != muteUntilComponents.day) {
+                            NSString *muteStatus = NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_NOT_MUTED",
+                                @"Indicates that the current thread is not muted.");
+                            NSDate *mutedUntilDate = strongSelf.thread.mutedUntilDate;
+                            NSDate *now = [NSDate date];
+                            if (mutedUntilDate != nil && [mutedUntilDate timeIntervalSinceDate:now] > 0) {
+                                NSCalendar *calendar = [NSCalendar currentCalendar];
+                                NSCalendarUnit calendarUnits = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
+                                NSDateComponents *muteUntilComponents =
+                                    [calendar components:calendarUnits fromDate:mutedUntilDate];
+                                NSDateComponents *nowComponents = [calendar components:calendarUnits fromDate:now];
+                                NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                                if (nowComponents.year != muteUntilComponents.year
+                                    || nowComponents.month != muteUntilComponents.month
+                                    || nowComponents.day != muteUntilComponents.day) {
 
-                                [dateFormatter setDateStyle:NSDateFormatterShortStyle];
-                                [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
-                            } else {
-                                [dateFormatter setDateStyle:NSDateFormatterNoStyle];
-                                [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
+                                    [dateFormatter setDateStyle:NSDateFormatterShortStyle];
+                                    [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
+                                } else {
+                                    [dateFormatter setDateStyle:NSDateFormatterNoStyle];
+                                    [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
+                                }
+
+                                muteStatus = [NSString
+                                    stringWithFormat:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT",
+                                                         @"Indicates that this thread is muted until a given date or time. "
+                                                         @"Embeds {{The date or time which the thread is muted until}}."),
+                                    [dateFormatter stringFromDate:mutedUntilDate]];
                             }
 
-                            muteStatus = [NSString
-                                stringWithFormat:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT",
-                                                     @"Indicates that this thread is muted until a given date or time. "
-                                                     @"Embeds {{The date or time which the thread is muted until}}."),
-                                [dateFormatter stringFromDate:mutedUntilDate]];
+                            UIStackView *contentRow =
+                                [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
+                            contentRow.spacing = strongSelf.iconSpacing;
+                            contentRow.alignment = UIStackViewAlignmentCenter;
+                            [cell.contentView addSubview:contentRow];
+                            [contentRow autoPinEdgesToSuperviewMargins];
+
+                            cell.detailTextLabel.text = muteStatus;
+
+                            cell.accessibilityIdentifier
+                                = ACCESSIBILITY_IDENTIFIER_WITH_NAME(OWSConversationSettingsViewController, @"mute");
+
+                            return cell;
                         }
-
-                        UIStackView *contentRow =
-                            [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
-                        contentRow.spacing = strongSelf.iconSpacing;
-                        contentRow.alignment = UIStackViewAlignmentCenter;
-                        [cell.contentView addSubview:contentRow];
-                        [contentRow autoPinEdgesToSuperviewMargins];
-
-                        cell.detailTextLabel.text = muteStatus;
-
-                        cell.accessibilityIdentifier
-                            = ACCESSIBILITY_IDENTIFIER_WITH_NAME(OWSConversationSettingsViewController, @"mute");
-
-                        return cell;
-                    }
-                    customRowHeight:UITableViewAutomaticDimension
-                    actionBlock:^{
-                        [weakSelf showMuteUnmuteActionSheet];
-                    }]];
-        mainSection.footerTitle = NSLocalizedString(
-            @"MUTE_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of muting a thread.");
-//        [contents addSection:notificationsSection];
+                        customRowHeight:UITableViewAutomaticDimension
+                        actionBlock:^{
+                            [weakSelf showMuteUnmuteActionSheet];
+                        }]];
+            mainSection.footerTitle = NSLocalizedString(
+                @"MUTE_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of muting a thread.");
+//            [contents addSection:notificationsSection];
+        }
     }
     // Block Conversation section.
 
@@ -992,10 +997,12 @@ const CGFloat kIconViewLength = 24;
 
     [lastTitleView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
-    [mainSectionHeader
-        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                     action:@selector(conversationNameTouched:)]];
-    mainSectionHeader.userInteractionEnabled = YES;
+    if (!self.thread.isGroupThread) {
+        [mainSectionHeader
+            addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                         action:@selector(conversationNameTouched:)]];
+        mainSectionHeader.userInteractionEnabled = YES;
+    }
 
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, mainSectionHeader);
 

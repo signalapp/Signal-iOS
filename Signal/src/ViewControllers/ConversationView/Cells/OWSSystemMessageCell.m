@@ -191,6 +191,7 @@ typedef void (^SystemMessageActionBlock)(void);
         [self.button setTitle:self.action.title forState:UIControlStateNormal];
         UIFont *buttonFont = UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
         self.button.titleLabel.font = buttonFont;
+        [self.button setTitleColor:UIColor.lokiGreen forState:UIControlStateNormal];
         self.button.hidden = NO;
     } else {
         self.button.hidden = YES;
