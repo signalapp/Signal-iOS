@@ -1509,13 +1509,10 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                         = (![NSObject isNullableObject:previousIncomingSenderId equalTo:incomingSenderId]
                             || viewItem.hasCellHeader);
                 }
+                
                 if (shouldShowSenderName) {
-                    senderName = [self.contactsManager
-                                  attributedContactOrProfileNameForPhoneIdentifier:incomingSenderId
-                                  primaryAttributes:[OWSMessageBubbleView
-                                                     senderNamePrimaryAttributes]
-                                  secondaryAttributes:[OWSMessageBubbleView
-                                                       senderNameSecondaryAttributes]];
+                    senderName = [self.contactsManager attributedContactOrProfileNameForPhoneIdentifier:incomingSenderId primaryAttributes:[OWSMessageBubbleView senderNamePrimaryAttributes]
+                        secondaryAttributes:[OWSMessageBubbleView senderNameSecondaryAttributes]];
                     
                     if ([self.thread isKindOfClass:[TSGroupThread class]]) {
                         TSGroupThread *groupThread = (TSGroupThread *)self.thread;

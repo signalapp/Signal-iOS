@@ -50,7 +50,6 @@ public final class LokiGroupChatPoller : NSObject {
             let endIndex = senderHexEncodedPublicKey.endIndex
             let cutoffIndex = senderHexEncodedPublicKey.index(endIndex, offsetBy: -8)
             let senderDisplayName = "\(message.displayName) (...\(senderHexEncodedPublicKey[cutoffIndex..<endIndex]))"
-
             let id = group.id.data(using: String.Encoding.utf8)!
             let x1 = SSKProtoGroupContext.builder(id: id, type: .deliver)
             x1.setName(group.displayName)
@@ -69,10 +68,9 @@ public final class LokiGroupChatPoller : NSObject {
             x4.setSource(senderHexEncodedPublicKey)
             x4.setSourceDevice(OWSDevicePrimaryDeviceId)
             x4.setContent(try! x3.build().serializedData())
-            
+        
             let storage = OWSPrimaryStorage.shared()
             storage.dbReadWriteConnection.readWrite { transaction in
-                // Set the display name of the user
                 transaction.setObject(senderDisplayName, forKey: senderHexEncodedPublicKey, inCollection: group.id)
                 SSKEnvironment.shared.messageManager.throws_processEnvelope(try! x4.build(), plaintextData: try! x3.build().serializedData(), wasReceivedByUD: false, transaction: transaction)
             }

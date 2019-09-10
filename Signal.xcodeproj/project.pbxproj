@@ -1666,7 +1666,6 @@
 				4C948FF62146EB4800349F0D /* BlockListCache.swift */,
 				343D3D991E9283F100165CA4 /* BlockListUIUtils.h */,
 				343D3D9A1E9283F100165CA4 /* BlockListUIUtils.m */,
-				241C6312231F5F1D00B4198E /* CGFloat+Rounding.swift */,
 				3466087120E550F300AFFE73 /* ConversationStyle.swift */,
 				34480B4D1FD0A7A300BC14EF /* DebugLogger.h */,
 				34480B4E1FD0A7A300BC14EF /* DebugLogger.m */,
@@ -1699,7 +1698,6 @@
 				45360B8C1F9521F800FA666C /* Searcher.swift */,
 				346129BD1FD2068600532771 /* ThreadUtil.h */,
 				346129BE1FD2068600532771 /* ThreadUtil.m */,
-				241C6310231F5C4400B4198E /* UIColor+Helper.swift */,
 				340872BE22393CF900CB25B0 /* UIGestureRecognizer+OWS.swift */,
 				4C858A51212DC5E1001B45D3 /* UIImage+OWS.swift */,
 				B97940251832BD2400BD66CB /* UIUtil.h */,
@@ -2651,6 +2649,8 @@
 			children = (
 				241C630E231F5AAC00B4198E /* JazzIcon.swift */,
 				B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */,
+				241C6312231F5F1D00B4198E /* CGFloat+Rounding.swift */,
+				241C6310231F5C4400B4198E /* UIColor+Helper.swift */,
 			);
 			path = Loki;
 			sourceTree = "<group>";

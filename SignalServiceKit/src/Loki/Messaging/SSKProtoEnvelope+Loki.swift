@@ -1,3 +1,4 @@
+
 @objc public extension SSKProtoEnvelope {
     
     @objc public var isGroupChatMessage: Bool {
@@ -7,7 +8,5 @@
         } catch {
             return false
         }
-        
-        return true;
     }
 }

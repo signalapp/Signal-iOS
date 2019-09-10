@@ -1,3 +1,4 @@
+
 @objc(LKIdenticon)
 final class Identicon : NSObject {
     
@@ -6,11 +7,7 @@ final class Identicon : NSObject {
         let iconLayer = icon.generateLayer(ofSize: size)
         let rect = CGRect(origin: CGPoint.zero, size: iconLayer.frame.size)
         let renderer = UIGraphicsImageRenderer(size: rect.size)
-        let image = renderer.image {
-            context in
-            
-            return iconLayer.render(in: context.cgContext)
-        }
+        let image = renderer.image { iconLayer.render(in: $0.cgContext) }
         return image
     }
 }
