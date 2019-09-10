@@ -2619,3 +2619,4 @@
 "Loki" = "Loki";
 "Can't Start Conversation" = "Can't Start Conversation";
 "Please enter the public key of the person you'd like to message." = "Please enter the public key of the person you'd like to message.";
+"Loki Messenger is currently in beta. For development purposes the beta version collects basic usage statistics and crash logs. In addition, the beta version doesn't provide full privacy and shouldn't be used to transmit sensitive information." = "Loki Messenger is currently in beta. For development purposes the beta version collects basic usage statistics and crash logs. In addition, the beta version doesn't provide full privacy and shouldn't be used to transmit sensitive information.";

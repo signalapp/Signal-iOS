@@ -30,16 +30,25 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         view.setCompressionResistanceVerticalLow()
         lokiLogoContainer.addSubview(lokiLogoImageView)
         
+        let betaTermsLabel = UILabel()
+        betaTermsLabel.text = NSLocalizedString("Loki Messenger is currently in beta. For development purposes the beta version collects basic usage statistics and crash logs. In addition, the beta version doesn't provide full privacy and shouldn't be used to transmit sensitive information.", comment: "")
+        betaTermsLabel.textColor = .white
+        betaTermsLabel.font = .ows_dynamicTypeSubheadlineClamped
+        betaTermsLabel.numberOfLines = 0
+        betaTermsLabel.textAlignment = .center
+        betaTermsLabel.lineBreakMode = .byWordWrapping
+        betaTermsLabel.accessibilityIdentifier = "onboarding.splash." + "betaTermsLabel"
+        
         let privacyPolicyLabel = UILabel()
         privacyPolicyLabel.text = NSLocalizedString("Privacy Policy", comment: "")
         privacyPolicyLabel.textColor = .ows_materialBlue
-        privacyPolicyLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        privacyPolicyLabel.font = .ows_dynamicTypeSubheadlineClamped
         privacyPolicyLabel.numberOfLines = 0
         privacyPolicyLabel.textAlignment = .center
         privacyPolicyLabel.lineBreakMode = .byWordWrapping
         privacyPolicyLabel.isUserInteractionEnabled = true
         privacyPolicyLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(explanationLabelTapped)))
-        privacyPolicyLabel.accessibilityIdentifier = "onboarding.splash." + "explanationLabel"
+        privacyPolicyLabel.accessibilityIdentifier = "onboarding.splash." + "privacyPolicyLabel"
 
         let continueButton = self.createButton(title: NSLocalizedString("BUTTON_CONTINUE", comment: "Label for 'continue' button."), selector: #selector(continuePressed))
         view.addSubview(continueButton)
@@ -48,6 +57,8 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
             lokiLogoContainer,
+            betaTermsLabel,
+            UIView.spacer(withHeight: 24),
             privacyPolicyLabel,
             UIView.spacer(withHeight: 24),
             continueButton
