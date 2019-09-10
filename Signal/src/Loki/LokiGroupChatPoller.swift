@@ -65,11 +65,13 @@ public final class LokiGroupChatPoller : NSObject {
             let x3 = SSKProtoContent.builder()
             x3.setDataMessage(try! x2.build())
             let x4 = SSKProtoEnvelope.builder(type: .ciphertext, timestamp: message.timestamp)
-            x4.setSource(senderDisplayName)
+            x4.setSource(senderHexEncodedPublicKey)
             x4.setSourceDevice(OWSDevicePrimaryDeviceId)
             x4.setContent(try! x3.build().serializedData())
+        
             let storage = OWSPrimaryStorage.shared()
             storage.dbReadWriteConnection.readWrite { transaction in
+                transaction.setObject(senderDisplayName, forKey: senderHexEncodedPublicKey, inCollection: group.id)
                 SSKEnvironment.shared.messageManager.throws_processEnvelope(try! x4.build(), plaintextData: try! x3.build().serializedData(), wasReceivedByUD: false, transaction: transaction)
             }
         }
