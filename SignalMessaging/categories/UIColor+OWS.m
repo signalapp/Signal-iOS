@@ -81,12 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIColor *)ows_systemPrimaryButtonColor
 {
-    static UIColor *sharedColor;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^(void) {
-        sharedColor = [UIView new].tintColor;
-    });
-    return sharedColor;
+    return UIColor.lokiGreen;
 }
 
 + (UIColor *)ows_messageBubbleLightGrayColor

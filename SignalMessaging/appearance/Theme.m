@@ -175,7 +175,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)galleryHighlightColor
 {
-    return [UIColor colorWithRGBHex:0x1f8fe8];
+    return UIColor.lokiGreen;
 }
 
 + (UIColor *)conversationButtonBackgroundColor

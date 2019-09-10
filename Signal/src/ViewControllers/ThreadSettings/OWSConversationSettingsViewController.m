@@ -374,8 +374,10 @@ const CGFloat kIconViewLength = 24;
                              actionBlock:^{
                                  [weakSelf showMediaGallery];
                              }]];
-
-    if (SSKFeatureFlags.conversationSearch) {
+     
+     if (SSKFeatureFlags.conversationSearch) {
+     * ========
+     */
         [mainSection addItem:[OWSTableItem
                                  itemWithCustomCellBlock:^{
                                      NSString *title = NSLocalizedString(@"CONVERSATION_SETTINGS_SEARCH",
@@ -390,6 +392,7 @@ const CGFloat kIconViewLength = 24;
                                  actionBlock:^{
                                      [weakSelf tappedConversationSearch];
                                  }]];
+    /*
     }
 
     if (!isNoteToSelf && !self.isGroupThread && self.thread.hasSafetyNumbers) {
@@ -652,12 +655,12 @@ const CGFloat kIconViewLength = 24;
     // Mute thread section.
 
     if (!isNoteToSelf) {
-        OWSTableSection *notificationsSection = [OWSTableSection new];
+//        OWSTableSection *notificationsSection = [OWSTableSection new];
         // We need a section header to separate the notifications UI from the group settings UI.
-        notificationsSection.headerTitle = NSLocalizedString(
-            @"SETTINGS_SECTION_NOTIFICATIONS", @"Label for the notifications section of conversation settings view.");
+//        notificationsSection.headerTitle = NSLocalizedString(
+//            @"SETTINGS_SECTION_NOTIFICATIONS", @"Label for the notifications section of conversation settings view.");
 
-        [notificationsSection
+        [mainSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
                             UITableViewCell *cell =
@@ -700,7 +703,7 @@ const CGFloat kIconViewLength = 24;
                             [weakSelf.navigationController pushViewController:vc animated:YES];
                         }]];
 
-        [notificationsSection
+        [mainSection
             addItem:
                 [OWSTableItem
                     itemWithCustomCellBlock:^{
@@ -769,9 +772,9 @@ const CGFloat kIconViewLength = 24;
                     actionBlock:^{
                         [weakSelf showMuteUnmuteActionSheet];
                     }]];
-        notificationsSection.footerTitle = NSLocalizedString(
+        mainSection.footerTitle = NSLocalizedString(
             @"MUTE_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of muting a thread.");
-        [contents addSection:notificationsSection];
+//        [contents addSection:notificationsSection];
     }
     // Block Conversation section.
 
