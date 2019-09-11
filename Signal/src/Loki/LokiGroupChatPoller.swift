@@ -91,8 +91,14 @@ public final class LokiGroupChatPoller : NSObject {
             guard !isDuplicate else { return }
             guard let groupID = group.id.data(using: .utf8) else { return }
             let thread = TSGroupThread.getOrCreateThread(withGroupId: groupID)
+            let signalQuote: TSQuotedMessage?
+            if let quote = message.quote {
+                signalQuote = TSQuotedMessage(timestamp: quote.quotedMessageTimestamp, authorId: quote.quoteeHexEncodedPublicKey, body: quote.quotedMessageBody, quotedAttachmentsForSending: [])
+            } else {
+                signalQuote = nil
+            }
             let message = TSOutgoingMessage(outgoingMessageWithTimestamp: message.timestamp, in: thread, messageBody: message.body, attachmentIds: [], expiresInSeconds: 0,
-                expireStartedAt: 0, isVoiceMessage: false, groupMetaMessage: .deliver, quotedMessage: nil, contactShare: nil, linkPreview: nil)
+                expireStartedAt: 0, isVoiceMessage: false, groupMetaMessage: .deliver, quotedMessage: signalQuote, contactShare: nil, linkPreview: nil)
             storage.dbReadWriteConnection.readWrite { transaction in
                 message.update(withSentRecipient: group.server, wasSentByUD: false, transaction: transaction)
                 message.saveGroupChatMessageID(messageServerID, in: transaction)

@@ -218,6 +218,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
 - (instancetype)initWithThread:(TSThread *)thread
           focusMessageIdOnOpen:(nullable NSString *)focusMessageIdOnOpen
+                     isRSSFeed:(BOOL)isRSSFeed
                       delegate:(id<ConversationViewModelDelegate>)delegate
 {
     self = [super init];
@@ -233,6 +234,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     _persistedViewItems = @[];
     _unsavedOutgoingMessages = @[];
     self.focusMessageIdOnOpen = focusMessageIdOnOpen;
+    _isRSSFeed = isRSSFeed;
     _viewState = [[ConversationViewState alloc] initWithViewItems:@[]];
 
     [self configure];
@@ -1205,6 +1207,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     NSArray<NSString *> *loadedUniqueIds = [self.messageMapping loadedUniqueIds];
     BOOL isGroupThread = self.thread.isGroupThread;
+    BOOL isRSSFeed = self.isRSSFeed;
     ConversationStyle *conversationStyle = self.delegate.conversationStyle;
 
     [self ensureConversationProfileState];
@@ -1218,6 +1221,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
               if (!viewItem) {
                   viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:interaction
                                                                             isGroupThread:isGroupThread
+                                                                                isRSSFeed:isRSSFeed
                                                                               transaction:transaction
                                                                         conversationStyle:conversationStyle];
               }

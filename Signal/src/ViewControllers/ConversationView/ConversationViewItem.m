@@ -119,6 +119,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @synthesize interaction = _interaction;
 @synthesize isFirstInCluster = _isFirstInCluster;
 @synthesize isGroupThread = _isGroupThread;
+@synthesize isRSSFeed = _isRSSFeed;
 @synthesize isLastInCluster = _isLastInCluster;
 @synthesize lastAudioMessageView = _lastAudioMessageView;
 @synthesize senderName = _senderName;
@@ -126,6 +127,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
                       isGroupThread:(BOOL)isGroupThread
+                          isRSSFeed:(BOOL)isRSSFeed
                         transaction:(YapDatabaseReadTransaction *)transaction
                   conversationStyle:(ConversationStyle *)conversationStyle
 {
@@ -141,6 +143,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     _interaction = interaction;
     _isGroupThread = isGroupThread;
+    _isRSSFeed = isRSSFeed;
     _conversationStyle = conversationStyle;
 
     [self updateAuthorConversationColorNameWithTransaction:transaction];

@@ -178,8 +178,7 @@ public final class LokiGroupChatAPI : NSObject {
                     throw Error.parsingFailed
                 }
                 let timestamp = UInt64(date.timeIntervalSince1970) * 1000
-                let quote: LokiGroupMessage.Quote?
-                return LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: userHexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp, quote: nil)
+                return LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: userHexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp, quote: message.quote)
             }
         }.recover { error -> Promise<LokiGroupMessage> in
             if let error = error as? NetworkManagerError, error.statusCode == 401 {

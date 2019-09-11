@@ -98,10 +98,12 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 @property (nonatomic, readonly) ConversationViewState *viewState;
 @property (nonatomic, nullable) NSString *focusMessageIdOnOpen;
 @property (nonatomic, readonly, nullable) ThreadDynamicInteractions *dynamicInteractions;
+@property (nonatomic, readonly) BOOL isRSSFeed;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithThread:(TSThread *)thread
           focusMessageIdOnOpen:(nullable NSString *)focusMessageIdOnOpen
+                     isRSSFeed:(BOOL)isRSSFeed
                       delegate:(id<ConversationViewModelDelegate>)delegate NS_DESIGNATED_INITIALIZER;
 
 - (void)ensureDynamicInteractionsAndUpdateIfNecessary:(BOOL)updateIfNecessary;

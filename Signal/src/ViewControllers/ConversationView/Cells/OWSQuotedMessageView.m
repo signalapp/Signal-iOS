@@ -361,7 +361,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     OWSAssertDebug(CGSizeEqualToSize(
         CGSizeMake(kRemotelySourcedContentGlyphLength, kRemotelySourcedContentGlyphLength), glyphImage.size));
     UIImageView *glyphView = [[UIImageView alloc] initWithImage:glyphImage];
-    glyphView.tintColor = Theme.secondaryColor;
+    glyphView.tintColor = UIColor.whiteColor;
     [glyphView
         autoSetDimensionsToSize:CGSizeMake(kRemotelySourcedContentGlyphLength, kRemotelySourcedContentGlyphLength)];
 

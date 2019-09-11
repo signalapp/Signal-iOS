@@ -74,9 +74,10 @@ class ConversationViewItemActions: NSObject {
     class func textActions(conversationViewItem: ConversationViewItem, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MenuAction] {
         var actions: [MenuAction] = []
 
-        let isGroup = conversationViewItem.isGroupThread
+        let isGroup = conversationViewItem.isGroupThread;
+        let isRSSFeed = conversationViewItem.isRSSFeed;
         
-        if shouldAllowReply && !isGroup {
+        if shouldAllowReply && !isRSSFeed {
             let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(replyAction)
         }
