@@ -225,9 +225,9 @@ public class ConversationStyle: NSObject {
     public func quotedReplyBubbleColor(isIncoming: Bool) -> UIColor {
         if Theme.isDarkThemeEnabled {
             if isIncoming {
-                return UIColor(rgbHex: 0x1976D2).withAlphaComponent(0.75)
+                return UIColor.lokiGreen().withAlphaComponent(0.75)
             } else {
-                return UIColor.ows_black.withAlphaComponent(0.4)
+                return UIColor.lokiDarkestGray().withAlphaComponent(0.4)
             }
         } else if isIncoming {
             return bubbleColorOutgoingSent.withAlphaComponent(0.25)
@@ -240,9 +240,9 @@ public class ConversationStyle: NSObject {
     public func quotedReplyStripeColor(isIncoming: Bool) -> UIColor {
         if Theme.isDarkThemeEnabled {
             if isIncoming {
-                return UIColor(rgbHex: 0x1976D2)
+                return UIColor.lokiGreen()
             } else {
-                return UIColor.ows_black
+                return UIColor.lokiDarkestGray()
             }
         } else if isIncoming {
             return bubbleColorOutgoingSent
