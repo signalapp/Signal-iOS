@@ -60,6 +60,11 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return SDSDatabaseStorage.shared;
 }
 
+- (StorageCoordinator *)storageCoordinator
+{
+    return SSKEnvironment.shared.storageCoordinator;
+}
+
 #pragma mark -
 
 - (instancetype)initWithContentType:(NSString *)contentType
@@ -470,13 +475,18 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         result = self.isValidImageCached.boolValue;
     }
 
-    if (didUpdateCache) {
+    if (didUpdateCache && self.canAsyncUpdate) {
         [self applyChangeAsyncToLatestCopyWithChangeBlock:^(TSAttachmentStream *latestInstance) {
             latestInstance.isValidImageCached = @(result);
         }];
     }
 
     return result;
+}
+
+- (BOOL)canAsyncUpdate
+{
+    return (!CurrentAppContext().isRunningTests && !self.storageCoordinator.isMigrating);
 }
 
 - (BOOL)isValidVideo
@@ -494,7 +504,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         result = self.isValidVideoCached.boolValue;
     }
 
-    if (didUpdateCache) {
+    if (didUpdateCache && self.canAsyncUpdate) {
         [self applyChangeAsyncToLatestCopyWithChangeBlock:^(TSAttachmentStream *latestInstance) {
             latestInstance.isValidVideoCached = @(result);
         }];
@@ -623,10 +633,12 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         self.cachedImageWidth = @(imageSize.width);
         self.cachedImageHeight = @(imageSize.height);
 
-        [self applyChangeAsyncToLatestCopyWithChangeBlock:^(TSAttachmentStream *latestInstance) {
-            latestInstance.cachedImageWidth = @(imageSize.width);
-            latestInstance.cachedImageHeight = @(imageSize.height);
-        }];
+        if (self.canAsyncUpdate) {
+            [self applyChangeAsyncToLatestCopyWithChangeBlock:^(TSAttachmentStream *latestInstance) {
+                latestInstance.cachedImageWidth = @(imageSize.width);
+                latestInstance.cachedImageHeight = @(imageSize.height);
+            }];
+        }
 
         return imageSize;
     }
@@ -724,9 +736,11 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     CGFloat audioDurationSeconds = [self calculateAudioDurationSeconds];
     self.cachedAudioDurationSeconds = @(audioDurationSeconds);
 
-    [self applyChangeAsyncToLatestCopyWithChangeBlock:^(TSAttachmentStream *latestInstance) {
-        latestInstance.cachedAudioDurationSeconds = @(audioDurationSeconds);
-    }];
+    if (self.canAsyncUpdate) {
+        [self applyChangeAsyncToLatestCopyWithChangeBlock:^(TSAttachmentStream *latestInstance) {
+            latestInstance.cachedAudioDurationSeconds = @(audioDurationSeconds);
+        }];
+    }
 
     return audioDurationSeconds;
 }

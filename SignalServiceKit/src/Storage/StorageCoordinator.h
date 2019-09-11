@@ -23,6 +23,8 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
 
 @property (atomic, readonly) StorageCoordinatorState state;
 
+@property (atomic, readonly) BOOL isMigrating;
+
 - (instancetype)init;
 
 // These methods should only be called by the migration itself.
