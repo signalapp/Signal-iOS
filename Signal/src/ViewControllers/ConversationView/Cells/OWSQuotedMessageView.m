@@ -549,7 +549,16 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         }
     } else {
         OWSContactsManager *contactsManager = Environment.shared.contactsManager;
-        NSString *quotedAuthor = [contactsManager contactOrProfileNameForPhoneIdentifier:self.quotedMessage.authorId];
+        __block NSString *quotedAuthor = [contactsManager contactOrProfileNameForPhoneIdentifier:self.quotedMessage.authorId];
+        
+        if (quotedAuthor == self.quotedMessage.authorId) {
+            [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                NSString *collection = [NSString stringWithFormat:@"%@.%@", LKGroupChatAPI.publicChatServer, @(LKGroupChatAPI.publicChatServerID)];
+                NSString *displayName = [transaction stringForKey:self.quotedMessage.authorId inCollection:collection];
+                if (displayName != nil) { quotedAuthor = displayName; }
+            }];
+        }
+        
         quotedAuthorText = [NSString
             stringWithFormat:
                 NSLocalizedString(@"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT",
