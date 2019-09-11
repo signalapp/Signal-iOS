@@ -7,10 +7,6 @@ import Foundation
 @objc
 public protocol SDSDatabaseStorageDelegate {
     var storageCoordinatorState: StorageCoordinatorState { get }
-
-    var hasYdbFile: Bool { get }
-
-    var hasGrdbFile: Bool { get }
 }
 
 // MARK: -
@@ -105,7 +101,7 @@ public class SDSDatabaseStorage: SDSTransactable {
 
     // GRDB TODO: Remove
     @objc
-    public var shouldUseDisposableGrdb: Bool {
+    public static var shouldUseDisposableGrdb: Bool {
         if [.ydbTests, .grdbTests ].contains(FeatureFlags.storageMode) {
             return true
         }
@@ -116,12 +112,12 @@ public class SDSDatabaseStorage: SDSTransactable {
             //
             // Specifically, state persisted in NSUserDefaults won't be "throw away"
             // and this will break the app if we throw away our database.
-            return hasYdbFile
+            return StorageCoordinator.hasYdbFile
         }
         return false
     }
 
-    private lazy var baseDir: URL = {
+    private static let baseDir: URL = {
         let containerUrl = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(),
                                isDirectory: true)
         if shouldUseDisposableGrdb {
@@ -132,7 +128,7 @@ public class SDSDatabaseStorage: SDSTransactable {
     }()
 
     @objc
-    public var grdbDatabaseFileUrl: URL {
+    public static var grdbDatabaseFileUrl: URL {
         return GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir)
     }
 
@@ -157,18 +153,18 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
 
         // crash if we can't read the DB.
-        return try! GRDBDatabaseStorageAdapter(baseDir: baseDir)
+        return try! GRDBDatabaseStorageAdapter(baseDir: type(of: self).baseDir)
     }
 
     @objc
     public func deleteGrdbFiles() {
-        GRDBDatabaseStorageAdapter.removeAllFiles(baseDir: baseDir)
+        GRDBDatabaseStorageAdapter.removeAllFiles(baseDir: type(of: self).baseDir)
     }
 
     @objc
     public func resetAllStorage() {
         OWSStorage.resetAllStorage()
-        GRDBDatabaseStorageAdapter.resetAllStorage(baseDir: baseDir)
+        GRDBDatabaseStorageAdapter.resetAllStorage(baseDir: type(of: self).baseDir)
     }
 
     func createYapStorage() -> YAPDBStorageAdapter {
@@ -437,20 +433,6 @@ extension SDSDatabaseStorage {
             owsFail("Missing delegate.")
         }
         return delegate.storageCoordinatorState
-    }
-
-    private var hasYdbFile: Bool {
-        guard let delegate = delegate else {
-            owsFail("Missing delegate.")
-        }
-        return delegate.hasYdbFile
-    }
-
-    private var hasGrdbFile: Bool {
-        guard let delegate = delegate else {
-            owsFail("Missing delegate.")
-        }
-        return delegate.hasGrdbFile
     }
 
     private var storageCoordinatorStateDescription: String {

@@ -208,7 +208,21 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     // there should be no risk of races.  And races should be harmless
     // since: a) getOrBuildUserProfileForAddress is idempotent and b) we use
     // the "update with..." pattern.
-    __block OWSUserProfile *localUserProfile;
+    //
+    // We first try using a read block to avoid opening a write block.
+    __block OWSUserProfile *_Nullable localUserProfile;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        localUserProfile = [OWSUserProfile getUserProfileForAddress:OWSUserProfile.localProfileAddress
+                                                        transaction:transaction];
+    }];
+
+    if (localUserProfile != nil) {
+        @synchronized(self) {
+            _localUserProfile = localUserProfile;
+        }
+        return localUserProfile;
+    }
+
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         localUserProfile =
             [OWSUserProfile getOrBuildUserProfileForAddress:OWSUserProfile.localProfileAddress transaction:transaction];
@@ -1260,7 +1274,12 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                         [self downloadAvatarForUserProfile:latestUserProfile];
                     }
                 } else if (error) {
-                    OWSLogError(@"avatar download for %@ failed with error: %@", userProfile.address, error);
+                    if ([response isKindOfClass:NSHTTPURLResponse.class]
+                        && ((NSHTTPURLResponse *)response).statusCode == 403) {
+                        OWSLogInfo(@"no avatar for: %@", userProfile.address);
+                    } else {
+                        OWSLogError(@"avatar download for %@ failed with error: %@", userProfile.address, error);
+                    }
                 } else if (!encryptedData) {
                     OWSLogError(@"avatar encrypted data for %@ could not be read.", userProfile.address);
                 } else if (!decryptedData) {

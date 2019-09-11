@@ -18,7 +18,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
+let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .beta
 
 // MARK: -
 
@@ -107,7 +107,7 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
-    public static var audibleErrorLogging = build.includes(.qa)
+    public static var audibleErrorLogging = build.includes(.internalPreview)
 
     @objc
     public static var storageModeDescription: String {

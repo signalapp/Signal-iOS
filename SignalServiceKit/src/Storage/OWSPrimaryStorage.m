@@ -223,6 +223,8 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
                                       [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:self];
                                       [TSDatabaseView asyncRegisterIncompleteViewOnceMessagesDatabaseView:self];
 
+                                      // YAPDBSignalServiceAddressIndex must register before YDBFullTextSearchFinder.
+                                      [YAPDBSignalServiceAddressIndex asyncRegisterDatabaseExtensions:self];
                                       [YDBFullTextSearchFinder asyncRegisterDatabaseExtensionWithStorage:self];
                                       [OWSIncomingMessageFinder asyncRegisterExtensionWithPrimaryStorage:self];
                                       [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:self];
@@ -233,7 +235,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
                                       [YAPDBMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
                                       [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:self];
                                       [YAPDBJobRecordFinderSetup asyncRegisterDatabaseExtensionObjCWithStorage:self];
-                                      [YAPDBSignalServiceAddressIndex asyncRegisterDatabaseExtensions:self];
                                       [YAPDBLinkedDeviceReadReceiptFinder asyncRegisterDatabaseExtensions:self];
                                       [YAPDBContactQueryFinder asyncRegisterDatabaseExtensions:self];
                                       [YAPDBUserProfileFinder asyncRegisterDatabaseExtensions:self];
