@@ -100,7 +100,7 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
             } else {
                 self.state = StorageCoordinatorStateGRDB;
 
-                // GRDB TODO: Delete YDB files?
+                [self removeYdbFiles];
             }
             break;
         case StorageModeYdbTests:
@@ -165,6 +165,21 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
     self.state = StorageCoordinatorStateYDBTests;
 }
 #endif
+
+- (void)removeYdbFiles
+{
+    if (SSKFeatureFlags.preserveYdb) {
+        // Don't clean up YDB..
+        return;
+    }
+    if (SSKFeatureFlags.storageMode == StorageModeGrdbThrowawayIfMigrating) {
+        // Don't clean up YDB; we're in throwaway mode.
+        return;
+    }
+
+    [OWSStorage deleteDatabaseFiles];
+    [OWSStorage deleteDBKeys];
+}
 
 @end
 

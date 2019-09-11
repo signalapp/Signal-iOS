@@ -107,6 +107,9 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
+    public static let preserveYdb = true
+
+    @objc
     public static var audibleErrorLogging = build.includes(.internalPreview)
 
     @objc
