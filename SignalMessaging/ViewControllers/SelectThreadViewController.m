@@ -216,8 +216,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     __block OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
 
                                     disappearingMessagesConfiguration =
-                                        [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId
-                                                                                       transaction:transaction];
+                                        [thread disappearingMessagesConfigurationWithTransaction:transaction];
 
                                     if (disappearingMessagesConfiguration
                                         && disappearingMessagesConfiguration.isEnabled) {

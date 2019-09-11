@@ -78,8 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
                            actionBlock:^{
                                [DebugUIMisc.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                                    OWSDisappearingMessagesConfiguration *_Nullable config =
-                                       [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId
-                                                                                      transaction:transaction];
+                                       [thread disappearingMessagesConfigurationWithTransaction:transaction];
                                    if (config) {
                                        [config anyRemoveWithTransaction:transaction];
                                    }

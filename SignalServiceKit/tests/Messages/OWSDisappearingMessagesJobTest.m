@@ -90,9 +90,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSDisappearingMessagesJob *job = [OWSDisappearingMessagesJob sharedJob];
 
-    OWSDisappearingMessagesConfiguration *configuration =
-        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
-    [configuration remove];
+    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        OWSDisappearingMessagesConfiguration *configuration;
+        configuration = [self.thread disappearingMessagesConfigurationWithTransaction:transaction.asAnyRead];
+        [configuration anyRemoveWithTransaction:transaction.asAnyWrite];
+    }];
 
     TSMessage *expiringMessage = [self messageWithBody:@"notYetExpiredMessage" expiresInSeconds:20 expireStartedAt:0];
     [expiringMessage save];
@@ -102,10 +104,12 @@ NS_ASSUME_NONNULL_BEGIN
             [job becomeConsistentWithConfigurationForMessage:expiringMessage
                                              contactsManager:[OWSFakeContactsManager new]
                                                  transaction:transaction];
-        }];
-    configuration = [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
 
-    XCTAssertNotNil(configuration);
+            OWSDisappearingMessagesConfiguration *configuration;
+            configuration = [self.thread disappearingMessagesConfigurationWithTransaction:transaction.asAnyRead];
+            XCTAssertNotNil(configuration);
+        }];
+
     XCTAssert(configuration.isEnabled);
     XCTAssertEqual(20, configuration.durationSeconds);
 }
@@ -114,20 +118,23 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSDisappearingMessagesJob *job = [OWSDisappearingMessagesJob sharedJob];
 
-    OWSDisappearingMessagesConfiguration *configuration =
-        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
-    [configuration remove];
+    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        OWSDisappearingMessagesConfiguration *configuration;
+        configuration = [self.thread disappearingMessagesConfigurationWithTransaction:transaction.asAnyRead];
+        [configuration anyRemoveWithTransaction:transaction.asAnyWrite];
+    }];
 
     TSMessage *unExpiringMessage = [self messageWithBody:@"unexpiringMessage" expiresInSeconds:0 expireStartedAt:0];
     [unExpiringMessage save];
-    [self
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [job becomeConsistentWithConfigurationForMessage:unExpiringMessage
-                                             contactsManager:[OWSFakeContactsManager new]
-                                                 transaction:transaction];
-        }];
+    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [job becomeConsistentWithConfigurationForMessage:unExpiringMessage
+                                         contactsManager:[OWSFakeContactsManager new]
+                                             transaction:transaction];
+    }];
 
-    XCTAssertNil([OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId]);
+    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        XCTAssertNil([self.thread disappearingMessagesConfigurationWithTransaction:transaction.asAnyRead]);
+    }];
 }
 
 @end

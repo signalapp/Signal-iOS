@@ -1071,23 +1071,27 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
+    OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
+        [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread transaction:transaction];
     if (dataMessage.hasExpireTimer && dataMessage.expireTimer > 0) {
         OWSLogInfo(
             @"Expiring messages duration turned to %u for thread %@", (unsigned int)dataMessage.expireTimer, thread);
         disappearingMessagesConfiguration =
-            [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:thread.uniqueId
-                                                                   enabled:YES
-                                                           durationSeconds:dataMessage.expireTimer];
+            [disappearingMessagesConfiguration copyAsEnabledWithDurationSeconds:dataMessage.expireTimer];
     } else {
         OWSLogInfo(@"Expiring messages have been turned off for thread %@", thread);
-        disappearingMessagesConfiguration = [[OWSDisappearingMessagesConfiguration alloc]
-            initWithThreadId:thread.uniqueId
-                     enabled:NO
-             durationSeconds:OWSDisappearingMessagesConfigurationDefaultExpirationDuration];
+        disappearingMessagesConfiguration = [disappearingMessagesConfiguration copyAsDisabled];
     }
     OWSAssertDebug(disappearingMessagesConfiguration);
-    [disappearingMessagesConfiguration anyInsertWithTransaction:transaction];
+
+    // NOTE: We always update the configuration here, even if it hasn't changed
+    //       to leave an audit trail.
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [disappearingMessagesConfiguration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+
     NSString *name = [self.contactsManager displayNameForAddress:envelope.sourceAddress transaction:transaction];
 
     // MJK TODO - safe to remove senderTimestamp
