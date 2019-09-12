@@ -176,14 +176,4 @@
     return [transaction objectForKey:key inCollection:LKMessageIDCollection];
 }
 
-- (void)setIsModerator:(BOOL)isModerator forGroup:(NSUInteger)group onServer:(NSString *)server in:(YapDatabaseReadWriteTransaction *)transaction {
-    NSString *key = [NSString stringWithFormat:@"%@.%@", server, @(group)];
-    [transaction setBool:isModerator forKey:key inCollection:LKModerationPermissionCollection];
-}
-
-- (BOOL)isModeratorForGroup:(NSUInteger)group onServer:(NSString *)server in:(YapDatabaseReadTransaction *)transaction NS_SWIFT_NAME(isModerator(for:on:in:)) {
-    NSString *key = [NSString stringWithFormat:@"%@.%@", server, @(group)];
-    return [transaction boolForKey:key inCollection:LKModerationPermissionCollection defaultValue:false];
-}
-
 @end
