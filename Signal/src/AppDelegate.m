@@ -1582,12 +1582,11 @@ static NSTimeInterval launchStartedAt;
 
 - (void)createGroupChatPollersIfNeeded
 {
-    // Make sure thread exists
+    // Only create the group chat pollers if their threads aren't deleted
     __block TSGroupThread *thread;
-    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         thread = [TSGroupThread threadWithGroupId:[self.lokiPublicChat.id dataUsingEncoding:NSUTF8StringEncoding] transaction:transaction];
     }];
-   
     if (thread != nil && self.lokiPublicChatPoller == nil) {
         self.lokiPublicChatPoller = [[LKGroupChatPoller alloc] initForGroup:self.lokiPublicChat];
     }
@@ -1595,17 +1594,18 @@ static NSTimeInterval launchStartedAt;
 
 - (void)createRSSFeedPollersIfNeeded
 {
-    // Make sure thread exists
+    // Only create the RSS feed pollers if their threads aren't deleted
     __block TSGroupThread *lokiNewsFeedThread;
-    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         lokiNewsFeedThread = [TSGroupThread threadWithGroupId:[self.lokiNewsFeed.id dataUsingEncoding:NSUTF8StringEncoding] transaction:transaction];
     }];
     if (lokiNewsFeedThread != nil && self.lokiNewsFeedPoller == nil) {
         self.lokiNewsFeedPoller = [[LKRSSFeedPoller alloc] initForFeed:self.lokiNewsFeed];
     }
-    
-    // We don't need to check thread for this as it's never deletable
-    if (self.lokiMessengerUpdatesFeedPoller == nil) { self.lokiMessengerUpdatesFeedPoller = [[LKRSSFeedPoller alloc] initForFeed:self.lokiMessengerUpdatesFeed]; }
+    // The user can't delete the Loki Messenger Updates RSS feed
+    if (self.lokiMessengerUpdatesFeedPoller == nil) {
+        self.lokiMessengerUpdatesFeedPoller = [[LKRSSFeedPoller alloc] initForFeed:self.lokiMessengerUpdatesFeed];
+    }
 }
 
 - (void)startGroupChatPollersIfNeeded
@@ -1623,17 +1623,13 @@ static NSTimeInterval launchStartedAt;
 
 - (void)handleThreadDeleted:(NSNotification *)notification {
     NSDictionary *userInfo = notification.userInfo;
-    NSString *threadId = (NSString *)userInfo[@"threadId"];
-    if (threadId == nil) { return; }
-    
-    // Check if public chat was deleted
-    if ([threadId isEqualToString:[TSGroupThread threadIdFromGroupId:[self.lokiPublicChat.id dataUsingEncoding:NSUTF8StringEncoding]]] && self.lokiPublicChatPoller != nil) {
+    NSString *threadID = (NSString *)userInfo[@"threadId"];
+    if (threadID == nil) { return; }
+    if ([threadID isEqualToString:[TSGroupThread threadIdFromGroupId:[self.lokiPublicChat.id dataUsingEncoding:NSUTF8StringEncoding]]] && self.lokiPublicChatPoller != nil) {
         [self.lokiPublicChatPoller stop];
         self.lokiPublicChatPoller = nil;
     }
-    
-    // Check if news feed was deleted
-    if ([threadId isEqualToString:[TSGroupThread threadIdFromGroupId:[self.lokiNewsFeed.id dataUsingEncoding:NSUTF8StringEncoding]]] && self.lokiNewsFeedPoller != nil) {
+    if ([threadID isEqualToString:[TSGroupThread threadIdFromGroupId:[self.lokiNewsFeed.id dataUsingEncoding:NSUTF8StringEncoding]]] && self.lokiNewsFeedPoller != nil) {
         [self.lokiNewsFeedPoller stop];
         self.lokiNewsFeedPoller = nil;
     }
