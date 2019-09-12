@@ -2037,6 +2037,11 @@ typedef enum : NSUInteger {
     [self populateReplyForViewItem:conversationViewItem];
 }
 
+- (void)copyPublicKeyFor:(id<ConversationViewItem>)conversationViewItem
+{
+    UIPasteboard.generalPasteboard.string = ((TSIncomingMessage *)conversationViewItem.interaction).authorId;
+}
+
 #pragma mark - MessageDetailViewDelegate
 
 - (void)detailViewMessageWasDeleted:(MessageDetailViewController *)messageDetailViewController

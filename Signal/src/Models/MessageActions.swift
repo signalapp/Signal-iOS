@@ -8,6 +8,7 @@ import Foundation
 protocol MessageActionsDelegate: class {
     func messageActionsShowDetailsForItem(_ conversationViewItem: ConversationViewItem)
     func messageActionsReplyToItem(_ conversationViewItem: ConversationViewItem)
+    func copyPublicKey(for conversationViewItem: ConversationViewItem)
 }
 
 struct MessageActionBuilder {
@@ -28,6 +29,14 @@ struct MessageActionBuilder {
                           block: { (_) in
                             conversationViewItem.copyTextAction()
         })
+    }
+    
+    static func copyPublicKey(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
+        return MenuAction(image: #imageLiteral(resourceName: "table_ic_add_to_existing_contact"),
+                          title: NSLocalizedString("Copy Public Key", comment: ""),
+                          subtitle: nil,
+                          block: { [weak delegate] _ in delegate?.copyPublicKey(for: conversationViewItem) }
+        )
     }
 
     static func showDetails(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
@@ -86,6 +95,11 @@ class ConversationViewItemActions: NSObject {
             let copyTextAction = MessageActionBuilder.copyText(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(copyTextAction)
         }
+        
+        if isGroup && !isRSSFeed && conversationViewItem.interaction is TSIncomingMessage {
+            let copyPublicKeyAction = MessageActionBuilder.copyPublicKey(conversationViewItem: conversationViewItem, delegate: delegate)
+            actions.append(copyPublicKeyAction)
+        }
 
         if !isGroup || conversationViewItem.userCanDeleteGroupMessage {
             let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
@@ -137,6 +151,12 @@ class ConversationViewItemActions: NSObject {
         }
 
         let isGroup = conversationViewItem.isGroupThread;
+        let isRSSFeed = conversationViewItem.isRSSFeed;
+        
+        if isGroup && !isRSSFeed && conversationViewItem.interaction is TSIncomingMessage {
+            let copyPublicKeyAction = MessageActionBuilder.copyPublicKey(conversationViewItem: conversationViewItem, delegate: delegate)
+            actions.append(copyPublicKeyAction)
+        }
         
         if !isGroup || conversationViewItem.userCanDeleteGroupMessage {
             let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
