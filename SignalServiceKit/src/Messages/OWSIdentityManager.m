@@ -617,8 +617,19 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         [self.databaseQueue readWithBlock:^(SDSAnyReadTransaction *transaction) {
             [self.queuedVerificationStateSyncMessagesKeyValueStore
                 enumerateKeysAndObjectsWithTransaction:transaction
-                                                 block:^(
-                                                     NSString *accountId, SignalServiceAddress *address, BOOL *stop) {
+                                                 block:^(NSString *accountId, id object, BOOL *stop) {
+                                                     SignalServiceAddress *address;
+                                                     if ([object isKindOfClass:[SignalServiceAddress class]]) {
+                                                         address = (SignalServiceAddress *)object;
+                                                     } else if ([object isKindOfClass:[NSString class]]) {
+                                                         // Previously, we stored phone numbers in this KV store.
+                                                         NSString *phoneNumber = (NSString *)object;
+                                                         address = [[SignalServiceAddress alloc]
+                                                             initWithPhoneNumber:phoneNumber];
+                                                     } else {
+                                                         OWSFailDebug(@"Invalid object: %@", [object class]);
+                                                         return;
+                                                     }
                                                      OWSRecipientIdentity *recipientIdentity =
                                                          [OWSRecipientIdentity anyFetchWithUniqueId:accountId
                                                                                         transaction:transaction];
