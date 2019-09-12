@@ -1468,8 +1468,13 @@ NS_ASSUME_NONNULL_BEGIN
                                                         serverTimestamp:serverTimestamp
                                                         wasReceivedByUD:wasReceivedByUD];
 
-        NSString *displayName = dataMessage.profile.displayName;
-        [self.profileManager setDisplayNameForContactWithID:thread.contactIdentifier to:displayName with:transaction];
+        NSString *rawDisplayName = dataMessage.profile.displayName;
+        if (rawDisplayName != nil && rawDisplayName.length > 0) {
+            NSString *displayName = [NSString stringWithFormat:@"%@ (...%@)", rawDisplayName, [incomingMessage.authorId substringFromIndex:incomingMessage.authorId.length - 8]];
+            [self.profileManager setDisplayNameForContactWithID:thread.contactIdentifier to:displayName with:transaction];
+        } else {
+            [self.profileManager setDisplayNameForContactWithID:thread.contactIdentifier to:nil with:transaction];
+        }
         
         if (envelope.isPtpMessage) { incomingMessage.isP2P = YES; }
         
