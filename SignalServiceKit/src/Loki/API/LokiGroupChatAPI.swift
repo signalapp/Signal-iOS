@@ -259,6 +259,7 @@ public final class LokiGroupChatAPI : NSObject {
         }
     }
     
+    @objc (isUserModerator:forGroup:onServer:)
     public static func isUserModerator(user hexEncodedPublicString: String, for group: UInt64, on server: String) -> Bool {
         return self.moderators[server]?[group]?.contains(hexEncodedPublicString) ?? false
     }

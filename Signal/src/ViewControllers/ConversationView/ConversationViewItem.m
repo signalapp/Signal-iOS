@@ -1236,6 +1236,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return NO;
 }
 
+- (NSString *)ourHexEncodedPublicKey {
+    return OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+}
+
 - (BOOL)userCanDeleteGroupMessage
 {
     if (!self.isGroupThread) return false;
@@ -1254,10 +1258,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     
     // Only allow deletion on incoming messages if the user has moderation permission
     if (interationType == OWSInteractionType_IncomingMessage) {
-        __block BOOL isModerator;
-        [[self primaryStorage].dbReadWriteConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            isModerator = [[self primaryStorage] isModeratorForGroup:LKGroupChatAPI.publicChatServerID onServer:LKGroupChatAPI.publicChatServer in:transaction];
-        }];
+        BOOL isModerator = [LKGroupChatAPI isUserModerator:self.ourHexEncodedPublicKey forGroup:LKGroupChatAPI.publicChatServerID onServer: LKGroupChatAPI.publicChatServer];
+    
         if (!isModerator) return false;
     }
 

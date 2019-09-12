@@ -99,8 +99,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setIDForMessageWithServerID:(NSUInteger)serverID to:(NSString *)messageID in:(YapDatabaseReadWriteTransaction *)transaction;
 - (NSString *_Nullable)getIDForMessageWithServerID:(NSUInteger)serverID in:(YapDatabaseReadTransaction *)transaction;
-- (void)setIsModerator:(BOOL)isModerator forGroup:(NSUInteger)group onServer:(NSString *)server in:(YapDatabaseReadWriteTransaction *)transaction NS_SWIFT_NAME(setIsModerator(_:for:on:in:));
-- (BOOL)isModeratorForGroup:(NSUInteger)group onServer:(NSString *)server in:(YapDatabaseReadTransaction *)transaction NS_SWIFT_NAME(isModerator(for:on:in:));
 
 @end
 
