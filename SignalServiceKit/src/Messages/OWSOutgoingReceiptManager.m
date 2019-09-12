@@ -250,19 +250,19 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
 
 - (void)enqueueDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope
 {
-    [self enqueueReadReceiptForAddress:envelope.sourceAddress
-                             timestamp:envelope.timestamp
-                           receiptType:OWSReceiptType_Delivery];
+    [self enqueueReceiptForAddress:envelope.sourceAddress
+                         timestamp:envelope.timestamp
+                       receiptType:OWSReceiptType_Delivery];
 }
 
 - (void)enqueueReadReceiptForAddress:(SignalServiceAddress *)address timestamp:(uint64_t)timestamp
 {
-    [self enqueueReadReceiptForAddress:address timestamp:timestamp receiptType:OWSReceiptType_Read];
+    [self enqueueReceiptForAddress:address timestamp:timestamp receiptType:OWSReceiptType_Read];
 }
 
-- (void)enqueueReadReceiptForAddress:(SignalServiceAddress *)address
-                           timestamp:(uint64_t)timestamp
-                         receiptType:(OWSReceiptType)receiptType
+- (void)enqueueReceiptForAddress:(SignalServiceAddress *)address
+                       timestamp:(uint64_t)timestamp
+                     receiptType:(OWSReceiptType)receiptType
 {
     SDSKeyValueStore *store = [self storeForReceiptType:receiptType];
 
@@ -290,11 +290,15 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
 
             // Unexpectedly have entries both on phone number and UUID, defer to UUID
             if (oldUUIDTimestamps && oldPhoneNumberTimestamps) {
+                oldTimestamps = [oldUUIDTimestamps setByAddingObjectsFromSet:oldPhoneNumberTimestamps];
                 [store removeValueForKey:address.phoneNumber transaction:transaction];
 
                 // If we have timestamps only under phone number, but know the UUID, migrate them lazily
             } else if (oldPhoneNumberTimestamps && address.uuidString) {
+                oldTimestamps = oldPhoneNumberTimestamps;
                 [store removeValueForKey:address.phoneNumber transaction:transaction];
+            } else {
+                oldTimestamps = oldUUIDTimestamps ?: oldPhoneNumberTimestamps;
             }
 
             NSMutableSet<NSNumber *> *newTimestamps
