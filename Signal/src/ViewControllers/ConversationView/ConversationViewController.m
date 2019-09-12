@@ -513,7 +513,7 @@ typedef enum : NSUInteger {
     _conversationStyle = [[ConversationStyle alloc] initWithThread:thread];
 
     _conversationViewModel =
-        [[ConversationViewModel alloc] initWithThread:thread focusMessageIdOnOpen:focusMessageId delegate:self];
+        [[ConversationViewModel alloc] initWithThread:thread focusMessageIdOnOpen:focusMessageId isRSSFeed:self.isRSSFeed delegate:self];
 
     _searchController = [[ConversationSearchController alloc] initWithThread:thread];
     _searchController.delegate = self;

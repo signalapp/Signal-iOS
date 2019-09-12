@@ -139,6 +139,8 @@ public final class LokiGroupChatAPI : NSObject {
                 throw Error.parsingFailed
             }
             return rawMessages.flatMap { message in
+                let isDeleted = (message["is_deleted"] as? Int == 1)
+                guard !isDeleted else { return nil }
                 guard let annotations = message["annotations"] as? [JSON], let annotation = annotations.first, let value = annotation["value"] as? JSON,
                     let serverID = message["id"] as? UInt64, let body = message["text"] as? String, let hexEncodedPublicKey = value["source"] as? String, let displayName = value["from"] as? String,
                     let timestamp = value["timestamp"] as? UInt64 else {
@@ -147,7 +149,13 @@ public final class LokiGroupChatAPI : NSObject {
                 }
                 let lastMessageServerID = getLastMessageServerID(for: group, on: server)
                 if serverID > (lastMessageServerID ?? 0) { setLastMessageServerID(for: group, on: server, to: serverID) }
-                return LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp)
+                let quote: LokiGroupMessage.Quote?
+                if let quoteAsJSON = value["quote"] as? JSON, let quotedMessageTimestamp = quoteAsJSON["id"] as? UInt64, let quoteeHexEncodedPublicKey = quoteAsJSON["author"] as? String, let quotedMessageBody = quoteAsJSON["text"] as? String {
+                    quote = LokiGroupMessage.Quote(quotedMessageTimestamp: quotedMessageTimestamp, quoteeHexEncodedPublicKey: quoteeHexEncodedPublicKey, quotedMessageBody: quotedMessageBody)
+                } else {
+                    quote = nil
+                }
+                return LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote)
             }
         }
     }
@@ -170,7 +178,7 @@ public final class LokiGroupChatAPI : NSObject {
                     throw Error.parsingFailed
                 }
                 let timestamp = UInt64(date.timeIntervalSince1970) * 1000
-                return LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: userHexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp)
+                return LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: userHexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp, quote: message.quote)
             }
         }.recover { error -> Promise<LokiGroupMessage> in
             if let error = error as? NetworkManagerError, error.statusCode == 401 {

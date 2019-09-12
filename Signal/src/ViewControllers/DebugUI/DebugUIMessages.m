@@ -2012,6 +2012,7 @@ NS_ASSUME_NONNULL_BEGIN
                 id<ConversationViewItem> viewItem =
                     [[ConversationInteractionViewItem alloc] initWithInteraction:messageToQuote
                                                                    isGroupThread:thread.isGroupThread
+                                                                       isRSSFeed:NO
                                                                      transaction:transaction
                                                                conversationStyle:conversationStyle];
                 quotedMessage = [
@@ -2033,6 +2034,7 @@ NS_ASSUME_NONNULL_BEGIN
                 id<ConversationViewItem> viewItem =
                     [[ConversationInteractionViewItem alloc] initWithInteraction:messageToQuote
                                                                    isGroupThread:thread.isGroupThread
+                                                                       isRSSFeed:NO
                                                                      transaction:transaction
                                                                conversationStyle:conversationStyle];
                 quotedMessage = [

@@ -56,6 +56,11 @@ public final class LokiGroupChatPoller : NSObject {
             let x2 = SSKProtoDataMessage.builder()
             x2.setTimestamp(message.timestamp)
             x2.setGroup(try! x1.build())
+            if let quote = message.quote {
+                let x5 = SSKProtoDataMessageQuote.builder(id: quote.quotedMessageTimestamp, author: quote.quoteeHexEncodedPublicKey)
+                x5.setText(quote.quotedMessageBody)
+                x2.setQuote(try! x5.build())
+            }
             x2.setBody(message.body)
             if let messageServerID = message.serverID {
                 let publicChatInfo = SSKProtoPublicChatInfo.builder()
@@ -68,7 +73,6 @@ public final class LokiGroupChatPoller : NSObject {
             x4.setSource(senderHexEncodedPublicKey)
             x4.setSourceDevice(OWSDevicePrimaryDeviceId)
             x4.setContent(try! x3.build().serializedData())
-        
             let storage = OWSPrimaryStorage.shared()
             storage.dbReadWriteConnection.readWrite { transaction in
                 transaction.setObject(senderDisplayName, forKey: senderHexEncodedPublicKey, inCollection: group.id)
@@ -87,8 +91,14 @@ public final class LokiGroupChatPoller : NSObject {
             guard !isDuplicate else { return }
             guard let groupID = group.id.data(using: .utf8) else { return }
             let thread = TSGroupThread.getOrCreateThread(withGroupId: groupID)
+            let signalQuote: TSQuotedMessage?
+            if let quote = message.quote {
+                signalQuote = TSQuotedMessage(timestamp: quote.quotedMessageTimestamp, authorId: quote.quoteeHexEncodedPublicKey, body: quote.quotedMessageBody, quotedAttachmentsForSending: [])
+            } else {
+                signalQuote = nil
+            }
             let message = TSOutgoingMessage(outgoingMessageWithTimestamp: message.timestamp, in: thread, messageBody: message.body, attachmentIds: [], expiresInSeconds: 0,
-                expireStartedAt: 0, isVoiceMessage: false, groupMetaMessage: .deliver, quotedMessage: nil, contactShare: nil, linkPreview: nil)
+                expireStartedAt: 0, isVoiceMessage: false, groupMetaMessage: .deliver, quotedMessage: signalQuote, contactShare: nil, linkPreview: nil)
             storage.dbReadWriteConnection.readWrite { transaction in
                 message.update(withSentRecipient: group.server, wasSentByUD: false, transaction: transaction)
                 message.saveGroupChatMessageID(messageServerID, in: transaction)

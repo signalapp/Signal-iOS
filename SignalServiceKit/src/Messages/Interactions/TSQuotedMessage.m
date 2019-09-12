@@ -157,7 +157,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    OWSAssertDebug(bodySource != TSQuotedMessageContentSourceUnknown);
+    // OWSAssertDebug(bodySource != TSQuotedMessageContentSourceUnknown);
 
     NSMutableArray<OWSAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
     for (SSKProtoDataMessageQuoteQuotedAttachment *quotedAttachment in quoteProto.attachments) {
