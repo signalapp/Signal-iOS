@@ -447,6 +447,16 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     }
 }
 
+- (void)softDeleteThreadWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self removeAllThreadInteractionsWithTransaction:transaction];
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSThread *thread) {
+                                 thread.messageDraft = nil;
+                                 thread.shouldThreadBeVisible = NO;
+                             }];
+}
+
 #pragma mark - Disappearing Messages
 
 - (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationWithTransaction:

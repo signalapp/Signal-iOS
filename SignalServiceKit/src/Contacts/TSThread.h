@@ -138,6 +138,8 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
  */
 - (void)archiveThreadWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
+- (void)softDeleteThreadWithTransaction:(SDSAnyWriteTransaction *)transaction;
+
 /**
  *  Unarchives a thread
  *
