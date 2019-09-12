@@ -136,8 +136,12 @@ class ConversationViewItemActions: NSObject {
             actions.append(replyAction)
         }
 
-        let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
-        actions.append(deleteAction)
+        let isGroup = conversationViewItem.isGroupThread;
+        
+        if !isGroup || conversationViewItem.userCanDeleteGroupMessage {
+            let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
+            actions.append(deleteAction)
+        }
 
         let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)
         actions.append(showDetailsAction)
