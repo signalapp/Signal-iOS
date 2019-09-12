@@ -260,16 +260,6 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
                                         }];
 }
 
-- (void)softDeleteGroupThreadWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self removeAllThreadInteractionsWithTransaction:transaction];
-
-    [self anyUpdateGroupThreadWithTransaction:transaction
-                                        block:^(TSGroupThread *thread) {
-                                            thread.shouldThreadBeVisible = NO;
-                                        }];
-}
-
 #pragma mark - Avatar
 
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream
