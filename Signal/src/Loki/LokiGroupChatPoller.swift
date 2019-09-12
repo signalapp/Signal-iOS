@@ -4,14 +4,14 @@ public final class LokiGroupChatPoller : NSObject {
     private let group: LokiGroupChat
     private var pollForNewMessagesTimer: Timer? = nil
     private var pollForDeletedMessagesTimer: Timer? = nil
-    private var pollForModerationPermissionTimer: Timer? = nil
+    private var pollForModeratorsTimer: Timer? = nil
     private var hasStarted = false
     private let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
     
     // MARK: Settings
     private let pollForNewMessagesInterval: TimeInterval = 4
     private let pollForDeletedMessagesInterval: TimeInterval = 20
-    private let pollForModerationPermissionInterval: TimeInterval = 10 * 60
+    private let pollForModeratorsInterval: TimeInterval = 10 * 60
     
     // MARK: Lifecycle
     @objc(initForGroup:)
@@ -24,18 +24,18 @@ public final class LokiGroupChatPoller : NSObject {
         if hasStarted { return }
         pollForNewMessagesTimer = Timer.scheduledTimer(withTimeInterval: pollForNewMessagesInterval, repeats: true) { [weak self] _ in self?.pollForNewMessages() }
         pollForDeletedMessagesTimer = Timer.scheduledTimer(withTimeInterval: pollForDeletedMessagesInterval, repeats: true) { [weak self] _ in self?.pollForDeletedMessages() }
-        pollForModerationPermissionTimer = Timer.scheduledTimer(withTimeInterval: pollForModerationPermissionInterval, repeats: true) { [weak self] _ in self?.pollForModerationPermission() }
+        pollForModeratorsTimer = Timer.scheduledTimer(withTimeInterval: pollForModeratorsInterval, repeats: true) { [weak self] _ in self?.pollForModerators() }
         // Perform initial updates
         pollForNewMessages()
         pollForDeletedMessages()
-        pollForModerationPermission()
+        pollForModerators()
         hasStarted = true
     }
     
     @objc public func stop() {
         pollForNewMessagesTimer?.invalidate()
         pollForDeletedMessagesTimer?.invalidate()
-        pollForModerationPermissionTimer?.invalidate()
+        pollForModeratorsTimer?.invalidate()
         hasStarted = false
     }
     
@@ -140,13 +140,7 @@ public final class LokiGroupChatPoller : NSObject {
         }
     }
     
-    private func pollForModerationPermission() {
-        let group = self.group
-        let _ = LokiGroupChatAPI.userHasModerationPermission(for: group.serverID, on: group.server).done { isModerator in
-            let storage = OWSPrimaryStorage.shared()
-            storage.dbReadWriteConnection.readWrite { transaction in
-                storage.setIsModerator(isModerator, for: UInt(group.serverID), on: group.server, in: transaction)
-            }
-        }
+    private func pollForModerators() {
+        let _ = LokiGroupChatAPI.getModerators(for: self.group.serverID, on: self.group.server)
     }
 }
