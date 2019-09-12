@@ -4,22 +4,16 @@ import PromiseKit
 public final class LokiGroupChatAPI : NSObject {
     private static let storage = OWSPrimaryStorage.shared()
     
+    private static var moderators: [String:[UInt64:Set<String>]] = [:] // Server URL to (channel ID to set of moderator IDs)
+    
     // MARK: Settings
     private static let fallbackBatchCount = 40
     private static let maxRetryCount: UInt = 4
     
     // MARK: Public Chat
-    @objc public static let publicChatServer = "https://chat.lokinet.org"
+    @objc public static let publicChatServer = "https://chat-dev.lokinet.org"
     @objc public static let publicChatMessageType = "network.loki.messenger.publicChat"
     @objc public static let publicChatServerID: UInt64 = 1
-    
-    // Mark: Moderators
-    typealias ModeratorArray = Set<String>
-    typealias ChannelDictionary = [UInt64 : ModeratorArray]
-    typealias ServerMapping = [String : ChannelDictionary]
-    
-    // A mapping from server to channel to moderator
-    private static var moderators = ServerMapping()
     
     // MARK: Convenience
     private static var userDisplayName: String {
@@ -244,26 +238,6 @@ public final class LokiGroupChatAPI : NSObject {
         }
     }
     
-    public static func userHasModerationPermission(for group: UInt64, on server: String) -> Promise<Bool> {
-        return getAuthToken(for: server).then { token -> Promise<Bool> in
-            let url = URL(string: "\(server)/loki/v1/user_info")!
-            let request = TSRequest(url: url)
-            request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-            return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
-                guard let json = rawResponse as? JSON, let data = json["data"] as? JSON else {
-                    print("[Loki] Couldn't parse moderation permission for group chat with ID: \(group) on server: \(server) from: \(rawResponse).")
-                    throw Error.parsingFailed
-                }
-                return data["moderator_status"] as? Bool ?? false
-            }
-        }
-    }
-    
-    @objc (isUserModerator:forGroup:onServer:)
-    public static func isUserModerator(user hexEncodedPublicString: String, for group: UInt64, on server: String) -> Bool {
-        return self.moderators[server]?[group]?.contains(hexEncodedPublicString) ?? false
-    }
-    
     public static func getModerators(for group: UInt64, on server: String) -> Promise<Set<String>> {
         let url = URL(string: "\(server)/loki/v1/channel/\(group)/get_moderators")!
         let request = TSRequest(url: url)
@@ -272,18 +246,19 @@ public final class LokiGroupChatAPI : NSObject {
                 print("[Loki] Couldn't parse moderators for group chat with ID: \(group) on server: \(server) from: \(rawResponse).")
                 throw Error.parsingFailed
             }
-            
-            let moderatorSet = Set(moderators);
-            
-            // Update our cache
-            if (self.moderators.keys.contains(server)) {
-                self.moderators[server]![group] = moderatorSet
+            let moderatorAsSet = Set(moderators);
+            if self.moderators.keys.contains(server) {
+                self.moderators[server]![group] = moderatorAsSet
             } else {
-                self.moderators[server] = [group : moderatorSet]
+                self.moderators[server] = [ group : moderatorAsSet ]
             }
-            
-            return moderatorSet
+            return moderatorAsSet
         }
+    }
+    
+    @objc (isUserModerator:forGroup:onServer:)
+    public static func isUserModerator(_ hexEncodedPublicString: String, for group: UInt64, on server: String) -> Bool {
+        return moderators[server]?[group]?.contains(hexEncodedPublicString) ?? false
     }
     
     // MARK: Public API (Obj-C)

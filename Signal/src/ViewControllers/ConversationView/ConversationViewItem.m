@@ -1236,7 +1236,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return NO;
 }
 
-- (NSString *)ourHexEncodedPublicKey {
+- (NSString *)userHexEncodedPublicKey {
     return OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
 }
 
@@ -1258,8 +1258,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     
     // Only allow deletion on incoming messages if the user has moderation permission
     if (interationType == OWSInteractionType_IncomingMessage) {
-        BOOL isModerator = [LKGroupChatAPI isUserModerator:self.ourHexEncodedPublicKey forGroup:LKGroupChatAPI.publicChatServerID onServer: LKGroupChatAPI.publicChatServer];
-    
+        BOOL isModerator = [LKGroupChatAPI isUserModerator:self.userHexEncodedPublicKey forGroup:LKGroupChatAPI.publicChatServerID onServer: LKGroupChatAPI.publicChatServer];
         if (!isModerator) return false;
     }
 

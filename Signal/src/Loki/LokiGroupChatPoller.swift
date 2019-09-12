@@ -141,6 +141,6 @@ public final class LokiGroupChatPoller : NSObject {
     }
     
     private func pollForModerators() {
-        let _ = LokiGroupChatAPI.getModerators(for: self.group.serverID, on: self.group.server)
+        let _ = LokiGroupChatAPI.getModerators(for: group.serverID, on: group.server)
     }
 }
