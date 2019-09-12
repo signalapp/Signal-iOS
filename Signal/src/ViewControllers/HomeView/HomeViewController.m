@@ -1413,6 +1413,8 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 - (void)deleteThread:(TSThread *)thread
 {
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        /* Loki: Orignal Code
+         =====================
         if ([thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread *groupThread = (TSGroupThread *)thread;
             if (groupThread.isLocalUserInGroup) {
@@ -1420,10 +1422,15 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
                 return;
             }
         }
+        */
 
+        // Loki: For now hard delete all groups
         [thread removeWithTransaction:transaction];
     }];
-
+    
+    // Loki - Post notification
+    [[NSNotificationCenter defaultCenter] postNotificationName:NSNotification.threadDeleted object:nil userInfo:@{ @"threadId": thread.uniqueId }];
+    
     [self updateViewState];
 }
 

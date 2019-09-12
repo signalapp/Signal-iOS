@@ -4,6 +4,7 @@ public extension Notification.Name {
     public static let newMessagesReceived = Notification.Name("newMessagesReceived")
     public static let threadFriendRequestStatusChanged = Notification.Name("threadFriendRequestStatusChanged")
     public static let messageFriendRequestStatusChanged = Notification.Name("messageFriendRequestStatusChanged")
+    public static let threadDeleted = Notification.Name("threadDeleted")
 }
 
 // MARK: - Obj-C
@@ -13,4 +14,5 @@ public extension Notification.Name {
     @objc public static let newMessagesReceived = Notification.Name.newMessagesReceived.rawValue as NSString
     @objc public static let threadFriendRequestStatusChanged = Notification.Name.threadFriendRequestStatusChanged.rawValue as NSString
     @objc public static let messageFriendRequestStatusChanged = Notification.Name.messageFriendRequestStatusChanged.rawValue as NSString
+    @objc public static let threadDeleted = Notification.Name.threadDeleted.rawValue as NSString
 }
