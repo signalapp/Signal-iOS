@@ -460,16 +460,11 @@ public extension TSThread {
 
     // Traverses all records.
     // Records are not visited in any particular order.
-    class func anyUnbatchedEnumerate(transaction: SDSAnyReadTransaction,
-                                     block: @escaping (TSThread, UnsafeMutablePointer<ObjCBool>) -> Void) {
-        anyEnumerate(transaction: transaction, batchSize: 0, block: block)
-    }
-
-    // Traverses all records.
-    // Records are not visited in any particular order.
-    class func anyBatchedEnumerate(transaction: SDSAnyReadTransaction,
-                                     block: @escaping (TSThread, UnsafeMutablePointer<ObjCBool>) -> Void) {
-        anyEnumerate(transaction: transaction, batchSize: Batching.kDefaultBatchSize, block: block)
+    class func anyEnumerate(transaction: SDSAnyReadTransaction,
+                            batched: Bool = false,
+                            block: @escaping (TSThread, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        let batchSize = batched ? Batching.kDefaultBatchSize : 0
+        anyEnumerate(transaction: transaction, batchSize: batchSize, block: block)
     }
 
     // Traverses all records.
@@ -511,14 +506,11 @@ public extension TSThread {
 
     // Traverses all records' unique ids.
     // Records are not visited in any particular order.
-    class func anyUnbatchedEnumerateUniqueIds(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
-        anyEnumerateUniqueIds(transaction: transaction, batchSize: 0, block: block)
-    }
-
-    // Traverses all records' unique ids.
-    // Records are not visited in any particular order.
-    class func anyBatchedEnumerateUniqueIds(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
-        anyEnumerateUniqueIds(transaction: transaction, batchSize: Batching.kDefaultBatchSize, block: block)
+    class func anyEnumerateUniqueIds(transaction: SDSAnyReadTransaction,
+                                     batched: Bool = false,
+                                     block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        let batchSize = batched ? Batching.kDefaultBatchSize : 0
+        anyEnumerateUniqueIds(transaction: transaction, batchSize: batchSize, block: block)
     }
 
     // Traverses all records' unique ids.
@@ -547,7 +539,7 @@ public extension TSThread {
     // Does not order the results.
     class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [TSThread] {
         var result = [TSThread]()
-        anyUnbatchedEnumerate(transaction: transaction) { (model, _) in
+        anyEnumerate(transaction: transaction) { (model, _) in
             result.append(model)
         }
         return result
@@ -556,7 +548,7 @@ public extension TSThread {
     // Does not order the results.
     class func anyAllUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
         var result = [String]()
-        anyUnbatchedEnumerateUniqueIds(transaction: transaction) { (uniqueId, _) in
+        anyEnumerateUniqueIds(transaction: transaction) { (uniqueId, _) in
             result.append(uniqueId)
         }
         return result

@@ -109,10 +109,10 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
         signalAccounts = [[NSMutableArray alloc] initWithCapacity:signalAccountCount];
 
-        [SignalAccount anyUnbatchedEnumerateWithTransaction:transaction
-                                                      block:^(SignalAccount *signalAccount, BOOL *stop) {
-                                                          [signalAccounts addObject:signalAccount];
-                                                      }];
+        [SignalAccount anyEnumerateWithTransaction:transaction
+                                             block:^(SignalAccount *signalAccount, BOOL *stop) {
+                                                 [signalAccounts addObject:signalAccount];
+                                             }];
     }];
     [signalAccounts sortUsingComparator:self.signalAccountComparator];
 
@@ -304,13 +304,12 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                 }
             }
 
-            [SignalRecipient
-                anyUnbatchedEnumerateWithTransaction:transaction
-                                               block:^(SignalRecipient *signalRecipient, BOOL *stop) {
-                                                   if (signalRecipient.devices.count > 0) {
-                                                       [existingRegisteredRecipients addObject:signalRecipient];
-                                                   }
-                                               }];
+            [SignalRecipient anyEnumerateWithTransaction:transaction
+                                                   block:^(SignalRecipient *signalRecipient, BOOL *stop) {
+                                                       if (signalRecipient.devices.count > 0) {
+                                                           [existingRegisteredRecipients addObject:signalRecipient];
+                                                       }
+                                                   }];
 
             allContactPhoneNumbers = [self phoneNumbersForIntersectionWithContacts:contacts];
             phoneNumbersForIntersection = allContactPhoneNumbers;
@@ -539,10 +538,10 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
         NSMutableDictionary<NSString *, SignalAccount *> *oldSignalAccounts = [NSMutableDictionary new];
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            [SignalAccount anyUnbatchedEnumerateWithTransaction:transaction
-                                                          block:^(SignalAccount *signalAccount, BOOL *stop) {
-                                                              oldSignalAccounts[signalAccount.uniqueId] = signalAccount;
-                                                          }];
+            [SignalAccount anyEnumerateWithTransaction:transaction
+                                                 block:^(SignalAccount *signalAccount, BOOL *stop) {
+                                                     oldSignalAccounts[signalAccount.uniqueId] = signalAccount;
+                                                 }];
         }];
 
         NSMutableArray *accountsToSave = [NSMutableArray new];

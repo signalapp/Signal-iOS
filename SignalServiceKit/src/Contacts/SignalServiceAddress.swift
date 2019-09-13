@@ -238,7 +238,7 @@ public class SignalServiceAddressCache: NSObject {
         super.init()
         AppReadiness.runNowOrWhenAppWillBecomeReady { [weak self] in
             SDSDatabaseStorage.shared.asyncRead { transaction in
-                SignalRecipient.anyUnbatchedEnumerate(transaction: transaction) { recipient, _ in
+                SignalRecipient.anyEnumerate(transaction: transaction) { recipient, _ in
                     let recipientUuid: UUID?
                     if let uuidString = recipient.recipientUUID {
                         recipientUuid = UUID(uuidString: uuidString)

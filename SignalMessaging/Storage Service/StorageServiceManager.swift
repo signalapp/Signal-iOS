@@ -418,7 +418,7 @@ class StorageServiceOperation: OWSOperation {
         var identifierMap: BidirectionalDictionary<AccountId, StorageService.ContactIdentifier> = [:]
 
         databaseStorage.read { transaction in
-            SignalRecipient.anyUnbatchedEnumerate(transaction: transaction) { recipient, _ in
+            SignalRecipient.anyEnumerate(transaction: transaction) { recipient, _ in
                 if recipient.devices.count > 0 {
                     let contactIdentifier = StorageService.ContactIdentifier.generate()
                     identifierMap[recipient.accountId] = contactIdentifier
