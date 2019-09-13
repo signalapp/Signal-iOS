@@ -108,7 +108,7 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
         let sql = """
             SELECT \(AttachmentRecord.databaseTableName).*
             FROM \(AttachmentRecord.databaseTableName)
-            LEFT JOIN \(InteractionRecord.databaseTableName)
+            INNER JOIN \(InteractionRecord.databaseTableName)
                 ON \(attachmentColumn: .albumMessageId) = \(interactionColumnFullyQualified: .uniqueId)
                 AND \(interactionColumn: .threadUniqueId) = ?
                 AND \(interactionColumn: .isViewOnceMessage) = FALSE
@@ -131,7 +131,7 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
         SELECT
             COUNT(*)
         FROM \(AttachmentRecord.databaseTableName)
-        LEFT JOIN \(InteractionRecord.databaseTableName)
+        INNER JOIN \(InteractionRecord.databaseTableName)
             ON \(attachmentColumn: .albumMessageId) = \(interactionColumnFullyQualified: .uniqueId)
             AND \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .isViewOnceMessage) = FALSE
@@ -147,7 +147,7 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
         let sql = """
         SELECT \(AttachmentRecord.databaseTableName).*
         FROM \(AttachmentRecord.databaseTableName)
-        LEFT JOIN \(InteractionRecord.databaseTableName)
+        INNER JOIN \(InteractionRecord.databaseTableName)
             ON \(attachmentColumn: .albumMessageId) = \(interactionColumnFullyQualified: .uniqueId)
             AND \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .isViewOnceMessage) = FALSE
@@ -178,7 +178,7 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
                 ) as rowNumber,
                 \(attachmentColumnFullyQualified: .uniqueId)
             FROM \(AttachmentRecord.databaseTableName)
-            LEFT JOIN \(InteractionRecord.databaseTableName)
+            INNER JOIN \(InteractionRecord.databaseTableName)
                 ON \(attachmentColumn: .albumMessageId) = \(interactionColumnFullyQualified: .uniqueId)
                 AND \(interactionColumn: .threadUniqueId) = ?
                 AND \(interactionColumn: .isViewOnceMessage) = FALSE
