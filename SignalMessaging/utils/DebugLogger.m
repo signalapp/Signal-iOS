@@ -3,6 +3,7 @@
 //
 
 #import "DebugLogger.h"
+#import "OWSPreferences.h"
 #import "OWSScrubbingLogFormatter.h"
 #import <AudioToolbox/AudioServices.h>
 #import <SignalCoreKit/NSDate+OWS.h>
@@ -23,27 +24,6 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
 @end
 
 #pragma mark -
-
-@interface ErrorLogger : DDFileLogger
-
-@end
-
-@implementation ErrorLogger
-
-- (void)logMessage:(nonnull DDLogMessage *)logMessage
-{
-    [self playAlertSound];
-    [super logMessage:logMessage];
-}
-
-- (void)playAlertSound
-{
-    // "choo-choo"
-    const SystemSoundID errorSound = 1023;
-    AudioServicesPlayAlertSound(errorSound);
-}
-
-@end
 
 @implementation DebugLogger
 
@@ -179,6 +159,25 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
     if (reenableLogging) {
         [self enableFileLogging];
     }
+}
+
+@end
+
+@implementation ErrorLogger
+
+- (void)logMessage:(nonnull DDLogMessage *)logMessage
+{
+    [super logMessage:logMessage];
+    if (OWSPreferences.isAudibleErrorLoggingEnabled) {
+        [self.class playAlertSound];
+    }
+}
+
++ (void)playAlertSound
+{
+    // "choo-choo"
+    const SystemSoundID errorSound = 1023;
+    AudioServicesPlayAlertSound(errorSound);
 }
 
 @end

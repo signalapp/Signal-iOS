@@ -45,6 +45,7 @@ NSString *const OWSPreferencesKeyShouldNotifyOfNewAccountKey = @"OWSPreferencesK
 NSString *const OWSPreferencesKeyIOSUpgradeNagDate = @"iOSUpgradeNagDate";
 NSString *const OWSPreferencesKey_IsYdbReadyForAppExtensions = @"isReadyForAppExtensions_5";
 NSString *const OWSPreferencesKey_IsGrdbReadyForAppExtensions = @"IsGrdbReadyForAppExtensions";
+NSString *const OWSPreferencesKey_IsAudibleErrorLoggingEnabled = @"IsAudibleErrorLoggingEnabled";
 NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySystemCallLogEnabled";
 NSString *const OWSPreferencesKeyIsViewOnceMessagesEnabled = @"OWSPreferencesKeyIsViewOnceMessagesEnabled";
 
@@ -191,6 +192,25 @@ NSString *const OWSPreferencesKeyIsViewOnceMessagesEnabled = @"OWSPreferencesKey
 + (void)setIsGrdbReadyForAppExtensions
 {
     [self setAppUserDefaultsFlagWithKey:OWSPreferencesKey_IsGrdbReadyForAppExtensions];
+}
+
++ (BOOL)isAudibleErrorLoggingEnabled
+{
+    NSNumber *_Nullable persistedValue =
+        [NSUserDefaults.appUserDefaults objectForKey:OWSPreferencesKey_IsAudibleErrorLoggingEnabled];
+
+    if (persistedValue == nil) {
+        // default
+        return NO;
+    }
+
+    return persistedValue.boolValue;
+}
+
++ (void)setIsAudibleErrorLoggingEnabled:(BOOL)value
+{
+    [NSUserDefaults.appUserDefaults setObject:@(value) forKey:OWSPreferencesKey_IsAudibleErrorLoggingEnabled];
+    [NSUserDefaults.appUserDefaults synchronize];
 }
 
 + (BOOL)appUserDefaultsFlagWithKey:(NSString *)key

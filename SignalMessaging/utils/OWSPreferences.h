@@ -43,6 +43,9 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 + (BOOL)isGrdbReadyForAppExtensions;
 + (void)setIsGrdbReadyForAppExtensions;
 
++ (BOOL)isAudibleErrorLoggingEnabled;
++ (void)setIsAudibleErrorLoggingEnabled:(BOOL)value;
+
 + (BOOL)isLoggingEnabled;
 + (void)setIsLoggingEnabled:(BOOL)value;
 
