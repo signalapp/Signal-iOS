@@ -47,6 +47,22 @@ public class SDSKeyValueStore: NSObject {
         super.init()
     }
 
+    public class func createTable(database: Database) throws {
+        let sql = """
+            CREATE TABLE \(table.tableName) (
+                \(keyColumn.columnName) TEXT NOT NULL,
+                \(collectionColumn.columnName) TEXT NOT NULL,
+                \(valueColumn.columnName) BLOB NOT NULL,
+                PRIMARY KEY (
+                    \(keyColumn.columnName),
+                    \(collectionColumn.columnName)
+                )
+            )
+        """
+        let statement = try database.cachedUpdateStatement(sql: sql)
+        try statement.execute()
+    }
+
     // MARK: Class Helpers
 
     @objc
@@ -481,21 +497,23 @@ public class SDSKeyValueStore: NSObject {
 
     private class func write(transaction: GRDBWriteTransaction, key: String, collection: String, encoded: Data?) throws {
         if let encoded = encoded {
-            let count = try Int.fetchOne(transaction.database,
-                                         sql: "SELECT COUNT(*) FROM \(table.tableName) WHERE \(keyColumn.columnName) == ? AND \(collectionColumn.columnName) == ?",
-                arguments: [
-                    key, collection
-                ]) ?? 0
-            if count > 0 {
-                let sql = "UPDATE \(table.tableName) SET \(valueColumn.columnName) = ? WHERE \(keyColumn.columnName) = ? AND \(collectionColumn.columnName) == ?"
-                try update(transaction: transaction, sql: sql, arguments: [ encoded, key, collection ])
-            } else {
-                let sql = "INSERT INTO \(table.tableName) ( \(keyColumn.columnName), \(collectionColumn.columnName), \(valueColumn.columnName) ) VALUES (?, ?, ?)"
-                try update(transaction: transaction, sql: sql, arguments: [ key, collection, encoded ])
-            }
+            // See: https://www.sqlite.org/lang_UPSERT.html
+            let sql = """
+                INSERT INTO \(table.tableName) (
+                    \(keyColumn.columnName),
+                    \(collectionColumn.columnName),
+                    \(valueColumn.columnName)
+                ) VALUES (?, ?, ?)
+                ON CONFLICT (
+                    \(keyColumn.columnName),
+                    \(collectionColumn.columnName)
+                ) DO UPDATE
+                SET \(valueColumn.columnName) = ?
+            """
+            try update(transaction: transaction, sql: sql, arguments: [ key, collection, encoded, encoded ])
         } else {
             // Setting to nil is a delete.
-            let sql = "DELETE FROM \(table.tableName) WHERE \(keyColumn.columnName) == ? AND  \(collectionColumn.columnName) == ?"
+            let sql = "DELETE FROM \(table.tableName) WHERE \(keyColumn.columnName) == ? AND \(collectionColumn.columnName) == ?"
             try update(transaction: transaction, sql: sql, arguments: [ key, collection ])
         }
     }

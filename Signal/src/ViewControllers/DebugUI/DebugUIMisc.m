@@ -13,6 +13,7 @@
 #import <SignalCoreKit/Randomness.h>
 #import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/Environment.h>
+#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
@@ -172,9 +173,25 @@ NS_ASSUME_NONNULL_BEGIN
                                          [SSKEnvironment.shared.socketManager cycleSocket];
                                      }]];
 
-    [items addObject:[OWSTableItem itemWithTitle:@"Add random key-value stores"
+    [items addObject:[OWSTableItem itemWithTitle:@"Add 1k KV keys"
                                      actionBlock:^() {
-                                         [DebugUIMisc populateRandomKeyValueStores];
+                                         [DebugUIMisc populateRandomKeyValueStores:1 * 1000];
+                                     }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Add 10k KV keys"
+                                     actionBlock:^() {
+                                         [DebugUIMisc populateRandomKeyValueStores:10 * 1000];
+                                     }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Add 100k KV keys"
+                                     actionBlock:^() {
+                                         [DebugUIMisc populateRandomKeyValueStores:100 * 1000];
+                                     }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Add 1m KV keys"
+                                     actionBlock:^() {
+                                         [DebugUIMisc populateRandomKeyValueStores:1000 * 1000];
+                                     }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Clear Random KV keys"
+                                     actionBlock:^() {
+                                         [DebugUIMisc clearRandomKeyValueStores];
                                      }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
@@ -380,18 +397,21 @@ NS_ASSUME_NONNULL_BEGIN
                         ]];
 }
 
-+ (void)populateRandomKeyValueStores
++ (void)populateRandomKeyValueStores:(NSUInteger)keyCount
 {
-    const NSUInteger kKVStoreCount = 10;
-    const NSUInteger kKeyCount = 100 * 1000;
-    for (NSUInteger storeIndex = 0; storeIndex < kKVStoreCount; storeIndex++) {
+    const NSUInteger kBatchSize = 1000;
+    const NSUInteger batchCount = keyCount / kBatchSize;
+    OWSLogVerbose(@"keyCount: %i", (int)keyCount);
+    OWSLogVerbose(@"batchCount: %i", (int)batchCount);
+    for (NSUInteger batchIndex = 0; batchIndex < batchCount; batchIndex++) {
+        OWSLogVerbose(@"batchIndex: %i / %i", (int)batchIndex, (int)batchCount);
+
         @autoreleasepool {
             [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                NSString *collection = [@"debug-" stringByAppendingString:NSUUID.UUID.UUIDString];
-                SDSKeyValueStore *store = [[SDSKeyValueStore alloc] initWithCollection:collection];
+                SDSKeyValueStore *store = [OWSBlockingManager keyValueStore];
 
                 // Set three values at a time.
-                for (NSUInteger keyIndex = 0; keyIndex < kKeyCount; keyIndex += 3) {
+                for (NSUInteger keyIndex = 0; keyIndex < kBatchSize; keyIndex += 3) {
                     NSData *value = [Randomness generateRandomBytes:4096];
                     [store setData:value key:NSUUID.UUID.UUIDString transaction:transaction];
 
@@ -402,6 +422,14 @@ NS_ASSUME_NONNULL_BEGIN
             }];
         }
     }
+}
+
++ (void)clearRandomKeyValueStores
+{
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        SDSKeyValueStore *store = [OWSBlockingManager keyValueStore];
+        [store removeAllWithTransaction:transaction];
+    }];
 }
 
 @end

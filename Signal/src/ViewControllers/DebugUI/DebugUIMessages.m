@@ -199,6 +199,10 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages createFakeThreads:1000 withFakeMessages:1];
                         }],
+        [OWSTableItem itemWithTitle:@"Create 1k fake threads with 10k messages"
+                        actionBlock:^{
+                            [DebugUIMessages createFakeThreads:1000 withFakeMessages:10 * 1000];
+                        }],
         [OWSTableItem itemWithTitle:@"Create 1k fake messages"
                         actionBlock:^{
                             [DebugUIMessages sendFakeMessages:1000 thread:thread];
@@ -3752,7 +3756,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                   TSContactThread *contactThread =
                       [TSContactThread getOrCreateThreadWithContactAddress:[[SignalServiceAddress alloc]
                                                                                initWithPhoneNumber:phoneNumber.toE164]];
-                  [self sendFakeMessages:messageCount thread:contactThread];
+                  @autoreleasepool {
+                      [self sendFakeMessages:messageCount thread:contactThread];
+                  }
                   [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
                       NSUInteger interactionCount = [contactThread numberOfInteractionsWithTransaction:transaction];
                       OWSLogInfo(@"Create fake thread: %@, interactions: %lu",

@@ -45,8 +45,9 @@ NS_SWIFT_NAME(init(uniqueId:createdAt:envelopeData:));
 - (NSString *)databaseExtensionName;
 - (NSString *)databaseExtensionGroup;
 
-#ifdef DEBUG
 - (NSUInteger)queuedJobCountWithTransaction:(SDSAnyReadTransaction *)transaction;
+
+#ifdef DEBUG
 - (void)addJobForEnvelopeData:(NSData *)envelopeData transaction:(SDSAnyWriteTransaction *)transaction;
 #endif
 
