@@ -175,8 +175,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
     __block OWSDisappearingMessagesConfiguration *configuration;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        configuration =
-            [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId transaction:transaction];
+        configuration = [thread disappearingMessagesConfigurationWithTransaction:transaction];
     }];
 
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
@@ -211,8 +210,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
     __block OWSDisappearingMessagesConfiguration *configuration;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        configuration =
-            [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId transaction:transaction];
+        configuration = [thread disappearingMessagesConfigurationWithTransaction:transaction];
     }];
 
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
@@ -350,8 +348,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
     __block OWSDisappearingMessagesConfiguration *configuration;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        configuration =
-            [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId transaction:transaction];
+        configuration = [thread disappearingMessagesConfigurationWithTransaction:transaction];
     }];
 
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);

@@ -1829,8 +1829,7 @@ typedef enum : NSUInteger {
 
 - (void)updateDisappearingMessagesConfigurationWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    self.disappearingMessagesConfiguration =
-        [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:self.thread.uniqueId transaction:transaction];
+    self.disappearingMessagesConfiguration = [self.thread disappearingMessagesConfigurationWithTransaction:transaction];
 }
 
 - (void)setDisappearingMessagesConfiguration:

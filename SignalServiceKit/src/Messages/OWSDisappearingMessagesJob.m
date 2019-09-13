@@ -225,10 +225,10 @@ void AssertIsOnDisappearingMessagesQueue()
         [thread disappearingMessagesConfigurationWithTransaction:transaction];
 
     if (duration == 0) {
-        disappearingMessagesConfiguration.enabled = NO;
+        disappearingMessagesConfiguration = [disappearingMessagesConfiguration copyWithIsEnabled:NO];
     } else {
-        disappearingMessagesConfiguration.enabled = YES;
-        disappearingMessagesConfiguration.durationSeconds = duration;
+        disappearingMessagesConfiguration =
+            [disappearingMessagesConfiguration copyAsEnabledWithDurationSeconds:duration];
     }
 
     if (![disappearingMessagesConfiguration hasChangedWithTransaction:transaction]) {
