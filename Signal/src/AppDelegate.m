@@ -1278,10 +1278,11 @@ static NSTimeInterval launchStartedAt;
     if (!Environment.shared.preferences.hasGeneratedThumbnails) {
         [self.databaseStorage
             asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-                [TSAttachment anyBatchedEnumerateWithTransaction:transaction
-                                                           block:^(TSAttachment *attachment, BOOL *stop) {
-                                                               // no-op. It's sufficient to initWithCoder: each object.
-                                                           }];
+                [TSAttachment anyEnumerateWithTransaction:transaction
+                                                  batched:YES
+                                                    block:^(TSAttachment *attachment, BOOL *stop) {
+                                                        // no-op. It's sufficient to initWithCoder: each object.
+                                                    }];
             }
             completion:^{
                 [Environment.shared.preferences setHasGeneratedThumbnails:YES];

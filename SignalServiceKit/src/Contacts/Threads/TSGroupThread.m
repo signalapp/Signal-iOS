@@ -201,15 +201,16 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 
     NSMutableArray<TSGroupThread *> *groupThreads = [NSMutableArray new];
 
-    [TSThread anyBatchedEnumerateWithTransaction:transaction
-                                           block:^(TSThread *thread, BOOL *stop) {
-                                               if ([thread isKindOfClass:[TSGroupThread class]]) {
-                                                   TSGroupThread *groupThread = (TSGroupThread *)thread;
-                                                   if ([groupThread.groupModel.groupMembers containsObject:address]) {
-                                                       [groupThreads addObject:groupThread];
-                                                   }
-                                               }
-                                           }];
+    [TSThread anyEnumerateWithTransaction:transaction
+                                  batched:YES
+                                    block:^(TSThread *thread, BOOL *stop) {
+                                        if ([thread isKindOfClass:[TSGroupThread class]]) {
+                                            TSGroupThread *groupThread = (TSGroupThread *)thread;
+                                            if ([groupThread.groupModel.groupMembers containsObject:address]) {
+                                                [groupThreads addObject:groupThread];
+                                            }
+                                        }
+                                    }];
 
     return [groupThreads copy];
 }

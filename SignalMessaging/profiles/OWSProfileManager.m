@@ -1076,18 +1076,18 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         OWSLogError(@"logUserProfiles: %ld", (unsigned long)[OWSUserProfile anyCountWithTransaction:transaction]);
 
-        [OWSUserProfile
-            anyBatchedEnumerateWithTransaction:transaction
-                                         block:^(OWSUserProfile *userProfile, BOOL *stop) {
-                                             OWSLogError(@"\t [%@]: has profile key: %d, has avatar URL: %d, has "
-                                                         @"avatar file: %d, name: %@, username: %@",
-                                                 userProfile.address,
-                                                 userProfile.profileKey != nil,
-                                                 userProfile.avatarUrlPath != nil,
-                                                 userProfile.avatarFileName != nil,
-                                                 userProfile.profileName,
-                                                 userProfile.username);
-                                         }];
+        [OWSUserProfile anyEnumerateWithTransaction:transaction
+                                            batched:YES
+                                              block:^(OWSUserProfile *userProfile, BOOL *stop) {
+                                                  OWSLogError(@"\t [%@]: has profile key: %d, has avatar URL: %d, has "
+                                                              @"avatar file: %d, name: %@, username: %@",
+                                                      userProfile.address,
+                                                      userProfile.profileKey != nil,
+                                                      userProfile.avatarUrlPath != nil,
+                                                      userProfile.avatarFileName != nil,
+                                                      userProfile.profileName,
+                                                      userProfile.username);
+                                              }];
     }];
 }
 

@@ -66,18 +66,18 @@ NS_ASSUME_NONNULL_BEGIN
     OWSGroupsOutputStream *groupsOutputStream = [[OWSGroupsOutputStream alloc] initWithOutputStream:dataOutputStream];
 
     [TSGroupThread
-        anyBatchedEnumerateWithTransaction:transaction
-                                     block:^(TSThread *thread, BOOL *stop) {
-                                         if (![thread isKindOfClass:[TSGroupThread class]]) {
-                                             if (![thread isKindOfClass:[TSContactThread class]]) {
-                                                 OWSLogWarn(
-                                                     @"Ignoring non group thread in thread collection: %@", thread);
-                                             }
-                                             return;
-                                         }
-                                         TSGroupThread *groupThread = (TSGroupThread *)thread;
-                                         [groupsOutputStream writeGroup:groupThread transaction:transaction];
-                                     }];
+        anyEnumerateWithTransaction:transaction
+                            batched:YES
+                              block:^(TSThread *thread, BOOL *stop) {
+                                  if (![thread isKindOfClass:[TSGroupThread class]]) {
+                                      if (![thread isKindOfClass:[TSContactThread class]]) {
+                                          OWSLogWarn(@"Ignoring non group thread in thread collection: %@", thread);
+                                      }
+                                      return;
+                                  }
+                                  TSGroupThread *groupThread = (TSGroupThread *)thread;
+                                  [groupsOutputStream writeGroup:groupThread transaction:transaction];
+                              }];
 
     [dataOutputStream close];
 

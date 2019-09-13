@@ -879,17 +879,18 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     OWSLogInfo(@"");
 
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        [OWSBackupFragment anyBatchedEnumerateWithTransaction:transaction
-                                                        block:^(OWSBackupFragment *fragment, BOOL *stop) {
-                                                            OWSLogVerbose(@"fragment: %@, %@, %lu, %@, %@, %@, %@",
-                                                                fragment.uniqueId,
-                                                                fragment.recordName,
-                                                                (unsigned long)fragment.encryptionKey.length,
-                                                                fragment.relativeFilePath,
-                                                                fragment.attachmentId,
-                                                                fragment.downloadFilePath,
-                                                                fragment.uncompressedDataLength);
-                                                        }];
+        [OWSBackupFragment anyEnumerateWithTransaction:transaction
+                                               batched:YES
+                                                 block:^(OWSBackupFragment *fragment, BOOL *stop) {
+                                                     OWSLogVerbose(@"fragment: %@, %@, %lu, %@, %@, %@, %@",
+                                                         fragment.uniqueId,
+                                                         fragment.recordName,
+                                                         (unsigned long)fragment.encryptionKey.length,
+                                                         fragment.relativeFilePath,
+                                                         fragment.attachmentId,
+                                                         fragment.downloadFilePath,
+                                                         fragment.uncompressedDataLength);
+                                                 }];
         OWSLogVerbose(
             @"Number of fragments: %lu", (unsigned long)[OWSBackupFragment anyCountWithTransaction:transaction]);
     }];

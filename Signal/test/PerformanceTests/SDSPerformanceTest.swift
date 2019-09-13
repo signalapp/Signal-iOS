@@ -176,7 +176,7 @@ class SDSPerformanceTest: PerformanceBaseTest {
         read { transaction in
             var enumeratedCount = 0
             for _ in 0..<enumerationCount {
-                TSInteraction.anyBatchedEnumerate(transaction: transaction) { _, _ in
+                TSInteraction.anyEnumerate(transaction: transaction, batched: true) { _, _ in
                     enumeratedCount += 1
                 }
             }
