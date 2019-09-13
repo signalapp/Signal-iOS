@@ -1380,12 +1380,14 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         if ([thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread *groupThread = (TSGroupThread *)thread;
             if (groupThread.isLocalUserInGroup) {
-                [groupThread softDeleteGroupThreadWithTransaction:transaction];
-                return;
+                [groupThread softDeleteThreadWithTransaction:transaction];
+            } else {
+                [groupThread anyRemoveWithTransaction:transaction];
             }
+        } else {
+            // contact thread
+            [thread softDeleteThreadWithTransaction:transaction];
         }
-
-        [thread anyRemoveWithTransaction:transaction];
     }];
 
     [self updateViewState];

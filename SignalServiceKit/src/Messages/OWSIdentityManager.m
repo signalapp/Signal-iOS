@@ -615,8 +615,29 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         [self.databaseQueue readWithBlock:^(SDSAnyReadTransaction *transaction) {
             [self.queuedVerificationStateSyncMessagesKeyValueStore
                 enumerateKeysAndObjectsWithTransaction:transaction
-                                                 block:^(
-                                                     NSString *accountId, SignalServiceAddress *address, BOOL *stop) {
+                                                 block:^(NSString *key, id value, BOOL *stop) {
+                                                     NSString *_Nullable accountId;
+                                                     SignalServiceAddress *address;
+                                                     if ([value isKindOfClass:[SignalServiceAddress class]]) {
+                                                         accountId = (NSString *)key;
+                                                         address = (SignalServiceAddress *)value;
+                                                     } else if ([value isKindOfClass:[NSString class]]) {
+                                                         // Previously, we stored phone numbers in this KV store.
+                                                         NSString *phoneNumber = (NSString *)value;
+                                                         address = [[SignalServiceAddress alloc]
+                                                             initWithPhoneNumber:phoneNumber];
+                                                         OWSAccountIdFinder *accountIdFinder = [OWSAccountIdFinder new];
+                                                         accountId = [accountIdFinder accountIdForAddress:address
+                                                                                              transaction:transaction];
+                                                         if (accountId == nil) {
+                                                             OWSFailDebug(@"Missing accountId for address.");
+                                                             return;
+                                                         }
+                                                     } else {
+                                                         OWSFailDebug(@"Invalid object: %@", [value class]);
+                                                         return;
+                                                     }
+
                                                      OWSRecipientIdentity *recipientIdentity =
                                                          [OWSRecipientIdentity anyFetchWithUniqueId:accountId
                                                                                         transaction:transaction];
