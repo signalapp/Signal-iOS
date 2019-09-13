@@ -148,7 +148,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSDisappearingMessagesConfiguration *configuration =
             [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread transaction:transaction];
         XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
-        configuration = [configuration copyAsDisabled];
+        configuration = [configuration copyWithIsEnabled:NO];
         XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
 
 #pragma clang diagnostic push
@@ -257,7 +257,7 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread transaction:transaction];
         XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
 
-        configuration = [configuration copyAsDisabled];
+        configuration = [configuration copyWithIsEnabled:NO];
 
         XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
 

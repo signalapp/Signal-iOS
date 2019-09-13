@@ -225,7 +225,7 @@ void AssertIsOnDisappearingMessagesQueue()
         [thread disappearingMessagesConfigurationWithTransaction:transaction];
 
     if (duration == 0) {
-        disappearingMessagesConfiguration = [disappearingMessagesConfiguration copyAsDisabled];
+        disappearingMessagesConfiguration = [disappearingMessagesConfiguration copyWithIsEnabled:NO];
     } else {
         disappearingMessagesConfiguration =
             [disappearingMessagesConfiguration copyAsEnabledWithDurationSeconds:duration];

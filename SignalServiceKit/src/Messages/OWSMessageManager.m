@@ -1080,7 +1080,7 @@ NS_ASSUME_NONNULL_BEGIN
             [disappearingMessagesConfiguration copyAsEnabledWithDurationSeconds:dataMessage.expireTimer];
     } else {
         OWSLogInfo(@"Expiring messages have been turned off for thread %@", thread);
-        disappearingMessagesConfiguration = [disappearingMessagesConfiguration copyAsDisabled];
+        disappearingMessagesConfiguration = [disappearingMessagesConfiguration copyWithIsEnabled:NO];
     }
     OWSAssertDebug(disappearingMessagesConfiguration);
 

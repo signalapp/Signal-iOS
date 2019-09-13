@@ -173,14 +173,6 @@ NS_ASSUME_NONNULL_BEGIN
     return newInstance;
 }
 
-- (instancetype)copyAsDisabled
-{
-    OWSDisappearingMessagesConfiguration *newInstance = [self copy];
-    newInstance.enabled = NO;
-    newInstance.durationSeconds = OWSDisappearingMessagesConfigurationDefaultExpirationDuration;
-    return newInstance;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

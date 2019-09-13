@@ -53,7 +53,6 @@ NS_SWIFT_NAME(init(uniqueId:durationSeconds:enabled:));
 - (instancetype)copyWithIsEnabled:(BOOL)isEnabled;
 - (instancetype)copyWithDurationSeconds:(uint32_t)durationSeconds;
 - (instancetype)copyAsEnabledWithDurationSeconds:(uint32_t)durationSeconds;
-- (instancetype)copyAsDisabled;
 
 @end
 

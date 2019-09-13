@@ -3559,7 +3559,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         {
             OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
                 [thread disappearingMessagesConfigurationWithTransaction:transaction];
-            disappearingMessagesConfiguration = [disappearingMessagesConfiguration copyAsDisabled];
+            disappearingMessagesConfiguration = [disappearingMessagesConfiguration copyWithIsEnabled:NO];
 
             // MJK TODO - remove senderTimestamp
             [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
