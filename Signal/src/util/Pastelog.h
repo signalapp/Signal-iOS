@@ -11,7 +11,8 @@ typedef void (^SubmitDebugLogsCompletion)(void);
 - (instancetype)init NS_UNAVAILABLE;
 
 + (void)submitLogs;
-+ (void)submitEmailWithLogUrl:(nullable NSURL *)url NS_SWIFT_NAME(submitEmail(logUrl:));
++ (void)submitEmailWithLogUrl:(nullable NSURL *)url
+                      subject:(NSString *)subject NS_SWIFT_NAME(submitEmail(logUrl:subject:));
 + (void)submitLogsWithCompletion:(nullable SubmitDebugLogsCompletion)completion;
 
 @end

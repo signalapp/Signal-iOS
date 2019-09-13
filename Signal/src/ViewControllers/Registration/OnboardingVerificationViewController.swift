@@ -482,7 +482,8 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
             actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT",
                                                                          comment: "action sheet item shown after a number of failures to receive a verificaiton SMS during registration"),
                                                 style: .default) { _ in
-                                                    Pastelog.submitEmail(logUrl: nil)
+                                                    Pastelog.submitEmail(logUrl: nil,
+                                                                         subject: "Signal Registration - Verification Code for iOS")
             })
         }
 
