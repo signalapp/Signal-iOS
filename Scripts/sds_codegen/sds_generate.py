@@ -243,11 +243,11 @@ class TypeInfo:
         elif self._swift_type == 'String':
             return '.unicodeString'
         elif self._objc_type == 'NSDate *':
-            # Persist Dates as NSTimeInterval timeIntervalSince1970.
+            # Persist dates as NSTimeInterval timeIntervalSince1970.
             return '.double'
         elif self._swift_type == 'Date':
-            # Persist Dates as NSTimeInterval timeIntervalSince1970.
-            fail('Unknown type(0):', self._swift_type)
+            # Persist dates as NSTimeInterval timeIntervalSince1970.
+            fail('We should not use `Date` as a "swift type" since all NSDates are serialized as doubles.', self._swift_type) 
         elif self._swift_type == 'Data':
             return '.blob'
         elif self._swift_type in ('Boolouble', 'Bool'):
@@ -363,7 +363,7 @@ class TypeInfo:
                     # '}',
                 ]
         elif self._objc_type == 'NSDate *':
-            # Persist Dates as NSTimeInterval timeIntervalSince1970.
+            # Persist dates as NSTimeInterval timeIntervalSince1970.
             
             value_expr = 'record.%s' % ( property.column_source(), )
             interval_name = '%sInterval' % ( str(value_name), )
@@ -469,7 +469,7 @@ class ParsedProperty:
         elif objc_type == 'NSString *':
             return 'String'
         elif objc_type == 'NSDate *':
-            # Persist Dates as NSTimeInterval timeIntervalSince1970.
+            # Persist dates as NSTimeInterval timeIntervalSince1970.
             return 'Double'
         elif objc_type == 'NSData *':
             return 'Data'
