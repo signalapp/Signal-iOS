@@ -64,7 +64,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
 
 @synthesize uiDatabaseConnection = _uiDatabaseConnection;
 
-+ (nullable instancetype)sharedManager
++ (nullable instancetype)shared
 {
     OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
 
