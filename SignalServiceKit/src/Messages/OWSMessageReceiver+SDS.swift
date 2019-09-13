@@ -313,6 +313,13 @@ public extension OWSMessageDecryptJob {
     // Traverses all records.
     // Records are not visited in any particular order.
     class func anyEnumerate(transaction: SDSAnyReadTransaction,
+                            block: @escaping (OWSMessageDecryptJob, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        anyEnumerate(transaction: transaction, batched: false, block: block)
+    }
+
+    // Traverses all records.
+    // Records are not visited in any particular order.
+    class func anyEnumerate(transaction: SDSAnyReadTransaction,
                             batched: Bool = false,
                             block: @escaping (OWSMessageDecryptJob, UnsafeMutablePointer<ObjCBool>) -> Void) {
         let batchSize = batched ? Batching.kDefaultBatchSize : 0
@@ -354,6 +361,13 @@ public extension OWSMessageDecryptJob {
                 owsFailDebug("Couldn't fetch models: \(error)")
             }
         }
+    }
+
+    // Traverses all records' unique ids.
+    // Records are not visited in any particular order.
+    class func anyEnumerateUniqueIds(transaction: SDSAnyReadTransaction,
+                                     block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        anyEnumerateUniqueIds(transaction: transaction, batched: false, block: block)
     }
 
     // Traverses all records' unique ids.

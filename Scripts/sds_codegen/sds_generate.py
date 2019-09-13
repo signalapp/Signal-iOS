@@ -1283,6 +1283,13 @@ public extension %(class_name)s {
     // Traverses all records.
     // Records are not visited in any particular order.
     class func anyEnumerate(transaction: SDSAnyReadTransaction,
+                            block: @escaping (%s, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        anyEnumerate(transaction: transaction, batched: false, block: block)
+    }
+
+    // Traverses all records.
+    // Records are not visited in any particular order.
+    class func anyEnumerate(transaction: SDSAnyReadTransaction,
                             batched: Bool = false,
                             block: @escaping (%s, UnsafeMutablePointer<ObjCBool>) -> Void) {
         let batchSize = batched ? Batching.kDefaultBatchSize : 0
@@ -1325,9 +1332,16 @@ public extension %(class_name)s {
             }
         }
     }
-''' % ( ( str(clazz.name), ) * 5 )
+''' % ( ( str(clazz.name), ) * 6 )
 
         swift_body += '''
+    // Traverses all records' unique ids.
+    // Records are not visited in any particular order.
+    class func anyEnumerateUniqueIds(transaction: SDSAnyReadTransaction, 
+                                     block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        anyEnumerateUniqueIds(transaction: transaction, batched: false, block: block)
+    }
+
     // Traverses all records' unique ids.
     // Records are not visited in any particular order.
     class func anyEnumerateUniqueIds(transaction: SDSAnyReadTransaction, 

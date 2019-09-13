@@ -328,6 +328,13 @@ public extension SignalRecipient {
     // Traverses all records.
     // Records are not visited in any particular order.
     class func anyEnumerate(transaction: SDSAnyReadTransaction,
+                            block: @escaping (SignalRecipient, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        anyEnumerate(transaction: transaction, batched: false, block: block)
+    }
+
+    // Traverses all records.
+    // Records are not visited in any particular order.
+    class func anyEnumerate(transaction: SDSAnyReadTransaction,
                             batched: Bool = false,
                             block: @escaping (SignalRecipient, UnsafeMutablePointer<ObjCBool>) -> Void) {
         let batchSize = batched ? Batching.kDefaultBatchSize : 0
@@ -369,6 +376,13 @@ public extension SignalRecipient {
                 owsFailDebug("Couldn't fetch models: \(error)")
             }
         }
+    }
+
+    // Traverses all records' unique ids.
+    // Records are not visited in any particular order.
+    class func anyEnumerateUniqueIds(transaction: SDSAnyReadTransaction,
+                                     block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        anyEnumerateUniqueIds(transaction: transaction, batched: false, block: block)
     }
 
     // Traverses all records' unique ids.
