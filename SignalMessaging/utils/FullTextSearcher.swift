@@ -290,12 +290,17 @@ public class FullTextSearcher: NSObject {
                 let sortKey = ConversationSortKey(creationDate: thread.creationDate,
                                                   lastMessageReceivedAtDate: thread.lastInteractionForInbox(transaction: transaction)?.receivedAtDate())
                 let searchResult = ConversationSearchResult(thread: threadViewModel, sortKey: sortKey)
-
-                if let contactThread = thread as? TSContactThread {
-                    existingConversationAddresses.insert(contactThread.contactAddress)
+                switch thread {
+                case is TSGroupThread:
+                    conversations.append(searchResult)
+                case let contactThread as TSContactThread:
+                    if contactThread.shouldThreadBeVisible {
+                        existingConversationAddresses.insert(contactThread.contactAddress)
+                        conversations.append(searchResult)
+                    }
+                default:
+                    owsFailDebug("unexpected thread: \(type(of: thread))")
                 }
-
-                conversations.append(searchResult)
             } else if let message = match as? TSMessage {
                 let thread = message.thread(transaction: transaction)
 

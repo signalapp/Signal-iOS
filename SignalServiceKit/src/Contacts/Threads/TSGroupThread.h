@@ -69,8 +69,6 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 - (void)leaveGroupWithSneakyTransaction;
 - (void)leaveGroupWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)softDeleteGroupThreadWithTransaction:(SDSAnyWriteTransaction *)transaction;
-
 #pragma mark - Avatar
 
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream;

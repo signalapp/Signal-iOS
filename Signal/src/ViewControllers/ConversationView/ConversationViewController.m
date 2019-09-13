@@ -5297,11 +5297,9 @@ typedef enum : NSUInteger {
                 [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
                 [groupThread leaveGroupWithTransaction:transaction];
             }
-
-            [groupThread softDeleteGroupThreadWithTransaction:transaction];
-        } else {
-            [self.thread anyRemoveWithTransaction:transaction];
         }
+
+        [self.thread softDeleteThreadWithTransaction:transaction];
 
         [transaction addCompletionWithBlock:^{
             [self.navigationController popViewControllerAnimated:YES];
