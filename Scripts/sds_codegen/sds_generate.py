@@ -248,8 +248,6 @@ class TypeInfo:
         elif self._swift_type == 'Date':
             # Persist Dates as NSTimeInterval timeIntervalSince1970.
             fail('Unknown type(0):', self._swift_type)
-            # return '.double'
-            # return '.int64'
         elif self._swift_type == 'Data':
             return '.blob'
         elif self._swift_type in ('Boolouble', 'Bool'):
@@ -442,18 +440,6 @@ class TypeInfo:
             value_expr = 'serializationSafeUInt64(%s)' % ( value_expr, )
         elif self.swift_type() == 'UInt':
             value_expr = 'serializationSafeUInt(%s)' % ( value_expr, )
-        
-        # # print 'property', property.swift_type_safe()
-        # record_field_type = property.record_field_type()
-        #
-        # optional_value = ''
-        # if property.swift_identifier() in initializer_value_names:
-        #     did_force_optional = (property.name not in root_base_property_names) and (not property.is_optional)
-        #     model_accessor = accessor_name_for_property(property)
-        #     value_expr = property.serialize_record_invocation('model.%s' % ( model_accessor, ), did_force_optional)
-        #
-        #     if record_field_type in ('UInt64', 'UInt',):
-        #         value_expr = 'min(%s(Int64.max), %s)' % ( record_field_type, value_expr, )
 
         return value_expr
     
@@ -485,9 +471,6 @@ class ParsedProperty:
         elif objc_type == 'NSDate *':
             # Persist Dates as NSTimeInterval timeIntervalSince1970.
             return 'Double'
-            # return '.double'
-            # return 'UInt64'
-            # return 'Date'
         elif objc_type == 'NSData *':
             return 'Data'
         elif objc_type == 'BOOL':
