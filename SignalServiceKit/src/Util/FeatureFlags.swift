@@ -184,7 +184,7 @@ public class FeatureFlags: NSObject {
     public static let socialGraphOnServer = registrationLockV2 && !IsUsingProductionService() && build.includes(.dev)
 
     @objc
-    public static let cameraFirstCaptureFlow = build.includes(.qa)
+    public static let cameraFirstCaptureFlow = true
 
     @objc
     public static let complainAboutSlowDBWrites = true
