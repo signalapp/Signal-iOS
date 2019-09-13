@@ -387,20 +387,18 @@ private class LegacyInteractionFinder {
         }
         var errorToRaise: Error?
         transaction.enumerateGroups { groupId, stopPtr in
-            autoreleasepool {
-                transaction.enumerateKeysAndObjects(inGroup: groupId) { (_, _, object, _, stopPtr) in
-                    do {
-                        guard let interaction = object as? TSInteraction else {
-                            owsFailDebug("unexpected object: \(type(of: object))")
-                            return
-                        }
-
-                        try block(interaction)
-                    } catch {
-                        owsFailDebug("error: \(error)")
-                        errorToRaise = error
-                        stopPtr.pointee = true
+            transaction.enumerateKeysAndObjects(inGroup: groupId) { (_, _, object, _, stopPtr) in
+                do {
+                    guard let interaction = object as? TSInteraction else {
+                        owsFailDebug("unexpected object: \(type(of: object))")
+                        return
                     }
+
+                    try block(interaction)
+                } catch {
+                    owsFailDebug("error: \(error)")
+                    errorToRaise = error
+                    stopPtr.pointee = true
                 }
             }
         }
@@ -473,22 +471,20 @@ private class LegacyDecryptJobFinder {
     }
 
     func enumerateJobRecords(block: @escaping (OWSMessageDecryptJob) throws -> Void) throws {
-        try autoreleasepool {
-            var errorToRaise: Error?
-            let legacyFinder = OWSMessageDecryptJobFinder()
-            try legacyFinder.enumerateJobs(transaction: ydbTransaction.asAnyRead) { (job, stop) in
-                do {
-                    try block(job)
-                } catch {
-                    owsFailDebug("error: \(error)")
-                    errorToRaise = error
-                    stop.pointee = true
-                }
+        var errorToRaise: Error?
+        let legacyFinder = OWSMessageDecryptJobFinder()
+        try legacyFinder.enumerateJobs(transaction: ydbTransaction.asAnyRead) { (job, stop) in
+            do {
+                try block(job)
+            } catch {
+                owsFailDebug("error: \(error)")
+                errorToRaise = error
+                stop.pointee = true
             }
+        }
 
-            if let errorToRaise = errorToRaise {
-                throw errorToRaise
-            }
+        if let errorToRaise = errorToRaise {
+            throw errorToRaise
         }
     }
 }
