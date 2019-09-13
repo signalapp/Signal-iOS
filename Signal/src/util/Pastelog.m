@@ -326,7 +326,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                           accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_email")
                                             style:UIAlertActionStyleDefault
                                           handler:^(UIAlertAction *action) {
-                                              [self submitEmailWithLogUrl:url];
+                                              [self submitEmailWithLogUrl:url subject:@"Signal - iOS Debug Log"];
                                               completion();
                                           }]];
         [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_COPY_LINK",
@@ -515,14 +515,15 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 
 #pragma mark Logs submission
 
-+ (void)submitEmailWithLogUrl:(nullable NSURL *)url
++ (void)submitEmailWithLogUrl:(nullable NSURL *)url subject:(NSString *)subject
 {
     NSString *emailAddress = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"LOGS_EMAIL"];
 
     NSMutableString *body = [NSMutableString new];
 
-    [body appendFormat:@"Tell us about the issue: \n\n\n"];
-
+    [body appendString:@"Tell us about the issue: \n\n\n"];
+    [body appendString:@"Generated Report: \n"];
+    [body appendFormat:@"Subject: %@ \n", subject];
     size_t size;
     sysctlbyname("hw.machine", NULL, &size, NULL, 0);
     char *machine = malloc(size);
@@ -537,10 +538,14 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
         [body appendFormat:@"Log URL: %@ \n", url];
     }
 
+    NSString *escapedSubject =
+        [subject stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
+
     NSString *escapedBody =
         [body stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
+
     NSString *urlString =
-        [NSString stringWithFormat:@"mailto:%@?subject=iOS%%20Debug%%20Log&body=%@", emailAddress, escapedBody];
+        [NSString stringWithFormat:@"mailto:%@?subject=%@&body=%@", emailAddress, escapedSubject, escapedBody];
 
     BOOL success = [UIApplication.sharedApplication openURL:[NSURL URLWithString:urlString]];
     if (!success) {
