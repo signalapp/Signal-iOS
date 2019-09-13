@@ -162,6 +162,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self.mockAppSharedDataDirectoryPath;
 }
 
+- (NSString *)appDatabaseBaseDirectoryPath
+{
+    return self.appSharedDataDirectoryPath;
+}
+
 @end
 
 #endif

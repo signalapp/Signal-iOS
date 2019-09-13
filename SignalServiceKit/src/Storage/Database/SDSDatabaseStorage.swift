@@ -102,9 +102,10 @@ public class SDSDatabaseStorage: SDSTransactable {
     // GRDB TODO: Remove
     @objc
     public static var shouldUseDisposableGrdb: Bool {
-        if [.ydbTests, .grdbTests ].contains(FeatureFlags.storageMode) {
-            return true
-        }
+        // We don't need to use a "disable" database in our tests;
+        // TestAppContext ensures that our entire appSharedDataDirectoryPath
+        // is disposable in that case.
+
         if .grdbThrowawayIfMigrating == FeatureFlags.storageMode {
             // .grdbThrowawayIfMigrating allows us to re-test the migration on each launch.
             // It doesn't make sense (and won't work) if there's no YDB database
@@ -117,19 +118,14 @@ public class SDSDatabaseStorage: SDSTransactable {
         return false
     }
 
-    private static let baseDir: URL = {
-        let containerUrl = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(),
-                               isDirectory: true)
-        if shouldUseDisposableGrdb {
-            return containerUrl.appendingPathComponent(UUID().uuidString, isDirectory: true)
-        } else {
-            return containerUrl
-        }
-    }()
+    private class func baseDir() -> URL {
+        return URL(fileURLWithPath: CurrentAppContext().appDatabaseBaseDirectoryPath(),
+                   isDirectory: true)
+    }
 
     @objc
     public static var grdbDatabaseFileUrl: URL {
-        return GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir)
+        return GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir())
     }
 
     func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
@@ -153,18 +149,18 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
 
         // crash if we can't read the DB.
-        return try! GRDBDatabaseStorageAdapter(baseDir: type(of: self).baseDir)
+        return try! GRDBDatabaseStorageAdapter(baseDir: type(of: self).baseDir())
     }
 
     @objc
     public func deleteGrdbFiles() {
-        GRDBDatabaseStorageAdapter.removeAllFiles(baseDir: type(of: self).baseDir)
+        GRDBDatabaseStorageAdapter.removeAllFiles(baseDir: type(of: self).baseDir())
     }
 
     @objc
     public func resetAllStorage() {
         OWSStorage.resetAllStorage()
-        GRDBDatabaseStorageAdapter.resetAllStorage(baseDir: type(of: self).baseDir)
+        GRDBDatabaseStorageAdapter.resetAllStorage(baseDir: type(of: self).baseDir())
     }
 
     func createYapStorage() -> YAPDBStorageAdapter {
