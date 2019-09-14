@@ -11,7 +11,6 @@
 #import "OWSDispatch.h"
 #import "OWSError.h"
 #import "OWSFileSystem.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSRequestFactory.h"
 #import "SSKEnvironment.h"
 #import "TSAttachmentPointer.h"
@@ -336,27 +335,20 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
         __block TSAttachmentPointer *_Nullable attachmentPointer;
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             // Fetch latest to ensure we don't overwrite an attachment stream, resurrect an attachment, etc.
-            TSAttachment *_Nullable attachment =
-                [TSAttachmentPointer anyFetchWithUniqueId:job.attachmentId transaction:transaction];
-            if (![attachment isKindOfClass:[TSAttachmentPointer class]]) {
+            attachmentPointer =
+                [TSAttachmentPointer anyFetchAttachmentPointerWithUniqueId:job.attachmentId transaction:transaction];
+            if (attachmentPointer == nil) {
+                OWSFailDebug(@"Missing attachment.");
                 return;
             }
-
-            attachmentPointer = (TSAttachmentPointer *)attachment;
-            [attachmentPointer anyUpdateWithTransaction:transaction
-                                                  block:^(TSAttachment *attachment) {
-                                                      if (![attachment isKindOfClass:[TSAttachmentPointer class]]) {
-                                                          OWSFailDebug(@"Unexpected object: %@", attachment.class);
-                                                          return;
-                                                      }
-                                                      TSAttachmentPointer *pointer = (TSAttachmentPointer *)attachment;
-                                                      pointer.state = TSAttachmentPointerStateDownloading;
-                                                  }];
+            [attachmentPointer anyUpdateAttachmentPointerWithTransaction:transaction
+                                                                   block:^(TSAttachmentPointer *attachment) {
+                                                                       attachment.state
+                                                                           = TSAttachmentPointerStateDownloading;
+                                                                   }];
 
             if (job.message) {
-                if (transaction.transitional_yapWriteTransaction) {
-                    [job.message touchWithTransaction:transaction.transitional_yapWriteTransaction];
-                }
+                [self.databaseStorage touchInteraction:job.message transaction:transaction];
             }
         }];
 
@@ -372,30 +364,23 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                 OWSLogVerbose(@"Attachment download succeeded.");
 
                 [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                    TSAttachment *_Nullable existingAttachment =
-                        [TSAttachment anyFetchWithUniqueId:attachmentStream.uniqueId transaction:transaction];
-                    if (!existingAttachment) {
+                    TSAttachmentPointer *_Nullable existingAttachment =
+                        [TSAttachmentPointer anyFetchAttachmentPointerWithUniqueId:attachmentStream.uniqueId
+                                                                       transaction:transaction];
+                    if (existingAttachment == nil) {
                         OWSFailDebug(@"Attachment no longer exists.");
                         return;
                     }
-                    if (![existingAttachment isKindOfClass:[TSAttachmentPointer class]]) {
-                        OWSFailDebug(@"Attachment unexpectedly already saved.");
-                        return;
-                    }
-
                     [existingAttachment anyRemoveWithTransaction:transaction];
                     [attachmentStream anyInsertWithTransaction:transaction];
 
                     if (job.message) {
-                        if (transaction.transitional_yapWriteTransaction) {
-                            [job.message touchWithTransaction:transaction.transitional_yapWriteTransaction];
-
-                            [transaction.transitional_yapWriteTransaction
-                                addCompletionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-                                   completionBlock:^{
-                                       [OWSDisappearingMessagesJob.sharedJob schedulePass];
-                                   }];
-                        }
+                        [self.databaseStorage touchInteraction:job.message transaction:transaction];
+                        [transaction
+                            addCompletionWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                                             block:^{
+                                                 [OWSDisappearingMessagesJob.sharedJob schedulePass];
+                                             }];
                     }
                 }];
 
@@ -412,28 +397,23 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 
                 [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                     // Fetch latest to ensure we don't overwrite an attachment stream, resurrect an attachment, etc.
-                    TSAttachment *_Nullable attachment =
-                        [TSAttachmentPointer anyFetchWithUniqueId:job.attachmentId transaction:transaction];
-                    if (![attachment isKindOfClass:[TSAttachmentPointer class]]) {
+                    TSAttachmentPointer *_Nullable attachmentPointer =
+                        [TSAttachmentPointer anyFetchAttachmentPointerWithUniqueId:job.attachmentId
+                                                                       transaction:transaction];
+                    if (attachmentPointer == nil) {
+                        OWSLogWarn(@"Attachment no longer exists.");
                         return;
                     }
-                    TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)attachment;
-                    [attachmentPointer
-                        anyUpdateWithTransaction:transaction
-                                           block:^(TSAttachment *attachment) {
-                                               if (![attachment isKindOfClass:[TSAttachmentPointer class]]) {
-                                                   OWSFailDebug(@"Unexpected object: %@", attachment.class);
-                                                   return;
-                                               }
-                                               TSAttachmentPointer *pointer = (TSAttachmentPointer *)attachment;
-                                               pointer.mostRecentFailureLocalizedText = error.localizedDescription;
-                                               pointer.state = TSAttachmentPointerStateFailed;
-                                           }];
+                    [attachmentPointer anyUpdateAttachmentPointerWithTransaction:transaction
+                                                                           block:^(TSAttachmentPointer *attachment) {
+                                                                               attachment.mostRecentFailureLocalizedText
+                                                                                   = error.localizedDescription;
+                                                                               attachment.state
+                                                                                   = TSAttachmentPointerStateFailed;
+                                                                           }];
 
                     if (job.message) {
-                        if (transaction.transitional_yapWriteTransaction) {
-                            [job.message touchWithTransaction:transaction.transitional_yapWriteTransaction];
-                        }
+                        [self.databaseStorage touchInteraction:job.message transaction:transaction];
                     }
                 }];
 
@@ -564,7 +544,10 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
         return;
     }
 
-    TSAttachmentStream *stream = [[TSAttachmentStream alloc] initWithPointer:attachmentPointer];
+    __block TSAttachmentStream *stream;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        stream = [[TSAttachmentStream alloc] initWithPointer:attachmentPointer transaction:transaction];
+    }];
 
     NSError *writeError;
     [stream writeData:plaintext error:&writeError];

@@ -3,12 +3,12 @@
 //
 
 #import <Mantle/MTLModel.h>
-#import <SignalServiceKit/TSYapDatabaseObject.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class SDSAnyWriteTransaction;
 @class SSKProtoDataMessage;
+@class SignalServiceAddress;
 @class TSAttachment;
 @class TSAttachmentStream;
 @class TSQuotedMessage;
@@ -58,7 +58,7 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 @interface TSQuotedMessage : MTLModel
 
 @property (nonatomic, readonly) uint64_t timestamp;
-@property (nonatomic, readonly) NSString *authorId;
+@property (nonatomic, readonly) SignalServiceAddress *authorAddress;
 @property (nonatomic, readonly) TSQuotedMessageContentSource bodySource;
 
 // This property should be set IFF we are quoting a text message
@@ -93,14 +93,14 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 
 // used when receiving quoted messages
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         authorId:(NSString *)authorId
+                    authorAddress:(SignalServiceAddress *)authorAddress
                              body:(NSString *_Nullable)body
                        bodySource:(TSQuotedMessageContentSource)bodySource
     receivedQuotedAttachmentInfos:(NSArray<OWSAttachmentInfo *> *)attachmentInfos;
 
 // used when sending quoted messages
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         authorId:(NSString *)authorId
+                    authorAddress:(SignalServiceAddress *)authorAddress
                              body:(NSString *_Nullable)body
       quotedAttachmentsForSending:(NSArray<TSAttachment *> *)attachments;
 

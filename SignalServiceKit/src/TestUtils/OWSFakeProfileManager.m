@@ -6,6 +6,7 @@
 #import "TSThread.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -13,8 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSFakeProfileManager ()
 
-@property (nonatomic, readonly) NSMutableDictionary<NSString *, OWSAES256Key *> *profileKeys;
-@property (nonatomic, readonly) NSMutableSet<NSString *> *recipientWhitelist;
+@property (nonatomic, readonly) NSMutableDictionary<SignalServiceAddress *, OWSAES256Key *> *profileKeys;
+@property (nonatomic, readonly) NSMutableSet<SignalServiceAddress *> *recipientWhitelist;
 @property (nonatomic, readonly) NSMutableSet<NSString *> *threadWhitelist;
 @property (nonatomic, readonly) OWSAES256Key *localProfileKey;
 
@@ -48,31 +49,36 @@ NS_ASSUME_NONNULL_BEGIN
     return _localProfileKey;
 }
 
-- (void)setProfileKeyData:(NSData *)profileKey forRecipientId:(NSString *)recipientId
+- (void)setProfileKeyData:(NSData *)profileKey
+               forAddress:(SignalServiceAddress *)address
+              transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAES256Key *_Nullable key = [OWSAES256Key keyWithData:profileKey];
     OWSAssert(key);
-    self.profileKeys[recipientId] = key;
+    self.profileKeys[address] = key;
 }
 
-- (nullable NSData *)profileKeyDataForRecipientId:(NSString *)recipientId
+- (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address
+                                  transaction:(SDSAnyReadTransaction *)transaction
 {
-    return self.profileKeys[recipientId].keyData;
+    return self.profileKeys[address].keyData;
 }
 
-- (BOOL)isUserInProfileWhitelist:(NSString *)recipientId
+- (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address
+                     transaction:(SDSAnyReadTransaction *)transaction
 {
-    return [self.recipientWhitelist containsObject:recipientId];
+    return [self.recipientWhitelist containsObject:address];
 }
 
 - (BOOL)isThreadInProfileWhitelist:(TSThread *)thread
+                       transaction:(SDSAnyReadTransaction *)transaction
 {
     return [self.threadWhitelist containsObject:thread.uniqueId];
 }
 
-- (void)addUserToProfileWhitelist:(NSString *)recipientId
+- (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
 {
-    [self.recipientWhitelist addObject:recipientId];
+    [self.recipientWhitelist addObject:address];
 }
 
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId
@@ -85,12 +91,12 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing.
 }
 
-- (void)fetchProfileForRecipientId:(nonnull NSString *)recipientId
+- (void)fetchProfileForAddress:(nonnull SignalServiceAddress *)address
 {
     // Do nothing.
 }
 
-- (void)ensureLocalProfileCached
+- (void)warmCaches
 {
     // Do nothing.
 }

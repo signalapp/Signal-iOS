@@ -4,20 +4,32 @@
 
 import Foundation
 
+enum FeatureBuild: Int {
+    case dev
+    case internalPreview
+    case qa
+    case beta
+    case production
+}
+
+extension FeatureBuild {
+    func includes(_ level: FeatureBuild) -> Bool {
+        return self.rawValue <= level.rawValue
+    }
+}
+
+let build: FeatureBuild = .production
+
 /// By centralizing feature flags here and documenting their rollout plan, it's easier to review
 /// which feature flags are in play.
 @objc(SSKFeatureFlags)
 public class FeatureFlags: NSObject {
 
     @objc
-    public static var conversationSearch: Bool {
-        return false
-    }
+    public static let conversationSearch = false
 
     @objc
-    public static var useGRDB: Bool {
-        return false
-    }
+    public static var useGRDB = false
 
     @objc
     public static let shouldPadAllOutgoingAttachments = false
@@ -34,12 +46,10 @@ public class FeatureFlags: NSObject {
     // StickerManager.isStickerSendEnabled.  Sticker sending is
     // auto-enabled once the user receives any sticker content.
     @objc
-    public static var stickerSend: Bool {
-        return OWSIsDebugBuild()
-    }
+    public static let stickerSend = build.includes(.qa)
 
     @objc
-    public static let stickerSharing = false
+    public static let stickerSharing = build.includes(.qa)
 
     @objc
     public static let stickerAutoEnable = true
@@ -57,19 +67,47 @@ public class FeatureFlags: NSObject {
     // This shouldn't be enabled in production until the receive side has been
     // in production for "long enough".
     @objc
-    public static let perMessageExpiration = false
-
-    // This shouldn't be enabled _in production_ but it should be enabled in beta and developer builds.
-    private static let isBetaBuild = true
+    public static let viewOnceSending = build.includes(.qa)
 
     // Don't enable this flag in production.
     @objc
-    public static let strictYDBExtensions = isBetaBuild
+    public static let strictYDBExtensions = build.includes(.beta)
 
     // Don't enable this flag in production.
     @objc
-    public static let onlyModernNotificationClearance = isBetaBuild
+    public static let onlyModernNotificationClearance = build.includes(.beta)
 
     @objc
-    public static let registrationLockV2 = false
+    public static let registrationLockV2 = !IsUsingProductionService() && build.includes(.dev)
+
+    @objc
+    public static var allowUUIDOnlyContacts: Bool {
+        // TODO UUID: Remove production check once this rolls out to prod service
+        if OWSIsDebugBuild() && !IsUsingProductionService() {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    @objc
+    public static var pinsForEveryone = build.includes(.dev)
+
+    @objc
+    public static let useOnlyModernContactDiscovery = !IsUsingProductionService() && build.includes(.dev)
+
+    @objc
+    public static let phoneNumberPrivacy = false
+
+    @objc
+    public static let socialGraphOnServer = registrationLockV2 && !IsUsingProductionService() && build.includes(.dev)
+
+    @objc
+    public static let cameraFirstCaptureFlow = build.includes(.qa)
+
+    @objc
+    public static let messageRequest = build.includes(.qa)
+
+    @objc
+    public static let profileDisplayChanges = build.includes(.qa)
 }

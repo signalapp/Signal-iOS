@@ -4,6 +4,27 @@
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Acceptera nytt säkerhetsnummer";
 
+/* Accessibility label for attachment. */
+"ACCESSIBILITY_LABEL_ATTACHMENT" = "Bilaga";
+
+/* Accessibility label for audio. */
+"ACCESSIBILITY_LABEL_AUDIO" = "Ljud";
+
+/* Accessibility label for contact. */
+"ACCESSIBILITY_LABEL_CONTACT" = "Kontakt";
+
+/* Accessibility label for media. */
+"ACCESSIBILITY_LABEL_MEDIA" = "Media";
+
+/* Accessibility label for message. */
+"ACCESSIBILITY_LABEL_MESSAGE" = "Meddelande";
+
+/* Accessibility label for messages sent by you. */
+"ACCESSIBILITY_LABEL_SENDER_SELF" = "Du";
+
+/* Accessibility label for stickers. */
+"ACCESSIBILITY_LABEL_STICKER" = "Klistermärke";
+
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Ring med Signal";
 
@@ -111,7 +132,7 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "Bilaga";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Nedladdning misslyckad. Tryck för att försöka igen.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Hämtning misslyckades. Tryck för att försöka igen.";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Fel vid sändning av bifogad fil";
@@ -146,11 +167,29 @@
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Välj en bild eller ta en ny och skicka sedan den";
 
+/* A button to open the camera from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_CAMERA" = "Kamera";
+
+/* A button to select a contact from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_CONTACT" = "Kontakt";
+
+/* A button to select a file from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_FILE" = "Fil";
+
+/* A button to select a GIF from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_GIF" = "GIF";
+
+/* A button to select a location from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_LOCATION" = "Plats";
+
+/* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Ge tillgång till dina foton i inställningar för att skicka dem här.";
+
+/* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "När du har tagit bilder, kommer du att kunna skicka dina senaste här.";
+
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Bifogad fil";
-
-/* attachment menu option to send contact */
-"ATTACHMENT_MENU_CONTACT_BUTTON" = "Kontakt";
 
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Kunde inte välja dokument.";
@@ -189,7 +228,7 @@
 "BACKUP_EXPORT_PHASE_EXPORT" = "Exporterar säkerhetskopia";
 
 /* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "Laddar upp backup";
+"BACKUP_EXPORT_PHASE_UPLOAD" = "Laddar upp säkerhetskopia";
 
 /* Error indicating the backup import could not import the user's data. */
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Säkerhetskopia kunde inte importeras.";
@@ -299,8 +338,14 @@
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "Nästa";
 
+/* Label for the 'okay' button. */
+"BUTTON_OKAY" = "Okej";
+
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Välj";
+
+/* Label for the 'submit' button. */
+"BUTTON_SUBMIT" = "Skicka";
 
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Ring igen";
@@ -467,13 +512,13 @@
 /* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Säkerhetsnumret med %@ har ändrats";
 
-/* Generic button text to proceed with an action */
+/* No comment provided by engineer. */
 "CONFIRMATION_TITLE" = "Bekräfta";
 
 /* Label for a contact's postal address. */
 "CONTACT_ADDRESS" = "Adress";
 
-/* An indicator that a contact has been blocked. */
+/* An indicator that a contact or group has been blocked. */
 "CONTACT_CELL_IS_BLOCKED" = "Blockerad";
 
 /* An indicator that a contact is no longer verified. */
@@ -566,6 +611,21 @@
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Ta bort konversation?";
 
+/* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Du kan inte välja mer än %@ konversationer.";
+
+/* table section header for section containing groups */
+"CONVERSATION_PICKER_SECTION_GROUPS" = "Grupper";
+
+/* table section header for section containing recent conversations */
+"CONVERSATION_PICKER_SECTION_RECENTS" = "Senaste konversationer";
+
+/* table section header for section containing contacts */
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Personer";
+
+/* navbar header */
+"CONVERSATION_PICKER_TITLE" = "Välj mottagare";
+
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Inga resultat";
 
@@ -635,6 +695,9 @@
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Ljud på";
 
+/* Indicates that user is in the system contacts list. */
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Den här användaren finns i dina kontakter";
+
 /* Indicates that user's profile has been shared with a group. */
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Denna grupp kan se din profil.";
 
@@ -666,7 +729,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tryck för mer";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Blockera användaren";
+"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Blockera denna användare";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Att återställa din session låter dig ta emot nya meddelanden från %@, men kommer inte att återställa meddelanden som redan är korrupta.";
@@ -725,9 +788,6 @@
 /* Label for the 'email debug log' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "Skicka e-post till support";
 
-/* Label for the 'send to last thread' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Skicka till senaste tråd";
-
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Skicka till mig själv";
 
@@ -760,7 +820,7 @@
 "DEVICE_LINKED_AT_LABEL" = "Länkad: %@";
 
 /* Alert title that can occur when viewing device manager. */
-"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Misslyckades med uppdatera enhetslistan.";
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Det gick inte att uppdatera enhetslistan.";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Meddelanden som försvinner";
@@ -855,6 +915,12 @@
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN-koderna matchar inte.";
 
+/* Error indicating that the entered 'two-factor auth PIN' is too long. */
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN-koden kan inte vara längre än 20 siffror.";
+
+/* Error indicating that the entered 'two-factor auth PIN' is too short. */
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN måste vara minst 4 siffror.";
+
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Ange en registreringslås-PIN. Du kommer att behöva ange denna PIN nästa gång du registrerar detta telefonnummer med Signal.";
 
@@ -919,7 +985,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Hämtning av bilagan misslyckades.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Misslyckades att ta emot bilaga: Be den här kontakten att skicka sitt meddelande igen efter att ha uppdaterat till den senaste versionen av Signal.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Det gick inte att ta emot bilaga: Be den här kontakten att skicka sitt meddelande igen efter att ha uppdaterat till den senaste versionen av Signal.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Mottog ett duplicerat meddelande.";
@@ -976,7 +1042,7 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Ditt säkerhetsnummer med %@ har nyligen ändrats. Du vill nog verifiera innan du skickar det här meddelandet igen.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Misslyckades med att bekräfta säkerhetsnumret!";
+"FAILED_VERIFICATION_TITLE" = "Det gick inte att verifiera säkerhetsnumret!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Markera som verifierad";
@@ -1094,6 +1160,9 @@
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Starta ditt första samtal här.";
+
+/* Table cell subtitle label for a conversation the user has not accepted. */
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Meddelandebegäran";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Inga träffar för '%@'";
@@ -1218,6 +1287,12 @@
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Gruppmedlemmar";
 
+/* A string indicating that the user can search for a location */
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Sök efter namn eller adress";
+
+/* The title for the location picker view */
+"LOCATION_PICKER_TITLE" = "Välj plats";
+
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Loggning";
 
@@ -1229,9 +1304,6 @@
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "Kamera";
-
-/* action sheet button title when choosing attachment type */
-"MEDIA_FROM_DOCUMENT_PICKER_BUTTON" = "Dokument";
 
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "Bildbibliotek";
@@ -1329,8 +1401,38 @@
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Meddelande";
 
+/* A button used to block a user on an incoming message request. */
+"MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Acceptera";
+
+/* A button used to block a user on an incoming message request. */
+"MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blockera";
+
+/* A button used to block a user on an incoming message request. */
+"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Ta bort";
+
+/* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Du måste dela din profil för att fortsätta konversationen med %@.";
+
+/* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "Du måste dela din profil för att fortsätta konversationen i %@.";
+
+/* A button used to learn more about why you must share your profile. */
+"MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Läs mer";
+
+/* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Vill du låta %@ skicka meddelanden till dig? De vet inte att du har sett deras meddelanden förrän du accepterar.";
+
+/* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Vill du gå med i gruppen %@? De vet inte att du har sett deras meddelanden förrän du accepterar.";
+
+/* A button used to share your profile with an existing thread. */
+"MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Dela profil";
+
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Levererat";
+
+/* message status while message is downloading. */
+"MESSAGE_STATUS_DOWNLOADING" = "Hämtar";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Kunde inte skicka.";
@@ -1377,9 +1479,6 @@
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Du blockerade %@ medlemmar i denna grupp";
 
-/* Text for banner in group conversation view that offers to share your profile with this group. */
-"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Dela din profil med den här gruppen?";
-
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Mer än en medlem i denna grupp är inte längre markerad som verifierad. Tryck för alternativ.";
 
@@ -1405,6 +1504,12 @@
 /* Alert title
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal behöver åtkomst till din kamera.";
+
+/* Alert body indicating the user has denied location permissios */
+"MISSING_LOCATION_PERMISSION_MESSAGE" = "Du kan aktivera den här behörigheten i appen för iOS-inställningar.";
+
+/* Alert title indicating the user has denied location permissios */
+"MISSING_LOCATION_PERMISSION_TITLE" = "Signal kräver tillgång till din plats för den här funktionen.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Du kan aktivera den här behörigheten i appen för iOS-inställningar.";
@@ -1521,7 +1626,7 @@
 "OK" = "OK";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Du har uttömt alla pin-försök, du kan försöka registrera dig igen om 7 dagar.";
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Felaktig PIN-kod. Försök förbrukade.";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Detta mobilnummer har registreringslåset påslaget. Ange PIN-koden för registreringslåset.";
@@ -1530,16 +1635,28 @@
 "ONBOARDING_2FA_EXPLANATION_2" = "Din registrerings lås-PIN-kod skiljer sig från den automatiserade verifieringskoden som skickades till telefonen under det sista steget.";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Jag glömde min PIN-kod";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Har du glömt din PIN-kod?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "Felaktig PIN-kod";
 
-/* Label indicating that the 2fa pin is invalid with a retry count in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_FORMAT" = "Fel PIN-kod, du har %lu försök kvar.";
+/* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Felaktig PIN-kod. %lu försök kvar.";
+
+/* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Felaktig PIN-kod. 1 försök kvar.";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "Registreringslås";
+
+/* Explanation of the 'onboarding account locked' view. */
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "För att skydda din integritet och säkerheten för ditt konto har vi låst det i 7 dagar.\n\nEfter 7 dagar av inaktivitet, kommer du att kunna omregistrera detta telefonnummer utan att behöva din PIN-kod. Allt innehåll kommer att raderas.";
+
+/* Label for the 'learn more' link in the 'onboarding account locked' view. */
+"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Läs mer om låsta konton";
+
+/* Title of the 'onboarding account locked' view. */
+"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Kontot låst";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Lägg till en känsla av mänsklighet till dina meddelanden";
@@ -1561,6 +1678,12 @@
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Felaktigt nummer";
+
+/* Title of the 'onboarding PIN' view. */
+"ONBOARDING_PIN_EXPLANATION" = "Ange PIN-koden du skapade för ditt konto. Detta skiljer sig från din SMS verifieringskod.";
+
+/* Title of the 'onboarding PIN' view. */
+"ONBOARDING_PIN_TITLE" = "Ange din PIN-kod";
 
 /* Explanation in the 'onboarding profile' view. */
 "ONBOARDING_PROFILE_EXPLANATION" = "Signal-profiler är end-to-end krypterade och Signal-tjänsten har aldrig tillgång till denna information.";
@@ -1643,22 +1766,19 @@
 /* Navbar title for for PDF view. */
 "PDF_VIEW_TITLE" = "PDF";
 
-/* Label that indicates that 'per-message expiration' is active. */
-"PER_MESSAGE_EXPIRATION_ACTIVE_INDICATOR" = "Försvinnande foto";
-
-/* Label for messages with per-message expiration that have invalid content. */
+/* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Fel med att hantera inkommande meddelande";
 
 /* Notification for incoming disappearing photo. */
 "PER_MESSAGE_EXPIRATION_NOTIFICATION" = "Försvinnande foto";
 
-/* Label for outgoing messages with per-message expiration. */
+/* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Foto";
 
-/* Label for messages with per-message expiration indicating that user can tap to view the message's contents. */
+/* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_TAP_TO_VIEW" = "Visa foto";
 
-/* Label for messages with per-message expiration indicating that the local user has viewed the message's contents. */
+/* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "Sett";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
@@ -1712,6 +1832,60 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Namnlösa album";
 
+/* The bold portion of the explanation in the 'pin creation' view. */
+"PIN_CREATION_BOLD_EXPLANATION" = "Det finns inget sätt att återställa din PIN-kod, så kom ihåg det.";
+
+/* Title of the 'pin creation' recreation view. */
+"PIN_CREATION_CHANGING_TITLE" = "Ändra din PIN-kod";
+
+/* The explanation of confirmation in the 'pin creation' view. */
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Bekräfta din nya PIN-kod.";
+
+/* The explanation in the 'pin creation' view. */
+"PIN_CREATION_EXPLANATION" = "Din PIN-kod lägger till och extra lager av säkerhet och säkerhetskopierar ditt konto.";
+
+/* Label indicating that the attempted PIN does not match the first PIN */
+"PIN_CREATION_MISMATCH_ERROR" = "PIN-koder matchar inte. Försök igen.";
+
+/* The placeholder when confirming a pin in the 'pin creation' view. */
+"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "Ange PIN-kod igen";
+
+/* The placeholder when creating a pin in the 'pin creation' view. */
+"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "PIN-koden måste vara 4+ siffror";
+
+/* The bold portion of the re-creation explanation in the 'pin creation' view. */
+"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "När du är utloggad finns det inget sätt att återställa din PIN-kod.";
+
+/* The re-creation explanation in the 'pin creation' view. */
+"PIN_CREATION_RECREATION_EXPLANATION" = "Eftersom du fortfarande är inloggad kan du skapa en ny PIN-kod.";
+
+/* Title of the 'pin creation' recreation view. */
+"PIN_CREATION_RECREATION_TITLE" = "Skapa en ny PIN-kod";
+
+/* Title of the 'pin creation' view. */
+"PIN_CREATION_TITLE" = "Skapa din PIN-kod";
+
+/* Label indicating that the attempted PIN is too long */
+"PIN_CREATION_TOO_LONG_ERROR" = "PIN-koden får inte vara mer än 20 siffror.";
+
+/* Label indicating that the attempted PIN is too short */
+"PIN_CREATION_TOO_SHORT_ERROR" = "PIN måste vara minst 4 siffror.";
+
+/* The explanation for the 'pin reminder' dialog. */
+"PIN_REMINDER_EXPLANATION" = "För att hjälpa dig att memorera din PIN-kod ber vi dig att skriva in den regelbundet. Vi frågar mindre med tiden.";
+
+/* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
+"PIN_REMINDER_FORGOT_PIN" = "Har du glömt din PIN-kod?";
+
+/* Label indicating that the attempted PIN does not match the user's PIN */
+"PIN_REMINDER_MISMATCH_ERROR" = "Ogiltig PIN-kod, försök igen.";
+
+/* The title for the 'pin reminder' dialog. */
+"PIN_REMINDER_TITLE" = "Ange din Signal PIN-kod";
+
+/* Label indicating that the attempted PIN is too short */
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN måste vara minst 4 siffror.";
+
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Spela media";
 
@@ -1725,7 +1899,7 @@
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ är verifierad.";
 
 /* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Mer info";
+"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Läs mer";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Tryck för att läsa av";
@@ -1766,12 +1940,6 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Fortsätt";
 
-/* Label text combining the phone number and profile name separated by a simple demarcation character. Phone number should be most prominent. '%1$@' is replaced with {{phone number}} and '%2$@' is replaced with {{profile name}} */
-"PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT" = "%1$@ ~%2$@";
-
-/* Prepend a simple marker to differentiate the profile name, embeds the contact's {{profile name}}. */
-"PROFILE_NAME_LABEL_FORMAT" = "~%@";
-
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Sätt profilens avatar";
 
@@ -1794,7 +1962,7 @@
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Dina kontakter kommer att kunna se din Signal-profil när du startar nya konversationer och när du delar den med andra användare eller grupper.";
 
 /* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tryck här för att veta mer. ";
+"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tryck här för att läsa mer. ";
 
 /* Label for the profile name field of the profile view. */
 "PROFILE_VIEW_PROFILE_NAME_FIELD" = "Profilnamn";
@@ -1857,7 +2025,19 @@
 "REGISTER_2FA_FORGOT_PIN" = "Jag har glömt PIN-koden.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Efter att 7 dagar har gått sen telefonnumret senast var aktivt i Signal så kan det här telefonnumret registreras igen utan din pinkod för registreringslås.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "För din integritet och säkerhet finns det inget sätt att återställa din PIN-kod. Om du inte kan komma ihåg din PIN-kod kan du verifiera med SMS efter 7 dagars inaktivitet. I det här fallet kommer ditt konto att raderas och allt innehåll raderas.";
+
+/* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Har du glömt din PIN-kod?";
+
+/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Du har %lu försök kvar. Om dina försök tar slut kommer ditt konto att låsas. Efter 7 dagars inaktivitet kan du registrera dig igen utan din PIN-kod. Ditt konto raderas och allt innehåll raderas.";
+
+/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Du har 1 Försök kvar. Om dina försök tar slut kommer ditt konto att låsas. Efter 7 dagars inaktivitet kan du registrera dig igen utan din PIN-kod. Ditt konto raderas och allt innehåll raderas.";
+
+/* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
+"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Felaktig PIN-kod";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Skicka";
@@ -2004,13 +2184,16 @@
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Autentisera för att öppna Signal";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
-"SCREEN_LOCK_UNLOCK_FAILED" = "Autentisering misslyckades";
+"SCREEN_LOCK_UNLOCK_FAILED" = "Autentisering misslyckades.";
 
 /* Label for button on lock screen that lets users unlock Signal. */
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Lås upp Signal";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Sök via namn eller nummer";
+
+/* placeholder text in an empty search field */
+"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "Sök";
 
 /* section header for search results that match a contact who doesn't have an existing conversation */
 "SEARCH_SECTION_CONTACTS" = "Andra kontakter";
@@ -2023,9 +2206,6 @@
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "Den säkra anslutningen har återställts.";
-
-/* Label for 'select GIF to attach' action sheet button */
-"SELECT_GIF_BUTTON" = "GIF";
 
 /* Table section header for conversations you haven't recently used. */
 "SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Andra kontakter";
@@ -2235,7 +2415,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Inställningar";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Samtals- och meddelandeaviseringar kan visas medan din telefon är låst. Du kanske vill begränsa vad som visas i dessa notiser.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Samtals- och meddelandenotiser kan visas medan din telefon är låst. Du kanske vill begränsa vad som visas i dessa notiser.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notisinnehåll";
@@ -2248,6 +2428,15 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Notiser";
+
+/* Footer for the 'PINs' section of the privacy settings. */
+"SETTINGS_PINS_FOOTER" = "Din PIN-kod lägger till ett extra lager av säkerhet och säkerhetskopierar ditt konto. Du kommer att bli ombedd för det när du registrerar ditt telefonnummer med Signal. Om du glömmer din PIN-kod kommer ditt konto att vara låst i 7 dagar.";
+
+/* Label for the 'pins' item of the privacy settings. */
+"SETTINGS_PINS_ITEM" = "Ändra din PIN-kod";
+
+/* Title for the 'PINs' section of the privacy settings. */
+"SETTINGS_PINS_TITLE" = "PIN-kod";
 
 /* Label for 'CallKit privacy' preference */
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Visa uppringarens namn & nummer";
@@ -2328,7 +2517,7 @@
 "SETTINGS_TYPING_INDICATORS_FOOTER" = "Visa och dela när meddelanden skrivs. Inställningen är valfri och påverkar alla konversationer.";
 
 /* Label for a link to more info about unidentified delivery. */
-"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Mer info";
+"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Läs mer";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Dold avsändare";
@@ -2403,7 +2592,7 @@
 "STICKER_MESSAGE_PREVIEW" = "Klistermärkesmeddelande";
 
 /* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "Klistermärkepaket installerat";
+"STICKER_PACK_INSTALLED_TOOLTIP" = "Klistermärkespaket installerat";
 
 /* Label for a sticker that failed to download. */
 "STICKERS_FAILED_DOWNLOAD" = "Klistermärke";
@@ -2417,8 +2606,14 @@
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Klistermärken du mottagit";
 
+/* Label indicating that one or more known sticker packs failed to load. */
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Vissa klistermärkespaket kunde inte läsas in";
+
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Installera klistermärken";
+
+/* Label indicating that one or more known sticker packs is loading. */
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Hämtar in...";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Inga klistermärken installerade";
@@ -2430,16 +2625,19 @@
 "STICKERS_MANAGE_VIEW_TITLE" = "Stickers";
 
 /* Default title for sticker packs. */
-"STICKERS_PACK_DEFAULT_TITLE" = "Klistermärkepaket";
+"STICKERS_PACK_DEFAULT_TITLE" = "Klistermärkespaket";
 
 /* Error message shown when a sticker pack failed to install. */
-"STICKERS_PACK_INSTALL_FAILED" = "Installation av klistermärkepaket misslyckades.";
+"STICKERS_PACK_INSTALL_FAILED" = "Installation av klistermärkespaket misslyckades.";
 
 /* Title of the 'share sticker pack' view. */
-"STICKERS_PACK_SHARE_VIEW_TITLE" = "Dela klistermärkepaket";
+"STICKERS_PACK_SHARE_VIEW_TITLE" = "Dela klistermärkespaket";
 
 /* The default title for the 'sticker pack' view. */
-"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Klistermärkepaket";
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Klistermärkespaket";
+
+/* Label indicating that the sticker pack failed to load. */
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Klistermärkespaketet kunde inte läsas in";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Avinstallera";
@@ -2452,6 +2650,21 @@
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verifiera säkerhetsnummer";
+
+/* The number of members in a group. Embeds {{member count}} */
+"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu medlemmar";
+
+/* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Medlem av %@, %@, och %lu ytterligare grupper";
+
+/* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Medlem av %@";
+
+/* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Medlem av %@, %@, och %@";
+
+/* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Medlem av %@ och %@";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ dagar";
@@ -2567,11 +2780,32 @@
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Stöds inte";
 
+/* Button to start a create pin flow from the one time splash screen that appears after upgrading */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Skapa din PIN-kod";
+
+/* Button to open a help document explaining more about why a PIN is required */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Läs mer om PIN-koder";
+
+/* Body text for PINs migration splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Ditt Registreringslås gör nu mer. Med PIN-koder kan du ta dina kontakter med dig när du byter enhet.";
+
+/* Header for PINs migration splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registreringslås = PIN-kod";
+
+/* Body text for PINs splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Lägg till ännu mer säkerhet till ditt konto och ta dina kontakter med dig när du byter telefon.";
+
+/* Header for PINs splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducerar PIN-koder";
+
+/* Button to open a help document explaining more about why a PIN is required */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Måste jag skapa en PIN-kod?";
+
 /* Body text for stickers splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Varför använda ord när du kan använda klistermärken? Tryck på den här ikonen på tangentbordet:";
 
 /* Header for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Introducerar Klistermärken";
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Introducerar klistermärken";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal kommer snart att kräva iOS 10 eller senare. Vänligen uppgradera i Inställningar-app >> Allmänt >> Programuppdatering.";
@@ -2601,7 +2835,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Granska säkerhetsnummer";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Svep för att avbryta";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Dra för att avbryta";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "Röstmeddelande";

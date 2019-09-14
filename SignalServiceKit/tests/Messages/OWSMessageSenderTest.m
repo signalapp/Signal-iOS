@@ -2,12 +2,10 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "NSError+MessageSending.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSError.h"
 #import "OWSFakeNetworkManager.h"
 #import "OWSMessageSender.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSUploadOperation.h"
 #import "SSKBaseTestObjC.h"
 #import "TSAccountManager.h"
@@ -248,19 +246,16 @@ NS_ASSUME_NONNULL_BEGIN
                                                                            linkPreview:nil];
     [self.expiringMessage save];
 
-    OWSPrimaryStorage *storageManager = [OWSPrimaryStorage sharedManager];
     OWSFakeContactsManager *contactsManager = [OWSFakeContactsManager new];
 
     // Successful Sending
     TSNetworkManager *successfulNetworkManager = [[OWSMessageSenderFakeNetworkManager alloc] initWithSuccess:YES];
     self.successfulMessageSender = [[OWSMessageSender alloc] initWithNetworkManager:successfulNetworkManager
-                                                                     primaryStorage:primaryStorage
                                                                     contactsManager:contactsManager];
 
     // Unsuccessful Sending
     TSNetworkManager *unsuccessfulNetworkManager = [[OWSMessageSenderFakeNetworkManager alloc] initWithSuccess:NO];
     self.unsuccessfulMessageSender = [[OWSMessageSender alloc] initWithNetworkManager:unsuccessfulNetworkManager
-                                                                       primaryStorage:primaryStorage
                                                                       contactsManager:contactsManager];
 }
 
@@ -490,11 +485,11 @@ NS_ASSUME_NONNULL_BEGIN
     SignalRecipient *successfulRecipient2 =
         [[SignalRecipient alloc] initWithTextSecureIdentifier:@"successful-recipient-id2" relay:nil];
 
-    TSGroupModel *groupModel = [[TSGroupModel alloc]
-        initWithTitle:@"group title"
-            memberIds:[@[ successfulRecipient.uniqueId, successfulRecipient2.uniqueId ] mutableCopy]
-                image:nil
-              groupId:groupIdData];
+    TSGroupModel *groupModel =
+        [[TSGroupModel alloc] initWithTitle:@"group title"
+                                    members:[@[ successfulRecipient.address, successfulRecipient2.address ] mutableCopy]
+                                      image:nil
+                                    groupId:groupIdData];
     TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel];
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:1
                                                                      inThread:groupThread
@@ -508,7 +503,6 @@ NS_ASSUME_NONNULL_BEGIN
             } else {
                 XCTFail(@"Unexpected message state");
             }
-
         }
         failure:^(NSError *_Nonnull error) {
             XCTFail(@"sendMessage should not fail.");
@@ -525,7 +519,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSMessageSender *messageSender = self.successfulMessageSender;
 
     NSError *error;
-    NSArray<SignalRecipient *> *recipients = [messageSender getRecipients:@[ recipient.uniqueId ] error:&error];
+    NSArray<SignalRecipient *> *recipients = [messageSender getRecipients:@[ recipient.address ] error:&error];
 
     XCTAssertNil(error);
     XCTAssertEqualObjects(recipient, recipients.firstObject);

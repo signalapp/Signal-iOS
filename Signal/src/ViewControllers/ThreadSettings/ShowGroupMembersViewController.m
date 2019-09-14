@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) TSGroupThread *thread;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 
-@property (nonatomic, nullable) NSSet<NSString *> *memberRecipientIds;
+@property (nonatomic, nullable) NSSet<SignalServiceAddress *> *memberAddresses;
 
 @end
 
@@ -88,9 +88,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssertDebug(self.thread);
     OWSAssertDebug(self.thread.groupModel);
-    OWSAssertDebug(self.thread.groupModel.groupMemberIds);
+    OWSAssertDebug(self.thread.groupModel.groupMembers);
 
-    self.memberRecipientIds = [NSSet setWithArray:self.thread.groupModel.groupMemberIds];
+    self.memberAddresses = [NSSet setWithArray:self.thread.groupModel.groupMembers];
 }
 
 - (void)viewDidLoad
@@ -124,8 +124,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     // If there are "no longer verified" members of the group,
     // highlight them in a special section.
-    NSArray<NSString *> *noLongerVerifiedRecipientIds = [self noLongerVerifiedRecipientIds];
-    if (noLongerVerifiedRecipientIds.count > 0) {
+    NSArray<SignalServiceAddress *> *noLongerVerifiedRecipientAddresses = [self noLongerVerifiedRecipientAddresses];
+    if (noLongerVerifiedRecipientAddresses.count > 0) {
         OWSTableSection *noLongerVerifiedSection = [OWSTableSection new];
         noLongerVerifiedSection.headerTitle = NSLocalizedString(@"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED",
             @"Title for the 'no longer verified' section of the 'group members' view.");
@@ -140,55 +140,51 @@ NS_ASSUME_NONNULL_BEGIN
                                              actionBlock:^{
                                                  [weakSelf offerResetAllNoLongerVerified];
                                              }]];
-        [self addMembers:noLongerVerifiedRecipientIds toSection:noLongerVerifiedSection useVerifyAction:YES];
+        [self addMembers:noLongerVerifiedRecipientAddresses toSection:noLongerVerifiedSection useVerifyAction:YES];
         [contents addSection:noLongerVerifiedSection];
     }
 
-    NSMutableSet *memberRecipientIds = [self.memberRecipientIds mutableCopy];
-    [memberRecipientIds removeObject:[helper localNumber]];
-    [self addMembers:memberRecipientIds.allObjects toSection:membersSection useVerifyAction:NO];
+    NSMutableSet *memberAddresses = [self.memberAddresses mutableCopy];
+    [memberAddresses removeObject:[helper localAddress]];
+    [self addMembers:memberAddresses.allObjects toSection:membersSection useVerifyAction:NO];
     [contents addSection:membersSection];
 
     self.contents = contents;
 }
 
-- (void)addMembers:(NSArray<NSString *> *)recipientIds
+- (void)addMembers:(NSArray<SignalServiceAddress *> *)addresses
           toSection:(OWSTableSection *)section
     useVerifyAction:(BOOL)useVerifyAction
 {
-    OWSAssertDebug(recipientIds);
+    OWSAssertDebug(addresses);
     OWSAssertDebug(section);
 
     __weak ShowGroupMembersViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
     // Sort the group members using contacts manager.
-    NSArray<NSString *> *sortedRecipientIds = [recipientIds sortedArrayUsingComparator:^NSComparisonResult(
-        NSString *recipientIdA, NSString *recipientIdB) {
-        SignalAccount *signalAccountA = [helper.contactsManager fetchOrBuildSignalAccountForRecipientId:recipientIdA];
-        SignalAccount *signalAccountB = [helper.contactsManager fetchOrBuildSignalAccountForRecipientId:recipientIdB];
-        return [helper.contactsManager compareSignalAccount:signalAccountA withSignalAccount:signalAccountB];
-    }];
-    for (NSString *recipientId in sortedRecipientIds) {
+    NSArray<SignalServiceAddress *> *sortedAddresses = [addresses
+        sortedArrayUsingComparator:^NSComparisonResult(SignalServiceAddress *addressA, SignalServiceAddress *addressB) {
+            SignalAccount *signalAccountA = [helper.contactsManager fetchOrBuildSignalAccountForAddress:addressA];
+            SignalAccount *signalAccountB = [helper.contactsManager fetchOrBuildSignalAccountForAddress:addressB];
+            return [helper.contactsManager compareSignalAccount:signalAccountA withSignalAccount:signalAccountB];
+        }];
+    for (SignalServiceAddress *address in sortedAddresses) {
         [section addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
-                                 ShowGroupMembersViewController *strongSelf = weakSelf;
-                                 OWSCAssertDebug(strongSelf);
-
                                  ContactTableViewCell *cell = [ContactTableViewCell new];
                                  OWSVerificationState verificationState =
-                                     [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId];
+                                     [[OWSIdentityManager sharedManager] verificationStateForAddress:address];
                                  BOOL isVerified = verificationState == OWSVerificationStateVerified;
                                  BOOL isNoLongerVerified = verificationState == OWSVerificationStateNoLongerVerified;
-                                 BOOL isBlocked = [helper isRecipientIdBlocked:recipientId];
+                                 BOOL isBlocked = [helper isSignalServiceAddressBlocked:address];
                                  if (isNoLongerVerified) {
                                      cell.accessoryMessage = NSLocalizedString(@"CONTACT_CELL_IS_NO_LONGER_VERIFIED",
                                          @"An indicator that a contact is no longer verified.");
                                  } else if (isBlocked) {
-                                     cell.accessoryMessage = NSLocalizedString(
-                                         @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                                     cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                                  }
 
-                                 [cell configureWithRecipientId:recipientId];
+                                 [cell configureWithRecipientAddress:address];
 
                                  if (isVerified) {
                                      [cell setAttributedSubtitle:cell.verifiedSubtitle];
@@ -196,7 +192,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      [cell setAttributedSubtitle:nil];
                                  }
 
-                                 NSString *cellName = [NSString stringWithFormat:@"user.%@", recipientId];
+                                 NSString *cellName = [NSString stringWithFormat:@"user.%@", address.stringForDisplay];
                                  cell.accessibilityIdentifier
                                      = ACCESSIBILITY_IDENTIFIER_WITH_NAME(ShowGroupMembersViewController, cellName);
 
@@ -205,9 +201,9 @@ NS_ASSUME_NONNULL_BEGIN
                              customRowHeight:UITableViewAutomaticDimension
                              actionBlock:^{
                                  if (useVerifyAction) {
-                                     [weakSelf showSafetyNumberView:recipientId];
+                                     [weakSelf showSafetyNumberView:address];
                                  } else {
-                                     [weakSelf didSelectRecipientId:recipientId];
+                                     [weakSelf didSelectAddress:address];
                                  }
                              }]];
     }
@@ -241,18 +237,18 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     OWSIdentityManager *identityManger = [OWSIdentityManager sharedManager];
-    NSArray<NSString *> *recipientIds = [self noLongerVerifiedRecipientIds];
-    for (NSString *recipientId in recipientIds) {
-        OWSVerificationState verificationState = [identityManger verificationStateForRecipientId:recipientId];
+    NSArray<SignalServiceAddress *> *addresses = [self noLongerVerifiedRecipientAddresses];
+    for (SignalServiceAddress *address in addresses) {
+        OWSVerificationState verificationState = [identityManger verificationStateForAddress:address];
         if (verificationState == OWSVerificationStateNoLongerVerified) {
-            NSData *identityKey = [identityManger identityKeyForRecipientId:recipientId];
+            NSData *identityKey = [identityManger identityKeyForAddress:address];
             if (identityKey.length < 1) {
-                OWSFailDebug(@"Missing identity key for: %@", recipientId);
+                OWSFailDebug(@"Missing identity key for: %@", address);
                 continue;
             }
             [identityManger setVerificationState:OWSVerificationStateDefault
                                      identityKey:identityKey
-                                     recipientId:recipientId
+                                         address:address
                            isUserInitiatedChange:YES];
         }
     }
@@ -261,24 +257,24 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 // Returns a collection of the group members who are "no longer verified".
-- (NSArray<NSString *> *)noLongerVerifiedRecipientIds
+- (NSArray<SignalServiceAddress *> *)noLongerVerifiedRecipientAddresses
 {
-    NSMutableArray<NSString *> *result = [NSMutableArray new];
-    for (NSString *recipientId in self.thread.recipientIdentifiers) {
-        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
+    NSMutableArray<SignalServiceAddress *> *result = [NSMutableArray new];
+    for (SignalServiceAddress *address in self.thread.recipientAddresses) {
+        if ([[OWSIdentityManager sharedManager] verificationStateForAddress:address]
             == OWSVerificationStateNoLongerVerified) {
-            [result addObject:recipientId];
+            [result addObject:address];
         }
     }
     return [result copy];
 }
 
-- (void)didSelectRecipientId:(NSString *)recipientId
+- (void)didSelectAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
     ContactsViewHelper *helper = self.contactsViewHelper;
-    SignalAccount *_Nullable signalAccount = [helper fetchSignalAccountForRecipientId:recipientId];
+    SignalAccount *_Nullable signalAccount = [helper fetchSignalAccountForAddress:address];
 
     UIAlertController *actionSheet =
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
@@ -293,13 +289,13 @@ NS_ASSUME_NONNULL_BEGIN
                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_contact_info")
                                                style:UIAlertActionStyleDefault
                                              handler:^(UIAlertAction *_Nonnull action) {
-                                                 [self showContactInfoViewForRecipientId:recipientId];
+                                                 [self showContactInfoViewForAddress:address];
                                              }]];
     }
 
     BOOL isBlocked;
     if (signalAccount) {
-        isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
+        isBlocked = [helper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
         if (isBlocked) {
             [actionSheet
                 addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
@@ -334,39 +330,37 @@ NS_ASSUME_NONNULL_BEGIN
                                                  }]];
         }
     } else {
-        isBlocked = [helper isRecipientIdBlocked:recipientId];
+        isBlocked = [helper isSignalServiceAddressBlocked:address];
         if (isBlocked) {
-            [actionSheet
-                addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
-                                                             @"Button label for the 'unblock' button")
-                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unblock")
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction *_Nonnull action) {
-                                                     [BlockListUIUtils
-                                                         showUnblockPhoneNumberActionSheet:recipientId
-                                                                        fromViewController:self
-                                                                           blockingManager:helper.blockingManager
-                                                                           contactsManager:helper.contactsManager
-                                                                           completionBlock:^(BOOL ignore) {
-                                                                               [self updateTableContents];
-                                                                           }];
-                                                 }]];
+            [actionSheet addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
+                                                                      @"Button label for the 'unblock' button")
+                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unblock")
+                                                            style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction *_Nonnull action) {
+                                                              [BlockListUIUtils
+                                                                  showUnblockAddressActionSheet:address
+                                                                             fromViewController:self
+                                                                                blockingManager:helper.blockingManager
+                                                                                contactsManager:helper.contactsManager
+                                                                                completionBlock:^(BOOL ignore) {
+                                                                                    [self updateTableContents];
+                                                                                }];
+                                                          }]];
         } else {
-            [actionSheet
-                addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON",
-                                                             @"Button label for the 'block' button")
-                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block")
-                                                   style:UIAlertActionStyleDestructive
-                                                 handler:^(UIAlertAction *_Nonnull action) {
-                                                     [BlockListUIUtils
-                                                         showBlockPhoneNumberActionSheet:recipientId
-                                                                      fromViewController:self
-                                                                         blockingManager:helper.blockingManager
-                                                                         contactsManager:helper.contactsManager
-                                                                         completionBlock:^(BOOL ignore) {
-                                                                             [self updateTableContents];
-                                                                         }];
-                                                 }]];
+            [actionSheet addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON",
+                                                                      @"Button label for the 'block' button")
+                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block")
+                                                            style:UIAlertActionStyleDestructive
+                                                          handler:^(UIAlertAction *_Nonnull action) {
+                                                              [BlockListUIUtils
+                                                                  showBlockAddressActionSheet:address
+                                                                           fromViewController:self
+                                                                              blockingManager:helper.blockingManager
+                                                                              contactsManager:helper.contactsManager
+                                                                              completionBlock:^(BOOL ignore) {
+                                                                                  [self updateTableContents];
+                                                                              }];
+                                                          }]];
         }
     }
 
@@ -377,14 +371,14 @@ NS_ASSUME_NONNULL_BEGIN
                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_message")
                                                style:UIAlertActionStyleDefault
                                              handler:^(UIAlertAction *_Nonnull action) {
-                                                 [self showConversationViewForRecipientId:recipientId];
+                                                 [self showConversationViewForAddress:address];
                                              }]];
         [actionSheet addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"GROUP_MEMBERS_CALL",
                                                                   @"Button label for the 'call group member' button")
                                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call")
                                                         style:UIAlertActionStyleDefault
                                                       handler:^(UIAlertAction *_Nonnull action) {
-                                                          [self callMember:recipientId];
+                                                          [self callMember:address];
                                                       }]];
         [actionSheet
             addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"VERIFY_PRIVACY",
@@ -393,7 +387,7 @@ NS_ASSUME_NONNULL_BEGIN
                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"safety_numbers")
                                                style:UIAlertActionStyleDefault
                                              handler:^(UIAlertAction *_Nonnull action) {
-                                                 [self showSafetyNumberView:recipientId];
+                                                 [self showSafetyNumberView:address];
                                              }]];
     }
 
@@ -402,36 +396,30 @@ NS_ASSUME_NONNULL_BEGIN
     [self presentAlert:actionSheet];
 }
 
-- (void)showContactInfoViewForRecipientId:(NSString *)recipientId
+- (void)showContactInfoViewForAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    [self.contactsViewHelper presentContactViewControllerForRecipientId:recipientId
-                                                     fromViewController:self
-                                                        editImmediately:NO];
+    [self.contactsViewHelper presentContactViewControllerForAddress:address fromViewController:self editImmediately:NO];
 }
 
-- (void)showConversationViewForRecipientId:(NSString *)recipientId
+- (void)showConversationViewForAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    [SignalApp.sharedApp presentConversationForRecipientId:recipientId
-                                                    action:ConversationViewActionCompose
-                                                  animated:YES];
+    [SignalApp.sharedApp presentConversationForAddress:address action:ConversationViewActionCompose animated:YES];
 }
 
-- (void)callMember:(NSString *)recipientId
+- (void)callMember:(SignalServiceAddress *)address
 {
-    [SignalApp.sharedApp presentConversationForRecipientId:recipientId
-                                                    action:ConversationViewActionAudioCall
-                                                  animated:YES];
+    [SignalApp.sharedApp presentConversationForAddress:address action:ConversationViewActionAudioCall animated:YES];
 }
 
-- (void)showSafetyNumberView:(NSString *)recipientId
+- (void)showSafetyNumberView:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    [FingerprintViewController presentFromViewController:self recipientId:recipientId];
+    [FingerprintViewController presentFromViewController:self address:address];
 }
 
 #pragma mark - ContactsViewHelperDelegate

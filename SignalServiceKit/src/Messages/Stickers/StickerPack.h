@@ -2,8 +2,8 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
+#import "BaseModel.h"
 #import "StickerInfo.h"
-#import "TSYapDatabaseObject.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface StickerPack : TSYapDatabaseObject
+@interface StickerPack : BaseModel
 
 @property (nonatomic, readonly) StickerPackInfo *info;
 

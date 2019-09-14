@@ -6,8 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const TSContactThreadPrefix;
-
 @class SignalServiceAddress;
 
 @interface TSContactThread : TSThread
@@ -27,48 +25,46 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
                  lastMessageDate:(nullable NSDate *)lastMessageDate
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
+                           rowId:(int64_t)rowId
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
+              contactPhoneNumber:(nullable NSString *)contactPhoneNumber
+      contactThreadSchemaVersion:(NSUInteger)contactThreadSchemaVersion
+                     contactUUID:(nullable NSString *)contactUUID
               hasDismissedOffers:(BOOL)hasDismissedOffers
-NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastMessageDate:messageDraft:mutedUntilDate:shouldThreadBeVisible:hasDismissedOffers:));
+NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastMessageDate:messageDraft:mutedUntilDate:rowId:shouldThreadBeVisible:contactPhoneNumber:contactThreadSchemaVersion:contactUUID:hasDismissedOffers:));
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
 
 // TODO: We might want to make this initializer private once we
-//       convert getOrCreateThreadWithContactId to take "any" transaction.
-- (instancetype)initWithContactId:(NSString *)contactId;
+//       convert getOrCreateThreadWithContactAddress to take "any" transaction.
+- (instancetype)initWithContactAddress:(SignalServiceAddress *)contactAddress;
 
+@property (nonatomic, readonly) SignalServiceAddress *contactAddress;
 @property (nonatomic) BOOL hasDismissedOffers;
 
-+ (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId NS_SWIFT_NAME(getOrCreateThread(contactId:));
++ (instancetype)getOrCreateThreadWithContactAddress:(SignalServiceAddress *)contactAddress
+    NS_SWIFT_NAME(getOrCreateThread(contactAddress:));
 
-+ (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
-                                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (instancetype)getOrCreateThreadWithContactAddress:(SignalServiceAddress *)contactAddress
+                                        transaction:(SDSAnyWriteTransaction *)transaction;
 
-+ (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
-                                anyTransaction:(SDSAnyWriteTransaction *)transaction;
+// Unlike getOrCreateThreadWithContactAddress, this will _NOT_ create a thread if one does not already exist.
++ (nullable instancetype)getThreadWithContactAddress:(SignalServiceAddress *)contactAddress
+                                         transaction:(SDSAnyReadTransaction *)transaction;
 
-// Unlike getOrCreateThreadWithContactId, this will _NOT_ create a thread if one does not already exist.
-+ (nullable instancetype)getThreadWithContactId:(NSString *)contactId transaction:(YapDatabaseReadTransaction *)transaction;
-+ (nullable instancetype)getThreadWithContactId:(NSString *)contactId
-                                 anyTransaction:(SDSAnyReadTransaction *)transaction;
++ (nullable SignalServiceAddress *)contactAddressFromThreadId:(NSString *)threadId
+                                                  transaction:(SDSAnyReadTransaction *)transaction;
 
-- (NSString *)contactIdentifier;
-- (SignalServiceAddress *)contactAddress;
-
-+ (NSString *)contactIdFromThreadId:(NSString *)threadId;
-
-// This is only exposed for tests.
-#ifdef DEBUG
-+ (NSString *)threadIdFromContactId:(NSString *)contactId;
-#endif
+// This is only ever used from migration from a pre-UUID world to a UUID world
++ (nullable NSString *)legacyContactPhoneNumberFromThreadId:(NSString *)threadId;
 
 // This method can be used to get the conversation color for a given
 // recipient without using a read/write transaction to create a
 // contact thread.
-+ (NSString *)conversationColorNameForRecipientId:(NSString *)recipientId
-                                      transaction:(SDSAnyReadTransaction *)transaction;
++ (NSString *)conversationColorNameForContactAddress:(SignalServiceAddress *)address
+                                         transaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

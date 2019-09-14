@@ -15,30 +15,18 @@ NS_ASSUME_NONNULL_BEGIN
 static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateColumn = @"state";
 static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"index_attachment_downloads_on_state";
 
-@interface OWSFailedAttachmentDownloadsJob ()
+@implementation OWSFailedAttachmentDownloadsJob
 
-@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
+#pragma mark - Dependencies
 
-@end
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
 
 #pragma mark -
 
-@implementation OWSFailedAttachmentDownloadsJob
-
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
-{
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    _primaryStorage = primaryStorage;
-
-    return self;
-}
-
-- (NSArray<NSString *> *)fetchAttemptingOutAttachmentIdsWithTransaction:
-    (YapDatabaseReadWriteTransaction *_Nonnull)transaction
++ (NSArray<NSString *> *)unfailedAttachmentPointerIdsWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -58,48 +46,48 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
 }
 
 - (void)enumerateAttemptingOutAttachmentsWithBlock:(void (^_Nonnull)(TSAttachmentPointer *attachment))block
-                                       transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction
+                                       transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
     // Since we can't directly mutate the enumerated attachments, we store only their ids in hopes
     // of saving a little memory and then enumerate the (larger) TSAttachment objects one at a time.
-    for (NSString *attachmentId in [self fetchAttemptingOutAttachmentIdsWithTransaction:transaction]) {
-        TSAttachment *_Nullable attachment =
-            [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction.asAnyRead];
-        if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
-            TSAttachmentPointer *pointer = (TSAttachmentPointer *)attachment;
-            block(pointer);
-        } else {
-            OWSLogError(@"unexpected object: %@", attachment);
+    NSArray<NSString *> *attachmentIds = [AttachmentFinder unfailedAttachmentPointerIdsWithTransaction:transaction];
+    for (NSString *attachmentId in attachmentIds) {
+        TSAttachmentPointer *_Nullable attachment =
+            [TSAttachmentPointer anyFetchAttachmentPointerWithUniqueId:attachmentId transaction:transaction];
+        if (attachment == nil) {
+            OWSFailDebug(@"Missing attachment.");
+            continue;
         }
+        block(attachment);
     }
 }
 
 - (void)run
 {
     __block uint count = 0;
-    [[self.primaryStorage newDatabaseConnection]
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.databaseStorage
+        writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             [self enumerateAttemptingOutAttachmentsWithBlock:^(TSAttachmentPointer *attachment) {
                 // sanity check
-                if (attachment.state != TSAttachmentPointerStateFailed) {
-                    [attachment anyUpdateWithTransaction:transaction.asAnyWrite
-                                                   block:^(TSAttachment *attachment) {
-                                                       if (![attachment isKindOfClass:[TSAttachmentPointer class]]) {
-                                                           OWSFailDebug(@"unexpected object: %@", attachment);
-                                                           return;
-                                                       }
-                                                       TSAttachmentPointer *pointer = (TSAttachmentPointer *)attachment;
-                                                       pointer.state = TSAttachmentPointerStateFailed;
-                                                   }];
-                    count++;
+                if (attachment.state == TSAttachmentPointerStateFailed) {
+                    OWSFailDebug(@"Attachment has unexpected state.");
+                    return;
                 }
+
+                [attachment anyUpdateAttachmentPointerWithTransaction:transaction
+                                                                block:^(TSAttachmentPointer *attachment) {
+                                                                    attachment.state = TSAttachmentPointerStateFailed;
+                                                                }];
+                count++;
             }
                                                  transaction:transaction];
         }];
 
-    OWSLogDebug(@"Marked %u attachments as unsent", count);
+    if (count > 0) {
+        OWSLogDebug(@"Marked %u attachments as unsent", count);
+    }
 }
 
 #pragma mark - YapDatabaseExtension
@@ -125,15 +113,6 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
 
     return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler versionTag:nil];
 }
-
-#ifdef DEBUG
-// Useful for tests, don't use in app startup path because it's slow.
-- (void)blockingRegisterDatabaseExtensions
-{
-    [self.primaryStorage registerExtension:[self.class indexDatabaseExtension]
-                                  withName:OWSFailedAttachmentDownloadsJobAttachmentStateIndex];
-}
-#endif
 
 + (NSString *)databaseExtensionName
 {

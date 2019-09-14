@@ -407,6 +407,10 @@ private class SignalCallData: NSObject {
         return AppEnvironment.shared.notificationPresenter
     }
 
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
     // MARK: - Notifications
 
     @objc func didEnterBackground() {
@@ -455,8 +459,10 @@ private class SignalCallData: NSObject {
         self.callData = callData
 
         // MJK TODO remove this timestamp param
-        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: .outgoingIncomplete, in: call.thread)
-        callRecord.save()
+        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), callType: .outgoingIncomplete, in: call.thread)
+        databaseStorage.write { transaction in
+            callRecord.anyInsert(transaction: transaction)
+        }
         call.callRecord = callRecord
 
         let promise = getIceServers()
@@ -569,7 +575,7 @@ private class SignalCallData: NSObject {
      */
     public func handleReceivedAnswer(thread: TSContactThread, callId: UInt64, sessionDescription: String) {
         AssertIsOnMainThread()
-        Logger.info("received call answer for call: \(callId) thread: \(thread.contactIdentifier())")
+        Logger.info("received call answer for call: \(callId) thread: \(thread.contactAddress)")
 
         guard let call = self.call else {
             Logger.warn("ignoring obsolete call: \(callId)")
@@ -613,7 +619,6 @@ private class SignalCallData: NSObject {
         if call.callRecord == nil {
             // MJK TODO remove this timestamp param
             call.callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                     withCallNumber: call.thread.contactIdentifier(),
                                      callType: .incomingMissed,
                                      in: call.thread)
         }
@@ -625,7 +630,9 @@ private class SignalCallData: NSObject {
 
         switch callRecord.callType {
         case .incomingMissed:
-            callRecord.save()
+            databaseStorage.write { transaction in
+                callRecord.anyUpsert(transaction: transaction)
+            }
             callUIAdapter.reportMissedCall(call)
         case .incomingIncomplete, .incoming:
             callRecord.updateCallType(.incomingMissed)
@@ -634,9 +641,13 @@ private class SignalCallData: NSObject {
             callRecord.updateCallType(.outgoingMissed)
         case .incomingMissedBecauseOfChangedIdentity, .incomingDeclined, .outgoingMissed, .outgoing:
             owsFailDebug("unexpected RPRecentCallType: \(callRecord.callType)")
-            callRecord.save()
+            databaseStorage.write { transaction in
+                callRecord.anyUpsert(transaction: transaction)
+            }
         default:
-            callRecord.save()
+            databaseStorage.write { transaction in
+                callRecord.anyUpsert(transaction: transaction)
+            }
             owsFailDebug("unknown RPRecentCallType: \(callRecord.callType)")
         }
     }
@@ -646,7 +657,7 @@ private class SignalCallData: NSObject {
      */
     private func handleLocalBusyCall(_ call: SignalCall) {
         AssertIsOnMainThread()
-        Logger.info("for call: \(call.identifiersForLogs) thread: \(call.thread.contactIdentifier())")
+        Logger.info("for call: \(call.identifiersForLogs) thread: \(call.thread.contactAddress)")
 
         do {
             let busyBuilder = SSKProtoCallMessageBusy.builder(id: call.signalingId)
@@ -665,7 +676,7 @@ private class SignalCallData: NSObject {
      */
     public func handleRemoteBusy(thread: TSContactThread, callId: UInt64) {
         AssertIsOnMainThread()
-        Logger.info("for thread: \(thread.contactIdentifier())")
+        Logger.info("for thread: \(thread.contactAddress)")
 
         guard let call = self.call else {
             Logger.warn("ignoring obsolete call: \(callId)")
@@ -677,7 +688,7 @@ private class SignalCallData: NSObject {
             return
         }
 
-        guard thread.contactIdentifier() == call.remotePhoneNumber else {
+        guard thread.contactAddress == call.remoteAddress else {
             Logger.warn("ignoring obsolete call")
             return
         }
@@ -699,16 +710,16 @@ private class SignalCallData: NSObject {
 
         BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(callId)")
 
-        let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: callId)
+        let newCall = SignalCall.incomingCall(localId: UUID(), remoteAddress: thread.contactAddress, signalingId: callId)
 
         Logger.info("receivedCallOffer: \(newCall.identifiersForLogs)")
 
-        let untrustedIdentity = OWSIdentityManager.shared().untrustedIdentityForSending(toRecipientId: thread.contactIdentifier())
+        let untrustedIdentity = OWSIdentityManager.shared().untrustedIdentityForSending(to: thread.contactAddress)
 
         guard untrustedIdentity == nil else {
             Logger.warn("missed a call due to untrusted identity: \(newCall.identifiersForLogs)")
 
-            let callerName = self.contactsManager.displayName(forPhoneIdentifier: thread.contactIdentifier())
+            let callerName = self.contactsManager.displayName(for: thread.contactAddress)
 
             switch untrustedIdentity!.verificationState {
             case .verified:
@@ -722,12 +733,13 @@ private class SignalCallData: NSObject {
 
             // MJK TODO remove this timestamp param
             let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                    withCallNumber: thread.contactIdentifier(),
                                     callType: .incomingMissedBecauseOfChangedIdentity,
                                     in: thread)
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
-            callRecord.save()
+            databaseStorage.write { transaction in
+                callRecord.anyInsert(transaction: transaction)
+            }
 
             terminateCall()
 
@@ -742,7 +754,7 @@ private class SignalCallData: NSObject {
 
             handleLocalBusyCall(newCall)
 
-            if existingCall.remotePhoneNumber == newCall.remotePhoneNumber {
+            if existingCall.remoteAddress == newCall.remoteAddress {
                 Logger.info("handling call from current call user as remote busy.: \(newCall.identifiersForLogs) but we're already in call: \(existingCall.identifiersForLogs)")
 
                 // If we're receiving a new call offer from the user we already think we have a call with,
@@ -802,7 +814,7 @@ private class SignalCallData: NSObject {
 
             // For contacts not stored in our system contacts, we assume they are an unknown caller, and we force
             // a TURN connection, so as not to reveal any connectivity information (IP/port) to the caller.
-            let isUnknownCaller = !self.contactsManager.hasSignalAccount(forRecipientId: thread.contactIdentifier())
+            let isUnknownCaller = !self.contactsManager.hasSignalAccount(for: thread.contactAddress)
 
             let useTurnOnly = isUnknownCaller || Environment.shared.preferences.doCallsHideIPAddress()
 
@@ -901,7 +913,7 @@ private class SignalCallData: NSObject {
                 return
             }
 
-            guard thread.contactIdentifier() == call.thread.contactIdentifier() else {
+            guard thread.contactAddress == call.thread.contactAddress else {
                 Logger.warn("ignoring remote ice update for thread: \(String(describing: thread.uniqueId)) due to thread mismatch. Call already ended?")
                 return
             }
@@ -1070,10 +1082,10 @@ private class SignalCallData: NSObject {
             return
         }
 
-        guard thread.contactIdentifier() == call.thread.contactIdentifier() else {
+        guard thread.contactAddress == call.thread.contactAddress else {
             // This can safely be ignored.
             // We don't want to fail the current call because an old call was slow to send us the hangup message.
-            Logger.warn("ignoring hangup for thread: \(thread.contactIdentifier()) which is not the current call: \(call.identifiersForLogs)")
+            Logger.warn("ignoring hangup for thread: \(thread.contactAddress) which is not the current call: \(call.identifiersForLogs)")
             return
         }
 
@@ -1151,8 +1163,10 @@ private class SignalCallData: NSObject {
         Logger.info("\(call.identifiersForLogs).")
 
         // MJK TODO remove this timestamp param
-        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: .incomingIncomplete, in: call.thread)
-        callRecord.save()
+        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), callType: .incomingIncomplete, in: call.thread)
+        databaseStorage.write { transaction in
+            callRecord.anyInsert(transaction: transaction)
+        }
         call.callRecord = callRecord
 
         var messageData: Data
@@ -1198,59 +1212,6 @@ private class SignalCallData: NSObject {
     }
 
     /**
-     * Local user chose to decline the call vs. answering it.
-     *
-     * The call is referred to by call `localId`, which is included in Notification actions.
-     *
-     * Incoming call only.
-     */
-    public func handleDeclineCall(localId: UUID) {
-        AssertIsOnMainThread()
-
-        guard let call = self.call else {
-            // This should never happen; return to a known good state.
-            owsFailDebug("call was unexpectedly nil")
-            OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file: #file, function: #function, line: #line)
-            handleFailedCurrentCall(error: CallError.assertionError(description: "call was unexpectedly nil"))
-            return
-        }
-
-        guard call.localId == localId else {
-            // This should never happen; return to a known good state.
-            owsFailDebug("callLocalId:\(localId) doesn't match current calls: \(call.localId)")
-            OWSProdError(OWSAnalyticsEvents.callServiceCallIdMismatch(), file: #file, function: #function, line: #line)
-            handleFailedCurrentCall(error: CallError.assertionError(description: "callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
-            return
-        }
-
-        self.handleDeclineCall(call)
-    }
-
-    /**
-     * Local user chose to decline the call vs. answering it.
-     *
-     * Incoming call only.
-     */
-    public func handleDeclineCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
-
-        Logger.info("\(call.identifiersForLogs).")
-
-        if let callRecord = call.callRecord {
-            owsFailDebug("Not expecting callrecord to already be set")
-            callRecord.updateCallType(.incomingDeclined)
-        } else {
-            // MJK TODO remove this timestamp param
-            let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: .incomingDeclined, in: call.thread)
-            callRecord.save()
-            call.callRecord = callRecord
-        }
-
-        // Currently we just handle this as a hangup. But we could offer more descriptive action. e.g. DataChannel message
-        handleLocalHungupCall(call)
-    }
-
-    /**
      * Local user chose to end the call.
      *
      * Can be used for Incoming and Outgoing calls.
@@ -1274,15 +1235,24 @@ private class SignalCallData: NSObject {
 
         Logger.info("\(call.identifiersForLogs).")
 
-        call.state = .localHangup
-
         if let callRecord = call.callRecord {
             if callRecord.callType == .outgoingIncomplete {
                 callRecord.updateCallType(.outgoingMissed)
             }
+        } else if call.state == .localRinging {
+            // MJK TODO remove this timestamp param
+            let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
+                                    callType: .incomingDeclined,
+                                    in: call.thread)
+            databaseStorage.write { transaction in
+                callRecord.anyInsert(transaction: transaction)
+            }
+            call.callRecord = callRecord
         } else {
             owsFailDebug("missing call record")
         }
+
+        call.state = .localHangup
 
         // TODO something like this lifted from Signal-Android.
         //        this.accountManager.cancelInFlightRequests();
@@ -1317,10 +1287,10 @@ private class SignalCallData: NSObject {
 
             self.messageSender.sendPromise(message: callMessage)
             .done {
-                Logger.debug("successfully sent hangup call message to \(call.thread.contactIdentifier())")
+                Logger.debug("successfully sent hangup call message to \(call.thread.contactAddress)")
             }.catch { error in
                 OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleLocalHungupCall(), file: #file, function: #function, line: #line)
-                Logger.error("failed to send hangup call message to \(call.thread.contactIdentifier()) with error: \(error)")
+                Logger.error("failed to send hangup call message to \(call.thread.contactAddress) with error: \(error)")
             }.retainUntilComplete()
 
             terminateCall()

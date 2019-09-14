@@ -84,7 +84,7 @@ public class SDSTableMetadata: NSObject {
     // MARK: - Table Creation
 
     public func createTable(database: Database) throws {
-        // TODO: Assert that table name is valid.
+        // GRDB TODO: Assert that table name is valid.
 
         try database.create(table: tableName) { (table) in
             for columnMetadata in self.columns {
@@ -101,10 +101,10 @@ public class SDSTableMetadata: NSObject {
                 case .int:
                     column = table.column(columnMetadata.columnName, .integer)
                 case .int64:
-                    // TODO: What's the right column type here?
+                    // GRDB TODO: What's the right column type here?
                     column = table.column(columnMetadata.columnName, .integer)
                 case .double:
-                    // TODO: What's the right column type here?
+                    // GRDB TODO: What's the right column type here?
                     column = table.column(columnMetadata.columnName, .double)
                 }
 

@@ -6,6 +6,9 @@ import Foundation
 
 public protocol MediaTileViewControllerDelegate: class {
     func mediaTileViewController(_ viewController: MediaTileViewController, didTapView tappedView: UIView, mediaGalleryItem: MediaGalleryItem)
+    func mediaTileViewControllerRequestedDismiss(_ tileViewController: MediaTileViewController,
+                                                 animated isAnimated: Bool,
+                                                 completion: (() -> Void)?)
 }
 
 public class MediaTileViewController: UICollectionViewController, MediaGalleryDataSourceDelegate, UICollectionViewDelegateFlowLayout {
@@ -37,9 +40,10 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
 
     fileprivate let mediaTileViewLayout: MediaTileViewLayout
 
-    init(mediaGalleryDataSource: MediaGalleryDataSource) {
+    let shouldShowDismissButton: Bool
+    init(mediaGalleryDataSource: MediaGalleryDataSource, shouldShowDismissButton: Bool) {
         self.mediaGalleryDataSource = mediaGalleryDataSource
-
+        self.shouldShowDismissButton = shouldShowDismissButton
         let layout: MediaTileViewLayout = type(of: self).buildLayout()
         self.mediaTileViewLayout = layout
         super.init(collectionViewLayout: layout)
@@ -91,7 +95,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         collectionView.backgroundColor = Theme.darkThemeBackgroundColor
 
         collectionView.register(PhotoGridViewCell.self, forCellWithReuseIdentifier: PhotoGridViewCell.reuseIdentifier)
-        collectionView.register(MediaGallerySectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: MediaGallerySectionHeader.reuseIdentifier)
+        collectionView.register(DarkThemeCollectionViewSectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: DarkThemeCollectionViewSectionHeader.reuseIdentifier)
         collectionView.register(MediaGalleryStaticHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: MediaGalleryStaticHeader.reuseIdentifier)
 
         collectionView.delegate = self
@@ -105,7 +109,17 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         self.footerBarBottomConstraint = footerBar.autoPinEdge(toSuperviewEdge: .bottom, withInset: -kFooterBarHeight)
 
         updateSelectButton()
+
+        if shouldShowDismissButton {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(didTapDismiss(_:)))
+        }
+
         self.mediaTileViewLayout.invalidateLayout()
+    }
+
+    @objc
+    func didTapDismiss(_ sender: UIBarButtonItem) {
+        delegate?.mediaTileViewControllerRequestedDismiss(self, animated: true, completion: nil)
     }
 
     private func indexPath(galleryItem: MediaGalleryItem) -> IndexPath? {
@@ -328,7 +342,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
                 sectionHeader.configure(title: title)
                 return sectionHeader
             default:
-                guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: MediaGallerySectionHeader.reuseIdentifier, for: indexPath) as? MediaGallerySectionHeader else {
+                guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: DarkThemeCollectionViewSectionHeader.reuseIdentifier, for: indexPath) as? DarkThemeCollectionViewSectionHeader else {
                     owsFailDebug("unable to build section header for indexPath: \(indexPath)")
                     return defaultView
                 }
@@ -794,6 +808,43 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
     }
 }
 
+extension MediaTileViewController: MediaPresentationContextProvider {
+    func mediaPresentationContext(galleryItem: MediaGalleryItem, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
+        // First time presentation can occur before layout.
+        view.layoutIfNeeded()
+
+        guard let indexPath = indexPath(galleryItem: galleryItem) else {
+            owsFailDebug("galleryItemIndexPath was unexpectedly nil")
+            return nil
+        }
+
+        guard let visibleIndex = collectionView.indexPathsForVisibleItems.firstIndex(of: indexPath) else {
+            owsFailDebug("visibleIndex was unexpectedly nil")
+            return nil
+        }
+
+        guard let cell = collectionView.visibleCells[safe: visibleIndex] as? PhotoGridViewCell else {
+            owsFailDebug("cell was unexpectedly nil")
+            return nil
+        }
+
+        let mediaView = cell.imageView
+
+        guard let mediaSuperview = mediaView.superview else {
+            owsFailDebug("mediaSuperview was unexpectedly nil")
+            return nil
+        }
+
+        let presentationFrame = coordinateSpace.convert(mediaView.frame, from: mediaSuperview)
+
+        return MediaPresentationContext(mediaView: mediaView, presentationFrame: presentationFrame, cornerRadius: 0)
+    }
+
+    func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
+        return nil
+    }
+}
+
 // MARK: - Private Helper Classes
 
 // Accomodates remaining scrolled to the same "apparent" position when new content is inserted
@@ -817,71 +868,6 @@ private class MediaTileViewLayout: UICollectionViewFlowLayout {
             contentSizeBeforeInsertingToTop = nil
             isInsertingCellsToTop = false
         }
-    }
-}
-
-private class MediaGallerySectionHeader: UICollectionReusableView {
-
-    static let reuseIdentifier = "MediaGallerySectionHeader"
-
-    // HACK: scrollbar incorrectly appears *behind* section headers
-    // in collection view on iOS11 =(
-    private class AlwaysOnTopLayer: CALayer {
-        override var zPosition: CGFloat {
-            get { return 0 }
-            set {}
-        }
-    }
-
-    let label: UILabel
-
-    override class var layerClass: AnyClass {
-        get {
-            // HACK: scrollbar incorrectly appears *behind* section headers
-            // in collection view on iOS11 =(
-            if #available(iOS 11, *) {
-                return AlwaysOnTopLayer.self
-            } else {
-                return super.layerClass
-            }
-        }
-    }
-
-    override init(frame: CGRect) {
-        label = UILabel()
-        label.textColor = Theme.darkThemePrimaryColor
-
-        let blurEffect = Theme.darkThemeBarBlurEffect
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-
-        super.init(frame: frame)
-
-        self.backgroundColor = Theme.darkThemeNavbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
-
-        self.addSubview(blurEffectView)
-        self.addSubview(label)
-
-        blurEffectView.autoPinEdgesToSuperviewEdges()
-        label.autoPinEdge(toSuperviewMargin: .trailing)
-        label.autoPinEdge(toSuperviewMargin: .leading)
-        label.autoVCenterInSuperview()
-    }
-
-    @available(*, unavailable, message: "Unimplemented")
-    required init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
-    public func configure(title: String) {
-        self.label.text = title
-    }
-
-    override public func prepareForReuse() {
-        super.prepareForReuse()
-
-        self.label.text = nil
     }
 }
 

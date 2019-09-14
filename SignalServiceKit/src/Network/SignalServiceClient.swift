@@ -6,8 +6,6 @@ import Foundation
 import PromiseKit
 import SignalMetadataKit
 
-public typealias RecipientIdentifier = String
-
 @objc
 public protocol SignalServiceClientObjC {
     @objc func updateAccountAttributesObjC() -> AnyPromise
@@ -21,6 +19,8 @@ public protocol SignalServiceClient: SignalServiceClientObjC {
     func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord) -> Promise<Void>
     func requestUDSenderCertificate() -> Promise<Data>
     func updateAccountAttributes() -> Promise<Void>
+    func getAccountUuid() -> Promise<UUID>
+    func requestStorageAuth() -> Promise<(username: String, password: String)>
 }
 
 /// Based on libsignal-service-java's PushServiceSocket class
@@ -106,6 +106,38 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
     public func updateAccountAttributes() -> Promise<Void> {
         let request = OWSRequestFactory.updateAttributesRequest()
         return networkManager.makePromise(request: request).asVoid()
+    }
+
+    public func getAccountUuid() -> Promise<UUID> {
+        let request = OWSRequestFactory.accountWhoAmIRequest()
+
+        return networkManager.makePromise(request: request).map { _, responseObject in
+            guard let parser = ParamParser(responseObject: responseObject) else {
+                throw OWSErrorMakeUnableToProcessServerResponseError()
+            }
+
+            let uuidString: String = try parser.required(key: "uuid")
+
+            guard let uuid = UUID(uuidString: uuidString) else {
+                throw OWSErrorMakeUnableToProcessServerResponseError()
+            }
+
+            return uuid
+        }
+    }
+
+    public func requestStorageAuth() -> Promise<(username: String, password: String)> {
+        let request = OWSRequestFactory.storageAuthRequest()
+        return networkManager.makePromise(request: request).map { _, responseObject in
+            guard let parser = ParamParser(responseObject: responseObject) else {
+                throw OWSErrorMakeUnableToProcessServerResponseError()
+            }
+
+            let username: String = try parser.required(key: "username")
+            let password: String = try parser.required(key: "password")
+
+            return (username: username, password: password)
+        }
     }
 
     // MARK: - Helpers

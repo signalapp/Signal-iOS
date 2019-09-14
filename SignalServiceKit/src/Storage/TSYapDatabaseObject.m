@@ -5,6 +5,7 @@
 #import "TSYapDatabaseObject.h"
 #import "OWSPrimaryStorage.h"
 #import "SSKEnvironment.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -16,14 +17,19 @@ NS_ASSUME_NONNULL_BEGIN
     return [self initWithUniqueId:[[NSUUID UUID] UUIDString]];
 }
 
-- (instancetype)initWithUniqueId:(NSString *_Nullable)aUniqueId
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _uniqueId = aUniqueId;
+    if (uniqueId.length > 0) {
+        _uniqueId = uniqueId;
+    } else {
+        OWSFailDebug(@"Invalid uniqueId.");
+        _uniqueId = [[NSUUID UUID] UUIDString];
+    }
 
     return self;
 }
@@ -35,11 +41,22 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
+    if (_uniqueId.length < 1) {
+        OWSFailDebug(@"Invalid uniqueId.");
+        _uniqueId = [[NSUUID UUID] UUIDString];
+    }
+
     return self;
 }
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    if (!self.shouldBeSaved) {
+        OWSLogDebug(@"Skipping save for %@.", [self class]);
+
+        return;
+    }
+
     [transaction setObject:self forKey:self.uniqueId inCollection:[[self class] collection]];
 }
 
@@ -56,18 +73,6 @@ NS_ASSUME_NONNULL_BEGIN
         [self saveWithTransaction:transaction];
     }
                                           completionBlock:completionBlock];
-}
-
-- (void)touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [transaction touchObjectForKey:self.uniqueId inCollection:[self.class collection]];
-}
-
-- (void)touch
-{
-    [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self touchWithTransaction:transaction];
-    }];
 }
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -99,15 +104,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark Class Methods
 
-+ (MTLPropertyStorage)storageBehaviorForPropertyWithKey:(NSString *)propertyKey
-{
-    if ([propertyKey isEqualToString:@"TAG"]) {
-        return MTLPropertyStorageNone;
-    } else {
-        return [super storageBehaviorForPropertyWithKey:propertyKey];
-    }
-}
-
 + (YapDatabaseConnection *)dbReadConnection
 {
     OWSJanksUI();
@@ -130,6 +126,16 @@ NS_ASSUME_NONNULL_BEGIN
 + (OWSPrimaryStorage *)primaryStorage
 {
     return [OWSPrimaryStorage sharedManager];
+}
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
 }
 
 + (NSString *)collection
@@ -201,28 +207,6 @@ NS_ASSUME_NONNULL_BEGIN
     return object;
 }
 
-#pragma mark - Update With...
-
-- (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
-                           changeBlock:(void (^)(id))changeBlock
-{
-    OWSAssertDebug(transaction);
-
-    changeBlock(self);
-
-    NSString *collection = [[self class] collection];
-    id latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
-    if (latestInstance) {
-        // Don't apply changeBlock twice to the same instance.
-        // It's at least unnecessary and actually wrong for some blocks.
-        // e.g. `changeBlock: { $0 in $0.someField++ }`
-        if (latestInstance != self) {
-            changeBlock(latestInstance);
-        }
-        [latestInstance saveWithTransaction:transaction];
-    }
-}
-
 #pragma mark Reload
 
 - (void)reload
@@ -252,12 +236,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Write Hooks
 
+- (BOOL)shouldBeSaved
+{
+    return YES;
+}
+
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     // Do nothing.
 }
 
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    // Do nothing.
+}
+
+- (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    // Do nothing.
+}
+
+- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     // Do nothing.
 }
@@ -281,6 +280,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSUInteger)ydb_numberOfKeysInCollectionWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssertDebug(transaction);
+
     return [self numberOfKeysInCollectionWithTransaction:transaction];
 }
 
@@ -302,12 +303,16 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)ydb_enumerateCollectionObjectsWithTransaction:(YapDatabaseReadTransaction *)transaction
                                            usingBlock:(void (^)(id object, BOOL *stop))block
 {
+    OWSAssertDebug(transaction);
+
     return [self enumerateCollectionObjectsWithTransaction:transaction usingBlock:block];
 }
 
 + (nullable instancetype)ydb_fetchObjectWithUniqueID:(NSString *)uniqueID
                                          transaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssertDebug(transaction);
+
     return [self fetchObjectWithUniqueID:uniqueID transaction:transaction];
 }
 
@@ -328,11 +333,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)ydb_reloadWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssertDebug(transaction);
+
     [self reloadWithTransaction:transaction];
 }
 
 - (void)ydb_reloadWithTransaction:(YapDatabaseReadTransaction *)transaction ignoreMissing:(BOOL)ignoreMissing
 {
+    OWSAssertDebug(transaction);
+
     [self reloadWithTransaction:transaction ignoreMissing:ignoreMissing];
 }
 
@@ -343,33 +352,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    OWSAssertDebug(transaction);
+
     [self saveWithTransaction:transaction];
-}
-
-- (void)ydb_touch
-{
-    [self touch];
-}
-
-- (void)ydb_touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [self touchWithTransaction:transaction];
 }
 
 - (void)ydb_removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    OWSAssertDebug(transaction);
+
     [self removeWithTransaction:transaction];
 }
 
 - (void)ydb_remove
 {
     [self remove];
-}
-
-- (void)ydb_applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
-                               changeBlock:(void (^)(id))changeBlock
-{
-    [self applyChangeToSelfAndLatestCopy:transaction changeBlock:changeBlock];
 }
 
 @end

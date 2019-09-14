@@ -7,9 +7,9 @@
 		<key>CarthageVersion</key>
 		<string>0.33.0</string>
 		<key>OSXVersion</key>
-		<string>10.14.5</string>
+		<string>10.14.6</string>
 		<key>WebRTCCommit</key>
-		<string>e742b8b9bc8f2c6d088d9a212fa326ebbba52784 M75 working w/ iOS9</string>
+		<string>7b0f20fdba38d3416412a3d34402d822654cdfec M77</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
@@ -30,7 +30,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.41.0</string>
+	<string>2.42.4</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -47,7 +47,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2.41.0.16</string>
+	<string>2.42.4.0</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LOGS_EMAIL</key>
@@ -121,6 +121,8 @@
 	<string>Signal uses your contacts to find users you know. We do not store your contacts on the server.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Signal's Screen Lock uses Face ID.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Signal needs access to your location in order to share your current location.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Signal needs access to your microphone to make and receive phone calls and record voice messages.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>

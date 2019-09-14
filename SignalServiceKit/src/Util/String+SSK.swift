@@ -3,14 +3,11 @@
 //
 
 import Foundation
+import NaturalLanguage
 
 public extension String {
     var digitsOnly: String {
         return (self as NSString).digitsOnly()
-    }
-
-    func rtlSafeAppend(_ string: String) -> String {
-        return (self as NSString).rtlSafeAppend(string)
     }
 
     func substring(from index: Int) -> String {
@@ -23,6 +20,98 @@ public extension String {
 
     enum StringError: Error {
         case invalidCharacterShift
+    }
+
+    /// Converts all non arabic numerals within a string to arabic numerals
+    ///
+    /// For example: "Hello ١٢٣" would become "Hello 123"
+    var ensureArabicNumerals: String {
+        return String(map { character in
+            // Check if this character is a number between 0-9, if it's not just return it and carry on
+            //
+            // Some languages (like Chinese) have characters that represent larger numbers (万 = 10^4)
+            // These are not easily translatable into arabic numerals at a character by character level,
+            // so we ignore them.
+            guard let number = character.wholeNumberValue, number <= 9, number >= 0 else { return character }
+            return Character("\(number)")
+        })
+    }
+}
+
+public extension NSString {
+    @objc
+    var ensureArabicNumerals: String {
+        return (self as String).ensureArabicNumerals
+    }
+}
+
+// MARK: - Attributed String Concatentation
+
+public extension NSAttributedString {
+    @objc
+    func stringByAppendingString(_ string: String, attributes: [NSAttributedString.Key: Any] = [:]) -> NSAttributedString {
+        return stringByAppendingString(NSAttributedString(string: string, attributes: attributes))
+    }
+
+    @objc
+    func stringByAppendingString(_ string: NSAttributedString) -> NSAttributedString {
+        let copy = mutableCopy() as! NSMutableAttributedString
+        copy.append(string)
+        return copy.copy() as! NSAttributedString
+    }
+
+    static func + (lhs: NSAttributedString, rhs: NSAttributedString) -> NSAttributedString {
+        return lhs.stringByAppendingString(rhs)
+    }
+
+    static func + (lhs: NSAttributedString, rhs: String) -> NSAttributedString {
+        return lhs.stringByAppendingString(rhs)
+    }
+}
+
+// MARK: - Natural Text Alignment
+
+public extension String {
+    private var dominantLanguage: String? {
+        if #available(iOS 12, *) {
+            return NLLanguageRecognizer.dominantLanguage(for: self)?.rawValue
+        } else if #available(iOS 11, *) {
+            return NSLinguisticTagger.dominantLanguage(for: self)
+        } else {
+            let nsstring = self as NSString
+            return nsstring.dominantLanguageWithLegacyLinguisticTagger
+        }
+    }
+
+    /// The natural text alignment of a given string. This may be different
+    /// than the natural alignment of the current system locale depending on
+    /// the language of the string, especially for user entered text.
+    var naturalTextAlignment: NSTextAlignment {
+        guard let dominantLanguage = dominantLanguage else {
+            // If we can't identify the strings language, use the system language's natural alignment
+            return .natural
+        }
+
+        switch NSParagraphStyle.defaultWritingDirection(forLanguage: dominantLanguage) {
+        case .leftToRight:
+            return .left
+        case .rightToLeft:
+            return .right
+        case .natural:
+            return .natural
+        @unknown default:
+            return .natural
+        }
+    }
+}
+
+public extension NSString {
+    /// The natural text alignment of a given string. This may be different
+    /// than the natural alignment of the current system locale depending on
+    /// the language of the string, especially for user entered text.
+    @objc
+    var naturalTextAlignment: NSTextAlignment {
+        return (self as String).naturalTextAlignment
     }
 }
 

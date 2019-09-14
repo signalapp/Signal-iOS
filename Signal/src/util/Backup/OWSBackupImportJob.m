@@ -29,8 +29,6 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
 @property (nonatomic) OWSBackupManifestContents *manifest;
 
-@property (nonatomic, nullable) YapDatabaseConnection *dbConnection;
-
 @end
 
 #pragma mark -
@@ -38,13 +36,6 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 @implementation OWSBackupImportJob
 
 #pragma mark - Dependencies
-
-- (OWSPrimaryStorage *)primaryStorage
-{
-    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
-
-    return SSKEnvironment.shared.primaryStorage;
-}
 
 - (OWSProfileManager *)profileManager
 {
@@ -70,6 +61,11 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     return AppEnvironment.shared.backupLazyRestore;
 }
 
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
 #pragma mark -
 
 - (NSArray<OWSBackupFragment *> *)databaseItems
@@ -93,8 +89,6 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     OWSLogInfo(@"");
 
     self.backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
-
-    self.dbConnection = self.primaryStorage.newDatabaseConnection;
 
     [self updateProgressWithDescription:nil progress:nil];
 
@@ -157,9 +151,12 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     [allItems addObjectsFromArray:self.attachmentsItems];
 
     // Record metadata for all items, so that we can re-use them in incremental backups after the restore.
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         for (OWSBackupFragment *item in allItems) {
-            [item saveWithTransaction:transaction];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+            [item anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
         }
     }];
 
@@ -389,7 +386,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     }
 
     __block NSUInteger count = 0;
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         for (OWSBackupFragment *item in self.attachmentsItems) {
             if (self.isComplete) {
                 return;
@@ -410,7 +407,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                 continue;
             }
             TSAttachment *_Nullable attachment =
-                [TSAttachmentPointer anyFetchWithUniqueId:item.attachmentId transaction:transaction.asAnyRead];
+                [TSAttachmentPointer anyFetchWithUniqueId:item.attachmentId transaction:transaction];
             if (!attachment) {
                 OWSLogError(@"attachment to restore could not be found.");
                 // Attachment-related errors are recoverable and can be ignored.
@@ -422,7 +419,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                 continue;
             }
             TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)attachment;
-            [attachmentPointer markForLazyRestoreWithFragment:item transaction:transaction.asAnyWrite];
+            [attachmentPointer markForLazyRestoreWithFragment:item transaction:transaction];
             count++;
             [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_RESTORING_FILES",
                                                     @"Indicates that the backup import data is being restored.")
@@ -444,19 +441,23 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup import no longer active.")];
     }
 
-    // Order matters here.
-    NSArray<NSString *> *collectionsToRestore = @[
-        [TSThread collection],
-        [TSAttachment collection],
-        // Interactions refer to threads and attachments,
-        // so copy them afterward.
-        [TSInteraction collection],
-        [OWSDatabaseMigration collection],
-    ];
     NSMutableDictionary<NSString *, NSNumber *> *restoredEntityCounts = [NSMutableDictionary new];
     __block unsigned long long copiedEntities = 0;
     __block BOOL aborted = NO;
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    // GRDB TODO: We need to totally rework this, post GRDB.
+
+#ifdef GRDB_BACKUP
+        // Order matters here.
+        NSArray<NSString *> *collectionsToRestore = @[
+            [TSThread collection],
+            [TSAttachment collection],
+            // Interactions refer to threads and attachments,
+            // so copy them afterward.
+            [TSInteraction collection],
+            [OWSDatabaseMigration collection],
+        ];
+
         for (NSString *collection in collectionsToRestore) {
             if ([collection isEqualToString:[OWSDatabaseMigration collection]]) {
                 // It's okay if there are existing migrations; we'll clear those
@@ -585,6 +586,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                 }
             }
         }
+#endif
     }];
 
     if (aborted) {
@@ -600,7 +602,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     }
     OWSLogInfo(@"copiedEntities: %llu", copiedEntities);
 
-    [self.primaryStorage logFileSizes];
+    [self.databaseStorage logFileSizes];
 
     return [AnyPromise promiseWithValue:@(1)];
 }

@@ -5,13 +5,13 @@
 #import "TSInvalidIdentityKeySendingErrorMessage.h"
 #import "OWSFingerprint.h"
 #import "OWSIdentityManager.h"
-#import "OWSPrimaryStorage.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "SSKSessionStore.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage_privateConstructor.h"
 #import "TSOutgoingMessage.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -50,17 +50,16 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
+              isViewOnceComplete:(BOOL)isViewOnceComplete
+               isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
-perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSeconds
-  perMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
-       perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
-                     recipientId:(nullable NSString *)recipientId
+                recipientAddress:(nullable SignalServiceAddress *)recipientAddress
                        messageId:(NSString *)messageId
                     preKeyBundle:(PreKeyBundle *)preKeyBundle
 {
@@ -75,17 +74,16 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
                    expireStartedAt:expireStartedAt
                          expiresAt:expiresAt
                   expiresInSeconds:expiresInSeconds
+                isViewOnceComplete:isViewOnceComplete
+                 isViewOnceMessage:isViewOnceMessage
                        linkPreview:linkPreview
                     messageSticker:messageSticker
-perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
-    perMessageExpirationHasExpired:perMessageExpirationHasExpired
-         perMessageExpireStartedAt:perMessageExpireStartedAt
                      quotedMessage:quotedMessage
                      schemaVersion:schemaVersion
          errorMessageSchemaVersion:errorMessageSchemaVersion
                          errorType:errorType
                               read:read
-                       recipientId:recipientId];
+                  recipientAddress:recipientAddress];
 
     if (!self) {
         return self;
@@ -113,7 +111,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         return;
     }
 
-    [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey recipientId:self.recipientId];
+    [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey address:self.recipientAddress];
 }
 
 - (nullable NSData *)throws_newIdentityKey
@@ -121,9 +119,9 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     return [self.preKeyBundle.identityKey throws_removeKeyType];
 }
 
-- (NSString *)theirSignalId
+- (SignalServiceAddress *)theirSignalAddress
 {
-    return self.recipientId;
+    return self.recipientAddress;
 }
 
 @end

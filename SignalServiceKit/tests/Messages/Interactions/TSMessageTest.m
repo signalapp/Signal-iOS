@@ -2,11 +2,12 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSMessage.h"
 #import "SSKBaseTestObjC.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
+#import "TSMessage.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -20,7 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setUp {
     [super setUp];
-    self.thread = [TSContactThread getOrCreateThreadWithContactId:@"fake-thread-id"];
+    self.thread = [TSContactThread
+        getOrCreateThreadWithContactAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"fake-thread-id"]];
 }
 
 - (void)tearDown {
@@ -40,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                         contactShare:nil
                                                          linkPreview:nil
                                                       messageSticker:nil
-                                 perMessageExpirationDurationSeconds:0];
+                                                   isViewOnceMessage:NO];
 
     XCTAssertEqual(0, message.expiresAt);
 }
@@ -60,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                         contactShare:nil
                                                          linkPreview:nil
                                                       messageSticker:nil
-                                 perMessageExpirationDurationSeconds:0];
+                                                   isViewOnceMessage:NO];
     XCTAssertEqual(now + expirationMs, message.expiresAt);
 }
 

@@ -26,17 +26,21 @@ public struct LinkedDeviceReadReceiptRecord: SDSRecord {
     public let uniqueId: String
 
     // Base class properties
+    public let linkedDeviceReadReceiptSchemaVersion: UInt
     public let messageIdTimestamp: UInt64
     public let readTimestamp: UInt64
-    public let senderId: String
+    public let senderPhoneNumber: String?
+    public let senderUUID: String?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
         case recordType
         case uniqueId
+        case linkedDeviceReadReceiptSchemaVersion
         case messageIdTimestamp
         case readTimestamp
-        case senderId
+        case senderPhoneNumber
+        case senderUUID
     }
 
     public static func columnName(_ column: LinkedDeviceReadReceiptRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -72,14 +76,18 @@ extension OWSLinkedDeviceReadReceipt {
         case .linkedDeviceReadReceipt:
 
             let uniqueId: String = record.uniqueId
+            let linkedDeviceReadReceiptSchemaVersion: UInt = record.linkedDeviceReadReceiptSchemaVersion
             let messageIdTimestamp: UInt64 = record.messageIdTimestamp
             let readTimestamp: UInt64 = record.readTimestamp
-            let senderId: String = record.senderId
+            let senderPhoneNumber: String? = record.senderPhoneNumber
+            let senderUUID: String? = record.senderUUID
 
             return OWSLinkedDeviceReadReceipt(uniqueId: uniqueId,
+                                              linkedDeviceReadReceiptSchemaVersion: linkedDeviceReadReceiptSchemaVersion,
                                               messageIdTimestamp: messageIdTimestamp,
                                               readTimestamp: readTimestamp,
-                                              senderId: senderId)
+                                              senderPhoneNumber: senderPhoneNumber,
+                                              senderUUID: senderUUID)
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -104,6 +112,10 @@ extension OWSLinkedDeviceReadReceipt: SDSModel {
     public func asRecord() throws -> SDSRecord {
         return try serializer.asRecord()
     }
+
+    public var sdsTableName: String {
+        return LinkedDeviceReadReceiptRecord.databaseTableName
+    }
 }
 
 // MARK: - Table Metadata
@@ -116,9 +128,11 @@ extension OWSLinkedDeviceReadReceiptSerializer {
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
-    static let messageIdTimestampColumn = SDSColumnMetadata(columnName: "messageIdTimestamp", columnType: .int64, columnIndex: 3)
-    static let readTimestampColumn = SDSColumnMetadata(columnName: "readTimestamp", columnType: .int64, columnIndex: 4)
-    static let senderIdColumn = SDSColumnMetadata(columnName: "senderId", columnType: .unicodeString, columnIndex: 5)
+    static let linkedDeviceReadReceiptSchemaVersionColumn = SDSColumnMetadata(columnName: "linkedDeviceReadReceiptSchemaVersion", columnType: .int64, columnIndex: 3)
+    static let messageIdTimestampColumn = SDSColumnMetadata(columnName: "messageIdTimestamp", columnType: .int64, columnIndex: 4)
+    static let readTimestampColumn = SDSColumnMetadata(columnName: "readTimestamp", columnType: .int64, columnIndex: 5)
+    static let senderPhoneNumberColumn = SDSColumnMetadata(columnName: "senderPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 6)
+    static let senderUUIDColumn = SDSColumnMetadata(columnName: "senderUUID", columnType: .unicodeString, isOptional: true, columnIndex: 7)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -126,9 +140,11 @@ extension OWSLinkedDeviceReadReceiptSerializer {
         recordTypeColumn,
         idColumn,
         uniqueIdColumn,
+        linkedDeviceReadReceiptSchemaVersionColumn,
         messageIdTimestampColumn,
         readTimestampColumn,
-        senderIdColumn
+        senderPhoneNumberColumn,
+        senderUUIDColumn
         ])
 }
 
@@ -149,7 +165,13 @@ public extension OWSLinkedDeviceReadReceipt {
 
     @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
     func anyUpsert(transaction: SDSAnyWriteTransaction) {
-        sdsSave(saveMode: .upsert, transaction: transaction)
+        let isInserting: Bool
+        if OWSLinkedDeviceReadReceipt.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil {
+            isInserting = false
+        } else {
+            isInserting = true
+        }
+        sdsSave(saveMode: isInserting ? .insert : .update, transaction: transaction)
     }
 
     // This method is used by "updateWith..." methods.
@@ -177,10 +199,6 @@ public extension OWSLinkedDeviceReadReceipt {
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
     func anyUpdate(transaction: SDSAnyWriteTransaction, block: (OWSLinkedDeviceReadReceipt) -> Void) {
-        guard let uniqueId = uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            return
-        }
 
         block(self)
 
@@ -200,21 +218,7 @@ public extension OWSLinkedDeviceReadReceipt {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
-        anyWillRemove(with: transaction)
-
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            ydb_remove(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsRemove(transaction: grdbTransaction)
-            } catch {
-                owsFail("Remove failed: \(error)")
-            }
-        }
-
-        anyDidRemove(with: transaction)
+        sdsRemove(transaction: transaction)
     }
 
     func anyReload(transaction: SDSAnyReadTransaction) {
@@ -222,11 +226,6 @@ public extension OWSLinkedDeviceReadReceipt {
     }
 
     func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
-        guard let uniqueId = self.uniqueId else {
-            owsFailDebug("uniqueId was unexpectedly nil")
-            return
-        }
-
         guard let latestVersion = type(of: self).anyFetch(uniqueId: uniqueId, transaction: transaction) else {
             if !ignoreMissing {
                 owsFailDebug("`latest` was unexpectedly nil")
@@ -330,9 +329,28 @@ public extension OWSLinkedDeviceReadReceipt {
                         break
                     }
                 }
-            } catch let error as NSError {
+            } catch let error {
                 owsFailDebug("Couldn't fetch models: \(error)")
             }
+        }
+    }
+
+    // Traverses all records' unique ids.
+    // Records are not visited in any particular order.
+    // Traversal aborts if the visitor returns false.
+    class func anyEnumerateUniqueIds(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            ydbTransaction.enumerateKeys(inCollection: OWSLinkedDeviceReadReceipt.collection()) { (uniqueId, stop) in
+                block(uniqueId, stop)
+            }
+        case .grdbRead(let grdbTransaction):
+            grdbEnumerateUniqueIds(transaction: grdbTransaction,
+                                   sql: """
+                    SELECT \(linkedDeviceReadReceiptColumn: .uniqueId)
+                    FROM \(LinkedDeviceReadReceiptRecord.databaseTableName)
+                """,
+                block: block)
         }
     }
 
@@ -345,12 +363,71 @@ public extension OWSLinkedDeviceReadReceipt {
         return result
     }
 
+    // Does not order the results.
+    class func anyAllUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
+        var result = [String]()
+        anyEnumerateUniqueIds(transaction: transaction) { (uniqueId, _) in
+            result.append(uniqueId)
+        }
+        return result
+    }
+
     class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.numberOfKeys(inCollection: OWSLinkedDeviceReadReceipt.collection())
         case .grdbRead(let grdbTransaction):
             return LinkedDeviceReadReceiptRecord.ows_fetchCount(grdbTransaction.database)
+        }
+    }
+
+    // WARNING: Do not use this method for any models which do cleanup
+    //          in their anyWillRemove(), anyDidRemove() methods.
+    class func anyRemoveAllWithoutInstantation(transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            ydbTransaction.removeAllObjects(inCollection: OWSLinkedDeviceReadReceipt.collection())
+        case .grdbWrite(let grdbTransaction):
+            do {
+                try LinkedDeviceReadReceiptRecord.deleteAll(grdbTransaction.database)
+            } catch {
+                owsFailDebug("deleteAll() failed: \(error)")
+            }
+        }
+
+        if shouldBeIndexedForFTS {
+            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
+        }
+    }
+
+    class func anyRemoveAllWithInstantation(transaction: SDSAnyWriteTransaction) {
+        // To avoid mutationDuringEnumerationException, we need
+        // to remove the instances outside the enumeration.
+        let uniqueIds = anyAllUniqueIds(transaction: transaction)
+        for uniqueId in uniqueIds {
+            guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+                owsFailDebug("Missing instance.")
+                continue
+            }
+            instance.anyRemove(transaction: transaction)
+        }
+
+        if shouldBeIndexedForFTS {
+            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
+        }
+    }
+
+    class func anyExists(uniqueId: String,
+                        transaction: SDSAnyReadTransaction) -> Bool {
+        assert(uniqueId.count > 0)
+
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.hasObject(forKey: uniqueId, inCollection: OWSLinkedDeviceReadReceipt.collection())
+        case .grdbRead(let grdbTransaction):
+            let sql = "SELECT EXISTS ( SELECT 1 FROM \(LinkedDeviceReadReceiptRecord.databaseTableName) WHERE \(linkedDeviceReadReceiptColumn: .uniqueId) = ? )"
+            let arguments: StatementArguments = [uniqueId]
+            return try! Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
         }
     }
 }
@@ -387,7 +464,9 @@ public extension OWSLinkedDeviceReadReceipt {
         assert(sql.count > 0)
 
         do {
-            guard let record = try LinkedDeviceReadReceiptRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
+            // There are significant perf benefits to using a cached statement.
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            guard let record = try LinkedDeviceReadReceiptRecord.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }
 
@@ -416,16 +495,15 @@ class OWSLinkedDeviceReadReceiptSerializer: SDSSerializer {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .linkedDeviceReadReceipt
-        guard let uniqueId: String = model.uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            throw SDSError.missingRequiredField
-        }
+        let uniqueId: String = model.uniqueId
 
         // Base class properties
+        let linkedDeviceReadReceiptSchemaVersion: UInt = model.linkedDeviceReadReceiptSchemaVersion
         let messageIdTimestamp: UInt64 = model.messageIdTimestamp
         let readTimestamp: UInt64 = model.readTimestamp
-        let senderId: String = model.senderId
+        let senderPhoneNumber: String? = model.senderPhoneNumber
+        let senderUUID: String? = model.senderUUID
 
-        return LinkedDeviceReadReceiptRecord(id: id, recordType: recordType, uniqueId: uniqueId, messageIdTimestamp: messageIdTimestamp, readTimestamp: readTimestamp, senderId: senderId)
+        return LinkedDeviceReadReceiptRecord(id: id, recordType: recordType, uniqueId: uniqueId, linkedDeviceReadReceiptSchemaVersion: linkedDeviceReadReceiptSchemaVersion, messageIdTimestamp: messageIdTimestamp, readTimestamp: readTimestamp, senderPhoneNumber: senderPhoneNumber, senderUUID: senderUUID)
     }
 }

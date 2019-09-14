@@ -13,4 +13,13 @@ extension UIImage {
 
         return imageView.renderAsImage(opaque: imageView.isOpaque, scale: UIScreen.main.scale)
     }
+
+    @objc
+    public func withCornerRadius(_ cornerRadius: CGFloat) -> UIImage? {
+        let rect = CGRect(origin: CGPoint(x: 0, y: 0), size: size)
+        UIGraphicsBeginImageContextWithOptions(size, false, 1)
+        UIBezierPath(roundedRect: rect, cornerRadius: cornerRadius).addClip()
+        draw(in: rect)
+        return UIGraphicsGetImageFromCurrentImageContext()
+    }
 }

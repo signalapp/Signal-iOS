@@ -12,35 +12,47 @@ protocol SDSDatabaseQueue {
     func write(block: @escaping (WriteTransaction) -> Void)
 }
 
+// MARK: -
+
+// Serializes all transactions done using this queue.
 @objc
 public class GRDBDatabaseQueue: NSObject, SDSDatabaseQueue {
-    let databaseQueue: DatabaseQueue
-    init(databaseQueue: DatabaseQueue) {
-        self.databaseQueue = databaseQueue
+    private let storageAdapter: GRDBDatabaseStorageAdapter
+
+    private let serialQueue = DispatchQueue(label: "org.signal.grdbDatabaseQueue")
+
+    init(storageAdapter: GRDBDatabaseStorageAdapter) {
+        self.storageAdapter = storageAdapter
     }
 
     @objc
     public func read(block: @escaping (GRDBReadTransaction) -> Void) {
-        databaseQueue.read { database in
-            block(GRDBReadTransaction(database: database))
+        serialQueue.sync {
+            do {
+                try storageAdapter.read(block: block)
+            } catch {
+                owsFail("fatal error: \(error)")
+            }
         }
     }
 
     @objc
     public func write(block: @escaping (GRDBWriteTransaction) -> Void) {
-        do {
-            try databaseQueue.write { database in
-                block(GRDBWriteTransaction(database: database))
+        serialQueue.sync {
+            do {
+                try storageAdapter.write(block: block)
+            } catch {
+                owsFail("fatal error: \(error)")
             }
-        } catch {
-            owsFail("fatal error: \(error)")
         }
     }
 
-    var asAnyQueue: SDSAnyDatabaseQueue {
-        return SDSAnyDatabaseQueue(grdbDatabaseQueue: self)
+    func asAnyQueue(crossProcess: SDSCrossProcess) -> SDSAnyDatabaseQueue {
+        return SDSAnyDatabaseQueue(grdbDatabaseQueue: self, crossProcess: crossProcess)
     }
 }
+
+// MARK: -
 
 class YAPDBDatabaseQueue: SDSDatabaseQueue {
     private let databaseConnection: YapDatabaseConnection
@@ -48,7 +60,7 @@ class YAPDBDatabaseQueue: SDSDatabaseQueue {
     public init(databaseConnection: YapDatabaseConnection) {
         // We use DatabaseQueue's in places where we're especially concerned
         // about data consistency. To help ensure that our instances aren't being
-        // mutated elsewhere we disable object caching on the connection
+        // mutated elsewhere we disable object caching on the connection.
         databaseConnection.objectCacheEnabled = false
         self.databaseConnection = databaseConnection
     }
@@ -61,13 +73,15 @@ class YAPDBDatabaseQueue: SDSDatabaseQueue {
         databaseConnection.readWrite(block)
     }
 
-    var asAnyQueue: SDSAnyDatabaseQueue {
-        return SDSAnyDatabaseQueue(yapDatabaseQueue: self)
+    func asAnyQueue(crossProcess: SDSCrossProcess) -> SDSAnyDatabaseQueue {
+        return SDSAnyDatabaseQueue(yapDatabaseQueue: self, crossProcess: crossProcess)
     }
 }
 
+// MARK: -
+
 @objc
-public class SDSAnyDatabaseQueue: NSObject, SDSDatabaseQueue {
+public class SDSAnyDatabaseQueue: SDSTransactable, SDSDatabaseQueue {
     enum SomeDatabaseQueue {
         case yap(_ yapQueue: YAPDBDatabaseQueue)
         case grdb(_ grdbQueue: GRDBDatabaseQueue)
@@ -75,16 +89,22 @@ public class SDSAnyDatabaseQueue: NSObject, SDSDatabaseQueue {
 
     private let someDatabaseQueue: SomeDatabaseQueue
 
-    init(yapDatabaseQueue: YAPDBDatabaseQueue) {
+    private let crossProcess: SDSCrossProcess
+
+    init(yapDatabaseQueue: YAPDBDatabaseQueue, crossProcess: SDSCrossProcess) {
         someDatabaseQueue = .yap(yapDatabaseQueue)
+
+        self.crossProcess = crossProcess
     }
 
-    init(grdbDatabaseQueue: GRDBDatabaseQueue) {
+    init(grdbDatabaseQueue: GRDBDatabaseQueue, crossProcess: SDSCrossProcess) {
         someDatabaseQueue = .grdb(grdbDatabaseQueue)
+
+        self.crossProcess = crossProcess
     }
 
     @objc
-    func read(block: @escaping (SDSAnyReadTransaction) -> Void) {
+    public override func read(block: @escaping (SDSAnyReadTransaction) -> Void) {
         switch someDatabaseQueue {
         case .yap(let yapDatabaseQueue):
             yapDatabaseQueue.read { block($0.asAnyRead) }
@@ -94,12 +114,14 @@ public class SDSAnyDatabaseQueue: NSObject, SDSDatabaseQueue {
     }
 
     @objc
-    func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
+    public override func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
         switch someDatabaseQueue {
         case .yap(let yapDatabaseQueue):
             yapDatabaseQueue.write { block($0.asAnyWrite) }
         case .grdb(let grdbDatabaseQueue):
             grdbDatabaseQueue.write { block($0.asAnyWrite) }
         }
+
+        crossProcess.notifyChangedAsync()
     }
 }

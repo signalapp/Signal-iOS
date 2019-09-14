@@ -4,7 +4,7 @@
 
 #import "OWSUploadOperation.h"
 #import "MIMETypeUtil.h"
-#import "NSError+MessageSending.h"
+#import "NSError+OWSOperation.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSDispatch.h"
 #import "OWSError.h"
@@ -17,7 +17,6 @@
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,7 +31,6 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 @interface OWSUploadOperation ()
 
 @property (readonly, nonatomic) NSString *attachmentId;
-@property (readonly, nonatomic) YapDatabaseConnection *dbConnection;
 
 @end
 
@@ -40,8 +38,16 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 
 @implementation OWSUploadOperation
 
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
 - (instancetype)initWithAttachmentId:(NSString *)attachmentId
-                        dbConnection:(YapDatabaseConnection *)dbConnection
 {
     self = [super init];
     if (!self) {
@@ -51,7 +57,6 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
     self.remainingRetries = 4;
 
     _attachmentId = attachmentId;
-    _dbConnection = dbConnection;
 
     return self;
 }
@@ -64,19 +69,14 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 - (void)run
 {
     __block TSAttachmentStream *_Nullable attachmentStream;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        TSAttachment *_Nullable attachment =
-            [TSAttachment anyFetchWithUniqueId:self.attachmentId transaction:transaction.asAnyRead];
-        if (attachment == nil) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        attachmentStream =
+            [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:self.attachmentId transaction:transaction];
+        if (attachmentStream == nil) {
             // Message may have been removed.
             OWSLogWarn(@"Missing attachment.");
             return;
         }
-        if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-            OWSFailDebug(@"Unexpected object: %@", [attachment class]);
-            return;
-        }
-        attachmentStream = (TSAttachmentStream *)attachment;
     }];
 
     if (!attachmentStream) {

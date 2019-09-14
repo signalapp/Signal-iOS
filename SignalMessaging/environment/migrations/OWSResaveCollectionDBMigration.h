@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDatabaseMigration.h"
@@ -12,7 +12,7 @@ typedef BOOL (^DBRecordFilterBlock)(id record);
 
 // Base class for migrations that resave all or a subset of
 // records in a database collection.
-@interface OWSResaveCollectionDBMigration : OWSDatabaseMigration
+@interface OWSResaveCollectionDBMigration : YDBDatabaseMigration
 
 - (void)resaveDBCollection:(NSString *)collection
                     filter:(nullable DBRecordFilterBlock)filter

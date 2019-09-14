@@ -10,6 +10,8 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSContactThread.h>
 
+#ifdef DEBUG
+
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation DebugUISessionState
@@ -59,9 +61,9 @@ NS_ASSUME_NONNULL_BEGIN
                                 OWSLogError(@"Flipping identity Key. Flip again to return.");
 
                                 OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
-                                NSString *recipientId = [thread contactIdentifier];
+                                SignalServiceAddress *address = thread.contactAddress;
 
-                                NSData *currentKey = [identityManager identityKeyForRecipientId:recipientId];
+                                NSData *currentKey = [identityManager identityKeyForAddress:address];
                                 NSMutableData *flippedKey = [NSMutableData new];
                                 const char *currentKeyBytes = currentKey.bytes;
                                 for (NSUInteger i = 0; i < currentKey.length; i++) {
@@ -69,48 +71,39 @@ NS_ASSUME_NONNULL_BEGIN
                                     [flippedKey appendBytes:&xorByte length:1];
                                 }
                                 OWSAssertDebug(flippedKey.length == currentKey.length);
-                                [identityManager saveRemoteIdentity:flippedKey recipientId:recipientId];
+                                [identityManager saveRemoteIdentity:flippedKey address:address];
                             }],
             [OWSTableItem itemWithTitle:@"Delete all sessions"
                             actionBlock:^{
                                 [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                                    [self.sessionStore deleteAllSessionsForContact:thread.contactIdentifier
+                                    [self.sessionStore deleteAllSessionsForAddress:thread.contactAddress
                                                                        transaction:transaction];
                                 }];
                             }],
             [OWSTableItem itemWithTitle:@"Archive all sessions"
                             actionBlock:^{
                                 [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                                    [self.sessionStore archiveAllSessionsForContact:thread.contactIdentifier
+                                    [self.sessionStore archiveAllSessionsForAddress:thread.contactAddress
                                                                         transaction:transaction];
                                 }];
                             }],
             [OWSTableItem itemWithTitle:@"Send session reset"
                             actionBlock:^{
                                 [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                                    if (!transaction.transitional_yapWriteTransaction) {
-                                        OWSFailDebug(@"GRDB TODO");
-                                    }
-                                    [self.sessionResetJobQueue
-                                        addContactThread:thread
-                                             transaction:transaction.transitional_yapWriteTransaction];
+                                    [self.sessionResetJobQueue addContactThread:thread transaction:transaction];
                                 }];
                             }],
         ]];
     }
 
-#if DEBUG
     [items addObjectsFromArray:@[ [OWSTableItem itemWithTitle:@"Clear Session and Identity Store"
                                                   actionBlock:^{
                                                       [self clearSessionAndIdentityStore];
                                                   }] ]];
-#endif
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
-
-#if DEBUG
 - (void)clearSessionAndIdentityStore
 {
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
@@ -118,8 +111,9 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSIdentityManager sharedManager] clearIdentityState:transaction];
     }];
 }
-#endif
 
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

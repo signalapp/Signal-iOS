@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -77,19 +77,41 @@ public enum SignalIOSProtoError: Error {
             setKey(key)
         }
 
-        @objc public func setType(_ valueParam: SignalIOSProtoBackupSnapshotBackupEntityType) {
+        @objc
+        public func setType(_ valueParam: SignalIOSProtoBackupSnapshotBackupEntityType) {
             proto.type = SignalIOSProtoBackupSnapshotBackupEntityTypeUnwrap(valueParam)
         }
 
-        @objc public func setEntityData(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setEntityData(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.entityData = valueParam
         }
 
-        @objc public func setCollection(_ valueParam: String) {
+        public func setEntityData(_ valueParam: Data) {
+            proto.entityData = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setCollection(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.collection = valueParam
         }
 
-        @objc public func setKey(_ valueParam: String) {
+        public func setCollection(_ valueParam: String) {
+            proto.collection = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setKey(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.key = valueParam
+        }
+
+        public func setKey(_ valueParam: String) {
             proto.key = valueParam
         }
 
@@ -322,15 +344,36 @@ extension SignalIOSProtoBackupSnapshot.SignalIOSProtoBackupSnapshotBuilder {
             setCiphertext(ciphertext)
         }
 
-        @objc public func setEphemeralPublic(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setEphemeralPublic(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.ephemeralPublic = valueParam
         }
 
-        @objc public func setSyntheticIv(_ valueParam: Data) {
+        public func setEphemeralPublic(_ valueParam: Data) {
+            proto.ephemeralPublic = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setSyntheticIv(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.syntheticIv = valueParam
         }
 
-        @objc public func setCiphertext(_ valueParam: Data) {
+        public func setSyntheticIv(_ valueParam: Data) {
+            proto.syntheticIv = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setCiphertext(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.ciphertext = valueParam
+        }
+
+        public func setCiphertext(_ valueParam: Data) {
             proto.ciphertext = valueParam
         }
 

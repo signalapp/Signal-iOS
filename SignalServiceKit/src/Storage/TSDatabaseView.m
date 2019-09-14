@@ -43,10 +43,9 @@ NSString *const TSThreadOutgoingMessageDatabaseViewExtensionName = @"TSThreadOut
 NSString *const TSUnreadDatabaseViewExtensionName = @"TSUnreadDatabaseViewExtensionName";
 NSString *const TSUnseenDatabaseViewExtensionName = @"TSUnseenDatabaseViewExtensionName";
 NSString *const TSThreadSpecialMessagesDatabaseViewExtensionName = @"TSThreadSpecialMessagesDatabaseViewExtensionName";
-NSString *const TSPerMessageExpirationMessagesDatabaseViewExtensionName
-    = @"TSPerMessageExpirationMessagesDatabaseViewExtensionName";
-NSString *const TSPerMessageExpirationMessagesGroup = @"TSPerMessageExpirationMessagesGroup";
-NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesDatabaseViewExtensionName";
+NSString *const TSIncompleteViewOnceMessagesDatabaseViewExtensionName
+    = @"TSIncompleteViewOnceMessagesDatabaseViewExtensionName";
+NSString *const TSIncompleteViewOnceMessagesGroup = @"TSIncompleteViewOnceMessagesGroup";
 NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName
     = @"TSLazyRestoreAttachmentsDatabaseViewExtensionName";
 NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup";
@@ -168,7 +167,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
                                       storage:storage];
 }
 
-+ (void)asyncRegisterPerMessageExpirationMessagesDatabaseView:(OWSStorage *)storage
++ (void)asyncRegisterIncompleteViewOnceMessagesDatabaseView:(OWSStorage *)storage
 {
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
         YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
@@ -180,17 +179,16 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
             return nil;
         }
         TSMessage *message = (TSMessage *)object;
-        if (message.hasPerMessageExpiration &&
-            !message.perMessageExpirationHasExpired) {
-            return TSPerMessageExpirationMessagesGroup;
+        if (message.isViewOnceMessage && !message.isViewOnceComplete) {
+            return TSIncompleteViewOnceMessagesGroup;
         } else {
             return nil;
         }
     }];
 
-    [self registerMessageDatabaseViewWithName:TSPerMessageExpirationMessagesDatabaseViewExtensionName
+    [self registerMessageDatabaseViewWithName:TSIncompleteViewOnceMessagesDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
-                                      version:@"2"
+                                      version:@"1"
                                       storage:storage];
 }
 
@@ -319,11 +317,13 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
             OWSAssertDebug(viewTransaction);
             NSUInteger threadMessageCount = [viewTransaction numberOfItemsInGroup:thread.uniqueId];
             if (threadMessageCount < 1) {
+                OWSAssertDebug(!thread.shouldThreadBeVisible);
                 return nil;
             }
         }
 
-        return [thread isArchivedWithTransaction:transaction] ? TSArchiveGroup : TSInboxGroup;
+        OWSAssertDebug(thread.shouldThreadBeVisible);
+        return [thread isArchivedWithTransaction:transaction.asAnyRead] ? TSArchiveGroup : TSInboxGroup;
     }];
 
     YapDatabaseViewSorting *viewSorting = [self threadSorting];
@@ -407,56 +407,6 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
     }];
 }
 
-+ (void)asyncRegisterSecondaryDevicesDatabaseView:(OWSStorage *)storage
-{
-    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *_Nullable(
-        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
-        if (![object isKindOfClass:[OWSDevice class]]) {
-            OWSFailDebug(@"Unexpected entity %@ in collection: %@", [object class], collection);
-            return nil;
-        }
-        OWSDevice *device = (OWSDevice *)object;
-        if (![device isPrimaryDevice]) {
-            return TSSecondaryDevicesGroup;
-        }
-        return nil;
-    }];
-
-    YapDatabaseViewSorting *viewSorting = [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(
-        YapDatabaseReadTransaction *transaction,
-        NSString *group,
-        NSString *collection1,
-        NSString *key1,
-        id object1,
-        NSString *collection2,
-        NSString *key2,
-        id object2) {
-        if (![object1 isKindOfClass:[OWSDevice class]]) {
-            OWSFailDebug(@"Unexpected entity %@ in collection: %@", [object1 class], collection1);
-            return NSOrderedSame;
-        }
-        if (![object2 isKindOfClass:[OWSDevice class]]) {
-            OWSFailDebug(@"Unexpected entity %@ in collection: %@", [object2 class], collection2);
-            return NSOrderedSame;
-        }
-        OWSDevice *device1 = (OWSDevice *)object1;
-        OWSDevice *device2 = (OWSDevice *)object2;
-
-        return [device2.createdAt compare:device1.createdAt];
-    }];
-
-    YapDatabaseViewOptions *options = [YapDatabaseViewOptions new];
-    options.isPersistent = YES;
-
-    NSSet *deviceCollection = [NSSet setWithObject:[OWSDevice collection]];
-    options.allowedCollections = [[YapWhitelistBlacklist alloc] initWithWhitelist:deviceCollection];
-
-    YapDatabaseView *view =
-        [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
-
-    [storage asyncRegisterExtension:view withName:TSSecondaryDevicesDatabaseViewExtensionName];
-}
-
 + (void)asyncRegisterLazyRestoreAttachmentsDatabaseView:(OWSStorage *)storage
 {
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *_Nullable(
@@ -469,7 +419,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
             return nil;
         }
         TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)object;
-        if (attachmentPointer.lazyRestoreFragment) {
+        if ([attachmentPointer lazyRestoreFragmentWithTransaction:transaction.asAnyRead]) {
             return TSLazyRestoreAttachmentsGroup;
         } else {
             return nil;
@@ -544,11 +494,11 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
     return result;
 }
 
-+ (id)perMessageExpirationMessagesDatabaseView:(YapDatabaseReadTransaction *)transaction
++ (id)incompleteViewOnceMessagesDatabaseView:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
-    id result = [transaction ext:TSPerMessageExpirationMessagesDatabaseViewExtensionName];
+    id result = [transaction ext:TSIncompleteViewOnceMessagesDatabaseViewExtensionName];
     OWSAssertDebug(result);
     return result;
 }

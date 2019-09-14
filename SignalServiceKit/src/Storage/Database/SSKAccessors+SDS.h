@@ -53,8 +53,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) TSOutgoingMessageState legacyMessageState;
 @property (nonatomic, readonly) BOOL legacyWasDelivered;
 @property (nonatomic, readonly) BOOL hasLegacyMessageState;
-
-@property (atomic, nullable, readonly) NSDictionary<NSString *, TSOutgoingMessageRecipientState *> *recipientStateMap;
+@property (atomic, readonly)
+    NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *recipientAddressStates;
+@property (nonatomic, readonly) NSUInteger outgoingMessageSchemaVersion;
+@property (nonatomic, readonly) TSOutgoingMessageState storedMessageState;
 
 @end
 
@@ -85,6 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TSIncomingMessage (SDS)
 
 @property (nonatomic, getter=wasRead) BOOL read;
+@property (nonatomic, readonly) NSUInteger incomingMessageSchemaVersion;
 
 @end
 
@@ -147,6 +150,84 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, copy) NSString *authorId;
 
 @property (atomic, readonly, nullable) NSData *envelopeData;
+
+@end
+
+#pragma mark -
+
+@interface SignalAccount (SDS)
+
+@property (nonatomic, readonly) NSUInteger accountSchemaVersion;
+
+@end
+
+#pragma mark -
+
+@interface SignalRecipient (SDS)
+
+@property (nonatomic, readonly) NSUInteger recipientSchemaVersion;
+
+@end
+
+#pragma mark -
+
+@interface TSContactThread (SDS)
+
+@property (nonatomic, nullable, readonly) NSString *contactPhoneNumber;
+@property (nonatomic, nullable, readonly) NSString *contactUUID;
+@property (nonatomic, readonly) NSUInteger contactThreadSchemaVersion;
+
+@end
+
+#pragma mark -
+
+@interface OWSUserProfile (SDS)
+
+@property (atomic, readonly) NSUInteger userProfileSchemaVersion;
+@property (atomic, nullable, readonly) NSString *recipientPhoneNumber;
+@property (atomic, nullable, readonly) NSString *recipientUUID;
+
+@end
+
+#pragma mark -
+
+@interface OWSLinkedDeviceReadReceipt (SDS)
+
+@property (nonatomic, nullable, readonly) NSString *senderPhoneNumber;
+@property (nonatomic, nullable, readonly) NSString *senderUUID;
+@property (nonatomic, readonly) NSUInteger linkedDeviceReadReceiptSchemaVersion;
+
+@end
+
+#pragma mark -
+
+@interface OWSRecipientIdentity (SDS)
+
+@property (nonatomic, readonly) NSUInteger recipientIdentitySchemaVersion;
+
+@end
+
+#pragma mark -
+
+@interface TSGroupModel (SDS)
+
+@property (nonatomic, readonly) NSUInteger groupModelSchemaVersion;
+
+@end
+
+#pragma mark -
+
+@interface TSRecipientReadReceipt (SDS)
+
+@property (nonatomic, readonly) NSUInteger recipientReadReceiptSchemaVersion;
+
+@end
+
+#pragma mark -
+
+@interface OWSUnknownProtocolVersionMessage (SDS)
+
+@property (nonatomic, readonly) NSUInteger unknownProtocolVersionMessageSchemaVersion;
 
 @end
 

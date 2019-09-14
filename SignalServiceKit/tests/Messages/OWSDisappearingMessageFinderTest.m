@@ -4,7 +4,6 @@
 
 #import "MockSSKEnvironment.h"
 #import "OWSDisappearingMessagesFinder.h"
-#import "OWSPrimaryStorage.h"
 #import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
 #import "TSMessage.h"
@@ -42,21 +41,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super setUp];
 
-    // TODO: This shouldn't be necessary.
-    //    [OWSDisappearingMessagesFinder blockingRegisterDatabaseExtensions:self.primaryStorage];
-
     self.thread = [TSContactThread getOrCreateThreadWithContactId:@"fake-thread-id"];
     self.now = [NSDate ows_millisecondTimeStamp];
 
     // Test subject
     self.finder = [OWSDisappearingMessagesFinder new];
-}
-
-- (void)tearDown
-{
-    self.dbConnection = nil;
-
-    [super tearDown];
 }
 
 - (TSMessage *)messageWithBody:(NSString *)body

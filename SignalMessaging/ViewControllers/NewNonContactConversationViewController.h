@@ -1,12 +1,14 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "SelectRecipientViewController.h"
 
+@class SignalServiceAddress;
+
 @protocol NewNonContactConversationViewControllerDelegate <NSObject>
 
-- (void)recipientIdWasSelected:(NSString *)recipientId;
+- (void)recipientAddressWasSelected:(SignalServiceAddress *)address;
 
 @end
 

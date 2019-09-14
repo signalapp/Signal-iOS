@@ -16,6 +16,7 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
+@class SignalServiceAddress;
 @class TSNetworkManager;
 
 typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
@@ -31,10 +32,13 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 @property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
 
 @property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
+@property (nonatomic, nullable) NSUUID *uuidAwaitingVerification;
 
 #pragma mark - Initializers
 
 + (instancetype)sharedInstance;
+
+- (void)warmCaches;
 
 - (OWSRegistrationState)registrationState;
 
@@ -54,13 +58,12 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 + (nullable NSString *)localNumber;
 - (nullable NSString *)localNumber;
 
-// A variant of localNumber that never opens a "sneaky" transaction.
-- (nullable NSString *)storedOrCachedLocalNumber:(SDSAnyReadTransaction *)transaction;
+@property (readonly, nullable) NSUUID *uuid;
+@property (class, readonly, nullable) SignalServiceAddress *localAddress;
+@property (readonly, nullable) SignalServiceAddress *localAddress;
 
-#ifdef DEBUG
-// This method is exposed for testing purposes only.
-- (void)storeLocalNumber:(NSString *)localNumber;
-#endif
+// A variant of localAddress that never opens a "sneaky" transaction.
+- (nullable SignalServiceAddress *)storedOrCachedLocalAddress:(SDSAnyReadTransaction *)transaction;
 
 /**
  *  Symmetric key that's used to encrypt message payloads from the server,
@@ -88,7 +91,7 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 
 - (void)verifyAccountWithCode:(NSString *)verificationCode
                           pin:(nullable NSString *)pin
-                      success:(void (^)(void))successBlock
+                      success:(void (^)(_Nullable id responseObject))successBlock
                       failure:(void (^)(NSError *error))failureBlock;
 
 // Called once registration is complete - meaning the following have succeeded:
@@ -96,6 +99,7 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 // - uploaded pre-keys
 // - uploaded push tokens
 - (void)didRegister;
+- (void)recordUuidForLegacyUser:(NSUUID *)uuid NS_SWIFT_NAME(recordUuidForLegacyUser(_:));
 
 #if TARGET_OS_IPHONE
 
@@ -143,7 +147,7 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 - (void)setIsManualMessageFetchEnabled:(BOOL)value;
 
 #ifdef DEBUG
-- (void)registerForTestsWithLocalNumber:(NSString *)localNumber;
+- (void)registerForTestsWithLocalNumber:(NSString *)localNumber uuid:(NSUUID *)uuid;
 #endif
 
 - (AnyPromise *)updateAccountAttributes __attribute__((warn_unused_result));

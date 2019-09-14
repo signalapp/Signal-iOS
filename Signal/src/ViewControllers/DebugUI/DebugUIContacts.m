@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIContacts.h"
@@ -9,10 +9,22 @@
 #import "SignalApp.h"
 #import <Contacts/Contacts.h>
 #import <SignalCoreKit/Randomness.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
+
+#ifdef DEBUG
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation DebugUIContacts
+
+#pragma mark - Dependencies
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 #pragma mark - Factory Methods
 
@@ -71,46 +83,50 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)clearSignalAccountCache
 {
     OWSLogWarn(@"Deleting all signal accounts.");
-    [SignalAccount removeAllObjectsInCollection];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [SignalAccount anyRemoveAllWithoutInstantationWithTransaction:transaction];
+    }];
 }
 
 + (void)clearSignalRecipientCache
 {
     OWSLogWarn(@"Deleting all signal recipients.");
-    [SignalRecipient removeAllObjectsInCollection];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [SignalRecipient anyRemoveAllWithoutInstantationWithTransaction:transaction];
+    }];
 }
 
-+ (NSString *)unregisteredRecipientId
++ (SignalServiceAddress *)unregisteredRecipient
 {
     // We ensure that the phone number is invalid by appending too many digits.
     NSMutableString *recipientId = [@"+1" mutableCopy];
     for (int i = 0; i < 11; i++) {
         [recipientId appendFormat:@"%d", (int)(arc4random() % 10)];
     }
-    return [recipientId copy];
+    return [[SignalServiceAddress alloc] initWithPhoneNumber:[recipientId copy]];
 }
 
 + (void)createUnregisteredContactThread
 {
-    NSString *recipientId = [self unregisteredRecipientId];
-    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
+    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:self.unregisteredRecipient];
     [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
 }
 
 + (void)createUnregisteredGroupThread
 {
-    NSString *unregisteredRecipientId = [self unregisteredRecipientId];
-    NSString *validRecipientId = @"+19174054216";
+    SignalServiceAddress *validRecipient = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054216"];
 
     NSString *groupName = @"Partially invalid group";
-    NSMutableArray<NSString *> *recipientIds = [@[
-        unregisteredRecipientId,
-        validRecipientId,
-        [TSAccountManager localNumber],
+    NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
+        self.unregisteredRecipient,
+        validRecipient,
+        TSAccountManager.localAddress,
     ] mutableCopy];
     NSData *groupId = [Randomness generateRandomBytes:16];
-    TSGroupModel *model =
-        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
+    TSGroupModel *model = [[TSGroupModel alloc] initWithTitle:groupName
+                                                      members:recipientAddresses
+                                                        image:nil
+                                                      groupId:groupId];
     TSGroupThread *thread = [TSGroupThread getOrCreateThreadWithGroupModel:model];
 
     [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
@@ -119,3 +135,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

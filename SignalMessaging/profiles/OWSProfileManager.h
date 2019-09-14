@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/ProfileManagerProtocol.h>
@@ -14,16 +14,23 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 @class OWSAES256Key;
 @class OWSMessageSender;
-@class OWSPrimaryStorage;
+@class SDSAnyReadTransaction;
+@class SDSDatabaseStorage;
+@class SDSKeyValueStore;
+@class SignalServiceAddress;
 @class TSNetworkManager;
 @class TSThread;
 
 // This class can be safely accessed and used from any thread.
 @interface OWSProfileManager : NSObject <ProfileManagerProtocol>
 
+@property (nonatomic, readonly) SDSKeyValueStore *whitelistedPhoneNumbersStore;
+@property (nonatomic, readonly) SDSKeyValueStore *whitelistedUUIDsStore;
+@property (nonatomic, readonly) SDSKeyValueStore *whitelistedGroupsStore;
+
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage;
+- (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedManager;
 
@@ -32,13 +39,12 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 // These two methods should only be called from the main thread.
 - (OWSAES256Key *)localProfileKey;
 // localUserProfileExists is true if there is _ANY_ local profile.
-- (BOOL)localProfileExists;
+- (BOOL)localProfileExistsWithTransaction:(SDSAnyReadTransaction *)transaction;
 // hasLocalProfile is true if there is a local profile with a name or avatar.
 - (BOOL)hasLocalProfile;
 - (nullable NSString *)localProfileName;
 - (nullable UIImage *)localProfileAvatarImage;
 - (nullable NSData *)localProfileAvatarData;
-- (void)ensureLocalProfileCached;
 
 // This method is used to update the "local profile" state on the client
 // and the service.  Client state is only updated if service state is
@@ -59,27 +65,35 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 // These methods are for debugging.
 - (void)clearProfileWhitelist;
 - (void)logProfileWhitelist;
-- (void)regenerateLocalProfile;
+- (void)regenerateLocalProfileWithSneakyTransaction;
 
 - (void)addThreadToProfileWhitelist:(TSThread *)thread;
 
-- (void)setContactRecipientIds:(NSArray<NSString *> *)contactRecipientIds;
+- (void)setContactAddresses:(NSArray<SignalServiceAddress *> *)contactAddresses;
 
 #pragma mark - Other User's Profiles
 
 // This method is for debugging.
 - (void)logUserProfiles;
 
-- (nullable OWSAES256Key *)profileKeyForRecipientId:(NSString *)recipientId;
+- (nullable OWSAES256Key *)profileKeyForAddress:(SignalServiceAddress *)address
+                                    transaction:(SDSAnyReadTransaction *)transaction;
 
-- (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId;
+- (nullable NSString *)profileNameForAddress:(SignalServiceAddress *)address
+                                 transaction:(SDSAnyReadTransaction *)transaction;
 
-- (nullable UIImage *)profileAvatarForRecipientId:(NSString *)recipientId;
-- (nullable NSData *)profileAvatarDataForRecipientId:(NSString *)recipientId;
+- (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address
+                                  transaction:(SDSAnyReadTransaction *)transaction;
+- (nullable NSData *)profileAvatarDataForAddress:(SignalServiceAddress *)address
+                                     transaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)updateProfileForRecipientId:(NSString *)recipientId
-               profileNameEncrypted:(nullable NSData *)profileNameEncrypted
-                      avatarUrlPath:(nullable NSString *)avatarUrlPath;
+- (void)updateProfileForAddress:(SignalServiceAddress *)address
+           profileNameEncrypted:(nullable NSData *)profileNameEncrypted
+                  avatarUrlPath:(nullable NSString *)avatarUrlPath;
+
+#pragma mark - Clean Up
+
++ (NSSet<NSString *> *)allProfileAvatarFilePathsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 #pragma mark - User Interface
 

@@ -79,6 +79,8 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
         [self loadDatabase];
 
         _dbReadPool = [[YapDatabaseConnectionPool alloc] initWithDatabase:self.database];
+        self.dbReadPool.connectionLimit = 10;
+
         _dbReadWriteConnection = [self newDatabaseConnection];
         _uiDatabaseConnection = [self newDatabaseConnection];
 
@@ -217,11 +219,12 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
                                       [TSDatabaseView asyncRegisterUnseenDatabaseView:self];
                                       [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:self];
                                       [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:self];
-                                      [TSDatabaseView asyncRegisterPerMessageExpirationMessagesDatabaseView:self];
+                                      [TSDatabaseView asyncRegisterIncompleteViewOnceMessagesDatabaseView:self];
 
-                                      [FullTextSearchFinder asyncRegisterDatabaseExtensionWithStorage:self];
+                                      // YAPDBSignalServiceAddressIndex must register before YDBFullTextSearchFinder.
+                                      [YAPDBSignalServiceAddressIndex asyncRegisterDatabaseExtensions:self];
+                                      [YDBFullTextSearchFinder asyncRegisterDatabaseExtensionWithStorage:self];
                                       [OWSIncomingMessageFinder asyncRegisterExtensionWithPrimaryStorage:self];
-                                      [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView:self];
                                       [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:self];
                                       [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
                                       [OWSIncompleteCallsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
@@ -230,6 +233,8 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
                                       [YAPDBMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
                                       [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:self];
                                       [YAPDBJobRecordFinderSetup asyncRegisterDatabaseExtensionObjCWithStorage:self];
+                                      [YAPDBLinkedDeviceReadReceiptFinder asyncRegisterDatabaseExtensions:self];
+                                      [YAPDBContactQueryFinder asyncRegisterDatabaseExtensions:self];
 
                                       [self.database
                                           flushExtensionRequestsWithCompletionQueue:dispatch_get_global_queue(

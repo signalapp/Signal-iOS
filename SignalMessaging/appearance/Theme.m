@@ -6,15 +6,12 @@
 #import "UIColor+OWS.h"
 #import "UIUtil.h"
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const ThemeDidChangeNotification = @"ThemeDidChangeNotification";
 
-NSString *const ThemeCollection = @"ThemeCollection";
 NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 
@@ -25,6 +22,22 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 @end
 
 @implementation Theme
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
++ (SDSKeyValueStore *)keyValueStore
+{
+    return [[SDSKeyValueStore alloc] initWithCollection:@"ThemeCollection"];
+}
+
+#pragma mark -
 
 + (instancetype)sharedInstance
 {
@@ -52,9 +65,11 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     }
 
     if (self.isDarkThemeEnabledNumber == nil) {
-        BOOL isDarkThemeEnabled = [OWSPrimaryStorage.sharedManager.dbReadConnection boolForKey:ThemeKeyThemeEnabled
-                                                                                  inCollection:ThemeCollection
-                                                                                  defaultValue:NO];
+        __block BOOL isDarkThemeEnabled;
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            isDarkThemeEnabled =
+                [Theme.keyValueStore getBool:ThemeKeyThemeEnabled defaultValue:NO transaction:transaction];
+        }];
         self.isDarkThemeEnabledNumber = @(isDarkThemeEnabled);
     }
 
@@ -71,9 +86,9 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     OWSAssertIsOnMainThread();
 
     self.isDarkThemeEnabledNumber = @(value);
-    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection setBool:value
-                                                            forKey:ThemeKeyThemeEnabled
-                                                      inCollection:ThemeCollection];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [Theme.keyValueStore setBool:value key:ThemeKeyThemeEnabled transaction:transaction];
+    }];
 
     [UIUtil setupSignalAppearence];
 
@@ -104,7 +119,12 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)secondaryColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray25Color : UIColor.ows_gray60Color);
+    return (Theme.isDarkThemeEnabled ? Theme.darkThemeSecondaryColor : UIColor.ows_gray60Color);
+}
+
++ (UIColor *)darkThemeSecondaryColor
+{
+    return UIColor.ows_gray25Color;
 }
 
 + (UIColor *)boldColor
@@ -125,6 +145,11 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 + (UIColor *)hairlineColor
 {
     return (Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray25Color);
+}
+
++ (UIColor *)outlineColor
+{
+    return Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray15Color;
 }
 
 #pragma mark - Global App Colors
@@ -157,6 +182,21 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 + (UIColor *)toolbarBackgroundColor
 {
     return self.navbarBackgroundColor;
+}
+
++ (UIColor *)conversationInputBackgroundColor
+{
+    return (Theme.isDarkThemeEnabled ?  UIColor.ows_gray75Color : [UIColor colorWithRGBHex:0xefefef]);
+}
+
++ (UIColor *)attachmentKeyboardItemBackgroundColor
+{
+    return self.conversationInputBackgroundColor;
+}
+
++ (UIColor *)attachmentKeyboardItemImageColor
+{
+    return (Theme.isDarkThemeEnabled ? [UIColor colorWithRGBHex:0xd8d8d9] : [UIColor colorWithRGBHex:0x636467]);
 }
 
 + (UIColor *)cellSelectedColor
@@ -208,6 +248,11 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 + (UIKeyboardAppearance)keyboardAppearance
 {
     return Theme.isDarkThemeEnabled ? self.darkThemeKeyboardAppearance : UIKeyboardAppearanceDefault;
+}
+
++ (UIColor *)keyboardBackgroundColor
+{
+    return Theme.isDarkThemeEnabled ? UIColor.ows_gray90Color : UIColor.ows_gray02Color;
 }
 
 + (UIKeyboardAppearance)darkThemeKeyboardAppearance

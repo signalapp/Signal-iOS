@@ -2,7 +2,6 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSPrimaryStorage.h"
 #import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
@@ -10,7 +9,6 @@
 #import "TSMessage.h"
 #import "TSOutgoingMessage.h"
 #import "TSThread.h"
-#import "YapDatabaseConnection+OWS.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -54,7 +52,7 @@
     TSIncomingMessage *newMessage =
         [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
                                                            inThread:self.thread
-                                                           authorId:[self.thread contactIdentifier]
+                                                      authorAddress:self.thread.contactAddress
                                                      sourceDeviceId:1
                                                         messageBody:body
                                                       attachmentIds:@[]
@@ -89,7 +87,7 @@
         TSIncomingMessage *newMessage =
             [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:i
                                                                inThread:self.thread
-                                                               authorId:[self.thread contactIdentifier]
+                                                          authorAddress:self.thread.contactAddress
                                                          sourceDeviceId:1
                                                             messageBody:body
                                                           attachmentIds:@[]
@@ -142,9 +140,10 @@
 
     NSMutableArray<TSIncomingMessage *> *messages = [NSMutableArray new];
     for (uint64_t i = 0; i < 10; i++) {
+        SignalServiceAddress *authorAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+fakephone"];
         TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:i
                                                                                            inThread:thread
-                                                                                           authorId:@"Ed"
+                                                                                      authorAddress:authorAddress
                                                                                      sourceDeviceId:1
                                                                                         messageBody:body
                                                                                       attachmentIds:@[]

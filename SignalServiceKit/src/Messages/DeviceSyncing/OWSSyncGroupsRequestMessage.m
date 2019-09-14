@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSSyncGroupsRequestMessage
 
-- (instancetype)initWithThread:(nullable TSThread *)thread groupId:(NSData *)groupId
+- (instancetype)initWithThread:(TSThread *)thread groupId:(NSData *)groupId
 {
     // MJK TODO - remove senderTimestamp
     self = [super initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
                                       contactShare:nil
                                        linkPreview:nil
                                     messageSticker:nil
-               perMessageExpirationDurationSeconds:0];
+                                 isViewOnceMessage:NO];
     if (!self) {
         return self;
     }

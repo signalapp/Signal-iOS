@@ -11,6 +11,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSFileSystem
 
++ (BOOL)fileOrFolderExistsAtPath:(NSString *)path
+{
+    BOOL isDirectory;
+    return [NSFileManager.defaultManager fileExistsAtPath:path isDirectory:&isDirectory];
+}
+
 + (BOOL)protectRecursiveContentsAtPath:(NSString *)path
 {
     BOOL isDirectory;
@@ -192,6 +198,38 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
++ (BOOL)moveFilePath:(NSString *)oldFilePath toFilePath:(NSString *)newFilePath
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (![fileManager fileExistsAtPath:oldFilePath]) {
+        OWSFailDebug(@"Can't move file or directory; source missing.");
+        return NO;
+    }
+
+    OWSLogInfo(@"Moving file or directory from: %@ to: %@", oldFilePath, newFilePath);
+
+    if ([fileManager fileExistsAtPath:newFilePath]) {
+        OWSFailDebug(@"Can't move file or directory; destination already exists.");
+        return NO;
+    }
+
+    NSError *_Nullable error;
+    BOOL success = [fileManager moveItemAtPath:oldFilePath toPath:newFilePath error:&error];
+    if (!success || error) {
+        OWSFailDebug(@"Could not move file or directory with error: %@", error);
+        return NO;
+    }
+
+    // Ensure all files moved have the proper data protection class.
+    // On large directories this can take a while, so we dispatch async
+    // since we're in the launch path.
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self protectRecursiveContentsAtPath:newFilePath];
+    });
+
+    return YES;
+}
+
 + (BOOL)ensureDirectoryExists:(NSString *)dirPath
 {
     return [self ensureDirectoryExists:dirPath fileProtectionType:NSFileProtectionCompleteUntilFirstUserAuthentication];
@@ -346,6 +384,11 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         return @(fileSize);
     }
+}
+
++ (nullable NSNumber *)fileSizeOfUrl:(NSURL *)fileUrl
+{
+    return [self fileSizeOfPath:fileUrl.path];
 }
 
 @end

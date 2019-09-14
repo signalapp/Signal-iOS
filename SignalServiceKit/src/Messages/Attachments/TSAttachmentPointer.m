@@ -259,13 +259,13 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (nullable OWSBackupFragment *)lazyRestoreFragment
+- (nullable OWSBackupFragment *)lazyRestoreFragmentWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     if (!self.lazyRestoreFragmentId) {
         return nil;
     }
-    OWSBackupFragment *_Nullable backupFragment =
-        [OWSBackupFragment fetchObjectWithUniqueID:self.lazyRestoreFragmentId];
+    OWSBackupFragment *_Nullable backupFragment = [OWSBackupFragment anyFetchWithUniqueId:self.lazyRestoreFragmentId
+                                                                              transaction:transaction];
     OWSAssertDebug(backupFragment);
     return backupFragment;
 }
@@ -284,23 +284,39 @@ NS_ASSUME_NONNULL_BEGIN
 
         OWSAssertDebug(lazyRestoreFragment.uniqueId);
     }
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSAttachment *attachment) {
-                                 if (![attachment isKindOfClass:[TSAttachmentPointer class]]) {
-                                     OWSFailDebug(@"Object has unexpected type: %@", [attachment class]);
-                                     return;
-                                 }
-                                 TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)attachment;
-                                 [attachmentPointer setLazyRestoreFragmentId:lazyRestoreFragment.uniqueId];
-                             }];
+    [self anyUpdateAttachmentPointerWithTransaction:transaction
+                                              block:^(TSAttachmentPointer *attachmentPointer) {
+                                                  [attachmentPointer
+                                                      setLazyRestoreFragmentId:lazyRestoreFragment.uniqueId];
+                                              }];
 }
 
-// TODO: We could add a similar check to the GRDB insert logic.
 - (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self checkForStreamOverwrite:transaction.asAnyRead];
+
+    [super ydb_saveWithTransaction:transaction];
+}
+
+- (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyWillInsertWithTransaction:transaction];
+
+    [self checkForStreamOverwrite:transaction];
+}
+
+- (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyWillUpdateWithTransaction:transaction];
+
+    [self checkForStreamOverwrite:transaction];
+}
+
+- (void)checkForStreamOverwrite:(SDSAnyReadTransaction *)transaction
 {
 #ifdef DEBUG
     if (self.uniqueId.length > 0) {
-        id _Nullable oldObject = [transaction objectForKey:self.uniqueId inCollection:TSAttachment.collection];
+        TSAttachment *_Nullable oldObject = [TSAttachment anyFetchWithUniqueId:self.uniqueId transaction:transaction];
         if ([oldObject isKindOfClass:[TSAttachmentStream class]]) {
             OWSFailDebug(@"We should never overwrite a TSAttachmentStream with a TSAttachmentPointer.");
         }
@@ -308,8 +324,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Missing uniqueId.");
     }
 #endif
-
-    [super ydb_saveWithTransaction:transaction];
 }
 
 @end

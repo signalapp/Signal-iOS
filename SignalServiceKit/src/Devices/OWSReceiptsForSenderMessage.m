@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSReceiptsForSenderMessage
 
-+ (OWSReceiptsForSenderMessage *)deliveryReceiptsForSenderMessageWithThread:(nullable TSThread *)thread
++ (OWSReceiptsForSenderMessage *)deliveryReceiptsForSenderMessageWithThread:(TSThread *)thread
                                                           messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps
 {
     return [[OWSReceiptsForSenderMessage alloc] initWithThread:thread
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    receiptType:SSKProtoReceiptMessageTypeDelivery];
 }
 
-+ (OWSReceiptsForSenderMessage *)readReceiptsForSenderMessageWithThread:(nullable TSThread *)thread
++ (OWSReceiptsForSenderMessage *)readReceiptsForSenderMessageWithThread:(TSThread *)thread
                                                       messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps
 {
     return [[OWSReceiptsForSenderMessage alloc] initWithThread:thread
@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    receiptType:SSKProtoReceiptMessageTypeRead];
 }
 
-- (instancetype)initWithThread:(nullable TSThread *)thread
+- (instancetype)initWithThread:(TSThread *)thread
              messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps
                    receiptType:(SSKProtoReceiptMessageType)receiptType
 {
@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
                                       contactShare:nil
                                        linkPreview:nil
                                     messageSticker:nil
-               perMessageExpirationDurationSeconds:0];
+                                 isViewOnceMessage:NO];
     if (!self) {
         return self;
     }
@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(recipient);
 
-    SSKProtoReceiptMessage *_Nullable receiptMessage = [self buildReceiptMessage:recipient.recipientId];
+    SSKProtoReceiptMessage *_Nullable receiptMessage = [self buildReceiptMessage];
     if (!receiptMessage) {
         OWSFailDebug(@"could not build protobuf.");
         return nil;
@@ -101,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
     return contentData;
 }
 
-- (nullable SSKProtoReceiptMessage *)buildReceiptMessage:(NSString *)recipientId
+- (nullable SSKProtoReceiptMessage *)buildReceiptMessage
 {
     SSKProtoReceiptMessageBuilder *builder = [SSKProtoReceiptMessage builder];
     [builder setType:self.receiptType];

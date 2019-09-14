@@ -13,10 +13,8 @@ public enum AccountServiceClientError: Error {
 }
 
 /// based on libsignal-service-java's AccountManager class
-@objc(SSKAccountServiceClient)
+@objc
 public class AccountServiceClient: NSObject {
-
-    public static var shared = AccountServiceClient()
 
     private let serviceClient: SignalServiceClient
 
@@ -57,5 +55,13 @@ public class AccountServiceClient: NSObject {
 
     public func setSignedPreKey(_ signedPreKey: SignedPreKeyRecord) -> Promise<Void> {
         return serviceClient.setCurrentSignedPreKey(signedPreKey)
+    }
+
+    public func updateAttributes() -> Promise<Void> {
+        return serviceClient.updateAccountAttributes()
+    }
+
+    public func getUuid() -> Promise<UUID> {
+        return serviceClient.getAccountUuid()
     }
 }

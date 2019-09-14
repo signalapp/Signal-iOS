@@ -16,27 +16,26 @@ typedef NS_ENUM(NSInteger, OWSMessageCellType) {
     OWSMessageCellType_MediaMessage,
     OWSMessageCellType_OversizeTextDownloading,
     OWSMessageCellType_StickerMessage,
-    OWSMessageCellType_PerMessageExpiration,
+    OWSMessageCellType_ViewOnce,
 };
 
 NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 #pragma mark -
 
-typedef NS_ENUM(NSUInteger, PerMessageExpirationState) {
-    PerMessageExpirationState_Unknown = 0,
-    PerMessageExpirationState_IncomingExpired,
-    PerMessageExpirationState_IncomingDownloading,
-    PerMessageExpirationState_IncomingFailed,
-    PerMessageExpirationState_IncomingAvailable,
-    PerMessageExpirationState_IncomingInvalidContent,
-    PerMessageExpirationState_OutgoingSending,
-    PerMessageExpirationState_OutgoingFailed,
-    PerMessageExpirationState_OutgoingSentAvailable,
-    PerMessageExpirationState_OutgoingSentExpired,
+typedef NS_ENUM(NSUInteger, ViewOnceMessageState) {
+    ViewOnceMessageState_Unknown = 0,
+    ViewOnceMessageState_IncomingExpired,
+    ViewOnceMessageState_IncomingDownloading,
+    ViewOnceMessageState_IncomingFailed,
+    ViewOnceMessageState_IncomingAvailable,
+    ViewOnceMessageState_IncomingInvalidContent,
+    ViewOnceMessageState_OutgoingSending,
+    ViewOnceMessageState_OutgoingFailed,
+    ViewOnceMessageState_OutgoingSentExpired,
 };
 
-NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState value);
+NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 
 @class ContactShareViewModel;
 @class ConversationViewCell;
@@ -46,13 +45,14 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState value);
 @class OWSQuotedReplyModel;
 @class OWSUnreadIndicator;
 @class SDSAnyReadTransaction;
+@class SignalServiceAddress;
 @class StickerInfo;
 @class TSAttachment;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
+@class TSGroupThread;
 @class TSInteraction;
 @class TSThread;
-@class YapDatabaseReadTransaction;
 
 @interface ConversationMediaAlbumItem : NSObject
 
@@ -93,11 +93,12 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState value);
 @property (nonatomic, readonly) BOOL hasCellHeader;
 
 @property (nonatomic, readonly) BOOL hasPerConversationExpiration;
-@property (nonatomic, readonly) BOOL hasPerMessageExpiration;
+@property (nonatomic, readonly) BOOL isViewOnceMessage;
 
 @property (nonatomic) BOOL shouldShowDate;
 @property (nonatomic) BOOL shouldShowSenderAvatar;
 @property (nonatomic, nullable) NSAttributedString *senderName;
+@property (nonatomic, nullable) NSString *accessibilityAuthorName;
 @property (nonatomic) BOOL shouldHideFooter;
 @property (nonatomic) BOOL isFirstInCluster;
 @property (nonatomic) BOOL isLastInCluster;
@@ -131,7 +132,7 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState value);
 
 @property (nonatomic, readonly, nullable) DisplayableText *displayableQuotedText;
 @property (nonatomic, readonly, nullable) NSString *quotedAttachmentMimetype;
-@property (nonatomic, readonly, nullable) NSString *quotedRecipientId;
+@property (nonatomic, readonly, nullable) SignalServiceAddress *quotedAuthorAddress;
 
 // We don't want to try to load the media for this item (if any)
 // if a load has previously failed.
@@ -147,12 +148,15 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState value);
 @property (nonatomic, readonly, nullable) StickerInfo *stickerInfo;
 @property (nonatomic, readonly, nullable) TSAttachmentStream *stickerAttachment;
 @property (nonatomic, readonly) BOOL isFailedSticker;
-@property (nonatomic, readonly) PerMessageExpirationState perMessageExpirationState;
+@property (nonatomic, readonly) ViewOnceMessageState viewOnceMessageState;
 
 @property (nonatomic, readonly, nullable) NSString *systemMessageText;
 
-// NOTE: This property is only set for incoming messages.
+// NOTE: This property is only set for incoming messages, typing indicators, and thread details.
 @property (nonatomic, readonly, nullable) NSString *authorConversationColorName;
+
+// NOTE: This property is only set for conversation thread details
+@property (nonatomic, readonly, nullable) NSArray<NSString *> *mutualGroupNames;
 
 #pragma mark - MessageActions
 

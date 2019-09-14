@@ -59,10 +59,6 @@ public class StickerManager: NSObject {
         return SDSDatabaseStorage.shared
     }
 
-    private static var primaryStorage: OWSPrimaryStorage {
-        return OWSPrimaryStorage.shared()
-    }
-
     private static var messageSenderJobQueue: MessageSenderJobQueue {
         return SSKEnvironment.shared.messageSenderJobQueue
     }
@@ -76,7 +72,7 @@ public class StickerManager: NSObject {
     private static let operationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.name = "org.signal.StickerManager"
-        operationQueue.maxConcurrentOperationCount = 1
+        operationQueue.maxConcurrentOperationCount = 4
         return operationQueue
     }()
 
@@ -632,10 +628,7 @@ public class StickerManager: NSObject {
         guard let emojiString = installedSticker.emojiString else {
             return
         }
-        guard let stickerId = installedSticker.uniqueId else {
-            owsFailDebug("Sticker is missing unique id.")
-            return
-        }
+        let stickerId = installedSticker.uniqueId
         for emoji in allEmoji(inEmojiString: emojiString) {
             emojiMapStore.appendToStringSet(key: emoji,
                                             value: stickerId,
@@ -650,10 +643,7 @@ public class StickerManager: NSObject {
         guard let emojiString = installedSticker.emojiString else {
             return
         }
-        guard let stickerId = installedSticker.uniqueId else {
-            owsFailDebug("Sticker is missing unique id.")
-            return
-        }
+        let stickerId = installedSticker.uniqueId
         for emoji in allEmoji(inEmojiString: emojiString) {
             emojiMapStore.removeFromStringSet(key: emoji,
                                               value: stickerId,
@@ -782,6 +772,25 @@ public class StickerManager: NSObject {
             StickerManager.tryToDownloadAndSaveStickerPack(stickerPackInfo: stickerPackInfo,
                                                            installMode: installMode)
         }
+    }
+
+    // MARK: - Missing Packs
+
+    // Track which sticker packs downloads have failed permanently.
+    private static var missingStickerPacks = Set<String>()
+
+    @objc
+    public class func markStickerPackAsMissing(stickerPackInfo: StickerPackInfo) {
+        DispatchQueue.main.async {
+            self.missingStickerPacks.insert(stickerPackInfo.asKey())
+        }
+    }
+
+    @objc
+    public class func isStickerPackMissing(stickerPackInfo: StickerPackInfo) -> Bool {
+        AssertIsOnMainThread()
+
+        return missingStickerPacks.contains(stickerPackInfo.asKey())
     }
 
     // MARK: - Recents
@@ -1057,8 +1066,12 @@ public class StickerManager: NSObject {
         guard tsAccountManager.isRegisteredAndReady else {
             return
         }
+        guard let thread = TSAccountManager.getOrCreateLocalThread(transaction: transaction) else {
+            owsFailDebug("Missing thread.")
+            return
+        }
 
-        let message = OWSStickerPackSyncMessage(packs: packs, operationType: operationType)
+        let message = OWSStickerPackSyncMessage(thread: thread, packs: packs, operationType: operationType)
         self.messageSenderJobQueue.add(message: message, transaction: transaction)
     }
 

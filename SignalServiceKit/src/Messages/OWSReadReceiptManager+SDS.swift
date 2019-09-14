@@ -27,6 +27,7 @@ public struct RecipientReadReceiptRecord: SDSRecord {
 
     // Base class properties
     public let recipientMap: Data
+    public let recipientReadReceiptSchemaVersion: UInt
     public let sentTimestamp: UInt64
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
@@ -34,6 +35,7 @@ public struct RecipientReadReceiptRecord: SDSRecord {
         case recordType
         case uniqueId
         case recipientMap
+        case recipientReadReceiptSchemaVersion
         case sentTimestamp
     }
 
@@ -71,11 +73,13 @@ extension TSRecipientReadReceipt {
 
             let uniqueId: String = record.uniqueId
             let recipientMapSerialized: Data = record.recipientMap
-            let recipientMap: [String: NSNumber] = try SDSDeserialization.unarchive(recipientMapSerialized, name: "recipientMap")
+            let recipientMap: [SignalServiceAddress: NSNumber] = try SDSDeserialization.unarchive(recipientMapSerialized, name: "recipientMap")
+            let recipientReadReceiptSchemaVersion: UInt = record.recipientReadReceiptSchemaVersion
             let sentTimestamp: UInt64 = record.sentTimestamp
 
             return TSRecipientReadReceipt(uniqueId: uniqueId,
                                           recipientMap: recipientMap,
+                                          recipientReadReceiptSchemaVersion: recipientReadReceiptSchemaVersion,
                                           sentTimestamp: sentTimestamp)
 
         default:
@@ -101,6 +105,10 @@ extension TSRecipientReadReceipt: SDSModel {
     public func asRecord() throws -> SDSRecord {
         return try serializer.asRecord()
     }
+
+    public var sdsTableName: String {
+        return RecipientReadReceiptRecord.databaseTableName
+    }
 }
 
 // MARK: - Table Metadata
@@ -114,7 +122,8 @@ extension TSRecipientReadReceiptSerializer {
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
     static let recipientMapColumn = SDSColumnMetadata(columnName: "recipientMap", columnType: .blob, columnIndex: 3)
-    static let sentTimestampColumn = SDSColumnMetadata(columnName: "sentTimestamp", columnType: .int64, columnIndex: 4)
+    static let recipientReadReceiptSchemaVersionColumn = SDSColumnMetadata(columnName: "recipientReadReceiptSchemaVersion", columnType: .int64, columnIndex: 4)
+    static let sentTimestampColumn = SDSColumnMetadata(columnName: "sentTimestamp", columnType: .int64, columnIndex: 5)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -123,6 +132,7 @@ extension TSRecipientReadReceiptSerializer {
         idColumn,
         uniqueIdColumn,
         recipientMapColumn,
+        recipientReadReceiptSchemaVersionColumn,
         sentTimestampColumn
         ])
 }
@@ -144,7 +154,13 @@ public extension TSRecipientReadReceipt {
 
     @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
     func anyUpsert(transaction: SDSAnyWriteTransaction) {
-        sdsSave(saveMode: .upsert, transaction: transaction)
+        let isInserting: Bool
+        if TSRecipientReadReceipt.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil {
+            isInserting = false
+        } else {
+            isInserting = true
+        }
+        sdsSave(saveMode: isInserting ? .insert : .update, transaction: transaction)
     }
 
     // This method is used by "updateWith..." methods.
@@ -172,10 +188,6 @@ public extension TSRecipientReadReceipt {
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
     func anyUpdate(transaction: SDSAnyWriteTransaction, block: (TSRecipientReadReceipt) -> Void) {
-        guard let uniqueId = uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            return
-        }
 
         block(self)
 
@@ -195,21 +207,7 @@ public extension TSRecipientReadReceipt {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
-        anyWillRemove(with: transaction)
-
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            ydb_remove(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsRemove(transaction: grdbTransaction)
-            } catch {
-                owsFail("Remove failed: \(error)")
-            }
-        }
-
-        anyDidRemove(with: transaction)
+        sdsRemove(transaction: transaction)
     }
 
     func anyReload(transaction: SDSAnyReadTransaction) {
@@ -217,11 +215,6 @@ public extension TSRecipientReadReceipt {
     }
 
     func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
-        guard let uniqueId = self.uniqueId else {
-            owsFailDebug("uniqueId was unexpectedly nil")
-            return
-        }
-
         guard let latestVersion = type(of: self).anyFetch(uniqueId: uniqueId, transaction: transaction) else {
             if !ignoreMissing {
                 owsFailDebug("`latest` was unexpectedly nil")
@@ -325,9 +318,28 @@ public extension TSRecipientReadReceipt {
                         break
                     }
                 }
-            } catch let error as NSError {
+            } catch let error {
                 owsFailDebug("Couldn't fetch models: \(error)")
             }
+        }
+    }
+
+    // Traverses all records' unique ids.
+    // Records are not visited in any particular order.
+    // Traversal aborts if the visitor returns false.
+    class func anyEnumerateUniqueIds(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            ydbTransaction.enumerateKeys(inCollection: TSRecipientReadReceipt.collection()) { (uniqueId, stop) in
+                block(uniqueId, stop)
+            }
+        case .grdbRead(let grdbTransaction):
+            grdbEnumerateUniqueIds(transaction: grdbTransaction,
+                                   sql: """
+                    SELECT \(recipientReadReceiptColumn: .uniqueId)
+                    FROM \(RecipientReadReceiptRecord.databaseTableName)
+                """,
+                block: block)
         }
     }
 
@@ -340,12 +352,71 @@ public extension TSRecipientReadReceipt {
         return result
     }
 
+    // Does not order the results.
+    class func anyAllUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
+        var result = [String]()
+        anyEnumerateUniqueIds(transaction: transaction) { (uniqueId, _) in
+            result.append(uniqueId)
+        }
+        return result
+    }
+
     class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.numberOfKeys(inCollection: TSRecipientReadReceipt.collection())
         case .grdbRead(let grdbTransaction):
             return RecipientReadReceiptRecord.ows_fetchCount(grdbTransaction.database)
+        }
+    }
+
+    // WARNING: Do not use this method for any models which do cleanup
+    //          in their anyWillRemove(), anyDidRemove() methods.
+    class func anyRemoveAllWithoutInstantation(transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            ydbTransaction.removeAllObjects(inCollection: TSRecipientReadReceipt.collection())
+        case .grdbWrite(let grdbTransaction):
+            do {
+                try RecipientReadReceiptRecord.deleteAll(grdbTransaction.database)
+            } catch {
+                owsFailDebug("deleteAll() failed: \(error)")
+            }
+        }
+
+        if shouldBeIndexedForFTS {
+            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
+        }
+    }
+
+    class func anyRemoveAllWithInstantation(transaction: SDSAnyWriteTransaction) {
+        // To avoid mutationDuringEnumerationException, we need
+        // to remove the instances outside the enumeration.
+        let uniqueIds = anyAllUniqueIds(transaction: transaction)
+        for uniqueId in uniqueIds {
+            guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+                owsFailDebug("Missing instance.")
+                continue
+            }
+            instance.anyRemove(transaction: transaction)
+        }
+
+        if shouldBeIndexedForFTS {
+            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
+        }
+    }
+
+    class func anyExists(uniqueId: String,
+                        transaction: SDSAnyReadTransaction) -> Bool {
+        assert(uniqueId.count > 0)
+
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.hasObject(forKey: uniqueId, inCollection: TSRecipientReadReceipt.collection())
+        case .grdbRead(let grdbTransaction):
+            let sql = "SELECT EXISTS ( SELECT 1 FROM \(RecipientReadReceiptRecord.databaseTableName) WHERE \(recipientReadReceiptColumn: .uniqueId) = ? )"
+            let arguments: StatementArguments = [uniqueId]
+            return try! Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
         }
     }
 }
@@ -382,7 +453,9 @@ public extension TSRecipientReadReceipt {
         assert(sql.count > 0)
 
         do {
-            guard let record = try RecipientReadReceiptRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
+            // There are significant perf benefits to using a cached statement.
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            guard let record = try RecipientReadReceiptRecord.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }
 
@@ -411,15 +484,13 @@ class TSRecipientReadReceiptSerializer: SDSSerializer {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .recipientReadReceipt
-        guard let uniqueId: String = model.uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            throw SDSError.missingRequiredField
-        }
+        let uniqueId: String = model.uniqueId
 
         // Base class properties
         let recipientMap: Data = requiredArchive(model.recipientMap)
+        let recipientReadReceiptSchemaVersion: UInt = model.recipientReadReceiptSchemaVersion
         let sentTimestamp: UInt64 = model.sentTimestamp
 
-        return RecipientReadReceiptRecord(id: id, recordType: recordType, uniqueId: uniqueId, recipientMap: recipientMap, sentTimestamp: sentTimestamp)
+        return RecipientReadReceiptRecord(id: id, recordType: recordType, uniqueId: uniqueId, recipientMap: recipientMap, recipientReadReceiptSchemaVersion: recipientReadReceiptSchemaVersion, sentTimestamp: sentTimestamp)
     }
 }

@@ -94,7 +94,7 @@ public class TypingIndicatorCell: ConversationViewCell {
             return nil
         }
         guard let authorAvatarImage =
-            OWSContactAvatarBuilder(signalId: typingIndicators.recipientId,
+            OWSContactAvatarBuilder(address: typingIndicators.address,
                                     colorName: ConversationColorName(rawValue: colorName),
                                     diameter: UInt(kAvatarSize)).build() else {
                                         owsFailDebug("Could build avatar image")

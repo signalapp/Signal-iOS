@@ -20,6 +20,14 @@ protocol MessageDetailViewDelegate: AnyObject {
 @objc
 class MessageDetailViewController: OWSViewController {
 
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
+
     @objc
     weak var delegate: MessageDetailViewDelegate?
 
@@ -152,6 +160,10 @@ class MessageDetailViewController: OWSViewController {
         }
     }
 
+    override public var canBecomeFirstResponder: Bool {
+        return true
+    }
+
     // MARK: - Create Views
 
     private func createViews() {
@@ -223,8 +235,12 @@ class MessageDetailViewController: OWSViewController {
 
         // Sender?
         if let incomingMessage = message as? TSIncomingMessage {
-            let senderId = incomingMessage.authorId
-            let senderName = contactsManager.contactOrProfileName(forPhoneIdentifier: senderId)
+            let senderName: String
+            if FeatureFlags.profileDisplayChanges {
+                senderName = contactsManager.displayName(for: incomingMessage.authorAddress)
+            } else {
+                senderName = contactsManager.legacyDisplayName(for: incomingMessage.authorAddress)
+            }
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SENDER",
                                                          comment: "Label for the 'sender' field of the 'message metadata' view."),
                                  value: senderName))
@@ -255,11 +271,11 @@ class MessageDetailViewController: OWSViewController {
                     groupRows.append(divider)
                 }
 
-                let messageRecipientIds = outgoingMessage.recipientIds()
+                let messageRecipientAddresses = outgoingMessage.recipientAddresses()
 
-                for recipientId in messageRecipientIds {
-                    guard let recipientState = outgoingMessage.recipientState(forRecipientId: recipientId) else {
-                        owsFailDebug("no message status for recipient: \(recipientId).")
+                for recipientAddress in messageRecipientAddresses {
+                    guard let recipientState = outgoingMessage.recipientState(for: recipientAddress) else {
+                        owsFailDebug("no message status for recipient: \(recipientAddress).")
                         continue
                     }
 
@@ -289,7 +305,7 @@ class MessageDetailViewController: OWSViewController {
                     } else {
                         cellView.accessoryMessage = shortStatusMessage
                     }
-                    cellView.configure(withRecipientId: recipientId)
+                    cellView.configure(withRecipientAddress: recipientAddress)
 
                     let wrapper = UIView()
                     wrapper.layoutMargins = UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20)
@@ -379,10 +395,10 @@ class MessageDetailViewController: OWSViewController {
             let messageStickerView = OWSMessageStickerView(frame: CGRect.zero)
             messageStickerView.delegate = self
             messageView = messageStickerView
-        } else if viewItem.messageCellType == .perMessageExpiration {
-            let messageHiddenView = OWSMessageHiddenView(frame: CGRect.zero)
-            messageHiddenView.delegate = self
-            messageView = messageHiddenView
+        } else if viewItem.messageCellType == .viewOnce {
+            let messageViewOnceView = OWSMessageViewOnceView(frame: CGRect.zero)
+            messageViewOnceView.delegate = self
+            messageView = messageViewOnceView
         } else {
             let messageBubbleView = OWSMessageBubbleView(frame: CGRect.zero)
             messageBubbleView.delegate = self
@@ -425,13 +441,13 @@ class MessageDetailViewController: OWSViewController {
         return rows
     }
 
-    private func fetchAttachment(transaction: YapDatabaseReadTransaction) -> TSAttachment? {
+    private func fetchAttachment(transaction: SDSAnyReadTransaction) -> TSAttachment? {
         // TODO: Support multi-image messages.
         guard let attachmentId = message.attachmentIds.firstObject as? String else {
             return nil
         }
 
-        guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction.asAnyRead) else {
+        guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) else {
             Logger.warn("Missing attachment. Was it deleted?")
             return nil
         }
@@ -563,12 +579,9 @@ class MessageDetailViewController: OWSViewController {
 
         AssertIsOnMainThread()
 
-        try self.uiDatabaseConnection.read { transaction in
-            guard let uniqueId = self.message.uniqueId else {
-                Logger.error("Message is missing uniqueId.")
-                return
-            }
-            guard let newMessage = TSInteraction.fetch(uniqueId: uniqueId, transaction: transaction) as? TSMessage else {
+        try databaseStorage.uiReadThrows { transaction in
+            let uniqueId = self.message.uniqueId
+            guard let newMessage = TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction) as? TSMessage else {
                 Logger.error("Message was deleted")
                 throw DetailViewError.messageWasDeleted
             }
@@ -591,12 +604,7 @@ class MessageDetailViewController: OWSViewController {
             owsFailDebug("notifications was unexpectedly nil")
             return
         }
-
-        guard let uniqueId = self.message.uniqueId else {
-            Logger.error("Message is missing uniqueId.")
-            return
-        }
-
+        let uniqueId = self.message.uniqueId
         guard self.uiDatabaseConnection.hasChange(forKey: uniqueId,
                                                  inCollection: TSInteraction.collection(),
                                                  in: notifications) else {
@@ -698,17 +706,20 @@ class MessageDetailViewController: OWSViewController {
 extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
 
     func didTapImageViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream, imageView: UIView) {
-        let mediaGallery = MediaGallery(thread: self.thread)
+        let galleryVC = MediaGalleryNavigationController.showingDetailView(thread: thread,
+                                                                           mediaAttachment: attachmentStream,
+                                                                           options: [])
 
-        mediaGallery.addDataSourceDelegate(self)
-        mediaGallery.presentDetailView(fromViewController: self, mediaAttachment: attachmentStream, replacingView: imageView)
+        galleryVC.mediaGallery.addDataSourceDelegate(self)
+        present(galleryVC, animated: true)
     }
 
     func didTapVideoViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream, imageView: UIView) {
-        let mediaGallery = MediaGallery(thread: self.thread)
-
-        mediaGallery.addDataSourceDelegate(self)
-        mediaGallery.presentDetailView(fromViewController: self, mediaAttachment: attachmentStream, replacingView: imageView)
+        let galleryVC = MediaGalleryNavigationController.showingDetailView(thread: thread,
+                                                                           mediaAttachment: attachmentStream,
+                                                                           options: [])
+        galleryVC.mediaGallery.addDataSourceDelegate(self)
+        present(galleryVC, animated: true)
     }
 
     func didTapContactShare(_ viewItem: ConversationViewItem) {
@@ -848,9 +859,9 @@ extension MessageDetailViewController: OWSMessageStickerViewDelegate {
     }
 }
 
-extension MessageDetailViewController: OWSMessageHiddenViewDelegate {
-    public func didTapAttachment(withPerMessageExpiration viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream) {
-        PerMessageExpirationViewController.tryToPresent(interaction: viewItem.interaction,
+extension MessageDetailViewController: OWSMessageViewOnceViewDelegate {
+    public func didTapViewOnceAttachment(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream) {
+        ViewOnceMessageViewController.tryToPresent(interaction: viewItem.interaction,
                                                         from: self)
     }
 }
@@ -866,5 +877,67 @@ extension MessageDetailViewController: ContactShareViewHelperDelegate {
 extension MessageDetailViewController: LongTextViewDelegate {
     func longTextViewMessageWasDeleted(_ longTextViewController: LongTextViewController) {
         self.delegate?.detailViewMessageWasDeleted(self)
+    }
+}
+
+extension MessageDetailViewController: MediaPresentationContextProvider {
+    func mediaPresentationContext(galleryItem: MediaGalleryItem, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
+        guard let messageBubbleView = self.messageView as? OWSMessageBubbleView else {
+            owsFailDebug("messageBubbleView was unexpectedly nil")
+            return nil
+        }
+
+        guard let mediaView = messageBubbleView.albumItemView(forAttachment: galleryItem.attachmentStream) else {
+            owsFailDebug("itemView was unexpectedly nil")
+            return nil
+        }
+
+        guard let mediaSuperview = mediaView.superview else {
+            owsFailDebug("mediaSuperview was unexpectedly nil")
+            return nil
+        }
+
+        let presentationFrame = coordinateSpace.convert(mediaView.frame, from: mediaSuperview)
+
+        // TODO better corner rounding.
+        return MediaPresentationContext(mediaView: mediaView, presentationFrame: presentationFrame, cornerRadius: kOWSMessageCellCornerRadius_Small * 2)
+    }
+
+    func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
+        return nil
+    }
+
+    func mediaWillDismiss(toContext: MediaPresentationContext) {
+        guard let messageBubbleView = toContext.messageBubbleView else { return }
+
+        // To avoid flicker when transition view is animated over the message bubble,
+        // we initially hide the overlaying elements and fade them in.
+        messageBubbleView.footerView.alpha = 0
+        messageBubbleView.bodyMediaGradientView?.alpha = 0.0
+    }
+
+    func mediaDidDismiss(toContext: MediaPresentationContext) {
+        guard let messageBubbleView = toContext.messageBubbleView else { return }
+
+        // To avoid flicker when transition view is animated over the message bubble,
+        // we initially hide the overlaying elements and fade them in.
+        let duration: TimeInterval = kIsDebuggingMediaPresentationAnimations ? 1.5 : 0.2
+        UIView.animate(
+            withDuration: duration,
+            animations: {
+                messageBubbleView.footerView.alpha = 1.0
+                messageBubbleView.bodyMediaGradientView?.alpha = 1.0
+        })
+    }
+}
+
+private extension MediaPresentationContext {
+    var messageBubbleView: OWSMessageBubbleView? {
+        guard let messageBubbleView = mediaView.firstAncestor(ofType: OWSMessageBubbleView.self) else {
+            owsFailDebug("unexpected mediaView: \(mediaView)")
+            return nil
+        }
+
+        return messageBubbleView
     }
 }

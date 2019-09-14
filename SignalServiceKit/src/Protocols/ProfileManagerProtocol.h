@@ -1,8 +1,11 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 @class OWSAES256Key;
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
+@class SignalServiceAddress;
 @class TSThread;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -11,19 +14,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSAES256Key *)localProfileKey;
 
-- (nullable NSData *)profileKeyDataForRecipientId:(NSString *)recipientId;
-- (void)setProfileKeyData:(NSData *)profileKeyData forRecipientId:(NSString *)recipientId;
+- (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address
+                                  transaction:(SDSAnyReadTransaction *)transaction;
+- (void)setProfileKeyData:(NSData *)profileKeyData
+               forAddress:(SignalServiceAddress *)address
+              transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (BOOL)isUserInProfileWhitelist:(NSString *)recipientId;
+- (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address
+                     transaction:(SDSAnyReadTransaction *)transaction;
 
-- (BOOL)isThreadInProfileWhitelist:(TSThread *)thread;
+- (BOOL)isThreadInProfileWhitelist:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)addUserToProfileWhitelist:(NSString *)recipientId;
+- (void)addUserToProfileWhitelist:(SignalServiceAddress *)address;
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId;
 
 - (void)fetchLocalUsersProfile;
 
-- (void)fetchProfileForRecipientId:(NSString *)recipientId;
+- (void)fetchProfileForAddress:(SignalServiceAddress *)address;
+
+- (void)warmCaches;
 
 @end
 

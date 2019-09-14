@@ -8,6 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class SSKProtoEnvelope;
+@class SignalServiceAddress;
 
 typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageNoSession,
@@ -26,10 +27,18 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageGroupCreationFailed,
 };
 
+@interface ThreadlessErrorMessage : NSObject <OWSPreviewText>
+
++ (ThreadlessErrorMessage *)corruptedMessageInUnknownThread;
+
+@end
+
+#pragma mark -
+
 @interface TSErrorMessage : TSMessage <OWSReadTracking>
 
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
-                                inThread:(nullable TSThread *)thread
+                                inThread:(TSThread *)thread
                              messageBody:(nullable NSString *)body
                            attachmentIds:(NSArray<NSString *> *)attachmentIds
                         expiresInSeconds:(uint32_t)expiresInSeconds
@@ -40,7 +49,7 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
                           messageSticker:(nullable MessageSticker *)messageSticker NS_UNAVAILABLE;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
+                         inThread:(TSThread *)thread
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSArray<NSString *> *)attachmentIds
                  expiresInSeconds:(uint32_t)expiresInSeconds
@@ -49,9 +58,9 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
+                         inThread:(TSThread *)thread
                 failedMessageType:(TSErrorMessageType)errorMessageType
-                      recipientId:(nullable NSString *)recipientId NS_DESIGNATED_INITIALIZER;
+                          address:(nullable SignalServiceAddress *)address NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -70,41 +79,38 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
+              isViewOnceComplete:(BOOL)isViewOnceComplete
+               isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
-perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSeconds
-  perMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
-       perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
-                     recipientId:(nullable NSString *)recipientId
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:));
+                recipientAddress:(nullable SignalServiceAddress *)recipientAddress
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientAddress:));
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
 
 + (instancetype)corruptedMessageWithEnvelope:(SSKProtoEnvelope *)envelope
-                             withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-+ (instancetype)corruptedMessageInUnknownThread;
+                             withTransaction:(SDSAnyWriteTransaction *)transaction;
 
 + (instancetype)invalidVersionWithEnvelope:(SSKProtoEnvelope *)envelope
-                           withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+                           withTransaction:(SDSAnyWriteTransaction *)transaction;
 
 + (instancetype)invalidKeyExceptionWithEnvelope:(SSKProtoEnvelope *)envelope
-                                withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                withTransaction:(SDSAnyWriteTransaction *)transaction;
 
 + (instancetype)missingSessionWithEnvelope:(SSKProtoEnvelope *)envelope
-                           withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+                           withTransaction:(SDSAnyWriteTransaction *)transaction;
 
-+ (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread recipientId:(NSString *)recipientId;
++ (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread address:(SignalServiceAddress *)address;
 
 @property (nonatomic, readonly) TSErrorMessageType errorType;
-@property (nullable, nonatomic, readonly) NSString *recipientId;
+@property (nullable, nonatomic, readonly) SignalServiceAddress *recipientAddress;
 
 @end
 

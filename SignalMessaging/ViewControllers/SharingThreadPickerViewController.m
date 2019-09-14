@@ -9,8 +9,8 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSThread.h>
@@ -53,14 +53,9 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 #pragma mark - Dependencies
 
-- (YapDatabaseConnection *)dbReadWriteConnection
+- (SDSDatabaseStorage *)databaseStorage
 {
-    return OWSPrimaryStorage.sharedManager.dbReadWriteConnection;
-}
-
-- (YapDatabaseConnection *)dbReadConnection
-{
-    return OWSPrimaryStorage.sharedManager.dbReadConnection;
+    return SDSDatabaseStorage.shared;
 }
 
 #pragma mark - UIViewController overrides
@@ -231,11 +226,11 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     BOOL isProfileAvatar = NO;
     NSData *_Nullable avatarImageData = [self.contactsManager avatarDataForCNContactId:contact.cnContactId];
-    for (NSString *recipientId in contact.textSecureIdentifiers) {
+    for (SignalServiceAddress *address in contact.registeredAddresses) {
         if (avatarImageData) {
             break;
         }
-        avatarImageData = [self.contactsManager profileImageDataForPhoneIdentifier:recipientId];
+        avatarImageData = [self.contactsManager profileImageDataForAddressWithSneakyTransaction:address];
         if (avatarImageData) {
             isProfileAvatar = YES;
         }
@@ -281,7 +276,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
      didApproveAttachments:(NSArray<SignalAttachment *> *_Nonnull)attachments
                messageText:(NSString *_Nullable)messageText
 {
-    [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+    [ThreadUtil addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:self.thread];
     [self
         tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
             OWSAssertIsOnMainThread();
@@ -292,7 +287,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             // SAE runs as long as it needs.
             // TODO ALBUMS - send album via SAE
 
-            [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+            [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
                 outgoingMessage = [ThreadUtil sendMessageNonDurablyWithText:messageText
                                                            mediaAttachments:attachments
                                                                    inThread:self.thread
@@ -328,7 +323,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 {
     OWSAssertDebug(messageText.length > 0);
 
-    [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+    [ThreadUtil addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:self.thread];
     [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
         OWSAssertIsOnMainThread();
 
@@ -336,7 +331,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         // DURABLE CLEANUP - SAE uses non-durable sending to make sure the app is running long enough to complete
         // the sending operation. Alternatively, we could use a durable send, but do more to make sure the
         // SAE runs as long as it needs.
-        [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             outgoingMessage = [ThreadUtil sendMessageNonDurablyWithText:messageText
                                                                inThread:self.thread
                                                        quotedReplyModel:nil
@@ -368,18 +363,18 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 {
     OWSLogInfo(@"");
 
-    [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+    [ThreadUtil addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:self.thread];
     [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
         OWSAssertIsOnMainThread();
         // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending
         // preparation rather than duplicated here and in the SAE
-        [self.dbReadWriteConnection
-            asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self.databaseStorage
+            asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
                 if (contactShare.avatarImage) {
-                    [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction.asAnyWrite];
+                    [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
                 }
             }
-            completionBlock:^{
+            completion:^{
                 __block TSOutgoingMessage *outgoingMessage = nil;
                 outgoingMessage = [ThreadUtil sendMessageNonDurablyWithContactShare:contactShare.dbRecord
                                                                            inThread:self.thread
@@ -476,12 +471,13 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     NSString *failureTitle = NSLocalizedString(@"SHARE_EXTENSION_SENDING_FAILURE_TITLE", @"Alert title");
 
     if ([error.domain isEqual:OWSSignalServiceKitErrorDomain] && error.code == OWSErrorCodeUntrustedIdentity) {
-        NSString *_Nullable untrustedRecipientId = error.userInfo[OWSErrorRecipientIdentifierKey];
+        SignalServiceAddress *_Nullable untrustedAddress = error.userInfo[OWSErrorRecipientAddressKey];
 
         NSString *failureFormat = NSLocalizedString(@"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT",
             @"alert body when sharing file failed because of untrusted/changed identity keys");
 
-        NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:untrustedRecipientId];
+        NSString *displayName =
+            [self.contactsManager displayNameForAddress:untrustedAddress];
         NSString *failureMessage = [NSString stringWithFormat:failureFormat, displayName];
 
         UIAlertController *failureAlert = [UIAlertController alertControllerWithTitle:failureTitle
@@ -495,13 +491,13 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                                                                     }];
         [failureAlert addAction:failureCancelAction];
 
-        if (untrustedRecipientId.length > 0) {
+        if (untrustedAddress.isValid) {
             UIAlertAction *confirmAction =
                 [UIAlertAction actionWithTitle:[SafetyNumberStrings confirmSendButton]
                                          style:UIAlertActionStyleDefault
                                        handler:^(UIAlertAction *action) {
                                            [self confirmIdentityAndResendMessage:message
-                                                                     recipientId:untrustedRecipientId
+                                                                     address:untrustedAddress
                                                               fromViewController:fromViewController];
                                        }];
 
@@ -540,53 +536,54 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 }
 
 - (void)confirmIdentityAndResendMessage:(TSOutgoingMessage *)message
-                            recipientId:(NSString *)recipientId
+                            address:(SignalServiceAddress *)address
                      fromViewController:(UIViewController *)fromViewController
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(message);
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
     OWSAssertDebug(fromViewController);
 
-    OWSLogDebug(@"Confirming identity for recipient: %@", recipientId);
+    OWSLogDebug(@"Confirming identity for recipient: %@", address);
 
-    [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        OWSVerificationState verificationState =
-            [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId
-                                                                    transaction:transaction.asAnyRead];
-        switch (verificationState) {
-            case OWSVerificationStateVerified: {
-                OWSFailDebug(@"Shouldn't need to confirm identity if it was already verified");
-                break;
-            }
-            case OWSVerificationStateDefault: {
-                // If we learned of a changed SN during send, then we've already recorded the new identity
-                // and there's nothing else we need to do for the resend to succeed.
-                // We don't want to redundantly set status to "default" because we would create a
-                // "You marked Alice as unverified" notice, which wouldn't make sense if Alice was never
-                // marked as "Verified".
-                OWSLogInfo(@"recipient has acceptable verification status. Next send will succeed.");
-                break;
-            }
-            case OWSVerificationStateNoLongerVerified: {
-                OWSLogInfo(@"marked recipient: %@ as default verification status.", recipientId);
-                NSData *identityKey =
-                    [[OWSIdentityManager sharedManager] identityKeyForRecipientId:recipientId
-                                                                      transaction:transaction.asAnyRead];
-                OWSAssertDebug(identityKey);
-                [[OWSIdentityManager sharedManager] setVerificationState:OWSVerificationStateDefault
-                                                             identityKey:identityKey
-                                                             recipientId:recipientId
-                                                   isUserInitiatedChange:YES
-                                                             transaction:transaction.asAnyWrite];
-                break;
+    [self.databaseStorage
+        asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            OWSVerificationState verificationState = [[OWSIdentityManager sharedManager]
+                verificationStateForAddress:address
+                                transaction:transaction];
+            switch (verificationState) {
+                case OWSVerificationStateVerified: {
+                    OWSFailDebug(@"Shouldn't need to confirm identity if it was already verified");
+                    break;
+                }
+                case OWSVerificationStateDefault: {
+                    // If we learned of a changed SN during send, then we've already recorded the new identity
+                    // and there's nothing else we need to do for the resend to succeed.
+                    // We don't want to redundantly set status to "default" because we would create a
+                    // "You marked Alice as unverified" notice, which wouldn't make sense if Alice was never
+                    // marked as "Verified".
+                    OWSLogInfo(@"recipient has acceptable verification status. Next send will succeed.");
+                    break;
+                }
+                case OWSVerificationStateNoLongerVerified: {
+                    OWSLogInfo(@"marked recipient: %@ as default verification status.", address);
+                    NSData *identityKey = [[OWSIdentityManager sharedManager]
+                        identityKeyForAddress:address
+                                  transaction:transaction];
+                    OWSAssertDebug(identityKey);
+                    [[OWSIdentityManager sharedManager]
+                         setVerificationState:OWSVerificationStateDefault
+                                  identityKey:identityKey
+                                      address:address
+                        isUserInitiatedChange:YES
+                                  transaction:transaction];
+                    break;
+                }
             }
         }
-
-        dispatch_async(dispatch_get_main_queue(), ^(void) {
+        completion:^{
             [self resendMessage:message fromViewController:fromViewController];
-        });
-    }];
+        }];
 }
 
 - (void)resendMessage:(TSOutgoingMessage *)message fromViewController:(UIViewController *)fromViewController

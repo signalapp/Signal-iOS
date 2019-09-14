@@ -4,10 +4,10 @@
 
 #import "OWSDevice.h"
 #import "OWSIncomingMessageFinder.h"
-#import "OWSPrimaryStorage.h"
 #import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
 #import "TSIncomingMessage.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSIncomingMessageFinderTest : SSKBaseTestObjC
 
-@property (nonatomic) NSString *sourceId;
+@property (nonatomic) SignalServiceAddress *sourceAddress;
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) OWSIncomingMessageFinder *finder;
 
@@ -30,8 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setUp
 {
     [super setUp];
-    self.sourceId = @"+19999999999";
-    self.thread = [TSContactThread getOrCreateThreadWithContactId:self.sourceId];
+    self.sourceAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+19999999999"];
+    self.thread = [TSContactThread getOrCreateThreadWithContactAddress:self.sourceAddress];
     self.finder = [OWSIncomingMessageFinder new];
 }
 
@@ -43,12 +43,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 - (void)createIncomingMessageWithTimestamp:(uint64_t)timestamp
-                                  authorId:(NSString *)authorId
+                             authorAddress:(SignalServiceAddress *)authorAddress
                             sourceDeviceId:(uint32_t)sourceDeviceId
 {
     TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
                                                                                             inThread:self.thread
-                                                                                            authorId:authorId
+                                                                                       authorAddress:authorAddress
                                                                                       sourceDeviceId:sourceDeviceId
                                                                                          messageBody:@"foo"
                                                                                        attachmentIds:@[]
@@ -59,8 +59,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                       messageSticker:nil
                                                                                      serverTimestamp:nil
                                                                                      wasReceivedByUD:NO
-                                                                 perMessageExpirationDurationSeconds:0];
-    [incomingMessage save];
+                                                                                   isViewOnceMessage:NO];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [incomingMessage anyInsertWithTransaction:transaction];
+    }];
 }
 
 - (void)testExistingMessages
@@ -69,11 +71,11 @@ NS_ASSUME_NONNULL_BEGIN
     uint64_t timestamp = 1234;
     __block BOOL result;
 
-    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        result = [self.finder existsMessageWithTimestamp:timestamp
-                                                sourceId:self.sourceId
-                                          sourceDeviceId:OWSDevicePrimaryDeviceId
-                                             transaction:transaction];
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [InteractionFinder existsIncomingMessageWithTimestamp:timestamp
+                                                               address:self.sourceAddress
+                                                        sourceDeviceId:OWSDevicePrimaryDeviceId
+                                                           transaction:transaction];
     }];
 
 
@@ -82,52 +84,54 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Different timestamp
     [self createIncomingMessageWithTimestamp:timestamp + 1
-                                    authorId:self.sourceId
+                               authorAddress:self.sourceAddress
                               sourceDeviceId:OWSDevicePrimaryDeviceId];
 
-    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        result = [self.finder existsMessageWithTimestamp:timestamp
-                                                sourceId:self.sourceId
-                                          sourceDeviceId:OWSDevicePrimaryDeviceId
-                                             transaction:transaction];
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [InteractionFinder existsIncomingMessageWithTimestamp:timestamp
+                                                               address:self.sourceAddress
+                                                        sourceDeviceId:OWSDevicePrimaryDeviceId
+                                                           transaction:transaction];
     }];
 
     XCTAssertFalse(result);
 
     // Different authorId
     [self createIncomingMessageWithTimestamp:timestamp
-                                    authorId:@"some-other-author-id"
+                               authorAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"some-other-address"]
                               sourceDeviceId:OWSDevicePrimaryDeviceId];
 
-    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        result = [self.finder existsMessageWithTimestamp:timestamp
-                                                sourceId:self.sourceId
-                                          sourceDeviceId:OWSDevicePrimaryDeviceId
-                                             transaction:transaction];
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [InteractionFinder existsIncomingMessageWithTimestamp:timestamp
+                                                               address:self.sourceAddress
+                                                        sourceDeviceId:OWSDevicePrimaryDeviceId
+                                                           transaction:transaction];
     }];
     XCTAssertFalse(result);
 
     // Different device
     [self createIncomingMessageWithTimestamp:timestamp
-                                    authorId:self.sourceId
+                               authorAddress:self.sourceAddress
                               sourceDeviceId:OWSDevicePrimaryDeviceId + 1];
 
-    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        result = [self.finder existsMessageWithTimestamp:timestamp
-                                                sourceId:self.sourceId
-                                          sourceDeviceId:OWSDevicePrimaryDeviceId
-                                             transaction:transaction];
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [InteractionFinder existsIncomingMessageWithTimestamp:timestamp
+                                                               address:self.sourceAddress
+                                                        sourceDeviceId:OWSDevicePrimaryDeviceId
+                                                           transaction:transaction];
     }];
     XCTAssertFalse(result);
 
     // The real deal...
-    [self createIncomingMessageWithTimestamp:timestamp authorId:self.sourceId sourceDeviceId:OWSDevicePrimaryDeviceId];
+    [self createIncomingMessageWithTimestamp:timestamp
+                               authorAddress:self.sourceAddress
+                              sourceDeviceId:OWSDevicePrimaryDeviceId];
 
-    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        result = [self.finder existsMessageWithTimestamp:timestamp
-                                                sourceId:self.sourceId
-                                          sourceDeviceId:OWSDevicePrimaryDeviceId
-                                             transaction:transaction];
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [InteractionFinder existsIncomingMessageWithTimestamp:timestamp
+                                                               address:self.sourceAddress
+                                                        sourceDeviceId:OWSDevicePrimaryDeviceId
+                                                           transaction:transaction];
     }];
 
     XCTAssertTrue(result);

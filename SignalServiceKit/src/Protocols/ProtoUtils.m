@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ProtoUtils.h"
@@ -26,18 +26,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-+ (BOOL)shouldMessageHaveLocalProfileKey:(TSThread *)thread recipientId:(NSString *_Nullable)recipientId
++ (BOOL)shouldMessageHaveLocalProfileKey:(TSThread *)thread
+                                 address:(SignalServiceAddress *_Nullable)address
+                             transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
+    OWSAssertDebug(transaction);
 
     // For 1:1 threads, we want to include the profile key IFF the
     // contact is in the whitelist.
     //
     // For Group threads, we want to include the profile key IFF the
     // recipient OR the group is in the whitelist.
-    if (recipientId.length > 0 && [self.profileManager isUserInProfileWhitelist:recipientId]) {
+    if (address.isValid && [self.profileManager isUserInProfileWhitelist:address transaction:transaction]) {
         return YES;
-    } else if ([self.profileManager isThreadInProfileWhitelist:thread]) {
+    } else if ([self.profileManager isThreadInProfileWhitelist:thread transaction:transaction]) {
         return YES;
     }
 
@@ -45,21 +48,23 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (void)addLocalProfileKeyIfNecessary:(TSThread *)thread
-                          recipientId:(NSString *_Nullable)recipientId
+                              address:(SignalServiceAddress *_Nullable)address
                    dataMessageBuilder:(SSKProtoDataMessageBuilder *)dataMessageBuilder
+                          transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
     OWSAssertDebug(dataMessageBuilder);
+    OWSAssertDebug(transaction);
 
-    if ([self shouldMessageHaveLocalProfileKey:thread recipientId:recipientId]) {
+    if ([self shouldMessageHaveLocalProfileKey:thread address:address transaction:transaction]) {
         [dataMessageBuilder setProfileKey:self.localProfileKey.keyData];
 
-        if (recipientId.length > 0) {
+        if (address.isValid) {
             // Once we've shared our profile key with a user (perhaps due to being
             // a member of a whitelisted group), make sure they're whitelisted.
             // FIXME PERF avoid this dispatch. It's going to happen for *each* recipient in a group message.
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self.profileManager addUserToProfileWhitelist:recipientId];
+                [self.profileManager addUserToProfileWhitelist:address];
             });
         }
     }
@@ -73,21 +78,23 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (void)addLocalProfileKeyIfNecessary:(TSThread *)thread
-                          recipientId:(NSString *)recipientId
+                              address:(SignalServiceAddress *)address
                    callMessageBuilder:(SSKProtoCallMessageBuilder *)callMessageBuilder
+                          transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
     OWSAssertDebug(callMessageBuilder);
+    OWSAssertDebug(transaction);
 
-    if ([self shouldMessageHaveLocalProfileKey:thread recipientId:recipientId]) {
+    if ([self shouldMessageHaveLocalProfileKey:thread address:address transaction:transaction]) {
         [callMessageBuilder setProfileKey:self.localProfileKey.keyData];
 
         // Once we've shared our profile key with a user (perhaps due to being
         // a member of a whitelisted group), make sure they're whitelisted.
         // FIXME PERF avoid this dispatch. It's going to happen for *each* recipient in a group message.
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.profileManager addUserToProfileWhitelist:recipientId];
+            [self.profileManager addUserToProfileWhitelist:address];
         });
     }
 }

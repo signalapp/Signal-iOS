@@ -8,12 +8,13 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/UIUtil.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSAddToContactViewController () <ContactEditingDelegate, ContactsViewHelperDelegate>
 
-@property (nonatomic) NSString *recipientId;
+@property (nonatomic) SignalServiceAddress *address;
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
@@ -66,11 +67,11 @@ NS_ASSUME_NONNULL_BEGIN
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
 }
 
-- (void)configureWithRecipientId:(NSString *)recipientId
+- (void)configureWithAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    _recipientId = recipientId;
+    _address = address;
 }
 
 #pragma mark - ContactEditingDelegate
@@ -189,7 +190,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)presentContactViewControllerForContact:(Contact *)contact
 {
     OWSAssertDebug(contact);
-    OWSAssertDebug(self.recipientId);
+    OWSAssertDebug(self.address.isValid);
 
     if (!self.contactsManager.supportsContactEditing) {
         OWSFailDebug(@"Contact editing not supported");
@@ -200,10 +201,10 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Could not load system contact.");
         return;
     }
-    [self.contactsViewHelper presentContactViewControllerForRecipientId:self.recipientId
-                                                     fromViewController:self
-                                                        editImmediately:YES
-                                                 addToExistingCnContact:cnContact];
+    [self.contactsViewHelper presentContactViewControllerForAddress:self.address
+                                                 fromViewController:self
+                                                    editImmediately:YES
+                                             addToExistingCnContact:cnContact];
 }
 
 @end

@@ -5,13 +5,13 @@
 #import "OWSContact.h"
 #import "Contact.h"
 #import "MimeTypeUtil.h"
-#import "NSString+SSK.h"
 #import "OWSContact+Private.h"
 #import "PhoneNumber.h"
 #import "TSAttachment.h"
 #import "TSAttachmentPointer.h"
 #import "TSAttachmentStream.h"
 #import <Contacts/Contacts.h>
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -485,6 +485,9 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
 - (nullable TSAttachment *)avatarAttachmentWithTransaction:(SDSAnyReadTransaction *)transaction
 {
+    if (self.avatarAttachmentId == nil) {
+        return nil;
+    }
     return [TSAttachment anyFetchWithUniqueId:self.avatarAttachmentId transaction:transaction];
 }
 
@@ -534,7 +537,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     return [self.e164PhoneNumbers
         filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString *_Nullable recipientId,
                                         NSDictionary<NSString *, id> *_Nullable bindings) {
-            return [contactsManager isSystemContact:recipientId];
+            return [contactsManager isSystemContactWithPhoneNumber:recipientId];
         }]];
 }
 

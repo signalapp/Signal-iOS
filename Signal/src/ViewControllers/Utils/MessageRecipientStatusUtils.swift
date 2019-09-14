@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -78,16 +78,14 @@ public class MessageRecipientStatusUtils: NSObject {
             if let readTimestamp = recipientState.readTimestamp {
                 let timestampString = DateUtil.formatPastTimestampRelativeToNow(readTimestamp.uint64Value)
                 let shortStatusMessage = timestampString
-                let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_READ", comment: "status message for read messages").rtlSafeAppend(" ")
-                    .rtlSafeAppend(timestampString)
+                let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_READ", comment: "status message for read messages") + " " + timestampString
                 return (status:.read, shortStatusMessage:shortStatusMessage, longStatusMessage:longStatusMessage)
             }
             if let deliveryTimestamp = recipientState.deliveryTimestamp {
                 let timestampString = DateUtil.formatPastTimestampRelativeToNow(deliveryTimestamp.uint64Value)
                 let shortStatusMessage = timestampString
                 let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_DELIVERED",
-                                                          comment: "message status for message delivered to their recipient.").rtlSafeAppend(" ")
-                    .rtlSafeAppend(timestampString)
+                                                          comment: "message status for message delivered to their recipient.") + " " + timestampString
                 return (status:.delivered, shortStatusMessage:shortStatusMessage, longStatusMessage:longStatusMessage)
             }
             let statusMessage =
@@ -117,7 +115,7 @@ public class MessageRecipientStatusUtils: NSObject {
                                          comment: "message status while message is sending."))
             }
         case .sent:
-            if outgoingMessage.readRecipientIds().count > 0 {
+            if outgoingMessage.readRecipientAddresses().count > 0 {
                 return (.read, NSLocalizedString("MESSAGE_STATUS_READ", comment: "status message for read messages"))
             }
             if outgoingMessage.wasDeliveredToAnyRecipient {

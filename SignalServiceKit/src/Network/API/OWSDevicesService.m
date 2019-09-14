@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDevicesService.h"
@@ -9,6 +9,7 @@
 #import "OWSRequestFactory.h"
 #import "TSNetworkManager.h"
 #import <Mantle/MTLJSONAdapter.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,6 +19,11 @@ NSString *const NSNotificationName_DeviceListUpdateModifiedDeviceList
     = @"NSNotificationName_DeviceListUpdateModifiedDeviceList";
 
 @implementation OWSDevicesService
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
 
 + (void)refreshDevices
 {
@@ -31,7 +37,10 @@ NSString *const NSNotificationName_DeviceListUpdateModifiedDeviceList
                     [OWSDeviceManager.sharedManager setMayHaveLinkedDevices];
                 }
 
-                BOOL didAddOrRemove = [OWSDevice replaceAll:devices];
+                __block BOOL didAddOrRemove;
+                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                    didAddOrRemove = [OWSDevice replaceAll:devices transaction:transaction];
+                }];
 
                 [NSNotificationCenter.defaultCenter
                     postNotificationNameAsync:NSNotificationName_DeviceListUpdateSucceeded

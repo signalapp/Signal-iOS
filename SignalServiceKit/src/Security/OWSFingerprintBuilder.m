@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFingerprintBuilder.h"
@@ -8,6 +8,7 @@
 #import "OWSIdentityManager.h"
 #import "TSAccountManager.h"
 #import <Curve25519Kit/Curve25519.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -34,30 +35,31 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable OWSFingerprint *)fingerprintWithTheirSignalId:(NSString *)theirSignalId
+- (nullable OWSFingerprint *)fingerprintWithTheirSignalAddress:(SignalServiceAddress *)theirSignalAddress
 {
-    NSData *_Nullable theirIdentityKey = [[OWSIdentityManager sharedManager] identityKeyForRecipientId:theirSignalId];
+    NSData *_Nullable theirIdentityKey = [[OWSIdentityManager sharedManager] identityKeyForAddress:theirSignalAddress];
 
     if (theirIdentityKey == nil) {
         OWSFailDebug(@"Missing their identity key");
         return nil;
     }
 
-    return [self fingerprintWithTheirSignalId:theirSignalId theirIdentityKey:theirIdentityKey];
+    return [self fingerprintWithTheirSignalAddress:theirSignalAddress theirIdentityKey:theirIdentityKey];
 }
 
-- (OWSFingerprint *)fingerprintWithTheirSignalId:(NSString *)theirSignalId theirIdentityKey:(NSData *)theirIdentityKey
+- (OWSFingerprint *)fingerprintWithTheirSignalAddress:(SignalServiceAddress *)theirSignalAddress
+                                     theirIdentityKey:(NSData *)theirIdentityKey
 {
-    NSString *theirName = [self.contactsManager displayNameForPhoneIdentifier:theirSignalId];
+    NSString *theirName = [self.contactsManager displayNameForAddress:theirSignalAddress];
 
-    NSString *mySignalId = [self.accountManager localNumber];
+    SignalServiceAddress *mySignalAddress = [self.accountManager localAddress];
     NSData *myIdentityKey = [[OWSIdentityManager sharedManager] identityKeyPair].publicKey;
 
-    return [OWSFingerprint fingerprintWithMyStableId:mySignalId
-                                       myIdentityKey:myIdentityKey
-                                       theirStableId:theirSignalId
-                                    theirIdentityKey:theirIdentityKey
-                                           theirName:theirName];
+    return [OWSFingerprint fingerprintWithMyStableAddress:mySignalAddress
+                                            myIdentityKey:myIdentityKey
+                                       theirStableAddress:theirSignalAddress
+                                         theirIdentityKey:theirIdentityKey
+                                                theirName:theirName];
 }
 
 @end

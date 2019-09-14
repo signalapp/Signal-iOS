@@ -101,6 +101,10 @@ extension InstalledSticker: SDSModel {
     public func asRecord() throws -> SDSRecord {
         return try serializer.asRecord()
     }
+
+    public var sdsTableName: String {
+        return InstalledStickerRecord.databaseTableName
+    }
 }
 
 // MARK: - Table Metadata
@@ -144,7 +148,13 @@ public extension InstalledSticker {
 
     @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
     func anyUpsert(transaction: SDSAnyWriteTransaction) {
-        sdsSave(saveMode: .upsert, transaction: transaction)
+        let isInserting: Bool
+        if InstalledSticker.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil {
+            isInserting = false
+        } else {
+            isInserting = true
+        }
+        sdsSave(saveMode: isInserting ? .insert : .update, transaction: transaction)
     }
 
     // This method is used by "updateWith..." methods.
@@ -172,10 +182,6 @@ public extension InstalledSticker {
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
     func anyUpdate(transaction: SDSAnyWriteTransaction, block: (InstalledSticker) -> Void) {
-        guard let uniqueId = uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            return
-        }
 
         block(self)
 
@@ -195,21 +201,7 @@ public extension InstalledSticker {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
-        anyWillRemove(with: transaction)
-
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            ydb_remove(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsRemove(transaction: grdbTransaction)
-            } catch {
-                owsFail("Remove failed: \(error)")
-            }
-        }
-
-        anyDidRemove(with: transaction)
+        sdsRemove(transaction: transaction)
     }
 
     func anyReload(transaction: SDSAnyReadTransaction) {
@@ -217,11 +209,6 @@ public extension InstalledSticker {
     }
 
     func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
-        guard let uniqueId = self.uniqueId else {
-            owsFailDebug("uniqueId was unexpectedly nil")
-            return
-        }
-
         guard let latestVersion = type(of: self).anyFetch(uniqueId: uniqueId, transaction: transaction) else {
             if !ignoreMissing {
                 owsFailDebug("`latest` was unexpectedly nil")
@@ -325,9 +312,28 @@ public extension InstalledSticker {
                         break
                     }
                 }
-            } catch let error as NSError {
+            } catch let error {
                 owsFailDebug("Couldn't fetch models: \(error)")
             }
+        }
+    }
+
+    // Traverses all records' unique ids.
+    // Records are not visited in any particular order.
+    // Traversal aborts if the visitor returns false.
+    class func anyEnumerateUniqueIds(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            ydbTransaction.enumerateKeys(inCollection: InstalledSticker.collection()) { (uniqueId, stop) in
+                block(uniqueId, stop)
+            }
+        case .grdbRead(let grdbTransaction):
+            grdbEnumerateUniqueIds(transaction: grdbTransaction,
+                                   sql: """
+                    SELECT \(installedStickerColumn: .uniqueId)
+                    FROM \(InstalledStickerRecord.databaseTableName)
+                """,
+                block: block)
         }
     }
 
@@ -340,12 +346,71 @@ public extension InstalledSticker {
         return result
     }
 
+    // Does not order the results.
+    class func anyAllUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
+        var result = [String]()
+        anyEnumerateUniqueIds(transaction: transaction) { (uniqueId, _) in
+            result.append(uniqueId)
+        }
+        return result
+    }
+
     class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.numberOfKeys(inCollection: InstalledSticker.collection())
         case .grdbRead(let grdbTransaction):
             return InstalledStickerRecord.ows_fetchCount(grdbTransaction.database)
+        }
+    }
+
+    // WARNING: Do not use this method for any models which do cleanup
+    //          in their anyWillRemove(), anyDidRemove() methods.
+    class func anyRemoveAllWithoutInstantation(transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            ydbTransaction.removeAllObjects(inCollection: InstalledSticker.collection())
+        case .grdbWrite(let grdbTransaction):
+            do {
+                try InstalledStickerRecord.deleteAll(grdbTransaction.database)
+            } catch {
+                owsFailDebug("deleteAll() failed: \(error)")
+            }
+        }
+
+        if shouldBeIndexedForFTS {
+            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
+        }
+    }
+
+    class func anyRemoveAllWithInstantation(transaction: SDSAnyWriteTransaction) {
+        // To avoid mutationDuringEnumerationException, we need
+        // to remove the instances outside the enumeration.
+        let uniqueIds = anyAllUniqueIds(transaction: transaction)
+        for uniqueId in uniqueIds {
+            guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+                owsFailDebug("Missing instance.")
+                continue
+            }
+            instance.anyRemove(transaction: transaction)
+        }
+
+        if shouldBeIndexedForFTS {
+            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
+        }
+    }
+
+    class func anyExists(uniqueId: String,
+                        transaction: SDSAnyReadTransaction) -> Bool {
+        assert(uniqueId.count > 0)
+
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.hasObject(forKey: uniqueId, inCollection: InstalledSticker.collection())
+        case .grdbRead(let grdbTransaction):
+            let sql = "SELECT EXISTS ( SELECT 1 FROM \(InstalledStickerRecord.databaseTableName) WHERE \(installedStickerColumn: .uniqueId) = ? )"
+            let arguments: StatementArguments = [uniqueId]
+            return try! Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
         }
     }
 }
@@ -382,7 +447,9 @@ public extension InstalledSticker {
         assert(sql.count > 0)
 
         do {
-            guard let record = try InstalledStickerRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
+            // There are significant perf benefits to using a cached statement.
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            guard let record = try InstalledStickerRecord.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }
 
@@ -411,10 +478,7 @@ class InstalledStickerSerializer: SDSSerializer {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .installedSticker
-        guard let uniqueId: String = model.uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            throw SDSError.missingRequiredField
-        }
+        let uniqueId: String = model.uniqueId
 
         // Base class properties
         let emojiString: String? = model.emojiString

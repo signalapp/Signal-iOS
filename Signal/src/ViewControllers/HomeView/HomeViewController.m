@@ -62,7 +62,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     UISearchBarDelegate,
     ConversationSearchViewDelegate,
     HomeViewDatabaseSnapshotDelegate,
-    OWSBlockListCacheDelegate>
+    OWSBlockListCacheDelegate,
+    CameraFirstCaptureDelegate>
 
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) UIView *emptyInboxView;
@@ -493,14 +494,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (NSArray<SignalAccount *> *)suggestedAccountsForFirstContact
 {
     NSMutableArray<SignalAccount *> *accounts = [NSMutableArray new];
-    NSString *_Nullable localNumber = [TSAccountManager localNumber];
-    if (localNumber == nil) {
-        OWSFailDebug(@"localNumber was unexepectedly nil");
-        return @[];
-    }
 
     for (SignalAccount *account in self.contactsManager.signalAccounts) {
-        if ([localNumber isEqual:account.recipientId]) {
+        if (account.recipientAddress.isLocalAddress) {
             continue;
         }
         if (accounts.count >= 3) {
@@ -767,11 +763,23 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     self.navigationItem.leftBarButtonItem = settingsButton;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, settingsButton);
 
-    self.navigationItem.rightBarButtonItem =
-        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
-                                                      target:self
-                                                      action:@selector(showNewConversationView)
-                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"compose")];
+    UIBarButtonItem *compose = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"compose-24"]
+                                                                style:UIBarButtonItemStylePlain
+                                                               target:self
+                                                               action:@selector(showNewConversationView)];
+    compose.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"compose");
+
+    if (SSKFeatureFlags.cameraFirstCaptureFlow) {
+        UIBarButtonItem *camera = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"camera-outline-24"]
+                                                                   style:UIBarButtonItemStylePlain
+                                                                  target:self
+                                                                  action:@selector(showCameraView)];
+        camera.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"camera");
+
+        self.navigationItem.rightBarButtonItems = @[ compose, camera ];
+    } else {
+        self.navigationItem.rightBarButtonItems = @[ compose ];
+    }
 }
 
 - (void)settingsButtonPressed:(id)sender
@@ -832,6 +840,29 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         // screen to avoid flicker.
         OWSNavigationController *modal = [[OWSNavigationController alloc] initWithRootViewController:viewController];
         [self.navigationController presentViewController:modal animated:YES completion:nil];
+    }];
+}
+
+- (void)showCameraView
+{
+    [self ows_askForCameraPermissions:^(BOOL cameraGranted) {
+        if (!cameraGranted) {
+            OWSLogWarn(@"camera permission denied.");
+            return;
+        }
+        [self ows_askForMicrophonePermissions:^(BOOL micGranted) {
+            if (!micGranted) {
+                OWSLogWarn(@"proceeding, though mic permission denied.");
+                // We can still continue without mic permissions, but any captured video will
+                // be silent.
+            }
+
+            CaptureFirstCaptureNavigationController *cameraModal =
+                [CaptureFirstCaptureNavigationController captureFirstCameraModal];
+            cameraModal.cameraFirstCaptureSendFlow.delegate = self;
+
+            [self presentViewController:cameraModal animated:YES completion:nil];
+        }];
     }];
 }
 
@@ -945,6 +976,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)applicationWillResignActive:(NSNotification *)notification
 {
     [self updateShouldObserveDBModifications];
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
 }
 
 #pragma mark - startup
@@ -1078,7 +1114,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         cellName = [NSString stringWithFormat:@"cell-group-%@", groupThread.groupModel.groupName];
     } else {
         TSContactThread *contactThread = (TSContactThread *)thread.threadRecord;
-        cellName = [NSString stringWithFormat:@"cell-contact-%@", contactThread.contactIdentifier];
+        cellName = [NSString stringWithFormat:@"cell-contact-%@", contactThread.contactAddress.stringForDisplay];
     }
     cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, cellName);
 
@@ -1342,14 +1378,14 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         if ([thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread *groupThread = (TSGroupThread *)thread;
             if (groupThread.isLocalUserInGroup) {
-                if (transaction.transitional_yapWriteTransaction) {
-                    [groupThread softDeleteGroupThreadWithTransaction:transaction.transitional_yapWriteTransaction];
-                }
-                return;
+                [groupThread softDeleteThreadWithTransaction:transaction];
+            } else {
+                [groupThread anyRemoveWithTransaction:transaction];
             }
+        } else {
+            // contact thread
+            [thread softDeleteThreadWithTransaction:transaction];
         }
-
-        [thread anyRemoveWithTransaction:transaction];
     }];
 
     [self updateViewState];
@@ -1517,10 +1553,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     if (![[uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] hasChangesForGroup:self.currentGrouping
                                                                           inNotifications:notifications]) {
 
-        [uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            SDSAnyReadTransaction *anyReadTransaction = transaction.asAnyRead;
+        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
             [self.threadMapping updateSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
-                                                               transaction:anyReadTransaction];
+                                                               transaction:transaction];
         }];
         [self updateViewState];
 
@@ -1693,6 +1728,18 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     OWSLogVerbose(@"");
     [self reloadTableViewData];
+}
+
+#pragma mark - CameraFirstCaptureDelegate
+
+- (void)cameraFirstCaptureSendFlowDidComplete:(CameraFirstCaptureSendFlow *)cameraFirstCaptureSendFlow
+{
+    [self dismissViewControllerAnimated:true completion:nil];
+}
+
+- (void)cameraFirstCaptureSendFlowDidCancel:(CameraFirstCaptureSendFlow *)cameraFirstCaptureSendFlow
+{
+    [self dismissViewControllerAnimated:true completion:nil];
 }
 
 @end

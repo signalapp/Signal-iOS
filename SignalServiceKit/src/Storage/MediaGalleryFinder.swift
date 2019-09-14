@@ -85,7 +85,7 @@ public class GRDBMediaGalleryFinder: NSObject {
     // MARK: - 
 
     var threadUniqueId: String {
-        return thread.uniqueId!
+        return thread.uniqueId
     }
 
     public static func setup(storage: GRDBDatabaseStorageAdapter) {
@@ -111,7 +111,7 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
             LEFT JOIN \(InteractionRecord.databaseTableName)
                 ON \(attachmentColumn: .albumMessageId) = \(interactionColumnFullyQualified: .uniqueId)
                 AND \(interactionColumn: .threadUniqueId) = ?
-                AND \(interactionColumn: .perMessageExpirationDurationSeconds) = 0
+                AND \(interactionColumn: .isViewOnceMessage) = FALSE
             WHERE \(attachmentColumnFullyQualified: .recordType) = \(SDSRecordType.attachmentStream.rawValue)
                 AND \(attachmentColumn: .albumMessageId) IS NOT NULL
                 AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
@@ -134,14 +134,13 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
         LEFT JOIN \(InteractionRecord.databaseTableName)
             ON \(attachmentColumn: .albumMessageId) = \(interactionColumnFullyQualified: .uniqueId)
             AND \(interactionColumn: .threadUniqueId) = ?
-            AND \(interactionColumn: .perMessageExpirationDurationSeconds) = 0
+            AND \(interactionColumn: .isViewOnceMessage) = FALSE
         WHERE \(attachmentColumnFullyQualified: .recordType) = \(SDSRecordType.attachmentStream.rawValue)
             AND \(attachmentColumn: .albumMessageId) IS NOT NULL
             AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
         """
 
         return try! UInt.fetchOne(transaction.database, sql: sql, arguments: [threadUniqueId]) ?? 0
-
     }
 
     func enumerateMediaAttachments(range: NSRange, transaction: GRDBReadTransaction, block: @escaping (TSAttachment) -> Void) {
@@ -151,7 +150,7 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
         LEFT JOIN \(InteractionRecord.databaseTableName)
             ON \(attachmentColumn: .albumMessageId) = \(interactionColumnFullyQualified: .uniqueId)
             AND \(interactionColumn: .threadUniqueId) = ?
-            AND \(interactionColumn: .perMessageExpirationDurationSeconds) = 0
+            AND \(interactionColumn: .isViewOnceMessage) = FALSE
         WHERE \(attachmentColumnFullyQualified: .recordType) = \(SDSRecordType.attachmentStream.rawValue)
             AND \(attachmentColumn: .albumMessageId) IS NOT NULL
             AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
@@ -182,7 +181,7 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
             LEFT JOIN \(InteractionRecord.databaseTableName)
                 ON \(attachmentColumn: .albumMessageId) = \(interactionColumnFullyQualified: .uniqueId)
                 AND \(interactionColumn: .threadUniqueId) = ?
-                AND \(interactionColumn: .perMessageExpirationDurationSeconds) = 0
+                AND \(interactionColumn: .isViewOnceMessage) = FALSE
             WHERE \(attachmentColumnFullyQualified: .recordType) = \(SDSRecordType.attachmentStream.rawValue)
               AND \(attachmentColumn: .albumMessageId) IS NOT NULL
               AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
@@ -190,6 +189,6 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
         WHERE \(attachmentColumn: .uniqueId) = ?
         """
 
-        return try! Int.fetchOne(transaction.database, sql: sql, arguments: [threadUniqueId, attachment.uniqueId!])
+        return try! Int.fetchOne(transaction.database, sql: sql, arguments: [threadUniqueId, attachment.uniqueId])
     }
 }

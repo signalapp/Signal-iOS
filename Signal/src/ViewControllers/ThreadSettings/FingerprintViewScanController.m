@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface FingerprintViewScanController () <OWSQRScannerDelegate>
 
 @property (nonatomic) TSAccountManager *accountManager;
-@property (nonatomic) NSString *recipientId;
+@property (nonatomic) SignalServiceAddress *recipientAddress;
 @property (nonatomic) NSData *identityKey;
 @property (nonatomic) OWSFingerprint *fingerprint;
 @property (nonatomic) NSString *contactName;
@@ -34,18 +34,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation FingerprintViewScanController
 
-- (void)configureWithRecipientId:(NSString *)recipientId
+- (void)configureWithRecipientAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    self.recipientId = recipientId;
+    self.recipientAddress = address;
     self.accountManager = [TSAccountManager sharedInstance];
 
     OWSContactsManager *contactsManager = Environment.shared.contactsManager;
-    self.contactName = [contactsManager displayNameForPhoneIdentifier:recipientId];
+    self.contactName = [contactsManager displayNameForAddress:address];
 
     OWSRecipientIdentity *_Nullable recipientIdentity =
-        [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
+        [[OWSIdentityManager sharedManager] recipientIdentityForAddress:address];
     OWSAssertDebug(recipientIdentity);
     // By capturing the identity key when we enter these views, we prevent the edge case
     // where the user verifies a key that we learned about while this view was open.
@@ -53,8 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSFingerprintBuilder *builder =
         [[OWSFingerprintBuilder alloc] initWithAccountManager:self.accountManager contactsManager:contactsManager];
-    self.fingerprint =
-        [builder fingerprintWithTheirSignalId:recipientId theirIdentityKey:recipientIdentity.identityKey];
+    self.fingerprint = [builder fingerprintWithTheirSignalAddress:address
+                                                 theirIdentityKey:recipientIdentity.identityKey];
 }
 
 - (void)loadView
@@ -140,7 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [self.class showVerificationSucceeded:self
                               identityKey:self.identityKey
-                              recipientId:self.recipientId
+                         recipientAddress:self.recipientAddress
                               contactName:self.contactName
                                       tag:self.logTag];
 }
@@ -161,13 +161,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)showVerificationSucceeded:(UIViewController *)viewController
                       identityKey:(NSData *)identityKey
-                      recipientId:(NSString *)recipientId
+                 recipientAddress:(SignalServiceAddress *)address
                       contactName:(NSString *)contactName
                               tag:(NSString *)tag
 {
     OWSAssertDebug(viewController);
     OWSAssertDebug(identityKey.length > 0);
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
     OWSAssertDebug(contactName.length > 0);
     OWSAssertDebug(tag.length > 0);
 
@@ -180,18 +180,17 @@ NS_ASSUME_NONNULL_BEGIN
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:successTitle
                                                                    message:successDescription
                                                             preferredStyle:UIAlertControllerStyleAlert];
-    [alert
-        addAction:[UIAlertAction
-                      actionWithTitle:NSLocalizedString(@"FINGERPRINT_SCAN_VERIFY_BUTTON",
-                                          @"Button that marks user as verified after a successful fingerprint scan.")
-                                style:UIAlertActionStyleDefault
-                              handler:^(UIAlertAction *action) {
-                                  [OWSIdentityManager.sharedManager setVerificationState:OWSVerificationStateVerified
-                                                                             identityKey:identityKey
-                                                                             recipientId:recipientId
-                                                                   isUserInitiatedChange:YES];
-                                  [viewController dismissViewControllerAnimated:true completion:nil];
-                              }]];
+    [alert addAction:[UIAlertAction
+                         actionWithTitle:NSLocalizedString(@"FINGERPRINT_SCAN_VERIFY_BUTTON",
+                                             @"Button that marks user as verified after a successful fingerprint scan.")
+                                   style:UIAlertActionStyleDefault
+                                 handler:^(UIAlertAction *action) {
+                                     [OWSIdentityManager.sharedManager setVerificationState:OWSVerificationStateVerified
+                                                                                identityKey:identityKey
+                                                                                    address:address
+                                                                      isUserInitiatedChange:YES];
+                                     [viewController dismissViewControllerAnimated:true completion:nil];
+                                 }]];
     UIAlertAction *dismissAction =
         [UIAlertAction actionWithTitle:CommonStrings.dismissButton
                                  style:UIAlertActionStyleDefault

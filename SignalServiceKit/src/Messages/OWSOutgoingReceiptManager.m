@@ -1,12 +1,11 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingReceiptManager.h"
 #import "AppReadiness.h"
 #import "OWSError.h"
 #import "OWSMessageSender.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSReceiptsForSenderMessage.h"
 #import "SSKEnvironment.h"
 #import "TSContactThread.h"
@@ -21,12 +20,7 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
     OWSReceiptType_Read,
 };
 
-NSString *const kOutgoingDeliveryReceiptManagerCollection = @"kOutgoingDeliveryReceiptManagerCollection";
-NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptManagerCollection";
-
 @interface OWSOutgoingReceiptManager ()
-
-@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @property (nonatomic) Reachability *reachability;
 
@@ -39,6 +33,27 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
 
 @implementation OWSOutgoingReceiptManager
 
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
++ (SDSKeyValueStore *)deliveryReceiptStore
+{
+    return [[SDSKeyValueStore alloc] initWithCollection:@"kOutgoingDeliveryReceiptManagerCollection"];
+}
+
++ (SDSKeyValueStore *)readReceiptStore
+{
+    return [[SDSKeyValueStore alloc] initWithCollection:@"kOutgoingReadReceiptManagerCollection"];
+}
+
+#pragma mark -
+
 + (instancetype)sharedManager
 {
     OWSAssert(SSKEnvironment.shared.outgoingReceiptManager);
@@ -46,7 +61,7 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
     return SSKEnvironment.shared.outgoingReceiptManager;
 }
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
+- (instancetype)init
 {
     self = [super init];
 
@@ -55,8 +70,6 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
     }
 
     self.reachability = [Reachability reachabilityForInternetConnection];
-
-    _dbConnection = primaryStorage.newDatabaseConnection;
 
     OWSSingletonAssert();
 
@@ -151,28 +164,44 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
 }
 
 - (NSArray<AnyPromise *> *)sendReceiptsForReceiptType:(OWSReceiptType)receiptType {
-    NSString *collection = [self collectionForReceiptType:receiptType];
+    SDSKeyValueStore *store = [self storeForReceiptType:receiptType];
 
     NSMutableDictionary<NSString *, NSSet<NSNumber *> *> *queuedReceiptMap = [NSMutableDictionary new];
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [transaction enumerateKeysAndObjectsInCollection:collection
-                                              usingBlock:^(NSString *key, id object, BOOL *stop) {
-                                                  NSString *recipientId = key;
-                                                  NSSet<NSNumber *> *timestamps = object;
-                                                  queuedReceiptMap[recipientId] = [timestamps copy];
-                                              }];
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [store enumerateKeysAndObjectsWithTransaction:transaction
+                                                block:^(NSString *key, id object, BOOL *stop) {
+                                                    NSString *recipientId = key;
+                                                    NSSet<NSNumber *> *timestamps = object;
+                                                    queuedReceiptMap[recipientId] = [timestamps copy];
+                                                }];
     }];
 
     NSMutableArray<AnyPromise *> *sendPromises = [NSMutableArray array];
 
-    for (NSString *recipientId in queuedReceiptMap) {
-        NSSet<NSNumber *> *timestamps = queuedReceiptMap[recipientId];
+    for (NSString *identifier in queuedReceiptMap) {
+        // The identifier could be either a UUID or a phone number,
+        // check if it's a valid UUID. If not, assume it's a phone number.
+
+        SignalServiceAddress *address;
+        NSUUID *_Nullable uuid = [[NSUUID alloc] initWithUUIDString:identifier];
+        if (uuid) {
+            address = [[SignalServiceAddress alloc] initWithUuid:uuid phoneNumber:nil];
+        } else {
+            address = [[SignalServiceAddress alloc] initWithPhoneNumber:identifier];
+        }
+
+        if (!address.isValid) {
+            OWSFailDebug(@"Unexpected identifier.");
+            continue;
+        }
+
+        NSSet<NSNumber *> *timestamps = queuedReceiptMap[identifier];
         if (timestamps.count < 1) {
             OWSFailDebug(@"Missing timestamps.");
             continue;
         }
 
-        TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
+        TSThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:address];
         OWSReceiptsForSenderMessage *message;
         NSString *receiptName;
         switch (receiptType) {
@@ -197,7 +226,7 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
 
                     // DURABLE CLEANUP - we could replace the custom durability logic in this class
                     // with a durable JobQueue.
-                    [self dequeueReceiptsWithRecipientId:recipientId timestamps:timestamps receiptType:receiptType];
+                    [self dequeueReceiptsForAddress:address timestamps:timestamps receiptType:receiptType];
 
                     // The value doesn't matter, we just need any non-NSError value.
                     resolve(@(1));
@@ -207,7 +236,7 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
 
                     if (error.domain == OWSSignalServiceKitErrorDomain
                         && error.code == OWSErrorCodeNoSuchSignalRecipient) {
-                        [self dequeueReceiptsWithRecipientId:recipientId timestamps:timestamps receiptType:receiptType];
+                        [self dequeueReceiptsForAddress:address timestamps:timestamps receiptType:receiptType];
                     }
 
                     resolve(error);
@@ -221,66 +250,117 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
 
 - (void)enqueueDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope
 {
-    [self enqueueReceiptWithRecipientId:envelope.source
-                              timestamp:envelope.timestamp
-                            receiptType:OWSReceiptType_Delivery];
+    [self enqueueReceiptForAddress:envelope.sourceAddress
+                         timestamp:envelope.timestamp
+                       receiptType:OWSReceiptType_Delivery];
 }
 
-- (void)enqueueReadReceiptForEnvelope:(NSString *)messageAuthorId timestamp:(uint64_t)timestamp {
-    [self enqueueReceiptWithRecipientId:messageAuthorId timestamp:timestamp receiptType:OWSReceiptType_Read];
+- (void)enqueueReadReceiptForAddress:(SignalServiceAddress *)address timestamp:(uint64_t)timestamp
+{
+    [self enqueueReceiptForAddress:address timestamp:timestamp receiptType:OWSReceiptType_Read];
 }
 
-- (void)enqueueReceiptWithRecipientId:(NSString *)recipientId
-                            timestamp:(uint64_t)timestamp
-                          receiptType:(OWSReceiptType)receiptType {
-    NSString *collection = [self collectionForReceiptType:receiptType];
+- (void)enqueueReceiptForAddress:(SignalServiceAddress *)address
+                       timestamp:(uint64_t)timestamp
+                     receiptType:(OWSReceiptType)receiptType
+{
+    SDSKeyValueStore *store = [self storeForReceiptType:receiptType];
 
-    if (recipientId.length < 1) {
-        OWSFailDebug(@"Invalid recipient id.");
-        return;
-    }
+    OWSAssertDebug(address.isValid);
     if (timestamp < 1) {
         OWSFailDebug(@"Invalid timestamp.");
         return;
     }
+
     dispatch_async(self.serialQueue, ^{
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            NSSet<NSNumber *> *_Nullable oldTimestamps = [transaction objectForKey:recipientId inCollection:collection];
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            NSString *identifier = address.uuidString ?: address.phoneNumber;
+
+            NSSet<NSNumber *> *_Nullable oldUUIDTimestamps;
+            if (address.uuidString) {
+                oldUUIDTimestamps = [store getObject:address.uuidString transaction:transaction];
+            }
+
+            NSSet<NSNumber *> *_Nullable oldPhoneNumberTimestamps;
+            if (address.phoneNumber) {
+                oldPhoneNumberTimestamps = [store getObject:address.phoneNumber transaction:transaction];
+            }
+
+            NSSet<NSNumber *> *_Nullable oldTimestamps;
+
+            // Unexpectedly have entries both on phone number and UUID, defer to UUID
+            if (oldUUIDTimestamps && oldPhoneNumberTimestamps) {
+                oldTimestamps = [oldUUIDTimestamps setByAddingObjectsFromSet:oldPhoneNumberTimestamps];
+                [store removeValueForKey:address.phoneNumber transaction:transaction];
+
+                // If we have timestamps only under phone number, but know the UUID, migrate them lazily
+            } else if (oldPhoneNumberTimestamps && address.uuidString) {
+                oldTimestamps = oldPhoneNumberTimestamps;
+                [store removeValueForKey:address.phoneNumber transaction:transaction];
+            } else {
+                oldTimestamps = oldUUIDTimestamps ?: oldPhoneNumberTimestamps;
+            }
+
             NSMutableSet<NSNumber *> *newTimestamps
                 = (oldTimestamps ? [oldTimestamps mutableCopy] : [NSMutableSet new]);
             [newTimestamps addObject:@(timestamp)];
 
-            [transaction setObject:newTimestamps forKey:recipientId inCollection:collection];
+            [store setObject:newTimestamps key:identifier transaction:transaction];
         }];
 
         [self process];
     });
 }
 
-- (void)dequeueReceiptsWithRecipientId:(NSString *)recipientId
-                            timestamps:(NSSet<NSNumber *> *)timestamps
-                           receiptType:(OWSReceiptType)receiptType {
-    NSString *collection = [self collectionForReceiptType:receiptType];
+- (void)dequeueReceiptsForAddress:(SignalServiceAddress *)address
+                       timestamps:(NSSet<NSNumber *> *)timestamps
+                      receiptType:(OWSReceiptType)receiptType
+{
+    SDSKeyValueStore *store = [self storeForReceiptType:receiptType];
 
-    if (recipientId.length < 1) {
-        OWSFailDebug(@"Invalid recipient id.");
-        return;
-    }
+    OWSAssertDebug(address.isValid);
     if (timestamps.count < 1) {
         OWSFailDebug(@"Invalid timestamps.");
         return;
     }
     dispatch_async(self.serialQueue, ^{
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            NSSet<NSNumber *> *_Nullable oldTimestamps = [transaction objectForKey:recipientId inCollection:collection];
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            NSString *identifier = address.uuidString ?: address.phoneNumber;
+
+            NSSet<NSNumber *> *_Nullable oldUUIDTimestamps;
+            if (address.uuidString) {
+                oldUUIDTimestamps = [store getObject:address.uuidString transaction:transaction];
+            }
+
+            NSSet<NSNumber *> *_Nullable oldPhoneNumberTimestamps;
+            if (address.phoneNumber) {
+                oldPhoneNumberTimestamps = [store getObject:address.phoneNumber transaction:transaction];
+            }
+
+            NSSet<NSNumber *> *_Nullable oldTimestamps = oldUUIDTimestamps;
+
+            // Unexpectedly have entries both on phone number and UUID, defer to UUID
+            if (oldUUIDTimestamps && oldPhoneNumberTimestamps) {
+                [store removeValueForKey:address.phoneNumber transaction:transaction];
+
+                // If we have timestamps only under phone number, but know the UUID, migrate them lazily
+            } else if (oldPhoneNumberTimestamps && address.uuidString) {
+                oldTimestamps = oldPhoneNumberTimestamps;
+                [store removeValueForKey:address.phoneNumber transaction:transaction];
+
+                // We don't know the UUID, just use the phone number timestamps.
+            } else if (oldPhoneNumberTimestamps) {
+                oldTimestamps = oldPhoneNumberTimestamps;
+            }
+
             NSMutableSet<NSNumber *> *newTimestamps
                 = (oldTimestamps ? [oldTimestamps mutableCopy] : [NSMutableSet new]);
             [newTimestamps minusSet:timestamps];
 
             if (newTimestamps.count > 0) {
-                [transaction setObject:newTimestamps forKey:recipientId inCollection:collection];
+                [store setObject:newTimestamps key:identifier transaction:transaction];
             } else {
-                [transaction removeObjectForKey:recipientId inCollection:collection];
+                [store removeValueForKey:identifier transaction:transaction];
             }
         }];
     });
@@ -293,12 +373,13 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
     [self process];
 }
 
-- (NSString *)collectionForReceiptType:(OWSReceiptType)receiptType {
+- (SDSKeyValueStore *)storeForReceiptType:(OWSReceiptType)receiptType
+{
     switch (receiptType) {
         case OWSReceiptType_Delivery:
-            return kOutgoingDeliveryReceiptManagerCollection;
+            return OWSOutgoingReceiptManager.deliveryReceiptStore;
         case OWSReceiptType_Read:
-            return kOutgoingReadReceiptManagerCollection;
+            return OWSOutgoingReceiptManager.readReceiptStore;
     }
 }
 

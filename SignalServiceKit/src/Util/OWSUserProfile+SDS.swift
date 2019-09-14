@@ -30,7 +30,9 @@ public struct UserProfileRecord: SDSRecord {
     public let avatarUrlPath: String?
     public let profileKey: Data?
     public let profileName: String?
-    public let recipientId: String
+    public let recipientPhoneNumber: String?
+    public let recipientUUID: String?
+    public let userProfileSchemaVersion: UInt
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -40,7 +42,9 @@ public struct UserProfileRecord: SDSRecord {
         case avatarUrlPath
         case profileKey
         case profileName
-        case recipientId
+        case recipientPhoneNumber
+        case recipientUUID
+        case userProfileSchemaVersion
     }
 
     public static func columnName(_ column: UserProfileRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -81,14 +85,18 @@ extension OWSUserProfile {
             let profileKeySerialized: Data? = record.profileKey
             let profileKey: OWSAES256Key? = try SDSDeserialization.optionalUnarchive(profileKeySerialized, name: "profileKey")
             let profileName: String? = record.profileName
-            let recipientId: String = record.recipientId
+            let recipientPhoneNumber: String? = record.recipientPhoneNumber
+            let recipientUUID: String? = record.recipientUUID
+            let userProfileSchemaVersion: UInt = record.userProfileSchemaVersion
 
             return OWSUserProfile(uniqueId: uniqueId,
                                   avatarFileName: avatarFileName,
                                   avatarUrlPath: avatarUrlPath,
                                   profileKey: profileKey,
                                   profileName: profileName,
-                                  recipientId: recipientId)
+                                  recipientPhoneNumber: recipientPhoneNumber,
+                                  recipientUUID: recipientUUID,
+                                  userProfileSchemaVersion: userProfileSchemaVersion)
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -113,6 +121,10 @@ extension OWSUserProfile: SDSModel {
     public func asRecord() throws -> SDSRecord {
         return try serializer.asRecord()
     }
+
+    public var sdsTableName: String {
+        return UserProfileRecord.databaseTableName
+    }
 }
 
 // MARK: - Table Metadata
@@ -129,7 +141,9 @@ extension OWSUserProfileSerializer {
     static let avatarUrlPathColumn = SDSColumnMetadata(columnName: "avatarUrlPath", columnType: .unicodeString, isOptional: true, columnIndex: 4)
     static let profileKeyColumn = SDSColumnMetadata(columnName: "profileKey", columnType: .blob, isOptional: true, columnIndex: 5)
     static let profileNameColumn = SDSColumnMetadata(columnName: "profileName", columnType: .unicodeString, isOptional: true, columnIndex: 6)
-    static let recipientIdColumn = SDSColumnMetadata(columnName: "recipientId", columnType: .unicodeString, columnIndex: 7)
+    static let recipientPhoneNumberColumn = SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 7)
+    static let recipientUUIDColumn = SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true, columnIndex: 8)
+    static let userProfileSchemaVersionColumn = SDSColumnMetadata(columnName: "userProfileSchemaVersion", columnType: .int64, columnIndex: 9)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -141,7 +155,9 @@ extension OWSUserProfileSerializer {
         avatarUrlPathColumn,
         profileKeyColumn,
         profileNameColumn,
-        recipientIdColumn
+        recipientPhoneNumberColumn,
+        recipientUUIDColumn,
+        userProfileSchemaVersionColumn
         ])
 }
 
@@ -162,7 +178,13 @@ public extension OWSUserProfile {
 
     @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
     func anyUpsert(transaction: SDSAnyWriteTransaction) {
-        sdsSave(saveMode: .upsert, transaction: transaction)
+        let isInserting: Bool
+        if OWSUserProfile.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil {
+            isInserting = false
+        } else {
+            isInserting = true
+        }
+        sdsSave(saveMode: isInserting ? .insert : .update, transaction: transaction)
     }
 
     // This method is used by "updateWith..." methods.
@@ -190,10 +212,6 @@ public extension OWSUserProfile {
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
     func anyUpdate(transaction: SDSAnyWriteTransaction, block: (OWSUserProfile) -> Void) {
-        guard let uniqueId = uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            return
-        }
 
         block(self)
 
@@ -213,21 +231,7 @@ public extension OWSUserProfile {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
-        anyWillRemove(with: transaction)
-
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            ydb_remove(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsRemove(transaction: grdbTransaction)
-            } catch {
-                owsFail("Remove failed: \(error)")
-            }
-        }
-
-        anyDidRemove(with: transaction)
+        sdsRemove(transaction: transaction)
     }
 
     func anyReload(transaction: SDSAnyReadTransaction) {
@@ -235,11 +239,6 @@ public extension OWSUserProfile {
     }
 
     func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
-        guard let uniqueId = self.uniqueId else {
-            owsFailDebug("uniqueId was unexpectedly nil")
-            return
-        }
-
         guard let latestVersion = type(of: self).anyFetch(uniqueId: uniqueId, transaction: transaction) else {
             if !ignoreMissing {
                 owsFailDebug("`latest` was unexpectedly nil")
@@ -343,9 +342,28 @@ public extension OWSUserProfile {
                         break
                     }
                 }
-            } catch let error as NSError {
+            } catch let error {
                 owsFailDebug("Couldn't fetch models: \(error)")
             }
+        }
+    }
+
+    // Traverses all records' unique ids.
+    // Records are not visited in any particular order.
+    // Traversal aborts if the visitor returns false.
+    class func anyEnumerateUniqueIds(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            ydbTransaction.enumerateKeys(inCollection: OWSUserProfile.collection()) { (uniqueId, stop) in
+                block(uniqueId, stop)
+            }
+        case .grdbRead(let grdbTransaction):
+            grdbEnumerateUniqueIds(transaction: grdbTransaction,
+                                   sql: """
+                    SELECT \(userProfileColumn: .uniqueId)
+                    FROM \(UserProfileRecord.databaseTableName)
+                """,
+                block: block)
         }
     }
 
@@ -358,12 +376,71 @@ public extension OWSUserProfile {
         return result
     }
 
+    // Does not order the results.
+    class func anyAllUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
+        var result = [String]()
+        anyEnumerateUniqueIds(transaction: transaction) { (uniqueId, _) in
+            result.append(uniqueId)
+        }
+        return result
+    }
+
     class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.numberOfKeys(inCollection: OWSUserProfile.collection())
         case .grdbRead(let grdbTransaction):
             return UserProfileRecord.ows_fetchCount(grdbTransaction.database)
+        }
+    }
+
+    // WARNING: Do not use this method for any models which do cleanup
+    //          in their anyWillRemove(), anyDidRemove() methods.
+    class func anyRemoveAllWithoutInstantation(transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            ydbTransaction.removeAllObjects(inCollection: OWSUserProfile.collection())
+        case .grdbWrite(let grdbTransaction):
+            do {
+                try UserProfileRecord.deleteAll(grdbTransaction.database)
+            } catch {
+                owsFailDebug("deleteAll() failed: \(error)")
+            }
+        }
+
+        if shouldBeIndexedForFTS {
+            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
+        }
+    }
+
+    class func anyRemoveAllWithInstantation(transaction: SDSAnyWriteTransaction) {
+        // To avoid mutationDuringEnumerationException, we need
+        // to remove the instances outside the enumeration.
+        let uniqueIds = anyAllUniqueIds(transaction: transaction)
+        for uniqueId in uniqueIds {
+            guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+                owsFailDebug("Missing instance.")
+                continue
+            }
+            instance.anyRemove(transaction: transaction)
+        }
+
+        if shouldBeIndexedForFTS {
+            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
+        }
+    }
+
+    class func anyExists(uniqueId: String,
+                        transaction: SDSAnyReadTransaction) -> Bool {
+        assert(uniqueId.count > 0)
+
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.hasObject(forKey: uniqueId, inCollection: OWSUserProfile.collection())
+        case .grdbRead(let grdbTransaction):
+            let sql = "SELECT EXISTS ( SELECT 1 FROM \(UserProfileRecord.databaseTableName) WHERE \(userProfileColumn: .uniqueId) = ? )"
+            let arguments: StatementArguments = [uniqueId]
+            return try! Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
         }
     }
 }
@@ -400,7 +477,9 @@ public extension OWSUserProfile {
         assert(sql.count > 0)
 
         do {
-            guard let record = try UserProfileRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
+            // There are significant perf benefits to using a cached statement.
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            guard let record = try UserProfileRecord.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }
 
@@ -429,18 +508,17 @@ class OWSUserProfileSerializer: SDSSerializer {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .userProfile
-        guard let uniqueId: String = model.uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            throw SDSError.missingRequiredField
-        }
+        let uniqueId: String = model.uniqueId
 
         // Base class properties
         let avatarFileName: String? = model.avatarFileName
         let avatarUrlPath: String? = model.avatarUrlPath
         let profileKey: Data? = optionalArchive(model.profileKey)
         let profileName: String? = model.profileName
-        let recipientId: String = model.recipientId
+        let recipientPhoneNumber: String? = model.recipientPhoneNumber
+        let recipientUUID: String? = model.recipientUUID
+        let userProfileSchemaVersion: UInt = model.userProfileSchemaVersion
 
-        return UserProfileRecord(id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientId: recipientId)
+        return UserProfileRecord(id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, userProfileSchemaVersion: userProfileSchemaVersion)
     }
 }

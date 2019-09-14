@@ -7,6 +7,8 @@ import SignalServiceKit
 import SignalMessaging
 import PromiseKit
 
+#if DEBUG
+
 class DebugUINotifications: DebugUIPage {
 
     // MARK: Dependencies
@@ -108,7 +110,7 @@ class DebugUINotifications: DebugUIPage {
     }
 
     func delayedNotificationDispatchWithFakeCall(thread: TSContactThread, callBlock: @escaping (SignalCall) -> Void) -> Guarantee<Void> {
-        let call = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: 0)
+        let call = SignalCall.incomingCall(localId: UUID(), remoteAddress: thread.contactAddress, signalingId: 0)
 
         return delayedNotificationDispatch {
             callBlock(call)
@@ -143,25 +145,29 @@ class DebugUINotifications: DebugUIPage {
 
     func notifyForIncomingCall(thread: TSContactThread) -> Guarantee<Void> {
         return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
-            self.notificationPresenter.presentIncomingCall(call, callerName: thread.name())
+            let callerName = self.contactsManager.displayName(for: thread.contactAddress)
+            self.notificationPresenter.presentIncomingCall(call, callerName: callerName)
         }
     }
 
     func notifyForMissedCall(thread: TSContactThread) -> Guarantee<Void> {
         return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
-            self.notificationPresenter.presentMissedCall(call, callerName: thread.name())
+            let callerName = self.contactsManager.displayName(for: thread.contactAddress)
+            self.notificationPresenter.presentMissedCall(call, callerName: callerName)
         }
     }
 
     func notifyForMissedCallBecauseOfNewIdentity(thread: TSContactThread) -> Guarantee<Void> {
         return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
-            self.notificationPresenter.presentMissedCallBecauseOfNewIdentity(call: call, callerName: thread.name())
+            let callerName = self.contactsManager.displayName(for: thread.contactAddress)
+            self.notificationPresenter.presentMissedCallBecauseOfNewIdentity(call: call, callerName: callerName)
         }
     }
 
     func notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: TSContactThread) -> Guarantee<Void> {
         return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
-            self.notificationPresenter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: call, callerName: thread.name())
+            let callerName = self.contactsManager.displayName(for: thread.contactAddress)
+            self.notificationPresenter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: call, callerName: callerName)
         }
     }
 
@@ -194,9 +200,8 @@ class DebugUINotifications: DebugUIPage {
     func notifyUserForThreadlessErrorMessage() -> Guarantee<Void> {
         return delayedNotificationDispatch {
             self.databaseStorage.write { transaction in
-                let errorMessage = TSErrorMessage.corruptedMessageInUnknownThread()
-
-                self.notificationPresenter.notifyUser(forThreadlessErrorMessage: errorMessage,
+                let errorMessage = ThreadlessErrorMessage.corruptedMessageInUnknownThread()
+                self.notificationPresenter.notifyUser(for: errorMessage,
                                                       transaction: transaction)
             }
         }
@@ -211,7 +216,7 @@ class DebugUINotifications: DebugUIPage {
                         return false
                     }
 
-                    guard recipient.recipientId != TSAccountManager.localNumber() else {
+                    guard !recipient.address.isLocalAddress else {
                         return false
                     }
 
@@ -225,3 +230,5 @@ class DebugUINotifications: DebugUIPage {
         }
     }
 }
+
+#endif

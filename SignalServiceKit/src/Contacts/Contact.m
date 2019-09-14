@@ -3,7 +3,6 @@
 //
 
 #import "Contact.h"
-#import "OWSPrimaryStorage.h"
 #import "PhoneNumber.h"
 #import "SSKEnvironment.h"
 #import "SignalRecipient.h"
@@ -11,6 +10,7 @@
 #import <Contacts/Contacts.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSString+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,6 +24,15 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation Contact
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 @synthesize comparableNameFirstLast = _comparableNameFirstLast;
 @synthesize comparableNameLastFirst = _comparableNameLastFirst;
@@ -210,19 +219,17 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (BOOL)isSignalContact {
-    NSArray *identifiers = [self textSecureIdentifiers];
-
-    return [identifiers count] > 0;
+    return self.registeredAddresses.count > 0;
 }
 
-- (NSArray<SignalRecipient *> *)signalRecipientsWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSArray<SignalRecipient *> *)signalRecipientsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     __block NSMutableArray *result = [NSMutableArray array];
 
     for (PhoneNumber *number in [self.parsedPhoneNumbers sortedArrayUsingSelector:@selector(compare:)]) {
-        SignalRecipient *_Nullable signalRecipient = [SignalRecipient registeredRecipientForRecipientId:number.toE164
-                                                                                        mustHaveDevices:YES
-                                                                                            transaction:transaction];
+        SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:number.toE164];
+        SignalRecipient *_Nullable signalRecipient =
+            [SignalRecipient registeredRecipientForAddress:address mustHaveDevices:YES transaction:transaction];
         if (signalRecipient) {
             [result addObject:signalRecipient];
         }
@@ -231,17 +238,19 @@ NS_ASSUME_NONNULL_BEGIN
     return [result copy];
 }
 
-- (NSArray<NSString *> *)textSecureIdentifiers {
-    __block NSMutableArray *identifiers = [NSMutableArray array];
+- (NSArray<SignalServiceAddress *> *)registeredAddresses
+{
+    __block NSMutableArray<SignalServiceAddress *> *addresses = [NSMutableArray array];
 
-    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         for (PhoneNumber *number in self.parsedPhoneNumbers) {
-            if ([SignalRecipient isRegisteredRecipient:number.toE164 transaction:transaction]) {
-                [identifiers addObject:number.toE164];
+            SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:number.toE164];
+            if ([SignalRecipient isRegisteredRecipient:address transaction:transaction]) {
+                [addresses addObject:address];
             }
         }
     }];
-    return [identifiers copy];
+    return [addresses copy];
 }
 
 + (NSComparator)comparatorSortingNamesByFirstThenLast:(BOOL)firstNameOrdering {
@@ -262,12 +271,17 @@ NS_ASSUME_NONNULL_BEGIN
     return [CNContactFormatter stringFromContact:cnContact style:CNContactFormatterStyleFullName].ows_stripped;
 }
 
-- (NSString *)nameForPhoneNumber:(NSString *)recipientId
+- (NSString *)nameForAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
-    OWSAssertDebug([self.textSecureIdentifiers containsObject:recipientId]);
+    OWSAssertDebug(address.isValid);
+    OWSAssertDebug([self.registeredAddresses containsObject:address]);
 
-    NSString *value = self.phoneNumberNameMap[recipientId];
+    // We don't have contacts entries for addresses without phone numbers
+    if (!address.phoneNumber) {
+        return nil;
+    }
+
+    NSString *value = self.phoneNumberNameMap[address.phoneNumber];
     if (!value) {
         return NSLocalizedString(@"PHONE_NUMBER_TYPE_UNKNOWN",
             @"Label used when we don't what kind of phone number it is (e.g. mobile/work/home).");

@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread
+- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread
 {
     return [super initOutgoingMessageWithTimestamp:timestamp
                                           inThread:thread
@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
                                       contactShare:nil
                                        linkPreview:nil
                                     messageSticker:nil
-               perMessageExpirationDurationSeconds:0];
+                                 isViewOnceMessage:NO];
 }
 
 - (BOOL)shouldBeSaved

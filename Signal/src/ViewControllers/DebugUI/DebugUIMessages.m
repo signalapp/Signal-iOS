@@ -26,6 +26,8 @@
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSThread.h>
 
+#ifdef DEBUG
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TSIncomingMessage (DebugUI)
@@ -53,8 +55,6 @@ NS_ASSUME_NONNULL_BEGIN
     return @"Messages";
 }
 
-#ifdef DEBUG
-
 - (NSArray<OWSTableItem *> *)itemsForActions:(NSArray<DebugUIMessagesAction *> *)actions
 {
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
@@ -79,15 +79,11 @@ NS_ASSUME_NONNULL_BEGIN
     return items;
 }
 
-#endif
-
 - (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread
 {
     OWSAssertDebug(thread);
 
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
-
-#ifdef DEBUG
 
     [items addObject:[OWSTableItem itemWithTitle:@"Delete all messages in thread"
                                      actionBlock:^{
@@ -128,6 +124,14 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages sendNTextMessagesInThread:thread];
                         }],
+        [OWSTableItem itemWithTitle:@"👷 Receive UUID message"
+                        actionBlock:^{
+                            [DebugUIMessages receiveUUIDEnvelopeInNewThread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Create UUID group"
+                        actionBlock:^{
+                            [DebugUIMessages createUUIDGroup];
+                        }],
         [OWSTableItem itemWithTitle:@"Send Media Gallery"
                         actionBlock:^{
                             [DebugUIMessages sendMediaAlbumInThread:thread];
@@ -156,7 +160,6 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages selectBackDatedAction:thread];
                         }],
-
 
 #pragma mark - Misc.
 
@@ -200,7 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages sendFakeMessages:1000 thread:thread];
                         }],
-        [OWSTableItem itemWithTitle:@"👷 Create 10 fake text messages"
+        [OWSTableItem itemWithTitle:@"Create 10 fake text messages"
                         actionBlock:^{
                             [DebugUIMessages sendFakeMessages:10 thread:thread isTextOnly:YES];
                         }],
@@ -305,18 +308,18 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        NSString *recipientId = contactThread.contactIdentifier;
+        SignalServiceAddress *recipientAddress = contactThread.contactAddress;
         [items addObject:[OWSTableItem itemWithTitle:@"Create 10 new groups"
                                          actionBlock:^{
-                                             [DebugUIMessages createNewGroups:10 recipientId:recipientId];
+                                             [DebugUIMessages createNewGroups:10 recipientAddress:recipientAddress];
                                          }]];
         [items addObject:[OWSTableItem itemWithTitle:@"Create 100 new groups"
                                          actionBlock:^{
-                                             [DebugUIMessages createNewGroups:100 recipientId:recipientId];
+                                             [DebugUIMessages createNewGroups:100 recipientAddress:recipientAddress];
                                          }]];
         [items addObject:[OWSTableItem itemWithTitle:@"Create 1,000 new groups"
                                          actionBlock:^{
-                                             [DebugUIMessages createNewGroups:1000 recipientId:recipientId];
+                                             [DebugUIMessages createNewGroups:1000 recipientAddress:recipientAddress];
                                          }]];
     }
     if ([thread isKindOfClass:[TSGroupThread class]]) {
@@ -327,12 +330,8 @@ NS_ASSUME_NONNULL_BEGIN
                                          }]];
     }
 
-#endif
-
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
-
-#ifdef DEBUG
 
 #pragma mark - Dependencies
 
@@ -380,8 +379,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendMessages:(NSUInteger)count toAllMembersOfGroup:(TSGroupThread *)groupThread
 {
-    for (NSString *recipientId in groupThread.groupModel.groupMemberIds) {
-        TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
+    for (SignalServiceAddress *address in groupThread.groupModel.groupMembers) {
+        TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactAddress:address];
         [[self sendTextMessagesActionInThread:contactThread] prepareAndPerformNTimes:count];
     }
 }
@@ -2048,14 +2047,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    isGroupThread:thread.isGroupThread
                                                                      transaction:transaction
                                                                conversationStyle:conversationStyle];
-                if (transaction.transitional_yapReadTransaction) {
-                    quotedMessage = [[OWSQuotedReplyModel
-                        quotedReplyForSendingWithConversationViewItem:viewItem
-                                                          transaction:transaction.transitional_yapReadTransaction]
-                        buildQuotedMessageForSending];
-                } else {
-                    OWSFailDebug(@"failure: not yet implemented for GRDB");
-                }
+                quotedMessage = [
+                    [OWSQuotedReplyModel quotedReplyForSendingWithConversationViewItem:viewItem transaction:transaction]
+                    buildQuotedMessageForSending];
             } else {
                 TSOutgoingMessage *_Nullable messageToQuote = [self createFakeOutgoingMessage:thread
                                                                                   messageBody:quotedMessageBodyWIndex
@@ -2075,14 +2069,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    isGroupThread:thread.isGroupThread
                                                                      transaction:transaction
                                                                conversationStyle:conversationStyle];
-                if (transaction.transitional_yapReadTransaction) {
-                    quotedMessage = [[OWSQuotedReplyModel
-                        quotedReplyForSendingWithConversationViewItem:viewItem
-                                                          transaction:transaction.transitional_yapReadTransaction]
-                        buildQuotedMessageForSending];
-                } else {
-                    OWSFailDebug(@"failure: not yet implemented for GRDB");
-                }
+                quotedMessage = [
+                    [OWSQuotedReplyModel quotedReplyForSendingWithConversationViewItem:viewItem transaction:transaction]
+                    buildQuotedMessageForSending];
             }
             OWSAssertDebug(quotedMessage);
 
@@ -3134,11 +3123,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
                                                   UIImage *avatarImage =
                                                       [OWSAvatarBuilder buildRandomAvatarWithDiameter:200];
-                                                  if (transaction.transitional_yapWriteTransaction) {
-                                                      [contact saveAvatarImage:avatarImage transaction:transaction];
-                                                  } else {
-                                                      OWSFailDebug(@"failure: not yet implemented for GRDB");
-                                                  }
+                                                  [contact saveAvatarImage:avatarImage transaction:transaction];
 
                                                   return contact;
                                               }]];
@@ -3321,11 +3306,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
                                                   UIImage *avatarImage =
                                                       [OWSAvatarBuilder buildRandomAvatarWithDiameter:200];
-                                                  if (transaction.transitional_yapWriteTransaction) {
-                                                      [contact saveAvatarImage:avatarImage transaction:transaction];
-                                                  } else {
-                                                      OWSFailDebug(@"failure: not yet implemented for GRDB");
-                                                  }
+                                                  [contact saveAvatarImage:avatarImage transaction:transaction];
 
                                                   return contact;
                                               }]];
@@ -3451,22 +3432,23 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     OWSAssertDebug(thread);
 
     uint64_t timestamp = [NSDate ows_millisecondTimeStamp];
-    NSString *source = ^{
+    SignalServiceAddress *source = ^{
         if ([thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread *gThread = (TSGroupThread *)thread;
-            return gThread.groupModel.groupMemberIds[0];
+            return gThread.groupModel.groupMembers[0];
         } else if ([thread isKindOfClass:[TSContactThread class]]) {
             TSContactThread *contactThread = (TSContactThread *)thread;
-            return contactThread.contactIdentifier;
+            return contactThread.contactAddress;
         } else {
             OWSFailDebug(@"failure: unknown thread type");
-            return @"unknown-source-id";
+            return [[SignalServiceAddress alloc] initWithPhoneNumber:@"unknown-source-id"];
         }
     }();
 
     SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builderWithTimestamp:timestamp];
     [envelopeBuilder setType:SSKProtoEnvelopeTypeCiphertext];
-    [envelopeBuilder setSource:source];
+    [envelopeBuilder setSourceE164:source.phoneNumber];
+    [envelopeBuilder setSourceUuid:source.uuidString];
     [envelopeBuilder setSourceDevice:1];
     NSError *error;
     SSKProtoEnvelope *_Nullable envelope = [envelopeBuilder buildAndReturnError:&error];
@@ -3488,35 +3470,27 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             TSContactThread *contactThread = (TSContactThread *)thread;
 
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                 withCallNumber:@"+19174054215"
                                                        callType:RPRecentCallTypeIncoming
                                                        inThread:contactThread]];
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                 withCallNumber:@"+19174054215"
                                                        callType:RPRecentCallTypeOutgoing
                                                        inThread:contactThread]];
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                 withCallNumber:@"+19174054215"
                                                        callType:RPRecentCallTypeIncomingMissed
                                                        inThread:contactThread]];
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                 withCallNumber:@"+19174054215"
                                                        callType:RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity
                                                        inThread:contactThread]];
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                 withCallNumber:@"+19174054215"
                                                        callType:RPRecentCallTypeOutgoingIncomplete
                                                        inThread:contactThread]];
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                 withCallNumber:@"+19174054215"
                                                        callType:RPRecentCallTypeIncomingIncomplete
                                                        inThread:contactThread]];
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                 withCallNumber:@"+19174054215"
                                                        callType:RPRecentCallTypeIncomingDeclined
                                                        inThread:contactThread]];
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                 withCallNumber:@"+19174054215"
                                                        callType:RPRecentCallTypeOutgoingMissed
                                                        inThread:contactThread]];
         }
@@ -3579,7 +3553,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                   createdInExistingGroup:NO]];
         }
 
-        [result addObject:[TSInfoMessage userNotRegisteredMessageInThread:thread recipientId:@"+19174054215"]];
+        [result addObject:[TSInfoMessage userNotRegisteredMessageInThread:thread
+                                                                  address:[[SignalServiceAddress alloc]
+                                                                              initWithPhoneNumber:@"+19174054215"]]];
 
         // MJK - should be safe to remove this senderTimestamp
         [result addObject:[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -3597,76 +3573,75 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                        messageType:TSInfoMessageTypeGroupQuit]];
 
         // MJK - should be safe to remove this senderTimestamp
-        [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                                thread:thread
-                                                                           recipientId:@"+19174054215"
-                                                                     verificationState:OWSVerificationStateDefault
-                                                                         isLocalChange:YES]];
+        [result addObject:[[OWSVerificationStateChangeMessage alloc]
+                              initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                         thread:thread
+                               recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
+                              verificationState:OWSVerificationStateDefault
+                                  isLocalChange:YES]];
 
         // MJK - should be safe to remove this senderTimestamp
-        [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                                thread:thread
-                                                                           recipientId:@"+19174054215"
-                                                                     verificationState:OWSVerificationStateVerified
-                                                                         isLocalChange:YES]];
+        [result addObject:[[OWSVerificationStateChangeMessage alloc]
+                              initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                         thread:thread
+                               recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
+                              verificationState:OWSVerificationStateVerified
+                                  isLocalChange:YES]];
         // MJK - should be safe to remove this senderTimestamp
-        [result
-            addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                            thread:thread
-                                                                       recipientId:@"+19174054215"
-                                                                 verificationState:OWSVerificationStateNoLongerVerified
-                                                                     isLocalChange:YES]];
+        [result addObject:[[OWSVerificationStateChangeMessage alloc]
+                              initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                         thread:thread
+                               recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
+                              verificationState:OWSVerificationStateNoLongerVerified
+                                  isLocalChange:YES]];
 
         // MJK - should be safe to remove this senderTimestamp
-        [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                                thread:thread
-                                                                           recipientId:@"+19174054215"
-                                                                     verificationState:OWSVerificationStateDefault
-                                                                         isLocalChange:NO]];
+        [result addObject:[[OWSVerificationStateChangeMessage alloc]
+                              initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                         thread:thread
+                               recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
+                              verificationState:OWSVerificationStateDefault
+                                  isLocalChange:NO]];
         // MJK - should be safe to remove this senderTimestamp
-        [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                                thread:thread
-                                                                           recipientId:@"+19174054215"
-                                                                     verificationState:OWSVerificationStateVerified
-                                                                         isLocalChange:NO]];
+        [result addObject:[[OWSVerificationStateChangeMessage alloc]
+                              initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                         thread:thread
+                               recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
+                              verificationState:OWSVerificationStateVerified
+                                  isLocalChange:NO]];
         // MJK - should be safe to remove this senderTimestamp
-        [result
-            addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                            thread:thread
-                                                                       recipientId:@"+19174054215"
-                                                                 verificationState:OWSVerificationStateNoLongerVerified
-                                                                     isLocalChange:NO]];
+        [result addObject:[[OWSVerificationStateChangeMessage alloc]
+                              initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                         thread:thread
+                               recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
+                              verificationState:OWSVerificationStateNoLongerVerified
+                                  isLocalChange:NO]];
 
-        if (transaction.transitional_yapWriteTransaction) {
-            [result addObject:[TSErrorMessage missingSessionWithEnvelope:[self createEnvelopeForThread:thread]
-                                                         withTransaction:transaction.transitional_yapWriteTransaction]];
-            [result addObject:[TSErrorMessage
-                                  invalidKeyExceptionWithEnvelope:[self createEnvelopeForThread:thread]
-                                                  withTransaction:transaction.transitional_yapWriteTransaction]];
-            [result addObject:[TSErrorMessage invalidVersionWithEnvelope:[self createEnvelopeForThread:thread]
-                                                         withTransaction:transaction.transitional_yapWriteTransaction]];
-            [result
-                addObject:[TSErrorMessage corruptedMessageWithEnvelope:[self createEnvelopeForThread:thread]
-                                                       withTransaction:transaction.transitional_yapWriteTransaction]];
+        [result addObject:[TSErrorMessage missingSessionWithEnvelope:[self createEnvelopeForThread:thread]
+                                                     withTransaction:transaction]];
+        [result addObject:[TSErrorMessage invalidKeyExceptionWithEnvelope:[self createEnvelopeForThread:thread]
+                                                          withTransaction:transaction]];
+        [result addObject:[TSErrorMessage invalidVersionWithEnvelope:[self createEnvelopeForThread:thread]
+                                                     withTransaction:transaction]];
+        [result addObject:[TSErrorMessage corruptedMessageWithEnvelope:[self createEnvelopeForThread:thread]
+                                                       withTransaction:transaction]];
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            TSInvalidIdentityKeyReceivingErrorMessage *_Nullable blockingSNChangeMessage =
-                [TSInvalidIdentityKeyReceivingErrorMessage
-                    untrustedKeyWithEnvelope:[self createEnvelopeForThread:thread]
-                             withTransaction:transaction.transitional_yapWriteTransaction];
+        TSInvalidIdentityKeyReceivingErrorMessage *_Nullable blockingSNChangeMessage =
+            [TSInvalidIdentityKeyReceivingErrorMessage untrustedKeyWithEnvelope:[self createEnvelopeForThread:thread]
+                                                                withTransaction:transaction];
 #pragma clang diagnostic pop
 
 
-            OWSAssertDebug(blockingSNChangeMessage);
-            [result addObject:blockingSNChangeMessage];
-        } else {
-            OWSFailDebug(@"failure: not yet implemented for GRDB");
-        }
+        OWSAssertDebug(blockingSNChangeMessage);
+        [result addObject:blockingSNChangeMessage];
+
         // MJK TODO - should be safe to remove this senderTimestamp
-        [result addObject:[[TSErrorMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                           inThread:thread
-                                                  failedMessageType:TSErrorMessageNonBlockingIdentityChange
-                                                        recipientId:@"+19174054215"]];
+        [result addObject:[[TSErrorMessage alloc]
+                              initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                       inThread:thread
+                              failedMessageType:TSErrorMessageNonBlockingIdentityChange
+                                        address:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]]];
     }];
 
     return result;
@@ -3760,7 +3735,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                   OWSAssertDebug(phoneNumber);
                   OWSAssertDebug(phoneNumber.toE164);
 
-                  TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:phoneNumber.toE164];
+                  TSContactThread *contactThread =
+                      [TSContactThread getOrCreateThreadWithContactAddress:[[SignalServiceAddress alloc]
+                                                                               initWithPhoneNumber:phoneNumber.toE164]];
                   [self sendFakeMessages:messageCount thread:contactThread];
                   [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
                       NSUInteger interactionCount = [contactThread numberOfInteractionsWithTransaction:transaction];
@@ -3835,28 +3812,23 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         switch (arc4random_uniform(isTextOnly ? 2 : 4)) {
             case 0: {
                 // MJK - should be safe to remove this senderTimestamp
-                TSIncomingMessage *message =
-                    [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                       inThread:thread
-                                                                       authorId:@"+19174054215"
-                                                                 sourceDeviceId:0
-                                                                    messageBody:randomText
-                                                                  attachmentIds:@[]
-                                                               expiresInSeconds:0
-                                                                  quotedMessage:nil
-                                                                   contactShare:nil
-                                                                    linkPreview:nil
-                                                                 messageSticker:nil
-                                                                serverTimestamp:nil
-                                                                wasReceivedByUD:NO
-                                            perMessageExpirationDurationSeconds:0];
-                if (transaction.transitional_yapWriteTransaction) {
-                    [message markAsReadNowWithSendReadReceipt:NO
-                                                  transaction:transaction.transitional_yapWriteTransaction];
-                } else {
-                    OWSLogWarn(@"GRDB TODO: not yet implemented");
-                    [message anyInsertWithTransaction:transaction];
-                }
+                TSIncomingMessage *message = [[TSIncomingMessage alloc]
+                    initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                            inThread:thread
+                                       authorAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
+                                      sourceDeviceId:0
+                                         messageBody:randomText
+                                       attachmentIds:@[]
+                                    expiresInSeconds:0
+                                       quotedMessage:nil
+                                        contactShare:nil
+                                         linkPreview:nil
+                                      messageSticker:nil
+                                     serverTimestamp:nil
+                                     wasReceivedByUD:NO
+                                   isViewOnceMessage:NO];
+                [message anyInsertWithTransaction:transaction];
+                [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
                 break;
             }
             case 1: {
@@ -3890,30 +3862,25 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 pointer.state = TSAttachmentPointerStateFailed;
                 [pointer anyInsertWithTransaction:transaction];
                 // MJK - should be safe to remove this senderTimestamp
-                TSIncomingMessage *message =
-                    [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                       inThread:thread
-                                                                       authorId:@"+19174054215"
-                                                                 sourceDeviceId:0
-                                                                    messageBody:nil
-                                                                  attachmentIds:@[
-                                                                      pointer.uniqueId,
-                                                                  ]
-                                                               expiresInSeconds:0
-                                                                  quotedMessage:nil
-                                                                   contactShare:nil
-                                                                    linkPreview:nil
-                                                                 messageSticker:nil
-                                                                serverTimestamp:nil
-                                                                wasReceivedByUD:NO
-                                            perMessageExpirationDurationSeconds:0];
-                if (transaction.transitional_yapWriteTransaction) {
-                    [message markAsReadNowWithSendReadReceipt:NO
-                                                  transaction:transaction.transitional_yapWriteTransaction];
-                } else {
-                    OWSLogWarn(@"GRDB TODO: not yet implemented");
-                    [message anyInsertWithTransaction:transaction];
-                }
+                TSIncomingMessage *message = [[TSIncomingMessage alloc]
+                    initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                            inThread:thread
+                                       authorAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
+                                      sourceDeviceId:0
+                                         messageBody:nil
+                                       attachmentIds:@[
+                                           pointer.uniqueId,
+                                       ]
+                                    expiresInSeconds:0
+                                       quotedMessage:nil
+                                        contactShare:nil
+                                         linkPreview:nil
+                                      messageSticker:nil
+                                     serverTimestamp:nil
+                                     wasReceivedByUD:NO
+                                   isViewOnceMessage:NO];
+                [message anyInsertWithTransaction:transaction];
+                [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
                 break;
             }
             case 3: {
@@ -3953,37 +3920,32 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
 #pragma mark -
 
-+ (void)createNewGroups:(NSUInteger)counter recipientId:(NSString *)recipientId
++ (void)createNewGroups:(NSUInteger)counter recipientAddress:(SignalServiceAddress *)recipientAddress
 {
     if (counter < 1) {
         return;
     }
 
     NSString *groupName = [NSUUID UUID].UUIDString;
-    NSMutableArray<NSString *> *recipientIds = [@[
-        recipientId,
-        [TSAccountManager localNumber],
+    NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
+        recipientAddress,
+        TSAccountManager.localAddress,
     ] mutableCopy];
     NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
-    TSGroupModel *groupModel =
-        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
+    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
+                                                           members:recipientAddresses
+                                                             image:nil
+                                                           groupId:groupId];
 
     __block TSGroupThread *thread;
-    [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
-        if (!transaction.transitional_yapWriteTransaction) {
-            OWSFailDebug(@"failure: not yet implemented for GRDB");
-            return;
-        }
-
-        thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel
-                                                    transaction:transaction.transitional_yapWriteTransaction];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
         OWSAssertDebug(thread);
 
         TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
                                                                groupMetaMessage:TSGroupMetaMessageNew
                                                                expiresInSeconds:0];
-        [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)
-                             transaction:transaction.transitional_yapWriteTransaction];
+        [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil) transaction:transaction];
 
         [self.messageSenderJobQueue addMessage:message transaction:transaction];
     }];
@@ -3997,7 +3959,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                    transaction:transaction];
         }];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [self createNewGroups:counter - 1 recipientId:recipientId];
+            [self createNewGroups:counter - 1 recipientAddress:recipientAddress];
         });
     });
 }
@@ -4040,22 +4002,23 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     // Try to use an arbitrary member of the current thread that isn't
     // ourselves as the sender.
-    NSString *_Nullable recipientId = [[thread recipientIdentifiers] firstObject];
+    SignalServiceAddress *_Nullable address = [[thread recipientAddresses] firstObject];
     // This might be an "empty" group with no other members.  If so, use a fake
     // sender id.
-    if (!recipientId) {
-        recipientId = @"+12345678901";
+    if (!address) {
+        address = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12345678901"];
     }
 
     uint64_t timestamp = [NSDate ows_millisecondTimeStamp];
-    NSString *source = recipientId;
+    SignalServiceAddress *source = address;
     uint32_t sourceDevice = 1;
     SSKProtoEnvelopeType envelopeType = SSKProtoEnvelopeTypeCiphertext;
     NSData *content = plaintextData;
 
     SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builderWithTimestamp:timestamp];
     [envelopeBuilder setType:envelopeType];
-    [envelopeBuilder setSource:source];
+    [envelopeBuilder setSourceE164:source.phoneNumber];
+    [envelopeBuilder setSourceUuid:source.uuidString];
     [envelopeBuilder setSourceDevice:sourceDevice];
     envelopeBuilder.content = content;
     NSError *error;
@@ -4218,14 +4181,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     NSMutableArray<TSOutgoingMessage *> *messages = [NSMutableArray new];
     for (NSUInteger i =0; i < count; i++) {
         NSString *text = [self randomText];
-        OWSDisappearingMessagesConfiguration *configuration;
-        if (transaction.transitional_yapReadTransaction) {
-            configuration = [OWSDisappearingMessagesConfiguration
-                fetchObjectWithUniqueID:thread.uniqueId
-                            transaction:transaction.transitional_yapReadTransaction];
-        } else {
-            OWSFailDebug(@"failure: not yet implemented for GRDB");
-        }
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId transaction:transaction];
 
         uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
         TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
@@ -4253,14 +4210,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     NSMutableArray<TSOutgoingMessage *> *messages = [NSMutableArray new];
     for (NSUInteger i =0; i < count; i++) {
         NSString *text = [self randomText];
-        OWSDisappearingMessagesConfiguration *configuration;
-        if (initialTransaction.transitional_yapReadTransaction) {
-            configuration = [OWSDisappearingMessagesConfiguration
-                fetchObjectWithUniqueID:thread.uniqueId
-                            transaction:initialTransaction.transitional_yapReadTransaction];
-        } else {
-            OWSFailDebug(@"failure: not yet implemented for GRDB");
-        }
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId transaction:initialTransaction];
 
         uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
         TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
@@ -4297,30 +4248,24 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     NSMutableArray<TSOutgoingMessage *> *messages = [NSMutableArray new];
     for (NSUInteger i =0; i < count; i++) {
         NSString *text = [self randomText];
-        OWSDisappearingMessagesConfiguration *configuration;
-        if (initialTransaction.transitional_yapReadTransaction) {
-            configuration = [OWSDisappearingMessagesConfiguration
-                fetchObjectWithUniqueID:thread.uniqueId
-                            transaction:initialTransaction.transitional_yapReadTransaction];
-        } else {
-            OWSFailDebug(@"failure: not yet implemented for GRDB");
-        }
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId transaction:initialTransaction];
 
         // MJK TODO - remove senderTimestamp
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc]
-               initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                       inThread:thread
-                                    messageBody:text
-                                  attachmentIds:[NSMutableArray new]
-                               expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds
-                                                                         : 0)expireStartedAt:0
-                                 isVoiceMessage:NO
-                               groupMetaMessage:TSGroupMetaMessageUnspecified
-                                  quotedMessage:nil
-                                   contactShare:nil
-                                    linkPreview:nil
-                                 messageSticker:nil
-            perMessageExpirationDurationSeconds:0];
+            initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                    inThread:thread
+                                 messageBody:text
+                               attachmentIds:[NSMutableArray new]
+                            expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds
+                                                                      : 0)expireStartedAt:0
+                              isVoiceMessage:NO
+                            groupMetaMessage:TSGroupMetaMessageUnspecified
+                               quotedMessage:nil
+                                contactShare:nil
+                                 linkPreview:nil
+                              messageSticker:nil
+                           isViewOnceMessage:NO];
         OWSLogError(@"resurrectNewOutgoingMessages2 timestamp: %llu.", message.timestamp);
         [messages addObject:message];
     }
@@ -4368,9 +4313,11 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         @(now - 1 * (long long)kMonthInMs),
         @(now - 2 * (long long)kMonthInMs),
     ];
-    NSMutableArray<NSString *> *recipientIds = [thread.recipientIdentifiers mutableCopy];
-    [recipientIds removeObject:[TSAccountManager localNumber]];
-    NSString *recipientId = (recipientIds.count > 0 ? recipientIds.firstObject : @"+19174054215");
+    NSMutableArray<SignalServiceAddress *> *addresses = [thread.recipientAddresses mutableCopy];
+    [addresses removeObject:TSAccountManager.localAddress];
+    SignalServiceAddress *address
+        = (addresses.count > 0 ? addresses.firstObject
+                               : [[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]);
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         for (NSNumber *timestamp in timestamps) {
@@ -4380,7 +4327,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 TSIncomingMessage *message =
                     [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp.unsignedLongLongValue
                                                                        inThread:thread
-                                                                       authorId:recipientId
+                                                                  authorAddress:address
                                                                  sourceDeviceId:0
                                                                     messageBody:randomText
                                                                   attachmentIds:[NSMutableArray new]
@@ -4391,13 +4338,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                  messageSticker:nil
                                                                 serverTimestamp:nil
                                                                 wasReceivedByUD:NO
-                                            perMessageExpirationDurationSeconds:0];
-                if (transaction.transitional_yapWriteTransaction) {
-                    [message markAsReadNowWithSendReadReceipt:NO
-                                                  transaction:transaction.transitional_yapWriteTransaction];
-                } else {
-                    OWSFailDebug(@"not yet supported for GRDB");
-                }
+                                                              isViewOnceMessage:NO];
+                [message anyInsertWithTransaction:transaction];
+                [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
             }
             {
                 // MJK TODO - this might be the one place we actually use senderTimestamp
@@ -4414,20 +4357,14 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                    contactShare:nil
                                                                     linkPreview:nil
                                                                  messageSticker:nil
-                                            perMessageExpirationDurationSeconds:0];
+                                                              isViewOnceMessage:NO];
                 [message anyInsertWithTransaction:transaction];
                 [message updateWithFakeMessageState:TSOutgoingMessageStateSent transaction:transaction];
-                [message updateWithSentRecipient:recipientId wasSentByUD:NO transaction:transaction];
-                if (transaction.transitional_yapWriteTransaction) {
-                    [message updateWithDeliveredRecipient:recipientId
-                                        deliveryTimestamp:timestamp
-                                              transaction:transaction.transitional_yapWriteTransaction];
-                    [message updateWithReadRecipientId:recipientId
-                                         readTimestamp:timestamp.unsignedLongLongValue
-                                           transaction:transaction.transitional_yapWriteTransaction];
-                } else {
-                    OWSFailDebug(@"failure: not yet implemented for GRDB");
-                }
+                [message updateWithSentRecipient:address wasSentByUD:NO transaction:transaction];
+                [message updateWithDeliveredRecipient:address deliveryTimestamp:timestamp transaction:transaction];
+                [message updateWithReadRecipient:address
+                                   readTimestamp:timestamp.unsignedLongLongValue
+                                     transaction:transaction];
             }
         }
     }];
@@ -4435,28 +4372,31 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
 + (void)createDisappearingMessagesWhichFailedToStartInThread:(TSThread *)thread
 {
+    // MJK TODO - should be safe to remove this senderTimestamp
     uint64_t now = [NSDate ows_millisecondTimeStamp];
 
-    // MJK TODO - should be safe to remove this senderTimestamp
+    SignalServiceAddress *address = thread.recipientAddresses.firstObject;
     TSIncomingMessage *message = [[TSIncomingMessage alloc]
-           initIncomingMessageWithTimestamp:now
-                                   inThread:thread
-                                   authorId:thread.recipientIdentifiers.firstObject
-                             sourceDeviceId:0
-                                messageBody:[NSString
-                                                stringWithFormat:@"Should disappear 60s after %lu", (unsigned long)now]
-                              attachmentIds:[NSMutableArray new]
-                           expiresInSeconds:60
-                              quotedMessage:nil
-                               contactShare:nil
-                                linkPreview:nil
-                             messageSticker:nil
-                            serverTimestamp:nil
-                            wasReceivedByUD:NO
-        perMessageExpirationDurationSeconds:0];
+        initIncomingMessageWithTimestamp:now
+                                inThread:thread
+                           authorAddress:address
+                          sourceDeviceId:0
+                             messageBody:[NSString
+                                             stringWithFormat:@"Should disappear 60s after %lu", (unsigned long)now]
+                           attachmentIds:[NSMutableArray new]
+                        expiresInSeconds:60
+                           quotedMessage:nil
+                            contactShare:nil
+                             linkPreview:nil
+                          messageSticker:nil
+                         serverTimestamp:nil
+                         wasReceivedByUD:NO
+                       isViewOnceMessage:NO];
     // private setter to avoid starting expire machinery.
     message.read = YES;
-    [message save];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [message anyInsertWithTransaction:transaction];
+    }];
 }
 
 + (void)testLinkificationInThread:(TSThread *)thread
@@ -4487,24 +4427,21 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                     transaction:transaction];
             }
             {
-                NSString *recipientId = @"+1323555555";
+                SignalServiceAddress *recipientAddress =
+                    [[SignalServiceAddress alloc] initWithPhoneNumber:@"+1323555555"];
                 NSString *groupName = string;
-                NSMutableArray<NSString *> *recipientIds = [@[
-                    recipientId,
-                    [TSAccountManager localNumber],
+                NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
+                    recipientAddress,
+                    TSAccountManager.localAddress,
                 ] mutableCopy];
                 NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
-                TSGroupModel *groupModel =
-                    [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
-
-                if (transaction.transitional_yapWriteTransaction) {
-                    TSGroupThread *groupThread =
-                        [TSGroupThread getOrCreateThreadWithGroupModel:groupModel
-                                                           transaction:transaction.transitional_yapWriteTransaction];
-                    OWSAssertDebug(groupThread);
-                } else {
-                    OWSFailDebug(@"failure: not yet implemented for GRDB");
-                }
+                TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
+                                                                       members:recipientAddresses
+                                                                         image:nil
+                                                                       groupId:groupId];
+                TSGroupThread *groupThread =
+                    [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+                OWSAssertDebug(groupThread);
             }
         }
     }];
@@ -4532,24 +4469,21 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                     transaction:transaction];
             }
             {
-                NSString *recipientId = @"+19174054215";
+                SignalServiceAddress *recipientAddress =
+                    [[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"];
                 NSString *groupName = string;
-                NSMutableArray<NSString *> *recipientIds = [@[
-                    recipientId,
-                    [TSAccountManager localNumber],
+                NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
+                    recipientAddress,
+                    TSAccountManager.localAddress,
                 ] mutableCopy];
                 NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
-                TSGroupModel *groupModel =
-                    [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
-
-                if (transaction.transitional_yapWriteTransaction) {
-                    TSGroupThread *groupThread =
-                        [TSGroupThread getOrCreateThreadWithGroupModel:groupModel
-                                                           transaction:transaction.transitional_yapWriteTransaction];
-                    OWSAssertDebug(groupThread);
-                } else {
-                    OWSFailDebug(@"failure: not yet implemented for GRDB");
-                }
+                TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
+                                                                       members:recipientAddresses
+                                                                         image:nil
+                                                                       groupId:groupId];
+                TSGroupThread *groupThread =
+                    [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+                OWSAssertDebug(groupThread);
             }
         }
     }];
@@ -4576,24 +4510,21 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                         transaction:transaction];
                 }
                 {
-                    NSString *recipientId = @"+19174054215";
+                    SignalServiceAddress *recipientAddress =
+                        [[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"];
                     NSString *groupName = string;
-                    NSMutableArray<NSString *> *recipientIds = [@[
-                        recipientId,
-                        [TSAccountManager localNumber],
+                    NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
+                        recipientAddress,
+                        TSAccountManager.localAddress,
                     ] mutableCopy];
                     NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
-                    TSGroupModel *groupModel =
-                        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
-
-                    if (transaction.transitional_yapWriteTransaction) {
-                        TSGroupThread *groupThread = [TSGroupThread
-                            getOrCreateThreadWithGroupModel:groupModel
-                                                transaction:transaction.transitional_yapWriteTransaction];
-                        OWSAssertDebug(groupThread);
-                    } else {
-                        OWSFailDebug(@"failure: not yet implemented for GRDB");
-                    }
+                    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
+                                                                           members:recipientAddresses
+                                                                             image:nil
+                                                                           groupId:groupId];
+                    TSGroupThread *groupThread =
+                        [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+                    OWSAssertDebug(groupThread);
                 }
             }
         }];
@@ -4639,11 +4570,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 + (void)deleteAllMessagesInThread:(TSThread *)thread
 {
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        if (transaction.transitional_yapWriteTransaction) {
-            [thread removeAllThreadInteractionsWithTransaction:transaction.transitional_yapWriteTransaction];
-        } else {
-            OWSFailDebug(@"failure: not yet implemented for GRDB");
-        }
+        [thread removeAllThreadInteractionsWithTransaction:transaction];
     }];
 }
 
@@ -4754,7 +4681,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                        contactShare:contactShare
                                                         linkPreview:linkPreview
                                                      messageSticker:messageSticker
-                                perMessageExpirationDurationSeconds:0];
+                                                  isViewOnceMessage:NO];
 
     if (attachmentId.length > 0 && filename.length > 0) {
         message.attachmentFilenameMap[attachmentId] = filename;
@@ -4763,26 +4690,18 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     [message anyInsertWithTransaction:transaction];
     [message updateWithFakeMessageState:messageState transaction:transaction];
     if (isDelivered) {
-        NSString *_Nullable recipientId = thread.recipientIdentifiers.lastObject;
-        OWSAssertDebug(recipientId.length > 0);
-        if (transaction.transitional_yapWriteTransaction) {
-            [message updateWithDeliveredRecipient:recipientId
-                                deliveryTimestamp:@([NSDate ows_millisecondTimeStamp])
-                                      transaction:transaction.transitional_yapWriteTransaction];
-        } else {
-            OWSFailDebug(@"failure: not yet implemented for GRDB");
-        }
+        SignalServiceAddress *_Nullable address = thread.recipientAddresses.lastObject;
+        OWSAssertDebug(address.isValid);
+        [message updateWithDeliveredRecipient:address
+                            deliveryTimestamp:@([NSDate ows_millisecondTimeStamp])
+                                  transaction:transaction];
     }
     if (isRead) {
-        NSString *_Nullable recipientId = thread.recipientIdentifiers.lastObject;
-        OWSAssertDebug(recipientId.length > 0);
-        if (transaction.transitional_yapWriteTransaction) {
-            [message updateWithReadRecipientId:recipientId
-                                 readTimestamp:[NSDate ows_millisecondTimeStamp]
-                                   transaction:transaction.transitional_yapWriteTransaction];
-        } else {
-            OWSFailDebug(@"failure: not yet implemented for GRDB");
-        }
+        SignalServiceAddress *_Nullable address = thread.recipientAddresses.lastObject;
+        OWSAssertDebug(address.isValid);
+        [message updateWithReadRecipient:address
+                           readTimestamp:[NSDate ows_millisecondTimeStamp]
+                             transaction:transaction];
     }
     return message;
 }
@@ -4842,26 +4761,23 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     //    uint64_t timestamp = [NSDate ows_millisecondTimeStamp] - millisAgo;
 
     // MJK TODO - should be safe to remove this senderTimestamp
-    TSIncomingMessage *message =
-        [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                           inThread:thread
-                                                           authorId:@"+19174054215"
-                                                     sourceDeviceId:0
-                                                        messageBody:messageBody
-                                                      attachmentIds:attachmentIds
-                                                   expiresInSeconds:0
-                                                      quotedMessage:quotedMessage
-                                                       contactShare:nil
-                                                        linkPreview:nil
-                                                     messageSticker:nil
-                                                    serverTimestamp:nil
-                                                    wasReceivedByUD:NO
-                                perMessageExpirationDurationSeconds:0];
-    if (transaction.transitional_yapWriteTransaction) {
-        [message markAsReadNowWithSendReadReceipt:NO transaction:transaction.transitional_yapWriteTransaction];
-    } else {
-        OWSFailDebug(@"failure: not yet supported by GRDB");
-    }
+    TSIncomingMessage *message = [[TSIncomingMessage alloc]
+        initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                inThread:thread
+                           authorAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
+                          sourceDeviceId:0
+                             messageBody:messageBody
+                           attachmentIds:attachmentIds
+                        expiresInSeconds:0
+                           quotedMessage:quotedMessage
+                            contactShare:nil
+                             linkPreview:nil
+                          messageSticker:nil
+                         serverTimestamp:nil
+                         wasReceivedByUD:NO
+                       isViewOnceMessage:NO];
+    [message anyInsertWithTransaction:transaction];
+    [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
     return message;
 }
 
@@ -5001,8 +4917,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         }];
 }
 
-#endif
-
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

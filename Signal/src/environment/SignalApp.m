@@ -11,7 +11,7 @@
 #import <SignalCoreKit/Threading.h>
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>
 
@@ -42,7 +42,14 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-#pragma mark - Singletons
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 - (void)setup {
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -53,20 +60,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - View Convenience Methods
 
-- (void)presentConversationForRecipientId:(NSString *)recipientId animated:(BOOL)isAnimated
+- (void)presentConversationForAddress:(SignalServiceAddress *)address animated:(BOOL)isAnimated
 {
-    [self presentConversationForRecipientId:recipientId action:ConversationViewActionNone animated:(BOOL)isAnimated];
+    [self presentConversationForAddress:address action:ConversationViewActionNone animated:(BOOL)isAnimated];
 }
 
-- (void)presentConversationForRecipientId:(NSString *)recipientId
-                                   action:(ConversationViewAction)action
-                                 animated:(BOOL)isAnimated
+- (void)presentConversationForAddress:(SignalServiceAddress *)address
+                               action:(ConversationViewAction)action
+                             animated:(BOOL)isAnimated
 {
     __block TSThread *thread = nil;
-    [OWSPrimaryStorage.dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
-        }];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        thread = [TSContactThread getOrCreateThreadWithContactAddress:address transaction:transaction];
+    }];
     [self presentConversationForThread:thread action:action animated:(BOOL)isAnimated];
 }
 
@@ -74,7 +80,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(threadId.length > 0);
 
-    TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
+    __block TSThread *_Nullable thread;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        thread = [TSThread anyFetchWithUniqueId:threadId transaction:transaction];
+    }];
     if (thread == nil) {
         OWSFailDebug(@"unable to find thread with id: %@", threadId);
         return;
@@ -129,7 +138,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSLogInfo(@"");
 
-    TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
+    __block TSThread *_Nullable thread;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        thread = [TSThread anyFetchWithUniqueId:threadId transaction:transaction];
+    }];
     if (thread == nil) {
         OWSFailDebug(@"unable to find thread with id: %@", threadId);
         return;

@@ -3,14 +3,17 @@
 //
 
 #import "OWSDisappearingMessagesConfiguration.h"
-#import "NSString+SSK.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSString+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSDisappearingMessagesConfiguration ()
 
 // Transient record lifecycle attributes.
+//
+// GRDB TODO: Ensure this is working with GRDB. Add tests?
 @property (atomic) NSDictionary *originalDictionaryValue;
 @property (atomic, getter=isNewRecord) BOOL newRecord;
 
@@ -85,11 +88,10 @@ NS_ASSUME_NONNULL_BEGIN
     _newRecord = NO;
 }
 
-+ (instancetype)fetchOrBuildDefaultWithThreadId:(NSString *)threadId
-                                    transaction:(YapDatabaseReadTransaction *)transaction
++ (instancetype)fetchOrBuildDefaultWithThreadId:(NSString *)threadId transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSDisappearingMessagesConfiguration *savedConfiguration =
-        [self fetchObjectWithUniqueID:threadId transaction:transaction];
+        [self anyFetchWithUniqueId:threadId transaction:transaction];
     if (savedConfiguration) {
         return savedConfiguration;
     } else {
@@ -159,6 +161,23 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [super saveWithTransaction:transaction];
+
+    self.originalDictionaryValue = [self dictionaryValue];
+    self.newRecord = NO;
+}
+
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidInsertWithTransaction:transaction];
+
+    self.originalDictionaryValue = [self dictionaryValue];
+    self.newRecord = NO;
+}
+
+- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidUpdateWithTransaction:transaction];
+
     self.originalDictionaryValue = [self dictionaryValue];
     self.newRecord = NO;
 }

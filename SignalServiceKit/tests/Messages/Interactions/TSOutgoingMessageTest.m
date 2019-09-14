@@ -3,7 +3,6 @@
 //
 
 #import "TSOutgoingMessage.h"
-#import "OWSPrimaryStorage.h"
 #import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
 
@@ -44,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       quotedMessage:nil
                                                        contactShare:nil
                                                         linkPreview:nil];
-    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
         XCTAssertFalse([message shouldStartExpireTimerWithTransaction:transaction]);
     }];
 }
@@ -63,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       quotedMessage:nil
                                                        contactShare:nil
                                                         linkPreview:nil];
-    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [message updateWithSentRecipient:self.contactId wasSentByUD:NO transaction:transaction];
         XCTAssertTrue([message shouldStartExpireTimerWithTransaction:transaction]);
     }];
@@ -83,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       quotedMessage:nil
                                                        contactShare:nil
                                                         linkPreview:nil];
-    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
         XCTAssertFalse([message shouldStartExpireTimerWithTransaction:transaction]);
     }];
 }
@@ -102,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       quotedMessage:nil
                                                        contactShare:nil
                                                         linkPreview:nil];
-    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [message updateWithMarkingAllUnsentRecipientsAsSendingWithTransaction:transaction];
         XCTAssertFalse([message shouldStartExpireTimerWithTransaction:transaction]);
     }];

@@ -69,6 +69,10 @@ public class LongTextViewController: OWSViewController {
                                                object: OWSPrimaryStorage.shared().dbNotificationObject)
     }
 
+    override public var canBecomeFirstResponder: Bool {
+        return true
+    }
+
     // MARK: - DB
 
     @objc internal func uiDatabaseDidUpdate(notification: NSNotification) {
@@ -79,11 +83,7 @@ public class LongTextViewController: OWSViewController {
             return
         }
 
-        guard let uniqueId = self.viewItem.interaction.uniqueId else {
-            Logger.error("Message is missing uniqueId.")
-            return
-        }
-
+        let uniqueId = self.viewItem.interaction.uniqueId
         guard self.uiDatabaseConnection.hasChange(forKey: uniqueId,
                                                   inCollection: TSInteraction.collection(),
                                                   in: notifications) else {
@@ -93,7 +93,7 @@ public class LongTextViewController: OWSViewController {
 
         do {
             try uiDatabaseConnection.read { transaction in
-                guard TSInteraction.fetch(uniqueId: uniqueId, transaction: transaction) != nil else {
+                guard TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction.asAnyRead) != nil else {
                     Logger.error("Message was deleted")
                     throw LongTextViewError.messageWasDeleted
                 }
@@ -131,6 +131,7 @@ public class LongTextViewController: OWSViewController {
         messageTextView.textColor = Theme.primaryColor
         if let displayableText = displayableText {
             messageTextView.text = fullText
+            messageTextView.textAlignment = displayableText.fullTextNaturalAlignment
             messageTextView.ensureShouldLinkifyText(displayableText.shouldAllowLinkification)
         } else {
             owsFailDebug("displayableText was unexpectedly nil")

@@ -1,0 +1,73 @@
+//
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//
+
+// iOS - since we use a modern proto-compiler, we must specify
+// the legacy proto format.
+syntax = "proto2";
+
+// iOS - package name determines class prefix
+package StorageServiceProtos;
+
+message Contact {
+  // @required
+  optional bytes key   = 1;  // Randomly generated 16-byte value
+  // @required
+  optional bytes value = 2;  // Encrypted serialized bytes
+}
+
+message Contacts {
+  repeated Contact contacts = 1; // Corresponds to the requested
+                                 // contact keys that were found
+}
+
+message ContactsManifest {
+  // @required
+  optional uint64 version = 1; // Monotonically increasing value
+  // @required
+  optional bytes  value   = 2; // Encrypted serialized bytes
+}
+
+message ReadOperation {
+  repeated bytes readKey = 1;
+}
+
+message WriteOperation {
+  optional ContactsManifest manifest      = 1;
+  repeated Contact          insertContact = 2;
+  repeated bytes            deleteKey     = 3;
+}
+
+message ContactRecord {
+  message Identity {
+    enum State {
+      DEFAULT    = 0;
+      VERIFIED   = 1;
+      UNVERIFIED = 2;
+    }
+
+    optional bytes key   = 1;
+    optional State state = 2;
+  }
+
+  message Profile {
+    optional string name   = 1;
+    optional bytes  key    = 2;
+    optional bytes  avatar = 3;
+  }
+
+  // @required
+  optional bytes    key         = 1;
+  optional string   serviceUuid = 2;
+  optional string   serviceE164 = 3;
+  optional Profile  profile     = 4;
+  optional Identity identity    = 5;
+  optional bool     blocked     = 6;
+  optional bool     whitelisted = 7;
+}
+
+message ManifestRecord {
+  // @required
+  optional uint64 version  = 1;
+  repeated bytes  keys     = 2;
+}

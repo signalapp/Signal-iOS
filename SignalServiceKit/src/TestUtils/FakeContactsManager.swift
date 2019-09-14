@@ -1,26 +1,42 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 @objc(OWSFakeContactsManager)
 public class FakeContactsManager: NSObject, ContactsManagerProtocol {
-    public func displayName(forPhoneIdentifier recipientId: String?) -> String {
+    public func displayName(for address: SignalServiceAddress) -> String {
         return "Fake name"
     }
 
-    public func displayName(forPhoneIdentifier recipientId: String?, transaction: YapDatabaseReadTransaction) -> String {
-        return self.displayName(forPhoneIdentifier: recipientId)
+    public func displayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        return self.displayName(for: address)
+    }
+
+    public func displayName(for signalAccount: SignalAccount) -> String {
+        return "Fake name"
+    }
+
+    public func displayName(for thread: TSThread, transaction: SDSAnyReadTransaction) -> String {
+        return "Fake name"
+    }
+
+    public func displayNameWithSneakyTransaction(thread: TSThread) -> String {
+        return "Fake name"
     }
 
     public func signalAccounts() -> [SignalAccount] {
         return []
     }
 
-    public func isSystemContact(_ recipientId: String) -> Bool {
+    public func isSystemContact(phoneNumber: String) -> Bool {
         return true
     }
 
-    public func isSystemContact(withSignalAccount recipientId: String) -> Bool {
+    public func isSystemContact(address: SignalServiceAddress) -> Bool {
+        return true
+    }
+
+    public func isSystemContact(withSignalAccount phoneNumber: String) -> Bool {
         return true
     }
 

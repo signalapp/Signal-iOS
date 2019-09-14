@@ -25,7 +25,8 @@ import random
 #
 # We treat direct subclasses of TSYapDatabaseObject as "roots" of the model class hierarchy.
 # Only root models do deserialization.
-BASE_MODEL_CLASS_NAME = 'TSYapDatabaseObject'
+OLD_BASE_MODEL_CLASS_NAME = 'TSYapDatabaseObject'
+NEW_BASE_MODEL_CLASS_NAME = 'BaseModel'
 
 CODE_GEN_SNIPPET_MARKER_OBJC = '// --- CODE GENERATION MARKER'
 
@@ -158,7 +159,7 @@ class ParsedClass:
          if not self.super_class_name in global_class_map:
              # print 'is_sds_model (2):', self.name, self.super_class_name
              return False
-         if self.super_class_name == BASE_MODEL_CLASS_NAME:
+         if self.super_class_name in (OLD_BASE_MODEL_CLASS_NAME, NEW_BASE_MODEL_CLASS_NAME, ):
              # print 'is_sds_model (3):', self.name, self.super_class_name
              return True
          super_class = global_class_map[self.super_class_name]
@@ -170,21 +171,23 @@ class ParsedClass:
          # print 'self.super_class_name:', self.super_class_name, self.super_class_name in global_class_map, self.super_class_name != BASE_MODEL_CLASS_NAME
          return (self.super_class_name and
                 self.super_class_name in global_class_map
-                and self.super_class_name != BASE_MODEL_CLASS_NAME)
+                and self.super_class_name != OLD_BASE_MODEL_CLASS_NAME
+                and self.super_class_name != NEW_BASE_MODEL_CLASS_NAME)
         
      def table_superclass(self):
          if self.super_class_name is None:
              return self
          if not self.super_class_name in global_class_map:
              return self
-         if self.super_class_name == BASE_MODEL_CLASS_NAME:
+         if self.super_class_name == OLD_BASE_MODEL_CLASS_NAME:
+             return self
+         if self.super_class_name == NEW_BASE_MODEL_CLASS_NAME:
              return self
          super_class = global_class_map[self.super_class_name]
          return super_class.table_superclass()
-    
-    
+        
      def should_generate_extensions(self):
-        if self.name == BASE_MODEL_CLASS_NAME:
+        if self.name in (OLD_BASE_MODEL_CLASS_NAME, NEW_BASE_MODEL_CLASS_NAME, ):
             print 'Ignoring class (1):', self.name 
             return False
         if should_ignore_class(self):
@@ -195,6 +198,15 @@ class ParsedClass:
             # Only write serialization extensions for SDS models.
             print 'Ignoring class (3):', self.name 
             return False
+
+         # The migration should not be persisted in the data store.
+        if self.name in ('OWSDatabaseMigration', 'YDBDatabaseMigration', 'OWSResaveCollectionDBMigration', ):
+            print 'Ignoring class (4):', self.name 
+            return False
+        if self.super_class_name in ('OWSDatabaseMigration', 'YDBDatabaseMigration', 'OWSResaveCollectionDBMigration', ):
+            print 'Ignoring class (5):', self.name 
+            return False
+
         return True
         
         
@@ -427,6 +439,10 @@ class ParsedProperty:
             return 'UInt'
         elif objc_type == 'int32_t':
             return 'Int32'
+        elif objc_type == 'int64_t':
+            return 'Int64'
+        elif objc_type == 'long long':
+            return 'Int64'
         elif objc_type == 'unsigned long long':
             return 'UInt64'
         elif objc_type == 'uint64_t':
@@ -971,8 +987,12 @@ extension %s: SDSModel {
     public func asRecord() throws -> SDSRecord {
         return try serializer.asRecord()
     }
+
+    public var sdsTableName: String {
+        return %s.databaseTableName
+    }
 }
-''' % ( str(clazz.name), )
+''' % ( str(clazz.name), record_name, )
 
     
     if not has_sds_superclass:
@@ -1059,7 +1079,13 @@ public extension %s {
     
     @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
     func anyUpsert(transaction: SDSAnyWriteTransaction) {
-        sdsSave(saveMode: .upsert, transaction: transaction)
+        let isInserting: Bool
+        if %s.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil {
+            isInserting = false
+        } else {
+            isInserting = true
+        }
+        sdsSave(saveMode: isInserting ? .insert : .update, transaction: transaction)
     }
     
     // This method is used by "updateWith..." methods.
@@ -1087,10 +1113,6 @@ public extension %s {
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
     func anyUpdate(transaction: SDSAnyWriteTransaction, block: (%s) -> Void) {
-        guard let uniqueId = uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            return
-        }
 
         block(self)
         
@@ -1110,21 +1132,7 @@ public extension %s {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
-        anyWillRemove(with: transaction)
-
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            ydb_remove(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsRemove(transaction: grdbTransaction)
-            } catch {
-                owsFail("Remove failed: \(error)")
-            }
-        }
-        
-        anyDidRemove(with: transaction)
+        sdsRemove(transaction: transaction)
     }
 
     func anyReload(transaction: SDSAnyReadTransaction) {
@@ -1132,11 +1140,6 @@ public extension %s {
     }
 
     func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
-        guard let uniqueId = self.uniqueId else {
-            owsFailDebug("uniqueId was unexpectedly nil")
-            return
-        }
-
         guard let latestVersion = type(of: self).anyFetch(uniqueId: uniqueId, transaction: transaction) else {
             if !ignoreMissing {
                 owsFailDebug("`latest` was unexpectedly nil")
@@ -1148,7 +1151,7 @@ public extension %s {
     }
 }
 
-''' % ( ( str(clazz.name), ) * 2 )
+''' % ( ( str(clazz.name), ) * 3 )
 
 
         # ---- Cursor ----
@@ -1254,12 +1257,35 @@ public extension %s {
                         break
                     }
                 }
-            } catch let error as NSError {
+            } catch let error {
                 owsFailDebug("Couldn't fetch models: \(error)")
             }
         }
     }
-    
+''' % ( ( str(clazz.name), ) * 4 )
+
+        swift_body += '''
+    // Traverses all records' unique ids.
+    // Records are not visited in any particular order.
+    // Traversal aborts if the visitor returns false.
+    class func anyEnumerateUniqueIds(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            ydbTransaction.enumerateKeys(inCollection: %s.collection()) { (uniqueId, stop) in
+                block(uniqueId, stop)
+            }
+        case .grdbRead(let grdbTransaction):
+            grdbEnumerateUniqueIds(transaction: grdbTransaction,
+                                   sql: """
+                    SELECT \(%sColumn: .uniqueId)
+                    FROM \(%s.databaseTableName)
+                """,
+                block: block)
+        }
+    }
+''' % ( str(clazz.name), record_identifier(clazz.name), record_name, )
+
+        swift_body += '''
     // Does not order the results.
     class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [%s] {
         var result = [%s]()
@@ -1268,9 +1294,18 @@ public extension %s {
         }
         return result
     }
-''' % ( ( str(clazz.name), ) * 6 )
+    
+    // Does not order the results.
+    class func anyAllUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
+        var result = [String]()
+        anyEnumerateUniqueIds(transaction: transaction) { (uniqueId, _) in
+            result.append(uniqueId)
+        }
+        return result
+    }
+''' % ( ( str(clazz.name), ) * 2 )
 
-        # ---- Fetch ----
+        # ---- Count ----
 
         swift_body += '''
     class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
@@ -1281,8 +1316,62 @@ public extension %s {
             return %s.ows_fetchCount(grdbTransaction.database)
         }
     }
-}
 ''' % ( str(clazz.name),  record_name, )
+
+        # ---- Remove All ----
+
+        swift_body += '''    
+    // WARNING: Do not use this method for any models which do cleanup
+    //          in their anyWillRemove(), anyDidRemove() methods.
+    class func anyRemoveAllWithoutInstantation(transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            ydbTransaction.removeAllObjects(inCollection: %s.collection())
+        case .grdbWrite(let grdbTransaction):
+            do {
+                try %s.deleteAll(grdbTransaction.database)
+            } catch {
+                owsFailDebug("deleteAll() failed: \(error)")
+            }
+        }
+        
+        if shouldBeIndexedForFTS {
+            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
+        }
+    }
+    
+    class func anyRemoveAllWithInstantation(transaction: SDSAnyWriteTransaction) {
+        // To avoid mutationDuringEnumerationException, we need
+        // to remove the instances outside the enumeration.
+        let uniqueIds = anyAllUniqueIds(transaction: transaction)
+        for uniqueId in uniqueIds {
+            guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+                owsFailDebug("Missing instance.")
+                continue
+            }
+            instance.anyRemove(transaction: transaction)
+        }
+        
+        if shouldBeIndexedForFTS {
+            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
+        }
+    }
+    
+    class func anyExists(uniqueId: String,
+                        transaction: SDSAnyReadTransaction) -> Bool {
+        assert(uniqueId.count > 0)
+        
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.hasObject(forKey: uniqueId, inCollection: %s.collection())
+        case .grdbRead(let grdbTransaction):
+            let sql = "SELECT EXISTS ( SELECT 1 FROM \(%s.databaseTableName) WHERE \(%sColumn: .uniqueId) = ? )"
+            let arguments: StatementArguments = [uniqueId]
+            return try! Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
+        }
+    }
+}
+''' % ( str(clazz.name), record_name, str(clazz.name), record_name, record_identifier(clazz.name), )
 
         # ---- Fetch ----
 
@@ -1324,7 +1413,9 @@ public extension %s {
         assert(sql.count > 0)
         
         do {
-            guard let record = try %s.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
+            // There are significant perf benefits to using a cached statement.
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            guard let record = try %s.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }
             
@@ -1336,6 +1427,45 @@ public extension %s {
     }
 }
 ''' % ( str(clazz.name), record_name, str(clazz.name), )
+    
+    
+    # ---- Typed Convenience Methods ----
+    
+
+    if has_sds_superclass:
+        swift_body += '''
+// MARK: - Typed Convenience Methods
+
+@objc
+public extension %s {
+    // NOTE: This method will fail if the object has unexpected type.
+    class func anyFetch%s(uniqueId: String,
+                                   transaction: SDSAnyReadTransaction) -> %s? {
+        assert(uniqueId.count > 0)
+        
+        guard let object = anyFetch(uniqueId: uniqueId,
+                                    transaction: transaction) else {
+                                        return nil
+        }
+        guard let instance = object as? %s else {
+            owsFailDebug("Object has unexpected type: \(type(of: object))")
+            return nil
+        }
+        return instance
+    }
+
+    // NOTE: This method will fail if the object has unexpected type.
+    func anyUpdate%s(transaction: SDSAnyWriteTransaction, block: (%s) -> Void) {
+        anyUpdate(transaction: transaction) { (object) in
+            guard let instance = object as? %s else {
+                owsFailDebug("Object has unexpected type: \(type(of: object))")
+                return
+            }
+            block(instance)
+        }
+    }
+}
+''' % ( str(clazz.name), str(remove_prefix_from_class_name(clazz.name)), str(clazz.name), str(clazz.name), str(remove_prefix_from_class_name(clazz.name)), str(clazz.name), str(clazz.name), )    
     
     
     # ---- SDSModel ----
@@ -1375,10 +1505,7 @@ class %sSerializer: SDSSerializer {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .%s
-        guard let uniqueId: String = model.uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            throw SDSError.missingRequiredField
-        }
+        let uniqueId: String = model.uniqueId
 ''' % ( serialize_record_type, )
     
     initializer_args = ['id', 'recordType', 'uniqueId', ]

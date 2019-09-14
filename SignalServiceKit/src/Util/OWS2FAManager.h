@@ -6,6 +6,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const NSNotificationName_2FAStateDidChange;
 
+extern const NSUInteger kMin2FAPinLength;
+extern const NSUInteger kMax2FAv1PinLength;
+extern const NSUInteger kLegacyTruncated2FAv1PinLength;
+
 typedef void (^OWS2FASuccess)(void);
 typedef void (^OWS2FAFailure)(NSError *error);
 
@@ -15,14 +19,14 @@ typedef NS_ENUM(NSUInteger, OWS2FAMode) {
     OWS2FAMode_V2,
 };
 
-@class OWSPrimaryStorage;
+@class SDSKeyValueStore;
 
 // This class can be safely accessed and used from any thread.
 @interface OWS2FAManager : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
++ (SDSKeyValueStore *)keyValueStore;
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedManager;
 
@@ -31,6 +35,9 @@ typedef NS_ENUM(NSUInteger, OWS2FAMode) {
 
 - (BOOL)is2FAEnabled;
 - (BOOL)isDueForReminder;
+- (BOOL)hasPending2FASetup;
+- (BOOL)needsLegacyPinMigration;
+- (void)markLegacyPinAsMigrated;
 - (void)verifyPin:(NSString *)pin result:(void (^_Nonnull)(BOOL))result;
 
 // Request with service

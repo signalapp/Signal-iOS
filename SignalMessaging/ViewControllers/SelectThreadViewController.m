@@ -15,8 +15,8 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -46,6 +46,15 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation SelectThreadViewController
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 - (void)loadView
 {
@@ -200,33 +209,35 @@ NS_ASSUME_NONNULL_BEGIN
 
                             BOOL isBlocked = [helper isThreadBlocked:thread];
                             if (isBlocked) {
-                                cell.accessoryMessage = NSLocalizedString(
-                                    @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                                cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                             }
 
-                            [cell configureWithThread:thread];
+                            [strongSelf.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+                                [cell configureWithThread:thread transaction:transaction];
 
-                            if (!cell.hasAccessoryText) {
-                                // Don't add a disappearing messages indicator if we've already added a "blocked" label.
-                                __block OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
-                                [self.uiDatabaseConnection
-                                    readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-                                        disappearingMessagesConfiguration = [OWSDisappearingMessagesConfiguration
-                                            fetchObjectWithUniqueID:thread.uniqueId
-                                                        transaction:transaction];
-                                    }];
+                                if (!cell.hasAccessoryText) {
+                                    // Don't add a disappearing messages indicator if we've already added a "blocked"
+                                    // label.
+                                    __block OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
 
-                                if (disappearingMessagesConfiguration && disappearingMessagesConfiguration.isEnabled) {
-                                    DisappearingTimerConfigurationView *disappearingTimerConfigurationView =
-                                        [[DisappearingTimerConfigurationView alloc]
-                                            initWithDurationSeconds:disappearingMessagesConfiguration.durationSeconds];
+                                    disappearingMessagesConfiguration =
+                                        [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId
+                                                                                       transaction:transaction];
 
-                                    disappearingTimerConfigurationView.tintColor = Theme.middleGrayColor;
-                                    [disappearingTimerConfigurationView autoSetDimensionsToSize:CGSizeMake(44, 44)];
+                                    if (disappearingMessagesConfiguration
+                                        && disappearingMessagesConfiguration.isEnabled) {
+                                        DisappearingTimerConfigurationView *disappearingTimerConfigurationView =
+                                            [[DisappearingTimerConfigurationView alloc]
+                                                initWithDurationSeconds:disappearingMessagesConfiguration
+                                                                            .durationSeconds];
 
-                                    [cell ows_setAccessoryView:disappearingTimerConfigurationView];
+                                        disappearingTimerConfigurationView.tintColor = Theme.middleGrayColor;
+                                        [disappearingTimerConfigurationView autoSetDimensionsToSize:CGSizeMake(44, 44)];
+
+                                        [cell ows_setAccessoryView:disappearingTimerConfigurationView];
+                                    }
                                 }
-                            }
+                            }];
 
                             return cell;
                         }
@@ -269,16 +280,12 @@ NS_ASSUME_NONNULL_BEGIN
         [otherContactsSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
-                            SelectThreadViewController *strongSelf = weakSelf;
-                            OWSCAssertDebug(strongSelf);
-
                             ContactTableViewCell *cell = [ContactTableViewCell new];
-                            BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
+                            BOOL isBlocked = [helper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
                             if (isBlocked) {
-                                cell.accessoryMessage = NSLocalizedString(
-                                    @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                                cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                             }
-                            [cell configureWithRecipientId:signalAccount.recipientId];
+                            [cell configureWithRecipientAddress:signalAccount.recipientAddress];
                             return cell;
                         }
                         customRowHeight:UITableViewAutomaticDimension
@@ -310,7 +317,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     ContactsViewHelper *helper = self.contactsViewHelper;
 
-    if ([helper isRecipientIdBlocked:signalAccount.recipientId]
+    if ([helper isSignalServiceAddressBlocked:signalAccount.recipientAddress]
         && ![self.selectThreadViewDelegate canSelectBlockedContact]) {
 
         __weak SelectThreadViewController *weakSelf = self;
@@ -327,8 +334,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     __block TSThread *thread = nil;
-    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        thread = [TSContactThread getOrCreateThreadWithContactId:signalAccount.recipientId transaction:transaction];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        thread = [TSContactThread getOrCreateThreadWithContactAddress:signalAccount.recipientAddress
+                                                          transaction:transaction];
     }];
     OWSAssertDebug(thread);
 
@@ -349,11 +357,11 @@ NS_ASSUME_NONNULL_BEGIN
     // We don't want to show a 1:1 thread with Alice and Alice's contact,
     // so we de-duplicate by recipientId.
     NSArray<TSThread *> *threads = self.threadViewHelper.threads;
-    NSMutableSet *contactIdsToIgnore = [NSMutableSet new];
+    NSMutableSet<SignalServiceAddress *> *contactAddressesToIgnore = [NSMutableSet new];
     for (TSThread *thread in threads) {
         if ([thread isKindOfClass:[TSContactThread class]]) {
             TSContactThread *contactThread = (TSContactThread *)thread;
-            [contactIdsToIgnore addObject:contactThread.contactIdentifier];
+            [contactAddressesToIgnore addObject:contactThread.contactAddress];
         }
     }
 
@@ -364,7 +372,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [matchingAccounts
         filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(SignalAccount *signalAccount,
                                         NSDictionary<NSString *, id> *_Nullable bindings) {
-            return ![contactIdsToIgnore containsObject:signalAccount.recipientId];
+            return ![contactAddressesToIgnore containsObject:signalAccount.recipientAddress];
         }]];
 }
 
@@ -404,9 +412,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - NewNonContactConversationViewControllerDelegate
 
-- (void)recipientIdWasSelected:(NSString *)recipientId
+- (void)recipientAddressWasSelected:(SignalServiceAddress *)address
 {
-    SignalAccount *signalAccount = [self.contactsViewHelper fetchOrBuildSignalAccountForRecipientId:recipientId];
+    SignalAccount *signalAccount =
+        [self.contactsViewHelper fetchOrBuildSignalAccountForAddress:address];
     [self signalAccountWasSelected:signalAccount];
 }
 

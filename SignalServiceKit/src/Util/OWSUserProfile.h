@@ -2,30 +2,27 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/TSYapDatabaseObject.h>
+#import <SignalServiceKit/BaseModel.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^OWSUserProfileCompletion)(void);
 
 @class OWSAES256Key;
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
+@class SignalServiceAddress;
 
 extern NSString *const kNSNotificationName_LocalProfileDidChange;
 extern NSString *const kNSNotificationName_OtherUsersProfileWillChange;
 extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 
-extern NSString *const kNSNotificationKey_ProfileRecipientId;
+extern NSString *const kNSNotificationKey_ProfileAddress;
 extern NSString *const kNSNotificationKey_ProfileGroupId;
 
-extern NSString *const kLocalProfileUniqueId;
+@interface OWSUserProfile : BaseModel
 
-// This class should be completely thread-safe.
-//
-// It is critical for coherency that all DB operations for this
-// class should be done on OWSProfileManager's dbConnection.
-@interface OWSUserProfile : TSYapDatabaseObject
-
-@property (atomic, readonly) NSString *recipientId;
+@property (atomic, readonly) SignalServiceAddress *address;
 @property (atomic, readonly, nullable) OWSAES256Key *profileKey;
 @property (atomic, readonly, nullable) NSString *profileName;
 @property (atomic, readonly, nullable) NSString *avatarUrlPath;
@@ -46,46 +43,53 @@ extern NSString *const kLocalProfileUniqueId;
                    avatarUrlPath:(nullable NSString *)avatarUrlPath
                       profileKey:(nullable OWSAES256Key *)profileKey
                      profileName:(nullable NSString *)profileName
-                     recipientId:(NSString *)recipientId
-NS_SWIFT_NAME(init(uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:recipientId:));
+            recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
+                   recipientUUID:(nullable NSString *)recipientUUID
+        userProfileSchemaVersion:(NSUInteger)userProfileSchemaVersion
+NS_SWIFT_NAME(init(uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:recipientPhoneNumber:recipientUUID:userProfileSchemaVersion:));
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
 
-+ (OWSUserProfile *)getOrBuildUserProfileForRecipientId:(NSString *)recipientId
-                                           dbConnection:(YapDatabaseConnection *)dbConnection;
++ (SignalServiceAddress *)localProfileAddress;
 
-+ (BOOL)localUserProfileExists:(YapDatabaseConnection *)dbConnection;
++ (OWSUserProfile *)getUserProfileForAddress:(SignalServiceAddress *)address
+                                 transaction:(SDSAnyReadTransaction *)transaction;
+
++ (OWSUserProfile *)getOrBuildUserProfileForAddress:(SignalServiceAddress *)recipientId
+                                        transaction:(SDSAnyWriteTransaction *)transaction;
+
++ (BOOL)localUserProfileExistsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 #pragma mark - Update With... Methods
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
                avatarFileName:(nullable NSString *)avatarFileName
-                 dbConnection:(YapDatabaseConnection *)dbConnection
+                  transaction:(SDSAnyWriteTransaction *)transaction
                    completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
-                 dbConnection:(YapDatabaseConnection *)dbConnection
+                  transaction:(SDSAnyWriteTransaction *)transaction
                    completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithAvatarUrlPath:(nullable NSString *)avatarUrlPath
                  avatarFileName:(nullable NSString *)avatarFileName
-                   dbConnection:(YapDatabaseConnection *)dbConnection
+                    transaction:(SDSAnyWriteTransaction *)transaction
                      completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithAvatarFileName:(nullable NSString *)avatarFileName
-                    dbConnection:(YapDatabaseConnection *)dbConnection
+                     transaction:(SDSAnyWriteTransaction *)transaction
                       completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithProfileKey:(OWSAES256Key *)profileKey
-                dbConnection:(YapDatabaseConnection *)dbConnection
+                 transaction:(SDSAnyWriteTransaction *)transaction
                   completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)clearWithProfileKey:(OWSAES256Key *)profileKey
-               dbConnection:(YapDatabaseConnection *)dbConnection
+                transaction:(SDSAnyWriteTransaction *)transaction
                  completion:(nullable OWSUserProfileCompletion)completion;
 
 #pragma mark - Profile Avatars Directory
@@ -96,7 +100,8 @@ NS_SWIFT_NAME(init(uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:
 + (NSString *)sharedDataProfileAvatarsDirPath;
 + (NSString *)profileAvatarsDirPath;
 + (void)resetProfileStorage;
-+ (NSSet<NSString *> *)allProfileAvatarFilePaths;
+
++ (NSSet<NSString *> *)allProfileAvatarFilePathsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

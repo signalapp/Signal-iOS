@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "NewNonContactConversationViewController.h"
@@ -7,6 +7,7 @@
 #import "ContactsViewHelper.h"
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalServiceKit/SignalAccount.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -46,25 +47,25 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
-- (void)phoneNumberWasSelected:(NSString *)phoneNumber
+- (void)addressWasSelected:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(phoneNumber.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    [self selectRecipient:phoneNumber];
+    [self selectRecipientAddress:address];
 }
 
 - (void)signalAccountWasSelected:(SignalAccount *)signalAccount
 {
     OWSAssertDebug(signalAccount);
 
-    [self selectRecipient:signalAccount.recipientId];
+    [self selectRecipientAddress:signalAccount.recipientAddress];
 }
 
-- (void)selectRecipient:(NSString *)recipientId
+- (void)selectRecipientAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    [self.nonContactConversationDelegate recipientIdWasSelected:recipientId];
+    [self.nonContactConversationDelegate recipientAddressWasSelected:address];
 }
 
 - (BOOL)shouldHideLocalNumber

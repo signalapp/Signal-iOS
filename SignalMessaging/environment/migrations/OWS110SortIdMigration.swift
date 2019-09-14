@@ -4,10 +4,10 @@
 
 import Foundation
 
-public class OWS110SortIdMigration: OWSDatabaseMigration {
+public class OWS110SortIdMigration: YDBDatabaseMigration {
     // increment a similar constant for each migration.
     @objc
-    class func migrationId() -> String {
+    public override class var migrationId: String {
         // append char "x" because we want to rerun on some internal devices which
         // have already run this migration.
         return "110x"
@@ -25,12 +25,12 @@ public class OWS110SortIdMigration: OWSDatabaseMigration {
 
     private func doMigration(completion: @escaping OWSDatabaseMigrationCompletion) {
         // TODO batch this?
-        self.dbReadWriteConnection().readWrite { transaction in
+        self.ydbReadWriteConnection.readWrite { transaction in
 
             var archivedThreads: [TSThread] = []
 
             // get archived threads before migration
-            TSThread.enumerateCollectionObjects(with: transaction) { (object, _) in
+            TSThread.ydb_enumerateCollectionObjects(with: transaction) { (object, _) in
                 guard let thread = object as? TSThread else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return
@@ -82,7 +82,7 @@ public class OWS110SortIdMigration: OWSDatabaseMigration {
                     for batch in groupKeys.chunked(by: groupKeyBatchSize) {
                         autoreleasepool {
                             for uniqueId in batch {
-                                guard let interaction = TSInteraction.fetch(uniqueId: uniqueId, transaction: transaction) else {
+                                guard let interaction = TSInteraction.ydb_fetch(uniqueId: uniqueId, transaction: transaction) else {
                                     owsFailDebug("Could not load interaction: \(uniqueId)")
                                     return
                                 }
@@ -91,7 +91,7 @@ public class OWS110SortIdMigration: OWSDatabaseMigration {
                                 }
                                 previousTimestampForLegacySorting = interaction.timestampForLegacySorting()
 
-                                interaction.saveNextSortId(transaction: transaction)
+                                interaction.ydb_saveNextSortId(transaction: transaction)
 
                                 completedCount += 1
                                 if completedCount % 100 == 0 {
@@ -109,7 +109,7 @@ public class OWS110SortIdMigration: OWSDatabaseMigration {
                 archivedThread.archiveThread(with: transaction.asAnyWrite)
             }
 
-            self.save(with: transaction)
+            self.markAsComplete(with: transaction.asAnyWrite)
         }
 
         completion()

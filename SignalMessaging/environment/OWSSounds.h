@@ -41,15 +41,13 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
 };
 
 @class OWSAudioPlayer;
-@class OWSPrimaryStorage;
+@class SDSAnyWriteTransaction;
+@class SDSKeyValueStore;
 @class TSThread;
-@class YapDatabaseReadWriteTransaction;
 
 @interface OWSSounds : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
++ (SDSKeyValueStore *)keyValueStore;
 
 + (NSString *)displayNameForSound:(OWSSound)sound;
 
@@ -62,7 +60,7 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
 
 + (OWSSound)globalNotificationSound;
 + (void)setGlobalNotificationSound:(OWSSound)sound;
-+ (void)setGlobalNotificationSound:(OWSSound)sound transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (void)setGlobalNotificationSound:(OWSSound)sound transaction:(SDSAnyWriteTransaction *)transaction;
 
 + (OWSSound)notificationSoundForThread:(TSThread *)thread;
 + (SystemSoundID)systemSoundIDForSound:(OWSSound)sound quiet:(BOOL)quiet;

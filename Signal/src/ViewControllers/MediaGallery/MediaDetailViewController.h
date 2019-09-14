@@ -31,6 +31,7 @@ typedef NS_OPTIONS(NSInteger, MediaGalleryOption) {
 
 @interface MediaDetailViewController : OWSViewController
 
+@property (nonatomic, readonly) UIView *mediaView;
 @property (nonatomic, weak) id<MediaDetailViewControllerDelegate> delegate;
 @property (nonatomic, readonly) GalleryItemBox *galleryItemBox;
 

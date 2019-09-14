@@ -27,6 +27,7 @@
 #import <SignalMessaging/SignalMessaging.h>
 #import <SignalMessaging/VersionMigrations.h>
 #import <SignalServiceKit/AppReadiness.h>
+#import <SignalServiceKit/CallKitIdStore.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
@@ -37,7 +38,6 @@
 #import <SignalServiceKit/OWSMath.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSPrimaryStorage+Calling.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -162,6 +162,13 @@ static NSTimeInterval launchStartedAt;
 - (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
+}
+
+- (id<OWSSyncManagerProtocol>)syncManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.syncManager);
+
+    return SSKEnvironment.shared.syncManager;
 }
 
 #pragma mark -
@@ -523,7 +530,7 @@ static NSTimeInterval launchStartedAt;
     OWSLogInfo(@"Build Carthage Version: %@", buildDetails[@"CarthageVersion"]);
     OWSLogInfo(@"Build Date/Time: %@", buildDetails[@"DateTime"]);
 
-    OWSLogInfo(@"Build Expires in: %ld days", SSKAppExpiry.daysUntilBuildExpiry);
+    OWSLogInfo(@"Build Expires in: %ld days", (long)SSKAppExpiry.daysUntilBuildExpiry);
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
@@ -727,7 +734,7 @@ static NSTimeInterval launchStartedAt;
             // At this point, potentially lengthy DB locking migrations could be running.
             // Avoid blocking app launch by putting all further possible DB access in async block
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                OWSLogInfo(@"running post launch block for registered user: %@", [self.tsAccountManager localNumber]);
+                OWSLogInfo(@"running post launch block for registered user: %@", [self.tsAccountManager localAddress]);
 
                 // Clean up any messages that expired since last launch immediately
                 // and continue cleaning in the background.
@@ -737,11 +744,11 @@ static NSTimeInterval launchStartedAt;
 
                 // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
                 // sent before the app exited should be marked as failures.
-                [[[OWSFailedMessagesJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
+                [[OWSFailedMessagesJob new] run];
                 // Mark all "incomplete" calls as missed, e.g. any incoming or outgoing calls that were not
                 // connected, failed or hung up before the app existed should be marked as missed.
-                [[[OWSIncompleteCallsJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
-                [[[OWSFailedAttachmentDownloadsJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
+                [[OWSIncompleteCallsJob new] run];
+                [[OWSFailedAttachmentDownloadsJob new] run];
             });
         } else {
             OWSLogInfo(@"running post launch block for unregistered user.");
@@ -778,16 +785,42 @@ static NSTimeInterval launchStartedAt;
                                                     preferences:Environment.shared.preferences];
             }
 
-            if ([OWS2FAManager sharedManager].isDueForReminder) {
-                if (!self.hasInitialRootViewController || self.window.rootViewController == nil) {
-                    OWSLogDebug(@"Skipping 2FA reminder since there isn't yet an initial view controller");
-                } else {
-                    UIViewController *rootViewController = self.window.rootViewController;
-                    OWSNavigationController *reminderNavController =
-                        [OWS2FAReminderViewController wrappedInNavController];
+            // 2FA
 
-                    [rootViewController presentViewController:reminderNavController animated:YES completion:nil];
+            if ([OWS2FAManager sharedManager].hasPending2FASetup) {
+                UIViewController *frontmostViewController = UIApplication.sharedApplication.frontmostViewController;
+                OWSAssertDebug(frontmostViewController);
+
+                if ([frontmostViewController isKindOfClass:[OWSPinSetupViewController class]]) {
+                    // We're already presenting this
+                    return;
                 }
+
+                OWSPinSetupViewController *setupVC = [[OWSPinSetupViewController alloc] initWithCompletionHandler:^{
+                    [frontmostViewController dismissViewControllerAnimated:YES completion:nil];
+                }];
+
+                [frontmostViewController
+                    presentViewController:[[OWSNavigationController alloc] initWithRootViewController:setupVC]
+                                 animated:YES
+                               completion:nil];
+            } else if ([OWS2FAManager sharedManager].isDueForReminder) {
+                UIViewController *frontmostViewController = UIApplication.sharedApplication.frontmostViewController;
+                OWSAssertDebug(frontmostViewController);
+
+                UIViewController *reminderVC;
+                if (SSKFeatureFlags.pinsForEveryone) {
+                    reminderVC = [OWSPinReminderViewController new];
+                } else {
+                    reminderVC = [OWS2FAReminderViewController wrappedInNavController];
+                }
+
+                if ([frontmostViewController isKindOfClass:[reminderVC class]]) {
+                    // We're already presenting this
+                    return;
+                }
+
+                [frontmostViewController presentViewController:reminderVC animated:YES completion:nil];
             }
         });
     }
@@ -909,8 +942,8 @@ static NSTimeInterval launchStartedAt;
                 return;
             }
 
-            NSString *_Nullable phoneNumber = [self phoneNumberForIntentHandle:handle];
-            if (phoneNumber.length < 1) {
+            SignalServiceAddress *_Nullable address = [self addressForIntentHandle:handle];
+            if (!address.isValid) {
                 OWSLogWarn(@"ignoring attempt to initiate video call to unknown user.");
                 return;
             }
@@ -924,7 +957,7 @@ static NSTimeInterval launchStartedAt;
             //   contacts app.  If so, the correct response is to try to initiate a new call
             //   to that user - unless there already is another call in progress.
             if (AppEnvironment.shared.callService.call != nil) {
-                if ([phoneNumber isEqualToString:AppEnvironment.shared.callService.call.remotePhoneNumber]) {
+                if ([address isEqualToAddress:AppEnvironment.shared.callService.call.remoteAddress]) {
                     OWSLogWarn(@"trying to upgrade ongoing call to video.");
                     [AppEnvironment.shared.callService handleCallKitStartVideo];
                     return;
@@ -936,7 +969,7 @@ static NSTimeInterval launchStartedAt;
 
             OutboundCallInitiator *outboundCallInitiator = AppEnvironment.shared.outboundCallInitiator;
             OWSAssertDebug(outboundCallInitiator);
-            [outboundCallInitiator initiateCallWithHandle:phoneNumber];
+            [outboundCallInitiator initiateCallWithAddress:address];
         }];
         return YES;
     } else if ([userActivity.activityType isEqualToString:@"INStartAudioCallIntent"]) {
@@ -968,8 +1001,8 @@ static NSTimeInterval launchStartedAt;
                 return;
             }
 
-            NSString *_Nullable phoneNumber = [self phoneNumberForIntentHandle:handle];
-            if (phoneNumber.length < 1) {
+            SignalServiceAddress *_Nullable address = [self addressForIntentHandle:handle];
+            if (!address.isValid) {
                 OWSLogWarn(@"ignoring attempt to initiate audio call to unknown user.");
                 return;
             }
@@ -981,7 +1014,7 @@ static NSTimeInterval launchStartedAt;
 
             OutboundCallInitiator *outboundCallInitiator = AppEnvironment.shared.outboundCallInitiator;
             OWSAssertDebug(outboundCallInitiator);
-            [outboundCallInitiator initiateCallWithHandle:phoneNumber];
+            [outboundCallInitiator initiateCallWithAddress:address];
         }];
         return YES;
 
@@ -1017,8 +1050,8 @@ static NSTimeInterval launchStartedAt;
                 return;
             }
 
-            NSString *_Nullable phoneNumber = [self phoneNumberForIntentHandle:handle];
-            if (phoneNumber.length < 1) {
+            SignalServiceAddress *_Nullable address = [self addressForIntentHandle:handle];
+            if (!address.isValid) {
                 OWSLogWarn(@"ignoring attempt to initiate call to unknown user.");
                 return;
             }
@@ -1030,7 +1063,7 @@ static NSTimeInterval launchStartedAt;
 
             OutboundCallInitiator *outboundCallInitiator = AppEnvironment.shared.outboundCallInitiator;
             OWSAssertDebug(outboundCallInitiator);
-            [outboundCallInitiator initiateCallWithHandle:phoneNumber];
+            [outboundCallInitiator initiateCallWithAddress:address];
         }];
         return YES;
     } else {
@@ -1062,23 +1095,23 @@ static NSTimeInterval launchStartedAt;
     return NO;
 }
 
-- (nullable NSString *)phoneNumberForIntentHandle:(NSString *)handle
+- (nullable SignalServiceAddress *)addressForIntentHandle:(NSString *)handle
 {
     OWSAssertDebug(handle.length > 0);
 
     if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
-        NSString *_Nullable phoneNumber = [self.primaryStorage phoneNumberForCallKitId:handle];
-        if (phoneNumber.length < 1) {
+        SignalServiceAddress *_Nullable address = [CallKitIdStore addressForCallKitId:handle];
+        if (!address.isValid) {
             OWSLogWarn(@"ignoring attempt to initiate audio call to unknown anonymous signal user.");
             return nil;
         }
-        return phoneNumber;
+        return address;
     }
 
     for (PhoneNumber *phoneNumber in
         [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:handle
                                               clientPhoneNumber:[TSAccountManager localNumber]]) {
-        return phoneNumber.toE164;
+        return [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber.toE164];
     }
     return nil;
 }
@@ -1300,9 +1333,6 @@ static NSTimeInterval launchStartedAt;
 
     OWSLogInfo(@"checkIfAppIsReady");
 
-    // TODO: Once "app ready" logic is moved into AppSetup, move this line there.
-    [self.profileManager ensureLocalProfileCached];
-
     // Note that this does much more than set a flag;
     // it will also run all deferred blocks.
     [AppReadiness setAppIsReady];
@@ -1313,7 +1343,7 @@ static NSTimeInterval launchStartedAt;
     }
 
     if ([self.tsAccountManager isRegistered]) {
-        OWSLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
+        OWSLogInfo(@"localAddress: %@", TSAccountManager.localAddress);
 
         // Fetch messages as soon as possible after launching. In particular, when
         // launching from the background, without this, we end up waiting some extra
@@ -1335,14 +1365,14 @@ static NSTimeInterval launchStartedAt;
     [SSKEnvironment.shared.reachabilityManager setup];
 
     if (!Environment.shared.preferences.hasGeneratedThumbnails) {
-        [self.primaryStorage.newDatabaseConnection
-            asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                [TSAttachment anyEnumerateWithTransaction:transaction.asAnyRead
+        [self.databaseStorage
+            asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+                [TSAttachment anyEnumerateWithTransaction:transaction
                                                     block:^(TSAttachment *attachment, BOOL *stop){
                                                         // no-op. It's sufficient to initWithCoder: each object.
                                                     }];
             }
-            completionBlock:^{
+            completion:^{
                 [Environment.shared.preferences setHasGeneratedThumbnails:YES];
             }];
     }
@@ -1383,11 +1413,11 @@ static NSTimeInterval launchStartedAt;
             && ![appVersion.lastAppVersion isEqualToString:appVersion.currentAppVersion]) {
             [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
 
-            [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
+            [self.syncManager sendConfigurationSyncMessage];
         }
     }
 
-    [PerMessageExpiration appDidBecomeReady];
+    [ViewOnceMessages appDidBecomeReady];
 }
 
 - (void)registrationStateDidChange
@@ -1399,15 +1429,18 @@ static NSTimeInterval launchStartedAt;
     [self enableBackgroundRefreshIfNecessary];
 
     if ([self.tsAccountManager isRegistered]) {
-        OWSLogInfo(@"localNumber: %@", [self.tsAccountManager localNumber]);
+        OWSLogInfo(@"localAddress: %@", [self.tsAccountManager localAddress]);
 
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             [ExperienceUpgradeFinder.sharedManager markAllAsSeenWithTransaction:transaction];
         }];
         // Start running the disappearing messages job in case the newly registered user
         // enables this feature
+
         [self.disappearingMessagesJob startIfNecessary];
-        [self.profileManager ensureLocalProfileCached];
+
+        // TODO: This is probably superfluous and can be removed.
+        [[self.syncManager syncLocalContact] retainUntilComplete];
 
         // For non-legacy users, read receipts are on by default.
         [self.readReceiptManager setAreReadReceiptsEnabled:YES];

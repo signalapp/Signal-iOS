@@ -4,8 +4,8 @@
 
 #import "DateUtil.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/OWSFormat.h>
-#import <SignalServiceKit/NSString+SSK.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -252,7 +252,8 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     } else {
         dateString = [[self dateFormatter] stringFromDate:pastDate];
     }
-    return [[dateString rtlSafeAppend:@" "] rtlSafeAppend:[[self timeFormatter] stringFromDate:pastDate]];
+    return [[dateString stringByAppendingString:@" "]
+        stringByAppendingString:[[self timeFormatter] stringFromDate:pastDate]];
 }
 
 + (NSString *)formatTimestampShort:(uint64_t)timestamp
@@ -383,7 +384,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
         // "Long date" + locale-specific "short" time format.
         NSString *dayOfWeek = [self.otherYearMessageFormatter stringFromDate:date];
         NSString *formattedTime = [[self timeFormatter] stringFromDate:date];
-        return [[dayOfWeek rtlSafeAppend:@" "] rtlSafeAppend:formattedTime];
+        return [[dayOfWeek stringByAppendingString:@" "] stringByAppendingString:formattedTime];
     }
 
     NSInteger daysDiff = [self daysFromFirstDate:date toSecondDate:nowDate];
@@ -391,12 +392,12 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
         // "Short date" + locale-specific "short" time format.
         NSString *dayOfWeek = [self.thisYearMessageFormatter stringFromDate:date];
         NSString *formattedTime = [[self timeFormatter] stringFromDate:date];
-        return [[dayOfWeek rtlSafeAppend:@" "] rtlSafeAppend:formattedTime];
+        return [[dayOfWeek stringByAppendingString:@" "] stringByAppendingString:formattedTime];
     } else if (daysDiff > 0) {
         // "Day of week" + locale-specific "short" time format.
         NSString *dayOfWeek = [self.thisWeekMessageFormatter stringFromDate:date];
         NSString *formattedTime = [[self timeFormatter] stringFromDate:date];
-        return [[dayOfWeek rtlSafeAppend:@" "] rtlSafeAppend:formattedTime];
+        return [[dayOfWeek stringByAppendingString:@" "] stringByAppendingString:formattedTime];
     } else {
         NSString *hoursString = [OWSFormat formatInt:(int)hoursDiff];
         return [NSString stringWithFormat:NSLocalizedString(@"DATE_HOURS_AGO_FORMAT",

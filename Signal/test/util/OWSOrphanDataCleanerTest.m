@@ -5,7 +5,6 @@
 #import "OWSOrphanDataCleaner.h"
 #import "SignalBaseTest.h"
 #import <SignalServiceKit/OWSDevice.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
@@ -32,9 +31,6 @@
 - (void)setUp
 {
     [super setUp];
-    // Register views, etc.
-    [OWSPrimaryStorage registerExtensionsWithMigrationBlock:^{
-    }];
 
     // Set up initial conditions & Sanity check
     XCTAssertEqual(0, [self numberOfItemsInAttachmentsFolder]);
@@ -72,17 +68,17 @@
 - (TSIncomingMessage *)createIncomingMessageWithThread:(TSThread *)thread
                                          attachmentIds:(NSArray<NSString *> *)attachmentIds
 {
-    TSIncomingMessage *incomingMessage =
-        [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:1
-                                                           inThread:thread
-                                                           authorId:@"fake-author-id"
-                                                     sourceDeviceId:OWSDevicePrimaryDeviceId
-                                                        messageBody:@"footch"
-                                                      attachmentIds:attachmentIds
-                                                   expiresInSeconds:0
-                                                      quotedMessage:nil
-                                                       contactShare:nil
-                                                        linkPreview:nil];
+    TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc]
+        initIncomingMessageWithTimestamp:1
+                                inThread:thread
+                           authorAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"fake-author-id"]
+                          sourceDeviceId:OWSDevicePrimaryDeviceId
+                             messageBody:@"footch"
+                           attachmentIds:attachmentIds
+                        expiresInSeconds:0
+                           quotedMessage:nil
+                            contactShare:nil
+                             linkPreview:nil];
     [incomingMessage save];
 
     return incomingMessage;

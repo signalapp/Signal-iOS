@@ -9,13 +9,12 @@ NS_ASSUME_NONNULL_BEGIN
 extern const NSUInteger kOversizeTextMessageSizeThreshold;
 
 @class OWSBlockingManager;
-@class OWSPrimaryStorage;
+@class SDSAnyWriteTransaction;
 @class TSAttachmentStream;
 @class TSInvalidIdentityKeySendingErrorMessage;
 @class TSNetworkManager;
 @class TSOutgoingMessage;
 @class TSThread;
-@class YapDatabaseReadWriteTransaction;
 
 @protocol ContactsManagerProtocol;
 
@@ -57,9 +56,7 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
 NS_SWIFT_NAME(MessageSender)
 @interface OWSMessageSender : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 /**
  * Send and resend text messages or resend messages with existing attachments.
@@ -104,7 +101,7 @@ NS_SWIFT_NAME(MessageSender)
 
 /// Persists all necessary data to disk before sending, e.g. generate thumbnails
 + (NSArray<NSString *> *)prepareMessageForSending:(TSOutgoingMessage *)message
-                                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                      transaction:(SDSAnyWriteTransaction *)transaction;
 
 /// Writes attachment to disk and applies original filename to message attributes
 + (void)prepareAttachments:(NSArray<OWSOutgoingAttachmentInfo *> *)attachmentInfos

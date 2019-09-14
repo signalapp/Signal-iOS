@@ -16,10 +16,13 @@
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SSKSessionStore.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/UIImage+OWS.h>
+
+#ifdef DEBUG
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -34,11 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation DebugUIMisc
 
 #pragma mark - Dependencies
-
-+ (YapDatabaseConnection *)dbConnection
-{
-    return [OWSPrimaryStorage.sharedManager dbReadWriteConnection];
-}
 
 + (SDSDatabaseStorage *)databaseStorage
 {
@@ -63,26 +61,30 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIMisc setManualCensorshipCircumventionEnabled:NO];
                                      }]];
-    [items addObject:[OWSTableItem itemWithTitle:@"Clear experience upgrades (works once per launch)"
-                                     actionBlock:^{
-                                         [ExperienceUpgrade removeAllObjectsInCollection];
-                                     }]];
+    [items addObject:[OWSTableItem
+                         itemWithTitle:@"Clear experience upgrades (works once per launch)"
+                           actionBlock:^{
+                               [DebugUIMisc.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                   [ExperienceUpgrade anyRemoveAllWithoutInstantationWithTransaction:transaction];
+                               }];
+                           }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Clear hasDismissedOffers"
                                      actionBlock:^{
                                          [DebugUIMisc clearHasDismissedOffers];
                                      }]];
 
-    [items addObject:[OWSTableItem itemWithTitle:@"Delete disappearing messages config"
-                                     actionBlock:^{
-                                         [[OWSPrimaryStorage sharedManager].newDatabaseConnection readWriteWithBlock:^(
-                                             YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                                             OWSDisappearingMessagesConfiguration *config =
-                                                 [OWSDisappearingMessagesConfiguration
-                                                     fetchOrBuildDefaultWithThreadId:thread.uniqueId
-                                                                         transaction:transaction];
-                                             [config removeWithTransaction:transaction];
-                                         }];
-                                     }]];
+    [items addObject:[OWSTableItem
+                         itemWithTitle:@"Delete disappearing messages config"
+                           actionBlock:^{
+                               [DebugUIMisc.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                   OWSDisappearingMessagesConfiguration *_Nullable config =
+                                       [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId
+                                                                                      transaction:transaction];
+                                   if (config) {
+                                       [config anyRemoveWithTransaction:transaction];
+                                   }
+                               }];
+                           }]];
 
     [items addObject:[OWSTableItem
                          itemWithTitle:@"Re-register"
@@ -112,10 +114,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     [items addObject:[OWSTableItem itemWithTitle:@"Show 2FA Reminder"
                                      actionBlock:^() {
-                                         OWSNavigationController *navController =
-                                             [OWS2FAReminderViewController wrappedInNavController];
+                                         UIViewController *reminderVC;
+                                         if (SSKFeatureFlags.pinsForEveryone) {
+                                             reminderVC = [OWSPinReminderViewController new];
+                                         } else {
+                                             reminderVC = [OWS2FAReminderViewController wrappedInNavController];
+                                         }
+
                                          [[[UIApplication sharedApplication] frontmostViewController]
-                                             presentViewController:navController
+                                             presentViewController:reminderVC
                                                           animated:YES
                                                         completion:nil];
                                      }]];
@@ -125,7 +132,6 @@ NS_ASSUME_NONNULL_BEGIN
                                          [OWS2FAManager.sharedManager setDefaultRepetitionInterval];
                                      }]];
 
-#ifdef DEBUG
     [items addObject:[OWSTableItem subPageItemWithText:@"Share UIImage"
                                            actionBlock:^(UIViewController *viewController) {
                                                UIImage *image =
@@ -144,7 +150,6 @@ NS_ASSUME_NONNULL_BEGIN
                                            actionBlock:^(UIViewController *viewController) {
                                                [DebugUIMisc sharePDFs:2];
                                            }]];
-#endif
 
     [items
         addObject:[OWSTableItem
@@ -229,8 +234,10 @@ NS_ASSUME_NONNULL_BEGIN
                                          }];
             for (TSContactThread *contactThread in contactThreads) {
                 if (contactThread.hasDismissedOffers) {
-                    contactThread.hasDismissedOffers = NO;
-                    [contactThread saveWithTransaction:transaction];
+                    [contactThread anyUpdateContactThreadWithTransaction:transaction.asAnyWrite
+                                                                   block:^(TSContactThread *thread) {
+                                                                       thread.hasDismissedOffers = NO;
+                                                                   }];
                 }
             }
         }];
@@ -242,8 +249,8 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *fileName = filePath.lastPathComponent;
 
     __block BOOL success;
-    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.databaseStorage
+        writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             NSError *error;
             success = [[NSFileManager defaultManager] copyItemAtPath:OWSPrimaryStorage.databaseFilePath
                                                               toPath:filePath
@@ -301,8 +308,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self sendAttachment:attachment thread:thread];
 }
 
-#ifdef DEBUG
-
 + (void)shareAssets:(NSUInteger)count
    fromAssetLoaders:(NSArray<DebugUIMessagesAssetLoader *> *)assetLoaders
 {
@@ -359,8 +364,8 @@ NS_ASSUME_NONNULL_BEGIN
                         ]];
 }
 
-#endif
-
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

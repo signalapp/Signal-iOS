@@ -3,13 +3,10 @@
 //
 
 #import "TSThread.h"
-#import "NSString+SSK.h"
 #import "OWSDisappearingMessagesConfiguration.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSReadTracking.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
-#import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSInteraction.h"
@@ -17,8 +14,8 @@
 #import "TSOutgoingMessage.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -77,7 +74,12 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     return @"TSThread";
 }
 
-- (instancetype)initWithUniqueId:(NSString *_Nullable)uniqueId
++ (BOOL)shouldBeIndexedForFTS
+{
+    return YES;
+}
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
 {
     self = [super initWithUniqueId:uniqueId];
 
@@ -85,13 +87,10 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
         _creationDate    = [NSDate date];
         _messageDraft    = nil;
 
-        NSString *_Nullable contactId = self.contactIdentifier;
-        if (contactId.length > 0) {
-            // To be consistent with colors synced to desktop
-            _conversationColorName = [self.class stableColorNameForNewConversationWithString:contactId];
-        } else {
-            _conversationColorName = [self.class stableColorNameForNewConversationWithString:self.uniqueId];
-        }
+        // This is overriden in TSContactThread to use the phone number when available
+        // We can't use self.colorSeed here because the subclass hasn't done its
+        // initializing work yet to set it up.
+        _conversationColorName = [self.class stableColorNameForNewConversationWithString:uniqueId];
     }
 
     return self;
@@ -112,6 +111,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
                  lastMessageDate:(nullable NSDate *)lastMessageDate
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
+                           rowId:(int64_t)rowId
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
 {
     self = [super initWithUniqueId:uniqueId];
@@ -128,6 +128,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     _lastMessageDate = lastMessageDate;
     _messageDraft = messageDraft;
     _mutedUntilDate = mutedUntilDate;
+    _rowId = rowId;
     _shouldThreadBeVisible = shouldThreadBeVisible;
 
     return self;
@@ -154,14 +155,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     }
 
     if (_conversationColorName.length == 0) {
-        NSString *_Nullable colorSeed = self.contactIdentifier;
-        if (colorSeed.length > 0) {
-            // group threads
-            colorSeed = self.uniqueId;
-        }
-
-        // To be consistent with colors synced to desktop
-        ConversationColorName colorName = [self.class stableColorNameForLegacyConversationWithString:colorSeed];
+        ConversationColorName colorName = [self.class stableColorNameForLegacyConversationWithString:self.colorSeed];
         OWSAssertDebug(colorName);
 
         _conversationColorName = colorName;
@@ -191,21 +185,29 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     return self;
 }
 
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    [super saveWithTransaction:transaction];
+    [super anyDidInsertWithTransaction:transaction];
 
-    [SSKPreferences setHasSavedThread:YES transaction:transaction.asAnyWrite];
+    BOOL isLocalThread = NO;
+    if ([self isKindOfClass:[TSContactThread class]]) {
+        TSContactThread *contactThread = (TSContactThread *)self;
+        OWSAssertDebug(contactThread.contactAddress != nil);
+        isLocalThread = contactThread.contactAddress.isLocalAddress;
+    }
+    if (!isLocalThread) {
+        [SSKPreferences setHasSavedThread:YES transaction:transaction];
+    }
 }
 
-- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
+    [super anyWillRemoveWithTransaction:transaction];
+
     [self removeAllThreadInteractionsWithTransaction:transaction];
-
-    [super removeWithTransaction:transaction];
 }
 
-- (void)removeAllThreadInteractionsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)removeAllThreadInteractionsWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     // We can't safely delete interactions while enumerating them, so
     // we collect and delete separately.
@@ -213,44 +215,37 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     // We don't want to instantiate the interactions when collecting them
     // or when deleting them.
     NSMutableArray<NSString *> *interactionIds = [NSMutableArray new];
-    YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
-    OWSAssertDebug(interactionsByThread);
-    __block BOOL didDetectCorruption = NO;
-    [interactionsByThread enumerateKeysInGroup:self.uniqueId
-                                    usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
-                                        if (![key isKindOfClass:[NSString class]] || key.length < 1) {
-                                            OWSFailDebug(
-                                                @"invalid key in thread interactions: %@, %@.", key, [key class]);
-                                            didDetectCorruption = YES;
-                                            return;
-                                        }
-                                        [interactionIds addObject:key];
-                                    }];
-
-    if (didDetectCorruption) {
-        OWSLogWarn(@"incrementing version of: %@", TSMessageDatabaseViewExtensionName);
-        [OWSPrimaryStorage incrementVersionOfDatabaseExtension:TSMessageDatabaseViewExtensionName];
+    NSError *error;
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId];
+    [interactionFinder enumerateInteractionIdsObjcWithTransaction:transaction
+                                                            error:&error
+                                                            block:^(NSString *key, BOOL *stop) {
+                                                                [interactionIds addObject:key];
+                                                            }];
+    if (error != nil) {
+        OWSFailDebug(@"Error during enumeration: %@", error);
     }
 
     for (NSString *interactionId in interactionIds) {
         // We need to fetch each interaction, since [TSInteraction removeWithTransaction:] does important work.
         TSInteraction *_Nullable interaction =
-            [TSInteraction fetchObjectWithUniqueID:interactionId transaction:transaction];
+            [TSInteraction anyFetchWithUniqueId:interactionId transaction:transaction];
         if (!interaction) {
             OWSFailDebug(@"couldn't load thread's interaction for deletion.");
             continue;
         }
-        [interaction removeWithTransaction:transaction];
+        [interaction anyRemoveWithTransaction:transaction];
     }
 }
 
 - (BOOL)isNoteToSelf
 {
-    if (!IsNoteToSelfEnabled()) {
-        return NO;
-    }
-    return (!self.isGroupThread && self.contactIdentifier != nil &&
-        [self.contactIdentifier isEqualToString:self.tsAccountManager.localNumber]);
+    return NO;
+}
+
+- (NSString *)colorSeed
+{
+    return self.uniqueId;
 }
 
 #pragma mark - To be subclassed.
@@ -261,19 +256,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     return NO;
 }
 
-// Override in ContactThread
-- (nullable NSString *)contactIdentifier
-{
-    return nil;
-}
-
-- (NSString *)name {
-    OWSAbstractMethod();
-
-    return nil;
-}
-
-- (NSArray<NSString *> *)recipientIdentifiers
+- (NSArray<SignalServiceAddress *> *)recipientAddresses
 {
     OWSAbstractMethod();
 
@@ -290,17 +273,19 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 /**
  * Iterate over this thread's interactions
  */
-- (void)enumerateInteractionsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-                                  usingBlock:(void (^)(TSInteraction *interaction,
-                                                 YapDatabaseReadTransaction *transaction))block
+- (void)enumerateInteractionsWithTransaction:(SDSAnyReadTransaction *)transaction
+                                  usingBlock:(void (^)(TSInteraction *interaction))block
 {
-    YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
-    [interactionsByThread
-        enumerateKeysAndObjectsInGroup:self.uniqueId
-                            usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
-                                TSInteraction *interaction = object;
-                                block(interaction, transaction);
-                            }];
+    NSError *error;
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId];
+    [interactionFinder enumerateInteractionsWithTransaction:transaction
+                                                      error:&error
+                                                      block:^(TSInteraction *interaction, BOOL *stop) {
+                                                          block(interaction);
+                                                      }];
+    if (error != nil) {
+        OWSFailDebug(@"Error during enumeration: %@", error);
+    }
 }
 
 /**
@@ -309,11 +294,9 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
  */
 - (void)enumerateInteractionsUsingBlock:(void (^)(TSInteraction *interaction))block
 {
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         [self enumerateInteractionsWithTransaction:transaction
-                                        usingBlock:^(
-                                            TSInteraction *interaction, YapDatabaseReadTransaction *transaction) {
-
+                                        usingBlock:^(TSInteraction *interaction) {
                                             block(interaction);
                                         }];
     }];
@@ -360,23 +343,29 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     return [[[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId] countWithTransaction:transaction];
 }
 
-- (NSArray<id<OWSReadTracking>> *)unseenMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSArray<id<OWSReadTracking>> *)unseenMessagesWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     NSMutableArray<id<OWSReadTracking>> *messages = [NSMutableArray new];
-    [[TSDatabaseView unseenDatabaseViewExtension:transaction]
-        enumerateKeysAndObjectsInGroup:self.uniqueId
-                            usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
-                                if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-                                    OWSFailDebug(@"Unexpected object in unseen messages: %@", [object class]);
-                                    return;
-                                }
-                                [messages addObject:(id<OWSReadTracking>)object];
-                            }];
-
+    NSError *error;
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId];
+    [interactionFinder
+        enumerateUnseenInteractionsWithTransaction:transaction
+                                             error:&error
+                                             block:^(TSInteraction *interaction, BOOL *stop) {
+                                                 if (![interaction conformsToProtocol:@protocol(OWSReadTracking)]) {
+                                                     OWSFailDebug(@"Unexpected object in unseen messages: %@",
+                                                         interaction.class);
+                                                     return;
+                                                 }
+                                                 [messages addObject:(id<OWSReadTracking>)interaction];
+                                             }];
+    if (error != nil) {
+        OWSFailDebug(@"Error during enumeration: %@", error);
+    }
     return [messages copy];
 }
 
-- (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)markAllAsReadWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     for (id<OWSReadTracking> message in [self unseenMessagesWithTransaction:transaction]) {
         [message markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp] sendReadReceipt:YES transaction:transaction];
@@ -409,7 +398,16 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 {
     OWSAssertDebug(interaction);
 
+    if (!interaction.shouldBeSaved) {
+        OWSFailDebug(@"Unexpected interaction type: %@", interaction.class);
+        return NO;
+    }
     if (interaction.isDynamicInteraction) {
+        OWSFailDebug(@"Unexpected interaction type: %@", interaction.class);
+        return NO;
+    }
+    if ([interaction isKindOfClass:[OWSOutgoingSyncMessage class]]) {
+        OWSFailDebug(@"Unexpected interaction type: %@", interaction.class);
         return NO;
     }
 
@@ -430,7 +428,8 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     return YES;
 }
 
-- (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(YapDatabaseReadWriteTransaction *)transaction {
+- (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(SDSAnyWriteTransaction *)transaction
+{
     OWSAssertDebug(lastMessage);
     OWSAssertDebug(transaction);
 
@@ -439,22 +438,34 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     }
 
     if (!self.shouldThreadBeVisible) {
-        self.shouldThreadBeVisible = YES;
-        [self saveWithTransaction:transaction];
+        [self anyUpdateWithTransaction:transaction
+                                 block:^(TSThread *thread) {
+                                     thread.shouldThreadBeVisible = YES;
+                                 }];
     } else {
-        [self touchWithTransaction:transaction];
+        [self.databaseStorage touchThread:self transaction:transaction];
     }
+}
+
+- (void)softDeleteThreadWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self removeAllThreadInteractionsWithTransaction:transaction];
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSThread *thread) {
+                                 thread.messageDraft = nil;
+                                 thread.shouldThreadBeVisible = NO;
+                             }];
 }
 
 #pragma mark - Disappearing Messages
 
 - (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationWithTransaction:
-    (YapDatabaseReadTransaction *)transaction
+    (SDSAnyReadTransaction *)transaction
 {
     return [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:self.uniqueId transaction:transaction];
 }
 
-- (uint32_t)disappearingMessagesDurationWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (uint32_t)disappearingMessagesDurationWithTransaction:(SDSAnyReadTransaction *)transaction
 {
 
     OWSDisappearingMessagesConfiguration *config = [self disappearingMessagesConfigurationWithTransaction:transaction];
@@ -468,15 +479,13 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 
 #pragma mark - Archival
 
-- (BOOL)isArchivedWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (BOOL)isArchivedWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     if (!self.archivedAsOfMessageSortId) {
         return NO;
     }
 
-    TSInteraction *_Nullable latestInteraction =
-        [self lastInteractionForInboxWithTransaction:[[SDSAnyReadTransaction alloc]
-                                                         initWithTransitional_yapReadTransaction:transaction]];
+    TSInteraction *_Nullable latestInteraction = [self lastInteractionForInboxWithTransaction:transaction];
     uint64_t latestSortIdForInbox = latestInteraction ? latestInteraction.sortId : 0;
     return self.archivedAsOfMessageSortId.unsignedLongLongValue >= latestSortIdForInbox;
 }
@@ -497,16 +506,13 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 
 - (void)archiveThreadWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-
     [self anyUpdateWithTransaction:transaction
                              block:^(TSThread *thread) {
                                  uint64_t latestId = [InteractionFinder mostRecentSortIdWithTransaction:transaction];
                                  thread.archivedAsOfMessageSortId = @(latestId);
                              }];
 
-    if (transaction.transitional_yapWriteTransaction) {
-        [self markAllAsReadWithTransaction:transaction.transitional_yapWriteTransaction];
-    }
+    [self markAllAsReadWithTransaction:transaction];
 }
 
 - (void)unarchiveThreadWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -519,9 +525,10 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 
 #pragma mark - Drafts
 
-- (NSString *)currentDraftWithTransaction:(YapDatabaseReadTransaction *)transaction {
-    TSThread *thread = [TSThread fetchObjectWithUniqueID:self.uniqueId transaction:transaction];
-    if (thread.messageDraft) {
+- (NSString *)currentDraftWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    TSThread *_Nullable thread = [TSThread anyFetchWithUniqueId:self.uniqueId transaction:transaction];
+    if (thread.messageDraft != nil) {
         return thread.messageDraft;
     } else {
         return @"";
@@ -546,10 +553,10 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
             [mutedUntilDate timeIntervalSinceDate:now] > 0);
 }
 
-- (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(SDSAnyWriteTransaction *)transaction
 {
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSThread *thread) {
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSThread *thread) {
                                  [thread setMutedUntilDate:mutedUntilDate];
                              }];
 }
@@ -696,11 +703,10 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     return colorMap;
 }
 
-- (void)updateConversationColorName:(ConversationColorName)colorName
-                        transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateConversationColorName:(ConversationColorName)colorName transaction:(SDSAnyWriteTransaction *)transaction
 {
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSThread *thread) {
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSThread *thread) {
                                  thread.conversationColorName = colorName;
                              }];
 }

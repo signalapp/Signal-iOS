@@ -21,6 +21,8 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSInfoMessage.h>
 
+@import SafariServices;
+
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^CustomLayoutBlock)(void);
@@ -72,7 +74,7 @@ typedef void (^CustomLayoutBlock)(void);
 
 @interface FingerprintViewController () <OWSCompareSafetyNumbersActivityDelegate>
 
-@property (nonatomic) NSString *recipientId;
+@property (nonatomic) SignalServiceAddress *address;
 @property (nonatomic) NSData *identityKey;
 @property (nonatomic) TSAccountManager *accountManager;
 @property (nonatomic) OWSFingerprint *fingerprint;
@@ -89,12 +91,21 @@ typedef void (^CustomLayoutBlock)(void);
 
 @implementation FingerprintViewController
 
-+ (void)presentFromViewController:(UIViewController *)viewController recipientId:(NSString *)recipientId
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
 {
-    OWSAssertDebug(recipientId.length > 0);
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
++ (void)presentFromViewController:(UIViewController *)viewController address:(SignalServiceAddress *)address
+{
+    OWSAssertDebug(address.isValid);
 
     OWSRecipientIdentity *_Nullable recipientIdentity =
-        [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
+        [[OWSIdentityManager sharedManager] recipientIdentityForAddress:address];
     if (!recipientIdentity) {
         [OWSAlerts showAlertWithTitle:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_TITLE",
                                           @"Title for alert explaining that a user cannot be verified.")
@@ -104,7 +115,7 @@ typedef void (^CustomLayoutBlock)(void);
     }
 
     FingerprintViewController *fingerprintViewController = [FingerprintViewController new];
-    [fingerprintViewController configureWithRecipientId:recipientId];
+    [fingerprintViewController configureWithAddress:address];
     OWSNavigationController *navigationController =
         [[OWSNavigationController alloc] initWithRootViewController:fingerprintViewController];
     [viewController presentViewController:navigationController animated:YES completion:nil];
@@ -138,17 +149,17 @@ typedef void (^CustomLayoutBlock)(void);
                                                object:nil];
 }
 
-- (void)configureWithRecipientId:(NSString *)recipientId
+- (void)configureWithAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    self.recipientId = recipientId;
+    self.address = address;
 
     OWSContactsManager *contactsManager = Environment.shared.contactsManager;
-    self.contactName = [contactsManager displayNameForPhoneIdentifier:recipientId];
+    self.contactName = [contactsManager displayNameForAddress:address];
 
     OWSRecipientIdentity *_Nullable recipientIdentity =
-        [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
+        [[OWSIdentityManager sharedManager] recipientIdentityForAddress:address];
     OWSAssertDebug(recipientIdentity);
     // By capturing the identity key when we enter these views, we prevent the edge case
     // where the user verifies a key that we learned about while this view was open.
@@ -156,8 +167,8 @@ typedef void (^CustomLayoutBlock)(void);
 
     OWSFingerprintBuilder *builder =
         [[OWSFingerprintBuilder alloc] initWithAccountManager:self.accountManager contactsManager:contactsManager];
-    self.fingerprint =
-        [builder fingerprintWithTheirSignalId:recipientId theirIdentityKey:recipientIdentity.identityKey];
+    self.fingerprint = [builder fingerprintWithTheirSignalAddress:address
+                                                 theirIdentityKey:recipientIdentity.identityKey];
 }
 
 - (void)loadView
@@ -347,10 +358,10 @@ typedef void (^CustomLayoutBlock)(void);
 
 - (void)updateVerificationStateLabel
 {
-    OWSAssertDebug(self.recipientId.length > 0);
+    OWSAssertDebug(self.address.isValid);
 
-    BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId]
-        == OWSVerificationStateVerified;
+    BOOL isVerified =
+        [[OWSIdentityManager sharedManager] verificationStateForAddress:self.address] == OWSVerificationStateVerified;
 
     if (isVerified) {
         NSMutableAttributedString *labelText = [NSMutableAttributedString new];
@@ -457,7 +468,7 @@ typedef void (^CustomLayoutBlock)(void);
 {
     [FingerprintViewScanController showVerificationSucceeded:self
                                                  identityKey:self.identityKey
-                                                 recipientId:self.recipientId
+                                            recipientAddress:self.address
                                                  contactName:self.contactName
                                                          tag:self.logTag];
 }
@@ -489,7 +500,7 @@ typedef void (^CustomLayoutBlock)(void);
 - (void)showScanner
 {
     FingerprintViewScanController *scanView = [FingerprintViewScanController new];
-    [scanView configureWithRecipientId:self.recipientId];
+    [scanView configureWithRecipientAddress:self.address];
     [self.navigationController pushViewController:scanView animated:YES];
 }
 
@@ -498,7 +509,10 @@ typedef void (^CustomLayoutBlock)(void);
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
         NSString *learnMoreURL = @"https://support.signal.org/hc/en-us/articles/"
                                  @"213134107";
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:learnMoreURL]];
+
+        SFSafariViewController *safariVC =
+            [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:learnMoreURL]];
+        [self presentViewController:safariVC animated:YES completion:nil];
     }
 }
 
@@ -519,21 +533,19 @@ typedef void (^CustomLayoutBlock)(void);
 - (void)verifyUnverifyButtonTapped:(UIGestureRecognizer *)gestureRecognizer
 {
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-        [OWSPrimaryStorage.sharedManager.newDatabaseConnection
-            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                BOOL isVerified =
-                    [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId
-                                                                            transaction:transaction.asAnyWrite]
-                    == OWSVerificationStateVerified;
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            BOOL isVerified =
+                [[OWSIdentityManager sharedManager] verificationStateForAddress:self.address transaction:transaction]
+                == OWSVerificationStateVerified;
 
-                OWSVerificationState newVerificationState
-                    = (isVerified ? OWSVerificationStateDefault : OWSVerificationStateVerified);
-                [[OWSIdentityManager sharedManager] setVerificationState:newVerificationState
-                                                             identityKey:self.identityKey
-                                                             recipientId:self.recipientId
-                                                   isUserInitiatedChange:YES
-                                                             transaction:transaction.asAnyWrite];
-            }];
+            OWSVerificationState newVerificationState
+                = (isVerified ? OWSVerificationStateDefault : OWSVerificationStateVerified);
+            [[OWSIdentityManager sharedManager] setVerificationState:newVerificationState
+                                                         identityKey:self.identityKey
+                                                             address:self.address
+                                               isUserInitiatedChange:YES
+                                                         transaction:transaction];
+        }];
 
         [self dismissViewControllerAnimated:YES completion:nil];
     }

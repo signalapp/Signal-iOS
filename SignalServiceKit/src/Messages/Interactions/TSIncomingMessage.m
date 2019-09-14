@@ -13,7 +13,6 @@
 #import "TSGroupThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,10 +21,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, getter=wasRead) BOOL read;
 
 @property (nonatomic, nullable) NSNumber *serverTimestamp;
+@property (nonatomic, readonly) NSUInteger incomingMessageSchemaVersion;
 
 @end
 
 #pragma mark -
+
+const NSUInteger TSIncomingMessageSchemaVersion = 1;
 
 @implementation TSIncomingMessage
 
@@ -36,17 +38,21 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    if (_authorId == nil) {
-        OWSAssertDebug([self.uniqueThreadId hasPrefix:TSContactThreadPrefix]);
-        _authorId = [TSContactThread contactIdFromThreadId:self.uniqueThreadId];
+    if (_incomingMessageSchemaVersion < 1) {
+        _authorPhoneNumber = [coder decodeObjectForKey:@"authorId"];
+        if (_authorPhoneNumber == nil) {
+            _authorPhoneNumber = [TSContactThread legacyContactPhoneNumberFromThreadId:self.uniqueThreadId];
+        }
     }
+
+    _incomingMessageSchemaVersion = TSIncomingMessageSchemaVersion;
 
     return self;
 }
 
 - (instancetype)initIncomingMessageWithTimestamp:(uint64_t)timestamp
                                         inThread:(TSThread *)thread
-                                        authorId:(NSString *)authorId
+                                   authorAddress:(SignalServiceAddress *)authorAddress
                                   sourceDeviceId:(uint32_t)sourceDeviceId
                                      messageBody:(nullable NSString *)body
                                    attachmentIds:(NSArray<NSString *> *)attachmentIds
@@ -57,29 +63,33 @@ NS_ASSUME_NONNULL_BEGIN
                                   messageSticker:(nullable MessageSticker *)messageSticker
                                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                                  wasReceivedByUD:(BOOL)wasReceivedByUD
-             perMessageExpirationDurationSeconds:(uint32_t)perMessageExpirationDurationSeconds
+                               isViewOnceMessage:(BOOL)isViewOnceMessage
 {
     self = [super initMessageWithTimestamp:timestamp
-                                   inThread:thread
-                                messageBody:body
-                              attachmentIds:attachmentIds
-                           expiresInSeconds:expiresInSeconds
-                            expireStartedAt:0
-                              quotedMessage:quotedMessage
-                               contactShare:contactShare
-                                linkPreview:linkPreview
-                             messageSticker:messageSticker
-        perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds];
+                                  inThread:thread
+                               messageBody:body
+                             attachmentIds:attachmentIds
+                          expiresInSeconds:expiresInSeconds
+                           expireStartedAt:0
+                             quotedMessage:quotedMessage
+                              contactShare:contactShare
+                               linkPreview:linkPreview
+                            messageSticker:messageSticker
+                         isViewOnceMessage:isViewOnceMessage];
 
     if (!self) {
         return self;
     }
 
-    _authorId = authorId;
+    _authorPhoneNumber = authorAddress.phoneNumber;
+    _authorUUID = authorAddress.uuidString;
+
     _sourceDeviceId = sourceDeviceId;
     _read = NO;
     _serverTimestamp = serverTimestamp;
     _wasReceivedByUD = wasReceivedByUD;
+
+    _incomingMessageSchemaVersion = TSIncomingMessageSchemaVersion;
 
     return self;
 }
@@ -101,14 +111,15 @@ NS_ASSUME_NONNULL_BEGIN
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
+              isViewOnceComplete:(BOOL)isViewOnceComplete
+               isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
-perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSeconds
-  perMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
-       perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
-                        authorId:(NSString *)authorId
+               authorPhoneNumber:(nullable NSString *)authorPhoneNumber
+                      authorUUID:(nullable NSString *)authorUUID
+    incomingMessageSchemaVersion:(NSUInteger)incomingMessageSchemaVersion
                             read:(BOOL)read
                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                   sourceDeviceId:(unsigned int)sourceDeviceId
@@ -125,11 +136,10 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
                    expireStartedAt:expireStartedAt
                          expiresAt:expiresAt
                   expiresInSeconds:expiresInSeconds
+                isViewOnceComplete:isViewOnceComplete
+                 isViewOnceMessage:isViewOnceMessage
                        linkPreview:linkPreview
                     messageSticker:messageSticker
-perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
-    perMessageExpirationHasExpired:perMessageExpirationHasExpired
-         perMessageExpireStartedAt:perMessageExpireStartedAt
                      quotedMessage:quotedMessage
                      schemaVersion:schemaVersion];
 
@@ -137,7 +147,9 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         return self;
     }
 
-    _authorId = authorId;
+    _authorPhoneNumber = authorPhoneNumber;
+    _authorUUID = authorUUID;
+    _incomingMessageSchemaVersion = incomingMessageSchemaVersion;
     _read = read;
     _serverTimestamp = serverTimestamp;
     _sourceDeviceId = sourceDeviceId;
@@ -150,51 +162,9 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
 // --- CODE GENERATION MARKER
 
-+ (nullable instancetype)findMessageWithAuthorId:(NSString *)authorId
-                                       timestamp:(uint64_t)timestamp
-                                     transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    __block TSIncomingMessage *foundMessage;
-    // In theory we could build a new secondaryIndex for (authorId,timestamp), but in practice there should
-    // be *very* few (millisecond) timestamps with multiple authors.
-    [TSDatabaseSecondaryIndexes
-        enumerateMessagesWithTimestamp:timestamp
-                             withBlock:^(NSString *collection, NSString *key, BOOL *stop) {
-                                 TSInteraction *interaction =
-                                     [TSInteraction fetchObjectWithUniqueID:key transaction:transaction];
-                                 if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
-                                     TSIncomingMessage *message = (TSIncomingMessage *)interaction;
-
-                                     OWSAssertDebug(message.authorId > 0);
-
-                                     if ([message.authorId isEqualToString:authorId]) {
-                                         foundMessage = message;
-                                     }
-                                 }
-                             }
-                      usingTransaction:transaction];
-
-    return foundMessage;
-}
-
-
 - (OWSInteractionType)interactionType
 {
     return OWSInteractionType_IncomingMessage;
-}
-
-- (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    for (NSString *attachmentId in self.attachmentIds) {
-        TSAttachment *_Nullable attachment =
-            [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction.asAnyRead];
-        if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
-            return NO;
-        }
-    }
-    return self.hasPerConversationExpiration;
 }
 
 #pragma mark - OWSReadTracking
@@ -204,8 +174,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     return YES;
 }
 
-- (void)markAsReadNowWithSendReadReceipt:(BOOL)sendReadReceipt
-                             transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)markAsReadNowWithSendReadReceipt:(BOOL)sendReadReceipt transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp]
                 sendReadReceipt:sendReadReceipt
@@ -214,28 +183,29 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
               sendReadReceipt:(BOOL)sendReadReceipt
-                  transaction:(YapDatabaseReadWriteTransaction *)transaction
+                  transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
-    if (_read && readTimestamp >= self.expireStartedAt) {
+    if (self.read && readTimestamp >= self.expireStartedAt) {
         return;
     }
-    
+
     NSTimeInterval secondsAgoRead = ((NSTimeInterval)[NSDate ows_millisecondTimeStamp] - (NSTimeInterval)readTimestamp) / 1000;
     OWSLogDebug(@"marking uniqueId: %@  which has timestamp: %llu as read: %f seconds ago",
         self.uniqueId,
         self.timestamp,
         secondsAgoRead);
-    _read = YES;
-    [self saveWithTransaction:transaction];
-    
-    [transaction addCompletionQueue:nil
-                    completionBlock:^{
-                        [[NSNotificationCenter defaultCenter]
-                         postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
-                         object:self];
-                    }];
+
+    [self anyUpdateIncomingMessageWithTransaction:transaction
+                                            block:^(TSIncomingMessage *message) {
+                                                message.read = YES;
+                                            }];
+
+    [transaction addCompletionWithBlock:^{
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
+                                                                 object:self];
+    }];
 
     [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:self
                                                      expirationStartedAt:readTimestamp
@@ -244,6 +214,11 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     if (sendReadReceipt) {
         [OWSReadReceiptManager.sharedManager messageWasReadLocally:self];
     }
+}
+
+- (SignalServiceAddress *)authorAddress
+{
+    return [[SignalServiceAddress alloc] initWithUuidString:self.authorUUID phoneNumber:self.authorPhoneNumber];
 }
 
 @end

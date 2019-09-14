@@ -15,7 +15,7 @@ typedef NSData *_Nonnull (^DynamicOutgoingMessageBlock)(SignalRecipient *);
 @interface OWSDynamicOutgoingMessage : TSOutgoingMessage
 
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
-                                        inThread:(nullable TSThread *)thread
+                                        inThread:(TSThread *)thread
                                      messageBody:(nullable NSString *)body
                                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
                                 expiresInSeconds:(uint32_t)expiresInSeconds
@@ -27,10 +27,10 @@ typedef NSData *_Nonnull (^DynamicOutgoingMessageBlock)(SignalRecipient *);
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                                   messageSticker:(nullable MessageSticker *)messageSticker NS_UNAVAILABLE;
 
-- (instancetype)initWithPlainTextDataBlock:(DynamicOutgoingMessageBlock)block thread:(nullable TSThread *)thread;
+- (instancetype)initWithPlainTextDataBlock:(DynamicOutgoingMessageBlock)block thread:(TSThread *)thread;
 - (instancetype)initWithPlainTextDataBlock:(DynamicOutgoingMessageBlock)block
                                  timestamp:(uint64_t)timestamp
-                                    thread:(nullable TSThread *)thread;
+                                    thread:(TSThread *)thread;
 
 @end
 

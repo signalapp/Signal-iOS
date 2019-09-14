@@ -13,15 +13,14 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSUnreadIndicator;
 @class SDSAnyReadTransaction;
 @class SignalAttachment;
+@class SignalServiceAddress;
 @class StickerInfo;
 @class TSContactThread;
 @class TSGroupThread;
 @class TSInteraction;
 @class TSOutgoingMessage;
 @class TSThread;
-@class YapDatabaseConnection;
 @class YapDatabaseReadTransaction;
-@class YapDatabaseReadWriteTransaction;
 
 @interface ThreadDynamicInteractions : NSObject
 
@@ -69,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSOutgoingMessage *)sendMessageNonDurablyWithText:(NSString *)fullMessageText
                                             inThread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                         transaction:(YapDatabaseReadTransaction *)transaction
+                                         transaction:(SDSAnyReadTransaction *)transaction
                                        messageSender:(OWSMessageSender *)messageSender
                                           completion:(void (^)(NSError *_Nullable error))completion;
 
@@ -78,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     mediaAttachments:(NSArray<SignalAttachment *> *)attachments
                                             inThread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                         transaction:(YapDatabaseReadTransaction *)transaction
+                                         transaction:(SDSAnyReadTransaction *)transaction
                                        messageSender:(OWSMessageSender *)messageSender
                                           completion:(void (^)(NSError *_Nullable error))completion;
 
@@ -118,14 +117,12 @@ NS_ASSUME_NONNULL_BEGIN
                                                      maxRangeSize:(NSUInteger)maxRangeSize
                                                       transaction:(SDSAnyReadTransaction *)transaction;
 
-+ (BOOL)shouldShowGroupProfileBannerInThread:(TSThread *)thread blockingManager:(OWSBlockingManager *)blockingManager;
-
 // This method should be called right _before_ we send a message to a thread,
-// since we want to auto-add contact threads to the profile whitelist if the
-// conversation was initiated by the local user.
+// since we want to auto-add any thread to the profile whitelist that was
+// initiated by the local user.
 //
 // Returns YES IFF the thread was just added to the profile whitelist.
-+ (BOOL)addThreadToProfileWhitelistIfEmptyContactThread:(TSThread *)thread;
++ (BOOL)addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:(TSThread *)thread;
 
 #pragma mark - Delete Content
 
@@ -134,9 +131,14 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Find Content
 
 + (nullable TSInteraction *)findInteractionInThreadByTimestamp:(uint64_t)timestamp
-                                                      authorId:(NSString *)authorId
+                                                 authorAddress:(SignalServiceAddress *)authorAddress
                                                 threadUniqueId:(NSString *)threadUniqueId
                                                    transaction:(YapDatabaseReadTransaction *)transaction;
+
+#pragma mark - Message Request
+
++ (BOOL)hasPendingMessageRequest:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
++ (BOOL)existsOutgoingMessage:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

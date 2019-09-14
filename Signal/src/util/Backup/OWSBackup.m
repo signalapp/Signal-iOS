@@ -17,7 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const NSNotificationNameBackupStateDidChange = @"NSNotificationNameBackupStateDidChange";
 
-NSString *const OWSPrimaryStorage_OWSBackupCollection = @"OWSPrimaryStorage_OWSBackupCollection";
 NSString *const OWSBackup_IsBackupEnabledKey = @"OWSBackup_IsBackupEnabledKey";
 NSString *const OWSBackup_LastExportSuccessDateKey = @"OWSBackup_LastExportSuccessDateKey";
 NSString *const OWSBackup_LastExportFailureDateKey = @"OWSBackup_LastExportFailureDateKey";
@@ -54,14 +53,14 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
     }
 }
 
-// TODO: Revisit after GRDB migration.
+// GRDB TODO: Revisit after GRDB migration.
 NSArray<NSString *> *MiscCollectionsToBackup(void)
 {
     return @[
-             kOWSBlockingManager_BlockListCollection,
-             OWSUserProfile.collection,
-             SSKIncrementingIdFinder.collectionName,
-             OWSPreferencesSignalDatabaseCollection,
+        OWSBlockingManager.keyValueStore.collection,
+        OWSUserProfile.collection,
+        SSKIncrementingIdFinder.collectionName,
+        OWSPreferencesSignalDatabaseCollection,
     ];
 }
 
@@ -114,7 +113,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     static SDSKeyValueStore *keyValueStore = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:OWSPrimaryStorage_OWSBackupCollection];
+        keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:@"OWSPrimaryStorage_OWSBackupCollection"];
     });
     return keyValueStore;
 }
@@ -763,12 +762,15 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
                                          return;
                                      }
                                      TSAttachmentPointer *attachmentPointer = object;
-                                     if (!attachmentPointer.lazyRestoreFragment) {
+
+                                     OWSBackupFragment *_Nullable lazyRestoreFragment =
+                                         [attachmentPointer lazyRestoreFragmentWithTransaction:transaction.asAnyRead];
+                                     if (lazyRestoreFragment == nil) {
                                          OWSFailDebug(
                                              @"Invalid object: %@ in collection:%@", [object class], collection);
                                          return;
                                      }
-                                     [recordNames addObject:attachmentPointer.lazyRestoreFragment.recordName];
+                                     [recordNames addObject:lazyRestoreFragment.recordName];
                                  }];
     }];
     return recordNames;
@@ -797,8 +799,11 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     OWSAssertDebug(attachment);
     OWSAssertDebug(backupIO);
 
-    OWSBackupFragment *_Nullable lazyRestoreFragment = attachment.lazyRestoreFragment;
-    if (!lazyRestoreFragment) {
+    __block OWSBackupFragment *_Nullable lazyRestoreFragment;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        lazyRestoreFragment = [attachment lazyRestoreFragmentWithTransaction:transaction];
+    }];
+    if (lazyRestoreFragment == nil) {
         OWSLogError(@"Attachment missing lazy restore metadata.");
         return
             [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Attachment missing lazy restore metadata.")];
@@ -849,7 +854,10 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
         }
     }
 
-    TSAttachmentStream *stream = [[TSAttachmentStream alloc] initWithPointer:attachmentPointer];
+    __block TSAttachmentStream *stream;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        stream = [[TSAttachmentStream alloc] initWithPointer:attachmentPointer transaction:transaction];
+    }];
 
     NSString *attachmentFilePath = stream.originalFilePath;
     if (attachmentFilePath.length < 1) {
@@ -897,7 +905,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     return [AnyPromise promiseWithValue:@(1)];
 }
 
-- (void)logBackupMetadataCache:(YapDatabaseConnection *)dbConnection
+- (void)logBackupMetadataCache
 {
     OWSLogInfo(@"");
 

@@ -12,11 +12,12 @@
 #import <SignalCoreKit/Randomness.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/OWSDynamicOutgoingMessage.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSThread.h>
+
+#ifdef DEBUG
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -56,8 +57,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(thread);
     
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
-
-#ifdef DEBUG
 
     [items addObject:[OWSTableItem itemWithTitle:@"Send empty message"
                                      actionBlock:^{
@@ -321,7 +320,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     [SSKProtoSyncMessage builder];
                                                 SSKProtoSyncMessageSentBuilder *sentBuilder =
                                                     [SSKProtoSyncMessageSent builder];
-                                                sentBuilder.destination = @"abc";
+                                                sentBuilder.destinationE164 = @"abc";
                                                 sentBuilder.timestamp = arc4random_uniform(32) + 1;
                                                 SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
                                                 sentBuilder.message = [dataBuilder buildIgnoringErrors];
@@ -343,7 +342,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     [SSKProtoSyncMessage builder];
                                                 SSKProtoSyncMessageSentBuilder *sentBuilder =
                                                     [SSKProtoSyncMessageSent builder];
-                                                sentBuilder.destination = @"abc";
+                                                sentBuilder.destinationE164 = @"abc";
                                                 sentBuilder.timestamp = 0;
                                                 SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
                                                 sentBuilder.message = [dataBuilder buildIgnoringErrors];
@@ -365,7 +364,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     [SSKProtoSyncMessage builder];
                                                 SSKProtoSyncMessageSentBuilder *sentBuilder =
                                                     [SSKProtoSyncMessageSent builder];
-                                                sentBuilder.destination = @"abc";
+                                                sentBuilder.destinationE164 = @"abc";
                                                 sentBuilder.timestamp = 0;
                                                 SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
                                                 dataBuilder.body = @" ";
@@ -388,7 +387,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     [SSKProtoSyncMessage builder];
                                                 SSKProtoSyncMessageSentBuilder *sentBuilder =
                                                     [SSKProtoSyncMessageSent builder];
-                                                sentBuilder.destination = @"abc";
+                                                sentBuilder.destinationE164 = @"abc";
                                                 sentBuilder.timestamp = 0;
                                                 SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
                                                 dataBuilder.body = @" ";
@@ -415,7 +414,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     [SSKProtoSyncMessage builder];
                                                 SSKProtoSyncMessageSentBuilder *sentBuilder =
                                                     [SSKProtoSyncMessageSent builder];
-                                                sentBuilder.destination = @"abc";
+                                                sentBuilder.destinationE164 = @"abc";
                                                 sentBuilder.timestamp = 0;
                                                 SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
                                                 dataBuilder.body = @" ";
@@ -440,7 +439,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                             [SSKProtoSyncMessage builder];
                                                                         SSKProtoSyncMessageSentBuilder *sentBuilder =
                                                                             [SSKProtoSyncMessageSent builder];
-                                                                        sentBuilder.destination = @"abc";
+                                                                        sentBuilder.destinationE164 = @"abc";
                                                                         syncMessageBuilder.sent =
                                                                             [sentBuilder buildIgnoringErrors];
                                                                         contentBuilder.syncMessage =
@@ -463,12 +462,8 @@ NS_ASSUME_NONNULL_BEGIN
                                          [DebugUIStress makeUnregisteredGroup];
                                      }]];
 
-#endif
-
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
-
-#ifdef DEBUG
 
 + (void)ensureGroupOfDataBuilder:(SSKProtoDataMessageBuilder *)dataBuilder thread:(TSThread *)thread
 {
@@ -523,11 +518,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)hallucinateTwinGroup:(TSGroupThread *)groupThread
 {
     __block TSGroupThread *thread;
-    [OWSPrimaryStorage.dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.databaseStorage
+        writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             TSGroupModel *groupModel =
                 [[TSGroupModel alloc] initWithTitle:[groupThread.groupModel.groupName stringByAppendingString:@" Copy"]
-                                          memberIds:groupThread.groupModel.groupMemberIds
+                                            members:groupThread.groupModel.groupMembers
                                               image:groupThread.groupModel.groupImage
                                             groupId:[Randomness generateRandomBytes:kGroupIdLength]];
             thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
@@ -539,22 +534,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)makeUnregisteredGroup
 {
-    NSMutableArray<NSString *> *recipientIds = [NSMutableArray new];
+    NSMutableArray<SignalServiceAddress *> *recipientAddresses = [NSMutableArray new];
     for (int i = 0; i < 3; i++) {
-        NSMutableString *recipientId = [@"+1999" mutableCopy];
+        NSMutableString *recipientNumber = [@"+1999" mutableCopy];
         for (int j = 0; j < 3; j++) {
             uint32_t digit = arc4random_uniform(10);
-            [recipientId appendFormat:@"%d", (int)digit];
+            [recipientNumber appendFormat:@"%d", (int)digit];
         }
-        [recipientIds addObject:recipientId];
+        [recipientAddresses addObject:[[SignalServiceAddress alloc] initWithUuid:[NSUUID UUID]
+                                                                     phoneNumber:recipientNumber]];
     }
-    [recipientIds addObject:self.tsAccountManager.localNumber];
+
+    if (SSKFeatureFlags.allowUUIDOnlyContacts) {
+        for (int i = 0; i < 3; i++) {
+            [recipientAddresses addObject:[[SignalServiceAddress alloc] initWithUuid:[NSUUID UUID] phoneNumber:nil]];
+        }
+    }
+
+    [recipientAddresses addObject:self.tsAccountManager.localAddress];
 
     __block TSGroupThread *thread;
-    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(
-        YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:NSUUID.UUID.UUIDString
-                                                             memberIds:recipientIds
+                                                               members:recipientAddresses
                                                                  image:nil
                                                                groupId:[Randomness generateRandomBytes:kGroupIdLength]];
         thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
@@ -564,8 +566,8 @@ NS_ASSUME_NONNULL_BEGIN
     [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
 }
 
-#endif
-
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

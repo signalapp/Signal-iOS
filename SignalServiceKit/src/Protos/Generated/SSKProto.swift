@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -60,8 +60,8 @@ public enum SSKProtoError: Error {
         if let _value = type {
             builder.setType(_value)
         }
-        if let _value = source {
-            builder.setSource(_value)
+        if let _value = sourceE164 {
+            builder.setSourceE164(_value)
         }
         if hasSourceDevice {
             builder.setSourceDevice(sourceDevice)
@@ -81,6 +81,9 @@ public enum SSKProtoError: Error {
         if hasServerTimestamp {
             builder.setServerTimestamp(serverTimestamp)
         }
+        if let _value = sourceUuid {
+            builder.setSourceUuid(_value)
+        }
         return builder
     }
 
@@ -96,40 +99,90 @@ public enum SSKProtoError: Error {
             setTimestamp(timestamp)
         }
 
-        @objc public func setType(_ valueParam: SSKProtoEnvelopeType) {
+        @objc
+        public func setType(_ valueParam: SSKProtoEnvelopeType) {
             proto.type = SSKProtoEnvelopeTypeUnwrap(valueParam)
         }
 
-        @objc public func setSource(_ valueParam: String) {
-            proto.source = valueParam
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setSourceE164(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.sourceE164 = valueParam
         }
 
-        @objc public func setSourceDevice(_ valueParam: UInt32) {
+        public func setSourceE164(_ valueParam: String) {
+            proto.sourceE164 = valueParam
+        }
+
+        @objc
+        public func setSourceDevice(_ valueParam: UInt32) {
             proto.sourceDevice = valueParam
         }
 
-        @objc public func setRelay(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setRelay(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.relay = valueParam
         }
 
-        @objc public func setTimestamp(_ valueParam: UInt64) {
+        public func setRelay(_ valueParam: String) {
+            proto.relay = valueParam
+        }
+
+        @objc
+        public func setTimestamp(_ valueParam: UInt64) {
             proto.timestamp = valueParam
         }
 
-        @objc public func setLegacyMessage(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setLegacyMessage(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.legacyMessage = valueParam
         }
 
-        @objc public func setContent(_ valueParam: Data) {
+        public func setLegacyMessage(_ valueParam: Data) {
+            proto.legacyMessage = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setContent(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.content = valueParam
         }
 
-        @objc public func setServerGuid(_ valueParam: String) {
+        public func setContent(_ valueParam: Data) {
+            proto.content = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setServerGuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.serverGuid = valueParam
         }
 
-        @objc public func setServerTimestamp(_ valueParam: UInt64) {
+        public func setServerGuid(_ valueParam: String) {
+            proto.serverGuid = valueParam
+        }
+
+        @objc
+        public func setServerTimestamp(_ valueParam: UInt64) {
             proto.serverTimestamp = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setSourceUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.sourceUuid = valueParam
+        }
+
+        public func setSourceUuid(_ valueParam: String) {
+            proto.sourceUuid = valueParam
         }
 
         @objc public func build() throws -> SSKProtoEnvelope {
@@ -163,14 +216,14 @@ public enum SSKProtoError: Error {
         return proto.hasType
     }
 
-    @objc public var source: String? {
-        guard proto.hasSource else {
+    @objc public var sourceE164: String? {
+        guard proto.hasSourceE164 else {
             return nil
         }
-        return proto.source
+        return proto.sourceE164
     }
-    @objc public var hasSource: Bool {
-        return proto.hasSource
+    @objc public var hasSourceE164: Bool {
+        return proto.hasSourceE164
     }
 
     @objc public var sourceDevice: UInt32 {
@@ -225,6 +278,62 @@ public enum SSKProtoError: Error {
     }
     @objc public var hasServerTimestamp: Bool {
         return proto.hasServerTimestamp
+    }
+
+    @objc public var sourceUuid: String? {
+        guard proto.hasSourceUuid else {
+            return nil
+        }
+        return proto.sourceUuid
+    }
+    @objc public var hasSourceUuid: Bool {
+        return proto.hasSourceUuid
+    }
+
+    @objc public var hasValidSource: Bool {
+        return sourceAddress != nil
+    }
+    @objc public var sourceAddress: SignalServiceAddress? {
+        guard hasSourceE164 || hasSourceUuid else { return nil }
+
+        let uuidString: String? = {
+            guard hasSourceUuid else { return nil }
+
+            guard let sourceUuid = sourceUuid else {
+                owsFailDebug("sourceUuid was unexpectedly nil")
+                return nil
+            }
+
+            return sourceUuid
+        }()
+
+        let phoneNumber: String? = {
+            guard hasSourceE164 else {
+                // Shouldn’t happen in prod yet
+                assert(FeatureFlags.allowUUIDOnlyContacts)
+                return nil
+            }
+
+            guard let sourceE164 = sourceE164 else {
+                owsFailDebug("sourceE164 was unexpectedly nil")
+                return nil
+            }
+
+            guard !sourceE164.isEmpty else {
+                owsFailDebug("sourceE164 was unexpectedly empty")
+                return nil
+            }
+
+            return sourceE164
+        }()
+
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        guard address.isValid else {
+            owsFailDebug("address was unexpectedly invalid")
+            return nil
+        }
+
+        return address
     }
 
     private init(proto: SignalServiceProtos_Envelope,
@@ -334,15 +443,24 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
             setTimestamp(timestamp)
         }
 
-        @objc public func setTimestamp(_ valueParam: UInt64) {
+        @objc
+        public func setTimestamp(_ valueParam: UInt64) {
             proto.timestamp = valueParam
         }
 
-        @objc public func setAction(_ valueParam: SSKProtoTypingMessageAction) {
+        @objc
+        public func setAction(_ valueParam: SSKProtoTypingMessageAction) {
             proto.action = SSKProtoTypingMessageActionUnwrap(valueParam)
         }
 
-        @objc public func setGroupID(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setGroupID(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.groupID = valueParam
+        }
+
+        public func setGroupID(_ valueParam: Data) {
             proto.groupID = valueParam
         }
 
@@ -479,27 +597,69 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setDataMessage(_ valueParam: SSKProtoDataMessage) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setDataMessage(_ valueParam: SSKProtoDataMessage?) {
+            guard let valueParam = valueParam else { return }
             proto.dataMessage = valueParam.proto
         }
 
-        @objc public func setSyncMessage(_ valueParam: SSKProtoSyncMessage) {
+        public func setDataMessage(_ valueParam: SSKProtoDataMessage) {
+            proto.dataMessage = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setSyncMessage(_ valueParam: SSKProtoSyncMessage?) {
+            guard let valueParam = valueParam else { return }
             proto.syncMessage = valueParam.proto
         }
 
-        @objc public func setCallMessage(_ valueParam: SSKProtoCallMessage) {
+        public func setSyncMessage(_ valueParam: SSKProtoSyncMessage) {
+            proto.syncMessage = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setCallMessage(_ valueParam: SSKProtoCallMessage?) {
+            guard let valueParam = valueParam else { return }
             proto.callMessage = valueParam.proto
         }
 
-        @objc public func setNullMessage(_ valueParam: SSKProtoNullMessage) {
+        public func setCallMessage(_ valueParam: SSKProtoCallMessage) {
+            proto.callMessage = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setNullMessage(_ valueParam: SSKProtoNullMessage?) {
+            guard let valueParam = valueParam else { return }
             proto.nullMessage = valueParam.proto
         }
 
-        @objc public func setReceiptMessage(_ valueParam: SSKProtoReceiptMessage) {
+        public func setNullMessage(_ valueParam: SSKProtoNullMessage) {
+            proto.nullMessage = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setReceiptMessage(_ valueParam: SSKProtoReceiptMessage?) {
+            guard let valueParam = valueParam else { return }
             proto.receiptMessage = valueParam.proto
         }
 
-        @objc public func setTypingMessage(_ valueParam: SSKProtoTypingMessage) {
+        public func setReceiptMessage(_ valueParam: SSKProtoReceiptMessage) {
+            proto.receiptMessage = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setTypingMessage(_ valueParam: SSKProtoTypingMessage?) {
+            guard let valueParam = valueParam else { return }
+            proto.typingMessage = valueParam.proto
+        }
+
+        public func setTypingMessage(_ valueParam: SSKProtoTypingMessage) {
             proto.typingMessage = valueParam.proto
         }
 
@@ -647,11 +807,19 @@ extension SSKProtoContent.SSKProtoContentBuilder {
             setSessionDescription(sessionDescription)
         }
 
-        @objc public func setId(_ valueParam: UInt64) {
+        @objc
+        public func setId(_ valueParam: UInt64) {
             proto.id = valueParam
         }
 
-        @objc public func setSessionDescription(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setSessionDescription(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.sessionDescription = valueParam
+        }
+
+        public func setSessionDescription(_ valueParam: String) {
             proto.sessionDescription = valueParam
         }
 
@@ -759,11 +927,19 @@ extension SSKProtoCallMessageOffer.SSKProtoCallMessageOfferBuilder {
             setSessionDescription(sessionDescription)
         }
 
-        @objc public func setId(_ valueParam: UInt64) {
+        @objc
+        public func setId(_ valueParam: UInt64) {
             proto.id = valueParam
         }
 
-        @objc public func setSessionDescription(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setSessionDescription(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.sessionDescription = valueParam
+        }
+
+        public func setSessionDescription(_ valueParam: String) {
             proto.sessionDescription = valueParam
         }
 
@@ -873,19 +1049,35 @@ extension SSKProtoCallMessageAnswer.SSKProtoCallMessageAnswerBuilder {
             setSdp(sdp)
         }
 
-        @objc public func setId(_ valueParam: UInt64) {
+        @objc
+        public func setId(_ valueParam: UInt64) {
             proto.id = valueParam
         }
 
-        @objc public func setSdpMid(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setSdpMid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.sdpMid = valueParam
         }
 
-        @objc public func setSdpMlineIndex(_ valueParam: UInt32) {
+        public func setSdpMid(_ valueParam: String) {
+            proto.sdpMid = valueParam
+        }
+
+        @objc
+        public func setSdpMlineIndex(_ valueParam: UInt32) {
             proto.sdpMlineIndex = valueParam
         }
 
-        @objc public func setSdp(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setSdp(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.sdp = valueParam
+        }
+
+        public func setSdp(_ valueParam: String) {
             proto.sdp = valueParam
         }
 
@@ -1012,7 +1204,8 @@ extension SSKProtoCallMessageIceUpdate.SSKProtoCallMessageIceUpdateBuilder {
             setId(id)
         }
 
-        @objc public func setId(_ valueParam: UInt64) {
+        @objc
+        public func setId(_ valueParam: UInt64) {
             proto.id = valueParam
         }
 
@@ -1109,7 +1302,8 @@ extension SSKProtoCallMessageBusy.SSKProtoCallMessageBusyBuilder {
             setId(id)
         }
 
-        @objc public func setId(_ valueParam: UInt64) {
+        @objc
+        public func setId(_ valueParam: UInt64) {
             proto.id = valueParam
         }
 
@@ -1216,11 +1410,25 @@ extension SSKProtoCallMessageHangup.SSKProtoCallMessageHangupBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setOffer(_ valueParam: SSKProtoCallMessageOffer) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setOffer(_ valueParam: SSKProtoCallMessageOffer?) {
+            guard let valueParam = valueParam else { return }
             proto.offer = valueParam.proto
         }
 
-        @objc public func setAnswer(_ valueParam: SSKProtoCallMessageAnswer) {
+        public func setOffer(_ valueParam: SSKProtoCallMessageOffer) {
+            proto.offer = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setAnswer(_ valueParam: SSKProtoCallMessageAnswer?) {
+            guard let valueParam = valueParam else { return }
+            proto.answer = valueParam.proto
+        }
+
+        public func setAnswer(_ valueParam: SSKProtoCallMessageAnswer) {
             proto.answer = valueParam.proto
         }
 
@@ -1234,15 +1442,36 @@ extension SSKProtoCallMessageHangup.SSKProtoCallMessageHangupBuilder {
             proto.iceUpdate = wrappedItems.map { $0.proto }
         }
 
-        @objc public func setHangup(_ valueParam: SSKProtoCallMessageHangup) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setHangup(_ valueParam: SSKProtoCallMessageHangup?) {
+            guard let valueParam = valueParam else { return }
             proto.hangup = valueParam.proto
         }
 
-        @objc public func setBusy(_ valueParam: SSKProtoCallMessageBusy) {
+        public func setHangup(_ valueParam: SSKProtoCallMessageHangup) {
+            proto.hangup = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setBusy(_ valueParam: SSKProtoCallMessageBusy?) {
+            guard let valueParam = valueParam else { return }
             proto.busy = valueParam.proto
         }
 
-        @objc public func setProfileKey(_ valueParam: Data) {
+        public func setBusy(_ valueParam: SSKProtoCallMessageBusy) {
+            proto.busy = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setProfileKey(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.profileKey = valueParam
+        }
+
+        public func setProfileKey(_ valueParam: Data) {
             proto.profileKey = valueParam
         }
 
@@ -1411,19 +1640,41 @@ extension SSKProtoCallMessage.SSKProtoCallMessageBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setContentType(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setContentType(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.contentType = valueParam
         }
 
-        @objc public func setFileName(_ valueParam: String) {
+        public func setContentType(_ valueParam: String) {
+            proto.contentType = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setFileName(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.fileName = valueParam
         }
 
-        @objc public func setThumbnail(_ valueParam: SSKProtoAttachmentPointer) {
+        public func setFileName(_ valueParam: String) {
+            proto.fileName = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setThumbnail(_ valueParam: SSKProtoAttachmentPointer?) {
+            guard let valueParam = valueParam else { return }
             proto.thumbnail = valueParam.proto
         }
 
-        @objc public func setFlags(_ valueParam: UInt32) {
+        public func setThumbnail(_ valueParam: SSKProtoAttachmentPointer) {
+            proto.thumbnail = valueParam.proto
+        }
+
+        @objc
+        public func setFlags(_ valueParam: UInt32) {
             proto.flags = valueParam
         }
 
@@ -1525,13 +1776,19 @@ extension SSKProtoDataMessageQuoteQuotedAttachment.SSKProtoDataMessageQuoteQuote
 
     // MARK: - SSKProtoDataMessageQuoteBuilder
 
-    @objc public class func builder(id: UInt64, author: String) -> SSKProtoDataMessageQuoteBuilder {
-        return SSKProtoDataMessageQuoteBuilder(id: id, author: author)
+    @objc public class func builder(id: UInt64) -> SSKProtoDataMessageQuoteBuilder {
+        return SSKProtoDataMessageQuoteBuilder(id: id)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoDataMessageQuoteBuilder {
-        let builder = SSKProtoDataMessageQuoteBuilder(id: id, author: author)
+        let builder = SSKProtoDataMessageQuoteBuilder(id: id)
+        if let _value = authorE164 {
+            builder.setAuthorE164(_value)
+        }
+        if let _value = authorUuid {
+            builder.setAuthorUuid(_value)
+        }
         if let _value = text {
             builder.setText(_value)
         }
@@ -1545,22 +1802,47 @@ extension SSKProtoDataMessageQuoteQuotedAttachment.SSKProtoDataMessageQuoteQuote
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(id: UInt64, author: String) {
+        @objc fileprivate init(id: UInt64) {
             super.init()
 
             setId(id)
-            setAuthor(author)
         }
 
-        @objc public func setId(_ valueParam: UInt64) {
+        @objc
+        public func setId(_ valueParam: UInt64) {
             proto.id = valueParam
         }
 
-        @objc public func setAuthor(_ valueParam: String) {
-            proto.author = valueParam
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setAuthorE164(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.authorE164 = valueParam
         }
 
-        @objc public func setText(_ valueParam: String) {
+        public func setAuthorE164(_ valueParam: String) {
+            proto.authorE164 = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setAuthorUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.authorUuid = valueParam
+        }
+
+        public func setAuthorUuid(_ valueParam: String) {
+            proto.authorUuid = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setText(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.text = valueParam
+        }
+
+        public func setText(_ valueParam: String) {
             proto.text = valueParam
         }
 
@@ -1587,9 +1869,27 @@ extension SSKProtoDataMessageQuoteQuotedAttachment.SSKProtoDataMessageQuoteQuote
 
     @objc public let id: UInt64
 
-    @objc public let author: String
-
     @objc public let attachments: [SSKProtoDataMessageQuoteQuotedAttachment]
+
+    @objc public var authorE164: String? {
+        guard proto.hasAuthorE164 else {
+            return nil
+        }
+        return proto.authorE164
+    }
+    @objc public var hasAuthorE164: Bool {
+        return proto.hasAuthorE164
+    }
+
+    @objc public var authorUuid: String? {
+        guard proto.hasAuthorUuid else {
+            return nil
+        }
+        return proto.authorUuid
+    }
+    @objc public var hasAuthorUuid: Bool {
+        return proto.hasAuthorUuid
+    }
 
     @objc public var text: String? {
         guard proto.hasText else {
@@ -1601,13 +1901,57 @@ extension SSKProtoDataMessageQuoteQuotedAttachment.SSKProtoDataMessageQuoteQuote
         return proto.hasText
     }
 
+    @objc public var hasValidAuthor: Bool {
+        return authorAddress != nil
+    }
+    @objc public var authorAddress: SignalServiceAddress? {
+        guard hasAuthorE164 || hasAuthorUuid else { return nil }
+
+        let uuidString: String? = {
+            guard hasAuthorUuid else { return nil }
+
+            guard let authorUuid = authorUuid else {
+                owsFailDebug("authorUuid was unexpectedly nil")
+                return nil
+            }
+
+            return authorUuid
+        }()
+
+        let phoneNumber: String? = {
+            guard hasAuthorE164 else {
+                // Shouldn’t happen in prod yet
+                assert(FeatureFlags.allowUUIDOnlyContacts)
+                return nil
+            }
+
+            guard let authorE164 = authorE164 else {
+                owsFailDebug("authorE164 was unexpectedly nil")
+                return nil
+            }
+
+            guard !authorE164.isEmpty else {
+                owsFailDebug("authorE164 was unexpectedly empty")
+                return nil
+            }
+
+            return authorE164
+        }()
+
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        guard address.isValid else {
+            owsFailDebug("address was unexpectedly invalid")
+            return nil
+        }
+
+        return address
+    }
+
     private init(proto: SignalServiceProtos_DataMessage.Quote,
                  id: UInt64,
-                 author: String,
                  attachments: [SSKProtoDataMessageQuoteQuotedAttachment]) {
         self.proto = proto
         self.id = id
-        self.author = author
         self.attachments = attachments
     }
 
@@ -1627,11 +1971,6 @@ extension SSKProtoDataMessageQuoteQuotedAttachment.SSKProtoDataMessageQuoteQuote
         }
         let id = proto.id
 
-        guard proto.hasAuthor else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: author")
-        }
-        let author = proto.author
-
         var attachments: [SSKProtoDataMessageQuoteQuotedAttachment] = []
         attachments = try proto.attachments.map { try SSKProtoDataMessageQuoteQuotedAttachment.parseProto($0) }
 
@@ -1641,7 +1980,6 @@ extension SSKProtoDataMessageQuoteQuotedAttachment.SSKProtoDataMessageQuoteQuote
 
         let result = SSKProtoDataMessageQuote(proto: proto,
                                               id: id,
-                                              author: author,
                                               attachments: attachments)
         return result
     }
@@ -1707,27 +2045,69 @@ extension SSKProtoDataMessageQuote.SSKProtoDataMessageQuoteBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setGivenName(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setGivenName(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.givenName = valueParam
         }
 
-        @objc public func setFamilyName(_ valueParam: String) {
+        public func setGivenName(_ valueParam: String) {
+            proto.givenName = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setFamilyName(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.familyName = valueParam
         }
 
-        @objc public func setPrefix(_ valueParam: String) {
+        public func setFamilyName(_ valueParam: String) {
+            proto.familyName = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setPrefix(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.prefix = valueParam
         }
 
-        @objc public func setSuffix(_ valueParam: String) {
+        public func setPrefix(_ valueParam: String) {
+            proto.prefix = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setSuffix(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.suffix = valueParam
         }
 
-        @objc public func setMiddleName(_ valueParam: String) {
+        public func setSuffix(_ valueParam: String) {
+            proto.suffix = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setMiddleName(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.middleName = valueParam
         }
 
-        @objc public func setDisplayName(_ valueParam: String) {
+        public func setMiddleName(_ valueParam: String) {
+            proto.middleName = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setDisplayName(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.displayName = valueParam
+        }
+
+        public func setDisplayName(_ valueParam: String) {
             proto.displayName = valueParam
         }
 
@@ -1904,15 +2284,30 @@ extension SSKProtoDataMessageContactName.SSKProtoDataMessageContactNameBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setValue(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setValue(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.value = valueParam
         }
 
-        @objc public func setType(_ valueParam: SSKProtoDataMessageContactPhoneType) {
+        public func setValue(_ valueParam: String) {
+            proto.value = valueParam
+        }
+
+        @objc
+        public func setType(_ valueParam: SSKProtoDataMessageContactPhoneType) {
             proto.type = SSKProtoDataMessageContactPhoneTypeUnwrap(valueParam)
         }
 
-        @objc public func setLabel(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setLabel(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.label = valueParam
+        }
+
+        public func setLabel(_ valueParam: String) {
             proto.label = valueParam
         }
 
@@ -2067,15 +2462,30 @@ extension SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneBuilder
 
         @objc fileprivate override init() {}
 
-        @objc public func setValue(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setValue(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.value = valueParam
         }
 
-        @objc public func setType(_ valueParam: SSKProtoDataMessageContactEmailType) {
+        public func setValue(_ valueParam: String) {
+            proto.value = valueParam
+        }
+
+        @objc
+        public func setType(_ valueParam: SSKProtoDataMessageContactEmailType) {
             proto.type = SSKProtoDataMessageContactEmailTypeUnwrap(valueParam)
         }
 
-        @objc public func setLabel(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setLabel(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.label = valueParam
+        }
+
+        public func setLabel(_ valueParam: String) {
             proto.label = valueParam
         }
 
@@ -2245,39 +2655,96 @@ extension SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailBuilder
 
         @objc fileprivate override init() {}
 
-        @objc public func setType(_ valueParam: SSKProtoDataMessageContactPostalAddressType) {
+        @objc
+        public func setType(_ valueParam: SSKProtoDataMessageContactPostalAddressType) {
             proto.type = SSKProtoDataMessageContactPostalAddressTypeUnwrap(valueParam)
         }
 
-        @objc public func setLabel(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setLabel(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.label = valueParam
         }
 
-        @objc public func setStreet(_ valueParam: String) {
+        public func setLabel(_ valueParam: String) {
+            proto.label = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setStreet(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.street = valueParam
         }
 
-        @objc public func setPobox(_ valueParam: String) {
+        public func setStreet(_ valueParam: String) {
+            proto.street = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setPobox(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.pobox = valueParam
         }
 
-        @objc public func setNeighborhood(_ valueParam: String) {
+        public func setPobox(_ valueParam: String) {
+            proto.pobox = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setNeighborhood(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.neighborhood = valueParam
         }
 
-        @objc public func setCity(_ valueParam: String) {
+        public func setNeighborhood(_ valueParam: String) {
+            proto.neighborhood = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setCity(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.city = valueParam
         }
 
-        @objc public func setRegion(_ valueParam: String) {
+        public func setCity(_ valueParam: String) {
+            proto.city = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setRegion(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.region = valueParam
         }
 
-        @objc public func setPostcode(_ valueParam: String) {
+        public func setRegion(_ valueParam: String) {
+            proto.region = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setPostcode(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.postcode = valueParam
         }
 
-        @objc public func setCountry(_ valueParam: String) {
+        public func setPostcode(_ valueParam: String) {
+            proto.postcode = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setCountry(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.country = valueParam
+        }
+
+        public func setCountry(_ valueParam: String) {
             proto.country = valueParam
         }
 
@@ -2462,11 +2929,19 @@ extension SSKProtoDataMessageContactPostalAddress.SSKProtoDataMessageContactPost
 
         @objc fileprivate override init() {}
 
-        @objc public func setAvatar(_ valueParam: SSKProtoAttachmentPointer) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setAvatar(_ valueParam: SSKProtoAttachmentPointer?) {
+            guard let valueParam = valueParam else { return }
             proto.avatar = valueParam.proto
         }
 
-        @objc public func setIsProfile(_ valueParam: Bool) {
+        public func setAvatar(_ valueParam: SSKProtoAttachmentPointer) {
+            proto.avatar = valueParam.proto
+        }
+
+        @objc
+        public func setIsProfile(_ valueParam: Bool) {
             proto.isProfile = valueParam
         }
 
@@ -2576,7 +3051,14 @@ extension SSKProtoDataMessageContactAvatar.SSKProtoDataMessageContactAvatarBuild
 
         @objc fileprivate override init() {}
 
-        @objc public func setName(_ valueParam: SSKProtoDataMessageContactName) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setName(_ valueParam: SSKProtoDataMessageContactName?) {
+            guard let valueParam = valueParam else { return }
+            proto.name = valueParam.proto
+        }
+
+        public func setName(_ valueParam: SSKProtoDataMessageContactName) {
             proto.name = valueParam.proto
         }
 
@@ -2610,11 +3092,25 @@ extension SSKProtoDataMessageContactAvatar.SSKProtoDataMessageContactAvatarBuild
             proto.address = wrappedItems.map { $0.proto }
         }
 
-        @objc public func setAvatar(_ valueParam: SSKProtoDataMessageContactAvatar) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setAvatar(_ valueParam: SSKProtoDataMessageContactAvatar?) {
+            guard let valueParam = valueParam else { return }
             proto.avatar = valueParam.proto
         }
 
-        @objc public func setOrganization(_ valueParam: String) {
+        public func setAvatar(_ valueParam: SSKProtoDataMessageContactAvatar) {
+            proto.avatar = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setOrganization(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.organization = valueParam
+        }
+
+        public func setOrganization(_ valueParam: String) {
             proto.organization = valueParam
         }
 
@@ -2761,15 +3257,36 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
             setUrl(url)
         }
 
-        @objc public func setUrl(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setUrl(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.url = valueParam
         }
 
-        @objc public func setTitle(_ valueParam: String) {
+        public func setUrl(_ valueParam: String) {
+            proto.url = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setTitle(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.title = valueParam
         }
 
-        @objc public func setImage(_ valueParam: SSKProtoAttachmentPointer) {
+        public func setTitle(_ valueParam: String) {
+            proto.title = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setImage(_ valueParam: SSKProtoAttachmentPointer?) {
+            guard let valueParam = valueParam else { return }
+            proto.image = valueParam.proto
+        }
+
+        public func setImage(_ valueParam: SSKProtoAttachmentPointer) {
             proto.image = valueParam.proto
         }
 
@@ -2889,19 +3406,41 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
             setData(data)
         }
 
-        @objc public func setPackID(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setPackID(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.packID = valueParam
         }
 
-        @objc public func setPackKey(_ valueParam: Data) {
+        public func setPackID(_ valueParam: Data) {
+            proto.packID = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setPackKey(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.packKey = valueParam
         }
 
-        @objc public func setStickerID(_ valueParam: UInt32) {
+        public func setPackKey(_ valueParam: Data) {
+            proto.packKey = valueParam
+        }
+
+        @objc
+        public func setStickerID(_ valueParam: UInt32) {
             proto.stickerID = valueParam
         }
 
-        @objc public func setData(_ valueParam: SSKProtoAttachmentPointer) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setData(_ valueParam: SSKProtoAttachmentPointer?) {
+            guard let valueParam = valueParam else { return }
+            proto.data = valueParam.proto
+        }
+
+        public func setData(_ valueParam: SSKProtoAttachmentPointer) {
             proto.data = valueParam.proto
         }
 
@@ -3033,12 +3572,14 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
     @objc public enum SSKProtoDataMessageProtocolVersion: Int32 {
         case initial = 0
         case messageTimers = 1
+        case viewOnce = 2
     }
 
     private class func SSKProtoDataMessageProtocolVersionWrap(_ value: SignalServiceProtos_DataMessage.ProtocolVersion) -> SSKProtoDataMessageProtocolVersion {
         switch value {
         case .initial: return .initial
         case .messageTimers: return .messageTimers
+        case .viewOnce: return .viewOnce
         }
     }
 
@@ -3046,6 +3587,7 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         switch value {
         case .initial: return .initial
         case .messageTimers: return .messageTimers
+        case .viewOnce: return .viewOnce
         }
     }
 
@@ -3088,8 +3630,8 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         if hasRequiredProtocolVersion {
             builder.setRequiredProtocolVersion(requiredProtocolVersion)
         }
-        if hasMessageTimer {
-            builder.setMessageTimer(messageTimer)
+        if hasIsViewOnce {
+            builder.setIsViewOnce(isViewOnce)
         }
         return builder
     }
@@ -3100,7 +3642,14 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setBody(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setBody(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.body = valueParam
+        }
+
+        public func setBody(_ valueParam: String) {
             proto.body = valueParam
         }
 
@@ -3114,27 +3663,51 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
             proto.attachments = wrappedItems.map { $0.proto }
         }
 
-        @objc public func setGroup(_ valueParam: SSKProtoGroupContext) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setGroup(_ valueParam: SSKProtoGroupContext?) {
+            guard let valueParam = valueParam else { return }
             proto.group = valueParam.proto
         }
 
-        @objc public func setFlags(_ valueParam: UInt32) {
+        public func setGroup(_ valueParam: SSKProtoGroupContext) {
+            proto.group = valueParam.proto
+        }
+
+        @objc
+        public func setFlags(_ valueParam: UInt32) {
             proto.flags = valueParam
         }
 
-        @objc public func setExpireTimer(_ valueParam: UInt32) {
+        @objc
+        public func setExpireTimer(_ valueParam: UInt32) {
             proto.expireTimer = valueParam
         }
 
-        @objc public func setProfileKey(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setProfileKey(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.profileKey = valueParam
         }
 
-        @objc public func setTimestamp(_ valueParam: UInt64) {
+        public func setProfileKey(_ valueParam: Data) {
+            proto.profileKey = valueParam
+        }
+
+        @objc
+        public func setTimestamp(_ valueParam: UInt64) {
             proto.timestamp = valueParam
         }
 
-        @objc public func setQuote(_ valueParam: SSKProtoDataMessageQuote) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setQuote(_ valueParam: SSKProtoDataMessageQuote?) {
+            guard let valueParam = valueParam else { return }
+            proto.quote = valueParam.proto
+        }
+
+        public func setQuote(_ valueParam: SSKProtoDataMessageQuote) {
             proto.quote = valueParam.proto
         }
 
@@ -3158,16 +3731,25 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
             proto.preview = wrappedItems.map { $0.proto }
         }
 
-        @objc public func setSticker(_ valueParam: SSKProtoDataMessageSticker) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setSticker(_ valueParam: SSKProtoDataMessageSticker?) {
+            guard let valueParam = valueParam else { return }
             proto.sticker = valueParam.proto
         }
 
-        @objc public func setRequiredProtocolVersion(_ valueParam: UInt32) {
+        public func setSticker(_ valueParam: SSKProtoDataMessageSticker) {
+            proto.sticker = valueParam.proto
+        }
+
+        @objc
+        public func setRequiredProtocolVersion(_ valueParam: UInt32) {
             proto.requiredProtocolVersion = valueParam
         }
 
-        @objc public func setMessageTimer(_ valueParam: UInt32) {
-            proto.messageTimer = valueParam
+        @objc
+        public func setIsViewOnce(_ valueParam: Bool) {
+            proto.isViewOnce = valueParam
         }
 
         @objc public func build() throws -> SSKProtoDataMessage {
@@ -3241,11 +3823,11 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         return proto.hasRequiredProtocolVersion
     }
 
-    @objc public var messageTimer: UInt32 {
-        return proto.messageTimer
+    @objc public var isViewOnce: Bool {
+        return proto.isViewOnce
     }
-    @objc public var hasMessageTimer: Bool {
-        return proto.hasMessageTimer
+    @objc public var hasIsViewOnce: Bool {
+        return proto.hasIsViewOnce
     }
 
     private init(proto: SignalServiceProtos_DataMessage,
@@ -3359,7 +3941,14 @@ extension SSKProtoDataMessage.SSKProtoDataMessageBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setPadding(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setPadding(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.padding = valueParam
+        }
+
+        public func setPadding(_ valueParam: Data) {
             proto.padding = valueParam
         }
 
@@ -3475,7 +4064,8 @@ extension SSKProtoNullMessage.SSKProtoNullMessageBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setType(_ valueParam: SSKProtoReceiptMessageType) {
+        @objc
+        public func setType(_ valueParam: SSKProtoReceiptMessageType) {
             proto.type = SSKProtoReceiptMessageTypeUnwrap(valueParam)
         }
 
@@ -3596,13 +4186,19 @@ extension SSKProtoReceiptMessage.SSKProtoReceiptMessageBuilder {
 
     // MARK: - SSKProtoVerifiedBuilder
 
-    @objc public class func builder(destination: String) -> SSKProtoVerifiedBuilder {
-        return SSKProtoVerifiedBuilder(destination: destination)
+    @objc public class func builder() -> SSKProtoVerifiedBuilder {
+        return SSKProtoVerifiedBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoVerifiedBuilder {
-        let builder = SSKProtoVerifiedBuilder(destination: destination)
+        let builder = SSKProtoVerifiedBuilder()
+        if let _value = destinationE164 {
+            builder.setDestinationE164(_value)
+        }
+        if let _value = destinationUuid {
+            builder.setDestinationUuid(_value)
+        }
         if let _value = identityKey {
             builder.setIdentityKey(_value)
         }
@@ -3621,25 +4217,52 @@ extension SSKProtoReceiptMessage.SSKProtoReceiptMessageBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(destination: String) {
-            super.init()
-
-            setDestination(destination)
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setDestinationE164(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.destinationE164 = valueParam
         }
 
-        @objc public func setDestination(_ valueParam: String) {
-            proto.destination = valueParam
+        public func setDestinationE164(_ valueParam: String) {
+            proto.destinationE164 = valueParam
         }
 
-        @objc public func setIdentityKey(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setDestinationUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.destinationUuid = valueParam
+        }
+
+        public func setDestinationUuid(_ valueParam: String) {
+            proto.destinationUuid = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setIdentityKey(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.identityKey = valueParam
         }
 
-        @objc public func setState(_ valueParam: SSKProtoVerifiedState) {
+        public func setIdentityKey(_ valueParam: Data) {
+            proto.identityKey = valueParam
+        }
+
+        @objc
+        public func setState(_ valueParam: SSKProtoVerifiedState) {
             proto.state = SSKProtoVerifiedStateUnwrap(valueParam)
         }
 
-        @objc public func setNullMessage(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setNullMessage(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.nullMessage = valueParam
+        }
+
+        public func setNullMessage(_ valueParam: Data) {
             proto.nullMessage = valueParam
         }
 
@@ -3654,7 +4277,25 @@ extension SSKProtoReceiptMessage.SSKProtoReceiptMessageBuilder {
 
     fileprivate let proto: SignalServiceProtos_Verified
 
-    @objc public let destination: String
+    @objc public var destinationE164: String? {
+        guard proto.hasDestinationE164 else {
+            return nil
+        }
+        return proto.destinationE164
+    }
+    @objc public var hasDestinationE164: Bool {
+        return proto.hasDestinationE164
+    }
+
+    @objc public var destinationUuid: String? {
+        guard proto.hasDestinationUuid else {
+            return nil
+        }
+        return proto.destinationUuid
+    }
+    @objc public var hasDestinationUuid: Bool {
+        return proto.hasDestinationUuid
+    }
 
     @objc public var identityKey: Data? {
         guard proto.hasIdentityKey else {
@@ -3694,10 +4335,54 @@ extension SSKProtoReceiptMessage.SSKProtoReceiptMessageBuilder {
         return proto.hasNullMessage
     }
 
-    private init(proto: SignalServiceProtos_Verified,
-                 destination: String) {
+    @objc public var hasValidDestination: Bool {
+        return destinationAddress != nil
+    }
+    @objc public var destinationAddress: SignalServiceAddress? {
+        guard hasDestinationE164 || hasDestinationUuid else { return nil }
+
+        let uuidString: String? = {
+            guard hasDestinationUuid else { return nil }
+
+            guard let destinationUuid = destinationUuid else {
+                owsFailDebug("destinationUuid was unexpectedly nil")
+                return nil
+            }
+
+            return destinationUuid
+        }()
+
+        let phoneNumber: String? = {
+            guard hasDestinationE164 else {
+                // Shouldn’t happen in prod yet
+                assert(FeatureFlags.allowUUIDOnlyContacts)
+                return nil
+            }
+
+            guard let destinationE164 = destinationE164 else {
+                owsFailDebug("destinationE164 was unexpectedly nil")
+                return nil
+            }
+
+            guard !destinationE164.isEmpty else {
+                owsFailDebug("destinationE164 was unexpectedly empty")
+                return nil
+            }
+
+            return destinationE164
+        }()
+
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        guard address.isValid else {
+            owsFailDebug("address was unexpectedly invalid")
+            return nil
+        }
+
+        return address
+    }
+
+    private init(proto: SignalServiceProtos_Verified) {
         self.proto = proto
-        self.destination = destination
     }
 
     @objc
@@ -3711,17 +4396,11 @@ extension SSKProtoReceiptMessage.SSKProtoReceiptMessageBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_Verified) throws -> SSKProtoVerified {
-        guard proto.hasDestination else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: destination")
-        }
-        let destination = proto.destination
-
         // MARK: - Begin Validation Logic for SSKProtoVerified -
 
         // MARK: - End Validation Logic for SSKProtoVerified -
 
-        let result = SSKProtoVerified(proto: proto,
-                                      destination: destination)
+        let result = SSKProtoVerified(proto: proto)
         return result
     }
 
@@ -3759,8 +4438,11 @@ extension SSKProtoVerified.SSKProtoVerifiedBuilder {
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder {
         let builder = SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder()
-        if let _value = destination {
-            builder.setDestination(_value)
+        if let _value = destinationE164 {
+            builder.setDestinationE164(_value)
+        }
+        if let _value = destinationUuid {
+            builder.setDestinationUuid(_value)
         }
         if hasUnidentified {
             builder.setUnidentified(unidentified)
@@ -3774,11 +4456,30 @@ extension SSKProtoVerified.SSKProtoVerifiedBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setDestination(_ valueParam: String) {
-            proto.destination = valueParam
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setDestinationE164(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.destinationE164 = valueParam
         }
 
-        @objc public func setUnidentified(_ valueParam: Bool) {
+        public func setDestinationE164(_ valueParam: String) {
+            proto.destinationE164 = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setDestinationUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.destinationUuid = valueParam
+        }
+
+        public func setDestinationUuid(_ valueParam: String) {
+            proto.destinationUuid = valueParam
+        }
+
+        @objc
+        public func setUnidentified(_ valueParam: Bool) {
             proto.unidentified = valueParam
         }
 
@@ -3793,14 +4494,24 @@ extension SSKProtoVerified.SSKProtoVerifiedBuilder {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus
 
-    @objc public var destination: String? {
-        guard proto.hasDestination else {
+    @objc public var destinationE164: String? {
+        guard proto.hasDestinationE164 else {
             return nil
         }
-        return proto.destination
+        return proto.destinationE164
     }
-    @objc public var hasDestination: Bool {
-        return proto.hasDestination
+    @objc public var hasDestinationE164: Bool {
+        return proto.hasDestinationE164
+    }
+
+    @objc public var destinationUuid: String? {
+        guard proto.hasDestinationUuid else {
+            return nil
+        }
+        return proto.destinationUuid
+    }
+    @objc public var hasDestinationUuid: Bool {
+        return proto.hasDestinationUuid
     }
 
     @objc public var unidentified: Bool {
@@ -3808,6 +4519,52 @@ extension SSKProtoVerified.SSKProtoVerifiedBuilder {
     }
     @objc public var hasUnidentified: Bool {
         return proto.hasUnidentified
+    }
+
+    @objc public var hasValidDestination: Bool {
+        return destinationAddress != nil
+    }
+    @objc public var destinationAddress: SignalServiceAddress? {
+        guard hasDestinationE164 || hasDestinationUuid else { return nil }
+
+        let uuidString: String? = {
+            guard hasDestinationUuid else { return nil }
+
+            guard let destinationUuid = destinationUuid else {
+                owsFailDebug("destinationUuid was unexpectedly nil")
+                return nil
+            }
+
+            return destinationUuid
+        }()
+
+        let phoneNumber: String? = {
+            guard hasDestinationE164 else {
+                // Shouldn’t happen in prod yet
+                assert(FeatureFlags.allowUUIDOnlyContacts)
+                return nil
+            }
+
+            guard let destinationE164 = destinationE164 else {
+                owsFailDebug("destinationE164 was unexpectedly nil")
+                return nil
+            }
+
+            guard !destinationE164.isEmpty else {
+                owsFailDebug("destinationE164 was unexpectedly empty")
+                return nil
+            }
+
+            return destinationE164
+        }()
+
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        guard address.isValid else {
+            owsFailDebug("address was unexpectedly invalid")
+            return nil
+        }
+
+        return address
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus) {
@@ -3867,8 +4624,11 @@ extension SSKProtoSyncMessageSentUnidentifiedDeliveryStatus.SSKProtoSyncMessageS
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoSyncMessageSentBuilder {
         let builder = SSKProtoSyncMessageSentBuilder()
-        if let _value = destination {
-            builder.setDestination(_value)
+        if let _value = destinationE164 {
+            builder.setDestinationE164(_value)
+        }
+        if let _value = destinationUuid {
+            builder.setDestinationUuid(_value)
         }
         if hasTimestamp {
             builder.setTimestamp(timestamp)
@@ -3892,19 +4652,46 @@ extension SSKProtoSyncMessageSentUnidentifiedDeliveryStatus.SSKProtoSyncMessageS
 
         @objc fileprivate override init() {}
 
-        @objc public func setDestination(_ valueParam: String) {
-            proto.destination = valueParam
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setDestinationE164(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.destinationE164 = valueParam
         }
 
-        @objc public func setTimestamp(_ valueParam: UInt64) {
+        public func setDestinationE164(_ valueParam: String) {
+            proto.destinationE164 = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setDestinationUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.destinationUuid = valueParam
+        }
+
+        public func setDestinationUuid(_ valueParam: String) {
+            proto.destinationUuid = valueParam
+        }
+
+        @objc
+        public func setTimestamp(_ valueParam: UInt64) {
             proto.timestamp = valueParam
         }
 
-        @objc public func setMessage(_ valueParam: SSKProtoDataMessage) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setMessage(_ valueParam: SSKProtoDataMessage?) {
+            guard let valueParam = valueParam else { return }
             proto.message = valueParam.proto
         }
 
-        @objc public func setExpirationStartTimestamp(_ valueParam: UInt64) {
+        public func setMessage(_ valueParam: SSKProtoDataMessage) {
+            proto.message = valueParam.proto
+        }
+
+        @objc
+        public func setExpirationStartTimestamp(_ valueParam: UInt64) {
             proto.expirationStartTimestamp = valueParam
         }
 
@@ -3918,7 +4705,8 @@ extension SSKProtoSyncMessageSentUnidentifiedDeliveryStatus.SSKProtoSyncMessageS
             proto.unidentifiedStatus = wrappedItems.map { $0.proto }
         }
 
-        @objc public func setIsRecipientUpdate(_ valueParam: Bool) {
+        @objc
+        public func setIsRecipientUpdate(_ valueParam: Bool) {
             proto.isRecipientUpdate = valueParam
         }
 
@@ -3937,14 +4725,24 @@ extension SSKProtoSyncMessageSentUnidentifiedDeliveryStatus.SSKProtoSyncMessageS
 
     @objc public let unidentifiedStatus: [SSKProtoSyncMessageSentUnidentifiedDeliveryStatus]
 
-    @objc public var destination: String? {
-        guard proto.hasDestination else {
+    @objc public var destinationE164: String? {
+        guard proto.hasDestinationE164 else {
             return nil
         }
-        return proto.destination
+        return proto.destinationE164
     }
-    @objc public var hasDestination: Bool {
-        return proto.hasDestination
+    @objc public var hasDestinationE164: Bool {
+        return proto.hasDestinationE164
+    }
+
+    @objc public var destinationUuid: String? {
+        guard proto.hasDestinationUuid else {
+            return nil
+        }
+        return proto.destinationUuid
+    }
+    @objc public var hasDestinationUuid: Bool {
+        return proto.hasDestinationUuid
     }
 
     @objc public var timestamp: UInt64 {
@@ -3966,6 +4764,52 @@ extension SSKProtoSyncMessageSentUnidentifiedDeliveryStatus.SSKProtoSyncMessageS
     }
     @objc public var hasIsRecipientUpdate: Bool {
         return proto.hasIsRecipientUpdate
+    }
+
+    @objc public var hasValidDestination: Bool {
+        return destinationAddress != nil
+    }
+    @objc public var destinationAddress: SignalServiceAddress? {
+        guard hasDestinationE164 || hasDestinationUuid else { return nil }
+
+        let uuidString: String? = {
+            guard hasDestinationUuid else { return nil }
+
+            guard let destinationUuid = destinationUuid else {
+                owsFailDebug("destinationUuid was unexpectedly nil")
+                return nil
+            }
+
+            return destinationUuid
+        }()
+
+        let phoneNumber: String? = {
+            guard hasDestinationE164 else {
+                // Shouldn’t happen in prod yet
+                assert(FeatureFlags.allowUUIDOnlyContacts)
+                return nil
+            }
+
+            guard let destinationE164 = destinationE164 else {
+                owsFailDebug("destinationE164 was unexpectedly nil")
+                return nil
+            }
+
+            guard !destinationE164.isEmpty else {
+                owsFailDebug("destinationE164 was unexpectedly empty")
+                return nil
+            }
+
+            return destinationE164
+        }()
+
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        guard address.isValid else {
+            owsFailDebug("address was unexpectedly invalid")
+            return nil
+        }
+
+        return address
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.Sent,
@@ -4057,11 +4901,19 @@ extension SSKProtoSyncMessageSent.SSKProtoSyncMessageSentBuilder {
             setBlob(blob)
         }
 
-        @objc public func setBlob(_ valueParam: SSKProtoAttachmentPointer) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setBlob(_ valueParam: SSKProtoAttachmentPointer?) {
+            guard let valueParam = valueParam else { return }
             proto.blob = valueParam.proto
         }
 
-        @objc public func setIsComplete(_ valueParam: Bool) {
+        public func setBlob(_ valueParam: SSKProtoAttachmentPointer) {
+            proto.blob = valueParam.proto
+        }
+
+        @objc
+        public func setIsComplete(_ valueParam: Bool) {
             proto.isComplete = valueParam
         }
 
@@ -4162,7 +5014,14 @@ extension SSKProtoSyncMessageContacts.SSKProtoSyncMessageContactsBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setBlob(_ valueParam: SSKProtoAttachmentPointer) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setBlob(_ valueParam: SSKProtoAttachmentPointer?) {
+            guard let valueParam = valueParam else { return }
+            proto.blob = valueParam.proto
+        }
+
+        public func setBlob(_ valueParam: SSKProtoAttachmentPointer) {
             proto.blob = valueParam.proto
         }
 
@@ -4246,6 +5105,7 @@ extension SSKProtoSyncMessageGroups.SSKProtoSyncMessageGroupsBuilder {
         let builder = SSKProtoSyncMessageBlockedBuilder()
         builder.setNumbers(numbers)
         builder.setGroupIds(groupIds)
+        builder.setUuids(uuids)
         return builder
     }
 
@@ -4275,6 +5135,16 @@ extension SSKProtoSyncMessageGroups.SSKProtoSyncMessageGroupsBuilder {
             proto.groupIds = wrappedItems
         }
 
+        @objc public func addUuids(_ valueParam: String) {
+            var items = proto.uuids
+            items.append(valueParam)
+            proto.uuids = items
+        }
+
+        @objc public func setUuids(_ wrappedItems: [String]) {
+            proto.uuids = wrappedItems
+        }
+
         @objc public func build() throws -> SSKProtoSyncMessageBlocked {
             return try SSKProtoSyncMessageBlocked.parseProto(proto)
         }
@@ -4292,6 +5162,10 @@ extension SSKProtoSyncMessageGroups.SSKProtoSyncMessageGroupsBuilder {
 
     @objc public var groupIds: [Data] {
         return proto.groupIds
+    }
+
+    @objc public var uuids: [String] {
+        return proto.uuids
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.Blocked) {
@@ -4393,7 +5267,8 @@ extension SSKProtoSyncMessageBlocked.SSKProtoSyncMessageBlockedBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setType(_ valueParam: SSKProtoSyncMessageRequestType) {
+        @objc
+        public func setType(_ valueParam: SSKProtoSyncMessageRequestType) {
             proto.type = SSKProtoSyncMessageRequestTypeUnwrap(valueParam)
         }
 
@@ -4476,13 +5351,19 @@ extension SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestBuilder {
 
     // MARK: - SSKProtoSyncMessageReadBuilder
 
-    @objc public class func builder(sender: String, timestamp: UInt64) -> SSKProtoSyncMessageReadBuilder {
-        return SSKProtoSyncMessageReadBuilder(sender: sender, timestamp: timestamp)
+    @objc public class func builder(timestamp: UInt64) -> SSKProtoSyncMessageReadBuilder {
+        return SSKProtoSyncMessageReadBuilder(timestamp: timestamp)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoSyncMessageReadBuilder {
-        let builder = SSKProtoSyncMessageReadBuilder(sender: sender, timestamp: timestamp)
+        let builder = SSKProtoSyncMessageReadBuilder(timestamp: timestamp)
+        if let _value = senderE164 {
+            builder.setSenderE164(_value)
+        }
+        if let _value = senderUuid {
+            builder.setSenderUuid(_value)
+        }
         return builder
     }
 
@@ -4492,18 +5373,36 @@ extension SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(sender: String, timestamp: UInt64) {
+        @objc fileprivate init(timestamp: UInt64) {
             super.init()
 
-            setSender(sender)
             setTimestamp(timestamp)
         }
 
-        @objc public func setSender(_ valueParam: String) {
-            proto.sender = valueParam
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setSenderE164(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.senderE164 = valueParam
         }
 
-        @objc public func setTimestamp(_ valueParam: UInt64) {
+        public func setSenderE164(_ valueParam: String) {
+            proto.senderE164 = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setSenderUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.senderUuid = valueParam
+        }
+
+        public func setSenderUuid(_ valueParam: String) {
+            proto.senderUuid = valueParam
+        }
+
+        @objc
+        public func setTimestamp(_ valueParam: UInt64) {
             proto.timestamp = valueParam
         }
 
@@ -4518,15 +5417,77 @@ extension SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestBuilder {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.Read
 
-    @objc public let sender: String
-
     @objc public let timestamp: UInt64
 
+    @objc public var senderE164: String? {
+        guard proto.hasSenderE164 else {
+            return nil
+        }
+        return proto.senderE164
+    }
+    @objc public var hasSenderE164: Bool {
+        return proto.hasSenderE164
+    }
+
+    @objc public var senderUuid: String? {
+        guard proto.hasSenderUuid else {
+            return nil
+        }
+        return proto.senderUuid
+    }
+    @objc public var hasSenderUuid: Bool {
+        return proto.hasSenderUuid
+    }
+
+    @objc public var hasValidSender: Bool {
+        return senderAddress != nil
+    }
+    @objc public var senderAddress: SignalServiceAddress? {
+        guard hasSenderE164 || hasSenderUuid else { return nil }
+
+        let uuidString: String? = {
+            guard hasSenderUuid else { return nil }
+
+            guard let senderUuid = senderUuid else {
+                owsFailDebug("senderUuid was unexpectedly nil")
+                return nil
+            }
+
+            return senderUuid
+        }()
+
+        let phoneNumber: String? = {
+            guard hasSenderE164 else {
+                // Shouldn’t happen in prod yet
+                assert(FeatureFlags.allowUUIDOnlyContacts)
+                return nil
+            }
+
+            guard let senderE164 = senderE164 else {
+                owsFailDebug("senderE164 was unexpectedly nil")
+                return nil
+            }
+
+            guard !senderE164.isEmpty else {
+                owsFailDebug("senderE164 was unexpectedly empty")
+                return nil
+            }
+
+            return senderE164
+        }()
+
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        guard address.isValid else {
+            owsFailDebug("address was unexpectedly invalid")
+            return nil
+        }
+
+        return address
+    }
+
     private init(proto: SignalServiceProtos_SyncMessage.Read,
-                 sender: String,
                  timestamp: UInt64) {
         self.proto = proto
-        self.sender = sender
         self.timestamp = timestamp
     }
 
@@ -4541,11 +5502,6 @@ extension SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Read) throws -> SSKProtoSyncMessageRead {
-        guard proto.hasSender else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sender")
-        }
-        let sender = proto.sender
-
         guard proto.hasTimestamp else {
             throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: timestamp")
         }
@@ -4556,7 +5512,6 @@ extension SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestBuilder {
         // MARK: - End Validation Logic for SSKProtoSyncMessageRead -
 
         let result = SSKProtoSyncMessageRead(proto: proto,
-                                             sender: sender,
                                              timestamp: timestamp)
         return result
     }
@@ -4616,19 +5571,23 @@ extension SSKProtoSyncMessageRead.SSKProtoSyncMessageReadBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setReadReceipts(_ valueParam: Bool) {
+        @objc
+        public func setReadReceipts(_ valueParam: Bool) {
             proto.readReceipts = valueParam
         }
 
-        @objc public func setUnidentifiedDeliveryIndicators(_ valueParam: Bool) {
+        @objc
+        public func setUnidentifiedDeliveryIndicators(_ valueParam: Bool) {
             proto.unidentifiedDeliveryIndicators = valueParam
         }
 
-        @objc public func setTypingIndicators(_ valueParam: Bool) {
+        @objc
+        public func setTypingIndicators(_ valueParam: Bool) {
             proto.typingIndicators = valueParam
         }
 
-        @objc public func setLinkPreviews(_ valueParam: Bool) {
+        @objc
+        public func setLinkPreviews(_ valueParam: Bool) {
             proto.linkPreviews = valueParam
         }
 
@@ -4768,15 +5727,30 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
             setPackKey(packKey)
         }
 
-        @objc public func setPackID(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setPackID(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.packID = valueParam
         }
 
-        @objc public func setPackKey(_ valueParam: Data) {
+        public func setPackID(_ valueParam: Data) {
+            proto.packID = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setPackKey(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.packKey = valueParam
         }
 
-        @objc public func setType(_ valueParam: SSKProtoSyncMessageStickerPackOperationType) {
+        public func setPackKey(_ valueParam: Data) {
+            proto.packKey = valueParam
+        }
+
+        @objc
+        public func setType(_ valueParam: SSKProtoSyncMessageStickerPackOperationType) {
             proto.type = SSKProtoSyncMessageStickerPackOperationTypeUnwrap(valueParam)
         }
 
@@ -4873,63 +5847,149 @@ extension SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPack
 
 #endif
 
-// MARK: - SSKProtoSyncMessageMessageTimerRead
+// MARK: - SSKProtoSyncMessageViewOnceOpen
 
-@objc public class SSKProtoSyncMessageMessageTimerRead: NSObject {
+@objc public class SSKProtoSyncMessageViewOnceOpen: NSObject {
 
-    // MARK: - SSKProtoSyncMessageMessageTimerReadBuilder
+    // MARK: - SSKProtoSyncMessageViewOnceOpenBuilder
 
-    @objc public class func builder(sender: String, timestamp: UInt64) -> SSKProtoSyncMessageMessageTimerReadBuilder {
-        return SSKProtoSyncMessageMessageTimerReadBuilder(sender: sender, timestamp: timestamp)
+    @objc public class func builder(timestamp: UInt64) -> SSKProtoSyncMessageViewOnceOpenBuilder {
+        return SSKProtoSyncMessageViewOnceOpenBuilder(timestamp: timestamp)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> SSKProtoSyncMessageMessageTimerReadBuilder {
-        let builder = SSKProtoSyncMessageMessageTimerReadBuilder(sender: sender, timestamp: timestamp)
+    @objc public func asBuilder() -> SSKProtoSyncMessageViewOnceOpenBuilder {
+        let builder = SSKProtoSyncMessageViewOnceOpenBuilder(timestamp: timestamp)
+        if let _value = senderE164 {
+            builder.setSenderE164(_value)
+        }
+        if let _value = senderUuid {
+            builder.setSenderUuid(_value)
+        }
         return builder
     }
 
-    @objc public class SSKProtoSyncMessageMessageTimerReadBuilder: NSObject {
+    @objc public class SSKProtoSyncMessageViewOnceOpenBuilder: NSObject {
 
-        private var proto = SignalServiceProtos_SyncMessage.MessageTimerRead()
+        private var proto = SignalServiceProtos_SyncMessage.ViewOnceOpen()
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(sender: String, timestamp: UInt64) {
+        @objc fileprivate init(timestamp: UInt64) {
             super.init()
 
-            setSender(sender)
             setTimestamp(timestamp)
         }
 
-        @objc public func setSender(_ valueParam: String) {
-            proto.sender = valueParam
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setSenderE164(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.senderE164 = valueParam
         }
 
-        @objc public func setTimestamp(_ valueParam: UInt64) {
+        public func setSenderE164(_ valueParam: String) {
+            proto.senderE164 = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setSenderUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.senderUuid = valueParam
+        }
+
+        public func setSenderUuid(_ valueParam: String) {
+            proto.senderUuid = valueParam
+        }
+
+        @objc
+        public func setTimestamp(_ valueParam: UInt64) {
             proto.timestamp = valueParam
         }
 
-        @objc public func build() throws -> SSKProtoSyncMessageMessageTimerRead {
-            return try SSKProtoSyncMessageMessageTimerRead.parseProto(proto)
+        @objc public func build() throws -> SSKProtoSyncMessageViewOnceOpen {
+            return try SSKProtoSyncMessageViewOnceOpen.parseProto(proto)
         }
 
         @objc public func buildSerializedData() throws -> Data {
-            return try SSKProtoSyncMessageMessageTimerRead.parseProto(proto).serializedData()
+            return try SSKProtoSyncMessageViewOnceOpen.parseProto(proto).serializedData()
         }
     }
 
-    fileprivate let proto: SignalServiceProtos_SyncMessage.MessageTimerRead
-
-    @objc public let sender: String
+    fileprivate let proto: SignalServiceProtos_SyncMessage.ViewOnceOpen
 
     @objc public let timestamp: UInt64
 
-    private init(proto: SignalServiceProtos_SyncMessage.MessageTimerRead,
-                 sender: String,
+    @objc public var senderE164: String? {
+        guard proto.hasSenderE164 else {
+            return nil
+        }
+        return proto.senderE164
+    }
+    @objc public var hasSenderE164: Bool {
+        return proto.hasSenderE164
+    }
+
+    @objc public var senderUuid: String? {
+        guard proto.hasSenderUuid else {
+            return nil
+        }
+        return proto.senderUuid
+    }
+    @objc public var hasSenderUuid: Bool {
+        return proto.hasSenderUuid
+    }
+
+    @objc public var hasValidSender: Bool {
+        return senderAddress != nil
+    }
+    @objc public var senderAddress: SignalServiceAddress? {
+        guard hasSenderE164 || hasSenderUuid else { return nil }
+
+        let uuidString: String? = {
+            guard hasSenderUuid else { return nil }
+
+            guard let senderUuid = senderUuid else {
+                owsFailDebug("senderUuid was unexpectedly nil")
+                return nil
+            }
+
+            return senderUuid
+        }()
+
+        let phoneNumber: String? = {
+            guard hasSenderE164 else {
+                // Shouldn’t happen in prod yet
+                assert(FeatureFlags.allowUUIDOnlyContacts)
+                return nil
+            }
+
+            guard let senderE164 = senderE164 else {
+                owsFailDebug("senderE164 was unexpectedly nil")
+                return nil
+            }
+
+            guard !senderE164.isEmpty else {
+                owsFailDebug("senderE164 was unexpectedly empty")
+                return nil
+            }
+
+            return senderE164
+        }()
+
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        guard address.isValid else {
+            owsFailDebug("address was unexpectedly invalid")
+            return nil
+        }
+
+        return address
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.ViewOnceOpen,
                  timestamp: UInt64) {
         self.proto = proto
-        self.sender = sender
         self.timestamp = timestamp
     }
 
@@ -4938,29 +5998,23 @@ extension SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPack
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageMessageTimerRead {
-        let proto = try SignalServiceProtos_SyncMessage.MessageTimerRead(serializedData: serializedData)
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageViewOnceOpen {
+        let proto = try SignalServiceProtos_SyncMessage.ViewOnceOpen(serializedData: serializedData)
         return try parseProto(proto)
     }
 
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.MessageTimerRead) throws -> SSKProtoSyncMessageMessageTimerRead {
-        guard proto.hasSender else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sender")
-        }
-        let sender = proto.sender
-
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.ViewOnceOpen) throws -> SSKProtoSyncMessageViewOnceOpen {
         guard proto.hasTimestamp else {
             throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: timestamp")
         }
         let timestamp = proto.timestamp
 
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageMessageTimerRead -
+        // MARK: - Begin Validation Logic for SSKProtoSyncMessageViewOnceOpen -
 
-        // MARK: - End Validation Logic for SSKProtoSyncMessageMessageTimerRead -
+        // MARK: - End Validation Logic for SSKProtoSyncMessageViewOnceOpen -
 
-        let result = SSKProtoSyncMessageMessageTimerRead(proto: proto,
-                                                         sender: sender,
-                                                         timestamp: timestamp)
+        let result = SSKProtoSyncMessageViewOnceOpen(proto: proto,
+                                                     timestamp: timestamp)
         return result
     }
 
@@ -4971,14 +6025,14 @@ extension SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPack
 
 #if DEBUG
 
-extension SSKProtoSyncMessageMessageTimerRead {
+extension SSKProtoSyncMessageViewOnceOpen {
     @objc public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
-extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerReadBuilder {
-    @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageMessageTimerRead? {
+extension SSKProtoSyncMessageViewOnceOpen.SSKProtoSyncMessageViewOnceOpenBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageViewOnceOpen? {
         return try! self.build()
     }
 }
@@ -5024,8 +6078,8 @@ extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerRea
             builder.setPadding(_value)
         }
         builder.setStickerPackOperation(stickerPackOperation)
-        if let _value = messageTimerRead {
-            builder.setMessageTimerRead(_value)
+        if let _value = viewOnceOpen {
+            builder.setViewOnceOpen(_value)
         }
         return builder
     }
@@ -5036,19 +6090,47 @@ extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerRea
 
         @objc fileprivate override init() {}
 
-        @objc public func setSent(_ valueParam: SSKProtoSyncMessageSent) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setSent(_ valueParam: SSKProtoSyncMessageSent?) {
+            guard let valueParam = valueParam else { return }
             proto.sent = valueParam.proto
         }
 
-        @objc public func setContacts(_ valueParam: SSKProtoSyncMessageContacts) {
+        public func setSent(_ valueParam: SSKProtoSyncMessageSent) {
+            proto.sent = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setContacts(_ valueParam: SSKProtoSyncMessageContacts?) {
+            guard let valueParam = valueParam else { return }
             proto.contacts = valueParam.proto
         }
 
-        @objc public func setGroups(_ valueParam: SSKProtoSyncMessageGroups) {
+        public func setContacts(_ valueParam: SSKProtoSyncMessageContacts) {
+            proto.contacts = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setGroups(_ valueParam: SSKProtoSyncMessageGroups?) {
+            guard let valueParam = valueParam else { return }
             proto.groups = valueParam.proto
         }
 
-        @objc public func setRequest(_ valueParam: SSKProtoSyncMessageRequest) {
+        public func setGroups(_ valueParam: SSKProtoSyncMessageGroups) {
+            proto.groups = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setRequest(_ valueParam: SSKProtoSyncMessageRequest?) {
+            guard let valueParam = valueParam else { return }
+            proto.request = valueParam.proto
+        }
+
+        public func setRequest(_ valueParam: SSKProtoSyncMessageRequest) {
             proto.request = valueParam.proto
         }
 
@@ -5062,19 +6144,47 @@ extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerRea
             proto.read = wrappedItems.map { $0.proto }
         }
 
-        @objc public func setBlocked(_ valueParam: SSKProtoSyncMessageBlocked) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setBlocked(_ valueParam: SSKProtoSyncMessageBlocked?) {
+            guard let valueParam = valueParam else { return }
             proto.blocked = valueParam.proto
         }
 
-        @objc public func setVerified(_ valueParam: SSKProtoVerified) {
+        public func setBlocked(_ valueParam: SSKProtoSyncMessageBlocked) {
+            proto.blocked = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setVerified(_ valueParam: SSKProtoVerified?) {
+            guard let valueParam = valueParam else { return }
             proto.verified = valueParam.proto
         }
 
-        @objc public func setConfiguration(_ valueParam: SSKProtoSyncMessageConfiguration) {
+        public func setVerified(_ valueParam: SSKProtoVerified) {
+            proto.verified = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setConfiguration(_ valueParam: SSKProtoSyncMessageConfiguration?) {
+            guard let valueParam = valueParam else { return }
             proto.configuration = valueParam.proto
         }
 
-        @objc public func setPadding(_ valueParam: Data) {
+        public func setConfiguration(_ valueParam: SSKProtoSyncMessageConfiguration) {
+            proto.configuration = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setPadding(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.padding = valueParam
+        }
+
+        public func setPadding(_ valueParam: Data) {
             proto.padding = valueParam
         }
 
@@ -5088,8 +6198,15 @@ extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerRea
             proto.stickerPackOperation = wrappedItems.map { $0.proto }
         }
 
-        @objc public func setMessageTimerRead(_ valueParam: SSKProtoSyncMessageMessageTimerRead) {
-            proto.messageTimerRead = valueParam.proto
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setViewOnceOpen(_ valueParam: SSKProtoSyncMessageViewOnceOpen?) {
+            guard let valueParam = valueParam else { return }
+            proto.viewOnceOpen = valueParam.proto
+        }
+
+        public func setViewOnceOpen(_ valueParam: SSKProtoSyncMessageViewOnceOpen) {
+            proto.viewOnceOpen = valueParam.proto
         }
 
         @objc public func build() throws -> SSKProtoSyncMessage {
@@ -5121,7 +6238,7 @@ extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerRea
 
     @objc public let stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation]
 
-    @objc public let messageTimerRead: SSKProtoSyncMessageMessageTimerRead?
+    @objc public let viewOnceOpen: SSKProtoSyncMessageViewOnceOpen?
 
     @objc public var padding: Data? {
         guard proto.hasPadding else {
@@ -5143,7 +6260,7 @@ extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerRea
                  verified: SSKProtoVerified?,
                  configuration: SSKProtoSyncMessageConfiguration?,
                  stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation],
-                 messageTimerRead: SSKProtoSyncMessageMessageTimerRead?) {
+                 viewOnceOpen: SSKProtoSyncMessageViewOnceOpen?) {
         self.proto = proto
         self.sent = sent
         self.contacts = contacts
@@ -5154,7 +6271,7 @@ extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerRea
         self.verified = verified
         self.configuration = configuration
         self.stickerPackOperation = stickerPackOperation
-        self.messageTimerRead = messageTimerRead
+        self.viewOnceOpen = viewOnceOpen
     }
 
     @objc
@@ -5209,9 +6326,9 @@ extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerRea
         var stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation] = []
         stickerPackOperation = try proto.stickerPackOperation.map { try SSKProtoSyncMessageStickerPackOperation.parseProto($0) }
 
-        var messageTimerRead: SSKProtoSyncMessageMessageTimerRead? = nil
-        if proto.hasMessageTimerRead {
-            messageTimerRead = try SSKProtoSyncMessageMessageTimerRead.parseProto(proto.messageTimerRead)
+        var viewOnceOpen: SSKProtoSyncMessageViewOnceOpen? = nil
+        if proto.hasViewOnceOpen {
+            viewOnceOpen = try SSKProtoSyncMessageViewOnceOpen.parseProto(proto.viewOnceOpen)
         }
 
         // MARK: - Begin Validation Logic for SSKProtoSyncMessage -
@@ -5228,7 +6345,7 @@ extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerRea
                                          verified: verified,
                                          configuration: configuration,
                                          stickerPackOperation: stickerPackOperation,
-                                         messageTimerRead: messageTimerRead)
+                                         viewOnceOpen: viewOnceOpen)
         return result
     }
 
@@ -5329,47 +6446,94 @@ extension SSKProtoSyncMessage.SSKProtoSyncMessageBuilder {
             setId(id)
         }
 
-        @objc public func setId(_ valueParam: UInt64) {
+        @objc
+        public func setId(_ valueParam: UInt64) {
             proto.id = valueParam
         }
 
-        @objc public func setContentType(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setContentType(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.contentType = valueParam
         }
 
-        @objc public func setKey(_ valueParam: Data) {
+        public func setContentType(_ valueParam: String) {
+            proto.contentType = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setKey(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.key = valueParam
         }
 
-        @objc public func setSize(_ valueParam: UInt32) {
+        public func setKey(_ valueParam: Data) {
+            proto.key = valueParam
+        }
+
+        @objc
+        public func setSize(_ valueParam: UInt32) {
             proto.size = valueParam
         }
 
-        @objc public func setThumbnail(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setThumbnail(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.thumbnail = valueParam
         }
 
-        @objc public func setDigest(_ valueParam: Data) {
+        public func setThumbnail(_ valueParam: Data) {
+            proto.thumbnail = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setDigest(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.digest = valueParam
         }
 
-        @objc public func setFileName(_ valueParam: String) {
+        public func setDigest(_ valueParam: Data) {
+            proto.digest = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setFileName(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.fileName = valueParam
         }
 
-        @objc public func setFlags(_ valueParam: UInt32) {
+        public func setFileName(_ valueParam: String) {
+            proto.fileName = valueParam
+        }
+
+        @objc
+        public func setFlags(_ valueParam: UInt32) {
             proto.flags = valueParam
         }
 
-        @objc public func setWidth(_ valueParam: UInt32) {
+        @objc
+        public func setWidth(_ valueParam: UInt32) {
             proto.width = valueParam
         }
 
-        @objc public func setHeight(_ valueParam: UInt32) {
+        @objc
+        public func setHeight(_ valueParam: UInt32) {
             proto.height = valueParam
         }
 
-        @objc public func setCaption(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setCaption(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.caption = valueParam
+        }
+
+        public func setCaption(_ valueParam: String) {
             proto.caption = valueParam
         }
 
@@ -5526,6 +6690,131 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
 
 #endif
 
+// MARK: - SSKProtoGroupContextMember
+
+@objc public class SSKProtoGroupContextMember: NSObject {
+
+    // MARK: - SSKProtoGroupContextMemberBuilder
+
+    @objc public class func builder() -> SSKProtoGroupContextMemberBuilder {
+        return SSKProtoGroupContextMemberBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoGroupContextMemberBuilder {
+        let builder = SSKProtoGroupContextMemberBuilder()
+        if let _value = uuid {
+            builder.setUuid(_value)
+        }
+        if let _value = e164 {
+            builder.setE164(_value)
+        }
+        return builder
+    }
+
+    @objc public class SSKProtoGroupContextMemberBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_GroupContext.Member()
+
+        @objc fileprivate override init() {}
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.uuid = valueParam
+        }
+
+        public func setUuid(_ valueParam: String) {
+            proto.uuid = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setE164(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.e164 = valueParam
+        }
+
+        public func setE164(_ valueParam: String) {
+            proto.e164 = valueParam
+        }
+
+        @objc public func build() throws -> SSKProtoGroupContextMember {
+            return try SSKProtoGroupContextMember.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoGroupContextMember.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_GroupContext.Member
+
+    @objc public var uuid: String? {
+        guard proto.hasUuid else {
+            return nil
+        }
+        return proto.uuid
+    }
+    @objc public var hasUuid: Bool {
+        return proto.hasUuid
+    }
+
+    @objc public var e164: String? {
+        guard proto.hasE164 else {
+            return nil
+        }
+        return proto.e164
+    }
+    @objc public var hasE164: Bool {
+        return proto.hasE164
+    }
+
+    private init(proto: SignalServiceProtos_GroupContext.Member) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoGroupContextMember {
+        let proto = try SignalServiceProtos_GroupContext.Member(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_GroupContext.Member) throws -> SSKProtoGroupContextMember {
+        // MARK: - Begin Validation Logic for SSKProtoGroupContextMember -
+
+        // MARK: - End Validation Logic for SSKProtoGroupContextMember -
+
+        let result = SSKProtoGroupContextMember(proto: proto)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoGroupContextMember {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoGroupContextMember.SSKProtoGroupContextMemberBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoGroupContextMember? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoGroupContext
 
 @objc public class SSKProtoGroupContext: NSObject {
@@ -5575,10 +6864,11 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
         if let _value = name {
             builder.setName(_value)
         }
-        builder.setMembers(members)
+        builder.setMembersE164(membersE164)
         if let _value = avatar {
             builder.setAvatar(_value)
         }
+        builder.setMembers(members)
         return builder
     }
 
@@ -5594,30 +6884,62 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
             setId(id)
         }
 
-        @objc public func setId(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setId(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.id = valueParam
         }
 
-        @objc public func setType(_ valueParam: SSKProtoGroupContextType) {
+        public func setId(_ valueParam: Data) {
+            proto.id = valueParam
+        }
+
+        @objc
+        public func setType(_ valueParam: SSKProtoGroupContextType) {
             proto.type = SSKProtoGroupContextTypeUnwrap(valueParam)
         }
 
-        @objc public func setName(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setName(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.name = valueParam
         }
 
-        @objc public func addMembers(_ valueParam: String) {
-            var items = proto.members
+        public func setName(_ valueParam: String) {
+            proto.name = valueParam
+        }
+
+        @objc public func addMembersE164(_ valueParam: String) {
+            var items = proto.membersE164
             items.append(valueParam)
+            proto.membersE164 = items
+        }
+
+        @objc public func setMembersE164(_ wrappedItems: [String]) {
+            proto.membersE164 = wrappedItems
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setAvatar(_ valueParam: SSKProtoAttachmentPointer?) {
+            guard let valueParam = valueParam else { return }
+            proto.avatar = valueParam.proto
+        }
+
+        public func setAvatar(_ valueParam: SSKProtoAttachmentPointer) {
+            proto.avatar = valueParam.proto
+        }
+
+        @objc public func addMembers(_ valueParam: SSKProtoGroupContextMember) {
+            var items = proto.members
+            items.append(valueParam.proto)
             proto.members = items
         }
 
-        @objc public func setMembers(_ wrappedItems: [String]) {
-            proto.members = wrappedItems
-        }
-
-        @objc public func setAvatar(_ valueParam: SSKProtoAttachmentPointer) {
-            proto.avatar = valueParam.proto
+        @objc public func setMembers(_ wrappedItems: [SSKProtoGroupContextMember]) {
+            proto.members = wrappedItems.map { $0.proto }
         }
 
         @objc public func build() throws -> SSKProtoGroupContext {
@@ -5634,6 +6956,8 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
     @objc public let id: Data
 
     @objc public let avatar: SSKProtoAttachmentPointer?
+
+    @objc public let members: [SSKProtoGroupContextMember]
 
     public var type: SSKProtoGroupContextType? {
         guard proto.hasType else {
@@ -5663,16 +6987,18 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
         return proto.hasName
     }
 
-    @objc public var members: [String] {
-        return proto.members
+    @objc public var membersE164: [String] {
+        return proto.membersE164
     }
 
     private init(proto: SignalServiceProtos_GroupContext,
                  id: Data,
-                 avatar: SSKProtoAttachmentPointer?) {
+                 avatar: SSKProtoAttachmentPointer?,
+                 members: [SSKProtoGroupContextMember]) {
         self.proto = proto
         self.id = id
         self.avatar = avatar
+        self.members = members
     }
 
     @objc
@@ -5696,13 +7022,17 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
             avatar = try SSKProtoAttachmentPointer.parseProto(proto.avatar)
         }
 
+        var members: [SSKProtoGroupContextMember] = []
+        members = try proto.members.map { try SSKProtoGroupContextMember.parseProto($0) }
+
         // MARK: - Begin Validation Logic for SSKProtoGroupContext -
 
         // MARK: - End Validation Logic for SSKProtoGroupContext -
 
         let result = SSKProtoGroupContext(proto: proto,
                                           id: id,
-                                          avatar: avatar)
+                                          avatar: avatar,
+                                          members: members)
         return result
     }
 
@@ -5755,11 +7085,19 @@ extension SSKProtoGroupContext.SSKProtoGroupContextBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setContentType(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setContentType(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.contentType = valueParam
         }
 
-        @objc public func setLength(_ valueParam: UInt32) {
+        public func setContentType(_ valueParam: String) {
+            proto.contentType = valueParam
+        }
+
+        @objc
+        public func setLength(_ valueParam: UInt32) {
             proto.length = valueParam
         }
 
@@ -5841,13 +7179,19 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
 
     // MARK: - SSKProtoContactDetailsBuilder
 
-    @objc public class func builder(number: String) -> SSKProtoContactDetailsBuilder {
-        return SSKProtoContactDetailsBuilder(number: number)
+    @objc public class func builder() -> SSKProtoContactDetailsBuilder {
+        return SSKProtoContactDetailsBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoContactDetailsBuilder {
-        let builder = SSKProtoContactDetailsBuilder(number: number)
+        let builder = SSKProtoContactDetailsBuilder()
+        if let _value = number {
+            builder.setNumber(_value)
+        }
+        if let _value = uuid {
+            builder.setUuid(_value)
+        }
         if let _value = name {
             builder.setName(_value)
         }
@@ -5878,41 +7222,90 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(number: String) {
-            super.init()
-
-            setNumber(number)
-        }
-
-        @objc public func setNumber(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setNumber(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.number = valueParam
         }
 
-        @objc public func setName(_ valueParam: String) {
+        public func setNumber(_ valueParam: String) {
+            proto.number = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.uuid = valueParam
+        }
+
+        public func setUuid(_ valueParam: String) {
+            proto.uuid = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setName(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.name = valueParam
         }
 
-        @objc public func setAvatar(_ valueParam: SSKProtoContactDetailsAvatar) {
+        public func setName(_ valueParam: String) {
+            proto.name = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setAvatar(_ valueParam: SSKProtoContactDetailsAvatar?) {
+            guard let valueParam = valueParam else { return }
             proto.avatar = valueParam.proto
         }
 
-        @objc public func setColor(_ valueParam: String) {
+        public func setAvatar(_ valueParam: SSKProtoContactDetailsAvatar) {
+            proto.avatar = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setColor(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.color = valueParam
         }
 
-        @objc public func setVerified(_ valueParam: SSKProtoVerified) {
+        public func setColor(_ valueParam: String) {
+            proto.color = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setVerified(_ valueParam: SSKProtoVerified?) {
+            guard let valueParam = valueParam else { return }
             proto.verified = valueParam.proto
         }
 
-        @objc public func setProfileKey(_ valueParam: Data) {
+        public func setVerified(_ valueParam: SSKProtoVerified) {
+            proto.verified = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setProfileKey(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.profileKey = valueParam
         }
 
-        @objc public func setBlocked(_ valueParam: Bool) {
+        public func setProfileKey(_ valueParam: Data) {
+            proto.profileKey = valueParam
+        }
+
+        @objc
+        public func setBlocked(_ valueParam: Bool) {
             proto.blocked = valueParam
         }
 
-        @objc public func setExpireTimer(_ valueParam: UInt32) {
+        @objc
+        public func setExpireTimer(_ valueParam: UInt32) {
             proto.expireTimer = valueParam
         }
 
@@ -5927,11 +7320,29 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
 
     fileprivate let proto: SignalServiceProtos_ContactDetails
 
-    @objc public let number: String
-
     @objc public let avatar: SSKProtoContactDetailsAvatar?
 
     @objc public let verified: SSKProtoVerified?
+
+    @objc public var number: String? {
+        guard proto.hasNumber else {
+            return nil
+        }
+        return proto.number
+    }
+    @objc public var hasNumber: Bool {
+        return proto.hasNumber
+    }
+
+    @objc public var uuid: String? {
+        guard proto.hasUuid else {
+            return nil
+        }
+        return proto.uuid
+    }
+    @objc public var hasUuid: Bool {
+        return proto.hasUuid
+    }
 
     @objc public var name: String? {
         guard proto.hasName else {
@@ -5978,11 +7389,9 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
     }
 
     private init(proto: SignalServiceProtos_ContactDetails,
-                 number: String,
                  avatar: SSKProtoContactDetailsAvatar?,
                  verified: SSKProtoVerified?) {
         self.proto = proto
-        self.number = number
         self.avatar = avatar
         self.verified = verified
     }
@@ -5998,11 +7407,6 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_ContactDetails) throws -> SSKProtoContactDetails {
-        guard proto.hasNumber else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: number")
-        }
-        let number = proto.number
-
         var avatar: SSKProtoContactDetailsAvatar? = nil
         if proto.hasAvatar {
             avatar = try SSKProtoContactDetailsAvatar.parseProto(proto.avatar)
@@ -6018,7 +7422,6 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
         // MARK: - End Validation Logic for SSKProtoContactDetails -
 
         let result = SSKProtoContactDetails(proto: proto,
-                                            number: number,
                                             avatar: avatar,
                                             verified: verified)
         return result
@@ -6073,11 +7476,19 @@ extension SSKProtoContactDetails.SSKProtoContactDetailsBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setContentType(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setContentType(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.contentType = valueParam
         }
 
-        @objc public func setLength(_ valueParam: UInt32) {
+        public func setContentType(_ valueParam: String) {
+            proto.contentType = valueParam
+        }
+
+        @objc
+        public func setLength(_ valueParam: UInt32) {
             proto.length = valueParam
         }
 
@@ -6153,6 +7564,131 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
 
 #endif
 
+// MARK: - SSKProtoGroupDetailsMember
+
+@objc public class SSKProtoGroupDetailsMember: NSObject {
+
+    // MARK: - SSKProtoGroupDetailsMemberBuilder
+
+    @objc public class func builder() -> SSKProtoGroupDetailsMemberBuilder {
+        return SSKProtoGroupDetailsMemberBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoGroupDetailsMemberBuilder {
+        let builder = SSKProtoGroupDetailsMemberBuilder()
+        if let _value = uuid {
+            builder.setUuid(_value)
+        }
+        if let _value = e164 {
+            builder.setE164(_value)
+        }
+        return builder
+    }
+
+    @objc public class SSKProtoGroupDetailsMemberBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_GroupDetails.Member()
+
+        @objc fileprivate override init() {}
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.uuid = valueParam
+        }
+
+        public func setUuid(_ valueParam: String) {
+            proto.uuid = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setE164(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.e164 = valueParam
+        }
+
+        public func setE164(_ valueParam: String) {
+            proto.e164 = valueParam
+        }
+
+        @objc public func build() throws -> SSKProtoGroupDetailsMember {
+            return try SSKProtoGroupDetailsMember.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoGroupDetailsMember.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_GroupDetails.Member
+
+    @objc public var uuid: String? {
+        guard proto.hasUuid else {
+            return nil
+        }
+        return proto.uuid
+    }
+    @objc public var hasUuid: Bool {
+        return proto.hasUuid
+    }
+
+    @objc public var e164: String? {
+        guard proto.hasE164 else {
+            return nil
+        }
+        return proto.e164
+    }
+    @objc public var hasE164: Bool {
+        return proto.hasE164
+    }
+
+    private init(proto: SignalServiceProtos_GroupDetails.Member) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoGroupDetailsMember {
+        let proto = try SignalServiceProtos_GroupDetails.Member(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_GroupDetails.Member) throws -> SSKProtoGroupDetailsMember {
+        // MARK: - Begin Validation Logic for SSKProtoGroupDetailsMember -
+
+        // MARK: - End Validation Logic for SSKProtoGroupDetailsMember -
+
+        let result = SSKProtoGroupDetailsMember(proto: proto)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoGroupDetailsMember {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoGroupDetailsMember.SSKProtoGroupDetailsMemberBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoGroupDetailsMember? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoGroupDetails
 
 @objc public class SSKProtoGroupDetails: NSObject {
@@ -6169,7 +7705,7 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
         if let _value = name {
             builder.setName(_value)
         }
-        builder.setMembers(members)
+        builder.setMembersE164(membersE164)
         if let _value = avatar {
             builder.setAvatar(_value)
         }
@@ -6185,6 +7721,7 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
         if hasBlocked {
             builder.setBlocked(blocked)
         }
+        builder.setMembers(members)
         return builder
     }
 
@@ -6200,42 +7737,83 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
             setId(id)
         }
 
-        @objc public func setId(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setId(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.id = valueParam
         }
 
-        @objc public func setName(_ valueParam: String) {
+        public func setId(_ valueParam: Data) {
+            proto.id = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setName(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.name = valueParam
         }
 
-        @objc public func addMembers(_ valueParam: String) {
-            var items = proto.members
+        public func setName(_ valueParam: String) {
+            proto.name = valueParam
+        }
+
+        @objc public func addMembersE164(_ valueParam: String) {
+            var items = proto.membersE164
             items.append(valueParam)
-            proto.members = items
+            proto.membersE164 = items
         }
 
-        @objc public func setMembers(_ wrappedItems: [String]) {
-            proto.members = wrappedItems
+        @objc public func setMembersE164(_ wrappedItems: [String]) {
+            proto.membersE164 = wrappedItems
         }
 
-        @objc public func setAvatar(_ valueParam: SSKProtoGroupDetailsAvatar) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setAvatar(_ valueParam: SSKProtoGroupDetailsAvatar?) {
+            guard let valueParam = valueParam else { return }
             proto.avatar = valueParam.proto
         }
 
-        @objc public func setActive(_ valueParam: Bool) {
+        public func setAvatar(_ valueParam: SSKProtoGroupDetailsAvatar) {
+            proto.avatar = valueParam.proto
+        }
+
+        @objc
+        public func setActive(_ valueParam: Bool) {
             proto.active = valueParam
         }
 
-        @objc public func setExpireTimer(_ valueParam: UInt32) {
+        @objc
+        public func setExpireTimer(_ valueParam: UInt32) {
             proto.expireTimer = valueParam
         }
 
-        @objc public func setColor(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setColor(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.color = valueParam
         }
 
-        @objc public func setBlocked(_ valueParam: Bool) {
+        public func setColor(_ valueParam: String) {
+            proto.color = valueParam
+        }
+
+        @objc
+        public func setBlocked(_ valueParam: Bool) {
             proto.blocked = valueParam
+        }
+
+        @objc public func addMembers(_ valueParam: SSKProtoGroupDetailsMember) {
+            var items = proto.members
+            items.append(valueParam.proto)
+            proto.members = items
+        }
+
+        @objc public func setMembers(_ wrappedItems: [SSKProtoGroupDetailsMember]) {
+            proto.members = wrappedItems.map { $0.proto }
         }
 
         @objc public func build() throws -> SSKProtoGroupDetails {
@@ -6253,6 +7831,8 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
 
     @objc public let avatar: SSKProtoGroupDetailsAvatar?
 
+    @objc public let members: [SSKProtoGroupDetailsMember]
+
     @objc public var name: String? {
         guard proto.hasName else {
             return nil
@@ -6263,8 +7843,8 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
         return proto.hasName
     }
 
-    @objc public var members: [String] {
-        return proto.members
+    @objc public var membersE164: [String] {
+        return proto.membersE164
     }
 
     @objc public var active: Bool {
@@ -6300,10 +7880,12 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
 
     private init(proto: SignalServiceProtos_GroupDetails,
                  id: Data,
-                 avatar: SSKProtoGroupDetailsAvatar?) {
+                 avatar: SSKProtoGroupDetailsAvatar?,
+                 members: [SSKProtoGroupDetailsMember]) {
         self.proto = proto
         self.id = id
         self.avatar = avatar
+        self.members = members
     }
 
     @objc
@@ -6327,13 +7909,17 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
             avatar = try SSKProtoGroupDetailsAvatar.parseProto(proto.avatar)
         }
 
+        var members: [SSKProtoGroupDetailsMember] = []
+        members = try proto.members.map { try SSKProtoGroupDetailsMember.parseProto($0) }
+
         // MARK: - Begin Validation Logic for SSKProtoGroupDetails -
 
         // MARK: - End Validation Logic for SSKProtoGroupDetails -
 
         let result = SSKProtoGroupDetails(proto: proto,
                                           id: id,
-                                          avatar: avatar)
+                                          avatar: avatar,
+                                          members: members)
         return result
     }
 
@@ -6364,13 +7950,16 @@ extension SSKProtoGroupDetails.SSKProtoGroupDetailsBuilder {
 
     // MARK: - SSKProtoPackStickerBuilder
 
-    @objc public class func builder(id: UInt32, emoji: String) -> SSKProtoPackStickerBuilder {
-        return SSKProtoPackStickerBuilder(id: id, emoji: emoji)
+    @objc public class func builder(id: UInt32) -> SSKProtoPackStickerBuilder {
+        return SSKProtoPackStickerBuilder(id: id)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoPackStickerBuilder {
-        let builder = SSKProtoPackStickerBuilder(id: id, emoji: emoji)
+        let builder = SSKProtoPackStickerBuilder(id: id)
+        if let _value = emoji {
+            builder.setEmoji(_value)
+        }
         return builder
     }
 
@@ -6380,18 +7969,25 @@ extension SSKProtoGroupDetails.SSKProtoGroupDetailsBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(id: UInt32, emoji: String) {
+        @objc fileprivate init(id: UInt32) {
             super.init()
 
             setId(id)
-            setEmoji(emoji)
         }
 
-        @objc public func setId(_ valueParam: UInt32) {
+        @objc
+        public func setId(_ valueParam: UInt32) {
             proto.id = valueParam
         }
 
-        @objc public func setEmoji(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setEmoji(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.emoji = valueParam
+        }
+
+        public func setEmoji(_ valueParam: String) {
             proto.emoji = valueParam
         }
 
@@ -6408,14 +8004,20 @@ extension SSKProtoGroupDetails.SSKProtoGroupDetailsBuilder {
 
     @objc public let id: UInt32
 
-    @objc public let emoji: String
+    @objc public var emoji: String? {
+        guard proto.hasEmoji else {
+            return nil
+        }
+        return proto.emoji
+    }
+    @objc public var hasEmoji: Bool {
+        return proto.hasEmoji
+    }
 
     private init(proto: SignalServiceProtos_Pack.Sticker,
-                 id: UInt32,
-                 emoji: String) {
+                 id: UInt32) {
         self.proto = proto
         self.id = id
-        self.emoji = emoji
     }
 
     @objc
@@ -6434,18 +8036,12 @@ extension SSKProtoGroupDetails.SSKProtoGroupDetailsBuilder {
         }
         let id = proto.id
 
-        guard proto.hasEmoji else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: emoji")
-        }
-        let emoji = proto.emoji
-
         // MARK: - Begin Validation Logic for SSKProtoPackSticker -
 
         // MARK: - End Validation Logic for SSKProtoPackSticker -
 
         let result = SSKProtoPackSticker(proto: proto,
-                                         id: id,
-                                         emoji: emoji)
+                                         id: id)
         return result
     }
 
@@ -6502,15 +8098,36 @@ extension SSKProtoPackSticker.SSKProtoPackStickerBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setTitle(_ valueParam: String) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setTitle(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.title = valueParam
         }
 
-        @objc public func setAuthor(_ valueParam: String) {
+        public func setTitle(_ valueParam: String) {
+            proto.title = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setAuthor(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.author = valueParam
         }
 
-        @objc public func setCover(_ valueParam: SSKProtoPackSticker) {
+        public func setAuthor(_ valueParam: String) {
+            proto.author = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setCover(_ valueParam: SSKProtoPackSticker?) {
+            guard let valueParam = valueParam else { return }
+            proto.cover = valueParam.proto
+        }
+
+        public func setCover(_ valueParam: SSKProtoPackSticker) {
             proto.cover = valueParam.proto
         }
 

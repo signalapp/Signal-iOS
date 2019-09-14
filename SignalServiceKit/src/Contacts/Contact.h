@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <Mantle/MTLModel.h>
@@ -12,9 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class CNContact;
 @class PhoneNumber;
+@class SDSAnyReadTransaction;
 @class SignalRecipient;
+@class SignalServiceAddress;
 @class UIImage;
-@class YapDatabaseReadTransaction;
 
 @interface Contact : MTLModel
 
@@ -30,9 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL isSignalContact;
 @property (nonatomic, readonly) NSString *cnContactId;
 
-- (NSArray<SignalRecipient *> *)signalRecipientsWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (NSArray<SignalRecipient *> *)signalRecipientsWithTransaction:(SDSAnyReadTransaction *)transaction;
 // TODO: Remove this method.
-- (NSArray<NSString *> *)textSecureIdentifiers;
+- (NSArray<SignalServiceAddress *> *)registeredAddresses;
 
 #if TARGET_OS_IOS
 
@@ -40,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable Contact *)contactWithVCardData:(NSData *)data;
 + (nullable CNContact *)cnContactWithVCardData:(NSData *)data;
 
-- (NSString *)nameForPhoneNumber:(NSString *)recipientId;
+- (NSString *)nameForAddress:(SignalServiceAddress *)address;
 
 #endif // TARGET_OS_IOS
 

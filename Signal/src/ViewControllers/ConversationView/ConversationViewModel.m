@@ -200,7 +200,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 @property (nonatomic, nullable) ThreadDynamicInteractions *dynamicInteractions;
 @property (nonatomic) BOOL hasClearedUnreadMessagesIndicator;
 @property (nonatomic, nullable) NSDate *collapseCutoffDate;
-@property (nonatomic, nullable) NSString *typingIndicatorsSender;
+@property (nonatomic, nullable) SignalServiceAddress *typingIndicatorsSender;
 
 @property (nonatomic, nullable) ConversationProfileState *conversationProfileState;
 @property (nonatomic) BOOL hasTooManyOutgoingMessagesToBlockCached;
@@ -255,11 +255,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 - (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
-}
-
-- (YapDatabaseConnection *)editingDatabaseConnection
-{
-    return self.primaryStorage.dbReadWriteConnection;
 }
 
 - (OWSContactsManager *)contactsManager
@@ -355,7 +350,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     // We need to update the "unread indicator" _before_ we determine the initial range
     // size, since it depends on where the unread indicator is placed.
-    self.typingIndicatorsSender = [self.typingIndicators typingRecipientIdForThread:self.thread];
+    self.typingIndicatorsSender = [self.typingIndicators typingAddressForThread:self.thread];
     self.collapseCutoffDate = [NSDate new];
 
     [self.primaryStorage updateUIDatabaseConnectionToLatest];
@@ -568,13 +563,12 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     // TODO: Remove by making unread indicator a view model concern.
     id<ConversationViewItem> _Nullable oldIndicatorItem = [self.viewState unreadIndicatorViewItem];
-    if (oldIndicatorItem) {
+    if (oldIndicatorItem.interaction != nil) {
         // TODO ideally this would be happening within the *same* transaction that caused the unreadMessageIndicator
         // to be cleared.
-        [self.editingDatabaseConnection
-            asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                [oldIndicatorItem.interaction touchWithTransaction:transaction];
-            }];
+        [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [self.databaseStorage touchInteraction:oldIndicatorItem.interaction transaction:transaction];
+        }];
     }
 
     if (self.hasClearedUnreadMessagesIndicator) {
@@ -615,6 +609,13 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                                                                                         error:&updateError];
                                                      }];
 
+    // If we have a thread details item, insert it into the updated items. We assume
+    // it always needs to update, because it's rarely actually loaded and can be changed
+    // by a large number of thread updates.
+    if (self.hasThreadDetailsViewItem) {
+        updatedInteractionIds = [updatedInteractionIds setByAddingObject:self.threadDetailsUniqueId];
+    }
+
     if (dbError || updateError || !updatedInteractionIds) {
         OWSFailDebug(@"failure: %@, %@", dbError, updateError);
         [self resetMappingWithSneakyTransaction];
@@ -653,12 +654,21 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     YapDatabaseAutoViewConnection *messageDatabaseView =
         [self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName];
     OWSAssertDebug([messageDatabaseView isKindOfClass:[YapDatabaseAutoViewConnection class]]);
-    if (![messageDatabaseView hasChangesForGroup:self.thread.uniqueId inNotifications:notifications]) {
+    if (![messageDatabaseView hasChangesForGroup:self.thread.uniqueId inNotifications:notifications]
+        && !self.hasThreadDetailsViewItem) {
         [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.minorUpdate];
         return;
     }
 
     NSSet<NSString *> *updatedInteractionIds = [self.messageMapping updatedItemIdsFor:notifications];
+
+    // If we have a thread details item, insert it into the updated items. We assume
+    // it always needs to update, because it's rarely actually loaded and can be changed
+    // by a large number of thread updates.
+    if (self.hasThreadDetailsViewItem) {
+        updatedInteractionIds = [updatedInteractionIds setByAddingObject:self.threadDetailsUniqueId];
+    }
+
     [self anyDBDidUpdateWithUpdatedInteractionIds:updatedInteractionIds];
 }
 
@@ -678,7 +688,19 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         [self.delegate conversationViewModelDidReset];
         return;
     }
-    if (diff.addedItemIds.count < 1 && diff.removedItemIds.count < 1 && diff.updatedItemIds.count < 1) {
+
+    NSMutableSet<NSString *> *diffAddedItemIds = [diff.addedItemIds mutableCopy];
+    NSMutableSet<NSString *> *diffRemovedItemIds = [diff.removedItemIds mutableCopy];
+    NSMutableSet<NSString *> *diffUpdatedItemIds = [diff.updatedItemIds mutableCopy];
+
+    // If we have a thread details item, insert it into the updated items. We assume
+    // it always needs to update, because it's rarely actually loaded and can be changed
+    // by a large number of thread updates.
+    if (self.hasThreadDetailsViewItem) {
+        [diffUpdatedItemIds addObject:self.threadDetailsUniqueId];
+    }
+
+    if (diffAddedItemIds.count < 1 && diffRemovedItemIds.count < 1 && diffUpdatedItemIds.count < 1) {
         // This probably isn't an error; presumably the modifications
         // occurred outside the load window.
         OWSLogDebug(@"Empty diff.");
@@ -686,9 +708,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         return;
     }
 
-    NSMutableSet<NSString *> *diffAddedItemIds = [diff.addedItemIds mutableCopy];
-    NSMutableSet<NSString *> *diffRemovedItemIds = [diff.removedItemIds mutableCopy];
-    NSMutableSet<NSString *> *diffUpdatedItemIds = [diff.updatedItemIds mutableCopy];
     for (TSOutgoingMessage *unsavedOutgoingMessage in self.unsavedOutgoingMessages) {
         // unsavedOutgoingMessages should only exist for a short period (usually 30-50ms) before
         // they are saved and moved into the `persistedViewItems`
@@ -717,18 +736,22 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     // We need to reload any modified interactions _before_ we call
     // reloadViewItems.
-    BOOL hasMalformedRowChange = NO;
+    __block BOOL hasMalformedRowChange = NO;
     NSMutableSet<NSString *> *updatedItemSet = [NSMutableSet new];
-    for (NSString *uniqueId in diffUpdatedItemIds) {
-        id<ConversationViewItem> _Nullable viewItem = self.viewItemCache[uniqueId];
-        if (viewItem) {
-            [self reloadInteractionForViewItem:viewItem];
-            [updatedItemSet addObject:viewItem.itemId];
-        } else {
-            OWSFailDebug(@"Update is missing view item");
-            hasMalformedRowChange = YES;
+
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        for (NSString *uniqueId in diffUpdatedItemIds) {
+            id<ConversationViewItem> _Nullable viewItem = self.viewItemCache[uniqueId];
+            if (viewItem) {
+                [self reloadInteractionForViewItem:viewItem transaction:transaction];
+                [updatedItemSet addObject:viewItem.itemId];
+            } else {
+                OWSFailDebug(@"Update is missing view item");
+                hasMalformedRowChange = YES;
+            }
         }
-    }
+    }];
+
     for (NSString *uniqueId in diffRemovedItemIds) {
         [self.viewItemCache removeObjectForKey:uniqueId];
     }
@@ -1052,7 +1075,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     }
 
     self.messageMapping = [[ConversationMessageMapping alloc] initWithThreadUniqueId:self.thread.uniqueId
-                                                                       desiredLength:self.initialMessageMappingLength];
+                                                                       desiredLength:self.initialMessageMappingLength
+                                                                        isNoteToSelf:self.thread.isNoteToSelf];
 
     NSError *error;
     [self.messageMapping updateWithTransaction:transaction error:&error];
@@ -1107,7 +1131,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
 #pragma mark - View Items
 
-- (void)ensureConversationProfileState
+- (void)ensureConversationProfileStateWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     if (self.conversationProfileState) {
         return;
@@ -1118,10 +1142,12 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     //
     // TODO: It'd be nice if these methods took a transaction.
     BOOL hasLocalProfile = [self.profileManager hasLocalProfile];
-    BOOL isThreadInProfileWhitelist = [self.profileManager isThreadInProfileWhitelist:self.thread];
+    BOOL isThreadInProfileWhitelist = [self.profileManager isThreadInProfileWhitelist:self.thread
+                                                                          transaction:transaction];
     BOOL hasUnwhitelistedMember = NO;
-    for (NSString *recipientId in self.thread.recipientIdentifiers) {
-        if (![self.profileManager isUserInProfileWhitelist:recipientId]) {
+    for (SignalServiceAddress *address in self.thread.recipientAddresses) {
+        if (![self.profileManager isUserInProfileWhitelist:address
+                                               transaction:transaction]) {
             hasUnwhitelistedMember = YES;
             break;
         }
@@ -1134,36 +1160,17 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     self.conversationProfileState = conversationProfileState;
 }
 
-- (nullable TSInteraction *)firstCallOrMessageForLoadedInteractions:(NSArray<TSInteraction *> *)loadedInteractions
-
-{
-    for (TSInteraction *interaction in loadedInteractions) {
-        switch (interaction.interactionType) {
-            case OWSInteractionType_Unknown:
-                OWSFailDebug(@"Unknown interaction type.");
-                return nil;
-            case OWSInteractionType_IncomingMessage:
-            case OWSInteractionType_OutgoingMessage:
-                return interaction;
-            case OWSInteractionType_Error:
-            case OWSInteractionType_Info:
-                break;
-            case OWSInteractionType_Call:
-            case OWSInteractionType_Offer:
-            case OWSInteractionType_TypingIndicator:
-                break;
-        }
-    }
-    return nil;
-}
-
-- (nullable OWSContactOffersInteraction *)
-    tryToBuildContactOffersInteractionWithTransaction:(YapDatabaseReadTransaction *)transaction
-                                   loadedInteractions:(NSArray<TSInteraction *> *)loadedInteractions
-                                     canLoadMoreItems:(BOOL)canLoadMoreItems
+- (nullable OWSContactOffersInteraction *)tryToBuildContactOffersInteractionWithTransaction:
+                                              (SDSAnyReadTransaction *)transaction
+                                                                           canLoadMoreItems:(BOOL)canLoadMoreItems
 {
     OWSAssertDebug(transaction);
     OWSAssertDebug(self.conversationProfileState);
+
+    // Only show the contacts offer if the message request feature is disabled
+    if (SSKFeatureFlags.messageRequest) {
+        return nil;
+    }
 
     if (canLoadMoreItems) {
         // Only show contact offers at the start of the conversation.
@@ -1184,10 +1191,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         return nil;
     }
 
-    NSString *localNumber = [self.tsAccountManager localNumber];
-    OWSAssertDebug(localNumber.length > 0);
-
-    TSInteraction *firstCallOrMessage = [self firstCallOrMessageForLoadedInteractions:loadedInteractions];
+    TSInteraction *firstCallOrMessage = [self firstCallOrMessageForLoadedInteractionsWithTransaction:transaction];
     if (!firstCallOrMessage) {
         return nil;
     }
@@ -1196,9 +1200,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     if (self.hasTooManyOutgoingMessagesToBlockCached) {
         hasTooManyOutgoingMessagesToBlock = YES;
     } else {
-        NSUInteger outgoingMessageCount =
-            [[TSDatabaseView threadOutgoingMessageDatabaseView:transaction] numberOfItemsInGroup:thread.uniqueId];
-
+        NSUInteger outgoingMessageCount = [[[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId]
+            outgoingMessageCountWithTransaction:transaction];
         const int kMaxBlockOfferOutgoingMessageCount = 10;
         hasTooManyOutgoingMessagesToBlock = (outgoingMessageCount > kMaxBlockOfferOutgoingMessageCount);
         self.hasTooManyOutgoingMessagesToBlockCached = hasTooManyOutgoingMessagesToBlock;
@@ -1208,9 +1211,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     BOOL shouldHaveAddToContactsOffer = YES;
     BOOL shouldHaveAddToProfileWhitelistOffer = YES;
 
-    NSString *recipientId = ((TSContactThread *)thread).contactIdentifier;
+    SignalServiceAddress *recipientAddress = contactThread.contactAddress;
 
-    if ([recipientId isEqualToString:localNumber]) {
+    if (recipientAddress.isLocalAddress) {
         // Don't add self to contacts.
         shouldHaveAddToContactsOffer = NO;
         // Don't bother to block self.
@@ -1218,7 +1221,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         // Don't bother adding self to profile whitelist.
         shouldHaveAddToProfileWhitelistOffer = NO;
     } else {
-        if ([[self.blockingManager blockedPhoneNumbers] containsObject:recipientId]) {
+        if ([self.blockingManager isAddressBlocked:recipientAddress]) {
             // Only create "add to contacts" offers for users which are not already blocked.
             shouldHaveAddToContactsOffer = NO;
             // Only create block offers for users which are not already blocked.
@@ -1227,7 +1230,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             shouldHaveAddToProfileWhitelistOffer = NO;
         }
 
-        if ([self.contactsManager hasNameInSystemContactsForRecipientId:recipientId]) {
+        if ([self.contactsManager hasNameInSystemContactsForAddress:recipientAddress]) {
             // Only create "add to contacts" offers for non-contacts.
             shouldHaveAddToContactsOffer = NO;
             // Only create block offers for non-contacts.
@@ -1264,8 +1267,14 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         shouldHaveAddToProfileWhitelistOffer = NO;
     }
 
+    // We can't add a user to contacts that doesn't have a phone number
+    if (recipientAddress.phoneNumber == nil) {
+        shouldHaveAddToContactsOffer = NO;
+    }
+
     BOOL shouldHaveContactOffers
         = (shouldHaveBlockOffer || shouldHaveAddToContactsOffer || shouldHaveAddToProfileWhitelistOffer);
+
     if (!shouldHaveContactOffers) {
         return nil;
     }
@@ -1281,13 +1290,12 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     NSString *uniqueId = @"contact-offers";
     OWSContactOffersInteraction *offersMessage =
         [[OWSContactOffersInteraction alloc] initWithUniqueId:uniqueId
-                                                               timestamp:contactOffersTimestamp
-                                                                  thread:thread
-                                                           hasBlockOffer:shouldHaveBlockOffer
-                                                   hasAddToContactsOffer:shouldHaveAddToContactsOffer
-                                           hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
-                                                             recipientId:recipientId
-                                                     beforeInteractionId:firstCallOrMessage.uniqueId];
+                                                    timestamp:contactOffersTimestamp
+                                                       thread:thread
+                                                hasBlockOffer:shouldHaveBlockOffer
+                                        hasAddToContactsOffer:shouldHaveAddToContactsOffer
+                                hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
+                                          beforeInteractionId:firstCallOrMessage.uniqueId];
 
     OWSLogInfo(@"Creating contact offers: %@ (%llu)", offersMessage.uniqueId, offersMessage.sortId);
     return offersMessage;
@@ -1317,7 +1325,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     BOOL isGroupThread = self.thread.isGroupThread;
     ConversationStyle *conversationStyle = self.delegate.conversationStyle;
 
-    [self ensureConversationProfileState];
+    [self ensureConversationProfileStateWithTransaction:transaction];
 
     __block BOOL hasError = NO;
     _Nullable id<ConversationViewItem> (^tryToAddViewItem)(TSInteraction *)
@@ -1349,8 +1357,13 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
 
     for (NSString *uniqueId in loadedUniqueIds) {
-        TSInteraction *_Nullable interaction =
-            [InteractionFinder fetchSwallowingErrorsWithUniqueId:uniqueId transaction:transaction];
+        TSInteraction *_Nullable interaction;
+        if ([uniqueId isEqualToString:OWSThreadDetailsInteraction.ThreadDetailsId]) {
+            interaction = [self buildThreadDetailsInteractionWithTransaction:transaction];
+        } else {
+            interaction = [InteractionFinder fetchSwallowingErrorsWithUniqueId:uniqueId transaction:transaction];
+        }
+
         if (!interaction) {
             OWSFailDebug(@"missing interaction in message mapping: %@.", uniqueId);
             // TODO: Add analytics.
@@ -1371,27 +1384,23 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         [interactionIds addObject:interaction.uniqueId];
     }
 
-    if (transaction.transitional_yapReadTransaction) {
-        OWSContactOffersInteraction *_Nullable offers =
-            [self tryToBuildContactOffersInteractionWithTransaction:transaction.transitional_yapReadTransaction
-                                                 loadedInteractions:interactions
-                                                   canLoadMoreItems:canLoadMoreItems];
-        if (offers && [interactionIds containsObject:offers.beforeInteractionId]) {
-            id<ConversationViewItem> _Nullable offersItem = tryToAddViewItem(offers);
-            if (!offersItem) {
-                OWSFailDebug(@"Contact offers should never be filtered out.");
-                // Do nothing.
-            } else if ([offersItem.interaction isKindOfClass:[OWSContactOffersInteraction class]]) {
-                OWSContactOffersInteraction *oldOffers = (OWSContactOffersInteraction *)offersItem.interaction;
-                BOOL didChange = (oldOffers.hasBlockOffer != offers.hasBlockOffer
-                    || oldOffers.hasAddToContactsOffer != offers.hasAddToContactsOffer
-                    || oldOffers.hasAddToProfileWhitelistOffer != offers.hasAddToProfileWhitelistOffer);
-                if (didChange) {
-                    [offersItem clearCachedLayoutState];
-                }
-            } else {
-                OWSFailDebug(@"Unexpected offers item: %@", offersItem.interaction.class);
+    OWSContactOffersInteraction *_Nullable offers =
+        [self tryToBuildContactOffersInteractionWithTransaction:transaction canLoadMoreItems:canLoadMoreItems];
+    if (offers && [interactionIds containsObject:offers.beforeInteractionId]) {
+        id<ConversationViewItem> _Nullable offersItem = tryToAddViewItem(offers);
+        if (!offersItem) {
+            OWSFailDebug(@"Contact offers should never be filtered out.");
+            // Do nothing.
+        } else if ([offersItem.interaction isKindOfClass:[OWSContactOffersInteraction class]]) {
+            OWSContactOffersInteraction *oldOffers = (OWSContactOffersInteraction *)offersItem.interaction;
+            BOOL didChange = (oldOffers.hasBlockOffer != offers.hasBlockOffer
+                || oldOffers.hasAddToContactsOffer != offers.hasAddToContactsOffer
+                || oldOffers.hasAddToProfileWhitelistOffer != offers.hasAddToProfileWhitelistOffer);
+            if (didChange) {
+                [offersItem clearCachedLayoutState];
             }
+        } else {
+            OWSFailDebug(@"Unexpected offers item: %@", offersItem.interaction.class);
         }
     }
 
@@ -1422,7 +1431,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         OWSTypingIndicatorInteraction *typingIndicatorInteraction =
             [[OWSTypingIndicatorInteraction alloc] initWithThread:self.thread
                                                         timestamp:[NSDate ows_millisecondTimeStamp]
-                                                      recipientId:self.typingIndicatorsSender];
+                                                          address:self.typingIndicatorsSender];
         tryToAddViewItem(typingIndicatorInteraction);
     }
 
@@ -1443,8 +1452,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         BOOL canShowDate = NO;
         switch (viewItem.interaction.interactionType) {
             case OWSInteractionType_Unknown:
-            case OWSInteractionType_Offer:
             case OWSInteractionType_TypingIndicator:
+            case OWSInteractionType_ThreadDetails:
+            case OWSInteractionType_Offer:
                 canShowDate = NO;
                 break;
             case OWSInteractionType_IncomingMessage:
@@ -1461,7 +1471,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
         BOOL shouldShowDate = NO;
         if (previousViewItemTimestamp == 0) {
-            shouldShowDateOnNextViewItem = YES;
+            // Only show for the first item if the date is not today
+            shouldShowDateOnNextViewItem
+                = ![DateUtil dateIsToday:[NSDate ows_dateWithMillisecondsSince1970:viewItemTimestamp]];
         } else if (![DateUtil isSameDayWithTimestamp:previousViewItemTimestamp timestamp:viewItemTimestamp]) {
             shouldShowDateOnNextViewItem = YES;
         }
@@ -1521,15 +1533,19 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         BOOL isFirstInCluster = YES;
         BOOL isLastInCluster = YES;
         NSAttributedString *_Nullable senderName = nil;
+        NSString *_Nullable accessibilityAuthorName = nil;
 
         OWSInteractionType interactionType = viewItem.interaction.interactionType;
         NSString *timestampText = [DateUtil formatTimestampShort:viewItem.interaction.timestamp];
 
         if (interactionType == OWSInteractionType_OutgoingMessage) {
+
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
             MessageReceiptStatus receiptStatus =
                 [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
             BOOL isDisappearingMessage = outgoingMessage.hasPerConversationExpiration;
+            accessibilityAuthorName = NSLocalizedString(
+                @"ACCESSIBILITY_LABEL_SENDER_SELF", @"Accessibility label for messages sent by you.");
 
             if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
                 TSOutgoingMessage *nextOutgoingMessage = (TSOutgoingMessage *)nextViewItem.interaction;
@@ -1567,15 +1583,16 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         } else if (interactionType == OWSInteractionType_IncomingMessage) {
 
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)viewItem.interaction;
-            NSString *incomingSenderId = incomingMessage.authorId;
-            OWSAssertDebug(incomingSenderId.length > 0);
+            SignalServiceAddress *incomingSenderAddress = incomingMessage.authorAddress;
+            OWSAssertDebug(incomingSenderAddress.isValid);
             BOOL isDisappearingMessage = incomingMessage.hasPerConversationExpiration;
+            accessibilityAuthorName = [self.contactsManager displayNameForAddress:incomingSenderAddress];
 
-            NSString *_Nullable nextIncomingSenderId = nil;
+            SignalServiceAddress *_Nullable nextIncomingSenderAddress = nil;
             if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
                 TSIncomingMessage *nextIncomingMessage = (TSIncomingMessage *)nextViewItem.interaction;
-                nextIncomingSenderId = nextIncomingMessage.authorId;
-                OWSAssertDebug(nextIncomingSenderId.length > 0);
+                nextIncomingSenderAddress = nextIncomingMessage.authorAddress;
+                OWSAssertDebug(nextIncomingSenderAddress.isValid);
             }
 
             if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
@@ -1583,8 +1600,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 // We can skip the "incoming message status" footer in a cluster if the next message
                 // has the same footer and no "date break" separates us.
                 // ...but always show the "disappearing messages" animation.
-                shouldHideFooter = ([timestampText isEqualToString:nextTimestampText] && !nextViewItem.hasCellHeader &&
-                    [NSObject isNullableObject:nextIncomingSenderId equalTo:incomingSenderId]
+                shouldHideFooter = ([timestampText isEqualToString:nextTimestampText] && !nextViewItem.hasCellHeader
+                    && ((!incomingSenderAddress && !nextIncomingSenderAddress) ||
+                        [incomingSenderAddress isEqualToAddress:nextIncomingSenderAddress])
                     && !isDisappearingMessage);
             }
 
@@ -1597,7 +1615,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 isFirstInCluster = YES;
             } else {
                 TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousViewItem.interaction;
-                isFirstInCluster = ![incomingSenderId isEqual:previousIncomingMessage.authorId];
+                isFirstInCluster = ![incomingSenderAddress isEqualToAddress:previousIncomingMessage.authorAddress];
             }
 
             if (nextViewItem == nil) {
@@ -1608,7 +1626,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 isLastInCluster = YES;
             } else {
                 TSIncomingMessage *nextIncomingMessage = (TSIncomingMessage *)nextViewItem.interaction;
-                isLastInCluster = ![incomingSenderId isEqual:nextIncomingMessage.authorId];
+                isLastInCluster = ![incomingSenderAddress isEqualToAddress:nextIncomingMessage.authorAddress];
             }
 
             if (viewItem.isGroupThread) {
@@ -1619,20 +1637,22 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 if (previousViewItem && previousViewItem.interaction.interactionType == interactionType) {
 
                     TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousViewItem.interaction;
-                    NSString *previousIncomingSenderId = previousIncomingMessage.authorId;
-                    OWSAssertDebug(previousIncomingSenderId.length > 0);
+                    SignalServiceAddress *previousIncomingSenderAddress = previousIncomingMessage.authorAddress;
+                    OWSAssertDebug(previousIncomingSenderAddress.isValid);
 
-                    shouldShowSenderName
-                        = (![NSObject isNullableObject:previousIncomingSenderId equalTo:incomingSenderId]
-                            || viewItem.hasCellHeader);
+                    shouldShowSenderName = ((!incomingSenderAddress && !previousIncomingSenderAddress)
+                        || ![incomingSenderAddress isEqualToAddress:previousIncomingSenderAddress]
+                        || viewItem.hasCellHeader);
                 }
                 if (shouldShowSenderName) {
-                    senderName = [self.contactsManager
-                        attributedContactOrProfileNameForPhoneIdentifier:incomingSenderId
-                                                       primaryAttributes:[OWSMessageBubbleView
-                                                                             senderNamePrimaryAttributes]
-                                                     secondaryAttributes:[OWSMessageBubbleView
-                                                                             senderNameSecondaryAttributes]];
+                    if (SSKFeatureFlags.profileDisplayChanges) {
+                        senderName = [[NSAttributedString alloc] initWithString:accessibilityAuthorName];
+                    } else {
+                        senderName = [self.contactsManager
+                            attributedLegacyDisplayNameForAddress:incomingSenderAddress
+                                                primaryAttributes:[OWSMessageBubbleView senderNamePrimaryAttributes]
+                                              secondaryAttributes:[OWSMessageBubbleView senderNameSecondaryAttributes]];
+                    }
                 }
 
                 // Show the sender avatar for incoming group messages unless
@@ -1640,7 +1660,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 // no "date break" separates us.
                 shouldShowSenderAvatar = YES;
                 if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
-                    shouldShowSenderAvatar = (![NSObject isNullableObject:nextIncomingSenderId equalTo:incomingSenderId]
+                    shouldShowSenderAvatar = ((!incomingSenderAddress && !nextIncomingSenderAddress)
+                        || ![incomingSenderAddress isEqualToAddress:nextIncomingSenderAddress]
                         || nextViewItem.hasCellHeader);
                 }
             }
@@ -1655,6 +1676,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         viewItem.shouldShowSenderAvatar = shouldShowSenderAvatar;
         viewItem.shouldHideFooter = shouldHideFooter;
         viewItem.senderName = senderName;
+        viewItem.accessibilityAuthorName = accessibilityAuthorName;
     }
 
     self.viewState = [[ConversationViewState alloc] initWithViewItems:viewItems];
@@ -1679,7 +1701,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
 // Whenever an interaction is modified, we need to reload it from the DB
 // and update the corresponding view item.
-- (void)reloadInteractionForViewItem:(id<ConversationViewItem>)viewItem
+- (void)reloadInteractionForViewItem:(id<ConversationViewItem>)viewItem transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(viewItem);
@@ -1689,15 +1711,19 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         return;
     }
 
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        TSInteraction *_Nullable interaction =
-            [TSInteraction anyFetchWithUniqueId:viewItem.interaction.uniqueId transaction:transaction];
-        if (!interaction) {
-            OWSFailDebug(@"could not reload interaction");
-        } else {
-            [viewItem replaceInteraction:interaction transaction:transaction];
-        }
-    }];
+    TSInteraction *_Nullable interaction;
+    if ([viewItem.interaction isKindOfClass:OWSThreadDetailsInteraction.class]) {
+        // Thread details is not a persisted interaction, so we need to rebuild it here to update it.
+        interaction = [self buildThreadDetailsInteractionWithTransaction:transaction];
+    } else {
+        interaction = [TSInteraction anyFetchWithUniqueId:viewItem.interaction.uniqueId transaction:transaction];
+    }
+
+    if (!interaction) {
+        OWSFailDebug(@"could not reload interaction");
+    } else {
+        [viewItem replaceInteraction:interaction transaction:transaction];
+    }
 }
 
 - (nullable NSIndexPath *)ensureLoadWindowContainsQuotedReply:(OWSQuotedReplyModel *)quotedReply
@@ -1706,7 +1732,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     OWSAssertIsOnMainThread();
     OWSAssertDebug(quotedReply);
     OWSAssertDebug(quotedReply.timestamp > 0);
-    OWSAssertDebug(quotedReply.authorId.length > 0);
+    OWSAssertDebug(quotedReply.authorAddress.isValid);
 
     if (quotedReply.isRemotelySourced) {
         return nil;
@@ -1715,7 +1741,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     TSInteraction *_Nullable quotedInteraction;
     if (transaction.transitional_yapReadTransaction != nil) {
         quotedInteraction = [ThreadUtil findInteractionInThreadByTimestamp:quotedReply.timestamp
-                                                                  authorId:quotedReply.authorId
+                                                             authorAddress:quotedReply.authorAddress
                                                             threadUniqueId:self.thread.uniqueId
                                                                transaction:transaction.transitional_yapReadTransaction];
     }
@@ -1807,10 +1833,10 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         return;
     }
 
-    self.typingIndicatorsSender = [self.typingIndicators typingRecipientIdForThread:self.thread];
+    self.typingIndicatorsSender = [self.typingIndicators typingAddressForThread:self.thread];
 }
 
-- (void)setTypingIndicatorsSender:(nullable NSString *)typingIndicatorsSender
+- (void)setTypingIndicatorsSender:(nullable SignalServiceAddress *)typingIndicatorsSender
 {
     OWSAssertIsOnMainThread();
 
@@ -1839,6 +1865,66 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             [weakSelf updateForTransientItems];
         });
     }
+}
+
+#pragma mark - Thread Details
+
+- (BOOL)hasThreadDetailsViewItem
+{
+    return self.viewItemCache[self.threadDetailsUniqueId] != nil;
+}
+
+- (NSString *)threadDetailsUniqueId
+{
+    return OWSThreadDetailsInteraction.ThreadDetailsId;
+}
+
+- (OWSThreadDetailsInteraction *)buildThreadDetailsInteractionWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    TSInteraction *_Nullable firstCallOrMessage =
+        [self firstCallOrMessageForLoadedInteractionsWithTransaction:transaction];
+
+    uint64_t threadDetailsTimestamp;
+    if (firstCallOrMessage) {
+        threadDetailsTimestamp = firstCallOrMessage.timestamp - 1;
+    } else {
+        threadDetailsTimestamp = 1;
+    }
+
+    return [[OWSThreadDetailsInteraction alloc] initWithThread:self.thread timestamp:threadDetailsTimestamp];
+}
+
+- (nullable TSInteraction *)firstCallOrMessageForLoadedInteractionsWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    for (NSString *uniqueId in self.messageMapping.loadedUniqueIds) {
+        TSInteraction *_Nullable interaction = [InteractionFinder fetchSwallowingErrorsWithUniqueId:uniqueId
+                                                                                        transaction:transaction];
+
+        if (!interaction) {
+            if (![uniqueId isEqualToString:OWSThreadDetailsInteraction.ThreadDetailsId]) {
+                OWSFailDebug(@"missing interaction in message mapping: %@.", uniqueId);
+            }
+            continue;
+        }
+
+        switch (interaction.interactionType) {
+            case OWSInteractionType_Unknown:
+                OWSFailDebug(@"Unknown interaction type.");
+                break;
+            case OWSInteractionType_Call:
+            case OWSInteractionType_IncomingMessage:
+            case OWSInteractionType_OutgoingMessage:
+                return interaction;
+            case OWSInteractionType_Error:
+            case OWSInteractionType_Info:
+                break;
+            case OWSInteractionType_ThreadDetails:
+            case OWSInteractionType_TypingIndicator:
+            case OWSInteractionType_Offer:
+                break;
+        }
+    }
+    return nil;
 }
 
 @end

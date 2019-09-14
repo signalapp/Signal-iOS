@@ -5,9 +5,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSIncomingSentMessageTranscript;
+@class SDSAnyWriteTransaction;
 @class SSKProtoSyncMessageSentUpdate;
 @class TSAttachmentStream;
-@class YapDatabaseReadWriteTransaction;
 
 // This job is used to process "outgoing message" notifications from linked devices.
 @interface OWSRecordTranscriptJob : NSObject
@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)processIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript
                            attachmentHandler:(void (^)(
                                                  NSArray<TSAttachmentStream *> *attachmentStreams))attachmentHandler
-                                 transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                 transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

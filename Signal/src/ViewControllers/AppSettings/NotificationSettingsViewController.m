@@ -41,7 +41,6 @@
     return SDSDatabaseStorage.shared;
 }
 
-
 #pragma mark - Table Contents
 
 - (void)updateTableContents

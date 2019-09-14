@@ -155,11 +155,7 @@ public class ConversationMediaView: UIView {
             configure(forError: .missing)
             return
         }
-        guard let attachmentId = attachmentPointer.uniqueId else {
-            owsFailDebug("Attachment missing unique ID.")
-            configure(forError: .invalid)
-            return
-        }
+        let attachmentId = attachmentPointer.uniqueId
         guard nil != attachmentDownloads.downloadProgress(forAttachmentId: attachmentId) else {
             // Not being downloaded.
             configure(forError: .missing)
@@ -179,11 +175,7 @@ public class ConversationMediaView: UIView {
         guard let attachmentStream = attachment as? TSAttachmentStream else {
             return false
         }
-        guard let attachmentId = attachmentStream.uniqueId else {
-            owsFailDebug("Attachment missing unique ID.")
-            configure(forError: .invalid)
-            return false
-        }
+        let attachmentId = attachmentStream.uniqueId
         guard !attachmentStream.isUploaded else {
             return false
         }
@@ -194,10 +186,7 @@ public class ConversationMediaView: UIView {
     }
 
     private func configureForAnimatedImage(attachmentStream: TSAttachmentStream) {
-        guard let cacheKey = attachmentStream.uniqueId else {
-            owsFailDebug("Attachment stream missing unique ID.")
-            return
-        }
+        let cacheKey = attachmentStream.uniqueId
         let animatedImageView = YYAnimatedImageView()
         // We need to specify a contentMode since the size of the image
         // might not match the aspect ratio of the view.
@@ -253,10 +242,7 @@ public class ConversationMediaView: UIView {
     }
 
     private func configureForStillImage(attachmentStream: TSAttachmentStream) {
-        guard let cacheKey = attachmentStream.uniqueId else {
-            owsFailDebug("Attachment stream missing unique ID.")
-            return
-        }
+        let cacheKey = attachmentStream.uniqueId
         let stillImageView = UIImageView()
         // We need to specify a contentMode since the size of the image
         // might not match the aspect ratio of the view.
@@ -308,10 +294,7 @@ public class ConversationMediaView: UIView {
     }
 
     private func configureForVideo(attachmentStream: TSAttachmentStream) {
-        guard let cacheKey = attachmentStream.uniqueId else {
-            owsFailDebug("Attachment stream missing unique ID.")
-            return
-        }
+        let cacheKey = attachmentStream.uniqueId
         let stillImageView = UIImageView()
         // We need to specify a contentMode since the size of the image
         // might not match the aspect ratio of the view.

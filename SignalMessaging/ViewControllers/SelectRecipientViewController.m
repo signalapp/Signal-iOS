@@ -6,6 +6,7 @@
 #import "CountryCodeViewController.h"
 #import "PhoneNumber.h"
 #import "ViewControllerUtils.h"
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/ContactsViewHelper.h>
 #import <SignalMessaging/Environment.h>
@@ -339,11 +340,11 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                                       return;
                                   }
 
-                                  NSString *recipientId = recipients[0].uniqueId;
+                                  SignalServiceAddress *address = recipients[0].address;
                                   [modalActivityIndicator
                                       dismissViewControllerAnimated:NO
                                                          completion:^{
-                                                             [weakSelf.delegate phoneNumberWasSelected:recipientId];
+                                                             [weakSelf.delegate addressWasSelected:address];
                                                          }];
                               }
                               failure:^(NSError *error) {
@@ -360,8 +361,8 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                               }];
                       }];
     } else {
-        NSString *recipientId = possiblePhoneNumbers[0];
-        [self.delegate phoneNumberWasSelected:recipientId];
+        SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:possiblePhoneNumbers[0]];
+        [self.delegate addressWasSelected:address];
     }
 }
 
@@ -540,20 +541,24 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                     addItem:[OWSTableItem
                                 itemWithCustomCellBlock:^{
                                     SelectRecipientViewController *strongSelf = weakSelf;
-                                    OWSCAssertDebug(strongSelf);
-
                                     ContactTableViewCell *cell = [ContactTableViewCell new];
-                                    BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
+
+                                    if (strongSelf == nil) {
+                                        OWSCFail(@"strongSelf was unexpectedly nil");
+                                        return cell;
+                                    }
+
+                                    BOOL isBlocked =
+                                        [helper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
                                     if (isBlocked) {
-                                        cell.accessoryMessage = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED",
-                                            @"An indicator that a contact has been blocked.");
+                                        cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                                     } else {
                                         cell.accessoryMessage =
-                                            [weakSelf.delegate accessoryMessageForSignalAccount:signalAccount];
+                                            [strongSelf.delegate accessoryMessageForSignalAccount:signalAccount];
                                     }
-                                    [cell configureWithRecipientId:signalAccount.recipientId];
+                                    [cell configureWithRecipientAddress:signalAccount.recipientAddress];
 
-                                    if (![weakSelf.delegate canSignalAccountBeSelected:signalAccount]) {
+                                    if (![strongSelf.delegate canSignalAccountBeSelected:signalAccount]) {
                                         cell.selectionStyle = UITableViewCellSelectionStyleNone;
                                     }
 
@@ -561,10 +566,15 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                                 }
                                 customRowHeight:UITableViewAutomaticDimension
                                 actionBlock:^{
-                                    if (![weakSelf.delegate canSignalAccountBeSelected:signalAccount]) {
+                                    SelectRecipientViewController *strongSelf = weakSelf;
+                                    if (strongSelf == nil) {
+                                        OWSCFail(@"strongSelf was unexpectedly nil");
                                         return;
                                     }
-                                    [weakSelf.delegate signalAccountWasSelected:signalAccount];
+                                    if (![strongSelf.delegate canSignalAccountBeSelected:signalAccount]) {
+                                        return;
+                                    }
+                                    [strongSelf.delegate signalAccountWasSelected:signalAccount];
                                 }]];
             }
         }

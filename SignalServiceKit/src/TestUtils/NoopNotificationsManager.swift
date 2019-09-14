@@ -6,7 +6,7 @@
 public class NoopNotificationsManager: NSObject, NotificationsProtocol {
 
     public func notifyUser(for incomingMessage: TSIncomingMessage, in thread: TSThread, transaction: SDSAnyReadTransaction) {
-        owsFailDebug("")
+        Logger.warn("skipping notification for: \(incomingMessage.description)")
     }
 
     public func notifyUser(for errorMessage: TSErrorMessage, thread: TSThread, transaction: SDSAnyWriteTransaction) {
@@ -17,7 +17,7 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocol {
         Logger.warn("skipping notification for: \(infoMessage.description)")
     }
 
-    public func notifyUser(forThreadlessErrorMessage errorMessage: TSErrorMessage, transaction: SDSAnyWriteTransaction) {
+    public func notifyUser(for errorMessage: ThreadlessErrorMessage, transaction: SDSAnyWriteTransaction) {
         Logger.warn("skipping notification for: \(errorMessage.description)")
     }
 

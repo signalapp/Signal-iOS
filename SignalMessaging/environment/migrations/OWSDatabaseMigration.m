@@ -2,13 +2,107 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSDatabaseMigration.h"
+#import <SignalMessaging/OWSDatabaseMigration.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDatabaseMigration
+
+// This key-value store is used to persist completion of migrations.
+// Note that it uses the YDB collection previously used to persist migration models.
+// Since we just check "has key", this is backwards-compatible.
++ (SDSKeyValueStore *)keyValueStore
+{
+    static SDSKeyValueStore *keyValueStore = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:OWSDatabaseMigration.collection];
+    });
+    return keyValueStore;
+}
+
+- (instancetype)init
+{
+    return [super initWithUniqueId:[self.class migrationId]];
+}
+
++ (NSString *)migrationId
+{
+    OWSAbstractMethod();
+
+    return @"";
+}
+
+- (NSString *)migrationId
+{
+    return self.class.migrationId;
+}
+
++ (NSString *)collection
+{
+    // We want all subclasses in the same collection
+    return @"OWSDatabaseMigration";
+}
+
+- (void)runUpWithCompletion:(OWSDatabaseMigrationCompletion)completion
+{
+    OWSAbstractMethod();
+}
+
+- (void)markAsCompleteWithSneakyTransaction
+{
+    OWSAbstractMethod();
+}
+
+- (void)markAsCompleteWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (!self.shouldBeSaved) {
+        OWSLogInfo(@"NOT Marking migration as incomplete: %@ %@", [self class], self.migrationId);
+        return;
+    }
+
+    [OWSDatabaseMigration markMigrationIdAsComplete:self.migrationId transaction:transaction];
+}
+
++ (void)markMigrationIdAsComplete:(NSString *)migrationId transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSLogInfo(@"Marking migration as incomplete: %@", migrationId);
+
+    [self.keyValueStore setBool:YES key:migrationId transaction:transaction];
+}
+
++ (void)markMigrationIdAsIncomplete:(NSString *)migrationId transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSLogInfo(@"Marking migration as incomplete: %@", migrationId);
+
+    [self.keyValueStore removeValueForKey:migrationId transaction:transaction];
+}
+
+- (BOOL)isCompleteWithSneakyTransaction
+{
+    OWSAbstractMethod();
+
+    return NO;
+}
+
+- (BOOL)isCompleteWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [OWSDatabaseMigration.keyValueStore hasValueForKey:self.migrationId transaction:transaction];
+}
+
++ (NSArray<NSString *> *)allCompleteMigrationIdsWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self.keyValueStore allKeysWithTransaction:transaction];
+}
+
+@end
+
+#pragma mark -
+
+@implementation YDBDatabaseMigration
 
 #pragma mark - Dependencies
 
@@ -20,44 +114,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark -
-
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSLogInfo(@"marking migration as complete.");
-
-    [super saveWithTransaction:transaction];
-}
-
-- (instancetype)init
-{
-    self = [super initWithUniqueId:[self.class migrationId]];
-    if (!self) {
-        return self;
-    }
-
-    return self;
-}
-
-+ (MTLPropertyStorage)storageBehaviorForPropertyWithKey:(NSString *)propertyKey
-{
-    if ([propertyKey isEqualToString:@"primaryStorage"]) {
-        return MTLPropertyStorageNone;
-    } else {
-        return [super storageBehaviorForPropertyWithKey:propertyKey];
-    }
-}
-
-+ (NSString *)migrationId
-{
-    OWSAbstractMethod();
-    return @"";
-}
-
-+ (NSString *)collection
-{
-    // We want all subclasses in the same collection
-    return @"OWSDatabaseMigration";
-}
 
 - (void)runUpWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -75,36 +131,55 @@ NS_ASSUME_NONNULL_BEGIN
             [self runUpWithTransaction:transaction];
         }
         completionBlock:^{
-            OWSLogInfo(@"Completed migration %@", self.uniqueId);
-            [self save];
+            [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [self markAsCompleteWithTransaction:transaction.asAnyWrite];
+            }];
 
             completion();
         }];
 }
 
-#pragma mark - Database Connections
-
-#ifdef DEBUG
-+ (YapDatabaseConnection *)dbReadConnection
+- (void)markAsCompleteWithSneakyTransaction
 {
-    return self.dbReadWriteConnection;
+    // GRDB TODO: Which kind of transaction we should use depends on whether or not
+    //            we are pre- or post- the YDB-to-GRDB migration.
+    [self.ydbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self markAsCompleteWithTransaction:transaction.asAnyWrite];
+    }];
 }
 
-+ (YapDatabaseConnection *)dbReadWriteConnection
+- (BOOL)isCompleteWithSneakyTransaction
+{
+    // GRDB TODO: Which kind of transaction we should use depends on whether or not
+    //            we are pre- or post- the YDB-to-GRDB migration.
+    __block BOOL result;
+    [self.ydbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        result = [self isCompleteWithTransaction:transaction.asAnyRead];
+    }];
+    return result;
+}
+
+#pragma mark - Database Connections
+
++ (YapDatabaseConnection *)ydbReadConnection
+{
+    return self.ydbReadWriteConnection;
+}
+
++ (YapDatabaseConnection *)ydbReadWriteConnection
 {
     return SSKEnvironment.shared.migrationDBConnection;
 }
 
-- (YapDatabaseConnection *)dbReadConnection
+- (YapDatabaseConnection *)ydbReadConnection
 {
-    return OWSDatabaseMigration.dbReadConnection;
+    return YDBDatabaseMigration.ydbReadConnection;
 }
 
-- (YapDatabaseConnection *)dbReadWriteConnection
+- (YapDatabaseConnection *)ydbReadWriteConnection
 {
-    return OWSDatabaseMigration.dbReadWriteConnection;
+    return YDBDatabaseMigration.ydbReadWriteConnection;
 }
-#endif
 
 @end
 

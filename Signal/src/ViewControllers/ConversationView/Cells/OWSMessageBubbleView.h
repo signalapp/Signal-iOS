@@ -8,7 +8,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class ContactShareViewModel;
 @class OWSContact;
+@class OWSLayerView;
 @class OWSLinkPreview;
+@class OWSMessageFooterView;
 @class OWSQuotedReplyModel;
 @class StickerPackInfo;
 @class TSAttachmentPointer;
@@ -64,7 +66,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSMessageBubbleView : OWSMessageView
 
 @property (nonatomic, nullable, readonly) UIView *bodyMediaView;
-
+@property (nonatomic, nullable, readonly) OWSLayerView *bodyMediaGradientView;
+@property (nonatomic, readonly) OWSMessageFooterView *footerView;
 @property (nonatomic, weak) id<OWSMessageBubbleViewDelegate> delegate;
 
 - (instancetype)init NS_UNAVAILABLE;

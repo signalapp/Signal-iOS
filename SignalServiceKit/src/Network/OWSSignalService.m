@@ -10,13 +10,11 @@
 #import "OWSPrimaryStorage.h"
 #import "TSAccountManager.h"
 #import "TSConstants.h"
-#import "YapDatabaseConnection+OWS.h"
 #import <AFNetworking/AFHTTPSessionManager.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kOWSPrimaryStorage_OWSSignalService = @"kTSStorageManager_OWSSignalService";
 NSString *const kOWSPrimaryStorage_isCensorshipCircumventionManuallyActivated
     = @"kTSStorageManager_isCensorshipCircumventionManuallyActivated";
 NSString *const kOWSPrimaryStorage_isCensorshipCircumventionManuallyDisabled
@@ -40,6 +38,23 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 #pragma mark -
 
 @implementation OWSSignalService
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
+- (SDSKeyValueStore *)keyValueStore
+{
+    return [[SDSKeyValueStore alloc] initWithCollection:@"kTSStorageManager_OWSSignalService"];
+}
+
+#pragma mark -
+
 
 @synthesize isCensorshipCircumventionActive = _isCensorshipCircumventionActive;
 
@@ -103,33 +118,44 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (BOOL)isCensorshipCircumventionManuallyActivated
 {
-    return
-        [[OWSPrimaryStorage dbReadConnection] boolForKey:kOWSPrimaryStorage_isCensorshipCircumventionManuallyActivated
-                                            inCollection:kOWSPrimaryStorage_OWSSignalService
-                                            defaultValue:NO];
+    __block BOOL result;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [self.keyValueStore getBool:kOWSPrimaryStorage_isCensorshipCircumventionManuallyActivated
+                                defaultValue:NO
+                                 transaction:transaction];
+    }];
+    return result;
 }
 
 - (void)setIsCensorshipCircumventionManuallyActivated:(BOOL)value
 {
-    [[OWSPrimaryStorage dbReadWriteConnection] setObject:@(value)
-                                                  forKey:kOWSPrimaryStorage_isCensorshipCircumventionManuallyActivated
-                                            inCollection:kOWSPrimaryStorage_OWSSignalService];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.keyValueStore setBool:value
+                                key:kOWSPrimaryStorage_isCensorshipCircumventionManuallyActivated
+                        transaction:transaction];
+    }];
 
     [self updateIsCensorshipCircumventionActive];
 }
 
 - (BOOL)isCensorshipCircumventionManuallyDisabled
 {
-    return [[OWSPrimaryStorage dbReadConnection] boolForKey:kOWSPrimaryStorage_isCensorshipCircumventionManuallyDisabled
-                                               inCollection:kOWSPrimaryStorage_OWSSignalService
-                                               defaultValue:NO];
+    __block BOOL result;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [self.keyValueStore getBool:kOWSPrimaryStorage_isCensorshipCircumventionManuallyDisabled
+                                defaultValue:NO
+                                 transaction:transaction];
+    }];
+    return result;
 }
 
 - (void)setIsCensorshipCircumventionManuallyDisabled:(BOOL)value
 {
-    [[OWSPrimaryStorage dbReadWriteConnection] setObject:@(value)
-                                                  forKey:kOWSPrimaryStorage_isCensorshipCircumventionManuallyDisabled
-                                            inCollection:kOWSPrimaryStorage_OWSSignalService];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.keyValueStore setBool:value
+                                key:kOWSPrimaryStorage_isCensorshipCircumventionManuallyDisabled
+                        transaction:transaction];
+    }];
 
     [self updateIsCensorshipCircumventionActive];
 }
@@ -240,13 +266,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
         OWSLogInfo(@"using reflector CDNSessionManager via: %@", censorshipConfiguration.domainFrontBaseURL);
         result = [self reflectorCDNSessionManagerWithCensorshipConfiguration:censorshipConfiguration];
     } else {
-        // On iOS 13 there is a bug that currently prevents us from telling iOS our CDN is trusted.
-        // As a workaround, connect to cloudfront directly for now.
-        if (@available(iOS 13, *)) {
-            result = self.iOS13CDNSessionManager;
-        } else {
-            result = self.defaultCDNSessionManager;
-        }
+        result = self.defaultCDNSessionManager;
     }
     // By default, CDN content should be binary.
     result.responseSerializer = [AFHTTPResponseSerializer serializer];
@@ -270,24 +290,6 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     return sessionManager;
 }
 
-- (AFHTTPSessionManager *)iOS13CDNSessionManager
-{
-    NSURL *baseURL = [[NSURL alloc] initWithString:textSecureDirectCDNServerURL];
-    OWSAssertDebug(baseURL);
-
-    NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
-    AFHTTPSessionManager *sessionManager = [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL
-                                                                    sessionConfiguration:sessionConf];
-
-    sessionManager.securityPolicy =
-        [OWSCensorshipConfiguration pinningPolicyWithCertNames:@[ @"CloudFrontDistributionLeaf" ]];
-
-    // Default acceptable content headers are rejected by AWS
-    sessionManager.responseSerializer.acceptableContentTypes = nil;
-
-    return sessionManager;
-}
-
 - (AFHTTPSessionManager *)reflectorCDNSessionManagerWithCensorshipConfiguration:
     (OWSCensorshipConfiguration *)censorshipConfiguration
 {
@@ -304,6 +306,27 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     [sessionManager.requestSerializer setValue:censorshipConfiguration.CDNReflectorHost forHTTPHeaderField:@"Host"];
 
     sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
+
+    return sessionManager;
+}
+
+#pragma mark - Storage Service
+
+- (AFHTTPSessionManager *)storageServiceSessionManager
+{
+    NSURL *baseURL = [[NSURL alloc] initWithString:storageServiceURL];
+    OWSAssertDebug(baseURL);
+
+    NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
+    AFHTTPSessionManager *sessionManager = [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL
+                                                                    sessionConfiguration:sessionConf];
+
+    sessionManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
+    sessionManager.requestSerializer = [AFHTTPRequestSerializer serializer];
+    sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+
+    // Disable default cookie handling for all requests.
+    sessionManager.requestSerializer.HTTPShouldHandleCookies = NO;
 
     return sessionManager;
 }
@@ -350,16 +373,21 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (nullable NSString *)manualCensorshipCircumventionCountryCode
 {
-    return
-        [[OWSPrimaryStorage dbReadConnection] objectForKey:kOWSPrimaryStorage_ManualCensorshipCircumventionCountryCode
-                                              inCollection:kOWSPrimaryStorage_OWSSignalService];
+    __block NSString *_Nullable result;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [self.keyValueStore getString:kOWSPrimaryStorage_ManualCensorshipCircumventionCountryCode
+                                   transaction:transaction];
+    }];
+    return result;
 }
 
 - (void)setManualCensorshipCircumventionCountryCode:(nullable NSString *)value
 {
-    [[OWSPrimaryStorage dbReadWriteConnection] setObject:value
-                                                  forKey:kOWSPrimaryStorage_ManualCensorshipCircumventionCountryCode
-                                            inCollection:kOWSPrimaryStorage_OWSSignalService];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.keyValueStore setString:value
+                                  key:kOWSPrimaryStorage_ManualCensorshipCircumventionCountryCode
+                          transaction:transaction];
+    }];
 }
 
 @end

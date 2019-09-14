@@ -25,10 +25,12 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
             return @"OWSInteractionType_Call";
         case OWSInteractionType_Info:
             return @"OWSInteractionType_Info";
-        case OWSInteractionType_Offer:
-            return @"OWSInteractionType_Offer";
+        case OWSInteractionType_ThreadDetails:
+            return @"OWSInteractionType_ThreadDetails";
         case OWSInteractionType_TypingIndicator:
             return @"OWSInteractionType_TypingIndicator";
+        case OWSInteractionType_Offer:
+            return @"OWSInteractionType_Offer";
     }
 }
 
@@ -40,23 +42,28 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 @implementation TSInteraction
 
-+ (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
-                                                ofClass:(Class)clazz
-                                        withTransaction:(YapDatabaseReadTransaction *)transaction
++ (BOOL)shouldBeIndexedForFTS
+{
+    return YES;
+}
+
++ (NSArray<TSInteraction *> *)ydb_interactionsWithTimestamp:(uint64_t)timestamp
+                                                    ofClass:(Class)clazz
+                                            withTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(timestamp > 0);
 
     // Accept any interaction.
-    return [self interactionsWithTimestamp:timestamp
-                                    filter:^(TSInteraction *interaction) {
-                                        return [interaction isKindOfClass:clazz];
-                                    }
-                           withTransaction:transaction];
+    return [self ydb_interactionsWithTimestamp:timestamp
+                                        filter:^(TSInteraction *interaction) {
+                                            return [interaction isKindOfClass:clazz];
+                                        }
+                               withTransaction:transaction];
 }
 
-+ (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
-                                                 filter:(BOOL (^_Nonnull)(TSInteraction *))filter
-                                        withTransaction:(YapDatabaseReadTransaction *)transaction
++ (NSArray<TSInteraction *> *)ydb_interactionsWithTimestamp:(uint64_t)timestamp
+                                                     filter:(BOOL (^_Nonnull)(TSInteraction *))filter
+                                            withTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(timestamp > 0);
 
@@ -66,7 +73,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
         enumerateMessagesWithTimestamp:timestamp
                              withBlock:^(NSString *collection, NSString *key, BOOL *stop) {
                                  TSInteraction *interaction =
-                                     [TSInteraction fetchObjectWithUniqueID:key transaction:transaction];
+                                     [TSInteraction anyFetchWithUniqueId:key transaction:transaction.asAnyRead];
                                  if (!filter(interaction)) {
                                      return;
                                  }
@@ -86,6 +93,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
                                    inThread:(TSThread *)thread
 {
     OWSAssertDebug(timestamp > 0);
+    OWSAssertDebug(thread);
 
     self = [super initWithUniqueId:uniqueId];
 
@@ -103,7 +111,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 {
     OWSAssertDebug(timestamp > 0);
 
-    self = [super initWithUniqueId:[[NSUUID UUID] UUIDString]];
+    self = [super init];
 
     if (!self) {
         return self;
@@ -178,28 +186,35 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 #pragma mark Thread
 
-- (TSThread *)thread
+- (TSThread *)threadWithSneakyTransaction
 {
-    return [TSThread fetchObjectWithUniqueID:self.uniqueThreadId];
+    if (self.uniqueThreadId == nil) {
+        // This might be a true for a few legacy interactions enqueued in
+        // the message sender.  The message sender will handle this case.
+        // Note that this method is not declared as nullable.
+        OWSFailDebug(@"Missing uniqueThreadId.");
+        return nil;
+    }
+
+    __block TSThread *thread;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        thread = [TSThread anyFetchWithUniqueId:self.uniqueThreadId transaction:transaction];
+        OWSAssertDebug(thread);
+    }];
+    return thread;
 }
 
 - (TSThread *)threadWithTransaction:(SDSAnyReadTransaction *)transaction
 {
+    if (self.uniqueThreadId == nil) {
+        // This might be a true for a few legacy interactions enqueued in
+        // the message sender.  The message sender will handle this case.
+        // Note that this method is not declared as nullable.
+        OWSFailDebug(@"Missing uniqueThreadId.");
+        return nil;
+    }
+
     return [TSThread anyFetchWithUniqueId:self.uniqueThreadId transaction:transaction];
-}
-
-- (void)touchThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [transaction touchObjectForKey:self.uniqueThreadId inCollection:[TSThread collection]];
-}
-
-- (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
-                           changeBlock:(void (^)(id))changeBlock
-{
-    OWSAssertDebug(transaction);
-
-    [super applyChangeToSelfAndLatestCopy:transaction changeBlock:changeBlock];
-    [self touchThreadWithTransaction:transaction];
 }
 
 #pragma mark Date operations
@@ -250,29 +265,98 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
                      (unsigned long)self.timestamp];
 }
 
+// GRDB TODO: Remove.
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    if (!self.uniqueId) {
-        OWSFailDebug(@"Missing uniqueId.");
-        self.uniqueId = [NSUUID new].UUIDString;
-    }
-    if (self.sortId == 0) {
-        self.sortId = [SSKIncrementingIdFinder nextIdWithKey:[TSInteraction collection] transaction:transaction];
-    }
+    [self ensureIdsWithTransaction:transaction];
 
     [super saveWithTransaction:transaction];
 
-    TSThread *fetchedThread = [self threadWithTransaction:transaction.asAnyRead];
-
-    [fetchedThread updateWithLastMessage:self transaction:transaction];
+    [self updateLastMessageWithTransaction:transaction.asAnyWrite];
 }
 
+// GRDB TODO: Remove.
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [super removeWithTransaction:transaction];
 
-    [self touchThreadWithTransaction:transaction];
+    [self touchThreadWithTransaction:transaction.asAnyWrite];
 }
+
+#pragma mark - Any Transaction Hooks
+
+- (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    // GRDB TODO: Remove this condition once we migrate interaction writes to use
+    //            any transactions.  We just don't want to do this work twice.
+    if (transaction.transitional_yapWriteTransaction != nil) {
+        [self ensureIdsWithTransaction:transaction.transitional_yapWriteTransaction];
+    }
+
+    [super anyWillInsertWithTransaction:transaction];
+}
+
+- (void)ensureIdsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    if (self.uniqueId.length < 1) {
+        OWSFailDebug(@"Missing uniqueId.");
+    }
+
+    if (self.sortId == 0) {
+        self.sortId = [SSKIncrementingIdFinder nextIdWithKey:[TSInteraction collection] transaction:transaction];
+    }
+}
+
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidInsertWithTransaction:transaction];
+
+    // GRDB TODO: Remove this condition once we migrate interaction writes to use
+    //            any transactions.  We just don't want to do this work twice.
+    if (transaction.transitional_yapWriteTransaction == nil) {
+        [self updateLastMessageWithTransaction:transaction];
+
+        [self touchThreadWithTransaction:transaction];
+    }
+}
+
+- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidUpdateWithTransaction:transaction];
+
+    // GRDB TODO: Remove this condition once we migrate interaction writes to use
+    //            any transactions.  We just don't want to do this work twice.
+    if (transaction.transitional_yapWriteTransaction == nil) {
+        [self updateLastMessageWithTransaction:transaction];
+
+        [self touchThreadWithTransaction:transaction];
+    }
+}
+
+- (void)touchThreadWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self.databaseStorage touchThreadId:self.uniqueThreadId transaction:transaction];
+}
+
+- (void)updateLastMessageWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    TSThread *fetchedThread = [self threadWithTransaction:transaction];
+
+    [fetchedThread updateWithLastMessage:self transaction:transaction];
+}
+
+- (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidRemoveWithTransaction:transaction];
+
+    // GRDB TODO: Remove this condition once we migrate interaction writes to use
+    //            any transactions.  We just don't want to do this work twice.
+    if (transaction.transitional_yapWriteTransaction == nil) {
+        [self touchThreadWithTransaction:transaction];
+    }
+}
+
+#pragma mark -
 
 - (BOOL)isDynamicInteraction
 {
@@ -281,7 +365,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 #pragma mark - sorting migration
 
-- (void)saveNextSortIdWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)ydb_saveNextSortIdWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (self.sortId != 0) {
         // This could happen if something else in our startup process saved the interaction
@@ -290,7 +374,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
         // we want to ignore any previously assigned sortId
         self.sortId = 0;
     }
-    [self saveWithTransaction:transaction];
+    [self ydb_saveWithTransaction:transaction];
 }
 
 @end

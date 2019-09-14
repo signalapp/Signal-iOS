@@ -7,7 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const OWSSignalServiceKitErrorDomain = @"OWSSignalServiceKitErrorDomain";
-NSString *const OWSErrorRecipientIdentifierKey = @"OWSErrorKeyRecipientIdentifier";
+NSString *const OWSErrorRecipientAddressKey = @"OWSErrorRecipientAddress";
 
 NSError *OWSErrorWithCodeDescription(OWSErrorCode code, NSString *description)
 {
@@ -47,12 +47,12 @@ NSError *OWSErrorMakeAssertionError(NSString *description)
         NSLocalizedString(@"ERROR_DESCRIPTION_UNKNOWN_ERROR", @"Worst case generic error message"));
 }
 
-NSError *OWSErrorMakeUntrustedIdentityError(NSString *description, NSString *recipientId)
+NSError *OWSErrorMakeUntrustedIdentityError(NSString *description, SignalServiceAddress *address)
 {
     return [NSError
         errorWithDomain:OWSSignalServiceKitErrorDomain
                    code:OWSErrorCodeUntrustedIdentity
-               userInfo:@{ NSLocalizedDescriptionKey : description, OWSErrorRecipientIdentifierKey : recipientId }];
+               userInfo:@{ NSLocalizedDescriptionKey : description, OWSErrorRecipientAddressKey : address }];
 }
 
 NSError *OWSErrorMakeMessageSendDisabledDueToPreKeyUpdateFailuresError()

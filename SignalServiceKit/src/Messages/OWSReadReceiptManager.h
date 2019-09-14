@@ -2,25 +2,25 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSYapDatabaseObject.h"
+#import "BaseModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSPrimaryStorage;
+@class SDSAnyWriteTransaction;
+@class SDSKeyValueStore;
 @class SSKProtoSyncMessageRead;
+@class SignalServiceAddress;
 @class TSIncomingMessage;
 @class TSOutgoingMessage;
 @class TSThread;
-@class YapDatabaseReadTransaction;
-@class YapDatabaseReadWriteTransaction;
 
 extern NSString *const kIncomingMessageMarkedAsReadNotification;
 
-@interface TSRecipientReadReceipt : TSYapDatabaseObject
+@interface TSRecipientReadReceipt : BaseModel
 
 @property (nonatomic, readonly) uint64_t sentTimestamp;
-// Map of "recipient id"-to-"read timestamp".
-@property (nonatomic, readonly) NSDictionary<NSString *, NSNumber *> *recipientMap;
+// Map of "recipient"-to-"read timestamp".
+@property (nonatomic, readonly) NSDictionary<SignalServiceAddress *, NSNumber *> *recipientMap;
 
 // --- CODE GENERATION MARKER
 
@@ -29,9 +29,10 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
-                    recipientMap:(NSDictionary<NSString *,NSNumber *> *)recipientMap
+                    recipientMap:(NSDictionary<SignalServiceAddress *,NSNumber *> *)recipientMap
+recipientReadReceiptSchemaVersion:(NSUInteger)recipientReadReceiptSchemaVersion
                    sentTimestamp:(uint64_t)sentTimestamp
-NS_SWIFT_NAME(init(uniqueId:recipientMap:sentTimestamp:));
+NS_SWIFT_NAME(init(uniqueId:recipientMap:recipientReadReceiptSchemaVersion:sentTimestamp:));
 
 // clang-format on
 
@@ -59,8 +60,9 @@ NS_SWIFT_NAME(init(uniqueId:recipientMap:sentTimestamp:));
 // This manager is responsible for handling and emitting all four kinds.
 @interface OWSReadReceiptManager : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
++ (SDSKeyValueStore *)keyValueStore;
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 + (instancetype)sharedManager;
 
 #pragma mark - Sender/Recipient Read Receipts
@@ -69,21 +71,21 @@ NS_SWIFT_NAME(init(uniqueId:recipientMap:sentTimestamp:));
 // from a user to whom we have sent a message.
 //
 // This method can be called from any thread.
-- (void)processReadReceiptsFromRecipientId:(NSString *)recipientId
-                            sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
-                             readTimestamp:(uint64_t)readTimestamp;
+- (void)processReadReceiptsFromRecipient:(SignalServiceAddress *)address
+                          sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
+                           readTimestamp:(uint64_t)readTimestamp;
 
 - (void)applyEarlyReadReceiptsForOutgoingMessageFromLinkedDevice:(TSOutgoingMessage *)message
-                                                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                                     transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Linked Device Read Receipts
 
 - (void)processReadReceiptsFromLinkedDevice:(NSArray<SSKProtoSyncMessageRead *> *)readReceiptProtos
                               readTimestamp:(uint64_t)readTimestamp
-                                transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)applyEarlyReadReceiptsForIncomingMessage:(TSIncomingMessage *)message
-                                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                     transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Locally Read
 

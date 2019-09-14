@@ -44,10 +44,10 @@ extension NetworkManagerError: CustomNSError {
 }
 
 public extension TSNetworkManager {
-    typealias NetworkManagerResult = (task: URLSessionDataTask, responseObject: Any?)
+    typealias Response = (task: URLSessionDataTask, responseObject: Any?)
 
-    func makePromise(request: TSRequest) -> Promise<NetworkManagerResult> {
-        let (promise, resolver) = Promise<NetworkManagerResult>.pending()
+    func makePromise(request: TSRequest) -> Promise<Response> {
+        let (promise, resolver) = Promise<Response>.pending()
 
         self.makeRequest(request,
                          success: { task, responseObject in

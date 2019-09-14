@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS103EnableVideoCalling.h"
@@ -41,7 +41,7 @@ static NSString *const OWS103EnableVideoCallingMigrationId = @"103";
             [[TSNetworkManager sharedManager] makeRequest:request
                 success:^(NSURLSessionDataTask *task, id responseObject) {
                     OWSLogInfo(@"successfully ran");
-                    [self save];
+                    [self markAsCompleteWithSneakyTransaction];
 
                     completion();
                 }
@@ -57,7 +57,7 @@ static NSString *const OWS103EnableVideoCallingMigrationId = @"103";
     } else {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             OWSLogInfo(@"skipping; not registered");
-            [self save];
+            [self markAsCompleteWithSneakyTransaction];
 
             completion();
         });

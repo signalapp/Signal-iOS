@@ -32,7 +32,7 @@ public class AccountManager: NSObject {
     }
 
     private var accountServiceClient: AccountServiceClient {
-        return AccountServiceClient.shared
+        return SSKEnvironment.shared.accountServiceClient
     }
 
     var pushRegistrationManager: PushRegistrationManager {
@@ -46,6 +46,12 @@ public class AccountManager: NSObject {
         super.init()
 
         SwiftSingletons.register(self)
+
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            if self.tsAccountManager.isRegistered {
+                self.recordUuidIfNecessary()
+            }
+        }
     }
 
     // MARK: registration
@@ -119,8 +125,16 @@ public class AccountManager: NSObject {
         }
 
         Logger.debug("registering with signal server")
-        let registrationPromise: Promise<Void> = firstly {
-            return self.registerForTextSecure(verificationCode: verificationCode, pin: pin)
+        let registrationPromise: Promise<Void> = firstly { () -> Promise<UUID?> in
+            self.registerForTextSecure(verificationCode: verificationCode, pin: pin)
+        }.then { (uuid: UUID?) -> Promise<Void> in
+            assert(!FeatureFlags.allowUUIDOnlyContacts || uuid != nil)
+            TSAccountManager.sharedInstance().uuidAwaitingVerification = uuid
+            return self.accountServiceClient.updateAttributes()
+        }.then {
+            self.createPreKeys()
+        }.done {
+            self.profileManager.fetchLocalUsersProfile()
         }.then { _ -> Promise<Void> in
             return self.syncPushTokens().recover { (error) -> Promise<Void> in
                 switch error {
@@ -143,13 +157,42 @@ public class AccountManager: NSObject {
         return registrationPromise
     }
 
-    private func registerForTextSecure(verificationCode: String,
-                                       pin: String?) -> Promise<Void> {
-        return Promise { resolver in
+    private func registerForTextSecure(verificationCode: String, pin: String?) -> Promise<UUID?> {
+        let promise = Promise<Any?> { resolver in
             tsAccountManager.verifyAccount(withCode: verificationCode,
                                            pin: pin,
-                                           success: { resolver.fulfill(()) },
+                                           success: { responseObject in resolver.fulfill((responseObject)) },
                                            failure: resolver.reject)
+        }
+
+        // TODO UUID: this UUID param should be non-optional when the production service is updated
+        return promise.map { responseObject throws -> UUID? in
+            guard let responseObject = responseObject else {
+                return nil
+            }
+
+            guard let params = ParamParser(responseObject: responseObject) else {
+                owsFailDebug("params was unexpectedly nil")
+                throw OWSErrorMakeUnableToProcessServerResponseError()
+            }
+
+            guard let uuidString: String = try params.optional(key: "uuid") else {
+                return nil
+            }
+
+            guard let uuid = UUID(uuidString: uuidString) else {
+                owsFailDebug("invalid uuidString: \(uuidString)")
+                throw OWSErrorMakeUnableToProcessServerResponseError()
+            }
+
+            return uuid
+        }
+    }
+
+    private func createPreKeys() -> Promise<Void> {
+        return Promise { resolver in
+            TSPreKeyManager.createPreKeys(success: { resolver.fulfill(()) },
+                                          failure: resolver.reject)
         }
     }
 
@@ -202,6 +245,38 @@ public class AccountManager: NSObject {
                                             failure: { (_: URLSessionDataTask, error: Error) in
                                                     return resolver.reject(error)
             })
+        }
+    }
+
+    func recordUuidIfNecessary() {
+        DispatchQueue.global().async {
+            _ = self.ensureUuid().catch { error in
+                // Until we're in a UUID-only world, don't require a
+                // local UUID.
+                if FeatureFlags.allowUUIDOnlyContacts {
+                    owsFailDebug("error: \(error)")
+                }
+                Logger.error("error: \(error)")
+            }.retainUntilComplete()
+        }
+    }
+
+    func ensureUuid() -> Promise<UUID> {
+        if let existingUuid = tsAccountManager.uuid {
+            return Promise.value(existingUuid)
+        }
+
+        return accountServiceClient.getUuid().map { uuid in
+            // It's possible this method could be called multiple times, so we check
+            // again if it's been set. We dont bother serializing access since it should
+            // be idempotent.
+            if let existingUuid = self.tsAccountManager.uuid {
+                assert(existingUuid == uuid)
+                return existingUuid
+            }
+            Logger.info("Recording UUID for legacy user")
+            self.tsAccountManager.recordUuidForLegacyUser(uuid)
+            return uuid
         }
     }
 }

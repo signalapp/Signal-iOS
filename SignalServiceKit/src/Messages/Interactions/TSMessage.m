@@ -5,7 +5,6 @@
 #import "TSMessage.h"
 #import "AppContext.h"
 #import "MIMETypeUtil.h"
-#import "NSString+SSK.h"
 #import "OWSContact.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "TSAttachment.h"
@@ -13,9 +12,8 @@
 #import "TSQuotedMessage.h"
 #import "TSThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabase.h>
-#import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -55,9 +53,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 @property (nonatomic, nullable) OWSLinkPreview *linkPreview;
 @property (nonatomic, nullable) MessageSticker *messageSticker;
 
-@property (nonatomic) uint32_t perMessageExpirationDurationSeconds;
-@property (nonatomic) uint64_t perMessageExpireStartedAt;
-@property (nonatomic) BOOL perMessageExpirationHasExpired;
+@property (nonatomic) BOOL isViewOnceMessage;
+@property (nonatomic) BOOL isViewOnceComplete;
 
 @end
 
@@ -66,7 +63,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 @implementation TSMessage
 
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
-                                inThread:(nullable TSThread *)thread
+                                inThread:(TSThread *)thread
                              messageBody:(nullable NSString *)body
                            attachmentIds:(NSArray<NSString *> *)attachmentIds
                         expiresInSeconds:(uint32_t)expiresInSeconds
@@ -75,7 +72,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                             contactShare:(nullable OWSContact *)contactShare
                              linkPreview:(nullable OWSLinkPreview *)linkPreview
                           messageSticker:(nullable MessageSticker *)messageSticker
-     perMessageExpirationDurationSeconds:(uint32_t)perMessageExpirationDurationSeconds
+                       isViewOnceMessage:(BOOL)isViewOnceMessage
 {
     self = [super initInteractionWithTimestamp:timestamp inThread:thread];
 
@@ -94,7 +91,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _contactShare = contactShare;
     _linkPreview = linkPreview;
     _messageSticker = messageSticker;
-    _perMessageExpirationDurationSeconds = perMessageExpirationDurationSeconds;
+    _isViewOnceMessage = isViewOnceMessage;
+    _isViewOnceComplete = NO;
 
     return self;
 }
@@ -116,11 +114,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
+              isViewOnceComplete:(BOOL)isViewOnceComplete
+               isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
-perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSeconds
-  perMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
-       perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
 {
@@ -140,11 +137,10 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     _expireStartedAt = expireStartedAt;
     _expiresAt = expiresAt;
     _expiresInSeconds = expiresInSeconds;
+    _isViewOnceComplete = isViewOnceComplete;
+    _isViewOnceMessage = isViewOnceMessage;
     _linkPreview = linkPreview;
     _messageSticker = messageSticker;
-    _perMessageExpirationDurationSeconds = perMessageExpirationDurationSeconds;
-    _perMessageExpirationHasExpired = perMessageExpirationHasExpired;
-    _perMessageExpireStartedAt = perMessageExpireStartedAt;
     _quotedMessage = quotedMessage;
     _schemaVersion = schemaVersion;
 
@@ -210,6 +206,21 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
 
     _schemaVersion = OWSMessageSchemaVersion;
 
+    // Upgrades legacy messages.
+    //
+    // TODO: We can eventually remove this migration since
+    //       per-message expiration was never released to
+    //       production.
+    NSNumber *_Nullable perMessageExpirationDurationSeconds =
+        [coder decodeObjectForKey:@"perMessageExpirationDurationSeconds"];
+    if (perMessageExpirationDurationSeconds.unsignedIntegerValue > 0) {
+        _isViewOnceMessage = YES;
+    }
+    NSNumber *_Nullable perMessageExpirationHasExpired = [coder decodeObjectForKey:@"perMessageExpirationHasExpired"];
+    if (perMessageExpirationHasExpired.boolValue > 0) {
+        _isViewOnceComplete = YES;
+    }
+
     return self;
 }
 
@@ -240,7 +251,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     [self updateExpiresAt];
 }
 
-- (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (BOOL)shouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     return self.hasPerConversationExpiration;
 }
@@ -341,15 +352,10 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     OWSAssertDebug([self.attachmentIds containsObject:attachment.uniqueId]);
     [attachment anyRemoveWithTransaction:transaction];
 
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSInteraction *_Nonnull interaction) {
-                                 if (![interaction isKindOfClass:[TSMessage class]]) {
-                                     OWSFailDebug(@"unexpected interaction: %@", interaction.class);
-                                     return;
-                                 }
-                                 TSMessage *message = (TSMessage *)interaction;
-                                 [message.attachmentIds removeObject:attachment.uniqueId];
-                             }];
+    [self anyUpdateMessageWithTransaction:transaction
+                                    block:^(TSMessage *message) {
+                                        [message.attachmentIds removeObject:attachment.uniqueId];
+                                    }];
 }
 
 - (NSString *)debugDescription
@@ -446,7 +452,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
         attachmentDescription = mediaAttachment.description;
     }
 
-    if (self.hasPerMessageExpiration) {
+    if (self.isViewOnceMessage) {
         NSString *label = NSLocalizedString(
             @"PER_MESSAGE_EXPIRATION_NOTIFICATION", @"Notification for incoming disappearing photo.");
         if (mediaAttachment != nil) {
@@ -461,27 +467,24 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
 
     if (attachmentDescription.length > 0 && bodyDescription.length > 0) {
         // Attachment with caption.
-        return [[bodyDescription rtlSafeAppend:@" "] rtlSafeAppend:attachmentDescription];
+        return [[bodyDescription stringByAppendingString:@" "] stringByAppendingString:attachmentDescription];
     } else if (bodyDescription.length > 0) {
         return bodyDescription;
     } else if (attachmentDescription.length > 0) {
         return attachmentDescription;
     } else if (self.contactShare) {
-        return [[self.contactShare.name.displayName rtlSafeAppend:@" "] rtlSafeAppend:@"👤"];
+        return [[self.contactShare.name.displayName stringByAppendingString:@" "] stringByAppendingString:@"👤"];
     } else if (self.messageSticker) {
         return NSLocalizedString(
             @"STICKER_MESSAGE_PREVIEW", @"Preview text shown in notifications and home view for sticker messages.");
     } else {
-        if (transaction.transitional_yapReadTransaction) {
-            // some cases aren't yet handled by GRDB
-            OWSFailDebug(@"message has neither body nor attachment.");
-        }
-        // TODO: We should do better here.
+        // This can happen when initially saving outgoing messages with camera first capture
+        // over the homeview.
         return @"";
     }
 }
 
-// TODO: Convert to Any.
+// GRDB TODO: Convert to Any.
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     // StickerManager does reference counting of "known" sticker packs.
@@ -497,7 +500,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     [super saveWithTransaction:transaction];
 }
 
-// TODO: Convert to Any.
+// GRDB TODO: Convert to Any.
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     // StickerManager does reference counting of "known" sticker packs.
@@ -516,6 +519,37 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     [self removeAllAttachmentsWithTransaction:transaction.asAnyWrite];
 }
 
+- (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyWillRemoveWithTransaction:transaction];
+
+    // GRDB TODO: Remove this condition once we migrate interaction writes to use
+    //            any transactions.  We just don't want to do this work twice.
+    if (transaction.transitional_yapWriteTransaction == nil) {
+        // StickerManager does reference counting of "known" sticker packs.
+        if (self.messageSticker != nil) {
+            BOOL willDelete = (self.uniqueId.length > 0
+                && nil != [TSMessage anyFetchWithUniqueId:self.uniqueId transaction:transaction]);
+
+            // StickerManager does reference counting of "known" sticker packs.
+            if (willDelete) {
+                [StickerManager removeKnownStickerInfo:self.messageSticker.info transaction:transaction];
+            }
+        }
+    }
+}
+
+- (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidRemoveWithTransaction:transaction];
+
+    // GRDB TODO: Remove this condition once we migrate interaction writes to use
+    //            any transactions.  We just don't want to do this work twice.
+    if (transaction.transitional_yapWriteTransaction == nil) {
+        [self removeAllAttachmentsWithTransaction:transaction];
+    }
+}
+
 - (void)removeAllAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
@@ -524,7 +558,11 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
         // We need to fetch each attachment, since [TSAttachment removeWithTransaction:] does important work.
         TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction];
         if (!attachment) {
-            OWSFailDebug(@"couldn't load interaction's attachment for deletion.");
+            if (self.shouldBeSaved) {
+                OWSFailDebugUnlessRunningTests(@"couldn't load interaction's attachment for deletion.");
+            } else {
+                OWSLogWarn(@"couldn't load interaction's attachment for deletion.");
+            }
             continue;
         }
         [attachment anyRemoveWithTransaction:transaction];
@@ -571,11 +609,10 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
 {
     OWSAssertDebug(expireStartedAt > 0);
 
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSInteraction *interaction) {
-                                 TSMessage *message = (TSMessage *)interaction;
-                                 [message setExpireStartedAt:expireStartedAt];
-                             }];
+    [self anyUpdateMessageWithTransaction:transaction
+                                    block:^(TSMessage *message) {
+                                        [message setExpireStartedAt:expireStartedAt];
+                                    }];
 }
 
 - (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(SDSAnyWriteTransaction *)transaction
@@ -583,11 +620,10 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     OWSAssertDebug(linkPreview);
     OWSAssertDebug(transaction);
 
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSInteraction *interaction) {
-                                 TSMessage *message = (TSMessage *)interaction;
-                                 [message setLinkPreview:linkPreview];
-                             }];
+    [self anyUpdateMessageWithTransaction:transaction
+                                    block:^(TSMessage *message) {
+                                        [message setLinkPreview:linkPreview];
+                                    }];
 }
 
 - (void)updateWithMessageSticker:(MessageSticker *)messageSticker transaction:(SDSAnyWriteTransaction *)transaction
@@ -595,12 +631,26 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     OWSAssertDebug(messageSticker);
     OWSAssertDebug(transaction);
 
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSInteraction *interaction) {
-                                 TSMessage *message = (TSMessage *)interaction;
-                                 message.messageSticker = messageSticker;
-                             }];
+    [self anyUpdateMessageWithTransaction:transaction
+                                    block:^(TSMessage *message) {
+                                        message.messageSticker = messageSticker;
+                                    }];
 }
+
+#ifdef DEBUG
+
+// This method is for testing purposes only.
+- (void)updateWithMessageBody:(nullable NSString *)messageBody transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+
+    [self anyUpdateMessageWithTransaction:transaction
+                                    block:^(TSMessage *message) {
+                                        message.body = messageBody;
+                                    }];
+}
+
+#endif
 
 #pragma mark - Renderable Content
 
@@ -610,52 +660,13 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
         self.body.length > 0 || self.attachmentIds.count > 0 || self.contactShare != nil || self.messageSticker != nil);
 }
 
-#pragma mark - Per-message expiration
+#pragma mark - View Once
 
-- (BOOL)hasPerMessageExpiration
-{
-    return self.perMessageExpirationDurationSeconds > 0;
-}
-
-- (BOOL)hasPerMessageExpirationStarted
-{
-    return self.perMessageExpireStartedAt > 0;
-}
-
-- (uint64_t)perMessageExpiresAt
-{
-    // We should call this method if:
-    //
-    // * This message has a per-message expiration.
-    OWSAssertDebug(self.perMessageExpirationDurationSeconds > 0);
-    // * The per-message expiration has begun.
-    OWSAssertDebug(self.perMessageExpireStartedAt > 0);
-
-    return self.perMessageExpireStartedAt + self.perMessageExpirationDurationSeconds * 1000;
-}
-
-- (void)updateWithPerMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
-                                transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(self.hasPerMessageExpiration);
-    OWSAssertDebug(!self.perMessageExpirationHasExpired);
-    OWSAssertDebug(perMessageExpireStartedAt > 0);
-    OWSAssertDebug(transaction);
-
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSInteraction *interaction) {
-                                 TSMessage *message = (TSMessage *)interaction;
-
-                                 message.perMessageExpireStartedAt = perMessageExpireStartedAt;
-                             }];
-}
-
-- (void)updateWithHasPerMessageExpiredAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithViewOnceCompleteAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
-    OWSAssertDebug(self.hasPerMessageExpiration);
-    OWSAssertDebug(!self.perMessageExpirationHasExpired);
-    OWSAssertDebug(self.perMessageExpireStartedAt > 0);
+    OWSAssertDebug(self.isViewOnceMessage);
+    OWSAssertDebug(!self.isViewOnceComplete);
 
     // We call removeAllAttachmentsWithTransaction() before
     // anyUpdateWithTransaction, because anyUpdateWithTransaction's
@@ -665,19 +676,19 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     [self anyReloadWithTransaction:transaction ignoreMissing:YES];
     [self removeAllAttachmentsWithTransaction:transaction];
 
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSInteraction *interaction) {
-                                 TSMessage *message = (TSMessage *)interaction;
+    [self anyUpdateMessageWithTransaction:transaction
+                                    block:^(TSMessage *message) {
+                                        message.isViewOnceComplete = YES;
 
-                                 message.perMessageExpirationHasExpired = YES;
-
-                                 message.body = nil;
-                                 message.contactShare = nil;
-                                 message.quotedMessage = nil;
-                                 message.linkPreview = nil;
-                                 message.messageSticker = nil;
-                                 message.attachmentIds = [NSMutableArray new];
-                             }];
+                                        // Remove renderable content.
+                                        message.body = nil;
+                                        message.contactShare = nil;
+                                        message.quotedMessage = nil;
+                                        message.linkPreview = nil;
+                                        message.messageSticker = nil;
+                                        message.attachmentIds = [NSMutableArray new];
+                                        OWSAssertDebug(!message.hasRenderableContent);
+                                    }];
 }
 
 @end

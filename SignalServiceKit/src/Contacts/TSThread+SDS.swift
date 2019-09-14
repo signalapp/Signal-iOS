@@ -37,6 +37,9 @@ public struct ThreadRecord: SDSRecord {
     public let shouldThreadBeVisible: Bool
 
     // Subclass properties
+    public let contactPhoneNumber: String?
+    public let contactThreadSchemaVersion: UInt?
+    public let contactUUID: String?
     public let groupModel: Data?
     public let hasDismissedOffers: Bool?
 
@@ -53,6 +56,9 @@ public struct ThreadRecord: SDSRecord {
         case messageDraft
         case mutedUntilDate
         case shouldThreadBeVisible
+        case contactPhoneNumber
+        case contactThreadSchemaVersion
+        case contactUUID
         case groupModel
         case hasDismissedOffers
     }
@@ -98,7 +104,11 @@ extension TSThread {
             let lastMessageDate: Date? = record.lastMessageDate
             let messageDraft: String? = record.messageDraft
             let mutedUntilDate: Date? = record.mutedUntilDate
+            let rowId: Int64 = Int64(recordId)
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
+            let contactPhoneNumber: String? = record.contactPhoneNumber
+            let contactThreadSchemaVersion: UInt = try SDSDeserialization.required(record.contactThreadSchemaVersion, name: "contactThreadSchemaVersion")
+            let contactUUID: String? = record.contactUUID
             let hasDismissedOffers: Bool = try SDSDeserialization.required(record.hasDismissedOffers, name: "hasDismissedOffers")
 
             return TSContactThread(uniqueId: uniqueId,
@@ -110,7 +120,11 @@ extension TSThread {
                                    lastMessageDate: lastMessageDate,
                                    messageDraft: messageDraft,
                                    mutedUntilDate: mutedUntilDate,
+                                   rowId: rowId,
                                    shouldThreadBeVisible: shouldThreadBeVisible,
+                                   contactPhoneNumber: contactPhoneNumber,
+                                   contactThreadSchemaVersion: contactThreadSchemaVersion,
+                                   contactUUID: contactUUID,
                                    hasDismissedOffers: hasDismissedOffers)
 
         case .groupThread:
@@ -124,6 +138,7 @@ extension TSThread {
             let lastMessageDate: Date? = record.lastMessageDate
             let messageDraft: String? = record.messageDraft
             let mutedUntilDate: Date? = record.mutedUntilDate
+            let rowId: Int64 = Int64(recordId)
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
             let groupModelSerialized: Data? = record.groupModel
             let groupModel: TSGroupModel = try SDSDeserialization.unarchive(groupModelSerialized, name: "groupModel")
@@ -137,6 +152,7 @@ extension TSThread {
                                  lastMessageDate: lastMessageDate,
                                  messageDraft: messageDraft,
                                  mutedUntilDate: mutedUntilDate,
+                                 rowId: rowId,
                                  shouldThreadBeVisible: shouldThreadBeVisible,
                                  groupModel: groupModel)
 
@@ -151,6 +167,7 @@ extension TSThread {
             let lastMessageDate: Date? = record.lastMessageDate
             let messageDraft: String? = record.messageDraft
             let mutedUntilDate: Date? = record.mutedUntilDate
+            let rowId: Int64 = Int64(recordId)
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
 
             return TSThread(uniqueId: uniqueId,
@@ -162,6 +179,7 @@ extension TSThread {
                             lastMessageDate: lastMessageDate,
                             messageDraft: messageDraft,
                             mutedUntilDate: mutedUntilDate,
+                            rowId: rowId,
                             shouldThreadBeVisible: shouldThreadBeVisible)
 
         default:
@@ -193,6 +211,10 @@ extension TSThread: SDSModel {
     public func asRecord() throws -> SDSRecord {
         return try serializer.asRecord()
     }
+
+    public var sdsTableName: String {
+        return ThreadRecord.databaseTableName
+    }
 }
 
 // MARK: - Table Metadata
@@ -215,8 +237,11 @@ extension TSThreadSerializer {
     static let mutedUntilDateColumn = SDSColumnMetadata(columnName: "mutedUntilDate", columnType: .int64, isOptional: true, columnIndex: 10)
     static let shouldThreadBeVisibleColumn = SDSColumnMetadata(columnName: "shouldThreadBeVisible", columnType: .int, columnIndex: 11)
     // Subclass properties
-    static let groupModelColumn = SDSColumnMetadata(columnName: "groupModel", columnType: .blob, isOptional: true, columnIndex: 12)
-    static let hasDismissedOffersColumn = SDSColumnMetadata(columnName: "hasDismissedOffers", columnType: .int, isOptional: true, columnIndex: 13)
+    static let contactPhoneNumberColumn = SDSColumnMetadata(columnName: "contactPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 12)
+    static let contactThreadSchemaVersionColumn = SDSColumnMetadata(columnName: "contactThreadSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 13)
+    static let contactUUIDColumn = SDSColumnMetadata(columnName: "contactUUID", columnType: .unicodeString, isOptional: true, columnIndex: 14)
+    static let groupModelColumn = SDSColumnMetadata(columnName: "groupModel", columnType: .blob, isOptional: true, columnIndex: 15)
+    static let hasDismissedOffersColumn = SDSColumnMetadata(columnName: "hasDismissedOffers", columnType: .int, isOptional: true, columnIndex: 16)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -233,6 +258,9 @@ extension TSThreadSerializer {
         messageDraftColumn,
         mutedUntilDateColumn,
         shouldThreadBeVisibleColumn,
+        contactPhoneNumberColumn,
+        contactThreadSchemaVersionColumn,
+        contactUUIDColumn,
         groupModelColumn,
         hasDismissedOffersColumn
         ])
@@ -255,7 +283,13 @@ public extension TSThread {
 
     @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
     func anyUpsert(transaction: SDSAnyWriteTransaction) {
-        sdsSave(saveMode: .upsert, transaction: transaction)
+        let isInserting: Bool
+        if TSThread.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil {
+            isInserting = false
+        } else {
+            isInserting = true
+        }
+        sdsSave(saveMode: isInserting ? .insert : .update, transaction: transaction)
     }
 
     // This method is used by "updateWith..." methods.
@@ -283,10 +317,6 @@ public extension TSThread {
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
     func anyUpdate(transaction: SDSAnyWriteTransaction, block: (TSThread) -> Void) {
-        guard let uniqueId = uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            return
-        }
 
         block(self)
 
@@ -306,21 +336,7 @@ public extension TSThread {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
-        anyWillRemove(with: transaction)
-
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            ydb_remove(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsRemove(transaction: grdbTransaction)
-            } catch {
-                owsFail("Remove failed: \(error)")
-            }
-        }
-
-        anyDidRemove(with: transaction)
+        sdsRemove(transaction: transaction)
     }
 
     func anyReload(transaction: SDSAnyReadTransaction) {
@@ -328,11 +344,6 @@ public extension TSThread {
     }
 
     func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
-        guard let uniqueId = self.uniqueId else {
-            owsFailDebug("uniqueId was unexpectedly nil")
-            return
-        }
-
         guard let latestVersion = type(of: self).anyFetch(uniqueId: uniqueId, transaction: transaction) else {
             if !ignoreMissing {
                 owsFailDebug("`latest` was unexpectedly nil")
@@ -436,9 +447,28 @@ public extension TSThread {
                         break
                     }
                 }
-            } catch let error as NSError {
+            } catch let error {
                 owsFailDebug("Couldn't fetch models: \(error)")
             }
+        }
+    }
+
+    // Traverses all records' unique ids.
+    // Records are not visited in any particular order.
+    // Traversal aborts if the visitor returns false.
+    class func anyEnumerateUniqueIds(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            ydbTransaction.enumerateKeys(inCollection: TSThread.collection()) { (uniqueId, stop) in
+                block(uniqueId, stop)
+            }
+        case .grdbRead(let grdbTransaction):
+            grdbEnumerateUniqueIds(transaction: grdbTransaction,
+                                   sql: """
+                    SELECT \(threadColumn: .uniqueId)
+                    FROM \(ThreadRecord.databaseTableName)
+                """,
+                block: block)
         }
     }
 
@@ -451,12 +481,71 @@ public extension TSThread {
         return result
     }
 
+    // Does not order the results.
+    class func anyAllUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
+        var result = [String]()
+        anyEnumerateUniqueIds(transaction: transaction) { (uniqueId, _) in
+            result.append(uniqueId)
+        }
+        return result
+    }
+
     class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.numberOfKeys(inCollection: TSThread.collection())
         case .grdbRead(let grdbTransaction):
             return ThreadRecord.ows_fetchCount(grdbTransaction.database)
+        }
+    }
+
+    // WARNING: Do not use this method for any models which do cleanup
+    //          in their anyWillRemove(), anyDidRemove() methods.
+    class func anyRemoveAllWithoutInstantation(transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            ydbTransaction.removeAllObjects(inCollection: TSThread.collection())
+        case .grdbWrite(let grdbTransaction):
+            do {
+                try ThreadRecord.deleteAll(grdbTransaction.database)
+            } catch {
+                owsFailDebug("deleteAll() failed: \(error)")
+            }
+        }
+
+        if shouldBeIndexedForFTS {
+            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
+        }
+    }
+
+    class func anyRemoveAllWithInstantation(transaction: SDSAnyWriteTransaction) {
+        // To avoid mutationDuringEnumerationException, we need
+        // to remove the instances outside the enumeration.
+        let uniqueIds = anyAllUniqueIds(transaction: transaction)
+        for uniqueId in uniqueIds {
+            guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+                owsFailDebug("Missing instance.")
+                continue
+            }
+            instance.anyRemove(transaction: transaction)
+        }
+
+        if shouldBeIndexedForFTS {
+            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
+        }
+    }
+
+    class func anyExists(uniqueId: String,
+                        transaction: SDSAnyReadTransaction) -> Bool {
+        assert(uniqueId.count > 0)
+
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.hasObject(forKey: uniqueId, inCollection: TSThread.collection())
+        case .grdbRead(let grdbTransaction):
+            let sql = "SELECT EXISTS ( SELECT 1 FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .uniqueId) = ? )"
+            let arguments: StatementArguments = [uniqueId]
+            return try! Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
         }
     }
 }
@@ -493,7 +582,9 @@ public extension TSThread {
         assert(sql.count > 0)
 
         do {
-            guard let record = try ThreadRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
+            // There are significant perf benefits to using a cached statement.
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            guard let record = try ThreadRecord.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }
 
@@ -522,10 +613,7 @@ class TSThreadSerializer: SDSSerializer {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .thread
-        guard let uniqueId: String = model.uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            throw SDSError.missingRequiredField
-        }
+        let uniqueId: String = model.uniqueId
 
         // Base class properties
         let archivalDate: Date? = model.archivalDate
@@ -539,9 +627,12 @@ class TSThreadSerializer: SDSSerializer {
         let shouldThreadBeVisible: Bool = model.shouldThreadBeVisible
 
         // Subclass properties
+        let contactPhoneNumber: String? = nil
+        let contactThreadSchemaVersion: UInt? = nil
+        let contactUUID: String? = nil
         let groupModel: Data? = nil
         let hasDismissedOffers: Bool? = nil
 
-        return ThreadRecord(id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, archivedAsOfMessageSortId: archivedAsOfMessageSortId, conversationColorName: conversationColorName, creationDate: creationDate, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
+        return ThreadRecord(id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, archivedAsOfMessageSortId: archivedAsOfMessageSortId, conversationColorName: conversationColorName, creationDate: creationDate, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactThreadSchemaVersion: contactThreadSchemaVersion, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
     }
 }

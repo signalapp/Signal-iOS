@@ -9,6 +9,7 @@
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalMessaging/BlockListUIUtils.h>
 #import <SignalMessaging/ContactTableViewCell.h>
@@ -19,7 +20,6 @@
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalMessaging/UIViewController+OWS.h>
-#import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/TSGroupModel.h>
@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSData *groupId;
 
 @property (nonatomic, nullable) UIImage *groupAvatar;
-@property (nonatomic) NSMutableSet<NSString *> *memberRecipientIds;
+@property (nonatomic) NSMutableSet<SignalServiceAddress *> *memberRecipientAddresses;
 
 @property (nonatomic) BOOL hasUnsavedChanges;
 @property (nonatomic) BOOL hasAppeared;
@@ -59,6 +59,15 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation NewGroupViewController
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 - (instancetype)init
 {
@@ -93,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
     _avatarViewHelper = [AvatarViewHelper new];
     _avatarViewHelper.delegate = self;
 
-    self.memberRecipientIds = [NSMutableSet new];
+    self.memberRecipientAddresses = [NSMutableSet new];
 }
 
 #pragma mark - View Lifecycle
@@ -220,14 +229,14 @@ NS_ASSUME_NONNULL_BEGIN
     ContactsViewHelper *contactsViewHelper = self.contactsViewHelper;
 
     NSArray<SignalAccount *> *signalAccounts = self.contactsViewHelper.signalAccounts;
-    NSMutableSet *nonContactMemberRecipientIds = [self.memberRecipientIds mutableCopy];
+    NSMutableSet *nonContactMemberRecipientAddresses = [self.memberRecipientAddresses mutableCopy];
     for (SignalAccount *signalAccount in signalAccounts) {
-        [nonContactMemberRecipientIds removeObject:signalAccount.recipientId];
+        [nonContactMemberRecipientAddresses removeObject:signalAccount.recipientAddress];
     }
 
     // Non-contact Members
 
-    if (nonContactMemberRecipientIds.count > 0 || signalAccounts.count < 1) {
+    if (nonContactMemberRecipientAddresses.count > 0 || signalAccounts.count < 1) {
 
         OWSTableSection *nonContactsSection = [OWSTableSection new];
         nonContactsSection.headerTitle = NSLocalizedString(
@@ -235,8 +244,8 @@ NS_ASSUME_NONNULL_BEGIN
 
         [nonContactsSection addItem:[self createAddNonContactItem]];
 
-        for (NSString *recipientId in
-            [nonContactMemberRecipientIds.allObjects sortedArrayUsingSelector:@selector(compare:)]) {
+        for (SignalServiceAddress *address in
+            [nonContactMemberRecipientAddresses.allObjects sortedArrayUsingSelector:@selector(compare:)]) {
 
             [nonContactsSection
                 addItem:[OWSTableItem
@@ -245,20 +254,20 @@ NS_ASSUME_NONNULL_BEGIN
                                 OWSCAssertDebug(strongSelf);
 
                                 ContactTableViewCell *cell = [ContactTableViewCell new];
-                                BOOL isCurrentMember = [strongSelf.memberRecipientIds containsObject:recipientId];
-                                BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
+                                BOOL isCurrentMember = [strongSelf.memberRecipientAddresses containsObject:address];
+                                BOOL isBlocked = [contactsViewHelper isSignalServiceAddressBlocked:address];
                                 if (isCurrentMember) {
                                     // In the "contacts" section, we label members as such when editing an existing
                                     // group.
                                     cell.accessoryMessage = NSLocalizedString(@"NEW_GROUP_MEMBER_LABEL",
                                         @"An indicator that a user is a member of the new group.");
                                 } else if (isBlocked) {
-                                    cell.accessoryMessage = NSLocalizedString(
-                                        @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                                    cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                                 }
-                                [cell configureWithRecipientId:recipientId];
+                                [cell configureWithRecipientAddress:address];
 
-                                NSString *cellName = [NSString stringWithFormat:@"non_signal_contact.%@", recipientId];
+                                NSString *cellName =
+                                    [NSString stringWithFormat:@"non_signal_contact.%@", address.stringForDisplay];
                                 cell.accessibilityIdentifier
                                     = ACCESSIBILITY_IDENTIFIER_WITH_NAME(NewGroupViewController, cellName);
 
@@ -266,44 +275,43 @@ NS_ASSUME_NONNULL_BEGIN
                             }
                             customRowHeight:UITableViewAutomaticDimension
                             actionBlock:^{
-                                BOOL isCurrentMember = [weakSelf.memberRecipientIds containsObject:recipientId];
-                                BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
+                                BOOL isCurrentMember = [weakSelf.memberRecipientAddresses containsObject:address];
+                                BOOL isBlocked = [contactsViewHelper isSignalServiceAddressBlocked:address];
                                 if (isCurrentMember) {
-                                    [weakSelf removeRecipientId:recipientId];
+                                    [weakSelf removeRecipientAddress:address];
                                 } else if (isBlocked) {
-                                    [BlockListUIUtils
-                                        showUnblockPhoneNumberActionSheet:recipientId
-                                                       fromViewController:weakSelf
-                                                          blockingManager:contactsViewHelper.blockingManager
-                                                          contactsManager:contactsViewHelper.contactsManager
-                                                          completionBlock:^(BOOL isStillBlocked) {
-                                                              if (!isStillBlocked) {
-                                                                  [weakSelf addRecipientId:recipientId];
-                                                              }
-                                                          }];
+                                    [BlockListUIUtils showUnblockAddressActionSheet:address
+                                                                 fromViewController:weakSelf
+                                                                    blockingManager:contactsViewHelper.blockingManager
+                                                                    contactsManager:contactsViewHelper.contactsManager
+                                                                    completionBlock:^(BOOL isStillBlocked) {
+                                                                        if (!isStillBlocked) {
+                                                                            [weakSelf addRecipientAddress:address];
+                                                                        }
+                                                                    }];
                                 } else {
 
                                     BOOL didShowSNAlert = [SafetyNumberConfirmationAlert
-                                        presentAlertIfNecessaryWithRecipientId:recipientId
-                                                              confirmationText:NSLocalizedString(
-                                                                                   @"SAFETY_NUMBER_CHANGED_CONFIRM_"
-                                                                                   @"ADD_TO_GROUP_ACTION",
-                                                                                   @"button title to confirm adding "
-                                                                                   @"a recipient to a group when "
-                                                                                   @"their safety "
-                                                                                   @"number has recently changed")
-                                                               contactsManager:contactsViewHelper.contactsManager
-                                                                    completion:^(BOOL didConfirmIdentity) {
-                                                                        if (didConfirmIdentity) {
-                                                                            [weakSelf addRecipientId:recipientId];
-                                                                        }
-                                                                    }];
+                                        presentAlertIfNecessaryWithAddress:address
+                                                          confirmationText:NSLocalizedString(
+                                                                               @"SAFETY_NUMBER_CHANGED_CONFIRM_"
+                                                                               @"ADD_TO_GROUP_ACTION",
+                                                                               @"button title to confirm adding "
+                                                                               @"a recipient to a group when "
+                                                                               @"their safety "
+                                                                               @"number has recently changed")
+                                                           contactsManager:contactsViewHelper.contactsManager
+                                                                completion:^(BOOL didConfirmIdentity) {
+                                                                    if (didConfirmIdentity) {
+                                                                        [weakSelf addRecipientAddress:address];
+                                                                    }
+                                                                }];
                                     if (didShowSNAlert) {
                                         return;
                                     }
 
 
-                                    [weakSelf addRecipientId:recipientId];
+                                    [weakSelf addRecipientAddress:address];
                                 }
                             }]];
         }
@@ -317,7 +325,7 @@ NS_ASSUME_NONNULL_BEGIN
         @"EDIT_GROUP_CONTACTS_SECTION_TITLE", @"a title for the contacts section of the 'new/update group' view.");
     if (signalAccounts.count > 0) {
 
-        if (nonContactMemberRecipientIds.count < 1) {
+        if (nonContactMemberRecipientAddresses.count < 1) {
             // If the group contains any non-contacts or has not contacts,
             // the "add non-contact user" will show up in the previous section
             // of the table. However, it's more attractive to hide that section
@@ -336,23 +344,22 @@ NS_ASSUME_NONNULL_BEGIN
 
                                 ContactTableViewCell *cell = [ContactTableViewCell new];
 
-                                NSString *recipientId = signalAccount.recipientId;
-                                BOOL isCurrentMember = [strongSelf.memberRecipientIds containsObject:recipientId];
-                                BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
+                                SignalServiceAddress *address = signalAccount.recipientAddress;
+                                BOOL isCurrentMember = [strongSelf.memberRecipientAddresses containsObject:address];
+                                BOOL isBlocked = [contactsViewHelper isSignalServiceAddressBlocked:address];
                                 if (isCurrentMember) {
                                     // In the "contacts" section, we label members as such when editing an existing
                                     // group.
                                     cell.accessoryMessage = NSLocalizedString(@"NEW_GROUP_MEMBER_LABEL",
                                         @"An indicator that a user is a member of the new group.");
                                 } else if (isBlocked) {
-                                    cell.accessoryMessage = NSLocalizedString(
-                                        @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                                    cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                                 }
 
-                                [cell configureWithRecipientId:signalAccount.recipientId];
+                                [cell configureWithRecipientAddress:signalAccount.recipientAddress];
 
                                 NSString *cellName =
-                                    [NSString stringWithFormat:@"signal_contact.%@", signalAccount.recipientId];
+                                    [NSString stringWithFormat:@"signal_contact.%@", address.stringForDisplay];
                                 cell.accessibilityIdentifier
                                     = ACCESSIBILITY_IDENTIFIER_WITH_NAME(NewGroupViewController, cellName);
 
@@ -360,11 +367,11 @@ NS_ASSUME_NONNULL_BEGIN
                             }
                             customRowHeight:UITableViewAutomaticDimension
                             actionBlock:^{
-                                NSString *recipientId = signalAccount.recipientId;
-                                BOOL isCurrentMember = [weakSelf.memberRecipientIds containsObject:recipientId];
-                                BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
+                                SignalServiceAddress *address = signalAccount.recipientAddress;
+                                BOOL isCurrentMember = [weakSelf.memberRecipientAddresses containsObject:address];
+                                BOOL isBlocked = [contactsViewHelper isSignalServiceAddressBlocked:address];
                                 if (isCurrentMember) {
-                                    [weakSelf removeRecipientId:recipientId];
+                                    [weakSelf removeRecipientAddress:address];
                                 } else if (isBlocked) {
                                     [BlockListUIUtils
                                         showUnblockSignalAccountActionSheet:signalAccount
@@ -373,30 +380,30 @@ NS_ASSUME_NONNULL_BEGIN
                                                             contactsManager:contactsViewHelper.contactsManager
                                                             completionBlock:^(BOOL isStillBlocked) {
                                                                 if (!isStillBlocked) {
-                                                                    [weakSelf addRecipientId:recipientId];
+                                                                    [weakSelf addRecipientAddress:address];
                                                                 }
                                                             }];
                                 } else {
                                     BOOL didShowSNAlert = [SafetyNumberConfirmationAlert
-                                        presentAlertIfNecessaryWithRecipientId:signalAccount.recipientId
-                                                              confirmationText:NSLocalizedString(
-                                                                                   @"SAFETY_NUMBER_CHANGED_CONFIRM_"
-                                                                                   @"ADD_TO_GROUP_ACTION",
-                                                                                   @"button title to confirm adding "
-                                                                                   @"a recipient to a group when "
-                                                                                   @"their safety "
-                                                                                   @"number has recently changed")
-                                                               contactsManager:contactsViewHelper.contactsManager
-                                                                    completion:^(BOOL didConfirmIdentity) {
-                                                                        if (didConfirmIdentity) {
-                                                                            [weakSelf addRecipientId:recipientId];
-                                                                        }
-                                                                    }];
+                                        presentAlertIfNecessaryWithAddress:address
+                                                          confirmationText:NSLocalizedString(
+                                                                               @"SAFETY_NUMBER_CHANGED_CONFIRM_"
+                                                                               @"ADD_TO_GROUP_ACTION",
+                                                                               @"button title to confirm adding "
+                                                                               @"a recipient to a group when "
+                                                                               @"their safety "
+                                                                               @"number has recently changed")
+                                                           contactsManager:contactsViewHelper.contactsManager
+                                                                completion:^(BOOL didConfirmIdentity) {
+                                                                    if (didConfirmIdentity) {
+                                                                        [weakSelf addRecipientAddress:address];
+                                                                    }
+                                                                }];
                                     if (didShowSNAlert) {
                                         return;
                                     }
 
-                                    [weakSelf addRecipientId:recipientId];
+                                    [weakSelf addRecipientAddress:address];
                                 }
                             }]];
         }
@@ -427,19 +434,19 @@ NS_ASSUME_NONNULL_BEGIN
                     }];
 }
 
-- (void)removeRecipientId:(NSString *)recipientId
+- (void)removeRecipientAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    [self.memberRecipientIds removeObject:recipientId];
+    [self.memberRecipientAddresses removeObject:address];
     [self updateTableContents];
 }
 
-- (void)addRecipientId:(NSString *)recipientId
+- (void)addRecipientAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    [self.memberRecipientIds addObject:recipientId];
+    [self.memberRecipientAddresses addObject:address];
     self.hasUnsavedChanges = YES;
     [self updateTableContents];
 }
@@ -467,10 +474,9 @@ NS_ASSUME_NONNULL_BEGIN
     TSGroupModel *model = [self makeGroup];
 
     __block TSGroupThread *thread;
-    [OWSPrimaryStorage.dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
-        }];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
+    }];
     OWSAssertDebug(thread);
     
     [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
@@ -493,7 +499,9 @@ NS_ASSUME_NONNULL_BEGIN
         TSErrorMessage *errorMessage = [[TSErrorMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                         inThread:thread
                                                                failedMessageType:TSErrorMessageGroupCreationFailed];
-        [errorMessage save];
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [errorMessage anyInsertWithTransaction:transaction];
+        }];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [SignalApp.sharedApp presentConversationForThread:thread action:ConversationViewActionCompose animated:NO];
@@ -535,10 +543,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (TSGroupModel *)makeGroup
 {
     NSString *groupName = [self.groupNameTextField.text ows_stripped];
-    NSMutableArray<NSString *> *recipientIds = [self.memberRecipientIds.allObjects mutableCopy];
-    [recipientIds addObject:[self.contactsViewHelper localNumber]];
+    NSMutableArray<SignalServiceAddress *> *recipientAddressess =
+        [self.memberRecipientAddresses.allObjects mutableCopy];
+    [recipientAddressess addObject:[self.contactsViewHelper localAddress]];
     return [[TSGroupModel alloc] initWithTitle:groupName
-                                     memberIds:recipientIds
+                                       members:recipientAddressess
                                          image:self.groupAvatar
                                        groupId:self.groupId];
 }
@@ -668,16 +677,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - AddToGroupViewControllerDelegate
 
-- (void)recipientIdWasAdded:(NSString *)recipientId
+- (void)recipientAddressWasAdded:(SignalServiceAddress *)address
 {
-    [self addRecipientId:recipientId];
+    [self addRecipientAddress:address];
 }
 
-- (BOOL)isRecipientGroupMember:(NSString *)recipientId
+- (BOOL)isRecipientGroupMember:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    return [self.memberRecipientIds containsObject:recipientId];
+    return [self.memberRecipientAddresses containsObject:address];
 }
 
 #pragma mark - OWSNavigationView

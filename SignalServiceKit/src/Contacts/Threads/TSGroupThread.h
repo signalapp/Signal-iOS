@@ -10,7 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class TSAttachmentStream;
-@class YapDatabaseReadWriteTransaction;
 
 extern NSString *const TSGroupThreadAvatarChangedNotification;
 extern NSString *const TSGroupThread_NotificationKey_UniqueId;
@@ -32,9 +31,10 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
                  lastMessageDate:(nullable NSDate *)lastMessageDate
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
+                           rowId:(int64_t)rowId
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
                       groupModel:(TSGroupModel *)groupModel
-NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastMessageDate:messageDraft:mutedUntilDate:shouldThreadBeVisible:groupModel:));
+NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastMessageDate:messageDraft:mutedUntilDate:rowId:shouldThreadBeVisible:groupModel:));
 
 // clang-format on
 
@@ -48,32 +48,26 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel;
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
-                                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
-+ (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
-                                 anyTransaction:(SDSAnyWriteTransaction *)transaction;
+                                    transaction:(SDSAnyWriteTransaction *)transaction;
 
 + (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId;
-+ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId
-                                 transaction:(YapDatabaseReadWriteTransaction *)transaction;
-+ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId anyTransaction:(SDSAnyWriteTransaction *)transaction;
++ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId transaction:(SDSAnyWriteTransaction *)transaction;
 
-+ (nullable instancetype)threadWithGroupId:(NSData *)groupId transaction:(YapDatabaseReadTransaction *)transaction;
-+ (nullable instancetype)threadWithGroupId:(NSData *)groupId anyTransaction:(SDSAnyReadTransaction *)transaction;
++ (nullable instancetype)threadWithGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction;
 
 + (NSString *)threadIdFromGroupId:(NSData *)groupId;
 
-+ (NSString *)defaultGroupName;
+@property (nonatomic, readonly) NSString *groupNameOrDefault;
+@property (class, nonatomic, readonly) NSString *defaultGroupName;
 
 - (BOOL)isLocalUserInGroup;
 
 // all group threads containing recipient as a member
-+ (NSArray<TSGroupThread *> *)groupThreadsWithRecipientId:(NSString *)recipientId
-                                              transaction:(SDSAnyReadTransaction *)transaction;
++ (NSArray<TSGroupThread *> *)groupThreadsWithAddress:(SignalServiceAddress *)address
+                                          transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)leaveGroupWithSneakyTransaction;
-- (void)leaveGroupWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-- (void)softDeleteGroupThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)leaveGroupWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Avatar
 

@@ -8,8 +8,8 @@ import GRDBCipher
 public protocol ThreadFinder {
     associatedtype ReadTransaction
 
-    func threadCount(isArchived: Bool, transaction: ReadTransaction) throws -> UInt
-    func enumerateThreads(isArchived: Bool, transaction: ReadTransaction, block: @escaping (TSThread) -> Void) throws
+    func visibleThreadCount(isArchived: Bool, transaction: ReadTransaction) throws -> UInt
+    func enumerateVisibleThreads(isArchived: Bool, transaction: ReadTransaction, block: @escaping (TSThread) -> Void) throws
 }
 
 public class AnyThreadFinder: ThreadFinder {
@@ -20,21 +20,21 @@ public class AnyThreadFinder: ThreadFinder {
 
     public init() { }
 
-    public func threadCount(isArchived: Bool, transaction: SDSAnyReadTransaction) throws -> UInt {
+    public func visibleThreadCount(isArchived: Bool, transaction: SDSAnyReadTransaction) throws -> UInt {
         switch transaction.readTransaction {
         case .grdbRead(let grdb):
-            return try grdbAdapter.threadCount(isArchived: isArchived, transaction: grdb.database)
+            return try grdbAdapter.visibleThreadCount(isArchived: isArchived, transaction: grdb.database)
         case .yapRead(let yap):
-            return yapAdapter.threadCount(isArchived: isArchived, transaction: yap)
+            return yapAdapter.visibleThreadCount(isArchived: isArchived, transaction: yap)
         }
     }
 
-    public func enumerateThreads(isArchived: Bool, transaction: SDSAnyReadTransaction, block: @escaping (TSThread) -> Void) throws {
+    public func enumerateVisibleThreads(isArchived: Bool, transaction: SDSAnyReadTransaction, block: @escaping (TSThread) -> Void) throws {
         switch transaction.readTransaction {
         case .grdbRead(let grdb):
-            try grdbAdapter.enumerateThreads(isArchived: isArchived, transaction: grdb.database, block: block)
+            try grdbAdapter.enumerateVisibleThreads(isArchived: isArchived, transaction: grdb.database, block: block)
         case .yapRead(let yap):
-            yapAdapter.enumerateThreads(isArchived: isArchived, transaction: yap, block: block)
+            yapAdapter.enumerateVisibleThreads(isArchived: isArchived, transaction: yap, block: block)
         }
     }
 }
@@ -42,14 +42,14 @@ public class AnyThreadFinder: ThreadFinder {
 struct YAPDBThreadFinder: ThreadFinder {
     typealias ReadTransaction = YapDatabaseReadTransaction
 
-    func threadCount(isArchived: Bool, transaction: YapDatabaseReadTransaction) -> UInt {
+    func visibleThreadCount(isArchived: Bool, transaction: YapDatabaseReadTransaction) -> UInt {
         guard let view = ext(transaction) else {
             return 0
         }
         return view.numberOfItems(inGroup: group(isArchived: isArchived))
     }
 
-    func enumerateThreads(isArchived: Bool, transaction: YapDatabaseReadTransaction, block: @escaping (TSThread) -> Void) {
+    func enumerateVisibleThreads(isArchived: Bool, transaction: YapDatabaseReadTransaction, block: @escaping (TSThread) -> Void) {
         guard let view = ext(transaction) else {
             return
         }
@@ -82,11 +82,12 @@ struct GRDBThreadFinder: ThreadFinder {
 
     static let cn = ThreadRecord.columnName
 
-    func threadCount(isArchived: Bool, transaction: Database) throws -> UInt {
+    func visibleThreadCount(isArchived: Bool, transaction: Database) throws -> UInt {
         guard let count = try UInt.fetchOne(transaction, sql: """
             SELECT COUNT(*)
             FROM (
                 SELECT
+                    \( threadColumn: .shouldThreadBeVisible),
                     CASE maxInteractionId <= \(threadColumn: .archivedAsOfMessageSortId)
                         WHEN 1 THEN 1
                         ELSE 0
@@ -102,16 +103,17 @@ struct GRDBThreadFinder: ThreadFinder {
                 ON latestInteractions.\(interactionColumn: .threadUniqueId) = \(threadColumn: .uniqueId)
             )
             WHERE isArchived = ?
-        """,
-                                            arguments: [isArchived]) else {
-                                                owsFailDebug("count was unexpectedly nil")
-                                                return 0
+            AND \(threadColumn: .shouldThreadBeVisible) = 1
+            """,
+            arguments: [isArchived]) else {
+                owsFailDebug("count was unexpectedly nil")
+                return 0
         }
 
         return count
     }
 
-    func enumerateThreads(isArchived: Bool, transaction: Database, block: @escaping (TSThread) -> Void) throws {
+    func enumerateVisibleThreads(isArchived: Bool, transaction: Database, block: @escaping (TSThread) -> Void) throws {
         try ThreadRecord.fetchCursor(transaction, sql: """
             SELECT *
             FROM (
@@ -130,12 +132,13 @@ struct GRDBThreadFinder: ThreadFinder {
                     GROUP BY \(interactionColumn: .threadUniqueId)
                 ) latestInteractions
                 ON latestInteractions.\(interactionColumn: .threadUniqueId) = \(threadColumn: .uniqueId)
-                ORDER BY maxInteractionId
+                ORDER BY maxInteractionId DESC
             )
             WHERE isArchived = ?
-        """,
-                                     arguments: [isArchived]).forEach { threadRecord in
-                                        block(try TSThread.fromRecord(threadRecord))
+            AND \( threadColumn: .shouldThreadBeVisible) = 1
+            """,
+            arguments: [isArchived]).forEach { threadRecord in
+                block(try TSThread.fromRecord(threadRecord))
         }
     }
 }

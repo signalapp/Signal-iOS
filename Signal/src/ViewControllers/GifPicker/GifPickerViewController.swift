@@ -35,6 +35,7 @@ extension GifPickerNavigationViewController: GifPickerViewControllerDelegate {
     func gifPickerDidSelect(attachment: SignalAttachment) {
         let attachmentApprovalItem = AttachmentApprovalItem(attachment: attachment)
         let attachmentApproval = AttachmentApprovalViewController(options: [],
+                                                                  sendButtonImageName: "send-solid-24",
                                                                   attachmentApprovalItems: [attachmentApprovalItem])
         attachmentApproval.approvalDelegate = self
         pushViewController(attachmentApproval, animated: true) {

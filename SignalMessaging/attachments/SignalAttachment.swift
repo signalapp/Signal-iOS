@@ -154,9 +154,9 @@ public class SignalAttachment: NSObject {
     @objc
     public var isConvertibleToContactShare = false
 
-    // This flag should be set for attachments that should be sent with per-message expiration.
+    // This flag should be set for attachments that should be sent as view-once messages.
     @objc
-    public var hasPerMessageExpiration = false
+    public var isViewOnceAttachment = false
 
     // Attachment types are identified using UTIs.
     //
@@ -250,7 +250,6 @@ public class SignalAttachment: NSObject {
 
     @objc
     public func buildOutgoingAttachmentInfo(message: TSMessage) -> OutgoingAttachmentInfo {
-        assert(message.uniqueId != nil)
         return OutgoingAttachmentInfo(dataSource: dataSource,
                                       contentType: mimeType,
                                       sourceFilename: filenameOrDefault,

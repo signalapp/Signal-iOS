@@ -79,8 +79,8 @@ class SDSKeyValueStoreTest: SSKBaseTestSwift {
     func test_data() {
         let store = SDSKeyValueStore(collection: "test")
 
-        let bytesA = Randomness.generateRandomBytes(32)!
-        let bytesB = Randomness.generateRandomBytes(32)!
+        let bytesA = Randomness.generateRandomBytes(32)
+        let bytesB = Randomness.generateRandomBytes(32)
 
         self.write { transaction in
             XCTAssertNil(store.getData("dataA", transaction: transaction))
@@ -129,7 +129,31 @@ class SDSKeyValueStoreTest: SSKBaseTestSwift {
             XCTAssertFalse(store.hasValue(forKey: key, transaction: transaction))
         }
 
-        let bytes = Randomness.generateRandomBytes(32)!
+        self.write { transaction in
+            let key = "date edge cases"
+
+            XCTAssertFalse(store.hasValue(forKey: key, transaction: transaction))
+
+            let date1 = Date()
+            store.setDate(date1, key: key, transaction: transaction)
+            XCTAssertTrue(store.hasValue(forKey: key, transaction: transaction))
+            XCTAssertEqual(date1.timeIntervalSince1970,
+                           store.getDate(key, transaction: transaction)?.timeIntervalSince1970)
+
+            store.removeValue(forKey: key, transaction: transaction)
+            XCTAssertFalse(store.hasValue(forKey: key, transaction: transaction))
+
+            let date2 = Date()
+            store.setObject(date2, key: key, transaction: transaction)
+            XCTAssertTrue(store.hasValue(forKey: key, transaction: transaction))
+            XCTAssertEqual(date2.timeIntervalSince1970,
+                           store.getDate(key, transaction: transaction)?.timeIntervalSince1970)
+
+            store.removeValue(forKey: key, transaction: transaction)
+            XCTAssertFalse(store.hasValue(forKey: key, transaction: transaction))
+        }
+
+        let bytes = Randomness.generateRandomBytes(32)
         self.write { transaction in
             let key = "data"
             XCTAssertFalse(store.hasValue(forKey: key, transaction: transaction))

@@ -69,12 +69,20 @@ public class AvatarImageView: UIImageView {
 @objc
 public class ConversationAvatarImageView: AvatarImageView {
 
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
+
     let thread: TSThread
     let diameter: UInt
     let contactsManager: OWSContactsManager
 
     // nil if group avatar
-    let recipientId: String?
+    let recipientAddress: SignalServiceAddress?
 
     // nil if contact avatar
     let groupThreadId: String?
@@ -86,20 +94,20 @@ public class ConversationAvatarImageView: AvatarImageView {
 
         switch thread {
         case let contactThread as TSContactThread:
-            self.recipientId = contactThread.contactIdentifier()
+            self.recipientAddress = contactThread.contactAddress
             self.groupThreadId = nil
         case let groupThread as TSGroupThread:
-            self.recipientId = nil
+            self.recipientAddress = nil
             self.groupThreadId = groupThread.uniqueId
         default:
             owsFailDebug("unexpected thread type: \(thread)")
-            self.recipientId = nil
+            self.recipientAddress = nil
             self.groupThreadId = nil
         }
 
         super.init(frame: .zero)
 
-        if recipientId != nil {
+        if recipientAddress != nil {
             NotificationCenter.default.addObserver(self, selector: #selector(handleOtherUsersProfileChanged(notification:)), name: NSNotification.Name(rawValue: kNSNotificationName_OtherUsersProfileDidChange), object: nil)
 
             NotificationCenter.default.addObserver(self, selector: #selector(handleSignalAccountsChanged(notification:)), name: NSNotification.Name.OWSContactsManagerSignalAccountsDidChange, object: nil)
@@ -129,18 +137,18 @@ public class ConversationAvatarImageView: AvatarImageView {
     @objc func handleOtherUsersProfileChanged(notification: Notification) {
         Logger.debug("")
 
-        guard let changedRecipientId = notification.userInfo?[kNSNotificationKey_ProfileRecipientId] as? String else {
-            owsFailDebug("recipientId was unexpectedly nil")
+        guard let changedAddress = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress else {
+            owsFailDebug("changedAddress was unexpectedly nil")
             return
         }
 
-        guard let recipientId = self.recipientId else {
+        guard let recipientAddress = self.recipientAddress else {
             // shouldn't call this for group threads
-            owsFailDebug("contactId was unexpectedly nil")
+            owsFailDebug("recipientAddress was unexpectedly nil")
             return
         }
 
-        guard recipientId == changedRecipientId else {
+        guard recipientAddress == changedAddress else {
             // not this avatar
             return
         }
@@ -167,7 +175,9 @@ public class ConversationAvatarImageView: AvatarImageView {
             return
         }
 
-        thread.reload()
+        databaseStorage.read { transaction in
+            self.thread.anyReload(transaction: transaction)
+        }
 
         self.updateImage()
     }

@@ -4,6 +4,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SignalServiceAddress;
+
 extern NSString *const OWSSignalServiceKitErrorDomain;
 
 typedef NS_ENUM(NSInteger, OWSErrorCode) {
@@ -55,14 +57,16 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeUploadFailed,
     OWSErrorCodeInvalidStickerData,
     OWSErrorCodeAttachmentDownloadFailed,
-    OWSErrorCodeAppExired,
+    OWSErrorCodeAppExpired,
+    OWSErrorCodeMissingLocalThread,
+    OWSErrorCodeContactSyncFailed,
 };
 
-extern NSString *const OWSErrorRecipientIdentifierKey;
+extern NSString *const OWSErrorRecipientAddressKey;
 
 extern NSError *OWSErrorWithCodeDescription(OWSErrorCode code, NSString *description);
 extern NSError *OWSErrorWithUserInfo(OWSErrorCode code, NSDictionary *userInfo);
-extern NSError *OWSErrorMakeUntrustedIdentityError(NSString *description, NSString *recipientId);
+extern NSError *OWSErrorMakeUntrustedIdentityError(NSString *description, SignalServiceAddress *address);
 extern NSError *OWSErrorMakeUnableToProcessServerResponseError(void);
 extern NSError *OWSErrorMakeFailedToSendOutgoingMessageError(void);
 extern NSError *OWSErrorMakeNoSuchSignalRecipientError(void);

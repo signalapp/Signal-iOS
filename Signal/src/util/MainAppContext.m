@@ -16,8 +16,6 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
 @interface MainAppContext ()
 
-@property (atomic) UIApplicationState reportedApplicationState;
-
 @property (nonatomic, nullable) NSMutableArray<AppActiveBlock> *appActiveBlocks;
 
 @end
@@ -29,6 +27,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 @synthesize mainWindow = _mainWindow;
 @synthesize appLaunchTime = _appLaunchTime;
 @synthesize buildTime = _buildTime;
+@synthesize reportedApplicationState = _reportedApplicationState;
 
 - (instancetype)init
 {
@@ -77,14 +76,23 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
 #pragma mark - Notifications
 
+- (UIApplicationState)reportedApplicationState
+{
+    @synchronized(self) {
+        return _reportedApplicationState;
+    }
+}
+
 - (void)setReportedApplicationState:(UIApplicationState)reportedApplicationState
 {
     OWSAssertIsOnMainThread();
 
-    if (_reportedApplicationState == reportedApplicationState) {
-        return;
+    @synchronized(self) {
+        if (_reportedApplicationState == reportedApplicationState) {
+            return;
+        }
+        _reportedApplicationState = reportedApplicationState;
     }
-    _reportedApplicationState = reportedApplicationState;
 
     [[NSNotificationCenter defaultCenter] postNotificationName:ReportedApplicationStateDidChangeNotification
                                                         object:nil
@@ -261,6 +269,11 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     }
 
     return _buildTime;
+}
+
+- (UIInterfaceOrientation)interfaceOrientation
+{
+    return [UIApplication sharedApplication].statusBarOrientation;
 }
 
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value

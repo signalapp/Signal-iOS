@@ -30,6 +30,7 @@ protocol PhotoCaptureDelegate: AnyObject {
     func endCaptureButtonAnimation(_ duration: TimeInterval)
 }
 
+@objc
 class PhotoCapture: NSObject {
 
     weak var delegate: PhotoCaptureDelegate?
@@ -37,6 +38,9 @@ class PhotoCapture: NSObject {
         return captureOutput.flashMode
     }
     let session: AVCaptureSession
+
+    // There can only ever be one `CapturePreviewView` per AVCaptureSession
+    lazy private(set) var previewView = CapturePreviewView(session: session)
 
     let sessionQueue = DispatchQueue(label: "PhotoCapture.sessionQueue")
 
@@ -101,6 +105,9 @@ class PhotoCapture: NSObject {
     }
 
     func startVideoCapture() -> Promise<Void> {
+        // If the session is already running, no need to do anything.
+        guard !self.session.isRunning else { return Promise.value(()) }
+
         return sessionQueue.async(.promise) { [weak self] in
             guard let self = self else { return }
 
@@ -410,11 +417,11 @@ extension PhotoCapture: VolumeButtonObserver {
     func didBeginLongPressVolumeButton(with identifier: VolumeButtons.Identifier) {
         handleLongPressBegin()
     }
-    
+
     func didCompleteLongPressVolumeButton(with identifier: VolumeButtons.Identifier) {
         handleLongPressComplete()
     }
-    
+
     func didCancelLongPressVolumeButton(with identifier: VolumeButtons.Identifier) {
         handleLongPressCancel()
     }

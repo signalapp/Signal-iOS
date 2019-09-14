@@ -26,20 +26,22 @@ public struct RecipientIdentityRecord: SDSRecord {
     public let uniqueId: String
 
     // Base class properties
+    public let accountId: String
     public let createdAt: Date
     public let identityKey: Data
     public let isFirstKnownKey: Bool
-    public let recipientId: String
+    public let recipientIdentitySchemaVersion: UInt
     public let verificationState: OWSVerificationState
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
         case recordType
         case uniqueId
+        case accountId
         case createdAt
         case identityKey
         case isFirstKnownKey
-        case recipientId
+        case recipientIdentitySchemaVersion
         case verificationState
     }
 
@@ -76,17 +78,19 @@ extension OWSRecipientIdentity {
         case .recipientIdentity:
 
             let uniqueId: String = record.uniqueId
+            let accountId: String = record.accountId
             let createdAt: Date = record.createdAt
             let identityKey: Data = record.identityKey
             let isFirstKnownKey: Bool = record.isFirstKnownKey
-            let recipientId: String = record.recipientId
+            let recipientIdentitySchemaVersion: UInt = record.recipientIdentitySchemaVersion
             let verificationState: OWSVerificationState = record.verificationState
 
             return OWSRecipientIdentity(uniqueId: uniqueId,
+                                        accountId: accountId,
                                         createdAt: createdAt,
                                         identityKey: identityKey,
                                         isFirstKnownKey: isFirstKnownKey,
-                                        recipientId: recipientId,
+                                        recipientIdentitySchemaVersion: recipientIdentitySchemaVersion,
                                         verificationState: verificationState)
 
         default:
@@ -112,6 +116,10 @@ extension OWSRecipientIdentity: SDSModel {
     public func asRecord() throws -> SDSRecord {
         return try serializer.asRecord()
     }
+
+    public var sdsTableName: String {
+        return RecipientIdentityRecord.databaseTableName
+    }
 }
 
 // MARK: - Table Metadata
@@ -124,11 +132,12 @@ extension OWSRecipientIdentitySerializer {
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
-    static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .int64, columnIndex: 3)
-    static let identityKeyColumn = SDSColumnMetadata(columnName: "identityKey", columnType: .blob, columnIndex: 4)
-    static let isFirstKnownKeyColumn = SDSColumnMetadata(columnName: "isFirstKnownKey", columnType: .int, columnIndex: 5)
-    static let recipientIdColumn = SDSColumnMetadata(columnName: "recipientId", columnType: .unicodeString, columnIndex: 6)
-    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, columnIndex: 7)
+    static let accountIdColumn = SDSColumnMetadata(columnName: "accountId", columnType: .unicodeString, columnIndex: 3)
+    static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .int64, columnIndex: 4)
+    static let identityKeyColumn = SDSColumnMetadata(columnName: "identityKey", columnType: .blob, columnIndex: 5)
+    static let isFirstKnownKeyColumn = SDSColumnMetadata(columnName: "isFirstKnownKey", columnType: .int, columnIndex: 6)
+    static let recipientIdentitySchemaVersionColumn = SDSColumnMetadata(columnName: "recipientIdentitySchemaVersion", columnType: .int64, columnIndex: 7)
+    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, columnIndex: 8)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -136,10 +145,11 @@ extension OWSRecipientIdentitySerializer {
         recordTypeColumn,
         idColumn,
         uniqueIdColumn,
+        accountIdColumn,
         createdAtColumn,
         identityKeyColumn,
         isFirstKnownKeyColumn,
-        recipientIdColumn,
+        recipientIdentitySchemaVersionColumn,
         verificationStateColumn
         ])
 }
@@ -161,7 +171,13 @@ public extension OWSRecipientIdentity {
 
     @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
     func anyUpsert(transaction: SDSAnyWriteTransaction) {
-        sdsSave(saveMode: .upsert, transaction: transaction)
+        let isInserting: Bool
+        if OWSRecipientIdentity.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil {
+            isInserting = false
+        } else {
+            isInserting = true
+        }
+        sdsSave(saveMode: isInserting ? .insert : .update, transaction: transaction)
     }
 
     // This method is used by "updateWith..." methods.
@@ -189,10 +205,6 @@ public extension OWSRecipientIdentity {
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
     func anyUpdate(transaction: SDSAnyWriteTransaction, block: (OWSRecipientIdentity) -> Void) {
-        guard let uniqueId = uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            return
-        }
 
         block(self)
 
@@ -212,21 +224,7 @@ public extension OWSRecipientIdentity {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
-        anyWillRemove(with: transaction)
-
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            ydb_remove(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsRemove(transaction: grdbTransaction)
-            } catch {
-                owsFail("Remove failed: \(error)")
-            }
-        }
-
-        anyDidRemove(with: transaction)
+        sdsRemove(transaction: transaction)
     }
 
     func anyReload(transaction: SDSAnyReadTransaction) {
@@ -234,11 +232,6 @@ public extension OWSRecipientIdentity {
     }
 
     func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
-        guard let uniqueId = self.uniqueId else {
-            owsFailDebug("uniqueId was unexpectedly nil")
-            return
-        }
-
         guard let latestVersion = type(of: self).anyFetch(uniqueId: uniqueId, transaction: transaction) else {
             if !ignoreMissing {
                 owsFailDebug("`latest` was unexpectedly nil")
@@ -342,9 +335,28 @@ public extension OWSRecipientIdentity {
                         break
                     }
                 }
-            } catch let error as NSError {
+            } catch let error {
                 owsFailDebug("Couldn't fetch models: \(error)")
             }
+        }
+    }
+
+    // Traverses all records' unique ids.
+    // Records are not visited in any particular order.
+    // Traversal aborts if the visitor returns false.
+    class func anyEnumerateUniqueIds(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            ydbTransaction.enumerateKeys(inCollection: OWSRecipientIdentity.collection()) { (uniqueId, stop) in
+                block(uniqueId, stop)
+            }
+        case .grdbRead(let grdbTransaction):
+            grdbEnumerateUniqueIds(transaction: grdbTransaction,
+                                   sql: """
+                    SELECT \(recipientIdentityColumn: .uniqueId)
+                    FROM \(RecipientIdentityRecord.databaseTableName)
+                """,
+                block: block)
         }
     }
 
@@ -357,12 +369,71 @@ public extension OWSRecipientIdentity {
         return result
     }
 
+    // Does not order the results.
+    class func anyAllUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
+        var result = [String]()
+        anyEnumerateUniqueIds(transaction: transaction) { (uniqueId, _) in
+            result.append(uniqueId)
+        }
+        return result
+    }
+
     class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.numberOfKeys(inCollection: OWSRecipientIdentity.collection())
         case .grdbRead(let grdbTransaction):
             return RecipientIdentityRecord.ows_fetchCount(grdbTransaction.database)
+        }
+    }
+
+    // WARNING: Do not use this method for any models which do cleanup
+    //          in their anyWillRemove(), anyDidRemove() methods.
+    class func anyRemoveAllWithoutInstantation(transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            ydbTransaction.removeAllObjects(inCollection: OWSRecipientIdentity.collection())
+        case .grdbWrite(let grdbTransaction):
+            do {
+                try RecipientIdentityRecord.deleteAll(grdbTransaction.database)
+            } catch {
+                owsFailDebug("deleteAll() failed: \(error)")
+            }
+        }
+
+        if shouldBeIndexedForFTS {
+            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
+        }
+    }
+
+    class func anyRemoveAllWithInstantation(transaction: SDSAnyWriteTransaction) {
+        // To avoid mutationDuringEnumerationException, we need
+        // to remove the instances outside the enumeration.
+        let uniqueIds = anyAllUniqueIds(transaction: transaction)
+        for uniqueId in uniqueIds {
+            guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+                owsFailDebug("Missing instance.")
+                continue
+            }
+            instance.anyRemove(transaction: transaction)
+        }
+
+        if shouldBeIndexedForFTS {
+            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
+        }
+    }
+
+    class func anyExists(uniqueId: String,
+                        transaction: SDSAnyReadTransaction) -> Bool {
+        assert(uniqueId.count > 0)
+
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.hasObject(forKey: uniqueId, inCollection: OWSRecipientIdentity.collection())
+        case .grdbRead(let grdbTransaction):
+            let sql = "SELECT EXISTS ( SELECT 1 FROM \(RecipientIdentityRecord.databaseTableName) WHERE \(recipientIdentityColumn: .uniqueId) = ? )"
+            let arguments: StatementArguments = [uniqueId]
+            return try! Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
         }
     }
 }
@@ -399,7 +470,9 @@ public extension OWSRecipientIdentity {
         assert(sql.count > 0)
 
         do {
-            guard let record = try RecipientIdentityRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
+            // There are significant perf benefits to using a cached statement.
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            guard let record = try RecipientIdentityRecord.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }
 
@@ -428,18 +501,16 @@ class OWSRecipientIdentitySerializer: SDSSerializer {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .recipientIdentity
-        guard let uniqueId: String = model.uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            throw SDSError.missingRequiredField
-        }
+        let uniqueId: String = model.uniqueId
 
         // Base class properties
+        let accountId: String = model.accountId
         let createdAt: Date = model.createdAt
         let identityKey: Data = model.identityKey
         let isFirstKnownKey: Bool = model.isFirstKnownKey
-        let recipientId: String = model.recipientId
+        let recipientIdentitySchemaVersion: UInt = model.recipientIdentitySchemaVersion
         let verificationState: OWSVerificationState = model.verificationState
 
-        return RecipientIdentityRecord(id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, identityKey: identityKey, isFirstKnownKey: isFirstKnownKey, recipientId: recipientId, verificationState: verificationState)
+        return RecipientIdentityRecord(id: id, recordType: recordType, uniqueId: uniqueId, accountId: accountId, createdAt: createdAt, identityKey: identityKey, isFirstKnownKey: isFirstKnownKey, recipientIdentitySchemaVersion: recipientIdentitySchemaVersion, verificationState: verificationState)
     }
 }

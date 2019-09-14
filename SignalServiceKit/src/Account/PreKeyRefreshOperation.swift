@@ -17,7 +17,7 @@ public class RefreshPreKeysOperation: OWSOperation {
     }
 
     private var accountServiceClient: AccountServiceClient {
-        return AccountServiceClient.shared
+        return SSKEnvironment.shared.accountServiceClient
     }
 
     private var signedPreKeyStore: SSKSignedPreKeyStore {
@@ -70,7 +70,7 @@ public class RefreshPreKeysOperation: OWSOperation {
             Logger.debug("done")
             self.reportSuccess()
         }.catch { error in
-            self.reportError(error)
+            self.reportError(withUndefinedRetry: error)
         }.retainUntilComplete()
     }
 

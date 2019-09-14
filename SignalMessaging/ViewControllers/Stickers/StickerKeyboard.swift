@@ -8,13 +8,12 @@ import Foundation
 public protocol StickerKeyboardDelegate {
     func didSelectSticker(stickerInfo: StickerInfo)
     func presentManageStickersView()
-    func rootViewSize() -> CGSize
 }
 
 // MARK: -
 
 @objc
-public class StickerKeyboard: UIStackView {
+public class StickerKeyboard: CustomKeyboard {
 
     // MARK: - Dependencies
 
@@ -27,6 +26,7 @@ public class StickerKeyboard: UIStackView {
     @objc
     public weak var delegate: StickerKeyboardDelegate?
 
+    private let mainStackView = UIStackView()
     private let headerView = UIStackView()
 
     private var stickerPacks = [StickerPack]()
@@ -38,8 +38,8 @@ public class StickerKeyboard: UIStackView {
     }
 
     @objc
-    public required init() {
-        super.init(frame: .zero)
+    public override init() {
+        super.init()
 
         createSubviews()
 
@@ -52,56 +52,30 @@ public class StickerKeyboard: UIStackView {
                                                selector: #selector(stickersOrPacksDidChange),
                                                name: StickerManager.stickersOrPacksDidChange,
                                                object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(orientationDidChange),
-                                               name: UIDevice.orientationDidChangeNotification,
-                                               object: UIDevice.current)
     }
 
     required public init(coder: NSCoder) {
         notImplemented()
     }
 
-    // TODO: Tune this value.
-    private let kDefaultKeyboardHeight: CGFloat = 300
-
-    @objc
-    public override var intrinsicContentSize: CGSize {
-        // Never take up more than half of the root view's height.
-        let rootViewSize = self.rootViewSize
-        let maxKeyboardHeight = rootViewSize.height / 2
-        return CGSize(width: 0, height: min(kDefaultKeyboardHeight, maxKeyboardHeight))
-    }
-
-    private var rootViewSize: CGSize {
-        guard let delegate = delegate else {
-            return .zero
-        }
-        return delegate.rootViewSize()
-    }
-
     private func createSubviews() {
-        axis = .vertical
-        layoutMargins = .zero
-        autoresizingMask = .flexibleHeight
-        alignment = .fill
+        contentView.addSubview(mainStackView)
+        mainStackView.axis = .vertical
+        mainStackView.alignment = .fill
+        mainStackView.autoPinEdgesToSuperviewEdges()
 
-        addBackgroundView(withBackgroundColor: keyboardBackgroundColor)
+        mainStackView.addBackgroundView(withBackgroundColor: Theme.keyboardBackgroundColor)
 
-        addArrangedSubview(headerView)
+        mainStackView.addArrangedSubview(headerView)
 
         populateHeaderView()
 
         setupPaging()
     }
 
-    private var keyboardBackgroundColor: UIColor {
-        return (Theme.isDarkThemeEnabled
-            ? UIColor.ows_gray90
-            : UIColor.ows_gray02)
-    }
+    public override func wasPresented() {
+        super.wasPresented()
 
-    @objc public func wasPresented() {
         // If there are no recents, default to showing the first sticker pack.
         if currentPageCollectionView.stickerCount < 1 {
             selectedStickerPack = stickerPacks.first
@@ -153,7 +127,7 @@ public class StickerKeyboard: UIStackView {
         headerView.spacing = StickerKeyboard.packCoverSpacing
         headerView.axis = .horizontal
         headerView.alignment = .center
-        headerView.backgroundColor = keyboardBackgroundColor
+        headerView.backgroundColor = Theme.keyboardBackgroundColor
         headerView.layoutMargins = UIEdgeInsets(top: 6, leading: 6, bottom: 6, trailing: 6)
         headerView.isLayoutMarginsRelativeArrangement = true
 
@@ -165,7 +139,7 @@ public class StickerKeyboard: UIStackView {
             searchButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "searchButton")
         }
 
-        packsCollectionView.backgroundColor = keyboardBackgroundColor
+        packsCollectionView.backgroundColor = Theme.keyboardBackgroundColor
         headerView.addArrangedSubview(packsCollectionView)
 
         let manageButton = buildHeaderButton("plus-24") { [weak self] in
@@ -199,29 +173,12 @@ public class StickerKeyboard: UIStackView {
         updateHeaderView()
     }
 
-    @objc
-    func orientationDidChange() {
-        AssertIsOnMainThread()
+    public override func orientationDidChange() {
+        super.orientationDidChange()
 
         Logger.verbose("")
 
-        invalidateIntrinsicContentSize()
-    }
-
-    private var isLayingoutSubviews = false
-    public override func layoutSubviews() {
-        isLayingoutSubviews = true
-
-        let previousPageWidth = pageWidth
-        super.layoutSubviews()
-
-        // If the page width changed (probably an orientation change),
-        // make sure we stay centered on the current pack.
-        if previousPageWidth != pageWidth {
-            updatePageConstraints(ignoreScrollingState: true)
-        }
-
-        isLayingoutSubviews = false
+        updatePageConstraints(ignoreScrollingState: true)
     }
 
     private func searchButtonWasTapped() {
@@ -312,7 +269,7 @@ public class StickerKeyboard: UIStackView {
         stickerPagingScrollView.showsHorizontalScrollIndicator = false
         stickerPagingScrollView.isDirectionalLockEnabled = true
         stickerPagingScrollView.delegate = self
-        addArrangedSubview(stickerPagingScrollView)
+        mainStackView.addArrangedSubview(stickerPagingScrollView)
         stickerPagingScrollView.autoPinEdge(toSuperviewSafeArea: .left)
         stickerPagingScrollView.autoPinEdge(toSuperviewSafeArea: .right)
 
@@ -323,10 +280,17 @@ public class StickerKeyboard: UIStackView {
         stickerPagesContainer.autoMatch(.width, to: .width, of: stickerPagingScrollView, withMultiplier: numberOfPages)
 
         for (index, collectionView) in stickerPackCollectionViews.enumerated() {
-            collectionView.backgroundColor = keyboardBackgroundColor
+            collectionView.backgroundColor = Theme.keyboardBackgroundColor
             collectionView.isDirectionalLockEnabled = true
             collectionView.stickerDelegate = self
-            stickerPagesContainer.addSubview(collectionView)
+
+            // We want the current page on top, to prevent weird
+            // animations when we initially calculate our frame.
+            if collectionView == currentPageCollectionView {
+                stickerPagesContainer.addSubview(collectionView)
+            } else {
+                stickerPagesContainer.insertSubview(collectionView, at: 0)
+            }
 
             collectionView.autoMatch(.width, to: .width, of: stickerPagingScrollView)
             collectionView.autoMatch(.height, to: .height, of: stickerPagingScrollView)
@@ -339,34 +303,6 @@ public class StickerKeyboard: UIStackView {
             )
         }
 
-    }
-
-    private var isScrollingChange = false
-    private func checkForPageChange() {
-        // Ignore any page changes while we're laying out, as the content
-        // offset will move about as the scrollView potentially resizes.
-        guard !isLayingoutSubviews else { return }
-
-        isScrollingChange = true
-
-        let offsetX = stickerPagingScrollView.contentOffset.x
-
-        // Scrolled left a page
-        if offsetX <= previousPageThreshold {
-            selectedStickerPack = previousPageStickerPack
-
-        // Scrolled right a page
-        } else if offsetX >= nextPageThreshold {
-            selectedStickerPack = nextPageStickerPack
-
-        // We're about to cross the threshold into a new page, execute any pending updates.
-        // We wait to execute these until we're sure we're going to cross over as it
-        // can cause some UI jitter that interupts scrolling.
-        } else if offsetX >= pageWidth * 0.95 && offsetX <= pageWidth * 1.05 {
-            applyPendingPageChangeUpdates()
-        }
-
-        isScrollingChange = false
     }
 
     private var pendingPageChangeUpdates: (() -> Void)?
@@ -439,6 +375,62 @@ public class StickerKeyboard: UIStackView {
             stickerPagingScrollView.contentOffset.x = pageWidth
         }
     }
+
+    // MARK: - Scroll state management
+
+    /// Indicates that the user stopped actively scrolling, but
+    /// we still haven't reached their final destination.
+    private var isWaitingForDeceleration = false
+
+    /// Indicates that the user started scrolling and we've yet
+    /// to reach their final destination.
+    private var isUserScrolling = false
+
+    /// Indicates that we're currently changing pages due to a
+    /// user initiated scroll action.
+    private var isScrollingChange = false
+
+    private func userStartedScrolling() {
+        isWaitingForDeceleration = false
+        isUserScrolling = true
+    }
+
+    private func userStoppedScrolling(waitingForDeceleration: Bool = false) {
+        guard isUserScrolling else { return }
+
+        if waitingForDeceleration {
+            isWaitingForDeceleration = true
+        } else {
+            isWaitingForDeceleration = false
+            isUserScrolling = false
+        }
+    }
+
+    private func checkForPageChange() {
+        // Ignore any page changes unless the user is triggering them.
+        guard isUserScrolling else { return }
+
+        isScrollingChange = true
+
+        let offsetX = stickerPagingScrollView.contentOffset.x
+
+        // Scrolled left a page
+        if offsetX <= previousPageThreshold {
+            selectedStickerPack = previousPageStickerPack
+
+            // Scrolled right a page
+        } else if offsetX >= nextPageThreshold {
+            selectedStickerPack = nextPageStickerPack
+
+            // We're about to cross the threshold into a new page, execute any pending updates.
+            // We wait to execute these until we're sure we're going to cross over as it
+            // can cause some UI jitter that interupts scrolling.
+        } else if offsetX >= pageWidth * 0.95 && offsetX <= pageWidth * 1.05 {
+            applyPendingPageChangeUpdates()
+        }
+
+        isScrollingChange = false
+    }
 }
 
 // MARK: -
@@ -446,6 +438,18 @@ public class StickerKeyboard: UIStackView {
 extension StickerKeyboard: UIScrollViewDelegate {
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         checkForPageChange()
+    }
+
+    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        userStartedScrolling()
+    }
+
+    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        userStoppedScrolling(waitingForDeceleration: decelerate)
+    }
+
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        userStoppedScrolling()
     }
 }
 

@@ -13,13 +13,14 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/OWSNavigationController.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIViewController+OWS.h>
-#import <SignalServiceKit/NSString+SSK.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
+
+@import SafariServices;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,7 +29,6 @@ typedef NS_ENUM(NSInteger, ProfileViewMode) {
     ProfileViewMode_Registration,
 };
 
-NSString *const kProfileView_Collection = @"kProfileView_Collection";
 NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDate";
 
 @interface ProfileViewController () <UITextFieldDelegate, AvatarViewHelperDelegate, OWSNavigationView>
@@ -55,6 +55,22 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 @implementation ProfileViewController
 
+#pragma mark - Dependencies
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
++ (SDSKeyValueStore *)keyValueStore
+{
+    return [[SDSKeyValueStore alloc] initWithCollection:@"kProfileView_Collection"];
+}
+
+#pragma mark -
+
 - (instancetype)initWithMode:(ProfileViewMode)profileViewMode
 {
     self = [super init];
@@ -65,10 +81,11 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
     self.profileViewMode = profileViewMode;
 
-    // Use the OWSPrimaryStorage.dbReadWriteConnection for consistency with the reads below.
-    [[[OWSPrimaryStorage sharedManager] dbReadWriteConnection] setDate:[NSDate new]
-                                                                forKey:kProfileView_LastPresentedDate
-                                                          inCollection:kProfileView_Collection];
+    [ProfileViewController.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [ProfileViewController.keyValueStore setDate:[NSDate new]
+                                                 key:kProfileView_LastPresentedDate
+                                         transaction:transaction];
+    }];
 
     return self;
 }
@@ -447,7 +464,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
             [self.navigationController popViewControllerAnimated:YES];
             break;
         case ProfileViewMode_Registration:
-            [self showHomeView];
+            [self showPinCreation];
             break;
     }
 }
@@ -458,6 +475,24 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     OWSLogVerbose(@"");
 
     [SignalApp.sharedApp showHomeView];
+}
+
+- (void)showPinCreation
+{
+    OWSAssertIsOnMainThread();
+    OWSLogVerbose(@"");
+
+    // If the user already has a pin, or the pins for all feature is disabled, just go home
+    if ([OWS2FAManager sharedManager].is2FAEnabled || !SSKFeatureFlags.pinsForEveryone) {
+        return [self showHomeView];
+    }
+
+    __weak ProfileViewController *weakSelf = self;
+    OWSPinSetupViewController *vc = [[OWSPinSetupViewController alloc] initWithCompletionHandler:^{
+        [weakSelf showHomeView];
+    }];
+
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 #pragma mark - UITextFieldDelegate
@@ -528,8 +563,9 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 - (void)infoRowTapped:(UIGestureRecognizer *)sender
 {
     if (sender.state == UIGestureRecognizerStateRecognized) {
-        [UIApplication.sharedApplication
-            openURL:[NSURL URLWithString:@"https://support.signal.org/hc/en-us/articles/115001110511"]];
+        SFSafariViewController *safariVC = [[SFSafariViewController alloc]
+            initWithURL:[NSURL URLWithString:@"https://support.signal.org/hc/en-us/articles/115001110511"]];
+        [self presentViewController:safariVC animated:YES completion:nil];
     }
 }
 
@@ -548,11 +584,13 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         return NO;
     }
 
-    // Use the OWSPrimaryStorage.dbReadWriteConnection for consistency with the writes above.
     NSTimeInterval kProfileNagFrequency = kDayInterval * 30;
-    NSDate *_Nullable lastPresentedDate =
-        [[[OWSPrimaryStorage sharedManager] dbReadWriteConnection] dateForKey:kProfileView_LastPresentedDate
-                                                                 inCollection:kProfileView_Collection];
+    __block NSDate *_Nullable lastPresentedDate;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        lastPresentedDate =
+            [ProfileViewController.keyValueStore getDate:kProfileView_LastPresentedDate transaction:transaction];
+    }];
+
     return (!lastPresentedDate || fabs([lastPresentedDate timeIntervalSinceNow]) > kProfileNagFrequency);
 }
 

@@ -4,10 +4,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSPrimaryStorage;
+@class SDSAnyWriteTransaction;
+@class SignalServiceAddress;
 @class TSMessage;
 @class TSThread;
-@class YapDatabaseReadWriteTransaction;
 
 @protocol ContactsManagerProtocol;
 
@@ -15,13 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedJob;
 
-- (instancetype)init NS_UNAVAILABLE;
-
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 - (void)startAnyExpirationForMessage:(TSMessage *)message
                  expirationStartedAt:(uint64_t)expirationStartedAt
-                         transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction;
+                         transaction:(SDSAnyWriteTransaction *_Nonnull)transaction;
 
 /**
  * Synchronize our disappearing messages settings with that of the given message. Useful so we can
@@ -31,25 +29,24 @@ NS_ASSUME_NONNULL_BEGIN
  *   Can be 0, indicating a non-expiring message, or greater, indicating an expiring message. We match the expiration
  *   timer of the message, including disabling expiring messages if the message is not an expiring message.
  *
- * @param remoteRecipientId
- *    nil for outgoing messages, otherwise the recipientId of the sender
+ * @param remoteRecipient
+ *    nil for outgoing messages, otherwise the address of the sender
  *
  * @param createdInExistingGroup
  *    YES when being added to a group which already has DM enabled, otherwise NO
  */
 - (void)becomeConsistentWithDisappearingDuration:(uint32_t)duration
                                           thread:(TSThread *)thread
-                      createdByRemoteRecipientId:(nullable NSString *)remoteRecipientId
+                        createdByRemoteRecipient:(nullable SignalServiceAddress *)remoteRecipient
                           createdInExistingGroup:(BOOL)createdInExistingGroup
-                                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                     transaction:(SDSAnyWriteTransaction *)transaction;
 
 // Clean up any messages that expired since last launch immediately
 // and continue cleaning in the background.
 - (void)startIfNecessary;
 
+- (void)cleanupMessagesWhichFailedToStartExpiringWithTransaction:(SDSAnyWriteTransaction *)transaction;
 - (void)schedulePass;
-
-- (void)cleanupMessagesWhichFailedToStartExpiringWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

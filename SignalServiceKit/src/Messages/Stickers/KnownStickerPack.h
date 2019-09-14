@@ -2,14 +2,14 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
+#import "BaseModel.h"
 #import "StickerInfo.h"
-#import "TSYapDatabaseObject.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class SDSAnyReadTransaction;
 
-@interface KnownStickerPack : TSYapDatabaseObject
+@interface KnownStickerPack : BaseModel
 
 @property (nonatomic, readonly) StickerPackInfo *info;
 @property (nonatomic) NSInteger referenceCount;

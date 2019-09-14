@@ -22,13 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init
 {
-    OWSPrimaryStorage *primaryStorage = SSKEnvironment.shared.primaryStorage;
-    OWSAssertDebug(primaryStorage);
-
     // TODO: We should probably mock this out.
     OWSAudioSession *audioSession = [OWSAudioSession new];
     OWSPreferences *preferences = [OWSPreferences new];
-    OWSSounds *sounds = [[OWSSounds alloc] initWithPrimaryStorage:primaryStorage];
+    OWSSounds *sounds = [OWSSounds new];
     id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
     OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
 

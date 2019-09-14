@@ -21,7 +21,7 @@ def shared_pods
   pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit', testspecs: ["Tests"]
   # pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
 
-  pod 'SignalMetadataKit', git: 'https://github.com/signalapp/SignalMetadataKit', testspecs: ["Tests"]
+  pod 'SignalMetadataKit', git: 'git@github.com:signalapp/SignalMetadataKit', testspecs: ["Tests"]
   # pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
 
   pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
@@ -110,7 +110,9 @@ def configure_warning_flags(installer)
       target.build_configurations.each do |build_configuration|
           build_configuration.build_settings['WARNING_CFLAGS'] = ['$(inherited)', 
                                                                   '-Werror=incompatible-pointer-types',
-                                                                  '-Werror=protocol']
+                                                                  '-Werror=protocol',
+                                                                  '-Werror=incomplete-implementation',
+                                                                  '-Werror=objc-literal-conversion']
       end
   end
 end

@@ -121,7 +121,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (UIColor *)highlightColor
 {
-    BOOL isQuotingSelf = [NSObject isNullableObject:self.quotedMessage.authorId equalTo:TSAccountManager.localNumber];
+    BOOL isQuotingSelf = self.quotedMessage.authorAddress.isLocalAddress;
     return (isQuotingSelf ? [self.conversationStyle bubbleColorWithIsIncoming:NO]
                           : [self.conversationStyle quotingSelfHighlightColor]);
 }
@@ -466,6 +466,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     self.quotedTextLabel.numberOfLines = self.isForPreview ? 1 : 2;
     self.quotedTextLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.quotedTextLabel.text = text;
+    self.quotedTextLabel.textAlignment = self.displayableQuotedText.displayTextNaturalAlignment;
     self.quotedTextLabel.textColor = textColor;
     self.quotedTextLabel.font = font;
 
@@ -536,9 +537,8 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 {
     OWSAssertDebug(self.quotedAuthorLabel);
 
-    NSString *_Nullable localNumber = [TSAccountManager localNumber];
     NSString *quotedAuthorText;
-    if ([localNumber isEqualToString:self.quotedMessage.authorId]) {
+    if (self.quotedMessage.authorAddress.isLocalAddress) {
 
         if (self.isOutgoing) {
             quotedAuthorText = NSLocalizedString(
@@ -549,7 +549,12 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         }
     } else {
         OWSContactsManager *contactsManager = Environment.shared.contactsManager;
-        NSString *quotedAuthor = [contactsManager contactOrProfileNameForPhoneIdentifier:self.quotedMessage.authorId];
+        NSString *quotedAuthor;
+        if (SSKFeatureFlags.profileDisplayChanges) {
+            quotedAuthor = [contactsManager displayNameForAddress:self.quotedMessage.authorAddress];
+        } else {
+            quotedAuthor = [contactsManager legacyDisplayNameForAddress:self.quotedMessage.authorAddress];
+        }
         quotedAuthorText = [NSString
             stringWithFormat:
                 NSLocalizedString(@"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT",

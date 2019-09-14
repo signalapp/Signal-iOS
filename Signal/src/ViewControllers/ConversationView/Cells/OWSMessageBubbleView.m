@@ -19,6 +19,7 @@
 #import "UIColor+OWS.h"
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -41,6 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) UIView *bodyMediaView;
 
 @property (nonatomic) LinkPreviewView *linkPreviewView;
+
+@property (nonatomic, nullable) OWSLayerView *bodyMediaGradientView;
 
 // Should lazy-load expensive view contents (images, etc.).
 // Should do nothing if view is already loaded.
@@ -294,8 +297,8 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_StickerMessage:
             OWSFailDebug(@"Stickers should not be rendered with this view.");
             break;
-        case OWSMessageCellType_PerMessageExpiration:
-            OWSFailDebug(@"Messages with per-message expiration should not be rendered with this view.");
+        case OWSMessageCellType_ViewOnce:
+            OWSFailDebug(@"View-once messages should not be rendered with this view.");
             break;
     }
 
@@ -398,9 +401,10 @@ NS_ASSUME_NONNULL_BEGIN
                                      layerFrame.origin.y = layerView.height - layerFrame.size.height;
                                      gradientLayer.frame = layerFrame;
                                  }];
+        self.bodyMediaGradientView = gradientView;
         [gradientView.layer addSublayer:gradientLayer];
         [bodyMediaView addSubview:gradientView];
-        [self.viewConstraints addObjectsFromArray:[gradientView ows_autoPinToSuperviewEdges]];
+        [self.viewConstraints addObjectsFromArray:[gradientView autoPinEdgesToSuperviewEdges]];
 
         [self.footerView configureWithConversationViewItem:self.viewItem
                                          conversationStyle:self.conversationStyle
@@ -588,8 +592,8 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_StickerMessage:
             OWSFailDebug(@"Stickers should not be rendered with this view.");
             return NO;
-        case OWSMessageCellType_PerMessageExpiration:
-            OWSFailDebug(@"Messages with per-message expiration should not be rendered with this view.");
+        case OWSMessageCellType_ViewOnce:
+            OWSFailDebug(@"View-once messages should not be rendered with this view.");
             return NO;
     }
 }
@@ -608,8 +612,8 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_StickerMessage:
             OWSFailDebug(@"Stickers should not be rendered with this view.");
             return NO;
-        case OWSMessageCellType_PerMessageExpiration:
-            OWSFailDebug(@"Messages with per-message expiration should not be rendered with this view.");
+        case OWSMessageCellType_ViewOnce:
+            OWSFailDebug(@"View-once messages should not be rendered with this view.");
             return NO;
     }
 }
@@ -712,17 +716,19 @@ NS_ASSUME_NONNULL_BEGIN
     [self.class loadForTextDisplay:self.bodyTextView
                    displayableText:self.displayableBodyText
                         searchText:self.delegate.lastSearchedText
+           accessibilityAuthorName:self.viewItem.accessibilityAuthorName
                          textColor:self.bodyTextColor
                               font:self.textMessageFont
                 shouldIgnoreEvents:shouldIgnoreEvents];
 }
 
 + (void)loadForTextDisplay:(OWSMessageTextView *)textView
-           displayableText:(DisplayableText *)displayableText
-                searchText:(nullable NSString *)searchText
-                 textColor:(UIColor *)textColor
-                      font:(UIFont *)font
-        shouldIgnoreEvents:(BOOL)shouldIgnoreEvents
+            displayableText:(DisplayableText *)displayableText
+                 searchText:(nullable NSString *)searchText
+    accessibilityAuthorName:(nullable NSString *)accessibilityAuthorName
+                  textColor:(UIColor *)textColor
+                       font:(UIFont *)font
+         shouldIgnoreEvents:(BOOL)shouldIgnoreEvents
 {
     textView.hidden = NO;
     textView.textColor = textColor;
@@ -737,9 +743,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *text = displayableText.displayText;
 
-    NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc]
-        initWithString:text
-            attributes:@{ NSFontAttributeName : font, NSForegroundColorAttributeName : textColor }];
+    NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
+    paragraphStyle.alignment = displayableText.displayTextNaturalAlignment;
+
+    NSMutableAttributedString *attributedText =
+        [[NSMutableAttributedString alloc] initWithString:text
+                                               attributes:@{
+                                                   NSFontAttributeName : font,
+                                                   NSForegroundColorAttributeName : textColor,
+                                                   NSParagraphStyleAttributeName : paragraphStyle
+                                               }];
     if (searchText.length >= ConversationSearchController.kMinimumSearchTextLength) {
         NSString *searchableText = [FullTextSearchFinder normalizeWithText:searchText];
         NSError *error;
@@ -764,6 +777,8 @@ NS_ASSUME_NONNULL_BEGIN
     // We use attributedText even when we're not highlighting searched text to esnure any lingering
     // attributes are reset.
     textView.attributedText = attributedText;
+
+    textView.accessibilityLabel = [self accessibilityLabelWithDescription:text authorName:accessibilityAuthorName];
 }
 
 - (BOOL)shouldShowSenderName
@@ -834,8 +849,13 @@ NS_ASSUME_NONNULL_BEGIN
                              opacity:0.15f];
         [itemView addSubview:innerShadowView];
         [self.bubbleView addPartnerView:innerShadowView];
-        [self.viewConstraints addObjectsFromArray:[innerShadowView ows_autoPinToSuperviewEdges]];
+        [self.viewConstraints addObjectsFromArray:[innerShadowView autoPinEdgesToSuperviewEdges]];
     }
+
+    albumView.accessibilityLabel =
+        [OWSMessageView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_MEDIA",
+                                                              @"Accessibility label for media.")
+                                               authorName:self.viewItem.accessibilityAuthorName];
 
     return albumView;
 }
@@ -861,6 +881,11 @@ NS_ASSUME_NONNULL_BEGIN
         // Do nothing.
     };
 
+    audioMessageView.accessibilityLabel =
+        [OWSMessageView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_AUDIO",
+                                                              @"Accessibility label for audio.")
+                                               authorName:self.viewItem.accessibilityAuthorName];
+
     return audioMessageView;
 }
 
@@ -881,6 +906,11 @@ NS_ASSUME_NONNULL_BEGIN
         // Do nothing.
     };
 
+    attachmentView.accessibilityLabel =
+        [OWSMessageView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_ATTACHMENT",
+                                                              @"Accessibility label for attachment.")
+                                               authorName:self.viewItem.accessibilityAuthorName];
+
     return attachmentView;
 }
 
@@ -900,6 +930,11 @@ NS_ASSUME_NONNULL_BEGIN
     self.unloadCellContentBlock = ^{
         // Do nothing.
     };
+
+    contactShareView.accessibilityLabel =
+        [OWSMessageView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_CONTACT",
+                                                              @"Accessibility label for contact.")
+                                               authorName:self.viewItem.accessibilityAuthorName];
 
     return contactShareView;
 }
@@ -1137,8 +1172,8 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Stickers should not be rendered with this view.");
             result = CGSizeZero;
             break;
-        case OWSMessageCellType_PerMessageExpiration:
-            OWSFailDebug(@"Messages with per-message expiration should not be rendered with this view.");
+        case OWSMessageCellType_ViewOnce:
+            OWSFailDebug(@"View-once messages should not be rendered with this view.");
             result = CGSizeZero;
             break;
     }
@@ -1364,6 +1399,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.bodyTextView removeFromSuperview];
     self.bodyTextView.text = nil;
     self.bodyTextView.attributedText = nil;
+    self.bodyTextView.accessibilityLabel = nil;
     self.bodyTextView.hidden = YES;
 
     self.bubbleView.fillColor = nil;
@@ -1384,6 +1420,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     [self.bodyMediaView removeFromSuperview];
     self.bodyMediaView = nil;
+    self.bodyMediaGradientView = nil;
 
     [self.quotedMessageView removeFromSuperview];
     self.quotedMessageView = nil;
@@ -1538,8 +1575,8 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_StickerMessage:
             OWSFailDebug(@"Stickers should not be rendered with this view.");
             break;
-        case OWSMessageCellType_PerMessageExpiration:
-            OWSFailDebug(@"Messages with per-message expiration should not be rendered with this view.");
+        case OWSMessageCellType_ViewOnce:
+            OWSFailDebug(@"View-once messages should not be rendered with this view.");
             break;
     }
 }

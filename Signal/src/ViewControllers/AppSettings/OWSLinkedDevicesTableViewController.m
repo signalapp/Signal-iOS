@@ -10,22 +10,20 @@
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSDevicesService.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSDatabaseView.h>
-#import <YapDatabase/YapDatabase.h>
-#import <YapDatabase/YapDatabaseViewConnection.h>
-#import <YapDatabase/YapDatabaseViewMappings.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSLinkedDevicesTableViewController ()
 
-@property (nonatomic) YapDatabaseConnection *dbConnection;
-@property (nonatomic) YapDatabaseViewMappings *deviceMappings;
+@property (nonatomic) NSArray<OWSDevice *> *devices;
+
 @property (nonatomic) NSTimer *pollingRefreshTimer;
 @property (nonatomic) BOOL isExpectingMoreDevices;
 
 @end
+
+#pragma mark -
 
 int const OWSLinkedDevicesTableViewControllerSectionExistingDevices = 0;
 int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
@@ -38,6 +36,15 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark - UIViewController overrides
 
 - (void)viewDidLoad
 {
@@ -55,14 +62,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     [self.tableView registerClass:[OWSDeviceTableViewCell class] forCellReuseIdentifier:@"ExistingDevice"];
     [self.tableView applyScrollViewInsetsFix];
 
-    self.dbConnection = [[OWSPrimaryStorage sharedManager] newDatabaseConnection];
-    [self.dbConnection beginLongLivedReadTransaction];
-    self.deviceMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ TSSecondaryDevicesGroup ]
-                                                                     view:TSSecondaryDevicesDatabaseViewExtensionName];
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [self.deviceMappings updateWithTransaction:transaction];
-    }];
-
+    // GRDB TODO: Remove the yap notifications.
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:YapDatabaseModifiedNotification
@@ -71,6 +71,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
                                              selector:@selector(yapDatabaseModifiedExternally:)
                                                  name:YapDatabaseModifiedExternallyNotification
                                                object:nil];
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(deviceListUpdateSucceeded:)
                                                  name:NSNotificationName_DeviceListUpdateSucceeded
@@ -83,11 +84,40 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
                                              selector:@selector(deviceListUpdateModifiedDeviceList:)
                                                  name:NSNotificationName_DeviceListUpdateModifiedDeviceList
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(deviceDidChange:)
+                                                 name:NSNotificationName_OWSDeviceDidChange
+                                               object:nil];
 
     self.refreshControl = [UIRefreshControl new];
     [self.refreshControl addTarget:self action:@selector(refreshDevices) forControlEvents:UIControlEventValueChanged];
 
-    [self setupEditButton];
+    [self updateDeviceList];
+}
+
+- (void)updateDeviceList
+{
+    OWSAssertIsOnMainThread();
+
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        NSArray<OWSDevice *> *devices = [OWSDevice anyFetchAllWithTransaction:transaction];
+        devices = [devices filter:^(OWSDevice *device) {
+            return !device.isPrimaryDevice;
+        }];
+        devices = [devices sortedArrayUsingComparator:^(OWSDevice *device1, OWSDevice *device2) {
+            return [device2.createdAt compare:device1.createdAt];
+        }];
+        self.devices = devices;
+    }];
+
+    // Don't show edit button for an empty table
+    if (self.devices.count > 0) {
+        self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    } else {
+        self.navigationItem.rightBarButtonItem = nil;
+    }
+
+    [self.tableView reloadData];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -109,17 +139,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     [self.pollingRefreshTimer invalidate];
 }
 
-// Don't show edit button for an empty table
-- (void)setupEditButton
-{
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        if ([OWSDevice hasSecondaryDevicesWithTransaction:transaction]) {
-            self.navigationItem.rightBarButtonItem = self.editButtonItem;
-        } else {
-            self.navigationItem.rightBarButtonItem = nil;
-        }
-    }];
-}
+#pragma mark -
 
 - (void)expectMoreDevices
 {
@@ -213,15 +233,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 {
     OWSAssertIsOnMainThread();
 
-    // External database modifications can't be converted into incremental updates,
-    // so rebuild everything.  This is expensive and usually isn't necessary, but
-    // there's no alternative.
-    [self.dbConnection beginLongLivedReadTransaction];
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [self.deviceMappings updateWithTransaction:transaction];
-    }];
-
-    [self.tableView reloadData];
+    [self updateDeviceList];
 }
 
 - (void)yapDatabaseModified:(NSNotification *)notification
@@ -230,53 +242,16 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 
     OWSLogVerbose(@"");
 
-    NSArray *notifications = [self.dbConnection beginLongLivedReadTransaction];
-    [self setupEditButton];
+    [self updateDeviceList];
+}
 
-    if ([notifications count] == 0) {
-        return; // already processed commit
-    }
+- (void)deviceDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
 
-    NSArray *rowChanges;
-    [[self.dbConnection ext:TSSecondaryDevicesDatabaseViewExtensionName] getSectionChanges:nil
-                                                                                rowChanges:&rowChanges
-                                                                          forNotifications:notifications
-                                                                              withMappings:self.deviceMappings];
-    if (rowChanges.count == 0) {
-        // There aren't any changes that affect our tableView!
-        return;
-    }
+    OWSLogVerbose(@"");
 
-    [self.tableView beginUpdates];
-
-    for (YapDatabaseViewRowChange *rowChange in rowChanges) {
-        switch (rowChange.type) {
-            case YapDatabaseViewChangeDelete: {
-                [self.tableView deleteRowsAtIndexPaths:@[ rowChange.indexPath ]
-                                      withRowAnimation:UITableViewRowAnimationAutomatic];
-                break;
-            }
-            case YapDatabaseViewChangeInsert: {
-                [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
-                                      withRowAnimation:UITableViewRowAnimationAutomatic];
-                break;
-            }
-            case YapDatabaseViewChangeMove: {
-                [self.tableView deleteRowsAtIndexPaths:@[ rowChange.indexPath ]
-                                      withRowAnimation:UITableViewRowAnimationAutomatic];
-                [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
-                                      withRowAnimation:UITableViewRowAnimationAutomatic];
-                break;
-            }
-            case YapDatabaseViewChangeUpdate: {
-                [self.tableView reloadRowsAtIndexPaths:@[ rowChange.indexPath ]
-                                      withRowAnimation:UITableViewRowAnimationNone];
-                break;
-            }
-        }
-    }
-
-    [self.tableView endUpdates];
+    [self updateDeviceList];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -288,7 +263,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 {
     switch (section) {
         case OWSLinkedDevicesTableViewControllerSectionExistingDevices:
-            return (NSInteger)[self.deviceMappings numberOfItemsInSection:(NSUInteger)section];
+            return (NSInteger)self.devices.count;
         case OWSLinkedDevicesTableViewControllerSectionAddDevice:
             return 1;
         default:
@@ -345,18 +320,14 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 
 - (nullable OWSDevice *)deviceForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == OWSLinkedDevicesTableViewControllerSectionExistingDevices) {
-        __block OWSDevice *device;
-        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            device = [[transaction extension:TSSecondaryDevicesDatabaseViewExtensionName]
-                objectAtIndexPath:indexPath
-                     withMappings:self.deviceMappings];
-        }];
+    NSUInteger index = (NSUInteger)indexPath.row;
 
-        return device;
-    }
+    OWSAssertDebug(index >= 0);
+    OWSAssertDebug(index < self.devices.count);
 
-    return nil;
+    OWSDevice *_Nullable device = self.devices[index];
+    OWSAssertDebug(device != nil);
+    return device;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -380,7 +351,10 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
             touchedUnlinkControlForDevice:device
                                   success:^{
                                       OWSLogInfo(@"Removing unlinked device with deviceId: %ld", (long)device.deviceId);
-                                      [device remove];
+                                      [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                          [device anyRemoveWithTransaction:transaction];
+                                      }];
+                                      [self updateDeviceList];
                                   }];
     }
 }

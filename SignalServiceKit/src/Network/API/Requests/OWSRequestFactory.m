@@ -79,12 +79,12 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSRequest requestWithUrl:[NSURL URLWithString:textSecureRegistrationLockV2API] method:@"DELETE" parameters:@{}];
 }
 
-+ (TSRequest *)acknowledgeMessageDeliveryRequestWithSource:(NSString *)source timestamp:(UInt64)timestamp
++ (TSRequest *)acknowledgeMessageDeliveryRequestWithAddress:(SignalServiceAddress *)address timestamp:(UInt64)timestamp
 {
-    OWSAssertDebug(source.length > 0);
+    OWSAssertDebug(address.isValid);
     OWSAssertDebug(timestamp > 0);
 
-    NSString *path = [NSString stringWithFormat:@"v1/messages/%@/%llu", source, timestamp];
+    NSString *path = [NSString stringWithFormat:@"v1/messages/%@/%llu", address.serviceIdentifier, timestamp];
 
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"DELETE" parameters:@{}];
 }
@@ -138,12 +138,12 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/messages"] method:@"GET" parameters:@{}];
 }
 
-+ (TSRequest *)getProfileRequestWithRecipientId:(NSString *)recipientId
-                                    udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
++ (TSRequest *)getProfileRequestWithAddress:(SignalServiceAddress *)address
+                                udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    NSString *path = [NSString stringWithFormat:textSecureProfileAPIFormat, recipientId];
+    NSString *path = [NSString stringWithFormat:textSecureProfileAPIFormat, address.serviceIdentifier];
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
     if (udAccessKey != nil) {
         [self useUDAuthWithRequest:request accessKey:udAccessKey];
@@ -200,14 +200,14 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
-+ (TSRequest *)recipientPrekeyRequestWithRecipient:(NSString *)recipientNumber
-                                          deviceId:(NSString *)deviceId
-                                       udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
++ (TSRequest *)recipientPreKeyRequestWithAddress:(SignalServiceAddress *)address
+                                        deviceId:(NSString *)deviceId
+                                     udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
 {
-    OWSAssertDebug(recipientNumber.length > 0);
+    OWSAssertDebug(address.isValid);
     OWSAssertDebug(deviceId.length > 0);
 
-    NSString *path = [NSString stringWithFormat:@"%@/%@/%@", textSecureKeysAPI, recipientNumber, deviceId];
+    NSString *path = [NSString stringWithFormat:@"%@/%@/%@", textSecureKeysAPI, address.serviceIdentifier, deviceId];
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
     if (udAccessKey != nil) {
@@ -244,6 +244,11 @@ NS_ASSUME_NONNULL_BEGIN
                           parameters:accountAttributes];
 }
 
++ (TSRequest *)accountWhoAmIRequest
+{
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/accounts/whoami"] method:@"GET" parameters:@{}];
+}
+
 + (TSRequest *)unregisterAccountRequest
 {
     NSString *path = [NSString stringWithFormat:@"%@/%@", textSecureAccountsAPI, @"apn"];
@@ -258,7 +263,10 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *path = [NSString stringWithFormat:@"v1/accounts/apn/preauth/%@/%@", pushToken, recipientId];
     NSURL *url = [NSURL URLWithString:path];
 
-    return [TSRequest requestWithUrl:url method:@"GET" parameters:@{}];
+    TSRequest *request = [TSRequest requestWithUrl:url method:@"GET" parameters:@{}];
+    request.shouldHaveAuthorizationHeaders = NO;
+
+    return request;
 }
 
 + (TSRequest *)requestVerificationCodeRequestWithPhoneNumber:(NSString *)phoneNumber
@@ -392,16 +400,16 @@ NS_ASSUME_NONNULL_BEGIN
     return [accountAttributes copy];
 }
 
-+ (TSRequest *)submitMessageRequestWithRecipient:(NSString *)recipientId
-                                        messages:(NSArray *)messages
-                                       timeStamp:(uint64_t)timeStamp
-                                     udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
++ (TSRequest *)submitMessageRequestWithAddress:(SignalServiceAddress *)recipientAddress
+                                      messages:(NSArray *)messages
+                                     timeStamp:(uint64_t)timeStamp
+                                   udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
 {
     // NOTE: messages may be empty; See comments in OWSDeviceManager.
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(recipientAddress.isValid);
     OWSAssertDebug(timeStamp > 0);
 
-    NSString *path = [textSecureMessagesAPI stringByAppendingString:recipientId];
+    NSString *path = [textSecureMessagesAPI stringByAppendingString:recipientAddress.serviceIdentifier];
     NSDictionary *parameters = @{
         @"messages" : messages,
         @"timestamp" : @(timeStamp),
@@ -464,6 +472,13 @@ NS_ASSUME_NONNULL_BEGIN
     };
 }
 
+#pragma mark - Storage Service
+
++ (TSRequest *)storageAuthRequest
+{
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/storage/auth"] method:@"GET" parameters:@{}];
+}
+
 #pragma mark - Remote Attestation
 
 + (TSRequest *)remoteAttestationRequestForService:(RemoteAttestationService)service
@@ -515,7 +530,7 @@ NS_ASSUME_NONNULL_BEGIN
             path = @"v1/directory/auth";
             break;
         case RemoteAttestationServiceKeyBackup:
-            path = @"v1/storage/auth";
+            path = @"v1/backup/auth";
             break;
     }
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];

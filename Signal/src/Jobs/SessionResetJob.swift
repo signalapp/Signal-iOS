@@ -10,9 +10,9 @@ import SignalServiceKit
 public class SessionResetJobQueue: NSObject, JobQueue {
 
     @objc(addContactThread:transaction:)
-    public func add(contactThread: TSContactThread, transaction: YapDatabaseReadWriteTransaction) {
+    public func add(contactThread: TSContactThread, transaction: SDSAnyWriteTransaction) {
         let jobRecord = OWSSessionResetJobRecord(contactThread: contactThread, label: self.jobRecordLabel)
-        self.add(jobRecord: jobRecord, transaction: transaction.asAnyWrite)
+        self.add(jobRecord: jobRecord, transaction: transaction)
     }
 
     // MARK: JobQueue
@@ -78,8 +78,8 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
     // MARK: 
 
     let contactThread: TSContactThread
-    var recipientId: String {
-        return contactThread.contactIdentifier()
+    var recipientAddress: SignalServiceAddress {
+        return contactThread.contactAddress
     }
 
     @objc public required init(contactThread: TSContactThread, jobRecord: OWSSessionResetJobRecord) {
@@ -89,16 +89,16 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
 
     // MARK: Dependencies
 
-    var dbConnection: YapDatabaseConnection {
-        return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection
-    }
-
     var sessionStore: SSKSessionStore {
         return SSKEnvironment.shared.sessionStore
     }
 
     var messageSender: MessageSender {
         return SSKEnvironment.shared.messageSender
+    }
+
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
     }
 
     // MARK: 
@@ -109,9 +109,9 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
         assert(self.durableOperationDelegate != nil)
 
         if firstAttempt {
-            self.dbConnection.readWrite { transaction in
-                Logger.info("deleting sessions for recipient: \(self.recipientId)")
-                self.sessionStore.deleteAllSessions(forContact: self.recipientId, transaction: transaction.asAnyWrite)
+            self.databaseStorage.write { transaction in
+                Logger.info("deleting sessions for recipient: \(self.recipientAddress)")
+                self.sessionStore.deleteAllSessions(for: self.recipientAddress, transaction: transaction)
             }
             firstAttempt = false
         }
@@ -122,35 +122,35 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
             return self.messageSender.sendPromise(message: endSessionMessage)
         }.done {
             Logger.info("successfully sent EndSessionMessage.")
-            self.dbConnection.readWrite { transaction in
+            self.databaseStorage.write { transaction in
                 // Archive the just-created session since the recipient should delete their corresponding
                 // session upon receiving and decrypting our EndSession message.
                 // Otherwise if we send another message before them, they wont have the session to decrypt it.
-                self.sessionStore.archiveAllSessions(forContact: self.recipientId, transaction: transaction.asAnyWrite)
+                self.sessionStore.archiveAllSessions(for: self.recipientAddress, transaction: transaction)
 
                 let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
                                             in: self.contactThread,
                                             messageType: TSInfoMessageType.typeSessionDidEnd)
-                message.save(with: transaction)
+                message.anyInsert(transaction: transaction)
             }
             self.reportSuccess()
         }.catch { error in
             Logger.error("sending error: \(error.localizedDescription)")
-            self.reportError(error)
+            self.reportError(withUndefinedRetry: error)
         }.retainUntilComplete()
     }
 
     override public func didSucceed() {
-        self.dbConnection.readWrite { transaction in
-            self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction.asAnyWrite)
+        self.databaseStorage.write { transaction in
+            self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
         }
     }
 
     override public func didReportError(_ error: Error) {
         Logger.debug("remainingRetries: \(self.remainingRetries)")
 
-        self.dbConnection.readWrite { transaction in
-            self.durableOperationDelegate?.durableOperation(self, didReportError: error, transaction: transaction.asAnyWrite)
+        self.databaseStorage.write { transaction in
+            self.durableOperationDelegate?.durableOperation(self, didReportError: error, transaction: transaction)
         }
     }
 
@@ -173,8 +173,8 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
 
     override public func didFail(error: Error) {
         Logger.error("failed to send EndSessionMessage with error: \(error.localizedDescription)")
-        self.dbConnection.readWrite { transaction in
-            self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction.asAnyWrite)
+        self.databaseStorage.write { transaction in
+            self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
 
             // Even though this is the failure handler - which means probably the recipient didn't receive the message
             // there's a chance that our send did succeed and the server just timed out our repsonse or something.
@@ -184,7 +184,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
             // Archive the just-created session since the recipient should delete their corresponding
             // session upon receiving and decrypting our EndSession message.
             // Otherwise if we send another message before them, they wont have the session to decrypt it.
-            self.sessionStore.archiveAllSessions(forContact: self.recipientId, transaction: transaction.asAnyWrite)
+            self.sessionStore.archiveAllSessions(for: self.recipientAddress, transaction: transaction)
         }
     }
 }

@@ -12,6 +12,18 @@ protocol ConversationSearchViewDelegate: class {
 @objc
 class ConversationSearchViewController: UITableViewController, BlockListCacheDelegate {
 
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    private var contactsManager: OWSContactsManager {
+        return Environment.shared.contactsManager
+    }
+
+    // MARK: -
+
     @objc
     public weak var delegate: ConversationSearchViewDelegate?
 
@@ -33,16 +45,8 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         }
     }
 
-    var uiDatabaseConnection: YapDatabaseConnection {
-        return OWSPrimaryStorage.shared().uiDatabaseConnection
-    }
-
     var searcher: FullTextSearcher {
         return FullTextSearcher.shared
-    }
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
     }
 
     enum SearchSection: Int {
@@ -161,7 +165,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 return
             }
 
-            SignalApp.shared().presentConversation(forRecipientId: searchResult.recipientId, action: .compose, animated: true)
+            SignalApp.shared().presentConversation(for: searchResult.recipientAddress, action: .compose, animated: true)
 
         case .messages:
             let sectionResults = searchResultSet.messages
@@ -243,7 +247,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 owsFailDebug("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
-            cell.configure(withRecipientId: searchResult.signalAccount.recipientId)
+            cell.configure(withRecipientAddress: searchResult.signalAccount.recipientAddress)
             return cell
         case .messages:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.cellReuseIdentifier()) as? HomeViewCell else {
@@ -395,11 +399,11 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         }
 
         var searchResults: HomeScreenSearchResultSet?
-        self.uiDatabaseConnection.asyncRead({[weak self] transaction in
+        self.databaseStorage.asyncRead(block: {[weak self] transaction in
             guard let strongSelf = self else { return }
-            searchResults = strongSelf.searcher.searchForHomeScreen(searchText: searchText, transaction: transaction, contactsManager: strongSelf.contactsManager)
+            searchResults = strongSelf.searcher.searchForHomeScreen(searchText: searchText, transaction: transaction)
         },
-                                            completionBlock: { [weak self] in
+                                            completion: { [weak self] in
                                                 AssertIsOnMainThread()
                                                 guard let strongSelf = self else { return }
 

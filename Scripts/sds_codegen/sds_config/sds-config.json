@@ -18,7 +18,8 @@
 	],
 	"custom_property_column_sources": {
 		"TSInteraction.sortId": "id",
-		"SSKJobRecord.sortId": "id"
+		"SSKJobRecord.sortId": "id",
+		"TSThread.rowId": "id"
 	},
 	"class_to_skip_serialization": [
 		"OWSOutgoingSyncMessage",

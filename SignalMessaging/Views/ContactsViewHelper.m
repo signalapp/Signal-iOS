@@ -6,11 +6,11 @@
 #import "Environment.h"
 #import "UIUtil.h"
 #import <ContactsUI/ContactsUI.h>
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/Contact.h>
-#import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalAccount.h>
@@ -23,7 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 // This property is a cached value that is lazy-populated.
 @property (nonatomic, nullable) NSArray<Contact *> *nonSignalContacts;
 
-@property (nonatomic) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
+@property (nonatomic) NSDictionary<NSString *, SignalAccount *> *phoneNumberSignalAccountMap;
+@property (nonatomic) NSDictionary<NSUUID *, SignalAccount *> *uuidSignalAccountMap;
+
 @property (nonatomic) NSArray<SignalAccount *> *signalAccounts;
 
 @property (nonatomic, readonly) OWSBlockListCache *blockListCache;
@@ -38,6 +40,15 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation ContactsViewHelper
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 - (instancetype)initWithDelegate:(id<ContactsViewHelperDelegate>)delegate
 {
@@ -90,20 +101,30 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Contacts
 
-- (nullable SignalAccount *)fetchSignalAccountForRecipientId:(NSString *)recipientId
+- (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address);
 
-    return self.signalAccountMap[recipientId];
+    SignalAccount *_Nullable signalAccount;
+
+    if (address.uuid) {
+        signalAccount = self.uuidSignalAccountMap[address.uuid];
+    }
+
+    if (!signalAccount && address.phoneNumber) {
+        signalAccount = self.phoneNumberSignalAccountMap[address.phoneNumber];
+    }
+
+    return signalAccount;
 }
 
-- (SignalAccount *)fetchOrBuildSignalAccountForRecipientId:(NSString *)recipientId
+- (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address);
 
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
-    return (signalAccount ?: [[SignalAccount alloc] initWithRecipientId:recipientId]);
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address];
+    return (signalAccount ?: [[SignalAccount alloc] initWithSignalServiceAddress:address]);
 }
 
 - (BOOL)isSignalAccountHidden:(SignalAccount *)signalAccount
@@ -124,7 +145,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     NSString *localNumber = [TSAccountManager localNumber];
-    if ([signalAccount.recipientId isEqualToString:localNumber]) {
+    if (signalAccount.recipientAddress.isLocalAddress) {
         return YES;
     }
 
@@ -137,16 +158,16 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (NSString *)localNumber
+- (SignalServiceAddress *)localAddress
 {
-    return [TSAccountManager localNumber];
+    return TSAccountManager.localAddress;
 }
 
-- (BOOL)isRecipientIdBlocked:(NSString *)recipientId
+- (BOOL)isSignalServiceAddressBlocked:(SignalServiceAddress *)address
 {
     OWSAssertIsOnMainThread();
 
-    return [self.blockListCache isRecipientIdBlocked:recipientId];
+    return [self.blockListCache isAddressBlocked:address];
 }
 
 - (BOOL)isGroupIdBlocked:(NSData *)groupId
@@ -160,7 +181,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        return [self isRecipientIdBlocked:contactThread.contactIdentifier];
+        return [self isSignalServiceAddressBlocked:contactThread.contactAddress];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         return [self isGroupIdBlocked:groupThread.groupModel.groupId];
@@ -174,15 +195,22 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    NSMutableDictionary<NSString *, SignalAccount *> *signalAccountMap = [NSMutableDictionary new];
+    NSMutableDictionary<NSString *, SignalAccount *> *phoneNumberSignalAccountMap = [NSMutableDictionary new];
+    NSMutableDictionary<NSUUID *, SignalAccount *> *uuidSignalAccountMap = [NSMutableDictionary new];
     NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
     for (SignalAccount *signalAccount in self.contactsManager.signalAccounts) {
         if (![self isSignalAccountHidden:signalAccount]) {
-            signalAccountMap[signalAccount.recipientId] = signalAccount;
+            if (signalAccount.recipientPhoneNumber) {
+                phoneNumberSignalAccountMap[signalAccount.recipientPhoneNumber] = signalAccount;
+            }
+            if (signalAccount.recipientUUID) {
+                uuidSignalAccountMap[signalAccount.recipientUUID] = signalAccount;
+            }
             [signalAccounts addObject:signalAccount];
         }
     }
-    self.signalAccountMap = [signalAccountMap copy];
+    self.phoneNumberSignalAccountMap = [phoneNumberSignalAccountMap copy];
+    self.uuidSignalAccountMap = [uuidSignalAccountMap copy];
     self.signalAccounts = [signalAccounts copy];
     self.nonSignalContacts = nil;
 
@@ -207,7 +235,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // Check for matches against "Note to Self".
     NSMutableArray<SignalAccount *> *signalAccountsToSearch = [self.signalAccounts mutableCopy];
-    SignalAccount *selfAccount = [[SignalAccount alloc] initWithRecipientId:self.localNumber];
+    SignalAccount *selfAccount = [[SignalAccount alloc] initWithSignalServiceAddress:self.localAddress];
     [signalAccountsToSearch addObject:selfAccount];
     return [self.fullTextSearcher filterSignalAccounts:signalAccountsToSearch withSearchText:searchText];
 }
@@ -271,8 +299,8 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableSet<Contact *> *nonSignalContactSet = [NSMutableSet new];
     __block NSArray<Contact *> *nonSignalContacts;
 
-    [OWSPrimaryStorage.dbReadConnection
-        asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self.databaseStorage
+        asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
             for (Contact *contact in self.contactsManager.allContactsMap.allValues) {
                 NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
                 if (signalRecipients.count < 1) {
@@ -284,7 +312,7 @@ NS_ASSUME_NONNULL_BEGIN
                     return [left.fullName compare:right.fullName];
                 }];
         }
-        completionBlock:^{
+        completion:^{
             self.nonSignalContacts = nonSignalContacts;
         }];
 }
@@ -292,9 +320,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSArray<Contact *> *)nonSignalContacts
 {
     OWSAssertIsOnMainThread();
+
     if (!_nonSignalContacts) {
         NSMutableSet<Contact *> *nonSignalContacts = [NSMutableSet new];
-        [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
             for (Contact *contact in self.contactsManager.allContactsMap.allValues) {
                 NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
                 if (signalRecipients.count < 1) {
@@ -345,22 +374,24 @@ NS_ASSUME_NONNULL_BEGIN
     [viewController presentAlert:alert];
 }
 
-- (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
-                                fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
-                                   editImmediately:(BOOL)shouldEditImmediately
+- (void)presentContactViewControllerForAddress:(SignalServiceAddress *)address
+                            fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
+                               editImmediately:(BOOL)shouldEditImmediately
 {
-    [self presentContactViewControllerForRecipientId:recipientId
-                                  fromViewController:fromViewController
-                                     editImmediately:shouldEditImmediately
-                              addToExistingCnContact:nil];
+    [self presentContactViewControllerForAddress:address
+                              fromViewController:fromViewController
+                                 editImmediately:shouldEditImmediately
+                          addToExistingCnContact:nil];
 }
 
-- (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
-                                fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
-                                   editImmediately:(BOOL)shouldEditImmediately
-                            addToExistingCnContact:(CNContact *_Nullable)existingContact
+- (void)presentContactViewControllerForAddress:(SignalServiceAddress *)address
+                            fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
+                               editImmediately:(BOOL)shouldEditImmediately
+                        addToExistingCnContact:(CNContact *_Nullable)existingContact
 {
-    SignalAccount *signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
+    OWSAssertIsOnMainThread();
+
+    SignalAccount *signalAccount = [self fetchSignalAccountForAddress:address];
 
     if (!self.contactsManager.supportsContactEditing) {
         // Should not expose UI that lets the user get here.
@@ -382,27 +413,30 @@ NS_ASSUME_NONNULL_BEGIN
         // Only add recipientId as a phone number for the existing contact
         // if its not already present.
         BOOL hasPhoneNumber = NO;
-        for (CNLabeledValue *existingPhoneNumber in phoneNumbers) {
-            CNPhoneNumber *phoneNumber = existingPhoneNumber.value;
-            if ([phoneNumber.stringValue isEqualToString:recipientId]) {
-                OWSFailDebug(@"We currently only should the 'add to existing contact' UI for phone numbers that don't "
-                             @"correspond to an existing user.");
-                hasPhoneNumber = YES;
-                break;
+        if (address.phoneNumber) {
+            for (CNLabeledValue *existingPhoneNumber in phoneNumbers) {
+                CNPhoneNumber *phoneNumber = existingPhoneNumber.value;
+                if ([phoneNumber.stringValue isEqualToString:address.phoneNumber]) {
+                    OWSFailDebug(
+                        @"We currently only should the 'add to existing contact' UI for phone numbers that don't "
+                        @"correspond to an existing user.");
+                    hasPhoneNumber = YES;
+                    break;
+                }
             }
-        }
-        if (!hasPhoneNumber) {
-            CNPhoneNumber *phoneNumber = [CNPhoneNumber phoneNumberWithStringValue:recipientId];
-            CNLabeledValue<CNPhoneNumber *> *labeledPhoneNumber =
-                [CNLabeledValue labeledValueWithLabel:CNLabelPhoneNumberMain value:phoneNumber];
-            [phoneNumbers addObject:labeledPhoneNumber];
-            updatedContact.phoneNumbers = phoneNumbers;
+            if (!hasPhoneNumber) {
+                CNPhoneNumber *phoneNumber = [CNPhoneNumber phoneNumberWithStringValue:address.phoneNumber];
+                CNLabeledValue<CNPhoneNumber *> *labeledPhoneNumber =
+                    [CNLabeledValue labeledValueWithLabel:CNLabelPhoneNumberMain value:phoneNumber];
+                [phoneNumbers addObject:labeledPhoneNumber];
+                updatedContact.phoneNumbers = phoneNumbers;
 
-            // When adding a phone number to an existing contact, immediately enter
-            // "edit" mode.
-            shouldEditImmediately = YES;
+                // When adding a phone number to an existing contact, immediately enter
+                // "edit" mode.
+                shouldEditImmediately = YES;
+            }
+            cnContact = updatedContact;
         }
-        cnContact = updatedContact;
     }
     if (signalAccount && !cnContact) {
         cnContact = [self.contactsManager cnContactWithId:signalAccount.contact.cnContactId];
@@ -423,12 +457,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (!contactViewController) {
         CNMutableContact *newContact = [CNMutableContact new];
-        CNPhoneNumber *phoneNumber = [CNPhoneNumber phoneNumberWithStringValue:recipientId];
-        CNLabeledValue<CNPhoneNumber *> *labeledPhoneNumber =
-            [CNLabeledValue labeledValueWithLabel:CNLabelPhoneNumberMain value:phoneNumber];
-        newContact.phoneNumbers = @[ labeledPhoneNumber ];
+        if (address.phoneNumber) {
+            CNPhoneNumber *phoneNumber = [CNPhoneNumber phoneNumberWithStringValue:address.phoneNumber];
+            CNLabeledValue<CNPhoneNumber *> *labeledPhoneNumber =
+                [CNLabeledValue labeledValueWithLabel:CNLabelPhoneNumberMain value:phoneNumber];
+            newContact.phoneNumbers = @[ labeledPhoneNumber ];
+        }
 
-        newContact.givenName = [self.profileManager profileNameForRecipientId:recipientId];
+        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+            newContact.givenName = [self.profileManager profileNameForAddress:address transaction:transaction];
+        }];
 
         contactViewController = [CNContactViewController viewControllerForNewContact:newContact];
     }

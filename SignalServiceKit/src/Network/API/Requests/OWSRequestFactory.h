@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSDevice;
 @class PreKeyRecord;
 @class SMKUDAccessKey;
+@class SignalServiceAddress;
 @class SignedPreKeyRecord;
 @class TSRequest;
 
@@ -26,7 +27,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)disableRegistrationLockV2Request;
 
-+ (TSRequest *)acknowledgeMessageDeliveryRequestWithSource:(NSString *)source timestamp:(UInt64)timestamp;
++ (TSRequest *)acknowledgeMessageDeliveryRequestWithAddress:(SignalServiceAddress *)address timestamp:(UInt64)timestamp;
 
 + (TSRequest *)acknowledgeMessageDeliveryRequestWithServerGuid:(NSString *)serverGuid;
 
@@ -40,9 +41,9 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)getMessagesRequest;
 
-+ (TSRequest *)getProfileRequestWithRecipientId:(NSString *)recipientId
-                                    udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
-    NS_SWIFT_NAME(getProfileRequest(recipientId:udAccessKey:));
++ (TSRequest *)getProfileRequestWithAddress:(SignalServiceAddress *)address
+                                udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
+    NS_SWIFT_NAME(getProfileRequest(address:udAccessKey:));
 
 + (TSRequest *)turnServerInfoRequest;
 
@@ -56,6 +57,8 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)updateAttributesRequest;
 
++ (TSRequest *)accountWhoAmIRequest;
+
 + (TSRequest *)unregisterAccountRequest;
 
 + (TSRequest *)requestPreauthChallengeRequestWithRecipientId:(NSString *)recipientId
@@ -67,10 +70,10 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                                                 captchaToken:(nullable NSString *)captchaToken
                                                    transport:(TSVerificationTransport)transport;
 
-+ (TSRequest *)submitMessageRequestWithRecipient:(NSString *)recipientId
-                                        messages:(NSArray *)messages
-                                       timeStamp:(uint64_t)timeStamp
-                                     udAccessKey:(nullable SMKUDAccessKey *)udAccessKey;
++ (TSRequest *)submitMessageRequestWithAddress:(SignalServiceAddress *)recipientAddress
+                                      messages:(NSArray *)messages
+                                     timeStamp:(uint64_t)timeStamp
+                                   udAccessKey:(nullable SMKUDAccessKey *)udAccessKey;
 
 + (TSRequest *)verifyCodeRequestWithVerificationCode:(NSString *)verificationCode
                                            forNumber:(NSString *)phoneNumber
@@ -83,15 +86,19 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)currentSignedPreKeyRequest;
 
-+ (TSRequest *)recipientPrekeyRequestWithRecipient:(NSString *)recipientNumber
-                                          deviceId:(NSString *)deviceId
-                                       udAccessKey:(nullable SMKUDAccessKey *)udAccessKey;
++ (TSRequest *)recipientPreKeyRequestWithAddress:(SignalServiceAddress *)recipientAddress
+                                        deviceId:(NSString *)deviceId
+                                     udAccessKey:(nullable SMKUDAccessKey *)udAccessKey;
 
 + (TSRequest *)registerSignedPrekeyRequestWithSignedPreKeyRecord:(SignedPreKeyRecord *)signedPreKey;
 
 + (TSRequest *)registerPrekeysRequestWithPrekeyArray:(NSArray *)prekeys
                                          identityKey:(NSData *)identityKeyPublic
                                         signedPreKey:(SignedPreKeyRecord *)signedPreKey;
+
+#pragma mark - Storage Service
+
++ (TSRequest *)storageAuthRequest;
 
 #pragma mark - Remote Attestation
 

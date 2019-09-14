@@ -8,8 +8,8 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SignalAccount.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSThread.h>
@@ -21,15 +21,15 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 @interface ContactCellView ()
 
 @property (nonatomic) UILabel *nameLabel;
-@property (nonatomic) UILabel *profileNameLabel;
 @property (nonatomic) UIImageView *avatarView;
 @property (nonatomic) UILabel *subtitleLabel;
+@property (nonatomic) UILabel *profileNameLabel;
 @property (nonatomic) UILabel *accessoryLabel;
 @property (nonatomic) UIStackView *nameContainerView;
 @property (nonatomic) UIView *accessoryViewContainer;
 
 @property (nonatomic, nullable) TSThread *thread;
-@property (nonatomic) NSString *recipientId;
+@property (nonatomic) SignalServiceAddress *address;
 
 @end
 
@@ -54,11 +54,9 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     return Environment.shared.contactsManager;
 }
 
-- (OWSPrimaryStorage *)primaryStorage
+- (SDSDatabaseStorage *)databaseStorage
 {
-    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
-
-    return SSKEnvironment.shared.primaryStorage;
+    return SDSDatabaseStorage.shared;
 }
 
 - (TSAccountManager *)tsAccountManager
@@ -83,10 +81,9 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.nameLabel = [UILabel new];
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
-    self.profileNameLabel = [UILabel new];
-    self.profileNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-
     self.subtitleLabel = [UILabel new];
+
+    self.profileNameLabel = [UILabel new];
 
     self.accessoryLabel = [[UILabel alloc] init];
     self.accessoryLabel.textAlignment = NSTextAlignmentRight;
@@ -127,30 +124,19 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.accessoryLabel.textColor = Theme.middleGrayColor;
 }
 
-- (void)configureWithRecipientId:(NSString *)recipientId
+- (void)configureWithRecipientAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
     // Update fonts to reflect changes to dynamic type.
     [self configureFontsAndColors];
 
-    self.recipientId = recipientId;
+    self.address = address;
 
-    [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        self.thread = [TSContactThread getThreadWithContactId:recipientId transaction:transaction];
+    // TODO remove sneaky transaction.
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        self.thread = [TSContactThread getThreadWithContactAddress:address transaction:transaction];
     }];
-
-    BOOL isNoteToSelf = (IsNoteToSelfEnabled() && [recipientId isEqualToString:self.tsAccountManager.localNumber]);
-    if (isNoteToSelf) {
-        self.nameLabel.attributedText = [[NSAttributedString alloc]
-            initWithString:NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.")
-                attributes:@{
-                    NSFontAttributeName : self.nameLabel.font,
-                }];
-    } else {
-        self.nameLabel.attributedText =
-            [self.contactsManager formattedFullNameForRecipientId:recipientId font:self.nameLabel.font];
-    }
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
@@ -168,7 +154,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     [self layoutSubviews];
 }
 
-- (void)configureWithThread:(TSThread *)thread
+- (void)configureWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
     self.thread = thread;
@@ -176,15 +162,15 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     // Update fonts to reflect changes to dynamic type.
     [self configureFontsAndColors];
 
-    NSString *threadName = thread.name;
-    if (threadName.length == 0 && [thread isKindOfClass:[TSGroupThread class]]) {
-        threadName = [MessageStrings newGroupDefaultTitle];
+    NSString *threadName = [self.contactsManager displayNameForThread:thread transaction:transaction];
+    TSContactThread *_Nullable contactThread;
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        contactThread = (TSContactThread *)self.thread;
     }
 
-    BOOL isNoteToSelf
-        = (!thread.isGroupThread && [thread.contactIdentifier isEqualToString:self.tsAccountManager.localNumber]);
+    BOOL isNoteToSelf = contactThread && contactThread.contactAddress.isLocalAddress;
     if (isNoteToSelf) {
-        threadName = NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.");
+        threadName = MessageStrings.noteToSelf;
     }
 
     NSAttributedString *attributedText =
@@ -194,8 +180,8 @@ const CGFloat kContactCellAvatarTextMargin = 12;
                                         }];
     self.nameLabel.attributedText = attributedText;
 
-    if ([thread isKindOfClass:[TSContactThread class]]) {
-        self.recipientId = thread.contactIdentifier;
+    if (contactThread != nil) {
+        self.address = contactThread.contactAddress;
 
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(otherUsersProfileDidChange:)
@@ -216,9 +202,9 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
 - (void)updateAvatar
 {
-    NSString *recipientId = self.recipientId;
-    if (recipientId.length == 0) {
-        OWSFailDebug(@"recipientId should not be nil");
+    SignalServiceAddress *address = self.address;
+    if (!address.isValid) {
+        OWSFailDebug(@"address should not be invalid");
         self.avatarView.image = nil;
         return;
     }
@@ -227,41 +213,33 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         if (self.thread) {
             return self.thread.conversationColorName;
         } else {
-            OWSAssertDebug(self.recipientId);
-            return [TSThread stableColorNameForNewConversationWithString:self.recipientId];
+            return [TSThread stableColorNameForNewConversationWithString:address.stringForDisplay];
         }
     }();
 
-    self.avatarView.image =
-        [[[OWSContactAvatarBuilder alloc] initWithSignalId:recipientId colorName:colorName diameter:kStandardAvatarSize]
-            build];
+    OWSContactAvatarBuilder *avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithAddress:address
+                                                                                    colorName:colorName
+                                                                                     diameter:kStandardAvatarSize];
+
+    self.avatarView.image = [avatarBuilder build];
 }
 
 - (void)updateProfileName
 {
-    OWSContactsManager *contactsManager = self.contactsManager;
-    if (contactsManager == nil) {
-        OWSFailDebug(@"contactsManager should not be nil");
-        self.profileNameLabel.text = nil;
-        return;
-    }
-
-    NSString *recipientId = self.recipientId;
-    if (recipientId.length == 0) {
-        OWSFailDebug(@"recipientId should not be nil");
-        self.profileNameLabel.text = nil;
-        return;
-    }
-
-    if ([contactsManager hasNameInSystemContactsForRecipientId:recipientId]) {
-        // Don't display profile name when we have a veritas name in system Contacts
-        self.profileNameLabel.text = nil;
+    BOOL isNoteToSelf = IsNoteToSelfEnabled() && self.address.isLocalAddress;
+    if (isNoteToSelf) {
+        self.nameLabel.text = MessageStrings.noteToSelf;
     } else {
-        // Use profile name, if any is available
-        self.profileNameLabel.text = [contactsManager formattedProfileNameForRecipientId:recipientId];
+        self.nameLabel.text = [self.contactsManager displayNameForAddress:self.address];
     }
 
-    [self.profileNameLabel setNeedsLayout];
+    if (!SSKFeatureFlags.profileDisplayChanges
+        && ![self.contactsManager hasNameInSystemContactsForAddress:self.address]) {
+        self.profileNameLabel.text = [self.contactsManager formattedProfileNameForAddress:self.address];
+        [self.profileNameLabel setNeedsLayout];
+    }
+
+    [self.nameLabel setNeedsLayout];
 }
 
 - (void)prepareForReuse
@@ -283,10 +261,10 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 {
     OWSAssertIsOnMainThread();
 
-    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
-    OWSAssertDebug(recipientId.length > 0);
+    SignalServiceAddress *address = notification.userInfo[kNSNotificationKey_ProfileAddress];
+    OWSAssertDebug(address.isValid);
 
-    if (recipientId.length > 0 && [self.recipientId isEqualToString:recipientId]) {
+    if (address.isValid && [self.address isEqualToAddress:address]) {
         [self updateProfileName];
         [self updateAvatar];
     }

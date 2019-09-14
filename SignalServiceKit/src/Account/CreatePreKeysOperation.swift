@@ -9,7 +9,7 @@ import PromiseKit
 public class CreatePreKeysOperation: OWSOperation {
 
     private var accountServiceClient: AccountServiceClient {
-        return AccountServiceClient.shared
+        return SSKEnvironment.shared.accountServiceClient
     }
 
     private var preKeyStore: SSKPreKeyStore {
@@ -47,7 +47,7 @@ public class CreatePreKeysOperation: OWSOperation {
             Logger.debug("done")
             self.reportSuccess()
         }.catch { error in
-            self.reportError(error)
+            self.reportError(withUndefinedRetry: error)
         }.retainUntilComplete()
     }
 }

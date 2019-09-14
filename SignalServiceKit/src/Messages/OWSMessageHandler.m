@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 // used in log formatting
 NSString *envelopeAddress(SSKProtoEnvelope *envelope)
 {
-    return [NSString stringWithFormat:@"%@.%d", envelope.source, (unsigned int)envelope.sourceDevice];
+    return [NSString stringWithFormat:@"%@.%d", envelope.sourceAddress, (unsigned int)envelope.sourceDevice];
 }
 
 @implementation OWSMessageHandler
@@ -168,7 +168,7 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
     } else if (syncMessage.read.count > 0) {
         return @"ReadReceipt";
     } else if (syncMessage.verified) {
-        return [NSString stringWithFormat:@"Verification for: %@", syncMessage.verified.destination];
+        return [NSString stringWithFormat:@"Verification for: %@", syncMessage.verified.destinationAddress];
     } else if (syncMessage.stickerPackOperation) {
         NSMutableString *description = [NSMutableString new];
         NSMutableArray<NSString *> *operationTypes = [NSMutableArray new];

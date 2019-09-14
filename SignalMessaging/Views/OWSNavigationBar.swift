@@ -119,6 +119,36 @@ public class OWSNavigationBar: UINavigationBar {
         }
     }
 
+    public func snapshotViewIncludingBackground(afterScreenUpdates: Bool) -> UIView? {
+        let originalFrame = self.frame
+        let originalBounds = self.bounds
+
+        // NavigationBars are weird because though it appears as though the status bar
+        // content is "in" or maybe "above" (z-index) the navbar, the navbar frame is strictly
+        // lower (y-index) than the status bar.
+        // To work with that, the navbar background, including the blur effect when transparency
+        // is enabled, extends beyond the navbars's bounds. This allows the background to extend
+        // up (y-index) and under (z-index) the status bar, without clips to bounds.
+        //
+        // Snapshots, however, clip to bounds. So as to capture the full size of the background
+        // in our snapshot we temporarily adjust the navbars frame.
+        self.frame = CGRect(x: 0, y: callBannerHeight, width: fullWidth, height: navbarWithoutStatusHeight + statusBarHeight)
+        self.bounds = self.frame
+        defer {
+            self.frame = originalFrame
+            self.bounds = originalBounds
+        }
+
+        guard let barSnapshot = self.snapshotView(afterScreenUpdates: afterScreenUpdates) else {
+            owsFailDebug("barSnapshot was unexpectedly nil")
+            return nil
+        }
+
+        barSnapshot.frame.origin = .zero
+
+        return barSnapshot
+    }
+
     @objc
     public func themeDidChange() {
         Logger.debug("")

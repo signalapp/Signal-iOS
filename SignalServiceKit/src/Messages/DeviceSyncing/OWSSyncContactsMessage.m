@@ -30,11 +30,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSSyncContactsMessage
 
-- (instancetype)initWithSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
-                       identityManager:(OWSIdentityManager *)identityManager
-                        profileManager:(id<ProfileManagerProtocol>)profileManager
+- (instancetype)initWithThread:(TSThread *)thread
+                signalAccounts:(NSArray<SignalAccount *> *)signalAccounts
+               identityManager:(OWSIdentityManager *)identityManager
+                profileManager:(id<ProfileManagerProtocol>)profileManager
 {
-    self = [super init];
+    self = [super initWithThread:thread];
     if (!self) {
         return self;
     }
@@ -91,19 +92,19 @@ NS_ASSUME_NONNULL_BEGIN
     return syncMessageBuilder;
 }
 
-- (nullable NSData *)buildPlainTextAttachmentDataWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (nullable NSData *)buildPlainTextAttachmentDataWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     NSMutableArray<SignalAccount *> *signalAccounts = [self.signalAccounts mutableCopy];
-    
-    NSString *_Nullable localNumber = self.tsAccountManager.localNumber;
-    OWSAssertDebug(localNumber);
-    if (localNumber) {
-        BOOL hasLocalNumber = NO;
+
+    SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
+    OWSAssertDebug(localAddress.isValid);
+    if (localAddress) {
+        BOOL hasLocalAddress = NO;
         for (SignalAccount *signalAccount in signalAccounts) {
-            hasLocalNumber |= [signalAccount.recipientId isEqualToString:localNumber];
+            hasLocalAddress |= signalAccount.recipientAddress.isLocalAddress;
         }
-        if (!hasLocalNumber) {
-            SignalAccount *signalAccount = [[SignalAccount alloc] initWithRecipientId:localNumber];
+        if (!hasLocalAddress) {
+            SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalServiceAddress:localAddress];
             // OWSContactsOutputStream requires all signalAccount to have a contact.
             signalAccount.contact = [[Contact alloc] initWithSystemContact:[CNContact new]];
             [signalAccounts addObject:signalAccount];
@@ -120,18 +121,22 @@ NS_ASSUME_NONNULL_BEGIN
 
     for (SignalAccount *signalAccount in signalAccounts) {
         OWSRecipientIdentity *_Nullable recipientIdentity =
-            [self.identityManager recipientIdentityForRecipientId:signalAccount.recipientId];
-        NSData *_Nullable profileKeyData = [self.profileManager profileKeyDataForRecipientId:signalAccount.recipientId];
+            [self.identityManager recipientIdentityForAddress:signalAccount.recipientAddress];
+        NSData *_Nullable profileKeyData =
+            [self.profileManager profileKeyDataForAddress:signalAccount.recipientAddress transaction:transaction];
 
         OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration;
         NSString *conversationColorName;
-        
-        TSContactThread *_Nullable contactThread = [TSContactThread getThreadWithContactId:signalAccount.recipientId transaction:transaction];
+
+        TSContactThread *_Nullable contactThread =
+            [TSContactThread getThreadWithContactAddress:signalAccount.recipientAddress transaction:transaction];
         if (contactThread) {
             conversationColorName = contactThread.conversationColorName;
-            disappearingMessagesConfiguration = [contactThread disappearingMessagesConfigurationWithTransaction:transaction];
+            disappearingMessagesConfiguration =
+                [contactThread disappearingMessagesConfigurationWithTransaction:transaction];
         } else {
-            conversationColorName = [TSThread stableColorNameForNewConversationWithString:signalAccount.recipientId];
+            conversationColorName =
+                [TSThread stableColorNameForNewConversationWithString:signalAccount.recipientAddress.stringForDisplay];
         }
 
         [contactsOutputStream writeSignalAccount:signalAccount

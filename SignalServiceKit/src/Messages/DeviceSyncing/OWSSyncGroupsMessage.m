@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSyncGroupsMessage.h"
@@ -16,9 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSSyncGroupsMessage
 
-- (instancetype)init
+- (instancetype)initWithThread:(TSThread *)thread
 {
-    return [super init];
+    return [super initWithThread:thread];
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
     return syncMessageBuilder;
 }
 
-- (nullable NSData *)buildPlainTextAttachmentDataWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (nullable NSData *)buildPlainTextAttachmentDataWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     // TODO use temp file stream to avoid loading everything into memory at once
     // First though, we need to re-engineer our attachment process to accept streams (encrypting with stream,
@@ -66,18 +66,17 @@ NS_ASSUME_NONNULL_BEGIN
     OWSGroupsOutputStream *groupsOutputStream = [[OWSGroupsOutputStream alloc] initWithOutputStream:dataOutputStream];
 
     [TSGroupThread
-        enumerateCollectionObjectsWithTransaction:transaction
-                                       usingBlock:^(id obj, BOOL *stop) {
-                                           if (![obj isKindOfClass:[TSGroupThread class]]) {
-                                               if (![obj isKindOfClass:[TSContactThread class]]) {
-                                                   OWSLogWarn(
-                                                       @"Ignoring non group thread in thread collection: %@", obj);
-                                               }
-                                               return;
-                                           }
-                                           TSGroupThread *groupThread = (TSGroupThread *)obj;
-                                           [groupsOutputStream writeGroup:groupThread transaction:transaction];
-                                       }];
+        anyEnumerateWithTransaction:transaction
+                              block:^(TSThread *thread, BOOL *stop) {
+                                  if (![thread isKindOfClass:[TSGroupThread class]]) {
+                                      if (![thread isKindOfClass:[TSContactThread class]]) {
+                                          OWSLogWarn(@"Ignoring non group thread in thread collection: %@", thread);
+                                      }
+                                      return;
+                                  }
+                                  TSGroupThread *groupThread = (TSGroupThread *)thread;
+                                  [groupsOutputStream writeGroup:groupThread transaction:transaction];
+                              }];
 
     [dataOutputStream close];
 

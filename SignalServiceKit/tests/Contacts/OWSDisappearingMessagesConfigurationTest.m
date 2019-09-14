@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "SSKBaseTestObjC.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,7 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                        durationSeconds:10];
     XCTAssertFalse(configuration.dictionaryValueDidChange);
 
-    [configuration save];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [configuration anyInsertWithTransaction:transaction];
+    }];
     XCTAssertFalse(configuration.dictionaryValueDidChange);
 
     configuration.enabled = NO;
@@ -30,8 +33,11 @@ NS_ASSUME_NONNULL_BEGIN
     configuration.enabled = YES;
     XCTAssertFalse(configuration.dictionaryValueDidChange);
 
-    OWSDisappearingMessagesConfiguration *reloadedConfiguration =
-        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:@"fake-thread-id"];
+    __block OWSDisappearingMessagesConfiguration *reloadedConfiguration;
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        reloadedConfiguration =
+            [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:@"fake-thread-id" transaction:transaction];
+    }];
     XCTAssertNotNil(reloadedConfiguration); // Sanity Check.
     XCTAssertFalse(reloadedConfiguration.dictionaryValueDidChange);
 

@@ -33,7 +33,7 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
                    contactShare: nil,
                    linkPreview: nil,
                    messageSticker: nil,
-                   perMessageExpirationDurationSeconds: 0)
+                   isViewOnceMessage: false)
     }
 
     @objc
@@ -78,7 +78,7 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
         let typingBuilder = SSKProtoTypingMessage.builder(timestamp: self.timestamp)
         typingBuilder.setAction(protoAction(forAction: action))
 
-        if let groupThread = self.thread as? TSGroupThread {
+        if let groupThread = self.threadWithSneakyTransaction as? TSGroupThread {
             typingBuilder.setGroupID(groupThread.groupModel.groupId)
         }
 
@@ -98,7 +98,7 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
     // MARK: TSYapDatabaseObject overrides
 
     @objc
-    public override func shouldBeSaved() -> Bool {
+    public override var shouldBeSaved: Bool {
         return false
     }
 

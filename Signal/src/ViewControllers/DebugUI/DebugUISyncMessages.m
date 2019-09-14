@@ -15,9 +15,8 @@
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
-#import <SignalServiceKit/OWSSyncGroupsMessage.h>
 #import <SignalServiceKit/OWSSyncGroupsRequestMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SSKSessionStore.h>
@@ -28,9 +27,18 @@
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSThread.h>
 
+#ifdef DEBUG
+
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation DebugUISyncMessages
+
+#pragma mark - Dependencies
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
 
 #pragma mark - Factory Methods
 
@@ -41,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread
 {
-    NSArray<OWSTableItem *> *items = @[
+    NSMutableArray<OWSTableItem *> *items = [@[
         [OWSTableItem itemWithTitle:@"Send Contacts Sync Message"
                         actionBlock:^{
                             [DebugUISyncMessages sendContactsSyncMessage];
@@ -58,7 +66,19 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUISyncMessages sendConfigurationSyncMessage];
                         }],
-    ];
+        [OWSTableItem itemWithTitle:@"Send Verification Sync Message"
+                        actionBlock:^{
+                            [DebugUISyncMessages sendVerificationSyncMessage];
+                        }],
+    ] mutableCopy];
+
+    if (thread != nil) {
+        [items addObject:[OWSTableItem itemWithTitle:@"Send Conversation Settings Sync Message"
+                                         actionBlock:^{
+                                             [DebugUISyncMessages syncConversationSettingsWithThread:thread];
+                                         }]];
+    }
+
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
@@ -87,11 +107,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSProfileManager sharedManager];
 }
 
-+ (YapDatabaseConnection *)dbConnection
-{
-    return [OWSPrimaryStorage.sharedManager newDatabaseConnection];
-}
-
 + (id<OWSSyncManagerProtocol>)syncManager
 {
     OWSAssertDebug(SSKEnvironment.shared.syncManager);
@@ -108,20 +123,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendGroupSyncMessage
 {
-    OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
-    __block DataSource *dataSource;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        dataSource = [DataSourceValue
-            dataSourceWithSyncMessageData:[syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction]];
+    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.syncManager syncGroupsWithTransaction:transaction];
     }];
-
-    [self.messageSenderJobQueue addMediaMessage:syncGroupsMessage
-                                     dataSource:dataSource
-                                    contentType:OWSMimeTypeApplicationOctetStream
-                                 sourceFilename:nil
-                                        caption:nil
-                                 albumMessageId:nil
-                          isTemporaryAttachment:YES];
 }
 
 + (void)sendBlockListSyncMessage
@@ -134,6 +138,22 @@ NS_ASSUME_NONNULL_BEGIN
     [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
 }
 
++ (void)sendVerificationSyncMessage
+{
+    [OWSIdentityManager.sharedManager tryToSyncQueuedVerificationStates];
+}
+
++ (void)syncConversationSettingsWithThread:(TSThread *)thread
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        ConversationConfigurationSyncOperation *operation =
+            [[ConversationConfigurationSyncOperation alloc] initWithThread:thread];
+        OWSAssertDebug(operation.isReady);
+        [operation start];
+    });
+}
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

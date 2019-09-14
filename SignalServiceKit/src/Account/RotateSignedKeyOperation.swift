@@ -12,7 +12,7 @@ public class RotateSignedPreKeyOperation: OWSOperation {
     }
 
     private var accountServiceClient: AccountServiceClient {
-        return AccountServiceClient.shared
+        return SSKEnvironment.shared.accountServiceClient
     }
 
     private var signedPreKeyStore: SSKSignedPreKeyStore {
@@ -44,7 +44,7 @@ public class RotateSignedPreKeyOperation: OWSOperation {
             Logger.debug("done")
             self.reportSuccess()
         }.catch { error in
-            self.reportError(error)
+            self.reportError(withUndefinedRetry: error)
         }.retainUntilComplete()
     }
 

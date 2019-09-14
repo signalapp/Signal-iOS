@@ -143,7 +143,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     required init(call: SignalCall) {
         contactsManager = Environment.shared.contactsManager
         self.call = call
-        self.thread = TSContactThread.getOrCreateThread(contactId: call.remotePhoneNumber)
+        self.thread = TSContactThread.getOrCreateThread(contactAddress: call.remoteAddress)
         super.init(nibName: nil, bundle: nil)
 
         allAudioSources = Set(callUIAdapter.audioService.availableInputs)
@@ -200,7 +200,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        contactNameLabel.text = contactsManager.stringForConversationTitle(withPhoneIdentifier: thread.contactIdentifier())
+        contactNameLabel.text = contactsManager.displayName(for: thread.contactAddress)
         updateAvatarImage()
         NotificationCenter.default.addObserver(forName: .OWSContactsManagerSignalAccountsDidChange, object: nil, queue: nil) { [weak self] _ in
             guard let strongSelf = self else { return }
@@ -948,7 +948,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     @objc func didPressDeclineCall(sender: UIButton) {
         Logger.info("")
 
-        callUIAdapter.declineCall(call)
+        callUIAdapter.localHangupCall(call)
 
         dismissIfPossible(shouldDelay: false)
     }

@@ -4,6 +4,7 @@
 
 #import "OWSVerificationStateChangeMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -11,21 +12,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                            thread:(TSThread *)thread
-                      recipientId:(NSString *)recipientId
+                 recipientAddress:(SignalServiceAddress *)recipientAddress
                 verificationState:(OWSVerificationState)verificationState
                     isLocalChange:(BOOL)isLocalChange
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(recipientAddress.isValid);
 
     self = [super initWithTimestamp:timestamp inThread:thread messageType:TSInfoMessageVerificationStateChange];
     if (!self) {
         return self;
     }
 
-    _recipientId = recipientId;
+    _recipientAddress = recipientAddress;
     _verificationState = verificationState;
     _isLocalChange = isLocalChange;
 
+    return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (self) {
+        if (_recipientAddress == nil) {
+            NSString *_Nullable phoneNumber = [coder decodeObjectForKey:@"recipientId"];
+            _recipientAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+            OWSAssertDebug(_recipientAddress.isValid);
+        }
+    }
     return self;
 }
 
@@ -46,20 +60,19 @@ NS_ASSUME_NONNULL_BEGIN
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
+              isViewOnceComplete:(BOOL)isViewOnceComplete
+               isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
-perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSeconds
-  perMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
-       perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
                    customMessage:(nullable NSString *)customMessage
         infoMessageSchemaVersion:(NSUInteger)infoMessageSchemaVersion
                      messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
-         unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
+             unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
                    isLocalChange:(BOOL)isLocalChange
-                     recipientId:(NSString *)recipientId
+                recipientAddress:(SignalServiceAddress *)recipientAddress
                verificationState:(OWSVerificationState)verificationState
 {
     self = [super initWithUniqueId:uniqueId
@@ -73,25 +86,24 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
                    expireStartedAt:expireStartedAt
                          expiresAt:expiresAt
                   expiresInSeconds:expiresInSeconds
+                isViewOnceComplete:isViewOnceComplete
+                 isViewOnceMessage:isViewOnceMessage
                        linkPreview:linkPreview
                     messageSticker:messageSticker
-perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
-    perMessageExpirationHasExpired:perMessageExpirationHasExpired
-         perMessageExpireStartedAt:perMessageExpireStartedAt
                      quotedMessage:quotedMessage
                      schemaVersion:schemaVersion
                      customMessage:customMessage
           infoMessageSchemaVersion:infoMessageSchemaVersion
                        messageType:messageType
                               read:read
-           unregisteredRecipientId:unregisteredRecipientId];
+               unregisteredAddress:unregisteredAddress];
 
     if (!self) {
         return self;
     }
 
     _isLocalChange = isLocalChange;
-    _recipientId = recipientId;
+    _recipientAddress = recipientAddress;
     _verificationState = verificationState;
 
     return self;

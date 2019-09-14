@@ -10,7 +10,7 @@ class AddMoreRailItem: GalleryRailItem {
         let view = UIView()
         view.backgroundColor = UIColor.black.withAlphaComponent(0.33)
 
-        let iconView = UIImageView(image: #imageLiteral(resourceName: "ic_plus_24").withRenderingMode(.alwaysTemplate))
+        let iconView = UIImageView(image: #imageLiteral(resourceName: "plus-24").withRenderingMode(.alwaysTemplate))
         iconView.tintColor = .ows_white
         view.addSubview(iconView)
         iconView.setCompressionResistanceHigh()
@@ -18,6 +18,12 @@ class AddMoreRailItem: GalleryRailItem {
         iconView.autoCenterInSuperview()
 
         return view
+    }
+}
+
+extension AddMoreRailItem: Equatable {
+    static func == (lhs: AddMoreRailItem, rhs: AddMoreRailItem) -> Bool {
+        return true
     }
 }
 

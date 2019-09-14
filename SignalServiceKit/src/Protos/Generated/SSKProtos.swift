@@ -8,15 +8,20 @@ import Foundation
 public class SSKProtos: NSObject {
 
     private override init() {}
-    
+
     @objc
     public class var initialProtocolVersion: Int {
         return SignalServiceProtos_DataMessage.ProtocolVersion.initial.rawValue
     }
-    
+
     @objc
     public class var perMessageExpirationProtocolVersion: Int {
         return SignalServiceProtos_DataMessage.ProtocolVersion.messageTimers.rawValue
+    }
+
+    @objc
+    public class var viewOnceMessagesProtocolVersion: Int {
+        return SignalServiceProtos_DataMessage.ProtocolVersion.viewOnce.rawValue
     }
 
     @objc

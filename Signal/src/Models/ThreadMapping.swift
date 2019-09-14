@@ -136,10 +136,10 @@ class ThreadMapping: NSObject {
     }
 
     func update(isViewingArchive: Bool, transaction: SDSAnyReadTransaction) throws {
-        archiveCount = try threadFinder.threadCount(isArchived: true, transaction: transaction)
-        inboxCount = try threadFinder.threadCount(isArchived: false, transaction: transaction)
+        archiveCount = try threadFinder.visibleThreadCount(isArchived: true, transaction: transaction)
+        inboxCount = try threadFinder.visibleThreadCount(isArchived: false, transaction: transaction)
         var newThreads: [TSThread] = []
-        try threadFinder.enumerateThreads(isArchived: isViewingArchive, transaction: transaction) { thread in
+        try threadFinder.enumerateVisibleThreads(isArchived: isViewingArchive, transaction: transaction) { thread in
             newThreads.append(thread)
         }
         threads = newThreads
@@ -165,12 +165,24 @@ class ThreadMapping: NSObject {
 
     @objc
     func updateAndCalculateDiff(isViewingArchive: Bool,
-                                updatedItemIds: Set<String>,
+                                updatedItemIds allUpdatedItemIds: Set<String>,
                                 transaction: SDSAnyReadTransaction) throws -> ThreadMappingDiff {
 
-        let oldThreadIds: [String] = threads.map { $0.uniqueId! }
+        // Ignore updates to non-visible threads.
+        var updatedItemIds = Set<String>()
+        for threadId in allUpdatedItemIds {
+            guard let thread = TSThread.anyFetch(uniqueId: threadId, transaction: transaction) else {
+                owsFailDebug("Missing thread.")
+                continue
+            }
+            if thread.shouldThreadBeVisible {
+                updatedItemIds.insert(threadId)
+            }
+        }
+
+        let oldThreadIds: [String] = threads.map { $0.uniqueId }
         try update(isViewingArchive: isViewingArchive, transaction: transaction)
-        let newThreadIds: [String] = threads.map { $0.uniqueId! }
+        let newThreadIds: [String] = threads.map { $0.uniqueId }
 
         var rowChanges: [ThreadMappingRowChange] = []
 
@@ -212,7 +224,7 @@ class ThreadMapping: NSObject {
                 throw assertionError("oldIndex was unexpectedly nil")
             }
             guard let newIndex = newThreadIds.firstIndexAsInt(of: updatedThreadId) else {
-                throw assertionError("oldIndex was unexpectedly nil")
+                throw assertionError("newIndex was unexpectedly nil")
             }
             if oldIndex != newIndex {
                 rowChanges.append(ThreadMappingRowChange(type: .move,

@@ -9,8 +9,8 @@ public class StickerSharingViewController: SelectThreadViewController {
 
     // MARK: Dependencies
 
-    var primaryStorage: OWSPrimaryStorage {
-        return SSKEnvironment.shared.primaryStorage
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
     }
 
     var linkPreviewManager: OWSLinkPreviewManager {
@@ -77,8 +77,8 @@ public class StickerSharingViewController: SelectThreadViewController {
                                  linkPreviewDraft: OWSLinkPreviewDraft?) {
         AssertIsOnMainThread()
 
-        primaryStorage.dbReadConnection.read { (transaction) in
-            ThreadUtil.enqueueMessage(withText: packUrl, in: thread, quotedReplyModel: nil, linkPreviewDraft: linkPreviewDraft, transaction: transaction.asAnyRead)
+        databaseStorage.read { transaction in
+            ThreadUtil.enqueueMessage(withText: packUrl, in: thread, quotedReplyModel: nil, linkPreviewDraft: linkPreviewDraft, transaction: transaction)
         }
 
         self.dismiss(animated: true)

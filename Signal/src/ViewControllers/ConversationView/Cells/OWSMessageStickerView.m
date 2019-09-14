@@ -46,11 +46,9 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.attachmentDownloads;
 }
 
-- (OWSPrimaryStorage *)primaryStorage
+- (SDSDatabaseStorage *)databaseStorage
 {
-    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
-
-    return SSKEnvironment.shared.primaryStorage;
+    return SDSDatabaseStorage.shared;
 }
 
 #pragma mark -
@@ -246,6 +244,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSAttachmentStream *stickerAttachment = self.viewItem.stickerAttachment;
     YYAnimatedImageView *stickerView = [YYAnimatedImageView new];
+
+    stickerView.accessibilityLabel =
+        [OWSMessageView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_STICKER",
+                                                              @"Accessibility label for stickers.")
+                                               authorName:self.viewItem.accessibilityAuthorName];
 
     self.loadCellContentBlock = ^{
         NSString *_Nullable filePath = stickerAttachment.originalFilePath;
@@ -494,10 +497,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.viewItem.isFailedSticker) {
         TSMessage *message = (TSMessage *)self.viewItem.interaction;
-        [self.primaryStorage.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
             [self.attachmentDownloads
                 downloadAllAttachmentsForMessage:message
-                                     transaction:transaction.asAnyRead
+                                     transaction:transaction
                                          success:^(NSArray<TSAttachmentStream *> *_Nonnull attachmentStreams) {
                                              // Do nothing.
                                          }

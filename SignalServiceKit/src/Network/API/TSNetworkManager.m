@@ -4,7 +4,7 @@
 
 #import "TSNetworkManager.h"
 #import "AppContext.h"
-#import "NSError+messageSending.h"
+#import "NSError+OWSOperation.h"
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSError.h"
 #import "OWSQueues.h"
@@ -99,6 +99,8 @@ dispatch_queue_t NetworkManagerQueue()
     }
 
     if (canUseAuth && request.shouldHaveAuthorizationHeaders) {
+        OWSAssertDebug(request.authUsername.length > 0);
+        OWSAssertDebug(request.authPassword.length > 0);
         [self.sessionManager.requestSerializer setAuthorizationHeaderFieldWithUsername:request.authUsername
                                                                               password:request.authPassword];
     }

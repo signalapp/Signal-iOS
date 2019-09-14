@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSIncomingMessage;
 @class TSInfoMessage;
 @class TSThread;
+@class ThreadlessErrorMessage;
 
 @protocol ContactsManagerProtocol;
 
@@ -28,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
                       wantsSound:(BOOL)wantsSound
                      transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)notifyUserForThreadlessErrorMessage:(TSErrorMessage *)errorMessage
+- (void)notifyUserForThreadlessErrorMessage:(ThreadlessErrorMessage *)errorMessage
                                 transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)clearAllNotifications;

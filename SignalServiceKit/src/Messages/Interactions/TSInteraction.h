@@ -2,7 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSYapDatabaseObject.h"
+#import "BaseModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -16,13 +16,14 @@ typedef NS_ENUM(NSInteger, OWSInteractionType) {
     OWSInteractionType_Error,
     OWSInteractionType_Call,
     OWSInteractionType_Info,
-    OWSInteractionType_Offer,
     OWSInteractionType_TypingIndicator,
+    OWSInteractionType_ThreadDetails,
+    OWSInteractionType_Offer,
 };
 
 NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 
-@protocol OWSPreviewText
+@protocol OWSPreviewText <NSObject>
 
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction;
 
@@ -30,11 +31,11 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 
 #pragma mark -
 
-@interface TSInteraction : TSYapDatabaseObject
+@interface TSInteraction : BaseModel
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-                                  timestamp:(uint64_t)timestamp
-                                   inThread:(TSThread *)thread;
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId timestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
 
@@ -56,7 +57,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 // --- CODE GENERATION MARKER
 
 @property (nonatomic, readonly) NSString *uniqueThreadId;
-@property (nonatomic, readonly) TSThread *thread;
+
 @property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) uint64_t sortId;
 @property (nonatomic, readonly) uint64_t receivedAtTimestamp;
@@ -65,23 +66,28 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 - (OWSInteractionType)interactionType;
 
+@property (nonatomic, readonly) TSThread *threadWithSneakyTransaction;
+
 - (TSThread *)threadWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(thread(transaction:));
 
 /**
  * When an interaction is updated, it often affects the UI for it's containing thread. Touching it's thread will notify
  * any observers so they can redraw any related UI.
  */
-- (void)touchThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)touchThreadWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark Utility Method
 
-+ (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
-                                                ofClass:(Class)clazz
-                                        withTransaction:(YapDatabaseReadTransaction *)transaction;
+// GRDB TODO: Remove this method.
++ (NSArray<TSInteraction *> *)ydb_interactionsWithTimestamp:(uint64_t)timestamp
+                                                    ofClass:(Class)clazz
+                                            withTransaction:(YapDatabaseReadTransaction *)transaction;
 
-+ (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
-                                                 filter:(BOOL (^_Nonnull)(TSInteraction *))filter
-                                        withTransaction:(YapDatabaseReadTransaction *)transaction;
+
+// GRDB TODO: Remove this method.
++ (NSArray<TSInteraction *> *)ydb_interactionsWithTimestamp:(uint64_t)timestamp
+                                                     filter:(BOOL (^_Nonnull)(TSInteraction *))filter
+                                            withTransaction:(YapDatabaseReadTransaction *)transaction;
 
 - (uint64_t)timestampForLegacySorting;
 - (NSComparisonResult)compareForSorting:(TSInteraction *)other;
@@ -94,8 +100,9 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 // unseen message indicators, etc.
 - (BOOL)isDynamicInteraction;
 
-- (void)saveNextSortIdWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-    NS_SWIFT_NAME(saveNextSortId(transaction:));
+// NOTE: This is only for use by a legacy migration.
+- (void)ydb_saveNextSortIdWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+    NS_SWIFT_NAME(ydb_saveNextSortId(transaction:));
 
 @end
 

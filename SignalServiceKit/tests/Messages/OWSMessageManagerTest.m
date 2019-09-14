@@ -11,7 +11,6 @@
 #import "OWSIdentityManager.h"
 #import "OWSMessageManager.h"
 #import "OWSMessageSender.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSSyncGroupsMessage.h"
 #import "SSKBaseTestObjC.h"
 #import "TSAccountManager.h"
@@ -70,7 +69,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
 - (void)setUp
 {
     [super setUp];
-    [self.tsAccountManager registerForTestsWithLocalNumber:kAliceRecipientId];
+    [self.tsAccountManager registerForTestsWithLocalNumber:kAliceRecipientId uuid:[NSUUID new]];
     [self.messageSenderJobQueue setup];
 }
 
@@ -80,10 +79,9 @@ NSString *const kAliceRecipientId = @"+13213214321";
 {
     XCTestExpectation *messageWasSent = [self expectationWithDescription:@"message was sent"];
 
-    OWSAssert([SSKEnvironment.shared.messageSender isKindOfClass:[OWSFakeMessageSender class]]);
-    OWSFakeMessageSender *fakeMessageSender = (OWSFakeMessageSender *)SSKEnvironment.shared.messageSender;
-    fakeMessageSender.sendMessageWasCalledBlock = ^(TSOutgoingMessage *sentMessage) {
-        XCTAssert([sentMessage isKindOfClass:[OWSSyncGroupsMessage class]]);
+    OWSAssertDebug([SSKEnvironment.shared.syncManager isKindOfClass:[OWSMockSyncManager class]]);
+    OWSMockSyncManager *mockSyncManager = (OWSMockSyncManager *)SSKEnvironment.shared.syncManager;
+    mockSyncManager.syncGroupsHook = ^{
         [messageWasSent fulfill];
     };
 
@@ -97,7 +95,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
     SSKProtoEnvelopeBuilder *envelopeBuilder =
         [SSKProtoEnvelope builderWithTimestamp:12345];
     [envelopeBuilder setType:SSKProtoEnvelopeTypeCiphertext];
-    [envelopeBuilder setSource:kAliceRecipientId];
+    [envelopeBuilder setSourceE164:kAliceRecipientId];
     [envelopeBuilder setSourceDevice:1];
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
@@ -145,7 +143,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
         TSGroupThread *groupThread
             = (TSGroupThread *)[TSGroupThread anyFetchWithUniqueId:groupThreadId transaction:transaction];
         XCTAssertNotNil(groupThread);
-        XCTAssertEqualObjects(@"Newly created Group Name", groupThread.name);
+        XCTAssertEqualObjects(@"Newly created Group Name", groupThread.groupNameOrDefault);
     }];
 }
 
@@ -189,7 +187,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
         TSGroupThread *groupThread
             = (TSGroupThread *)[TSGroupThread anyFetchWithUniqueId:groupThreadId transaction:transaction];
         XCTAssertNotNil(groupThread);
-        XCTAssertEqualObjects(@"Newly created Group Name", groupThread.name);
+        XCTAssertEqualObjects(@"Newly created Group Name", groupThread.groupNameOrDefault);
     }];
 }
 

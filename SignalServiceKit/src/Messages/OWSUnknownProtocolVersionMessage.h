@@ -6,16 +6,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SignalServiceAddress;
+
 @interface OWSUnknownProtocolVersionMessage : TSInfoMessage
 
 @property (nonatomic, readonly) NSUInteger protocolVersion;
 
 // If nil, the invalid message was sent by a linked device.
-@property (nonatomic, nullable, readonly) NSString *senderId;
+@property (nonatomic, nullable, readonly) SignalServiceAddress *sender;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                            thread:(TSThread *)thread
-                         senderId:(nullable NSString *)senderId
+                           sender:(nullable SignalServiceAddress *)sender
                   protocolVersion:(NSUInteger)protocolVersion NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
@@ -36,21 +38,21 @@ NS_ASSUME_NONNULL_BEGIN
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
+              isViewOnceComplete:(BOOL)isViewOnceComplete
+               isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
-perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSeconds
-  perMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
-       perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
                    customMessage:(nullable NSString *)customMessage
         infoMessageSchemaVersion:(NSUInteger)infoMessageSchemaVersion
                      messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
-         unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
+             unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
                  protocolVersion:(NSUInteger)protocolVersion
-                        senderId:(nullable NSString *)senderId
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:protocolVersion:senderId:));
+                          sender:(nullable SignalServiceAddress *)sender
+unknownProtocolVersionMessageSchemaVersion:(NSUInteger)unknownProtocolVersionMessageSchemaVersion
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredAddress:protocolVersion:sender:unknownProtocolVersionMessageSchemaVersion:));
 
 // clang-format on
 

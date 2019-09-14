@@ -21,10 +21,8 @@ extern NSString *const TSUnreadDatabaseViewExtensionName;
 extern NSString *const TSUnseenDatabaseViewExtensionName;
 extern NSString *const TSThreadOutgoingMessageDatabaseViewExtensionName;
 extern NSString *const TSThreadSpecialMessagesDatabaseViewExtensionName;
-extern NSString *const TSPerMessageExpirationMessagesDatabaseViewExtensionName;
-extern NSString *const TSPerMessageExpirationMessagesGroup;
-
-extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
+extern NSString *const TSIncompleteViewOnceMessagesDatabaseViewExtensionName;
+extern NSString *const TSIncompleteViewOnceMessagesGroup;
 
 extern NSString *const TSLazyRestoreAttachmentsGroup;
 extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
@@ -35,6 +33,8 @@ extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
 
 #pragma mark - Views
 
+// GRDB TODO: Remove these methods?
+
 // Returns the "unseen" database view if it is ready;
 // otherwise it returns the "unread" database view.
 + (id)unseenDatabaseViewExtension:(YapDatabaseReadTransaction *)transaction;
@@ -43,7 +43,7 @@ extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
 
 + (id)threadSpecialMessagesDatabaseView:(YapDatabaseReadTransaction *)transaction;
 
-+ (id)perMessageExpirationMessagesDatabaseView:(YapDatabaseReadTransaction *)transaction;
++ (id)incompleteViewOnceMessagesDatabaseView:(YapDatabaseReadTransaction *)transaction;
 
 #pragma mark - Registration
 
@@ -69,9 +69,7 @@ extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
 
 + (void)asyncRegisterThreadSpecialMessagesDatabaseView:(OWSStorage *)storage;
 
-+ (void)asyncRegisterPerMessageExpirationMessagesDatabaseView:(OWSStorage *)storage;
-
-+ (void)asyncRegisterSecondaryDevicesDatabaseView:(OWSStorage *)storage;
++ (void)asyncRegisterIncompleteViewOnceMessagesDatabaseView:(OWSStorage *)storage;
 
 + (void)asyncRegisterLazyRestoreAttachmentsDatabaseView:(OWSStorage *)storage;
 

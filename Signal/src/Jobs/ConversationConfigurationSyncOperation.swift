@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,9 +11,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         case assertionError(description: String)
     }
 
-    private var dbConnection: YapDatabaseConnection {
-        return OWSPrimaryStorage.shared().dbReadConnection
-    }
+    // MARK: - Dependencies
 
     private var messageSenderJobQueue: MessageSenderJobQueue {
         return SSKEnvironment.shared.messageSenderJobQueue
@@ -26,6 +24,12 @@ class ConversationConfigurationSyncOperation: OWSOperation {
     private var syncManager: OWSSyncManagerProtocol {
         return SSKEnvironment.shared.syncManager
     }
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
 
     private let thread: TSThread
 
@@ -46,12 +50,13 @@ class ConversationConfigurationSyncOperation: OWSOperation {
     }
 
     private func reportAssertionError(description: String) {
-        let error = ColorSyncOperationError.assertionError(description: description)
+        let error: NSError = ColorSyncOperationError.assertionError(description: description) as NSError
+        error.isRetryable = false
         self.reportError(error)
     }
 
     private func sync(contactThread: TSContactThread) {
-        guard let signalAccount: SignalAccount = self.contactsManager.fetchSignalAccount(forRecipientId: contactThread.contactIdentifier()) else {
+        guard let signalAccount: SignalAccount = self.contactsManager.fetchSignalAccount(for: contactThread.contactAddress) else {
             reportAssertionError(description: "unable to find signalAccount")
             return
         }
@@ -64,10 +69,13 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         // The current implementation works, but seems wasteful.
         // Does desktop handle single group sync correctly?
         // What does Android do?
-        let syncMessage: OWSSyncGroupsMessage = OWSSyncGroupsMessage()
-
+        guard let thread = TSAccountManager.getOrCreateLocalThreadWithSneakyTransaction() else {
+            owsFailDebug("Missing thread.")
+            return
+        }
+        let syncMessage = OWSSyncGroupsMessage(thread: thread)
         var dataSource: DataSource?
-        self.dbConnection.read { transaction in
+        self.databaseStorage.read { transaction in
             guard let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction) else {
                 owsFailDebug("could not serialize sync groups data")
                 return
@@ -93,5 +101,4 @@ class ConversationConfigurationSyncOperation: OWSOperation {
                                        isTemporaryAttachment: true)
         self.reportSuccess()
     }
-
 }

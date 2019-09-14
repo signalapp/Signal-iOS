@@ -41,7 +41,7 @@ enum AppNotificationAction: CaseIterable {
 
 struct AppNotificationUserInfoKey {
     static let threadId = "Signal.AppNotificationsUserInfoKey.threadId"
-    static let callBackNumber = "Signal.AppNotificationsUserInfoKey.callBackNumber"
+    static let callBackAddress = "Signal.AppNotificationsUserInfoKey.callBackAddress"
     static let localCallId = "Signal.AppNotificationsUserInfoKey.localCallId"
 }
 
@@ -211,8 +211,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     func presentIncomingCall(_ call: SignalCall, callerName: String) {
 
-        let remotePhoneNumber = call.remotePhoneNumber
-        let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
+        let remoteAddress = call.remoteAddress
+        let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -225,14 +225,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.incomingCallBody
-
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
-        }
-
         let userInfo = [
-            AppNotificationUserInfoKey.threadId: threadId,
+            AppNotificationUserInfoKey.threadId: thread.uniqueId,
             AppNotificationUserInfoKey.localCallId: call.localId.uuidString
         ]
 
@@ -249,8 +243,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     func presentMissedCall(_ call: SignalCall, callerName: String) {
 
-        let remotePhoneNumber = call.remotePhoneNumber
-        let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
+        let remoteAddress = call.remoteAddress
+        let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -263,15 +257,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.missedCallBody
-
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
-        }
-
-        let userInfo = [
-            AppNotificationUserInfoKey.threadId: threadId,
-            AppNotificationUserInfoKey.callBackNumber: remotePhoneNumber
+        let userInfo: [String: Any] = [
+            AppNotificationUserInfoKey.threadId: thread.uniqueId,
+            AppNotificationUserInfoKey.callBackAddress: remoteAddress
         ]
 
         DispatchQueue.main.async {
@@ -288,8 +276,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: SignalCall, callerName: String) {
 
-        let remotePhoneNumber = call.remotePhoneNumber
-        let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
+        let remoteAddress = call.remoteAddress
+        let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -302,14 +290,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
-
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
-        }
-
         let userInfo = [
-            AppNotificationUserInfoKey.threadId: threadId
+            AppNotificationUserInfoKey.threadId: thread.uniqueId
         ]
 
         DispatchQueue.main.async {
@@ -326,8 +308,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     public func presentMissedCallBecauseOfNewIdentity(call: SignalCall, callerName: String) {
 
-        let remotePhoneNumber = call.remotePhoneNumber
-        let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
+        let remoteAddress = call.remoteAddress
+        let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -340,15 +322,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
-
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
-        }
-
-        let userInfo = [
-            AppNotificationUserInfoKey.threadId: threadId,
-            AppNotificationUserInfoKey.callBackNumber: remotePhoneNumber
+        let userInfo: [String: Any] = [
+            AppNotificationUserInfoKey.threadId: thread.uniqueId,
+            AppNotificationUserInfoKey.callBackAddress: remoteAddress
         ]
 
         DispatchQueue.main.async {
@@ -374,7 +350,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         let messageText = rawMessageText.filterStringForDisplay()
 
-        let senderName = contactsManager.displayName(forPhoneIdentifier: incomingMessage.authorId)
+        let senderName = contactsManager.displayName(for: incomingMessage.authorAddress)
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -386,14 +362,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             switch thread {
             case is TSContactThread:
                 notificationTitle = senderName
-            case is TSGroupThread:
-                var groupName = thread.name()
-                if groupName.count < 1 {
-                    groupName = MessageStrings.newGroupDefaultTitle
-                }
+            case let groupThread as TSGroupThread:
                 notificationTitle = String(format: NotificationStrings.incomingGroupMessageTitleFormat,
                                            senderName,
-                                           groupName)
+                                           groupThread.groupNameOrDefault)
             default:
                 owsFailDebug("unexpected thread: \(thread)")
                 return
@@ -409,26 +381,21 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         case .namePreview:
             notificationBody = messageText
         }
-
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
-        }
-
         assert((notificationBody ?? notificationTitle) != nil)
+
+        var category = AppNotificationCategory.incomingMessage
 
         // Don't reply from lockscreen if anyone in this conversation is
         // "no longer verified".
-        var category = AppNotificationCategory.incomingMessage
-        for recipientId in thread.recipientIdentifiers {
-            if self.identityManager.verificationState(forRecipientId: recipientId) == .noLongerVerified {
+        for address in thread.recipientAddresses {
+            if self.identityManager.verificationState(for: address) == .noLongerVerified {
                 category = AppNotificationCategory.incomingMessageFromNoLongerVerifiedIdentity
                 break
             }
         }
 
         let userInfo = [
-            AppNotificationUserInfoKey.threadId: threadId
+            AppNotificationUserInfoKey.threadId: thread.uniqueId
         ]
 
         DispatchQueue.main.async {
@@ -448,16 +415,11 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         case .noNameNoPreview:
             notificationTitle = nil
         case .nameNoPreview, .namePreview:
-            notificationTitle = thread.name()
+            notificationTitle = contactsManager.displayNameWithSneakyTransaction(thread: thread)
         }
 
         let notificationBody = NotificationStrings.failedToSendBody
-
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
-        }
-
+        let threadId = thread.uniqueId
         let userInfo = [
             AppNotificationUserInfoKey.threadId: threadId
         ]
@@ -490,17 +452,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationTitle = nil
             threadIdentifier = nil
         case .namePreview, .nameNoPreview:
-            notificationTitle = thread.name()
+            notificationTitle = contactsManager.displayName(for: thread, transaction: transaction)
             threadIdentifier = thread.uniqueId
         }
 
         let notificationBody = infoOrErrorMessage.previewText(with: transaction)
-
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
-        }
-
+        let threadId = thread.uniqueId
         let userInfo = [
             AppNotificationUserInfoKey.threadId: threadId
         ]
@@ -516,7 +473,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func notifyUser(forThreadlessErrorMessage errorMessage: TSErrorMessage, transaction: SDSAnyWriteTransaction) {
+    public func notifyUser(for errorMessage: ThreadlessErrorMessage, transaction: SDSAnyWriteTransaction) {
         let notificationBody = errorMessage.previewText(with: transaction)
 
         transaction.addCompletion {
@@ -599,8 +556,8 @@ class NotificationActionHandler {
         return AppEnvironment.shared.notificationPresenter
     }
 
-    var dbConnection: YapDatabaseConnection {
-        return OWSPrimaryStorage.shared().dbReadWriteConnection
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
     }
 
     // MARK: -
@@ -619,11 +576,11 @@ class NotificationActionHandler {
     }
 
     func callBack(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
-        guard let recipientId = userInfo[AppNotificationUserInfoKey.callBackNumber] as? String else {
-            throw NotificationError.failDebug("recipientId was unexpectedly nil")
+        guard let address = userInfo[AppNotificationUserInfoKey.callBackAddress] as? SignalServiceAddress else {
+            throw NotificationError.failDebug("address was unexpectedly nil")
         }
 
-        callUIAdapter.startAndShowOutgoingCall(recipientId: recipientId, hasLocalVideo: false)
+        callUIAdapter.startAndShowOutgoingCall(address: address, hasLocalVideo: false)
         return Promise.value(())
     }
 
@@ -636,8 +593,14 @@ class NotificationActionHandler {
             throw NotificationError.failDebug("unable to build localCallId. localCallIdString: \(localCallIdString)")
         }
 
-        callUIAdapter.declineCall(localId: localCallId)
+        callUIAdapter.localHangupCall(localId: localCallId)
         return Promise.value(())
+    }
+
+    private func threadWithSneakyTransaction(threadId: String) -> TSThread? {
+        return databaseStorage.readReturningResult { transaction in
+            return TSThread.anyFetch(uniqueId: threadId, transaction: transaction)
+        }
     }
 
     func markAsRead(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
@@ -645,7 +608,7 @@ class NotificationActionHandler {
             throw NotificationError.failDebug("threadId was unexpectedly nil")
         }
 
-        guard let thread = TSThread.fetch(uniqueId: threadId) else {
+        guard let thread = threadWithSneakyTransaction(threadId: threadId) else {
             throw NotificationError.failDebug("unable to find thread with id: \(threadId)")
         }
 
@@ -657,7 +620,7 @@ class NotificationActionHandler {
             throw NotificationError.failDebug("threadId was unexpectedly nil")
         }
 
-        guard let thread = TSThread.fetch(uniqueId: threadId) else {
+        guard let thread = threadWithSneakyTransaction(threadId: threadId) else {
             throw NotificationError.failDebug("unable to find thread with id: \(threadId)")
         }
 
@@ -688,20 +651,20 @@ class NotificationActionHandler {
     }
 
     private func markAsRead(thread: TSThread) -> Promise<Void> {
-        return dbConnection.readWritePromise { transaction in
+        return databaseStorage.writePromise { transaction in
             thread.markAllAsRead(with: transaction)
         }
     }
 }
 
 extension ThreadUtil {
-    static var dbReadConnection: YapDatabaseConnection {
-        return OWSPrimaryStorage.shared().dbReadConnection
+    static var databaseStorage: SDSDatabaseStorage {
+        return SSKEnvironment.shared.databaseStorage
     }
 
     class func sendMessageNonDurably(text: String, thread: TSThread, quotedReplyModel: OWSQuotedReplyModel?, messageSender: MessageSender) -> Promise<Void> {
         return Promise { resolver in
-            self.dbReadConnection.read { transaction in
+            self.databaseStorage.read { transaction in
                 _ = self.sendMessageNonDurably(withText: text,
                                                in: thread,
                                                quotedReplyModel: quotedReplyModel,

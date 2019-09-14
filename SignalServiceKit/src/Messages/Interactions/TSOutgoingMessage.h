@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SignalServiceAddress;
+
 // Feature flag.
 //
 // TODO: Remove.
@@ -59,6 +61,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 @class SSKProtoContentBuilder;
 @class SSKProtoDataMessageBuilder;
 @class SignalRecipient;
+@class SignalServiceAddress;
 
 @interface TSOutgoingMessageRecipientState : MTLModel
 
@@ -77,7 +80,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 @interface TSOutgoingMessage : TSMessage
 
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
-                                inThread:(nullable TSThread *)thread
+                                inThread:(TSThread *)thread
                              messageBody:(nullable NSString *)body
                            attachmentIds:(NSArray<NSString *> *)attachmentIds
                         expiresInSeconds:(uint32_t)expiresInSeconds
@@ -89,7 +92,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 // MJK TODO - Can we remove the sender timestamp param?
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
-                                        inThread:(nullable TSThread *)thread
+                                        inThread:(TSThread *)thread
                                      messageBody:(nullable NSString *)body
                                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
                                 expiresInSeconds:(uint32_t)expiresInSeconds
@@ -100,8 +103,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                                   messageSticker:(nullable MessageSticker *)messageSticker
-             perMessageExpirationDurationSeconds:(uint32_t)perMessageExpirationDurationSeconds
-    NS_DESIGNATED_INITIALIZER;
+                               isViewOnceMessage:(BOOL)isViewOnceMessage NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -120,11 +122,10 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
+              isViewOnceComplete:(BOOL)isViewOnceComplete
+               isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
-perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSeconds
-  perMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
-       perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
            attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
@@ -137,8 +138,10 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
               legacyMessageState:(TSOutgoingMessageState)legacyMessageState
               legacyWasDelivered:(BOOL)legacyWasDelivered
            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
-               recipientStateMap:(nullable NSDictionary<NSString *,TSOutgoingMessageRecipientState *> *)recipientStateMap
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:));
+    outgoingMessageSchemaVersion:(NSUInteger)outgoingMessageSchemaVersion
+          recipientAddressStates:(nullable NSDictionary<SignalServiceAddress *,TSOutgoingMessageRecipientState *> *)recipientAddressStates
+              storedMessageState:(TSOutgoingMessageState)storedMessageState
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:outgoingMessageSchemaVersion:recipientAddressStates:storedMessageState:));
 
 // clang-format on
 
@@ -146,16 +149,16 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-+ (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
++ (instancetype)outgoingMessageInThread:(TSThread *)thread
                             messageBody:(nullable NSString *)body
                            attachmentId:(nullable NSString *)attachmentId;
 
-+ (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
++ (instancetype)outgoingMessageInThread:(TSThread *)thread
                             messageBody:(nullable NSString *)body
                            attachmentId:(nullable NSString *)attachmentId
                        expiresInSeconds:(uint32_t)expiresInSeconds;
 
-+ (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
++ (instancetype)outgoingMessageInThread:(TSThread *)thread
                             messageBody:(nullable NSString *)body
                            attachmentId:(nullable NSString *)attachmentId
                        expiresInSeconds:(uint32_t)expiresInSeconds
@@ -163,13 +166,14 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                             linkPreview:(nullable OWSLinkPreview *)linkPreview
                          messageSticker:(nullable MessageSticker *)messageSticker;
 
-+ (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
++ (instancetype)outgoingMessageInThread:(TSThread *)thread
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                        expiresInSeconds:(uint32_t)expiresInSeconds;
 
-@property (readonly) TSOutgoingMessageState messageState;
-@property (readonly) BOOL wasDeliveredToAnyRecipient;
-@property (readonly) BOOL wasSentToAnyRecipient;
+@property (nonatomic, readonly) TSOutgoingMessageState messageState;
+
+@property (nonatomic, readonly) BOOL wasDeliveredToAnyRecipient;
+@property (nonatomic, readonly) BOOL wasSentToAnyRecipient;
 
 @property (atomic, readonly) BOOL hasSyncedTranscript;
 @property (atomic, readonly, nullable) NSString *customMessage;
@@ -206,40 +210,39 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
  */
 - (BOOL)shouldSyncTranscript;
 
-- (BOOL)shouldBeSaved;
-
 // All recipients of this message.
-- (NSArray<NSString *> *)recipientIds;
+- (NSArray<SignalServiceAddress *> *)recipientAddresses;
 
 // All recipients of this message who we are currently trying to send to (queued, uploading or during send).
-- (NSArray<NSString *> *)sendingRecipientIds;
+- (NSArray<SignalServiceAddress *> *)sendingRecipientAddresses;
 
 // All recipients of this message to whom it has been sent (and possibly delivered or read).
-- (NSArray<NSString *> *)sentRecipientIds;
+- (NSArray<SignalServiceAddress *> *)sentRecipientAddresses;
 
 // All recipients of this message to whom it has been sent and delivered (and possibly read).
-- (NSArray<NSString *> *)deliveredRecipientIds;
+- (NSArray<SignalServiceAddress *> *)deliveredRecipientAddresses;
 
 // All recipients of this message to whom it has been sent, delivered and read.
-- (NSArray<NSString *> *)readRecipientIds;
+- (NSArray<SignalServiceAddress *> *)readRecipientAddresses;
 
 // Number of recipients of this message to whom it has been sent.
 - (NSUInteger)sentRecipientsCount;
 
-- (nullable TSOutgoingMessageRecipientState *)recipientStateForRecipientId:(NSString *)recipientId;
+- (nullable TSOutgoingMessageRecipientState *)recipientStateForAddress:(SignalServiceAddress *)address;
 
 #pragma mark - Update With... Methods
 
 // This method is used to record a successful send to one recipient.
-- (void)updateWithSentRecipient:(NSString *)recipientId
+- (void)updateWithSentRecipient:(SignalServiceAddress *)recipientAddress
                     wasSentByUD:(BOOL)wasSentByUD
                     transaction:(SDSAnyWriteTransaction *)transaction;
 
 // This method is used to record a skipped send to one recipient.
-- (void)updateWithSkippedRecipient:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithSkippedRecipient:(SignalServiceAddress *)recipientAddress
+                       transaction:(SDSAnyWriteTransaction *)transaction;
 
 // On app launch, all "sending" recipients should be marked as "failed".
-- (void)updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:(SDSAnyWriteTransaction *)transaction;
 
 // When we start a message send, all "failed" recipients should be marked as "sending".
 - (void)updateAllUnsentRecipientsAsSendingWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -255,9 +258,8 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 - (void)updateWithSendingError:(NSError *)error
                    transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(update(sendingError:transaction:));
 
-- (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript
-                          transaction:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)updateWithCustomMessage:(NSString *)customMessage transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithCustomMessage:(NSString *)customMessage transaction:(SDSAnyWriteTransaction *)transaction;
 - (void)updateWithCustomMessage:(NSString *)customMessage;
 
 // This method is used to record a successful delivery to one recipient.
@@ -266,25 +268,27 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 // delivery receipts don't have a "delivery timestamp".  Those
 // messages repurpose the "timestamp" field to indicate when the
 // corresponding message was originally sent.
-- (void)updateWithDeliveredRecipient:(NSString *)recipientId
+- (void)updateWithDeliveredRecipient:(SignalServiceAddress *)recipientAddress
                    deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
-                         transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                         transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)updateWithWasSentFromLinkedDeviceWithUDRecipientIds:(nullable NSArray<NSString *> *)udRecipientIds
-                                          nonUdRecipientIds:(nullable NSArray<NSString *> *)nonUdRecipientIds
-                                               isSentUpdate:(BOOL)isSentUpdate
-                                                transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithWasSentFromLinkedDeviceWithUDRecipientAddresses:
+            (nullable NSArray<SignalServiceAddress *> *)udRecipientAddresses
+                                          nonUdRecipientAddresses:
+                                              (nullable NSArray<SignalServiceAddress *> *)nonUdRecipientAddresses
+                                                     isSentUpdate:(BOOL)isSentUpdate
+                                                      transaction:(SDSAnyWriteTransaction *)transaction;
 
 // This method is used to rewrite the recipient list with a single recipient.
 // It is used to reply to a "group info request", which should only be
 // delivered to the requestor.
-- (void)updateWithSendingToSingleGroupRecipient:(NSString *)singleGroupRecipient
-                                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithSendingToSingleGroupRecipient:(SignalServiceAddress *)singleGroupRecipient
+                                    transaction:(SDSAnyWriteTransaction *)transaction;
 
 // This method is used to record a successful "read" by one recipient.
-- (void)updateWithReadRecipientId:(NSString *)recipientId
-                    readTimestamp:(uint64_t)readTimestamp
-                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithReadRecipient:(SignalServiceAddress *)recipientAddress
+                  readTimestamp:(uint64_t)readTimestamp
+                    transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (nullable NSNumber *)firstRecipientReadTimestamp;
 

@@ -13,6 +13,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSOutgoingCallMessage
 
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
 - (instancetype)initWithThread:(TSThread *)thread
 {
     // MJK TODO - safe to remove senderTimestamp
@@ -28,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
                                       contactShare:nil
                                        linkPreview:nil
                                     messageSticker:nil
-               perMessageExpirationDurationSeconds:0];
+                                 isViewOnceMessage:NO];
     if (!self) {
         return self;
     }
@@ -116,8 +125,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(recipient);
 
     SSKProtoContentBuilder *builder = [SSKProtoContent builder];
-    [builder setCallMessage:[self buildCallMessage:recipient.recipientId]];
-    
+    [builder setCallMessage:[self buildCallMessage:recipient.address]];
+
     NSError *error;
     NSData *_Nullable data = [builder buildSerializedDataAndReturnError:&error];
     if (error || !data) {
@@ -127,7 +136,7 @@ NS_ASSUME_NONNULL_BEGIN
     return data;
 }
 
-- (nullable SSKProtoCallMessage *)buildCallMessage:(NSString *)recipientId
+- (nullable SSKProtoCallMessage *)buildCallMessage:(SignalServiceAddress *)address
 {
     SSKProtoCallMessageBuilder *builder = [SSKProtoCallMessage builder];
 
@@ -151,7 +160,13 @@ NS_ASSUME_NONNULL_BEGIN
         [builder setBusy:self.busyMessage];
     }
 
-    [ProtoUtils addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId callMessageBuilder:builder];
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        TSThread *thread = [self threadWithTransaction:transaction];
+        [ProtoUtils addLocalProfileKeyIfNecessary:thread
+                                          address:address
+                               callMessageBuilder:builder
+                                      transaction:transaction];
+    }];
 
     NSError *error;
     SSKProtoCallMessage *_Nullable result = [builder buildAndReturnError:&error];

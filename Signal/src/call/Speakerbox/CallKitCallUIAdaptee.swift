@@ -106,11 +106,11 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     // MARK: CallUIAdaptee
 
-    func startOutgoingCall(handle: String) -> SignalCall {
+    func startOutgoingCall(handle: SignalServiceAddress) -> SignalCall {
         AssertIsOnMainThread()
         Logger.info("")
 
-        let call = SignalCall.outgoingCall(localId: UUID(), remotePhoneNumber: handle)
+        let call = SignalCall.outgoingCall(localId: UUID(), remoteAddress: handle)
 
         // make sure we don't terminate audio session during call
         _ = self.audioSession.startAudioActivity(call.audioActivity)
@@ -146,12 +146,21 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         let update = CXCallUpdate()
 
         if showNamesOnCallScreen {
-            update.localizedCallerName = self.contactsManager.stringForConversationTitle(withPhoneIdentifier: call.remotePhoneNumber)
-            update.remoteHandle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
+            update.localizedCallerName = self.contactsManager.displayName(for: call.remoteAddress)
+            let type: CXHandle.HandleType
+            let value: String
+            if let phoneNumber = call.remoteAddress.phoneNumber {
+                type = .phoneNumber
+                value = phoneNumber
+            } else {
+                type = .generic
+                value = call.remoteAddress.stringForDisplay
+            }
+            update.remoteHandle = CXHandle(type: type, value: value)
         } else {
             let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
             update.remoteHandle = CXHandle(type: .generic, value: callKitId)
-            OWSPrimaryStorage.shared().setPhoneNumber(call.remotePhoneNumber, forCallKitId: callKitId)
+            CallKitIdStore.setAddress(call.remoteAddress, forCallKitId: callKitId)
             update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME", comment: "The generic name used for calls if CallKit privacy is enabled")
         }
 
@@ -188,19 +197,6 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         callManager.answer(call: call)
     }
 
-    func declineCall(localId: UUID) {
-        AssertIsOnMainThread()
-
-        owsFailDebug("CallKit should decline calls via system call screen, not via notifications.")
-    }
-
-    func declineCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
-        Logger.info("")
-
-        callManager.localHangup(call: call)
-    }
-
     func recipientAcceptedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
         Logger.info("")
@@ -211,6 +207,12 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         disableUnsupportedFeatures(callUpdate: update)
 
         provider.reportCall(with: call.localId, updated: update)
+    }
+
+    func localHangupCall(localId: UUID) {
+        AssertIsOnMainThread()
+
+        owsFailDebug("CallKit should decline calls via system call screen, not via notifications.")
     }
 
     func localHangupCall(_ call: SignalCall) {

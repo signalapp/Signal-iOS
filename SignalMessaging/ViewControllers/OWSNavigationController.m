@@ -171,7 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
         return UIStatusBarStyleLightContent;
     } else {
         UIViewController *presentedViewController = self.presentedViewController;
-        if (presentedViewController) {
+        if (presentedViewController != nil && !presentedViewController.isBeingDismissed) {
             return presentedViewController.preferredStatusBarStyle;
         } else {
             return (Theme.isDarkThemeEnabled ? UIStatusBarStyleLightContent : super.preferredStatusBarStyle);

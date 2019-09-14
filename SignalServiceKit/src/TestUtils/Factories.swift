@@ -97,7 +97,7 @@ public class ContactThreadFactory: NSObject, Factory {
     @objc
     public func create(transaction: SDSAnyWriteTransaction) -> TSContactThread {
         let threadId = generateContactThreadId()
-        let thread = TSContactThread.getOrCreateThread(withContactId: threadId, anyTransaction: transaction)
+        let thread = TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(phoneNumber: threadId), transaction: transaction)
 
         let incomingMessageFactory = IncomingMessageFactory()
         incomingMessageFactory.threadCreator = { _ in return thread }
@@ -119,7 +119,7 @@ public class ContactThreadFactory: NSObject, Factory {
     // MARK: Generators
 
     public func generateContactThreadId() -> String {
-        return CommonGenerator.contactId
+        return CommonGenerator.e164()
     }
 }
 
@@ -142,7 +142,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
                                      contactShare: contactShareBuilder(),
                                      linkPreview: linkPreviewBuilder(),
                                      messageSticker: messageStickerBuilder(),
-                                     perMessageExpirationDurationSeconds: perMessageExpirationDurationSecondsBuilder())
+                                     isViewOnceMessage: isViewOnceMessageBuilder())
 
         return item
     }
@@ -220,8 +220,8 @@ public class OutgoingMessageFactory: NSObject, Factory {
     }
 
     @objc
-    public var perMessageExpirationDurationSecondsBuilder: () -> UInt32 = {
-        return 0
+    public var isViewOnceMessageBuilder: () -> Bool = {
+        return false
     }
 
     // MARK: Delivery Receipts
@@ -260,7 +260,7 @@ public class IncomingMessageFactory: NSObject, Factory {
 
         let item = TSIncomingMessage(incomingMessageWithTimestamp: timestampBuilder(),
                                      in: thread,
-                                     authorId: authorIdBuilder(thread),
+                                     authorAddress: authorAddressBuilder(thread),
                                      sourceDeviceId: sourceDeviceIdBuilder(),
                                      messageBody: messageBodyBuilder(),
                                      attachmentIds: attachmentIdsBuilder(),
@@ -271,7 +271,7 @@ public class IncomingMessageFactory: NSObject, Factory {
                                      messageSticker: messageStickerBuilder(),
                                      serverTimestamp: serverTimestampBuilder(),
                                      wasReceivedByUD: wasReceivedByUDBuilder(),
-                                     perMessageExpirationDurationSeconds: perMessageExpirationDurationSecondsBuilder())
+                                     isViewOnceMessage: isViewOnceMessageBuilder())
 
         item.anyInsert(transaction: transaction)
 
@@ -298,15 +298,16 @@ public class IncomingMessageFactory: NSObject, Factory {
     }
 
     @objc
-    public var authorIdBuilder: (TSThread) -> String = { thread in
+    public var authorAddressBuilder: (TSThread) -> SignalServiceAddress = { thread in
         switch thread {
         case let contactThread as TSContactThread:
-            return contactThread.contactIdentifier()
+            return contactThread.contactAddress
         case let groupThread as TSGroupThread:
-            return groupThread.recipientIdentifiers.ows_randomElement() ?? CommonGenerator.contactId
+            let randomAddress = groupThread.recipientAddresses.ows_randomElement() ?? CommonGenerator.address()
+            return randomAddress
         default:
             owsFailDebug("unexpected thread type")
-            return CommonGenerator.contactId
+            return CommonGenerator.address()
         }
     }
 
@@ -356,8 +357,8 @@ public class IncomingMessageFactory: NSObject, Factory {
     }
 
     @objc
-    public var perMessageExpirationDurationSecondsBuilder: () -> UInt32 = {
-        return 0
+    public var isViewOnceMessageBuilder: () -> Bool = {
+        return false
     }
 }
 
@@ -370,7 +371,7 @@ class GroupThreadFactory: NSObject, Factory {
     @objc
     public func create(transaction: SDSAnyWriteTransaction) -> TSGroupThread {
         let thread = TSGroupThread.getOrCreateThread(with: groupModelBuilder(self),
-                                                     anyTransaction: transaction)
+                                                     transaction: transaction)
         thread.anyInsert(transaction: transaction)
 
         let incomingMessageFactory = IncomingMessageFactory()
@@ -395,7 +396,7 @@ class GroupThreadFactory: NSObject, Factory {
     @objc
     public var groupModelBuilder: (GroupThreadFactory) -> TSGroupModel = { groupThreadFactory in
         return TSGroupModel(title: groupThreadFactory.titleBuilder(),
-                            memberIds: groupThreadFactory.memberIdsBuilder(),
+                            members: groupThreadFactory.membersBuilder(),
                             image: groupThreadFactory.imageBuilder(),
                             groupId: groupThreadFactory.groupIdBuilder())
     }
@@ -407,7 +408,7 @@ class GroupThreadFactory: NSObject, Factory {
 
     @objc
     public var groupIdBuilder: () -> Data = {
-        return Randomness.generateRandomBytes(Int32(kGroupIdLength))!
+        return Randomness.generateRandomBytes(Int32(kGroupIdLength))
     }
 
     @objc
@@ -416,9 +417,9 @@ class GroupThreadFactory: NSObject, Factory {
     }
 
     @objc
-    public var memberIdsBuilder: () -> [RecipientIdentifier] = {
+    public var membersBuilder: () -> [SignalServiceAddress] = {
         let groupSize = arc4random_uniform(10)
-        return (0..<groupSize).map { _ in CommonGenerator.contactId }
+        return (0..<groupSize).map { _ in  CommonGenerator.address(hasPhoneNumber: Bool.random()) }
     }
 }
 
@@ -514,14 +515,18 @@ extension Array {
     }
 }
 
-struct CommonGenerator {
+public struct CommonGenerator {
 
-    static public var contactId: String {
+    static public func e164() -> String {
         let digits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
         let randomDigits = (0..<10).map { _ in return digits.ows_randomElement()! }
 
         return "+1".appending(randomDigits.joined())
+    }
+
+    static public func address(hasPhoneNumber: Bool = true) -> SignalServiceAddress {
+        return SignalServiceAddress(uuid: UUID(), phoneNumber: hasPhoneNumber ? e164() : nil)
     }
 
     // Body Content

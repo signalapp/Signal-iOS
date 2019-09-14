@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSInteger)incrementIntForKey:(NSString *)key transaction:(SDSAnyWriteTransaction *)transaction
 {
-    NSInteger value = [self getInt:key transaction:transaction];
+    NSInteger value = [self getInt:key defaultValue:0 transaction:transaction];
     value++;
     [self setInt:value key:key transaction:transaction];
     return value;
@@ -59,11 +59,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - SSKSignedPreKeyStore
 
-NSString *const OWSPrimaryStorageSignedPreKeyStoreCollection = @"TSStorageManagerSignedPreKeyStoreCollection";
-NSString *const OWSPrimaryStorageSignedPreKeyMetadataCollection = @"TSStorageManagerSignedPreKeyMetadataCollection";
-NSString *const OWSPrimaryStorageKeyPrekeyUpdateFailureCount = @"prekeyUpdateFailureCount";
-NSString *const OWSPrimaryStorageKeyFirstPrekeyUpdateFailureDate = @"firstPrekeyUpdateFailureDate";
-NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSignedPrekeyId";
+NSString *const kPrekeyUpdateFailureCountKey = @"prekeyUpdateFailureCount";
+NSString *const kFirstPrekeyUpdateFailureDateKey = @"firstPrekeyUpdateFailureDate";
+NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
 
 @interface SSKSignedPreKeyStore ()
 
@@ -81,8 +79,8 @@ NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSigne
         return self;
     }
 
-    _keyStore = [[SDSKeyValueStore alloc] initWithCollection:OWSPrimaryStorageSignedPreKeyStoreCollection];
-    _metadataStore = [[SDSKeyValueStore alloc] initWithCollection:OWSPrimaryStorageSignedPreKeyMetadataCollection];
+    _keyStore = [[SDSKeyValueStore alloc] initWithCollection:@"TSStorageManagerSignedPreKeyStoreCollection"];
+    _metadataStore = [[SDSKeyValueStore alloc] initWithCollection:@"TSStorageManagerSignedPreKeyMetadataCollection"];
 
     return self;
 }
@@ -168,7 +166,7 @@ NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSigne
 {
     __block NSNumber *_Nullable result;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result = [self.metadataStore getObject:OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId transaction:transaction];
+        result = [self.metadataStore getObject:kPrekeyCurrentSignedPrekeyIdKey transaction:transaction];
     }];
     return result;
 }
@@ -176,9 +174,7 @@ NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSigne
 - (void)setCurrentSignedPrekeyId:(int)value
 {
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self.metadataStore setObject:@(value)
-                                  key:OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId
-                          transaction:transaction];
+        [self.metadataStore setObject:@(value) key:kPrekeyCurrentSignedPrekeyIdKey transaction:transaction];
     }];
 }
 
@@ -187,7 +183,7 @@ NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSigne
     __block SignedPreKeyRecord *_Nullable currentRecord;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         NSNumber *_Nullable preKeyId =
-            [self.metadataStore getObject:OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId transaction:transaction];
+            [self.metadataStore getObject:kPrekeyCurrentSignedPrekeyIdKey transaction:transaction];
 
         if (preKeyId == nil) {
             return;
@@ -205,7 +201,7 @@ NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSigne
 {
     __block NSNumber *_Nullable value;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        value = [self.metadataStore getObject:OWSPrimaryStorageKeyPrekeyUpdateFailureCount transaction:transaction];
+        value = [self.metadataStore getObject:kPrekeyUpdateFailureCountKey transaction:transaction];
     }];
     // Will default to zero.
     return [value intValue];
@@ -214,7 +210,7 @@ NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSigne
 - (void)clearPrekeyUpdateFailureCount
 {
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self.metadataStore removeValueForKey:OWSPrimaryStorageKeyPrekeyUpdateFailureCount transaction:transaction];
+        [self.metadataStore removeValueForKey:kPrekeyUpdateFailureCountKey transaction:transaction];
     }];
 }
 
@@ -222,8 +218,7 @@ NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSigne
 {
     __block NSInteger result;
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        result = [self.metadataStore incrementIntForKey:OWSPrimaryStorageKeyPrekeyUpdateFailureCount
-                                            transaction:transaction];
+        result = [self.metadataStore incrementIntForKey:kPrekeyUpdateFailureCountKey transaction:transaction];
     }];
     return result;
 }
@@ -232,7 +227,7 @@ NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSigne
 {
     __block NSDate *_Nullable result;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result = [self.metadataStore getDate:OWSPrimaryStorageKeyFirstPrekeyUpdateFailureDate transaction:transaction];
+        result = [self.metadataStore getDate:kFirstPrekeyUpdateFailureDateKey transaction:transaction];
     }];
     return result;
 }
@@ -240,14 +235,14 @@ NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSigne
 - (void)setFirstPrekeyUpdateFailureDate:(nonnull NSDate *)value
 {
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self.metadataStore setDate:value key:OWSPrimaryStorageKeyFirstPrekeyUpdateFailureDate transaction:transaction];
+        [self.metadataStore setDate:value key:kFirstPrekeyUpdateFailureDateKey transaction:transaction];
     }];
 }
 
 - (void)clearFirstPrekeyUpdateFailureDate
 {
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self.metadataStore removeValueForKey:OWSPrimaryStorageKeyFirstPrekeyUpdateFailureDate transaction:transaction];
+        [self.metadataStore removeValueForKey:kFirstPrekeyUpdateFailureDateKey transaction:transaction];
     }];
 }
 
@@ -255,7 +250,7 @@ NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSigne
 
 - (void)logSignedPreKeyReport
 {
-    NSString *tag = @"[OWSPrimaryStorage (SignedPreKeyStore)]";
+    NSString *tag = @"SSKSignedPreKeyStore";
 
     NSNumber *currentId = [self currentSignedPrekeyId];
     NSDate *firstPrekeyUpdateFailureDate = [self firstPrekeyUpdateFailureDate];

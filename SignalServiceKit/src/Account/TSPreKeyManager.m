@@ -9,7 +9,6 @@
 #import "SSKEnvironment.h"
 #import "SSKSignedPreKeyStore.h"
 #import "TSNetworkManager.h"
-#import "TSStorageHeaders.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 

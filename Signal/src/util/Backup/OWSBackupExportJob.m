@@ -314,8 +314,6 @@ NS_ASSUME_NONNULL_BEGIN
 // If we are replacing an existing backup, we use some of its contents for continuity.
 @property (nonatomic, nullable) NSSet<NSString *> *lastValidRecordNames;
 
-@property (nonatomic, nullable) YapDatabaseConnection *dbConnection;
-
 @end
 
 #pragma mark -
@@ -324,11 +322,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Dependencies
 
-- (OWSPrimaryStorage *)primaryStorage
+- (SDSDatabaseStorage *)databaseStorage
 {
-    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
-
-    return SSKEnvironment.shared.primaryStorage;
+    return SDSDatabaseStorage.shared;
 }
 
 - (OWSBackup *)backup
@@ -354,8 +350,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     [self updateProgressWithDescription:nil progress:nil];
-
-    self.dbConnection = self.primaryStorage.newDatabaseConnection;
 
     [[self.backup ensureCloudKitAccess]
             .thenInBackground(^{
@@ -491,155 +485,129 @@ NS_ASSUME_NONNULL_BEGIN
         Class,
         EntityFilter _Nullable,
         SignalIOSProtoBackupSnapshotBackupEntityType);
-    NSMutableSet<NSString *> *exportedCollections = [NSMutableSet new];
-    ExportBlock exportEntities = ^(YapDatabaseReadTransaction *transaction,
-        NSString *collection,
-        Class expectedClass,
-        EntityFilter _Nullable filter,
-        SignalIOSProtoBackupSnapshotBackupEntityType entityType) {
-        [exportedCollections addObject:collection];
-
-        __block NSUInteger count = 0;
-        [transaction enumerateKeysAndObjectsInCollection:collection
-                                              usingBlock:^(NSString *key, id object, BOOL *stop) {
-                                                  if (self.isComplete) {
-                                                      *stop = YES;
-                                                      return;
-                                                  }
-                                                  if (filter && !filter(object)) {
-                                                      return;
-                                                  }
-                                                  if (![object isKindOfClass:expectedClass]) {
-                                                      OWSFailDebug(@"unexpected class: %@", [object class]);
-                                                      return;
-                                                  }
-                                                  NSObject *entity = object;
-                                                  count++;
-
-                                                  if ([entity isKindOfClass:[TSAttachmentStream class]]) {
-                                                      // Convert attachment streams to pointers,
-                                                      // since we'll need to restore them.
-                                                      TSAttachmentStream *attachmentStream
-                                                          = (TSAttachmentStream *)entity;
-                                                      TSAttachmentPointer *attachmentPointer =
-                                                          [[TSAttachmentPointer alloc]
-                                                              initForRestoreWithAttachmentStream:attachmentStream];
-                                                      entity = attachmentPointer;
-                                                  }
-
-                                                  if (![exportStream writeObject:entity
-                                                                      collection:collection
-                                                                             key:key
-                                                                      entityType:entityType]) {
-                                                      *stop = YES;
-                                                      aborted = YES;
-                                                      return;
-                                                  }
-                                              }];
-        return count;
-    };
 
     __block NSUInteger copiedThreads = 0;
     __block NSUInteger copiedInteractions = 0;
     __block NSUInteger copiedAttachments = 0;
-    __block NSUInteger copiedMigrations = 0;
     __block NSUInteger copiedMisc = 0;
     self.unsavedAttachmentExports = [NSMutableArray new];
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        copiedThreads = exportEntities(transaction,
-            [TSThread collection],
-            [TSThread class],
-            nil,
-            SignalIOSProtoBackupSnapshotBackupEntityTypeThread);
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [TSThread anyEnumerateWithTransaction:transaction
+                                        block:^(TSThread *object, BOOL *stop) {
+                                            NSString *collection = TSThread.collection;
+                                            SignalIOSProtoBackupSnapshotBackupEntityType entityType
+                                                = SignalIOSProtoBackupSnapshotBackupEntityTypeThread;
+
+                                            if (self.isComplete) {
+                                                *stop = YES;
+                                                return;
+                                            }
+                                            copiedThreads++;
+                                            if (![exportStream writeObject:object
+                                                                collection:collection
+                                                                       key:object.uniqueId
+                                                                entityType:entityType]) {
+                                                *stop = YES;
+                                                aborted = YES;
+                                                return;
+                                            }
+                                        }];
         if (aborted) {
             return;
         }
+        [TSAttachment
+            anyEnumerateWithTransaction:transaction
+                                  block:^(TSAttachment *object, BOOL *stop) {
+                                      NSString *collection = TSAttachment.collection;
+                                      SignalIOSProtoBackupSnapshotBackupEntityType entityType
+                                          = SignalIOSProtoBackupSnapshotBackupEntityTypeAttachment;
 
-        copiedAttachments = exportEntities(transaction,
-            [TSAttachment collection],
-            [TSAttachment class],
-            ^(id object) {
-                if (![object isKindOfClass:[TSAttachmentStream class]]) {
-                    // No need to backup the contents (e.g. the file on disk)
-                    // of attachment pointers.
-                    // After a restore, users will be able "tap to retry".
-                    return YES;
-                }
-                TSAttachmentStream *attachmentStream = object;
-                NSString *_Nullable filePath = attachmentStream.originalFilePath;
-                if (!filePath || ![NSFileManager.defaultManager fileExistsAtPath:filePath]) {
-                    OWSFailDebug(@"attachment is missing file.");
-                    return NO;
-                }
+                                      if (self.isComplete) {
+                                          *stop = YES;
+                                          return;
+                                      }
 
-                // OWSAttachmentExport is used to lazily write an encrypted copy of the
-                // attachment to disk.
-                OWSAttachmentExport *attachmentExport =
-                    [[OWSAttachmentExport alloc] initWithBackupIO:self.backupIO
-                                                     attachmentId:attachmentStream.uniqueId
-                                               attachmentFilePath:filePath];
-                [self.unsavedAttachmentExports addObject:attachmentExport];
+                                      TSYapDatabaseObject *objectToWrite = object;
+                                      // No need to backup the contents (e.g. the file on disk)
+                                      // of attachment pointers.
+                                      // After a restore, users will be able "tap to retry".
+                                      if ([object isKindOfClass:[TSAttachmentStream class]]) {
+                                          TSAttachmentStream *attachmentStream = (TSAttachmentStream *)object;
+                                          NSString *_Nullable filePath = attachmentStream.originalFilePath;
+                                          if (!filePath || ![NSFileManager.defaultManager fileExistsAtPath:filePath]) {
+                                              OWSFailDebug(@"attachment is missing file.");
+                                              return;
+                                          }
 
-                return YES;
-            },
-            SignalIOSProtoBackupSnapshotBackupEntityTypeAttachment);
+                                          // OWSAttachmentExport is used to lazily write an encrypted copy of the
+                                          // attachment to disk.
+                                          OWSAttachmentExport *attachmentExport =
+                                              [[OWSAttachmentExport alloc] initWithBackupIO:self.backupIO
+                                                                               attachmentId:attachmentStream.uniqueId
+                                                                         attachmentFilePath:filePath];
+                                          [self.unsavedAttachmentExports addObject:attachmentExport];
+
+
+                                          // Convert attachment streams to pointers,
+                                          // since we'll need to restore them.
+                                          objectToWrite = [[TSAttachmentPointer alloc]
+                                              initForRestoreWithAttachmentStream:attachmentStream];
+                                      }
+
+                                      copiedAttachments++;
+                                      if (![exportStream writeObject:objectToWrite
+                                                          collection:collection
+                                                                 key:object.uniqueId
+                                                          entityType:entityType]) {
+                                          *stop = YES;
+                                          aborted = YES;
+                                          return;
+                                      }
+                                  }];
         if (aborted) {
             return;
         }
 
         // Interactions refer to threads and attachments, so copy after them.
-        copiedInteractions = exportEntities(transaction,
-            [TSInteraction collection],
-            [TSInteraction class],
-            ^(id object) {
-                // Ignore both kinds of disappearing messages.
-                if ([object isKindOfClass:[TSMessage class]]) {
-                    TSMessage *message = object;
-                    if (message.hasPerConversationExpiration || message.hasPerMessageExpiration) {
-                        return NO;
-                    }
-                }
-                TSInteraction *interaction = object;
-                // Ignore dynamic interactions.
-                if (interaction.isDynamicInteraction) {
-                    return NO;
-                }
-                return YES;
-            },
-            SignalIOSProtoBackupSnapshotBackupEntityTypeInteraction);
+        [TSInteraction
+            anyEnumerateWithTransaction:transaction
+                                  block:^(TSInteraction *object, BOOL *stop) {
+                                      NSString *collection = TSInteraction.collection;
+                                      SignalIOSProtoBackupSnapshotBackupEntityType entityType
+                                          = SignalIOSProtoBackupSnapshotBackupEntityTypeInteraction;
+
+                                      if (self.isComplete) {
+                                          *stop = YES;
+                                          return;
+                                      }
+
+                                      // Ignore both kinds of disappearing messages.
+                                      if ([object isKindOfClass:[TSMessage class]]) {
+                                          TSMessage *message = (TSMessage *)object;
+                                          if (message.hasPerConversationExpiration || message.isViewOnceMessage) {
+                                              return;
+                                          }
+                                      }
+                                      // Ignore dynamic interactions.
+                                      if (object.isDynamicInteraction) {
+                                          return;
+                                      }
+
+                                      copiedInteractions++;
+                                      if (![exportStream writeObject:object
+                                                          collection:collection
+                                                                 key:object.uniqueId
+                                                          entityType:entityType]) {
+                                          *stop = YES;
+                                          aborted = YES;
+                                          return;
+                                      }
+                                  }];
         if (aborted) {
             return;
         }
 
-        copiedMigrations = exportEntities(transaction,
-            [OWSDatabaseMigration collection],
-            [OWSDatabaseMigration class],
-            nil,
-            SignalIOSProtoBackupSnapshotBackupEntityTypeMigration);
-        if (aborted) {
-            return;
-        }
-
-        for (NSString *collection in MiscCollectionsToBackup()) {
-            copiedMisc += exportEntities(
-                transaction, collection, [NSObject class], nil, SignalIOSProtoBackupSnapshotBackupEntityTypeMisc);
-            if (aborted) {
-                return;
-            }
-        }
-
-        for (NSString *collection in [exportedCollections.allObjects sortedArrayUsingSelector:@selector(compare:)]) {
-            OWSLogVerbose(@"Exported collection: %@", collection);
-        }
-        OWSLogVerbose(@"Exported collections: %lu", (unsigned long)exportedCollections.count);
-
-        NSSet<NSString *> *allCollections = [NSSet setWithArray:transaction.allCollections];
-        NSMutableSet *unexportedCollections = [allCollections mutableCopy];
-        [unexportedCollections minusSet:exportedCollections];
-        for (NSString *collection in [unexportedCollections.allObjects sortedArrayUsingSelector:@selector(compare:)]) {
-            OWSLogVerbose(@"Unexported collection: %@", collection);
-        }
-        OWSLogVerbose(@"Unexported collections: %lu", (unsigned long)unexportedCollections.count);
+        // GRDB TODO: After GRDB migration, backup MiscCollectionsToBackup().
     }];
 
     if (aborted || self.isComplete) {
@@ -660,7 +628,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogInfo(@"copiedThreads: %zd", copiedThreads);
     OWSLogInfo(@"copiedMessages: %zd", copiedInteractions);
     OWSLogInfo(@"copiedAttachments: %zd", copiedAttachments);
-    OWSLogInfo(@"copiedMigrations: %zd", copiedMigrations);
     OWSLogInfo(@"copiedMisc: %zd", copiedMisc);
     OWSLogInfo(@"copiedEntities: %zd", exportStream.totalItemCount);
 
@@ -861,8 +828,8 @@ NS_ASSUME_NONNULL_BEGIN
                 backupFragment.relativeFilePath = attachmentExport.relativeFilePath;
                 backupFragment.attachmentId = attachmentExport.attachmentId;
                 backupFragment.uncompressedDataLength = exportItem.uncompressedDataLength;
-                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                    [backupFragment saveWithTransaction:transaction];
+                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                    [backupFragment anyInsertWithTransaction:transaction];
                 }];
 
                 OWSLogVerbose(@"saved attachment: %@ as %@",
@@ -899,7 +866,12 @@ NS_ASSUME_NONNULL_BEGIN
     // * That this record does in fact exist in our CloudKit database.
     NSString *recordName =
         [OWSBackupAPI recordNameForPersistentFileWithRecipientId:self.recipientId fileId:attachmentExport.attachmentId];
-    OWSBackupFragment *_Nullable lastBackupFragment = [OWSBackupFragment fetchObjectWithUniqueID:recordName];
+
+    __block OWSBackupFragment *_Nullable lastBackupFragment;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        lastBackupFragment = [OWSBackupFragment anyFetchWithUniqueId:recordName transaction:transaction];
+    }];
+
     if (!lastBackupFragment || ![self.lastValidRecordNames containsObject:recordName]) {
         return NO;
     }
@@ -1099,14 +1071,22 @@ NS_ASSUME_NONNULL_BEGIN
     // After every successful backup export, we can (and should) cull metadata
     // for any backup fragment (i.e. CloudKit record) that wasn't involved in
     // the latest backup export.
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        NSArray<NSString *> *allRecordNames = [transaction allKeysInCollection:[OWSBackupFragment collection]];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        NSArray<NSString *> *allRecordNames = [OWSBackupFragment anyAllUniqueIdsWithTransaction:transaction];
 
         NSMutableSet<NSString *> *obsoleteRecordNames = [NSMutableSet new];
         [obsoleteRecordNames addObjectsFromArray:allRecordNames];
         [obsoleteRecordNames minusSet:activeRecordNames];
-        
-        [transaction removeObjectsForKeys:obsoleteRecordNames.allObjects inCollection:[OWSBackupFragment collection]];
+
+        for (NSString *uniqueId in obsoleteRecordNames) {
+            OWSBackupFragment *_Nullable instance =
+                [OWSBackupFragment anyFetchWithUniqueId:uniqueId transaction:transaction];
+            if (instance == nil) {
+                OWSFailDebug(@"Missing instance.");
+                continue;
+            }
+            [instance anyRemoveWithTransaction:transaction];
+        }
     }];
 }
 

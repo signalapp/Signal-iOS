@@ -2,16 +2,15 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSYapDatabaseObject.h"
+#import "BaseModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSPrimaryStorage;
 @class OWSStorage;
 @class SDSAnyWriteTransaction;
 @class SSKProtoEnvelope;
 
-@interface OWSMessageContentJob : TSYapDatabaseObject
+@interface OWSMessageContentJob : BaseModel
 
 @property (nonatomic, readonly) NSDate *createdAt;
 @property (nonatomic, readonly) NSData *envelopeData;
@@ -22,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
                        plaintextData:(NSData *_Nullable)plaintextData
                      wasReceivedByUD:(BOOL)wasReceivedByUD NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithUniqueId:(NSString *_Nullable)uniqueId NS_UNAVAILABLE;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 // --- CODE GENERATION MARKER

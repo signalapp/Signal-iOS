@@ -4,9 +4,9 @@
 
 #import "TSAttachment.h"
 #import "MIMETypeUtil.h"
-#import "NSString+SSK.h"
 #import "TSAttachmentPointer.h"
 #import "TSMessage.h"
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/iOSVersions.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -137,9 +137,9 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
 
 // This constructor is used for new instances of TSAttachmentStream
 // that represent downloaded incoming attachments.
-- (instancetype)initWithPointer:(TSAttachmentPointer *)pointer
+- (instancetype)initWithPointer:(TSAttachmentPointer *)pointer transaction:(SDSAnyReadTransaction *)transaction
 {
-    if (!pointer.lazyRestoreFragment) {
+    if (![pointer lazyRestoreFragmentWithTransaction:transaction]) {
         OWSAssertDebug(pointer.serverId > 0);
         OWSAssertDebug(pointer.encryptionKey.length > 0);
         if (pointer.byteCount <= 0) {
@@ -351,7 +351,7 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     if (self.albumMessageId == nil) {
         return nil;
     }
-    return (TSMessage *)[TSMessage anyFetchWithUniqueId:self.albumMessageId transaction:transaction];
+    return [TSMessage anyFetchMessageWithUniqueId:self.albumMessageId transaction:transaction];
 }
 
 - (void)migrateAlbumMessageId:(NSString *)albumMesssageId

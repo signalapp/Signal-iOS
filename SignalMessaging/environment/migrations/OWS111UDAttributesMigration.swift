@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalServiceKit
 
 @objc
-public class OWS111UDAttributesMigration: OWSDatabaseMigration {
+public class OWS111UDAttributesMigration: YDBDatabaseMigration {
 
     // MARK: - Dependencies
 
@@ -18,7 +18,7 @@ public class OWS111UDAttributesMigration: OWSDatabaseMigration {
 
     // increment a similar constant for each migration.
     @objc
-    class func migrationId() -> String {
+    public override class var migrationId: String {
         // NOTE: Changes were made to the service after this migration was initially
         // merged, so we need to re-migrate any developer devices.  
         return "111.1"
@@ -35,8 +35,8 @@ public class OWS111UDAttributesMigration: OWSDatabaseMigration {
     private func doMigration() {
         tsAccountManager.updateAccountAttributes().retainUntilComplete()
 
-        self.dbReadWriteConnection().readWrite { transaction in
-            self.save(with: transaction)
+        self.ydbReadWriteConnection.readWrite { transaction in
+            self.markAsComplete(with: transaction.asAnyWrite)
         }
     }
 }

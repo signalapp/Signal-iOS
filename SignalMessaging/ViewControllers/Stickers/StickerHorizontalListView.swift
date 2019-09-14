@@ -38,7 +38,9 @@ public class StickerHorizontalListViewItemSticker: NSObject, StickerHorizontalLi
     }
 
     public var view: UIView {
-        return StickerView(stickerInfo: stickerInfo)
+        let view = StickerView(stickerInfo: stickerInfo)
+        view.layer.minificationFilter = .trilinear
+        return view
     }
 
     public var isSelected: Bool {

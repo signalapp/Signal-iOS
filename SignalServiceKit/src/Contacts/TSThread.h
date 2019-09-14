@@ -2,7 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSYapDatabaseObject.h"
+#import "BaseModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -11,6 +11,7 @@ BOOL IsNoteToSelfEnabled(void);
 @class OWSDisappearingMessagesConfiguration;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
+@class SignalServiceAddress;
 @class TSInteraction;
 @class TSInvalidIdentityKeyReceivingErrorMessage;
 
@@ -34,11 +35,12 @@ extern ConversationColorName const kConversationColorName_Default;
 /**
  *  TSThread is the superclass of TSContactThread and TSGroupThread
  */
-@interface TSThread : TSYapDatabaseObject
+@interface TSThread : BaseModel
 
 @property (nonatomic) BOOL shouldThreadBeVisible;
 @property (nonatomic, readonly, nullable) NSDate *creationDate;
 @property (nonatomic, readonly) BOOL isArchivedByLegacyTimestampForSorting;
+@property (nonatomic, readonly) int64_t rowId;
 
 // --- CODE GENERATION MARKER
 
@@ -55,8 +57,9 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
                  lastMessageDate:(nullable NSDate *)lastMessageDate
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
+                           rowId:(int64_t)rowId
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
-NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastMessageDate:messageDraft:mutedUntilDate:shouldThreadBeVisible:));
+NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastMessageDate:messageDraft:mutedUntilDate:rowId:shouldThreadBeVisible:));
 
 // clang-format on
 
@@ -69,32 +72,18 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
  */
 - (BOOL)isGroupThread;
 
-/**
- *  Returns the name of the thread.
- *
- *  @return The name of the thread.
- */
-- (NSString *)name;
-
 @property (nonatomic, readonly) ConversationColorName conversationColorName;
 
-- (void)updateConversationColorName:(ConversationColorName)colorName
-                        transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateConversationColorName:(ConversationColorName)colorName transaction:(SDSAnyWriteTransaction *)transaction;
 + (ConversationColorName)stableColorNameForNewConversationWithString:(NSString *)colorSeed;
 @property (class, nonatomic, readonly) NSArray<ConversationColorName> *conversationColorNames;
 
 /**
- * @returns
- *   Signal Id (e164) of the contact if it's a contact thread.
- */
-- (nullable NSString *)contactIdentifier;
-
-/**
  * @returns recipientId for each recipient in the thread
  */
-@property (nonatomic, readonly) NSArray<NSString *> *recipientIdentifiers;
+@property (nonatomic, readonly) NSArray<SignalServiceAddress *> *recipientAddresses;
 
-- (BOOL)isNoteToSelf;
+@property (nonatomic, readonly) BOOL isNoteToSelf;
 
 #pragma mark Interactions
 
@@ -113,7 +102,7 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 
 - (BOOL)hasSafetyNumbers;
 
-- (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)markAllAsReadWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 /**
  *  Returns the string that will be displayed typically in a conversations view as a preview of the last message
@@ -133,14 +122,14 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
  *  @param lastMessage Latest Interaction to take into consideration.
  *  @param transaction Database transaction.
  */
-- (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark Archival
 
 /**
  * @return YES if no new messages have been sent or received since the thread was last archived.
  */
-- (BOOL)isArchivedWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (BOOL)isArchivedWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 /**
  *  Archives a thread
@@ -149,6 +138,8 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
  */
 - (void)archiveThreadWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
+- (void)softDeleteThreadWithTransaction:(SDSAnyWriteTransaction *)transaction;
+
 /**
  *  Unarchives a thread
  *
@@ -156,14 +147,14 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
  */
 - (void)unarchiveThreadWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)removeAllThreadInteractionsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)removeAllThreadInteractionsWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 
 #pragma mark Disappearing Messages
 
 - (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationWithTransaction:
-    (YapDatabaseReadTransaction *)transaction;
-- (uint32_t)disappearingMessagesDurationWithTransaction:(YapDatabaseReadTransaction *)transaction;
+    (SDSAnyReadTransaction *)transaction;
+- (uint32_t)disappearingMessagesDurationWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 #pragma mark Drafts
 
@@ -174,7 +165,7 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
  *
  *  @return Last known draft for that thread.
  */
-- (NSString *)currentDraftWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (NSString *)currentDraftWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 /**
  *  Sets the draft of a thread. Typically called when leaving a conversation view.
@@ -189,7 +180,7 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 
 #pragma mark - Update With... Methods
 
-- (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(SDSAnyWriteTransaction *)transaction;
 
 + (BOOL)shouldInteractionAppearInInbox:(TSInteraction *)interaction;
 

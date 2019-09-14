@@ -6,14 +6,14 @@ import Foundation
 import GRDBCipher
 
 @objc
-public class SDSDatabaseStorage: NSObject {
+public class SDSDatabaseStorage: SDSTransactable {
 
     @objc
     public static var shared: SDSDatabaseStorage {
         return SSKEnvironment.shared.databaseStorage
     }
 
-    static public var shouldLogDBQueries: Bool = false
+    static public var shouldLogDBQueries: Bool = true
 
     private var hasPendingCrossProcessWrite = false
 
@@ -76,7 +76,7 @@ public class SDSDatabaseStorage: NSObject {
     }
 
     func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
-        assert(self.useGRDB)
+        assert(self.useGRDB || CurrentAppContext().isRunningTests)
 
         let baseDir: URL
 
@@ -103,9 +103,9 @@ public class SDSDatabaseStorage: NSObject {
     @objc
     public func newDatabaseQueue() -> SDSAnyDatabaseQueue {
         if useGRDB {
-            return grdbStorage.newDatabaseQueue().asAnyQueue
+            return grdbStorage.newDatabaseQueue().asAnyQueue(crossProcess: crossProcess)
         } else {
-            return yapStorage.newDatabaseQueue().asAnyQueue
+            return yapStorage.newDatabaseQueue().asAnyQueue(crossProcess: crossProcess)
         }
     }
 
@@ -129,9 +129,7 @@ public class SDSDatabaseStorage: NSObject {
         if useGRDB {
             do {
                 try grdbStorage.uiRead { transaction in
-                    autoreleasepool {
-                        block(transaction.asAnyRead)
-                    }
+                    block(transaction.asAnyRead)
                 }
             } catch {
                 owsFail("error: \(error)")
@@ -144,13 +142,11 @@ public class SDSDatabaseStorage: NSObject {
     }
 
     @objc
-    public func read(block: @escaping (SDSAnyReadTransaction) -> Void) {
+    public override func read(block: @escaping (SDSAnyReadTransaction) -> Void) {
         if useGRDB {
             do {
                 try grdbStorage.read { transaction in
-                    autoreleasepool {
-                        block(transaction.asAnyRead)
-                    }
+                    block(transaction.asAnyRead)
                 }
             } catch {
                 owsFail("error: \(error)")
@@ -163,13 +159,11 @@ public class SDSDatabaseStorage: NSObject {
     }
 
     @objc
-    public func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
+    public override func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
         if useGRDB {
             do {
                 try grdbStorage.write { transaction in
-                    autoreleasepool {
-                        block(transaction.asAnyWrite)
-                    }
+                    block(transaction.asAnyWrite)
                 }
             } catch {
                 owsFail("error: \(error)")
@@ -180,69 +174,7 @@ public class SDSDatabaseStorage: NSObject {
             }
         }
 
-        self.notifyCrossProcessWrite()
-    }
-
-    @objc
-    public func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void) {
-        asyncRead(block: block, completion: { })
-    }
-
-    @objc
-    public func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void, completion: @escaping () -> Void) {
-        asyncRead(block: block, completionQueue: .main, completion: completion)
-    }
-
-    @objc
-    public func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void, completionQueue: DispatchQueue, completion: @escaping () -> Void) {
-        DispatchQueue.global().async {
-            if self.useGRDB {
-                do {
-                    try self.grdbStorage.read { transaction in
-                        block(transaction.asAnyRead)
-                    }
-                } catch {
-                    owsFail("error: \(error)")
-                }
-            } else {
-                self.yapStorage.read { transaction in
-                    block(transaction.asAnyRead)
-                }
-            }
-
-            completionQueue.async(execute: completion)
-        }
-    }
-
-    @objc
-    public func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void) {
-        asyncWrite(block: block, completion: { })
-    }
-
-    @objc
-    public func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void, completion: @escaping () -> Void) {
-        asyncWrite(block: block, completionQueue: .main, completion: completion)
-    }
-
-    @objc
-    public func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void, completionQueue: DispatchQueue, completion: @escaping () -> Void) {
-        DispatchQueue.global().async {
-            if self.useGRDB {
-                do {
-                    try self.grdbStorage.write { transaction in
-                        block(transaction.asAnyWrite)
-                    }
-                } catch {
-                    owsFail("error: \(error)")
-                }
-            } else {
-                self.yapStorage.write { transaction in
-                    block(transaction.asAnyWrite)
-                }
-            }
-
-            completionQueue.async(execute: completion)
-        }
+        crossProcess.notifyChangedAsync()
     }
 
     // MARK: - Value Methods
@@ -271,6 +203,58 @@ public class SDSDatabaseStorage: NSObject {
         return value
     }
 
+    // MARK: - Touch
+
+    @objc(touchInteraction:transaction:)
+    public func touch(interaction: TSInteraction, transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let yap):
+            let uniqueId = interaction.uniqueId
+            yap.touchObject(forKey: uniqueId, inCollection: TSInteraction.collection())
+        case .grdbWrite(let grdb):
+            guard let conversationViewDatabaseObserver = grdbStorage.conversationViewDatabaseObserver else {
+                if AppReadiness.isAppReady() {
+                    owsFailDebug("conversationViewDatabaseObserver was unexpectedly nil")
+                }
+                return
+            }
+            conversationViewDatabaseObserver.touch(interaction: interaction, transaction: grdb)
+        }
+    }
+
+    @objc(touchThread:transaction:)
+    public func touch(thread: TSThread, transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let yap):
+            let uniqueId = thread.uniqueId
+            yap.touchObject(forKey: uniqueId, inCollection: TSThread.collection())
+        case .grdbWrite(let grdb):
+            guard let homeViewDatabaseObserver = grdbStorage.homeViewDatabaseObserver else {
+                if AppReadiness.isAppReady() {
+                    owsFailDebug("homeViewDatabaseObserver was unexpectedly nil")
+                }
+                return
+            }
+            homeViewDatabaseObserver.touch(thread: thread, transaction: grdb)
+        }
+    }
+
+    @objc(touchThreadId:transaction:)
+    public func touch(threadId: String, transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let yap):
+            yap.touchObject(forKey: threadId, inCollection: TSThread.collection())
+        case .grdbWrite(let grdb):
+            guard let homeViewDatabaseObserver = grdbStorage.homeViewDatabaseObserver else {
+                if AppReadiness.isAppReady() {
+                    owsFailDebug("homeViewDatabaseObserver was unexpectedly nil")
+                }
+                return
+            }
+            homeViewDatabaseObserver.touch(threadId: threadId, transaction: grdb)
+        }
+    }
+
     // MARK: - Cross Process Notifications
 
     private func handleCrossProcessWrite() {
@@ -289,17 +273,6 @@ public class SDSDatabaseStorage: NSObject {
         } else {
             // If not active, set flag to update when we become active.
             hasPendingCrossProcessWrite = true
-        }
-    }
-
-    private func notifyCrossProcessWrite() {
-        Logger.info("")
-
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else {
-                return
-            }
-            self.crossProcess.notifyChanged()
         }
     }
 
@@ -332,7 +305,18 @@ public class SDSDatabaseStorage: NSObject {
         //       skip most of the perf cost.
         NotificationCenter.default.postNotificationNameAsync(SDSDatabaseStorage.didReceiveCrossProcessNotification, object: nil)
     }
+
+    // MARK: - Misc.
+
+    @objc
+    public func logFileSizes() {
+        Logger.info("Database : \(databaseFileSize)")
+        Logger.info("\t WAL file size: \(databaseWALFileSize)")
+        Logger.info("\t SHM file size: \(databaseSHMFileSize)")
+    }
 }
+
+// MARK: -
 
 protocol SDSDatabaseStorageAdapter {
     associatedtype ReadTransaction
@@ -342,9 +326,13 @@ protocol SDSDatabaseStorageAdapter {
     func write(block: @escaping (WriteTransaction) -> Void) throws
 }
 
+// MARK: -
+
 struct YAPDBStorageAdapter {
     let storage: OWSPrimaryStorage
 }
+
+// MARK: -
 
 extension YAPDBStorageAdapter: SDSDatabaseStorageAdapter {
     func uiReadThrows(block: @escaping (YapDatabaseReadTransaction) throws -> Void) throws {
@@ -384,13 +372,17 @@ extension YAPDBStorageAdapter: SDSDatabaseStorageAdapter {
     }
 }
 
+// MARK: -
+
 @objc
 public class GRDBDatabaseStorageAdapter: NSObject {
+
+    private let dbURL: URL
 
     private let keyServiceName: String = "TSKeyChainService"
     private let keyName: String = "OWSDatabaseCipherKeySpec"
 
-    private let storage: Storage
+    private let storage: GRDBStorage
 
     public var pool: DatabasePool {
         return storage.pool
@@ -399,8 +391,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     init(dbDir: URL) throws {
         OWSFileSystem.ensureDirectoryExists(dbDir.path)
 
-        let dbURL = dbDir.appendingPathComponent("signal.sqlite", isDirectory: false)
-        storage = try Storage(dbURL: dbURL, keyServiceName: keyServiceName, keyName: keyName)
+        dbURL = dbDir.appendingPathComponent("signal.sqlite", isDirectory: false)
+        storage = try GRDBStorage(dbURL: dbURL, keyServiceName: keyServiceName, keyName: keyName)
 
         super.init()
 
@@ -421,7 +413,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     }
 
     func newDatabaseQueue() -> GRDBDatabaseQueue {
-        return GRDBDatabaseQueue(databaseQueue: storage.newDatabaseQueue())
+        return GRDBDatabaseQueue(storageAdapter: self)
     }
 
     public func add(function: DatabaseFunction) {
@@ -431,9 +423,10 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     lazy var migrator: DatabaseMigrator = {
         var migrator = DatabaseMigrator()
         migrator.registerMigration("create initial schema") { db in
+            try SDSKeyValueStore.table.createTable(database: db)
+
             try TSThreadSerializer.table.createTable(database: db)
             try TSInteractionSerializer.table.createTable(database: db)
-            try SDSKeyValueStore.table.createTable(database: db)
             try StickerPackSerializer.table.createTable(database: db)
             try InstalledStickerSerializer.table.createTable(database: db)
             try KnownStickerPackSerializer.table.createTable(database: db)
@@ -447,6 +440,9 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             try SignalAccountSerializer.table.createTable(database: db)
             try OWSUserProfileSerializer.table.createTable(database: db)
             try TSRecipientReadReceiptSerializer.table.createTable(database: db)
+            try OWSLinkedDeviceReadReceiptSerializer.table.createTable(database: db)
+            try OWSDeviceSerializer.table.createTable(database: db)
+            try OWSContactQuerySerializer.table.createTable(database: db)
 
             try db.create(index: "index_interactions_on_id_and_threadUniqueId",
                           on: InteractionRecord.databaseTableName,
@@ -463,11 +459,11 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             try db.create(index: "index_jobs_on_label",
                           on: JobRecordRecord.databaseTableName,
                           columns: [JobRecordRecord.columnName(.label)])
-            try db.create(index: "index_interactions_with_per_message_expiration",
+            try db.create(index: "index_interactions_on_view_once",
                           on: InteractionRecord.databaseTableName,
                           columns: [
-                            InteractionRecord.columnName(.perMessageExpirationDurationSeconds),
-                            InteractionRecord.columnName(.perMessageExpirationHasExpired)
+                            InteractionRecord.columnName(.isViewOnceMessage),
+                            InteractionRecord.columnName(.isViewOnceComplete)
                 ])
             try db.create(index: "index_key_value_store_on_collection_and_key",
                           on: SDSKeyValueStore.table.tableName,
@@ -488,6 +484,103 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                             InteractionRecord.columnName(.uniqueId),
                             InteractionRecord.columnName(.threadUniqueId)
                 ])
+
+            // Signal Account Indices
+            try db.create(
+                index: "index_signal_accounts_on_recipientPhoneNumber",
+                on: SignalAccountRecord.databaseTableName,
+                columns: [SignalAccountRecord.columnName(.recipientPhoneNumber)]
+            )
+
+            try db.create(
+                index: "index_signal_accounts_on_recipientUUID",
+                on: SignalAccountRecord.databaseTableName,
+                columns: [SignalAccountRecord.columnName(.recipientUUID)]
+            )
+
+            // Signal Recipient Indices
+            try db.create(
+                index: "index_signal_recipients_on_recipientPhoneNumber",
+                on: SignalRecipientRecord.databaseTableName,
+                columns: [SignalRecipientRecord.columnName(.recipientPhoneNumber)]
+            )
+
+            try db.create(
+                index: "index_signal_recipients_on_recipientUUID",
+                on: SignalRecipientRecord.databaseTableName,
+                columns: [SignalRecipientRecord.columnName(.recipientUUID)]
+            )
+
+            // Thread Indices
+            try db.create(
+                index: "index_thread_on_contactPhoneNumber",
+                on: ThreadRecord.databaseTableName,
+                columns: [ThreadRecord.columnName(.contactPhoneNumber)]
+            )
+
+            try db.create(
+                index: "index_tsthread_on_contactUUID",
+                on: ThreadRecord.databaseTableName,
+                columns: [ThreadRecord.columnName(.contactUUID)]
+            )
+
+            // User Profile
+            try db.create(
+                index: "index_user_profiles_on_recipientPhoneNumber",
+                on: UserProfileRecord.databaseTableName,
+                columns: [UserProfileRecord.columnName(.recipientPhoneNumber)]
+            )
+
+            try db.create(
+                index: "index_user_profiles_on_recipientUUID",
+                on: UserProfileRecord.databaseTableName,
+                columns: [UserProfileRecord.columnName(.recipientUUID)]
+            )
+
+            // Linked Device Read Receipts
+            try db.create(
+                index: "index_linkedDeviceReadReceipt_on_senderPhoneNumberAndTimestamp",
+                on: LinkedDeviceReadReceiptRecord.databaseTableName,
+                columns: [LinkedDeviceReadReceiptRecord.columnName(.senderPhoneNumber), LinkedDeviceReadReceiptRecord.columnName(.messageIdTimestamp)]
+            )
+
+            try db.create(
+                index: "index_linkedDeviceReadReceipt_on_senderUUIDAndTimestamp",
+                on: LinkedDeviceReadReceiptRecord.databaseTableName,
+                columns: [LinkedDeviceReadReceiptRecord.columnName(.senderUUID), LinkedDeviceReadReceiptRecord.columnName(.messageIdTimestamp)]
+            )
+
+            // Interaction Finder
+            try db.create(index: "index_interactions_on_timestamp_sourceDeviceId_and_authorUUID",
+                          on: InteractionRecord.databaseTableName,
+                          columns: [
+                            InteractionRecord.columnName(.timestamp),
+                            InteractionRecord.columnName(.sourceDeviceId),
+                            InteractionRecord.columnName(.authorUUID)
+                ])
+
+            try db.create(index: "index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber",
+                          on: InteractionRecord.databaseTableName,
+                          columns: [
+                            InteractionRecord.columnName(.timestamp),
+                            InteractionRecord.columnName(.sourceDeviceId),
+                            InteractionRecord.columnName(.authorPhoneNumber)
+                ])
+            try db.create(index: "index_interactions_on_threadUniqueId_and_read",
+                          on: InteractionRecord.databaseTableName,
+                          columns: [
+                            InteractionRecord.columnName(.threadUniqueId),
+                            InteractionRecord.columnName(.read)
+                ])
+
+            // ContactQuery
+            try db.create(index: "index_contact_queries_on_lastQueried",
+                          on: ContactQueryRecord.databaseTableName,
+                          columns: [
+                            ContactQueryRecord.columnName(.lastQueried)
+                ])
+
+            try GRDBFullTextSearchFinder.createTables(database: db)
         }
         return migrator
     }()
@@ -510,7 +603,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     @objc
     public private(set) var mediaGalleryDatabaseObserver: MediaGalleryDatabaseObserver?
 
-    func setupUIDatabase() throws {
+    @objc
+    public func setupUIDatabase() throws {
         // UIDatabaseObserver is a general purpose observer, whose delegates
         // are notified when things change, but are not given any specific details
         // about the changes.
@@ -545,10 +639,22 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         }
     }
 
+    func testing_tearDownUIDatabase() {
+        // UIDatabaseObserver is a general purpose observer, whose delegates
+        // are notified when things change, but are not given any specific details
+        // about the changes.
+        self.uiDatabaseObserver = nil
+        self.homeViewDatabaseObserver = nil
+        self.conversationViewDatabaseObserver = nil
+        self.mediaGalleryDatabaseObserver = nil
+    }
+
     func setup() throws {
         GRDBMediaGalleryFinder.setup(storage: self)
     }
 }
+
+// MARK: -
 
 extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
@@ -556,14 +662,18 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     public func uiReadThrows(block: @escaping (GRDBReadTransaction) throws -> Void) rethrows {
         AssertIsOnMainThread()
         try latestSnapshot.read { database in
-            try block(GRDBReadTransaction(database: database))
+            try autoreleasepool {
+                try block(GRDBReadTransaction(database: database))
+            }
         }
     }
 
     public func readReturningResultThrows<T>(block: @escaping (GRDBReadTransaction) throws -> T) throws -> T {
         AssertIsOnMainThread()
         return try pool.read { database in
-            return try block(GRDBReadTransaction(database: database))
+            try autoreleasepool {
+                return try block(GRDBReadTransaction(database: database))
+            }
         }
     }
 
@@ -571,14 +681,18 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     public func uiRead(block: @escaping (GRDBReadTransaction) -> Void) throws {
         AssertIsOnMainThread()
         latestSnapshot.read { database in
-            block(GRDBReadTransaction(database: database))
+            autoreleasepool {
+                block(GRDBReadTransaction(database: database))
+            }
         }
     }
 
     @objc
     public func read(block: @escaping (GRDBReadTransaction) -> Void) throws {
         try pool.read { database in
-            block(GRDBReadTransaction(database: database))
+            autoreleasepool {
+                block(GRDBReadTransaction(database: database))
+            }
         }
     }
 
@@ -586,42 +700,20 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     public func write(block: @escaping (GRDBWriteTransaction) -> Void) throws {
         var transaction: GRDBWriteTransaction!
         try pool.write { database in
-            transaction = GRDBWriteTransaction(database: database)
-            block(transaction)
+            autoreleasepool {
+                transaction = GRDBWriteTransaction(database: database)
+                block(transaction)
+            }
         }
         for (queue, block) in transaction.completions {
             queue.async(execute: block)
         }
     }
-
-    public func uiReadReturningResult<T>(block: @escaping (GRDBReadTransaction) -> T) -> T {
-        var value: T!
-        try! uiRead { (transaction) in
-            value = block(transaction)
-        }
-        return value
-    }
-
-    public func readReturningResult<T>(block: @escaping (GRDBReadTransaction) -> T) -> T {
-        var value: T!
-        try! read { (transaction) in
-            value = block(transaction)
-        }
-        return value
-    }
-
-    public func writeReturningResult<T>(block: @escaping (GRDBWriteTransaction) -> T) -> T {
-        var value: T!
-        try! write { (transaction) in
-            value = block(transaction)
-        }
-        return value
-    }
 }
 
-private struct Storage {
+// MARK: -
 
-    // MARK: -
+private struct GRDBStorage {
 
     let pool: DatabasePool
 
@@ -630,7 +722,7 @@ private struct Storage {
 
     init(dbURL: URL, keyServiceName: String, keyName: String) throws {
         self.dbURL = dbURL
-        let keyspec = KeySpecSource(keyServiceName: keyServiceName, keyName: keyName)
+        let keyspec = GRDBKeySpecSource(keyServiceName: keyServiceName, keyName: keyName)
 
         var configuration = Configuration()
         configuration.readonly = false
@@ -666,17 +758,11 @@ private struct Storage {
 
         OWSFileSystem.protectFileOrFolder(atPath: dbURL.path)
     }
-
-    public func newDatabaseQueue() -> DatabaseQueue {
-        do {
-            return try DatabaseQueue(path: dbURL.path, configuration: configuration)
-        } catch {
-            owsFail("error: \(error)")
-        }
-    }
 }
 
-private struct KeySpecSource {
+// MARK: -
+
+private struct GRDBKeySpecSource {
     let keyServiceName: String
     let keyName: String
 
@@ -700,5 +786,62 @@ private struct KeySpecSource {
 
     func fetchData() throws -> Data {
         return try CurrentAppContext().keychainStorage().data(forService: keyServiceName, key: keyName)
+    }
+}
+
+// MARK: -
+
+@objc
+public extension SDSDatabaseStorage {
+    var databaseFileSize: UInt64 {
+        if useGRDB {
+            return grdbStorage.databaseFileSize
+        } else {
+            return OWSPrimaryStorage.shared().databaseFileSize()
+        }
+    }
+
+    var databaseWALFileSize: UInt64 {
+        if useGRDB {
+            return grdbStorage.databaseWALFileSize
+        } else {
+            return OWSPrimaryStorage.shared().databaseWALFileSize()
+        }
+    }
+
+    var databaseSHMFileSize: UInt64 {
+        if useGRDB {
+            return grdbStorage.databaseSHMFileSize
+        } else {
+            return OWSPrimaryStorage.shared().databaseSHMFileSize()
+        }
+    }
+}
+
+// MARK: -
+
+extension GRDBDatabaseStorageAdapter {
+    var databaseFileSize: UInt64 {
+        guard let fileSize = OWSFileSystem.fileSize(of: dbURL) else {
+            owsFailDebug("Could not determine file size.")
+            return 0
+        }
+        return fileSize.uint64Value
+    }
+
+    var databaseWALFileSize: UInt64 {
+        guard let fileSize = OWSFileSystem.fileSize(ofPath: dbURL.path + "-shm") else {
+            owsFailDebug("Could not determine file size.")
+            return 0
+        }
+        return fileSize.uint64Value
+    }
+
+    var databaseSHMFileSize: UInt64 {
+        guard let fileSize = OWSFileSystem.fileSize(ofPath: dbURL.path + "-wal") else {
+            owsFailDebug("Could not determine file size.")
+            return 0
+        }
+        return fileSize.uint64Value
     }
 }

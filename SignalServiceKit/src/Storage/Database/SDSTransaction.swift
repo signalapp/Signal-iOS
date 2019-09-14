@@ -115,6 +115,7 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, SPKProtocolWriteCont
         super.init(transitional_yapReadTransaction: transitional_yapWriteTransaction)
     }
 
+    // GRDB TODO: Remove this method.
     @objc
     public var transitional_yapWriteTransaction: YapDatabaseReadWriteTransaction? {
         switch writeTransaction {
@@ -157,5 +158,23 @@ public extension YapDatabaseReadTransaction {
 public extension YapDatabaseReadWriteTransaction {
     var asAnyWrite: SDSAnyWriteTransaction {
         return SDSAnyWriteTransaction(transitional_yapWriteTransaction: self)
+    }
+}
+
+// MARK: - Convenience Methods
+
+public extension GRDBWriteTransaction {
+    // This has significant perf benefits over database.execute()
+    // for queries that we perform repeatedly.
+    func executeWithCachedStatement(sql: String,
+                                    arguments: StatementArguments = StatementArguments()) {
+        do {
+            let statement = try database.cachedUpdateStatement(sql: sql)
+            // TODO: We could use setArgumentsWithValidation for more safety.
+            statement.unsafeSetArguments(arguments)
+            try statement.execute()
+        } catch {
+            owsFail("Error: \(error)")
+        }
     }
 }

@@ -20,13 +20,6 @@ public class GalleryItemBox: NSObject {
     }
 }
 
-private class Box<A> {
-    var value: A
-    init(_ val: A) {
-        self.value = val
-    }
-}
-
 fileprivate extension MediaDetailViewController {
     var galleryItem: MediaGalleryItem {
         return self.galleryItemBox.value
@@ -36,6 +29,8 @@ fileprivate extension MediaDetailViewController {
 class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, MediaDetailViewControllerDelegate, MediaGalleryDataSourceDelegate {
 
     private weak var mediaGalleryDataSource: MediaGalleryDataSource?
+    private weak var mediaPageViewDelegate: MediaPageViewDelegate?
+    var mediaInteractiveDismiss: MediaInteractiveDismiss!
 
     private var cachedPages: [MediaGalleryItem: MediaDetailViewController] = [:]
     private var initialPage: MediaDetailViewController!
@@ -64,17 +59,21 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     private let showAllMediaButton: Bool
     private let sliderEnabled: Bool
 
-    init(initialItem: MediaGalleryItem, mediaGalleryDataSource: MediaGalleryDataSource, options: MediaGalleryOption) {
+    init(initialItem: MediaGalleryItem,
+         mediaGalleryDataSource: MediaGalleryDataSource,
+         mediaPageViewDelegate: MediaPageViewDelegate,
+         options: MediaGalleryOption) {
+        self.mediaGalleryDataSource = mediaGalleryDataSource
+        self.mediaPageViewDelegate = mediaPageViewDelegate
         self.showAllMediaButton = options.contains(.showAllMediaButton)
         self.sliderEnabled = options.contains(.sliderEnabled)
-        self.mediaGalleryDataSource = mediaGalleryDataSource
 
         let kSpacingBetweenItems: CGFloat = 20
 
-        let options: [UIPageViewController.OptionsKey: Any] = [.interPageSpacing: kSpacingBetweenItems]
+        let pageViewOptions: [UIPageViewController.OptionsKey: Any] = [.interPageSpacing: kSpacingBetweenItems]
         super.init(transitionStyle: .scroll,
                    navigationOrientation: .horizontal,
-                   options: options)
+                   options: pageViewOptions)
 
         self.dataSource = self
         self.delegate = self
@@ -114,6 +113,13 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     // MARK: UIViewController overrides
 
+    // HACK: Though we don't have an input accessory view, the VC we are presented above (ConversationVC) does.
+    // If the app is backgrounded and then foregrounded, when OWSWindowManager calls mainWindow.makeKeyAndVisible
+    // the ConversationVC's inputAccessoryView will appear *above* us unless we'd previously become first responder.
+    override public var canBecomeFirstResponder: Bool {
+        return true
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -123,6 +129,9 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         // to swipe to go back in the pager view anyway, instead swiping back should show the next page.
         let backButton = OWSViewController.createOWSBackButton(withTarget: self, selector: #selector(didPressDismissButton))
         self.navigationItem.leftBarButtonItem = backButton
+
+        mediaInteractiveDismiss = MediaInteractiveDismiss(mediaPageViewController: self)
+        mediaInteractiveDismiss.addGestureRecognizer(to: view)
 
         self.navigationItem.titleView = portraitHeaderView
 
@@ -345,13 +354,12 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     public func didPressAllMediaButton(sender: Any) {
         Logger.debug("")
 
-        currentViewController.stopAnyVideo()
-
-        guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
+        guard let mediaPageViewDelegate = self.mediaPageViewDelegate else {
             owsFailDebug("mediaGalleryDataSource was unexpectedly nil")
             return
         }
-        mediaGalleryDataSource.showAllMedia(focusedItem: currentItem)
+
+        mediaPageViewDelegate.mediaPageViewControllerDidTapAllMedia(self)
     }
 
     @objc
@@ -599,20 +607,22 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     public func dismissSelf(animated isAnimated: Bool, completion: (() -> Void)? = nil) {
         // Swapping mediaView for presentationView will be perceptible if we're not zoomed out all the way.
-        // currentVC
         currentViewController.zoomOut(animated: true)
-        currentViewController.stopAnyVideo()
 
-        guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
+        currentViewController.stopAnyVideo()
+        UIApplication.shared.setStatusBarHidden(false, with: .none)
+        self.navigationController?.setNavigationBarHidden(false, animated: false)
+
+        guard let mediaPageViewDelegate = self.mediaPageViewDelegate else {
             owsFailDebug("mediaGalleryDataSource was unexpectedly nil")
             self.presentingViewController?.dismiss(animated: true)
 
             return
         }
 
-        mediaGalleryDataSource.dismissMediaDetailViewController(self,
-                                                                animated: isAnimated,
-                                                                completion: completion)
+        mediaPageViewDelegate.mediaPageViewControllerRequestedDismiss(self,
+                                                                      animated: isAnimated,
+                                                                      completion: completion)
     }
 
     // MARK: MediaDetailViewControllerDelegate
@@ -663,7 +673,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     private func senderName(message: TSMessage) -> String {
         switch message {
         case let incomingMessage as TSIncomingMessage:
-            return self.contactsManager.displayName(forPhoneIdentifier: incomingMessage.authorId)
+            return self.contactsManager.displayName(for: incomingMessage.authorAddress)
         case is TSOutgoingMessage:
             return NSLocalizedString("MEDIA_GALLERY_SENDER_NAME_YOU", comment: "Short sender label for media sent by you")
         default:
@@ -772,20 +782,12 @@ extension MediaGalleryItem: GalleryRailItem {
     public func buildRailItemView() -> UIView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
-        getRailImage().map { [weak imageView] image in
-            guard let imageView = imageView else { return }
-            imageView.image = image
-        }.retainUntilComplete()
-
+        imageView.image = getRailImage()
         return imageView
     }
 
-    public func getRailImage() -> Guarantee<UIImage> {
-        return Guarantee<UIImage> { fulfill in
-            if let image = self.thumbnailImage(async: { fulfill($0) }) {
-                fulfill(image)
-            }
-        }
+    public func getRailImage() -> UIImage? {
+        return self.thumbnailImageSync()
     }
 }
 
@@ -829,5 +831,34 @@ extension MediaPageViewController: CaptionContainerViewDelegate {
         }
 
         captionContainerView.isHidden = true
+    }
+}
+
+extension MediaPageViewController: MediaPresentationContextProvider {
+    func mediaPresentationContext(galleryItem: MediaGalleryItem, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
+        let mediaView = currentViewController.mediaView
+
+        guard let mediaSuperview = mediaView.superview else {
+            owsFailDebug("superview was unexpectedly nil")
+            return nil
+        }
+
+        let presentationFrame = coordinateSpace.convert(mediaView.frame, from: mediaSuperview)
+        // TODO better match the corner radius
+        return MediaPresentationContext(mediaView: mediaView, presentationFrame: presentationFrame, cornerRadius: 0)
+    }
+
+    func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
+        view.layoutIfNeeded()
+
+        guard let snapshot = bottomContainer.snapshotView(afterScreenUpdates: true) else {
+            owsFailDebug("snapshot was unexpectedly nil")
+            return nil
+        }
+
+        let presentationFrame = coordinateSpace.convert(bottomContainer.frame,
+                                                        from: bottomContainer.superview!)
+
+        return (snapshot, presentationFrame)
     }
 }

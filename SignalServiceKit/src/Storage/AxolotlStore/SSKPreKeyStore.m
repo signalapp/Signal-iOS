@@ -15,7 +15,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const TSStorageInternalSettingsCollection = @"TSStorageInternalSettingsCollection";
-NSString *const OWSPrimaryStoragePreKeyStoreCollection = @"TSStorageManagerPreKeyStoreCollection";
 NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
 
 #pragma mark - Private Extension
@@ -59,7 +58,7 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
         return self;
     }
 
-    _keyStore = [[SDSKeyValueStore alloc] initWithCollection:OWSPrimaryStoragePreKeyStoreCollection];
+    _keyStore = [[SDSKeyValueStore alloc] initWithCollection:@"TSStorageManagerPreKeyStoreCollection"];
     _metadataStore = [[SDSKeyValueStore alloc] initWithCollection:TSStorageInternalSettingsCollection];
 
     return self;
@@ -145,7 +144,7 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
 {
     __block NSInteger lastPreKeyId;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        lastPreKeyId = [self.metadataStore getInt:TSNextPrekeyIdKey transaction:transaction];
+        lastPreKeyId = [self.metadataStore getInt:TSNextPrekeyIdKey defaultValue:0 transaction:transaction];
     }];
 
     if (lastPreKeyId < 1) {

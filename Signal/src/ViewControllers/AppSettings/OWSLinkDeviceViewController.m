@@ -18,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSLinkDeviceViewController () <OWSQRScannerDelegate>
 
-@property (nonatomic) YapDatabaseConnection *dbConnection;
 @property (nonatomic) UIView *qrScanningView;
 @property (nonatomic) UILabel *scanningInstructionsLabel;
 @property (nonatomic) OWSQRCodeScanningViewController *qrScanningController;
@@ -33,8 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
     [super viewDidLoad];
 
     self.view.backgroundColor = Theme.backgroundColor;
-
-    self.dbConnection = [[OWSPrimaryStorage sharedManager] newDatabaseConnection];
 
     UIImage *heroImage = [UIImage imageNamed:@"ic_devices_ios"];
     OWSAssertDebug(heroImage);

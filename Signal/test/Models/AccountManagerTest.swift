@@ -28,7 +28,7 @@ class FailingTSAccountManager: TSAccountManager {
 
     override func verifyAccount(withCode: String,
                                 pin: String?,
-                                success: @escaping () -> Void, failure: @escaping (Error) -> Void) {
+                                success: @escaping (Any?) -> Void, failure: @escaping (Error) -> Void) {
         failure(VerificationFailedError())
     }
 
@@ -44,8 +44,8 @@ class FailingTSAccountManager: TSAccountManager {
 class VerifyingTSAccountManager: FailingTSAccountManager {
     override func verifyAccount(withCode: String,
                                 pin: String?,
-                                success: @escaping () -> Void, failure: @escaping (Error) -> Void) {
-        success()
+                                success: @escaping (Any?) -> Void, failure: @escaping (Error) -> Void) {
+        success(nil)
     }
 
     override func performUpdateAccountAttributes() -> AnyPromise {

@@ -28,8 +28,7 @@
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/OWSUserProfile.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSThread.h>
@@ -48,12 +47,9 @@ const CGFloat kIconViewLength = 24;
     OWSSheetViewControllerDelegate>
 
 @property (nonatomic) TSThread *thread;
-@property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
-@property (nonatomic, readonly) YapDatabaseConnection *editingDatabaseConnection;
 
 @property (nonatomic) NSArray<NSNumber *> *disappearingMessagesDurations;
 @property (nonatomic) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
-@property (nullable, nonatomic) MediaGallery *mediaGallery;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 @property (nonatomic, readonly) UIImageView *avatarView;
 @property (nonatomic, readonly) UILabel *disappearingMessagesDurationLabel;
@@ -149,6 +145,11 @@ const CGFloat kIconViewLength = 24;
     return [OWSProfileManager sharedManager];
 }
 
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
 #pragma mark
 
 - (void)observeNotifications
@@ -163,21 +164,20 @@ const CGFloat kIconViewLength = 24;
                                                object:nil];
 }
 
-- (YapDatabaseConnection *)editingDatabaseConnection
-{
-    return [OWSPrimaryStorage sharedManager].dbReadWriteConnection;
-}
-
 - (NSString *)threadName
 {
-    NSString *threadName = self.thread.name;
-    if (self.thread.contactIdentifier &&
-        [threadName isEqualToString:self.thread.contactIdentifier]) {
-        threadName =
-            [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:self.thread.contactIdentifier];
-    } else if (threadName.length == 0 && [self isGroupThread]) {
-        threadName = [MessageStrings newGroupDefaultTitle];
+    NSString *threadName = [self.contactsManager displayNameForThreadWithSneakyTransaction:self.thread];
+
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        return threadName;
     }
+
+    TSContactThread *contactThread = (TSContactThread *)self.thread;
+    NSString *_Nullable phoneNumber = contactThread.contactAddress.phoneNumber;
+    if (phoneNumber && [threadName isEqualToString:phoneNumber]) {
+        threadName = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber];
+    }
+
     return threadName;
 }
 
@@ -196,11 +196,10 @@ const CGFloat kIconViewLength = 24;
     return groupThread.groupModel.groupImage != nil;
 }
 
-- (void)configureWithThread:(TSThread *)thread uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection
+- (void)configureWithThread:(TSThread *)thread
 {
     OWSAssertDebug(thread);
     self.thread = thread;
-    self.uiDatabaseConnection = uiDatabaseConnection;
 
     if ([self.thread isKindOfClass:[TSContactThread class]]) {
         self.title = NSLocalizedString(
@@ -232,8 +231,8 @@ const CGFloat kIconViewLength = 24;
 {
     OWSAssertDebug([self.thread isKindOfClass:[TSContactThread class]]);
     TSContactThread *contactThread = (TSContactThread *)self.thread;
-    NSString *recipientId = contactThread.contactIdentifier;
-    return [self.contactsManager hasSignalAccountForRecipientId:recipientId];
+    SignalServiceAddress *recipientAddress = contactThread.contactAddress;
+    return [self.contactsManager hasSignalAccountForAddress:recipientAddress];
 }
 
 #pragma mark - ContactEditingDelegate
@@ -286,13 +285,11 @@ const CGFloat kIconViewLength = 24;
 
     self.disappearingMessagesDurations = [OWSDisappearingMessagesConfiguration validDurationsSeconds];
 
-    self.disappearingMessagesConfiguration =
-        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
-
-    if (!self.disappearingMessagesConfiguration) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         self.disappearingMessagesConfiguration =
-            [[OWSDisappearingMessagesConfiguration alloc] initDefaultWithThreadId:self.thread.uniqueId];
-    }
+            [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:self.thread.uniqueId
+                                                                      transaction:transaction];
+    }];
 
 #ifdef SHOW_COLOR_PICKER
     self.colorPicker = [[OWSColorPicker alloc] initWithThread:self.thread];
@@ -363,8 +360,8 @@ const CGFloat kIconViewLength = 24;
                                      OWSConversationSettingsViewController *strongSelf = weakSelf;
                                      OWSCAssertDebug(strongSelf);
                                      TSContactThread *contactThread = (TSContactThread *)strongSelf.thread;
-                                     NSString *recipientId = contactThread.contactIdentifier;
-                                     [strongSelf presentAddToContactViewControllerWithRecipientId:recipientId];
+                                     [strongSelf
+                                         presentAddToContactViewControllerWithAddress:contactThread.contactAddress];
                                  }]];
     }
 
@@ -372,7 +369,7 @@ const CGFloat kIconViewLength = 24;
                              itemWithCustomCellBlock:^{
                                  return [weakSelf
                                       disclosureCellWithName:MediaStrings.allMedia
-                                                    iconName:@"actionsheet_camera_roll_black"
+                                                    iconName:@"photo-outline-24"
                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                                  OWSConversationSettingsViewController, @"all_media")];
                              }
@@ -414,9 +411,35 @@ const CGFloat kIconViewLength = 24;
                         }]];
     }
 
-    if (isNoteToSelf) {
-        // Skip the profile whitelist.
-    } else if ([self.profileManager isThreadInProfileWhitelist:self.thread]) {
+    // Indicate if the user is in the system contacts
+    if (!isNoteToSelf && !self.isGroupThread && self.hasExistingContact) {
+        [mainSection
+         addItem:[OWSTableItem
+                  itemWithCustomCellBlock:^{
+                      OWSConversationSettingsViewController *strongSelf = weakSelf;
+                      OWSCAssertDebug(strongSelf);
+
+                      return [strongSelf
+                              labelCellWithName:NSLocalizedString(
+                                                                  @"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT",
+                                                                  @"Indicates that user is in the system contacts list.")
+                              iconName:@"profile-outline-24"
+                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                                                         OWSConversationSettingsViewController, @"is_in_contacts")];
+                  }
+                  actionBlock:nil]];
+    }
+
+    // Show profile status and allow sharing your profile for threads that are not in the whitelist.
+    // This goes away when phoneNumberPrivacy is enabled, since profile sharing become mandatory.
+    __block BOOL isThreadInProfileWhitelist;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        isThreadInProfileWhitelist =
+            [self.profileManager isThreadInProfileWhitelist:self.thread transaction:transaction];
+    }];
+    if (SSKFeatureFlags.phoneNumberPrivacy || isNoteToSelf) {
+        // Do nothing
+    } else if (isThreadInProfileWhitelist) {
         [mainSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
@@ -427,11 +450,11 @@ const CGFloat kIconViewLength = 24;
                                       labelCellWithName:
                                           (strongSelf.isGroupThread
                                                   ? NSLocalizedString(
-                                                        @"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP",
-                                                        @"Indicates that user's profile has been shared with a group.")
+                                                      @"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP",
+                                                      @"Indicates that user's profile has been shared with a group.")
                                                   : NSLocalizedString(
-                                                        @"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER",
-                                                        @"Indicates that user's profile has been shared with a user."))
+                                                      @"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER",
+                                                      @"Indicates that user's profile has been shared with a user."))
                                                iconName:@"table_ic_share_profile"
                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                             OWSConversationSettingsViewController,
@@ -449,9 +472,9 @@ const CGFloat kIconViewLength = 24;
                                  disclosureCellWithName:
                                      (strongSelf.isGroupThread
                                              ? NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP",
-                                                   @"Action that shares user profile with a group.")
+                                                 @"Action that shares user profile with a group.")
                                              : NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER",
-                                                   @"Action that shares user profile with a user."))
+                                                 @"Action that shares user profile with a user."))
                                                iconName:@"table_ic_share_profile"
                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                             OWSConversationSettingsViewController, @"share_profile")];
@@ -945,36 +968,48 @@ const CGFloat kIconViewLength = 24;
 
     __block UIView *lastTitleView = threadTitleLabel;
 
-    if (![self isGroupThread]) {
-        const CGFloat kSubtitlePointSize = 12.f;
-        void (^addSubtitle)(NSAttributedString *) = ^(NSAttributedString *subtitle) {
-            UILabel *subtitleLabel = [UILabel new];
-            subtitleLabel.textColor = [Theme secondaryColor];
-            subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
-            subtitleLabel.attributedText = subtitle;
-            subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-            [threadNameView addSubview:subtitleLabel];
-            [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastTitleView];
-            [subtitleLabel autoPinLeadingToSuperviewMargin];
-            lastTitleView = subtitleLabel;
-        };
+    const CGFloat kSubtitlePointSize = 12.f;
+    void (^addSubtitle)(NSAttributedString *) = ^(NSAttributedString *subtitle) {
+        UILabel *subtitleLabel = [UILabel new];
+        subtitleLabel.textColor = [Theme secondaryColor];
+        subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
+        subtitleLabel.attributedText = subtitle;
+        subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        [threadNameView addSubview:subtitleLabel];
+        [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastTitleView];
+        [subtitleLabel autoPinLeadingToSuperviewMargin];
+        lastTitleView = subtitleLabel;
+    };
 
-        NSString *recipientId = self.thread.contactIdentifier;
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        TSContactThread *contactThread = (TSContactThread *)self.thread;
 
-        BOOL hasName = ![self.thread.name isEqualToString:recipientId];
-        if (hasName) {
-            NSAttributedString *subtitle = [[NSAttributedString alloc]
-                initWithString:[PhoneNumber
-                                   bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId]];
-            addSubtitle(subtitle);
-        } else {
-            NSString *_Nullable profileName = [self.contactsManager formattedProfileNameForRecipientId:recipientId];
+        SignalServiceAddress *recipientAddress = contactThread.contactAddress;
+        NSString *_Nullable phoneNumber = recipientAddress.phoneNumber;
+
+        if (phoneNumber.length > 0) {
+            NSString *formattedPhoneNumber =
+                [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber];
+            if (![[self.contactsManager displayNameForThreadWithSneakyTransaction:contactThread]
+                    isEqualToString:formattedPhoneNumber]) {
+                addSubtitle([[NSAttributedString alloc] initWithString:formattedPhoneNumber]);
+            }
+        }
+
+        if (!SSKFeatureFlags.profileDisplayChanges
+            && ![self.contactsManager hasNameInSystemContactsForAddress:recipientAddress]) {
+            NSString *_Nullable profileName = [self.contactsManager formattedProfileNameForAddress:recipientAddress];
             if (profileName) {
                 addSubtitle([[NSAttributedString alloc] initWithString:profileName]);
             }
         }
 
-        BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
+#if DEBUG
+        NSString *uuidText = [NSString stringWithFormat:@"UUID: %@", contactThread.contactAddress.uuid ?: @"Unknown"];
+        addSubtitle([[NSAttributedString alloc] initWithString:uuidText]);
+#endif
+
+        BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForAddress:recipientAddress]
             == OWSVerificationStateVerified;
         if (isVerified) {
             NSMutableAttributedString *subtitle = [NSMutableAttributedString new];
@@ -991,6 +1026,19 @@ const CGFloat kIconViewLength = 24;
             addSubtitle(subtitle);
         }
     }
+
+    // TODO Message Request: In order to debug the profile is getting shared in the right moments,
+    // display the thread whitelist state in settings. Eventually we can probably delete this.
+#if DEBUG
+    __block BOOL isThreadInProfileWhitelist;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        isThreadInProfileWhitelist =
+            [self.profileManager isThreadInProfileWhitelist:self.thread transaction:transaction];
+    }];
+    NSString *hasSharedProfile =
+        [NSString stringWithFormat:@"Whitelisted: %@", isThreadInProfileWhitelist ? @"Yes" : @"No"];
+    addSubtitle([[NSAttributedString alloc] initWithString:hasSharedProfile]);
+#endif
 
     [lastTitleView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
@@ -1063,8 +1111,12 @@ const CGFloat kIconViewLength = 24;
     }
 
     if (self.disappearingMessagesConfiguration.dictionaryValueDidChange) {
-        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [self.disappearingMessagesConfiguration saveWithTransaction:transaction];
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+            [self.disappearingMessagesConfiguration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+
             // MJK TODO - should be safe to remove this senderTimestamp
             OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
                 [[OWSDisappearingConfigurationUpdateInfoMessage alloc]
@@ -1073,15 +1125,20 @@ const CGFloat kIconViewLength = 24;
                              configuration:self.disappearingMessagesConfiguration
                        createdByRemoteName:nil
                     createdInExistingGroup:NO];
-            [infoMessage saveWithTransaction:transaction];
+            [infoMessage anyInsertWithTransaction:transaction];
 
             OWSDisappearingMessagesConfigurationMessage *message = [[OWSDisappearingMessagesConfigurationMessage alloc]
                 initWithConfiguration:self.disappearingMessagesConfiguration
                                thread:self.thread];
 
-            [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
+            [self.messageSenderJobQueue addMessage:message transaction:transaction];
         }];
     }
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
 }
 
 #pragma mark - Actions
@@ -1097,10 +1154,12 @@ const CGFloat kIconViewLength = 24;
 
 - (void)showVerificationView
 {
-    NSString *recipientId = self.thread.contactIdentifier;
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug([self.thread isKindOfClass:[TSContactThread class]]);
+    TSContactThread *contactThread = (TSContactThread *)self.thread;
+    SignalServiceAddress *contactAddress = contactThread.contactAddress;
+    OWSAssertDebug(contactAddress.isValid);
 
-    [FingerprintViewController presentFromViewController:self recipientId:recipientId];
+    [FingerprintViewController presentFromViewController:self address:contactAddress];
 }
 
 - (void)showGroupMembersView
@@ -1133,12 +1192,12 @@ const CGFloat kIconViewLength = 24;
     }
 
     TSContactThread *contactThread = (TSContactThread *)self.thread;
-    [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.contactIdentifier
-                                                     fromViewController:self
-                                                        editImmediately:YES];
+    [self.contactsViewHelper presentContactViewControllerForAddress:contactThread.contactAddress
+                                                 fromViewController:self
+                                                    editImmediately:YES];
 }
 
-- (void)presentAddToContactViewControllerWithRecipientId:(NSString *)recipientId
+- (void)presentAddToContactViewControllerWithAddress:(SignalServiceAddress *)address
 {
     if (!self.contactsManager.supportsContactEditing) {
         // Should not expose UI that lets the user get here.
@@ -1152,7 +1211,7 @@ const CGFloat kIconViewLength = 24;
     }
 
     OWSAddToContactViewController *viewController = [OWSAddToContactViewController new];
-    [viewController configureWithRecipientId:recipientId];
+    [viewController configureWithAddress:address];
     [self.navigationController pushViewController:viewController animated:YES];
 }
 
@@ -1197,8 +1256,9 @@ const CGFloat kIconViewLength = 24;
     TSOutgoingMessage *message =
         [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
 
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+
         [gThread leaveGroupWithTransaction:transaction];
     }];
 
@@ -1417,10 +1477,10 @@ const CGFloat kIconViewLength = 24;
 
 - (void)setThreadMutedUntilDate:(nullable NSDate *)value
 {
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self.thread updateWithMutedUntilDate:value transaction:transaction];
     }];
-    
+
     [self updateTableContents];
 }
 
@@ -1428,13 +1488,11 @@ const CGFloat kIconViewLength = 24;
 {
     OWSLogDebug(@"");
 
-    MediaGallery *mediaGallery = [[MediaGallery alloc] initWithThread:self.thread
-                                                              options:MediaGalleryOptionSliderEnabled];
+    MediaGalleryNavigationController *mediaGallery =
+        [MediaGalleryNavigationController showingTileViewWithThread:self.thread
+                                                            options:MediaGalleryOptionSliderEnabled];
 
-    self.mediaGallery = mediaGallery;
-
-    OWSAssertDebug([self.navigationController isKindOfClass:[OWSNavigationController class]]);
-    [mediaGallery pushTileViewFromNavController:(OWSNavigationController *)self.navigationController];
+    [self presentViewController:mediaGallery animated:YES completion:nil];
 }
 
 - (void)tappedConversationSearch
@@ -1455,11 +1513,15 @@ const CGFloat kIconViewLength = 24;
 {
     OWSAssertIsOnMainThread();
 
-    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
-    OWSAssertDebug(recipientId.length > 0);
+    SignalServiceAddress *address = notification.userInfo[kNSNotificationKey_ProfileAddress];
+    OWSAssertDebug(address.isValid);
 
-    if (recipientId.length > 0 && [self.thread isKindOfClass:[TSContactThread class]] &&
-        [self.thread.contactIdentifier isEqualToString:recipientId]) {
+    TSContactThread *_Nullable contactThread;
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        contactThread = (TSContactThread *)self.thread;
+    }
+
+    if (address.isValid && contactThread && [contactThread.contactAddress isEqualToAddress:address]) {
         [self updateTableContents];
     }
 }
@@ -1484,7 +1546,7 @@ const CGFloat kIconViewLength = 24;
     didPickConversationColor:(OWSConversationColor *_Nonnull)conversationColor
 {
     OWSLogDebug(@"picked color: %@", conversationColor.name);
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self.thread updateConversationColorName:conversationColor.name transaction:transaction];
     }];
 

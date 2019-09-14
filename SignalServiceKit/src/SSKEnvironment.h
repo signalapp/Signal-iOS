@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AccountServiceClient;
 @class ContactsUpdater;
 @class MessageSenderJobQueue;
 @class OWS2FAManager;
@@ -23,9 +24,11 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSPrimaryStorage;
 @class OWSReadReceiptManager;
 @class SDSDatabaseStorage;
+@class SSKMessageDecryptJobQueue;
 @class SSKPreKeyStore;
 @class SSKSessionStore;
 @class SSKSignedPreKeyStore;
+@class SignalServiceAddressCache;
 @class StickerManager;
 @class TSAccountManager;
 @class TSNetworkManager;
@@ -40,6 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol SSKReachabilityManager;
 @protocol OWSSyncManagerProtocol;
 @protocol OWSTypingIndicators;
+@protocol StorageServiceManagerProtocol;
 
 @interface SSKEnvironment : NSObject
 
@@ -59,6 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
                             preKeyStore:(SSKPreKeyStore *)preKeyStore
                               udManager:(id<OWSUDManager>)udManager
                        messageDecrypter:(OWSMessageDecrypter *)messageDecrypter
+                 messageDecryptJobQueue:(SSKMessageDecryptJobQueue *)messageDecryptJobQueue
                   batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
                         messageReceiver:(OWSMessageReceiver *)messageReceiver
                           socketManager:(TSSocketManager *)socketManager
@@ -72,7 +77,11 @@ NS_ASSUME_NONNULL_BEGIN
                        typingIndicators:(id<OWSTypingIndicators>)typingIndicators
                     attachmentDownloads:(OWSAttachmentDownloads *)attachmentDownloads
                          stickerManager:(StickerManager *)stickerManager
-                        databaseStorage:(SDSDatabaseStorage *)databaseStorage NS_DESIGNATED_INITIALIZER;
+                        databaseStorage:(SDSDatabaseStorage *)databaseStorage
+              signalServiceAddressCache:(SignalServiceAddressCache *)signalServiceAddressCache
+                   accountServiceClient:(AccountServiceClient *)accountServiceClient
+                  storageServiceManager:(id<StorageServiceManagerProtocol>)storageServiceManager
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -101,6 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) SSKPreKeyStore *preKeyStore;
 @property (nonatomic, readonly) id<OWSUDManager> udManager;
 @property (nonatomic, readonly) OWSMessageDecrypter *messageDecrypter;
+@property (nonatomic, readonly) SSKMessageDecryptJobQueue *messageDecryptJobQueue;
 @property (nonatomic, readonly) OWSBatchMessageProcessor *batchMessageProcessor;
 @property (nonatomic, readonly) OWSMessageReceiver *messageReceiver;
 @property (nonatomic, readonly) TSSocketManager *socketManager;
@@ -113,6 +123,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) id<SSKReachabilityManager> reachabilityManager;
 @property (nonatomic, readonly) id<OWSTypingIndicators> typingIndicators;
 @property (nonatomic, readonly) OWSAttachmentDownloads *attachmentDownloads;
+@property (nonatomic, readonly) SignalServiceAddressCache *signalServiceAddressCache;
+@property (nonatomic, readonly) AccountServiceClient *accountServiceClient;
+@property (nonatomic, readonly) id<StorageServiceManagerProtocol> storageServiceManager;
 
 @property (nonatomic, readonly) StickerManager *stickerManager;
 @property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;

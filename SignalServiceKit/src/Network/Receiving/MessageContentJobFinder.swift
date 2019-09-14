@@ -51,6 +51,11 @@ public class AnyMessageContentJobFinder: NSObject, MessageContentJobFinder {
             grdbAdapter.removeJobs(withUniqueIds: uniqueIds, transaction: grdbWrite)
         }
     }
+
+    @objc
+    public func jobCount(transaction: SDSAnyReadTransaction) -> UInt {
+        return OWSMessageContentJob.anyCount(transaction: transaction)
+    }
 }
 
 class GRDBMessageContentJobFinder: MessageContentJobFinder {
@@ -88,6 +93,6 @@ class GRDBMessageContentJobFinder: MessageContentJobFinder {
             WHERE \(messageContentJobColumn: .uniqueId) in (\(commaSeparatedIds))
         """
 
-        try! transaction.database.execute(sql: sql)
+        transaction.executeWithCachedStatement(sql: sql)
     }
 }

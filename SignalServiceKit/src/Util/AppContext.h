@@ -47,6 +47,8 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 @property (atomic, nullable) UIWindow *mainWindow;
 
+@property (nonatomic, readonly) UIInterfaceOrientation interfaceOrientation;
+
 // Unlike UIApplication.applicationState, this is thread-safe.
 // It contains the "last known" application state.
 //
@@ -62,7 +64,7 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 // This conservatism is useful, since we want to err on the side of
 // caution when, for example, we do work that should only be done
 // when the app is foreground and active.
-@property (atomic, readonly) UIApplicationState reportedApplicationState;
+@property (readonly) UIApplicationState reportedApplicationState;
 
 // A convenience accessor for reportedApplicationState.
 //

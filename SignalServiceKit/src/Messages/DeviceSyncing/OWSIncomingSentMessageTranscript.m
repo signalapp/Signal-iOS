@@ -5,7 +5,6 @@
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSContact.h"
 #import "OWSMessageManager.h"
-#import "OWSPrimaryStorage.h"
 #import "TSContactThread.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
@@ -26,8 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSIncomingSentMessageTranscript
 
-- (instancetype)initWithProto:(SSKProtoSyncMessageSent *)sentProto
-                  transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (instancetype)initWithProto:(SSKProtoSyncMessageSent *)sentProto transaction:(SDSAnyWriteTransaction *)transaction
 {
     self = [super init];
     if (!self) {
@@ -35,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _dataMessage = sentProto.message;
-    _recipientId = sentProto.destination;
+    _recipientAddress = sentProto.destinationAddress;
     _timestamp = sentProto.timestamp;
     _expirationStartedAt = sentProto.expirationStartTimestamp;
     _expirationDuration = sentProto.message.expireTimer;
@@ -47,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
     _isExpirationTimerUpdate = (_dataMessage.flags & SSKProtoDataMessageFlagsExpirationTimerUpdate) != 0;
     _isEndSessionMessage = (_dataMessage.flags & SSKProtoDataMessageFlagsEndSession) != 0;
     _isRecipientUpdate = sentProto.isRecipientUpdate;
-    _perMessageExpirationDurationSeconds = _dataMessage.messageTimer;
+    _isViewOnceMessage = _dataMessage.hasIsViewOnce && _dataMessage.isViewOnce;
 
     if (self.dataMessage.hasRequiredProtocolVersion) {
         _requiredProtocolVersion = @(self.dataMessage.requiredProtocolVersion);
@@ -65,18 +63,17 @@ NS_ASSUME_NONNULL_BEGIN
         if (self.dataMessage.group) {
             _thread = [TSGroupThread getOrCreateThreadWithGroupId:_dataMessage.group.id transaction:transaction];
         } else {
-            _thread = [TSContactThread getOrCreateThreadWithContactId:_recipientId transaction:transaction];
+            _thread = [TSContactThread getOrCreateThreadWithContactAddress:_recipientAddress transaction:transaction];
         }
 
-        _quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:_dataMessage
-                                                               thread:_thread
-                                                          transaction:transaction.asAnyWrite];
-        _contact = [OWSContacts contactForDataMessage:_dataMessage transaction:transaction.asAnyWrite];
+        _quotedMessage =
+            [TSQuotedMessage quotedMessageForDataMessage:_dataMessage thread:_thread transaction:transaction];
+        _contact = [OWSContacts contactForDataMessage:_dataMessage transaction:transaction];
 
         NSError *linkPreviewError;
         _linkPreview = [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:_dataMessage
                                                                            body:_body
-                                                                    transaction:transaction.asAnyWrite
+                                                                    transaction:transaction
                                                                           error:&linkPreviewError];
         if (linkPreviewError && ![OWSLinkPreview isNoPreviewError:linkPreviewError]) {
             OWSLogError(@"linkPreviewError: %@", linkPreviewError);
@@ -84,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         NSError *stickerError;
         _messageSticker = [MessageSticker buildValidatedMessageStickerWithDataMessage:_dataMessage
-                                                                          transaction:transaction.asAnyWrite
+                                                                          transaction:transaction
                                                                                 error:&stickerError];
         if (stickerError && ![MessageSticker isNoStickerError:stickerError]) {
             OWSFailDebug(@"stickerError: %@", stickerError);
@@ -92,10 +89,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (sentProto.unidentifiedStatus.count > 0) {
-        NSMutableArray<NSString *> *nonUdRecipientIds = [NSMutableArray new];
-        NSMutableArray<NSString *> *udRecipientIds = [NSMutableArray new];
+        NSMutableArray<SignalServiceAddress *> *nonUdRecipientAddresses = [NSMutableArray new];
+        NSMutableArray<SignalServiceAddress *> *udRecipientAddresses = [NSMutableArray new];
         for (SSKProtoSyncMessageSentUnidentifiedDeliveryStatus *statusProto in sentProto.unidentifiedStatus) {
-            if (!statusProto.hasDestination || statusProto.destination.length < 1) {
+            if (!statusProto.hasValidDestination) {
                 OWSFailDebug(@"Delivery status proto is missing destination.");
                 continue;
             }
@@ -103,15 +100,15 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFailDebug(@"Delivery status proto is missing value.");
                 continue;
             }
-            NSString *recipientId = statusProto.destination;
+            SignalServiceAddress *recipientAddress = statusProto.destinationAddress;
             if (statusProto.unidentified) {
-                [udRecipientIds addObject:recipientId];
+                [udRecipientAddresses addObject:recipientAddress];
             } else {
-                [nonUdRecipientIds addObject:recipientId];
+                [nonUdRecipientAddresses addObject:recipientAddress];
             }
         }
-        _nonUdRecipientIds = [nonUdRecipientIds copy];
-        _udRecipientIds = [udRecipientIds copy];
+        _nonUdRecipientAddresses = [nonUdRecipientAddresses copy];
+        _udRecipientAddresses = [udRecipientAddresses copy];
     }
 
     return self;

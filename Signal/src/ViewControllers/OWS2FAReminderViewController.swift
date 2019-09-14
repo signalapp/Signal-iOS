@@ -47,7 +47,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
 
         let attributes = [NSAttributedString.Key.font: pinEntryView.boldLabelFont]
 
-        let attributedInstructionsText = NSAttributedString(string: instructionsTextHeader, attributes: attributes).rtlSafeAppend(" ").rtlSafeAppend(instructionsTextBody)
+        let attributedInstructionsText = NSAttributedString(string: instructionsTextHeader, attributes: attributes) + " " + instructionsTextBody
 
         pinEntryView.attributedInstructionsText = attributedInstructionsText
 
@@ -75,8 +75,18 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
     public func pinEntryView(_ entryView: PinEntryView, pinCodeDidChange pinCode: String) {
         // optimistically match, without having to press "done"
         ows2FAManager.verifyPin(pinCode) { success in
+
             if success {
                 self.didSubmitCorrectPin()
+
+            // We have a legacy pin that may have been truncated to 16 characters.
+            } else if self.ows2FAManager.needsLegacyPinMigration(), pinCode.count > kLegacyTruncated2FAv1PinLength {
+                let truncatedPinCode = pinCode.substring(to: Int(kLegacyTruncated2FAv1PinLength))
+                self.ows2FAManager.verifyPin(truncatedPinCode) { success in
+                    if success {
+                        self.didSubmitCorrectPin()
+                    }
+                }
             }
         }
     }

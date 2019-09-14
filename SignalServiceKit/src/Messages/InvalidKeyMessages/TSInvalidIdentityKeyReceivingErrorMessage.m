@@ -7,7 +7,6 @@
 #import "OWSIdentityManager.h"
 #import "OWSMessageManager.h"
 #import "OWSMessageReceiver.h"
-#import "OWSPrimaryStorage.h"
 #import "SSKEnvironment.h"
 #import "SSKSessionStore.h"
 #import "TSContactThread.h"
@@ -16,7 +15,6 @@
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <AxolotlKit/PreKeyWhisperMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -39,10 +37,10 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 // We no longer create these messages, but they might exist on legacy clients so it's useful to be able to
 // create them with the debug UI
 + (nullable instancetype)untrustedKeyWithEnvelope:(SSKProtoEnvelope *)envelope
-                                  withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                                  withTransaction:(SDSAnyWriteTransaction *)transaction
 {
     TSContactThread *contactThread =
-    [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+        [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress transaction:transaction];
 
     // Legit usage of senderTimestamp, references message which failed to decrypt
     TSInvalidIdentityKeyReceivingErrorMessage *errorMessage =
@@ -67,9 +65,9 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
         OWSFailDebug(@"failure: envelope data failed with error: %@", error);
         return nil;
     }
-    
-    _authorId = envelope.source;
-    
+
+    _authorId = envelope.sourceE164;
+
     return self;
 }
 #endif
@@ -91,17 +89,16 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
+              isViewOnceComplete:(BOOL)isViewOnceComplete
+               isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
-perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSeconds
-  perMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
-       perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
-                     recipientId:(nullable NSString *)recipientId
+                recipientAddress:(nullable SignalServiceAddress *)recipientAddress
                         authorId:(NSString *)authorId
                     envelopeData:(nullable NSData *)envelopeData
 {
@@ -116,17 +113,16 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
                    expireStartedAt:expireStartedAt
                          expiresAt:expiresAt
                   expiresInSeconds:expiresInSeconds
+                isViewOnceComplete:isViewOnceComplete
+                 isViewOnceMessage:isViewOnceMessage
                        linkPreview:linkPreview
                     messageSticker:messageSticker
-perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
-    perMessageExpirationHasExpired:perMessageExpirationHasExpired
-         perMessageExpireStartedAt:perMessageExpireStartedAt
                      quotedMessage:quotedMessage
                      schemaVersion:schemaVersion
          errorMessageSchemaVersion:errorMessageSchemaVersion
                          errorType:errorType
                               read:read
-                       recipientId:recipientId];
+                  recipientAddress:recipientAddress];
 
     if (!self) {
         return self;
@@ -171,11 +167,11 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         return;
     }
 
-    [[OWSIdentityManager sharedManager] saveRemoteIdentity:newKey recipientId:self.envelope.source];
+    [[OWSIdentityManager sharedManager] saveRemoteIdentity:newKey address:self.envelope.sourceAddress];
 
     // Decrypt this and any old messages for the newly accepted key
     NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *messagesToDecrypt =
-        [self.thread receivedMessagesForInvalidKey:newKey];
+        [self.threadWithSneakyTransaction receivedMessagesForInvalidKey:newKey];
 
     for (TSInvalidIdentityKeyReceivingErrorMessage *errorMessage in messagesToDecrypt) {
         [SSKEnvironment.shared.messageReceiver handleReceivedEnvelopeData:errorMessage.envelopeData];
@@ -183,7 +179,9 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         // Here we remove the existing error message because handleReceivedEnvelope will either
         //  1.) succeed and create a new successful message in the thread or...
         //  2.) fail and create a new identical error message in the thread.
-        [errorMessage remove];
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [errorMessage anyRemoveWithTransaction:transaction];
+        }];
     }
 }
 
@@ -218,7 +216,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         return self.authorId;
     } else {
         // for existing messages before we were storing author id.
-        return self.envelope.source;
+        return self.envelope.sourceE164;
     }
 }
 

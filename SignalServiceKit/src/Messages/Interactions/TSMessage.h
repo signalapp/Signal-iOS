@@ -29,7 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) uint32_t expiresInSeconds;
 @property (nonatomic, readonly) uint64_t expireStartedAt;
 @property (nonatomic, readonly) uint64_t expiresAt;
-// See: hasPerMessageExpiration.
 @property (nonatomic, readonly) BOOL hasPerConversationExpiration;
 
 @property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
@@ -37,19 +36,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
 @property (nonatomic, readonly, nullable) MessageSticker *messageSticker;
 
-// Per-message expiration.
-@property (nonatomic, readonly) uint32_t perMessageExpirationDurationSeconds;
-@property (nonatomic, readonly) uint64_t perMessageExpireStartedAt;
-@property (nonatomic, readonly) uint64_t perMessageExpiresAt;
-@property (nonatomic, readonly) BOOL perMessageExpirationHasExpired;
-// See: hasPerConversationExpiration.
-@property (nonatomic, readonly) BOOL hasPerMessageExpiration;
-@property (nonatomic, readonly) BOOL hasPerMessageExpirationStarted;
+@property (nonatomic, readonly) BOOL isViewOnceMessage;
+@property (nonatomic, readonly) BOOL isViewOnceComplete;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
-                                inThread:(nullable TSThread *)thread
+                                inThread:(TSThread *)thread
                              messageBody:(nullable NSString *)body
                            attachmentIds:(NSArray<NSString *> *)attachmentIds
                         expiresInSeconds:(uint32_t)expiresInSeconds
@@ -58,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
                             contactShare:(nullable OWSContact *)contactShare
                              linkPreview:(nullable OWSLinkPreview *)linkPreview
                           messageSticker:(nullable MessageSticker *)messageSticker
-     perMessageExpirationDurationSeconds:(uint32_t)perMessageExpirationDurationSeconds NS_DESIGNATED_INITIALIZER;
+                       isViewOnceMessage:(BOOL)isViewOnceMessage NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -77,14 +70,13 @@ NS_ASSUME_NONNULL_BEGIN
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
+              isViewOnceComplete:(BOOL)isViewOnceComplete
+               isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
-perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSeconds
-  perMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
-       perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:));
 
 // clang-format on
 
@@ -110,7 +102,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 - (nullable NSString *)oversizeTextWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (nullable NSString *)bodyTextWithTransaction:(SDSAnyReadTransaction *)transaction;
 
-- (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (BOOL)shouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 - (BOOL)hasRenderableContent;
 
@@ -122,15 +114,16 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 - (void)updateWithMessageSticker:(MessageSticker *)messageSticker transaction:(SDSAnyWriteTransaction *)transaction;
 
-#pragma mark - Per-message expiration
+#ifdef DEBUG
 
-// This method is used when we start expiration of per-message expiration.
-//
-// NOTE: To start "count down", use PerMessageExpiration.  Don't call this method directly.
-- (void)updateWithPerMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
-                                transaction:(SDSAnyWriteTransaction *)transaction;
+// This method is for testing purposes only.
+- (void)updateWithMessageBody:(nullable NSString *)messageBody transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)updateWithHasPerMessageExpiredAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction;
+#endif
+
+#pragma mark - View Once
+
+- (void)updateWithViewOnceCompleteAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

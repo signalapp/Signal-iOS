@@ -9,13 +9,15 @@
 #import "TSAccountManager.h"
 #import "TSSocketManager.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+const NSUInteger SignalRecipientSchemaVersion = 1;
+
 @interface SignalRecipient ()
 
-@property (nonatomic) NSOrderedSet *devices;
+@property (nonatomic) NSOrderedSet<NSNumber *> *devices;
+@property (nonatomic) NSUInteger recipientSchemaVersion;
 
 @end
 
@@ -49,29 +51,40 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.socketManager;
 }
 
++ (id<StorageServiceManagerProtocol>)storageServiceManager
+{
+    return SSKEnvironment.shared.storageServiceManager;
+}
+
 #pragma mark -
 
-+ (instancetype)getOrBuildUnsavedRecipientForRecipientId:(NSString *)recipientId
-                                             transaction:(YapDatabaseReadTransaction *)transaction
++ (instancetype)getOrBuildUnsavedRecipientForAddress:(SignalServiceAddress *)address
+                                         transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    SignalRecipient *_Nullable recipient =
-        [self registeredRecipientForRecipientId:recipientId mustHaveDevices:NO transaction:transaction];
+    SignalRecipient *_Nullable recipient = [self registeredRecipientForAddress:address
+                                                               mustHaveDevices:NO
+                                                                   transaction:transaction];
     if (!recipient) {
-        recipient = [[self alloc] initWithTextSecureIdentifier:recipientId];
+        recipient = [[self alloc] initWithAddress:address];
     }
     return recipient;
 }
 
-- (instancetype)initWithTextSecureIdentifier:(NSString *)textSecureIdentifier
+- (instancetype)initWithAddress:(SignalServiceAddress *)address
 {
-    self = [super initWithUniqueId:textSecureIdentifier];
+    self = [super init];
+
     if (!self) {
         return self;
     }
-   
+
+    _recipientUUID = address.uuidString;
+    _recipientPhoneNumber = address.phoneNumber;
+    _recipientSchemaVersion = SignalRecipientSchemaVersion;
+
     _devices = [NSOrderedSet orderedSetWithObject:@(OWSDevicePrimaryDeviceId)];
 
     return self;
@@ -88,14 +101,25 @@ NS_ASSUME_NONNULL_BEGIN
         _devices = [NSOrderedSet new];
     }
 
+    // Migrating from an everyone has a phone number world to a
+    // world in which we have UUIDs
+    if (_recipientSchemaVersion < 1) {
+        // Copy uniqueId to recipientPhoneNumber
+        _recipientPhoneNumber = [coder decodeObjectForKey:@"uniqueId"];
+
+        OWSAssert(_recipientPhoneNumber != nil);
+    }
+
     // Since we use device count to determine whether a user is registered or not,
     // ensure the local user always has at least *this* device.
     if (![_devices containsObject:@(OWSDevicePrimaryDeviceId)]) {
-        if ([self.uniqueId isEqualToString:self.tsAccountManager.localNumber]) {
+        if (self.address.isLocalAddress) {
             DDLogInfo(@"Adding primary device to self recipient.");
             [self addDevices:[NSSet setWithObject:@(OWSDevicePrimaryDeviceId)]];
         }
     }
+
+    _recipientSchemaVersion = SignalRecipientSchemaVersion;
 
     return self;
 }
@@ -108,7 +132,10 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
-                         devices:(NSOrderedSet *)devices
+                         devices:(NSOrderedSet<NSNumber *> *)devices
+            recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
+          recipientSchemaVersion:(NSUInteger)recipientSchemaVersion
+                   recipientUUID:(nullable NSString *)recipientUUID
 {
     self = [super initWithUniqueId:uniqueId];
 
@@ -117,6 +144,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _devices = devices;
+    _recipientPhoneNumber = recipientPhoneNumber;
+    _recipientSchemaVersion = recipientSchemaVersion;
+    _recipientUUID = recipientUUID;
 
     return self;
 }
@@ -125,41 +155,50 @@ NS_ASSUME_NONNULL_BEGIN
 
 // --- CODE GENERATION MARKER
 
-+ (nullable instancetype)registeredRecipientForRecipientId:(NSString *)recipientId
-                                           mustHaveDevices:(BOOL)mustHaveDevices
-                                               transaction:(YapDatabaseReadTransaction *)transaction
++ (AnySignalRecipientFinder *)recipientFinder
+{
+    return [AnySignalRecipientFinder new];
+}
+
++ (nullable instancetype)registeredRecipientForAddress:(SignalServiceAddress *)address
+                                       mustHaveDevices:(BOOL)mustHaveDevices
+                                           transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
-    OWSAssertDebug(recipientId.length > 0);
-
-    SignalRecipient *_Nullable signalRecipient = [self fetchObjectWithUniqueID:recipientId transaction:transaction];
+    OWSAssertDebug(address.isValid);
+    SignalRecipient *_Nullable signalRecipient = [self.recipientFinder signalRecipientForAddress:address
+                                                                                     transaction:transaction];
     if (mustHaveDevices && signalRecipient.devices.count < 1) {
         return nil;
     }
+
     return signalRecipient;
 }
 
-- (void)addDevices:(NSSet *)devices
+#pragma mark -
+
+- (void)addDevices:(NSSet<NSNumber *> *)devices
 {
     OWSAssertDebug(devices.count > 0);
 
-    NSMutableOrderedSet *updatedDevices = [self.devices mutableCopy];
+    NSMutableOrderedSet<NSNumber *> *updatedDevices = [self.devices mutableCopy];
     [updatedDevices unionSet:devices];
     self.devices = [updatedDevices copy];
 }
 
-- (void)removeDevices:(NSSet *)devices
+- (void)removeDevices:(NSSet<NSNumber *> *)devices
 {
     OWSAssertDebug(devices.count > 0);
 
-    NSMutableOrderedSet *updatedDevices = [self.devices mutableCopy];
+    NSMutableOrderedSet<NSNumber *> *updatedDevices = [self.devices mutableCopy];
     [updatedDevices minusSet:devices];
     self.devices = [updatedDevices copy];
 }
 
-- (void)updateRegisteredRecipientWithDevicesToAdd:(nullable NSArray *)devicesToAdd
-                                  devicesToRemove:(nullable NSArray *)devicesToRemove
-                                      transaction:(YapDatabaseReadWriteTransaction *)transaction {
+- (void)updateRegisteredRecipientWithDevicesToAdd:(nullable NSArray<NSNumber *> *)devicesToAdd
+                                  devicesToRemove:(nullable NSArray<NSNumber *> *)devicesToRemove
+                                      transaction:(SDSAnyWriteTransaction *)transaction
+{
     OWSAssertDebug(transaction);
     OWSAssertDebug(devicesToAdd.count > 0 || devicesToRemove.count > 0);
 
@@ -177,130 +216,163 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_async(dispatch_get_main_queue(), ^{
         // Device changes can affect the UD access mode for a recipient,
         // so we need to fetch the profile for this user to update UD access mode.
-        [self.profileManager fetchProfileForRecipientId:self.recipientId];
-        
-        if ([self.recipientId isEqualToString:self.tsAccountManager.localNumber]) {
+        [self.profileManager fetchProfileForAddress:self.address];
+
+        if (self.address.isLocalAddress) {
             [self.socketManager cycleSocket];
         }
     });
 }
 
-- (void)addDevicesToRegisteredRecipient:(NSSet *)devices transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)addDevicesToRegisteredRecipient:(NSSet<NSNumber *> *)devices transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
     OWSAssertDebug(devices.count > 0);
     OWSLogDebug(@"adding devices: %@, to recipient: %@", devices, self);
 
-    [self reloadWithTransaction:transaction];
-    [self addDevices:devices];
-    [self saveWithTransaction_internal:transaction];
+    [self anyReloadWithTransaction:transaction];
+    [self anyUpdateWithTransaction:transaction
+                             block:^(SignalRecipient *signalRecipient) {
+                                 [signalRecipient addDevices:devices];
+                             }];
 }
 
-- (void)removeDevicesFromRecipient:(NSSet *)devices transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)removeDevicesFromRecipient:(NSSet<NSNumber *> *)devices transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
     OWSAssertDebug(devices.count > 0);
 
     OWSLogDebug(@"removing devices: %@, from registered recipient: %@", devices, self);
-    [self reloadWithTransaction:transaction ignoreMissing:YES];
-    [self removeDevices:devices];
-    [self saveWithTransaction_internal:transaction];
+    [self anyReloadWithTransaction:transaction ignoreMissing:YES];
+    [self anyUpdateWithTransaction:transaction
+                             block:^(SignalRecipient *signalRecipient) {
+                                 [signalRecipient removeDevices:devices];
+                             }];
 }
 
-- (NSString *)recipientId
+#pragma mark -
+
+- (SignalServiceAddress *)address
 {
-    return self.uniqueId;
+    return [[SignalServiceAddress alloc] initWithUuidString:self.recipientUUID phoneNumber:self.recipientPhoneNumber];
 }
+
+#pragma mark -
 
 - (NSComparisonResult)compare:(SignalRecipient *)other
 {
-    return [self.recipientId compare:other.recipientId];
+    return [self.address compare:other.address];
 }
 
-- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+// GRDB TODO: We might want will/did hooks for updates.
+- (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    // We need to distinguish between "users we know to be unregistered" and
-    // "users whose registration status is unknown".  The former correspond to
-    // instances of SignalRecipient with no devices.  The latter do not
-    // correspond to an instance of SignalRecipient in the database (although
-    // they may correspond to an "unsaved" instance of SignalRecipient built
-    // by getOrBuildUnsavedRecipientForRecipientId.
-    OWSFailDebug(@"Don't call removeWithTransaction.");
-    
-    [super removeWithTransaction:transaction];
+    [super anyWillInsertWithTransaction:transaction];
+
+    OWSLogVerbose(@"saved signal recipient: %@ (%lu)", self.address, (unsigned long)self.devices.count);
 }
 
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    // We only want to mutate the persisted SignalRecipients in the database
-    // using other methods of this class, e.g. markRecipientAsRegistered...
-    // to create, addDevices and removeDevices to mutate.  We're trying to
-    // be strict about using persisted SignalRecipients as a cache to
-    // reflect "last known registration status".  Forcing our codebase to
-    // use those methods helps ensure that we update the cache deliberately.
-    OWSFailDebug(@"Don't call saveWithTransaction from outside this class.");
-    
-    [self saveWithTransaction_internal:transaction];
-}
-
-- (void)saveWithTransaction_internal:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [super saveWithTransaction:transaction];
-
-    OWSLogVerbose(@"saved signal recipient: %@ (%lu)", self.recipientId, (unsigned long) self.devices.count);
-}
-
-+ (BOOL)isRegisteredRecipient:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction
-{
-    return nil != [self registeredRecipientForRecipientId:recipientId mustHaveDevices:YES transaction:transaction];
-}
-
-+ (SignalRecipient *)markRecipientAsRegisteredAndGet:(NSString *)recipientId
-                                         transaction:(YapDatabaseReadWriteTransaction *)transaction
++ (BOOL)isRegisteredRecipient:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
+    return nil != [self registeredRecipientForAddress:address mustHaveDevices:YES transaction:transaction];
+}
 
-    SignalRecipient *_Nullable instance =
-        [self registeredRecipientForRecipientId:recipientId mustHaveDevices:YES transaction:transaction];
++ (SignalRecipient *)markRecipientAsRegisteredAndGet:(SignalServiceAddress *)address
+                                         transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(address.isValid);
+    OWSAssertDebug(transaction);
 
-    if (!instance) {
-        OWSLogDebug(@"creating recipient: %@", recipientId);
+    SignalRecipient *_Nullable existingInstance = [self registeredRecipientForAddress:address
+                                                                      mustHaveDevices:YES
+                                                                          transaction:transaction];
 
-        instance = [[self alloc] initWithTextSecureIdentifier:recipientId];
-        [instance saveWithTransaction_internal:transaction];
+    if (existingInstance == nil) {
+        OWSLogDebug(@"creating recipient: %@", address);
+
+        SignalRecipient *newInstance = [[self alloc] initWithAddress:address];
+        [newInstance anyInsertWithTransaction:transaction];
+
+        // Record with the new contact in the social graph
+        [self.storageServiceManager recordPendingUpdatesWithUpdatedIds:@[ newInstance.accountId ]];
+
+        return newInstance;
     }
-    return instance;
+
+    BOOL hasChanged = NO;
+
+    // If we've learned a users UUID, record it.
+    if (existingInstance.recipientUUID == nil && address.uuid != nil) {
+        hasChanged = YES;
+
+        [existingInstance anyUpdateWithTransaction:transaction
+                                             block:^(SignalRecipient *latestCopy) {
+                                                 latestCopy.recipientUUID = address.uuidString;
+                                             }];
+    }
+
+    // If we've learned a users phone number, record it.
+    if (existingInstance.recipientPhoneNumber == nil && address.phoneNumber != nil) {
+        hasChanged = YES;
+
+        OWSFailDebug(@"unexpectedly learned about a users phone number");
+        [existingInstance anyUpdateWithTransaction:transaction
+                                             block:^(SignalRecipient *latestCopy) {
+                                                 latestCopy.recipientPhoneNumber = address.phoneNumber;
+                                             }];
+    }
+
+    // Record the updated contact in the social graph
+    if (hasChanged) {
+        [self.storageServiceManager recordPendingUpdatesWithUpdatedIds:@[ existingInstance.accountId ]];
+    }
+
+    return existingInstance;
 }
 
-+ (void)markRecipientAsRegistered:(NSString *)recipientId
++ (void)markRecipientAsRegistered:(SignalServiceAddress *)address
                          deviceId:(UInt32)deviceId
-                      transaction:(YapDatabaseReadWriteTransaction *)transaction
+                      transaction:(SDSAnyWriteTransaction *)transaction
 {
+    OWSAssertDebug(address.isValid);
+    OWSAssertDebug(deviceId > 0);
     OWSAssertDebug(transaction);
-    OWSAssertDebug(recipientId.length > 0);
 
-    SignalRecipient *recipient = [self markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
+    SignalRecipient *recipient = [self markRecipientAsRegisteredAndGet:address transaction:transaction];
     if (![recipient.devices containsObject:@(deviceId)]) {
         OWSLogDebug(@"Adding device %u to existing recipient.", (unsigned int)deviceId);
 
-        [recipient addDevices:[NSSet setWithObject:@(deviceId)]];
-        [recipient saveWithTransaction_internal:transaction];
+        [recipient anyReloadWithTransaction:transaction];
+        [recipient anyUpdateWithTransaction:transaction
+                                      block:^(SignalRecipient *signalRecipient) {
+                                          [signalRecipient addDevices:[NSSet setWithObject:@(deviceId)]];
+                                      }];
     }
 }
 
-+ (void)markRecipientAsUnregistered:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
++ (void)markRecipientAsUnregistered:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction
 {
+    OWSAssertDebug(address.isValid);
     OWSAssertDebug(transaction);
-    OWSAssertDebug(recipientId.length > 0);
 
-    SignalRecipient *instance = [self getOrBuildUnsavedRecipientForRecipientId:recipientId
-                                                                   transaction:transaction];
-    OWSLogDebug(@"Marking recipient as not registered: %@", recipientId);
-    if (instance.devices.count > 0) {
-        [instance removeDevices:instance.devices.set];
+    SignalRecipient *recipient = [self getOrBuildUnsavedRecipientForAddress:address transaction:transaction];
+    OWSLogDebug(@"Marking recipient as not registered: %@", address);
+    if (recipient.devices.count > 0) {
+        if ([SignalRecipient anyFetchWithUniqueId:recipient.uniqueId transaction:transaction] == nil) {
+            [recipient removeDevices:recipient.devices.set];
+            [recipient anyInsertWithTransaction:transaction];
+        } else {
+            [recipient anyUpdateWithTransaction:transaction
+                                          block:^(SignalRecipient *signalRecipient) {
+                                              signalRecipient.devices = [NSOrderedSet new];
+                                          }];
+        }
+
+        // Remove the contact from our social graph
+        [self.storageServiceManager recordPendingDeletionsWithDeletedIds:@[ recipient.accountId ]];
     }
-    [instance saveWithTransaction_internal:transaction];
 }
 
 @end

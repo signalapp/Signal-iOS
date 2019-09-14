@@ -23,6 +23,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) OWSIdentityManager *identityManager;
 @property (nonatomic) id<OWSUDManager> udManager;
 @property (nonatomic) OWSMessageDecrypter *messageDecrypter;
+@property (nonatomic) SSKMessageDecryptJobQueue *messageDecryptJobQueue;
 @property (nonatomic) OWSBatchMessageProcessor *batchMessageProcessor;
 @property (nonatomic) OWSMessageReceiver *messageReceiver;
 @property (nonatomic) TSSocketManager *socketManager;
@@ -66,6 +67,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                             preKeyStore:(SSKPreKeyStore *)preKeyStore
                               udManager:(id<OWSUDManager>)udManager
                        messageDecrypter:(OWSMessageDecrypter *)messageDecrypter
+                 messageDecryptJobQueue:(SSKMessageDecryptJobQueue *)messageDecryptJobQueue
                   batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
                         messageReceiver:(OWSMessageReceiver *)messageReceiver
                           socketManager:(TSSocketManager *)socketManager
@@ -80,6 +82,9 @@ static SSKEnvironment *sharedSSKEnvironment;
                     attachmentDownloads:(OWSAttachmentDownloads *)attachmentDownloads
                          stickerManager:(StickerManager *)stickerManager
                         databaseStorage:(SDSDatabaseStorage *)databaseStorage
+              signalServiceAddressCache:(SignalServiceAddressCache *)signalServiceAddressCache
+                   accountServiceClient:(AccountServiceClient *)accountServiceClient
+                  storageServiceManager:(id<StorageServiceManagerProtocol>)storageServiceManager
 {
     self = [super init];
     if (!self) {
@@ -102,6 +107,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(preKeyStore);
     OWSAssertDebug(udManager);
     OWSAssertDebug(messageDecrypter);
+    OWSAssertDebug(messageDecryptJobQueue);
     OWSAssertDebug(batchMessageProcessor);
     OWSAssertDebug(messageReceiver);
     OWSAssertDebug(socketManager);
@@ -116,6 +122,9 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(attachmentDownloads);
     OWSAssertDebug(stickerManager);
     OWSAssertDebug(databaseStorage);
+    OWSAssertDebug(signalServiceAddressCache);
+    OWSAssertDebug(accountServiceClient);
+    OWSAssertDebug(storageServiceManager);
 
     _contactsManager = contactsManager;
     _linkPreviewManager = linkPreviewManager;
@@ -133,6 +142,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _preKeyStore = preKeyStore;
     _udManager = udManager;
     _messageDecrypter = messageDecrypter;
+    _messageDecryptJobQueue = messageDecryptJobQueue;
     _batchMessageProcessor = batchMessageProcessor;
     _messageReceiver = messageReceiver;
     _socketManager = socketManager;
@@ -147,6 +157,9 @@ static SSKEnvironment *sharedSSKEnvironment;
     _attachmentDownloads = attachmentDownloads;
     _stickerManager = stickerManager;
     _databaseStorage = databaseStorage;
+    _signalServiceAddressCache = signalServiceAddressCache;
+    _accountServiceClient = accountServiceClient;
+    _storageServiceManager = storageServiceManager;
 
     return self;
 }

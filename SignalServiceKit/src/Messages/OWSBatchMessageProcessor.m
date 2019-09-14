@@ -9,7 +9,6 @@
 #import "NotificationsProtocol.h"
 #import "OWSBackgroundTask.h"
 #import "OWSMessageManager.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSQueues.h"
 #import "OWSStorage.h"
 #import "SSKEnvironment.h"
@@ -34,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(envelopeData);
 
-    self = [super initWithUniqueId:[NSUUID new].UUIDString];
+    self = [super init];
     if (!self) {
         return self;
     }
@@ -224,7 +223,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)drainQueue
 {
-    OWSAssertDebug(AppReadiness.isAppReady);
+    OWSAssertDebugUnlessRunningTests(AppReadiness.isAppReady);
 
     // Don't process incoming messages in app extensions.
     if (!CurrentAppContext().isMainApp) {
@@ -266,8 +265,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSArray<OWSMessageContentJob *> *processedJobs = [self processJobs:batchJobs];
 
+    __block NSUInteger jobCount;
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self.finder removeJobsWithUniqueIds:processedJobs.uniqueIds transaction:transaction];
+
+        jobCount = [self.finder jobCountWithTransaction:transaction];
     }];
 
     OWSAssertDebug(backgroundTask);
@@ -276,7 +278,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogVerbose(@"completed %lu/%lu jobs. %lu jobs left.",
         (unsigned long)processedJobs.count,
         (unsigned long)batchJobs.count,
-        (unsigned long)[OWSMessageContentJob numberOfKeysInCollection]);
+        (unsigned long)jobCount);
 
     // Wait a bit in hopes of increasing the batch size.
     // This delay won't affect the first message to arrive when this queue is idle,
@@ -297,7 +299,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             void (^reportFailure)(SDSAnyWriteTransaction *transaction) = ^(SDSAnyWriteTransaction *transaction) {
                 // TODO: Add analytics.
-                TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
+                ThreadlessErrorMessage *errorMessage = [ThreadlessErrorMessage corruptedMessageInUnknownThread];
                 [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
                                                                                     transaction:transaction];
             };

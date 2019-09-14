@@ -9,7 +9,6 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSMath.h>
 #import <SignalServiceKit/OWSMessageManager.h>
-#import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>
 
@@ -381,6 +380,17 @@ NS_ASSUME_NONNULL_BEGIN
                                      NSFontAttributeName : self.snippetFont.ows_mediumWeight,
                                      NSForegroundColorAttributeName : [Theme primaryColor],
                                  }]];
+    } else if (thread.hasPendingMessageRequest) {
+        // If you haven't accepted the message request for this thread, don't show the latest message
+        [snippetText
+            appendAttributedString:
+                [[NSAttributedString alloc]
+                    initWithString:NSLocalizedString(@"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION",
+                                       @"Table cell subtitle label for a conversation the user has not accepted.")
+                        attributes:@{
+                            NSFontAttributeName : self.snippetFont.ows_mediumWeight,
+                            NSForegroundColorAttributeName : [Theme primaryColor],
+                        }]];
     } else {
         if ([thread isMuted]) {
             [snippetText appendAttributedString:[[NSAttributedString alloc]
@@ -470,8 +480,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
-    if (recipientId.length == 0) {
+    SignalServiceAddress *address = notification.userInfo[kNSNotificationKey_ProfileAddress];
+    if (!address.isValid) {
         return;
     }
 
@@ -479,7 +489,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (![self.thread.contactIdentifier isEqualToString:recipientId]) {
+    if (![self.thread.contactAddress isEqualToAddress:address]) {
         return;
     }
 
@@ -501,35 +511,38 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSAttributedString *name;
+    NSString *_Nullable name;
+    NSAttributedString *_Nullable attributedName;
     if (thread.isGroupThread) {
         if (thread.name.length == 0) {
-            name = [[NSAttributedString alloc] initWithString:[MessageStrings newGroupDefaultTitle]];
+            name = [MessageStrings newGroupDefaultTitle];
         } else {
-            name = [[NSAttributedString alloc] initWithString:thread.name];
+            name = thread.name;
         }
     } else {
         if (self.thread.threadRecord.isNoteToSelf) {
-            name = [[NSAttributedString alloc]
-                initWithString:NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.")
-                    attributes:@{
-                        NSFontAttributeName : self.nameFont,
-                    }];
+            name = MessageStrings.noteToSelf;
+        } else if (SSKFeatureFlags.profileDisplayChanges) {
+            name = [self.contactsManager displayNameForAddress:thread.contactAddress];
         } else {
-            name = [self.contactsManager attributedContactOrProfileNameForPhoneIdentifier:thread.contactIdentifier
-                                                                              primaryFont:self.nameFont
-                                                                            secondaryFont:self.nameSecondaryFont];
+            attributedName = [self.contactsManager attributedLegacyDisplayNameForAddress:thread.contactAddress
+                                                                             primaryFont:self.nameFont
+                                                                           secondaryFont:self.nameSecondaryFont];
         }
     }
 
-    self.nameLabel.attributedText = name;
+    if (name && !attributedName) {
+        attributedName = [[NSAttributedString alloc] initWithString:name];
+    }
+
+    self.nameLabel.attributedText = attributedName;
 }
 
 #pragma mark - Typing Indicators
 
 - (void)updatePreview
 {
-    if ([self.typingIndicators typingRecipientIdForThread:self.thread.threadRecord] != nil) {
+    if ([self.typingIndicators typingAddressForThread:self.thread.threadRecord] != nil) {
         // If we hide snippetLabel, our layout will break since UIStackView will remove
         // it from the layout.  Wrapping the preview views (the snippet label and the
         // typing indicator) in a UIStackView proved non-trivial since we're using

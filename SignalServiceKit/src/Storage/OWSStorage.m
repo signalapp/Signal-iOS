@@ -13,6 +13,7 @@
 #import "TSAttachmentStream.h"
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/Randomness.h>
+#import <SignalServiceKit/BaseModel.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
@@ -186,7 +187,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 #pragma mark -
 
-@interface OWSUnknownDBObject : TSYapDatabaseObject <NSCoding>
+@interface OWSUnknownDBObject : BaseModel <NSCoding>
 
 @end
 
@@ -219,13 +220,6 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSFailDebug(@"Tried to save unknown object");
-
-    // No-op.
-}
-
-- (void)touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSFailDebug(@"Tried to touch unknown object");
 
     // No-op.
 }
@@ -937,13 +931,6 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     } else {
         OWSLogWarn(@"Successfully set new keychain value.");
     }
-}
-
-- (void)logFileSizes
-{
-    OWSLogInfo(@"Database file size: %@", [OWSFileSystem fileSizeOfPath:self.databaseFilePath]);
-    OWSLogInfo(@"\t SHM file size: %@", [OWSFileSystem fileSizeOfPath:self.databaseFilePath_SHM]);
-    OWSLogInfo(@"\t WAL file size: %@", [OWSFileSystem fileSizeOfPath:self.databaseFilePath_WAL]);
 }
 
 @end

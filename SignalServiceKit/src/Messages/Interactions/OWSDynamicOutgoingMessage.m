@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDynamicOutgoingMessage
 
-- (instancetype)initWithPlainTextDataBlock:(DynamicOutgoingMessageBlock)block thread:(nullable TSThread *)thread
+- (instancetype)initWithPlainTextDataBlock:(DynamicOutgoingMessageBlock)block thread:(TSThread *)thread
 {
     return [self initWithPlainTextDataBlock:block timestamp:[NSDate ows_millisecondTimeStamp] thread:thread];
 }
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 // MJK TODO can we remove sender timestamp?
 - (instancetype)initWithPlainTextDataBlock:(DynamicOutgoingMessageBlock)block
                                  timestamp:(uint64_t)timestamp
-                                    thread:(nullable TSThread *)thread
+                                    thread:(TSThread *)thread
 {
     self = [super initOutgoingMessageWithTimestamp:timestamp
                                           inThread:thread
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
                                       contactShare:nil
                                        linkPreview:nil
                                     messageSticker:nil
-               perMessageExpirationDurationSeconds:0];
+                                 isViewOnceMessage:NO];
 
     if (self) {
         _block = block;

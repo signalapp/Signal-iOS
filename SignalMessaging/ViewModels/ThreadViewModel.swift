@@ -11,9 +11,10 @@ public class ThreadViewModel: NSObject {
     @objc public let isGroupThread: Bool
     @objc public let threadRecord: TSThread
     @objc public let unreadCount: UInt
-    @objc public let contactIdentifier: String?
+    @objc public let contactAddress: SignalServiceAddress?
     @objc public let name: String
     @objc public let isMuted: Bool
+    @objc public let hasPendingMessageRequest: Bool
 
     var isContactThread: Bool {
         return !isGroupThread
@@ -27,7 +28,8 @@ public class ThreadViewModel: NSObject {
         self.threadRecord = thread
 
         self.isGroupThread = thread.isGroupThread()
-        self.name = thread.name()
+        self.name = Environment.shared.contactsManager.displayName(for: thread, transaction: transaction)
+
         self.isMuted = thread.isMuted
         self.lastMessageText = thread.lastMessageText(transaction: transaction)
         let lastInteraction = thread.lastInteractionForInbox(transaction: transaction)
@@ -35,19 +37,14 @@ public class ThreadViewModel: NSObject {
         self.lastMessageDate = lastInteraction?.receivedAtDate()
 
         if let contactThread = thread as? TSContactThread {
-            self.contactIdentifier = contactThread.contactIdentifier()
+            self.contactAddress = contactThread.contactAddress
         } else {
-            self.contactIdentifier = nil
+            self.contactAddress = nil
         }
 
-        if let threadUniqueId = thread.uniqueId,
-            let unreadCount = try? InteractionFinder(threadUniqueId: threadUniqueId).unreadCount(transaction: transaction) {
-            self.unreadCount = unreadCount
-        } else {
-            owsFailDebug("unreadCount was unexpectedly nil")
-            self.unreadCount = 0
-        }
+        self.unreadCount = InteractionFinder(threadUniqueId: thread.uniqueId).unreadCount(transaction: transaction)
         self.hasUnreadMessages = unreadCount > 0
+        self.hasPendingMessageRequest = ThreadUtil.hasPendingMessageRequest(thread, transaction: transaction)
     }
 
     @objc

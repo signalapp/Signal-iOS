@@ -135,6 +135,14 @@ protocol ColorPickerViewDelegate: class {
 
 class ColorPickerView: UIView, ColorViewDelegate {
 
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
+
     private let colorViews: [ColorView]
     let conversationStyle: ConversationStyle
     var outgoingMessageView = OWSMessageBubbleView(forAutoLayout: ())
@@ -219,19 +227,31 @@ class ColorPickerView: UIView, ColorViewDelegate {
         return headerView
     }
 
+    private var outgoingViewItem: MockConversationViewItem {
+        let thread = MockThread(contactAddress: SignalServiceAddress(phoneNumber: "+fake-id"))
+        let outgoingText = NSLocalizedString("COLOR_PICKER_DEMO_MESSAGE_1", comment: "The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble.")
+        let outgoingItem = MockConversationViewItem(interaction: MockOutgoingMessage(messageBody: outgoingText, thread: thread))
+        outgoingItem.displayableBodyText = DisplayableText.displayableText(outgoingText)
+        outgoingItem.interactionType = .outgoingMessage
+        return outgoingItem
+    }
+
+    private var incomingViewItem: MockConversationViewItem {
+        let thread = MockThread(contactAddress: SignalServiceAddress(phoneNumber: "+fake-id"))
+        let incomingText = NSLocalizedString("COLOR_PICKER_DEMO_MESSAGE_2", comment: "The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble.")
+        let incomingItem = MockConversationViewItem(interaction: MockIncomingMessage(messageBody: incomingText, thread: thread))
+        incomingItem.displayableBodyText = DisplayableText.displayableText(incomingText)
+        incomingItem.interactionType = .incomingMessage
+        return incomingItem
+    }
+
     private func updateMockConversationView() {
         conversationStyle.viewWidth = max(bounds.size.width, kMinimumConversationWidth)
         mockConversationView.subviews.forEach { $0.removeFromSuperview() }
 
         // outgoing
         outgoingMessageView = OWSMessageBubbleView(forAutoLayout: ())
-        let outgoingItem = MockConversationViewItem()
-        let outgoingText = NSLocalizedString("COLOR_PICKER_DEMO_MESSAGE_1", comment: "The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble.")
-        outgoingItem.interaction = MockOutgoingMessage(messageBody: outgoingText)
-        outgoingItem.displayableBodyText = DisplayableText.displayableText(outgoingText)
-        outgoingItem.interactionType = .outgoingMessage
-
-        outgoingMessageView.viewItem = outgoingItem
+        outgoingMessageView.viewItem = outgoingViewItem
         outgoingMessageView.cellMediaCache = NSCache()
         outgoingMessageView.conversationStyle = conversationStyle
         outgoingMessageView.configureViews()
@@ -244,13 +264,7 @@ class ColorPickerView: UIView, ColorViewDelegate {
 
         // incoming
         incomingMessageView = OWSMessageBubbleView(forAutoLayout: ())
-        let incomingItem = MockConversationViewItem()
-        let incomingText = NSLocalizedString("COLOR_PICKER_DEMO_MESSAGE_2", comment: "The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble.")
-        incomingItem.interaction = MockIncomingMessage(messageBody: incomingText)
-        incomingItem.displayableBodyText = DisplayableText.displayableText(incomingText)
-        incomingItem.interactionType = .incomingMessage
-
-        incomingMessageView.viewItem = incomingItem
+        incomingMessageView.viewItem = incomingViewItem
         incomingMessageView.cellMediaCache = NSCache()
         incomingMessageView.conversationStyle = conversationStyle
         incomingMessageView.configureViews()
@@ -296,8 +310,20 @@ class ColorPickerView: UIView, ColorViewDelegate {
 // MARK: Mock Classes for rendering demo conversation
 
 @objc
+private class MockThread: TSContactThread {
+    public override var shouldBeSaved: Bool {
+        return false
+    }
+
+    override func anyWillInsert(with transaction: SDSAnyWriteTransaction) {
+        // no - op
+        owsFailDebug("shouldn't save mock thread")
+    }
+}
+
+@objc
 private class MockConversationViewItem: NSObject, ConversationViewItem {
-    var interaction: TSInteraction = TSMessage()
+    var interaction: TSInteraction
     var interactionType: OWSInteractionType = OWSInteractionType.unknown
     var quotedReply: OWSQuotedReplyModel?
     var isGroupThread: Bool = false
@@ -307,10 +333,11 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var hasQuotedText: Bool = false
     var hasCellHeader: Bool = false
     var hasPerConversationExpiration: Bool = false
-    var hasPerMessageExpiration: Bool = false
+    var isViewOnceMessage: Bool = false
     var shouldShowDate: Bool = false
     var shouldShowSenderAvatar: Bool = false
     var senderName: NSAttributedString?
+    var accessibilityAuthorName: String?
     var shouldHideFooter: Bool = false
     var isFirstInCluster: Bool = true
     var isLastInCluster: Bool = true
@@ -325,7 +352,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var mediaSize: CGSize  = .zero
     var displayableQuotedText: DisplayableText?
     var quotedAttachmentMimetype: String?
-    var quotedRecipientId: String?
+    var quotedAuthorAddress: SignalServiceAddress?
     var didCellMediaFailToLoad: Bool = false
     var contactShare: ContactShareViewModel?
     var systemMessageText: String?
@@ -339,14 +366,17 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var stickerInfo: StickerInfo?
     var stickerAttachment: TSAttachmentStream?
     var isFailedSticker: Bool = false
-    var perMessageExpirationState: PerMessageExpirationState = .incomingExpired
+    var viewOnceMessageState: ViewOnceMessageState = .incomingExpired
+    var mutualGroupNames: [String]?
 
-    override init() {
+    init(interaction: TSInteraction) {
+        self.interaction = interaction
+
         super.init()
     }
 
     func itemId() -> String {
-        return interaction.uniqueId!
+        return interaction.uniqueId
     }
 
     func dequeueCell(for collectionView: UICollectionView, indexPath: IndexPath) -> ConversationViewCell {
@@ -441,10 +471,10 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
 }
 
 private class MockIncomingMessage: TSIncomingMessage {
-    init(messageBody: String) {
+    init(messageBody: String, thread: TSThread) {
         super.init(incomingMessageWithTimestamp: NSDate.ows_millisecondTimeStamp(),
-                   in: TSThread(),
-                   authorId: "+fake-id",
+                   in: thread,
+                   authorAddress: SignalServiceAddress(phoneNumber: "+fake-id"),
                    sourceDeviceId: 1,
                    messageBody: messageBody,
                    attachmentIds: [],
@@ -455,7 +485,7 @@ private class MockIncomingMessage: TSIncomingMessage {
                    messageSticker: nil,
                    serverTimestamp: nil,
                    wasReceivedByUD: false,
-                   perMessageExpirationDurationSeconds: 0)
+                   isViewOnceMessage: false)
     }
 
     required init(coder: NSCoder) {
@@ -466,16 +496,19 @@ private class MockIncomingMessage: TSIncomingMessage {
         fatalError("init(dictionary:) has not been implemented")
     }
 
-    override func save(with transaction: YapDatabaseReadWriteTransaction) {
-        // no - op
+    public override var shouldBeSaved: Bool {
+        return false
+    }
+
+    override func anyWillInsert(with transaction: SDSAnyWriteTransaction) {
         owsFailDebug("shouldn't save mock message")
     }
 }
 
 private class MockOutgoingMessage: TSOutgoingMessage {
-    init(messageBody: String) {
+    init(messageBody: String, thread: TSThread) {
         super.init(outgoingMessageWithTimestamp: NSDate.ows_millisecondTimeStamp(),
-                   in: nil,
+                   in: thread,
                    messageBody: messageBody,
                    attachmentIds: [],
                    expiresInSeconds: 0,
@@ -486,7 +519,7 @@ private class MockOutgoingMessage: TSOutgoingMessage {
                    contactShare: nil,
                    linkPreview: nil,
                    messageSticker: nil,
-                   perMessageExpirationDurationSeconds: 0)
+                   isViewOnceMessage: false)
     }
 
     required init?(coder: NSCoder) {
@@ -497,8 +530,11 @@ private class MockOutgoingMessage: TSOutgoingMessage {
         fatalError("init(dictionary:) has not been implemented")
     }
 
-    override func save(with transaction: YapDatabaseReadWriteTransaction) {
-        // no - op
+    public override var shouldBeSaved: Bool {
+        return false
+    }
+
+    override func anyWillInsert(with transaction: SDSAnyWriteTransaction) {
         owsFailDebug("shouldn't save mock message")
     }
 
@@ -516,12 +552,12 @@ private class MockOutgoingMessage: TSOutgoingMessage {
         }
     }
 
-    override func readRecipientIds() -> [String] {
+    override func readRecipientAddresses() -> [SignalServiceAddress] {
         // makes message appear as read
-        return ["fake-non-empty-id"]
+        return [SignalServiceAddress(phoneNumber: "+123123123123123123")]
     }
 
-    override func recipientState(forRecipientId recipientId: String) -> TSOutgoingMessageRecipientState? {
+    override func recipientState(for recipientAddress: SignalServiceAddress) -> TSOutgoingMessageRecipientState? {
         return MockOutgoingMessageRecipientState()
     }
 }

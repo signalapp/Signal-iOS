@@ -8,8 +8,18 @@ public protocol GalleryRailItemProvider: class {
     var railItems: [GalleryRailItem] { get }
 }
 
-public protocol GalleryRailItem: class {
+public protocol GalleryRailItem {
     func buildRailItemView() -> UIView
+    func isEqualToGalleryRailItem(_ other: GalleryRailItem?) -> Bool
+}
+
+public extension GalleryRailItem where Self: Equatable {
+    func isEqualToGalleryRailItem(_ other: GalleryRailItem?) -> Bool {
+        guard let other = other as? Self else {
+            return false
+        }
+        return self == other
+    }
 }
 
 protocol GalleryRailCellViewDelegate: class {
@@ -157,7 +167,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
                 return false
             }
             for (index, element) in lhs.enumerated() {
-                guard element === rhs[index] else {
+                guard element.isEqualToGalleryRailItem(rhs[index]) else {
                     return false
                 }
             }
@@ -190,8 +200,18 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
 
         scrollView.subviews.forEach { $0.removeFromSuperview() }
 
+        let animatedReveal: Bool
+        if #available(iOS 12, *) {
+            animatedReveal = true
+        } else {
+            // This animation is broken on iOS11
+            // Often times the media rail will "drop in" from the top of the screen
+            // rather than growing from the top of the toolbar. It's better to skip this
+            // animation all together.
+            animatedReveal = false
+        }
         animate(animationDuration: animationDuration,
-                animated: animated,
+                animated: animatedReveal,
                 animations: {
             self.isHidden = false
         })
@@ -246,7 +266,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
     func updateFocusedItem(_ focusedItem: GalleryRailItem?) {
         var selectedCellView: GalleryRailCellView?
         cellViews.forEach { cellView in
-            if cellView.item === focusedItem {
+            if let item = cellView.item, item.isEqualToGalleryRailItem(focusedItem) {
                 assert(selectedCellView == nil)
                 selectedCellView = cellView
                 cellView.setIsSelected(true)

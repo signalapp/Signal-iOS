@@ -4,8 +4,7 @@
 
 #import "TSCall.h"
 #import "TSContactThread.h"
-#import <YapDatabase/YapDatabaseConnection.h>
-#import <YapDatabase/YapDatabaseTransaction.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -39,6 +38,8 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 @property (nonatomic, readonly) NSUInteger callSchemaVersion;
 
+@property (nonatomic) RPRecentCallType callType;
+
 @end
 
 #pragma mark -
@@ -46,7 +47,6 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 @implementation TSCall
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                   withCallNumber:(NSString *)contactNumber
                          callType:(RPRecentCallType)callType
                          inThread:(TSContactThread *)thread
 {
@@ -168,18 +168,21 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
               sendReadReceipt:(BOOL)sendReadReceipt
-                  transaction:(YapDatabaseReadWriteTransaction *)transaction
+                  transaction:(SDSAnyWriteTransaction *)transaction
 {
 
     OWSAssertDebug(transaction);
 
-    if (_read) {
+    if (self.read) {
         return;
     }
 
     OWSLogDebug(@"marking as read uniqueId: %@ which has timestamp: %llu", self.uniqueId, self.timestamp);
-    _read = YES;
-    [self saveWithTransaction:transaction];
+
+    [self anyUpdateCallWithTransaction:transaction
+                                 block:^(TSCall *call) {
+                                     call.read = YES;
+                                 }];
 
     // Ignore sendReadReceipt - it doesn't apply to calls.
 }
@@ -188,12 +191,12 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 - (void)updateCallType:(RPRecentCallType)callType
 {
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self updateCallType:callType transaction:transaction];
     }];
 }
 
-- (void)updateCallType:(RPRecentCallType)callType transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateCallType:(RPRecentCallType)callType transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -203,9 +206,10 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
         self.uniqueId,
         self.timestamp);
 
-    _callType = callType;
-
-    [self saveWithTransaction:transaction];
+    [self anyUpdateCallWithTransaction:transaction
+                                 block:^(TSCall *call) {
+                                     call.callType = callType;
+                                 }];
 }
 
 @end

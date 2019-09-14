@@ -1,10 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalServiceKit
 import SignalMessaging
+
+#if DEBUG
 
 class DebugUICalling: DebugUIPage {
 
@@ -42,9 +44,9 @@ class DebugUICalling: DebugUIPage {
                 let callMessage = OWSOutgoingCallMessage(thread: thread, hangupMessage: hangupMessage)
 
                 strongSelf.messageSender.sendPromise(message: callMessage).done {
-                    Logger.debug("Successfully sent hangup call message to \(thread.contactIdentifier())")
+                    Logger.debug("Successfully sent hangup call message to \(thread.contactAddress)")
                 }.catch { error in
-                    Logger.error("failed to send hangup call message to \(thread.contactIdentifier()) with error: \(error)")
+                    Logger.error("failed to send hangup call message to \(thread.contactAddress) with error: \(error)")
                 }.retainUntilComplete()
             },
             OWSTableItem(title: "Send 'busy' for old call") { [weak self] in
@@ -63,9 +65,9 @@ class DebugUICalling: DebugUIPage {
                 let callMessage = OWSOutgoingCallMessage(thread: thread, busyMessage: busyMessage)
 
                 strongSelf.messageSender.sendPromise(message: callMessage).done {
-                    Logger.debug("Successfully sent busy call message to \(thread.contactIdentifier())")
+                    Logger.debug("Successfully sent busy call message to \(thread.contactAddress)")
                 }.catch { error in
-                    Logger.error("failed to send busy call message to \(thread.contactIdentifier()) with error: \(error)")
+                    Logger.error("failed to send busy call message to \(thread.contactAddress) with error: \(error)")
                 }.retainUntilComplete()
             }
         ]
@@ -73,3 +75,5 @@ class DebugUICalling: DebugUIPage {
         return OWSTableSection(title: "Call Debug", items: sectionItems)
     }
 }
+
+#endif

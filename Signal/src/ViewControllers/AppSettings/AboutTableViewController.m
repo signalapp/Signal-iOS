@@ -8,10 +8,20 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/UIUtil.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 
+@import SafariServices;
+
 @implementation AboutTableViewController
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 - (void)dealloc
 {
@@ -50,30 +60,36 @@
 {
     OWSTableContents *contents = [OWSTableContents new];
 
+    __weak AboutTableViewController *weakSelf = self;
+
     OWSTableSection *informationSection = [OWSTableSection new];
     informationSection.headerTitle = NSLocalizedString(@"SETTINGS_INFORMATION_HEADER", @"");
     [informationSection addItem:[OWSTableItem labelItemWithText:NSLocalizedString(@"SETTINGS_VERSION", @"")
                                                   accessoryText:[[[NSBundle mainBundle] infoDictionary]
                                                                     objectForKey:@"CFBundleVersion"]]];
 
-    [informationSection addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_LEGAL_TERMS_CELL",
-                                                                         @"table cell label")
-                                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"terms")
-                                                         actionBlock:^{
-                                                             [[UIApplication sharedApplication]
-                                                                 openURL:[NSURL URLWithString:kLegalTermsUrlString]];
-                                                         }]];
+    [informationSection
+        addItem:[OWSTableItem
+                     disclosureItemWithText:NSLocalizedString(@"SETTINGS_LEGAL_TERMS_CELL", @"table cell label")
+                    accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"terms")
+                                actionBlock:^{
+                                    SFSafariViewController *safariVC = [[SFSafariViewController alloc]
+                                        initWithURL:[NSURL URLWithString:kLegalTermsUrlString]];
+                                    [weakSelf presentViewController:safariVC animated:YES completion:nil];
+                                }]];
 
     [contents addSection:informationSection];
 
     OWSTableSection *helpSection = [OWSTableSection new];
     helpSection.headerTitle = NSLocalizedString(@"SETTINGS_HELP_HEADER", @"");
-    [helpSection addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_SUPPORT", @"")
-                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"support")
-                                                  actionBlock:^{
-                                                      [[UIApplication sharedApplication]
-                                                          openURL:[NSURL URLWithString:@"https://support.signal.org"]];
-                                                  }]];
+    [helpSection
+        addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_SUPPORT", @"")
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"support")
+                                         actionBlock:^{
+                                             SFSafariViewController *safariVC = [[SFSafariViewController alloc]
+                                                 initWithURL:[NSURL URLWithString:@"https://support.signal.org"]];
+                                             [weakSelf presentViewController:safariVC animated:YES completion:nil];
+                                         }]];
     [contents addSection:helpSection];
 
     UILabel *copyrightLabel = [UILabel new];
@@ -90,10 +106,10 @@
     __block NSUInteger threadCount;
     __block NSUInteger messageCount;
     __block NSUInteger attachmentCount;
-    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        threadCount = [transaction numberOfKeysInCollection:[TSThread collection]];
-        messageCount = [transaction numberOfKeysInCollection:[TSInteraction collection]];
-        attachmentCount = [transaction numberOfKeysInCollection:[TSAttachment collection]];
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        threadCount = [TSThread anyCountWithTransaction:transaction];
+        messageCount = [TSInteraction anyCountWithTransaction:transaction];
+        attachmentCount = [TSAttachment anyCountWithTransaction:transaction];
     }];
 
     NSByteCountFormatter *byteCountFormatter = [NSByteCountFormatter new];
@@ -119,17 +135,16 @@
     [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Attachments: %@",
                                                                     formattedAttachmentCount]]];
 
-    NSString *dbSize =
-        [byteCountFormatter stringFromByteCount:(long long)[OWSPrimaryStorage.sharedManager databaseFileSize]];
+    NSString *dbSize = [byteCountFormatter stringFromByteCount:(long long)[self.databaseStorage databaseFileSize]];
     [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Database size: %@", dbSize]]];
 
     NSString *dbWALSize =
-        [byteCountFormatter stringFromByteCount:(long long)[OWSPrimaryStorage.sharedManager databaseWALFileSize]];
+        [byteCountFormatter stringFromByteCount:(long long)[self.databaseStorage databaseWALFileSize]];
     [debugSection
         addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Database WAL size: %@", dbWALSize]]];
 
     NSString *dbSHMSize =
-        [byteCountFormatter stringFromByteCount:(long long)[OWSPrimaryStorage.sharedManager databaseSHMFileSize]];
+        [byteCountFormatter stringFromByteCount:(long long)[self.databaseStorage databaseSHMFileSize]];
     [debugSection
         addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Database SHM size: %@", dbSHMSize]]];
 

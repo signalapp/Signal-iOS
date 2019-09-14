@@ -2,19 +2,22 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSYapDatabaseObject.h"
+#import "BaseModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSLinkedDeviceReadReceipt : TSYapDatabaseObject
+@class SDSAnyReadTransaction;
+@class SignalServiceAddress;
 
-@property (nonatomic, readonly) NSString *senderId;
+@interface OWSLinkedDeviceReadReceipt : BaseModel
+
+@property (nonatomic, readonly) SignalServiceAddress *senderAddress;
 @property (nonatomic, readonly) uint64_t messageIdTimestamp;
 @property (nonatomic, readonly) uint64_t readTimestamp;
 
-- (instancetype)initWithSenderId:(NSString *)senderId
-              messageIdTimestamp:(uint64_t)messageIdtimestamp
-                   readTimestamp:(uint64_t)readTimestamp;
+- (instancetype)initWithSenderAddress:(SignalServiceAddress *)address
+                   messageIdTimestamp:(uint64_t)messageIdtimestamp
+                        readTimestamp:(uint64_t)readTimestamp;
 
 // --- CODE GENERATION MARKER
 
@@ -24,19 +27,20 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
+linkedDeviceReadReceiptSchemaVersion:(NSUInteger)linkedDeviceReadReceiptSchemaVersion
               messageIdTimestamp:(uint64_t)messageIdTimestamp
                    readTimestamp:(uint64_t)readTimestamp
-                        senderId:(NSString *)senderId
-NS_SWIFT_NAME(init(uniqueId:messageIdTimestamp:readTimestamp:senderId:));
+               senderPhoneNumber:(nullable NSString *)senderPhoneNumber
+                      senderUUID:(nullable NSString *)senderUUID
+NS_SWIFT_NAME(init(uniqueId:linkedDeviceReadReceiptSchemaVersion:messageIdTimestamp:readTimestamp:senderPhoneNumber:senderUUID:));
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
 
-+ (nullable OWSLinkedDeviceReadReceipt *)findLinkedDeviceReadReceiptWithSenderId:(NSString *)senderId
-                                                              messageIdTimestamp:(uint64_t)messageIdTimestamp
-                                                                     transaction:
-                                                                         (YapDatabaseReadTransaction *)transaction;
++ (nullable OWSLinkedDeviceReadReceipt *)findLinkedDeviceReadReceiptWithAddress:(SignalServiceAddress *)address
+                                                             messageIdTimestamp:(uint64_t)messageIdTimestamp
+                                                                    transaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

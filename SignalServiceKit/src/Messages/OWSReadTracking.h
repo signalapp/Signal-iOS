@@ -4,7 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class YapDatabaseReadWriteTransaction;
+@class SDSAnyWriteTransaction;
 
 /**
  * Some interactions track read/unread status.
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
               sendReadReceipt:(BOOL)sendReadReceipt
-                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                  transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

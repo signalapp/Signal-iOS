@@ -1,10 +1,9 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ContactsUpdater.h"
 #import "OWSError.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSRequestFactory.h"
 #import "PhoneNumber.h"
 #import "SSKEnvironment.h"
@@ -25,6 +24,15 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation ContactsUpdater
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 + (instancetype)sharedUpdater {
     OWSAssertDebug(SSKEnvironment.shared.contactsUpdater);
@@ -77,39 +85,94 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (void)contactIntersectionWithSet:(NSSet<NSString *> *)recipientIdsToLookup
+- (void)contactIntersectionWithSet:(NSSet<NSString *> *)phoneNumbersToLookup
                            success:(void (^)(NSSet<SignalRecipient *> *recipients))success
                            failure:(void (^)(NSError *error))failure
 {
-    OWSLegacyContactDiscoveryOperation *operation =
-        [[OWSLegacyContactDiscoveryOperation alloc] initWithRecipientIdsToLookup:recipientIdsToLookup.allObjects];
-
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSArray<NSOperation *> *operationAndDependencies = [operation.dependencies arrayByAddingObject:operation];
-        [self.contactIntersectionQueue addOperations:operationAndDependencies waitUntilFinished:YES];
+        CDSContactQueryBuilder *builder =
+            [[CDSContactQueryBuilder alloc] initWithPhoneNumbersToLookup:phoneNumbersToLookup];
 
-        if (operation.failingError != nil) {
-            failure(operation.failingError);
+        __block NSError *error;
+        __block CDSContactQueryCollection *queryCollection;
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            queryCollection = [builder buildWithTransaction:transaction error:&error];
+            [builder removeStaleWithTransaction:transaction];
+        }];
+
+        if (error) {
+            failure(error);
             return;
         }
 
-        NSSet<NSString *> *registeredRecipientIds = operation.registeredRecipientIds;
+        NSMutableSet<SignalRecipient *> *registeredRecipients = [NSMutableSet new];
+        if (SSKFeatureFlags.useOnlyModernContactDiscovery) {
+            SSKContactDiscoveryOperation *operation =
+                [[SSKContactDiscoveryOperation alloc] initWithQueryCollection:queryCollection];
 
-        NSMutableSet<SignalRecipient *> *recipients = [NSMutableSet new];
-        [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            for (NSString *recipientId in recipientIdsToLookup) {
-                if ([registeredRecipientIds containsObject:recipientId]) {
-                    SignalRecipient *recipient =
-                        [SignalRecipient markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
-                    [recipients addObject:recipient];
-                } else {
-                    [SignalRecipient markRecipientAsUnregistered:recipientId transaction:transaction];
-                }
+            NSArray<NSOperation *> *operationAndDependencies = [operation.dependencies arrayByAddingObject:operation];
+            [self.contactIntersectionQueue addOperations:operationAndDependencies waitUntilFinished:YES];
+
+            if (operation.failingError != nil) {
+                failure(operation.failingError);
+                return;
             }
-        }];
+
+            OWSAssertDebug(operation.isFinished);
+            NSSet<SignalServiceAddress *> *registeredAddresses = operation.registeredAddresses;
+
+            NSMutableSet<NSString *> *unregisterdPhoneNumbers = [phoneNumbersToLookup mutableCopy];
+
+            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                for (SignalServiceAddress *registeredAddress in registeredAddresses) {
+                    NSString *registeredPhoneNumber = registeredAddress.phoneNumber;
+                    if (registeredPhoneNumber == nil) {
+                        OWSFailDebug(@"registeredPhoneNumber was unexpetedly nil");
+                        continue;
+                    }
+
+                    [unregisterdPhoneNumbers removeObject:registeredPhoneNumber];
+                    SignalRecipient *recipient = [SignalRecipient markRecipientAsRegisteredAndGet:registeredAddress
+                                                                                      transaction:transaction];
+                    [registeredRecipients addObject:recipient];
+                }
+
+                for (NSString *unregisteredPhoneNumber in unregisterdPhoneNumbers) {
+                    SignalServiceAddress *unregisteredAddress =
+                        [[SignalServiceAddress alloc] initWithPhoneNumber:unregisteredPhoneNumber];
+
+                    [SignalRecipient markRecipientAsUnregistered:unregisteredAddress transaction:transaction];
+                }
+            }];
+        } else {
+            OWSLegacyContactDiscoveryOperation *operation =
+                [[OWSLegacyContactDiscoveryOperation alloc] initWithQueryCollection:queryCollection];
+
+            NSArray<NSOperation *> *operationAndDependencies = [operation.dependencies arrayByAddingObject:operation];
+            [self.contactIntersectionQueue addOperations:operationAndDependencies waitUntilFinished:YES];
+
+            if (operation.failingError != nil) {
+                failure(operation.failingError);
+                return;
+            }
+
+            NSSet<NSString *> *registeredPhoneNumbers = operation.registeredPhoneNumbers;
+            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                for (NSString *phoneNumber in phoneNumbersToLookup) {
+                    SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+                    if ([registeredPhoneNumbers containsObject:phoneNumber]) {
+                        SignalRecipient *recipient = [SignalRecipient markRecipientAsRegisteredAndGet:address
+                                                                                          transaction:transaction];
+                        [registeredRecipients addObject:recipient];
+                    } else {
+                        [SignalRecipient markRecipientAsUnregistered:address transaction:transaction];
+                    }
+                }
+            }];
+        }
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            success([recipients copy]);
+            success([registeredRecipients copy]);
         });
     });
 }

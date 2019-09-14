@@ -6,8 +6,8 @@
 #import "OWSContactAvatarBuilder.h"
 #import "OWSMessageBubbleView.h"
 #import "OWSMessageHeaderView.h"
-#import "OWSMessageHiddenView.h"
 #import "OWSMessageStickerView.h"
+#import "OWSMessageViewOnceView.h"
 #import "Signal-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) OWSMessageHeaderView *headerView;
 @property (nonatomic) OWSMessageBubbleView *messageBubbleView;
 @property (nonatomic) OWSMessageStickerView *messageStickerView;
-@property (nonatomic) OWSMessageHiddenView *messageHiddenView;
+@property (nonatomic) OWSMessageViewOnceView *messageViewOnceView;
 @property (nonatomic) AvatarImageView *avatarView;
 @property (nonatomic, nullable) UIImageView *sendFailureBadgeView;
 
@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.messageBubbleView = [OWSMessageBubbleView new];
     self.messageStickerView = [OWSMessageStickerView new];
-    self.messageHiddenView = [OWSMessageHiddenView new];
+    self.messageViewOnceView = [OWSMessageViewOnceView new];
 
     self.headerView = [OWSMessageHeaderView new];
 
@@ -102,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.messageBubbleView.conversationStyle = conversationStyle;
     self.messageStickerView.conversationStyle = conversationStyle;
-    self.messageHiddenView.conversationStyle = conversationStyle;
+    self.messageViewOnceView.conversationStyle = conversationStyle;
 }
 
 + (NSString *)cellReuseIdentifier
@@ -147,8 +147,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (self.cellType == OWSMessageCellType_StickerMessage) {
         return self.messageStickerView;
-    } else if (self.cellType == OWSMessageCellType_PerMessageExpiration) {
-        return self.messageHiddenView;
+    } else if (self.cellType == OWSMessageCellType_ViewOnce) {
+        return self.messageViewOnceView;
     } else {
         return self.messageBubbleView;
     }
@@ -164,7 +164,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
     OWSAssertDebug(self.messageBubbleView);
     OWSAssertDebug(self.messageStickerView);
-    OWSAssertDebug(self.messageHiddenView);
+    OWSAssertDebug(self.messageViewOnceView);
 
     OWSMessageView *messageView = self.messageView;
     messageView.viewItem = self.viewItem;
@@ -306,9 +306,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.viewItem.interaction;
     UIImage *_Nullable authorAvatarImage =
-        [[[OWSContactAvatarBuilder alloc] initWithSignalId:incomingMessage.authorId
-                                                 colorName:self.viewItem.authorConversationColorName
-                                                  diameter:self.avatarSize] build];
+        [[[OWSContactAvatarBuilder alloc] initWithAddress:incomingMessage.authorAddress
+                                                colorName:self.viewItem.authorConversationColorName
+                                                 diameter:self.avatarSize] build];
     self.avatarView.image = authorAvatarImage;
     [self.swipeableContentView addSubview:self.avatarView];
 
@@ -341,13 +341,13 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
-    if (recipientId.length == 0) {
+    SignalServiceAddress *address = notification.userInfo[kNSNotificationKey_ProfileAddress];
+    if (!address.isValid) {
         return;
     }
     TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.viewItem.interaction;
 
-    if (![incomingMessage.authorId isEqualToString:recipientId]) {
+    if (![incomingMessage.authorAddress isEqualToAddress:address]) {
         return;
     }
 
@@ -402,9 +402,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self.messageStickerView prepareForReuse];
     [self.messageStickerView unloadContent];
     [self.messageStickerView removeFromSuperview];
-    [self.messageHiddenView prepareForReuse];
-    [self.messageHiddenView unloadContent];
-    [self.messageHiddenView removeFromSuperview];
+    [self.messageViewOnceView prepareForReuse];
+    [self.messageViewOnceView unloadContent];
+    [self.messageViewOnceView removeFromSuperview];
 
     [self.headerView removeFromSuperview];
 

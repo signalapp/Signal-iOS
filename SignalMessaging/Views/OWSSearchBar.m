@@ -64,6 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIColor *foregroundColor = Theme.placeholderColor;
     searchBar.barTintColor = Theme.backgroundColor;
+    searchBar.tintColor = Theme.primaryColor;
     searchBar.barStyle = Theme.barStyle;
 
     // Hide searchBar border.

@@ -2,24 +2,30 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSYapDatabaseObject.h"
+#import "BaseModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-// SignalRecipient serves two purposes:
-//
-// a) It serves as a cache of "known" Signal accounts.  When the service indicates
-//    that an account exists, we make sure that an instance of SignalRecipient exists
-//    for that recipient id (using mark as registered) and has at least one device.
-//    When the service indicates that an account does not exist, we remove any devices
-//    from that SignalRecipient - but do not remove it from the database.
-//    Note that SignalRecipients without any devices are not considered registered.
-//// b) We hang the "known device list" for known signal accounts on this entity.
-@interface SignalRecipient : TSYapDatabaseObject
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
+@class SignalServiceAddress;
 
-@property (nonatomic, readonly) NSOrderedSet *devices;
+/// SignalRecipient serves two purposes:
+///
+/// a) It serves as a cache of "known" Signal accounts.  When the service indicates
+///    that an account exists, we make sure that an instance of SignalRecipient exists
+///    for that recipient id (using mark as registered) and has at least one device.
+///    When the service indicates that an account does not exist, we remove any devices
+///    from that SignalRecipient - but do not remove it from the database.
+///    Note that SignalRecipients without any devices are not considered registered.
+/// b) We hang the "known device list" for known signal accounts on this entity.
+@interface SignalRecipient : BaseModel
+
+@property (nonatomic, readonly) NSOrderedSet<NSNumber *> *devices;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithAddress:(SignalServiceAddress *)address NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -29,35 +35,44 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
-                         devices:(NSOrderedSet *)devices
-NS_SWIFT_NAME(init(uniqueId:devices:));
+                         devices:(NSOrderedSet<NSNumber *> *)devices
+            recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
+          recipientSchemaVersion:(NSUInteger)recipientSchemaVersion
+                   recipientUUID:(nullable NSString *)recipientUUID
+NS_SWIFT_NAME(init(uniqueId:devices:recipientPhoneNumber:recipientSchemaVersion:recipientUUID:));
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
 
-+ (nullable instancetype)registeredRecipientForRecipientId:(NSString *)recipientId
-                                           mustHaveDevices:(BOOL)mustHaveDevices
-                                               transaction:(YapDatabaseReadTransaction *)transaction;
-+ (instancetype)getOrBuildUnsavedRecipientForRecipientId:(NSString *)recipientId
-                                             transaction:(YapDatabaseReadTransaction *)transaction;
++ (nullable instancetype)registeredRecipientForAddress:(SignalServiceAddress *)address
+                                       mustHaveDevices:(BOOL)mustHaveDevices
+                                           transaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)updateRegisteredRecipientWithDevicesToAdd:(nullable NSArray *)devicesToAdd
-                                  devicesToRemove:(nullable NSArray *)devicesToRemove
-                                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (instancetype)getOrBuildUnsavedRecipientForAddress:(SignalServiceAddress *)address
+                                         transaction:(SDSAnyReadTransaction *)transaction;
 
-@property (nonatomic, readonly) NSString *recipientId;
+- (void)updateRegisteredRecipientWithDevicesToAdd:(nullable NSArray<NSNumber *> *)devicesToAdd
+                                  devicesToRemove:(nullable NSArray<NSNumber *> *)devicesToRemove
+                                      transaction:(SDSAnyWriteTransaction *)transaction;
+
+@property (nonatomic, nullable) NSString *recipientPhoneNumber;
+@property (nonatomic, nullable) NSString *recipientUUID;
+
+@property (nonatomic, readonly) SignalServiceAddress *address;
 
 - (NSComparisonResult)compare:(SignalRecipient *)other;
 
-+ (BOOL)isRegisteredRecipient:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction;
++ (BOOL)isRegisteredRecipient:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
-+ (SignalRecipient *)markRecipientAsRegisteredAndGet:(NSString *)recipientId
-                                         transaction:(YapDatabaseReadWriteTransaction *)transaction;
-+ (void)markRecipientAsRegistered:(NSString *)recipientId
++ (SignalRecipient *)markRecipientAsRegisteredAndGet:(SignalServiceAddress *)address
+                                         transaction:(SDSAnyWriteTransaction *)transaction;
+
++ (void)markRecipientAsRegistered:(SignalServiceAddress *)address
                          deviceId:(UInt32)deviceId
-                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
-+ (void)markRecipientAsUnregistered:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                      transaction:(SDSAnyWriteTransaction *)transaction;
+
++ (void)markRecipientAsUnregistered:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 
