@@ -391,7 +391,7 @@ def process_if_appropriate(filepath):
 
 def check_diff_for_keywords():
     objc_keywords = [
-        "OWSAbstractMethod\("
+        "OWSAbstractMethod\(",
         "OWSAssert\(", 
         "OWSCAssert\(", 
         "OWSFail\(", 
