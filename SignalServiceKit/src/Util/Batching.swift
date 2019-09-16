@@ -15,28 +15,24 @@ public class Batching: NSObject {
     // If batchSize == 0, no batching is done and no
     // autoreleasepool is used.
     public static func loop(batchSize: UInt,
-                            conditionBlock: () -> Bool,
-                            loopBlock: () throws -> Void) throws {
+                            loopBlock: (UnsafeMutablePointer<ObjCBool>) throws -> Void) throws {
+        var stop: ObjCBool = false
         guard batchSize > 0 else {
             // No batching.
-            while true {
-                guard conditionBlock() else {
-                    return
-                }
-                try loopBlock()
+            while !stop.boolValue {
+                try loopBlock(&stop)
             }
+            return
         }
 
         // With batching.
-        var stop = false
-        while !stop {
+        while !stop.boolValue {
             try autoreleasepool {
                 for _ in 0..<batchSize {
-                    guard conditionBlock() else {
-                        stop = true
+                    guard !stop.boolValue else {
                         return
                     }
-                    try loopBlock()
+                    try loopBlock(&stop)
                 }
             }
         }
@@ -44,26 +40,24 @@ public class Batching: NSObject {
 
     @objc
     public static func loopObjc(batchSize: UInt,
-                                conditionBlock: () -> Bool,
-                                loopBlock: () -> Void) {
+                                loopBlock: (UnsafeMutablePointer<ObjCBool>) -> Void) {
+        var stop: ObjCBool = false
         guard batchSize > 0 else {
             // No batching.
-            while true {
-                guard conditionBlock() else {
-                    return
-                }
-                loopBlock()
+            while !stop.boolValue {
+                loopBlock(&stop)
             }
+            return
         }
 
         // With batching.
         while true {
             autoreleasepool {
                 for _ in 0..<batchSize {
-                    guard conditionBlock() else {
+                    guard !stop.boolValue else {
                         return
                     }
-                    loopBlock()
+                    loopBlock(&stop)
                 }
             }
         }
