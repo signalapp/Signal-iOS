@@ -102,8 +102,6 @@ class SDSPerformanceTest: PerformanceBaseTest {
         write { transaction in
             TSThread.anyRemoveAllWithInstantation(transaction: transaction)
             TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
-            TSThread.anyRemoveAllWithoutInstantation(transaction: transaction)
-            TSInteraction.anyRemoveAllWithoutInstantation(transaction: transaction)
         }
     }
 
@@ -153,8 +151,6 @@ class SDSPerformanceTest: PerformanceBaseTest {
         write { transaction in
             TSThread.anyRemoveAllWithInstantation(transaction: transaction)
             TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
-            TSThread.anyRemoveAllWithoutInstantation(transaction: transaction)
-            TSInteraction.anyRemoveAllWithoutInstantation(transaction: transaction)
         }
     }
 
@@ -188,8 +184,6 @@ class SDSPerformanceTest: PerformanceBaseTest {
         write { transaction in
             TSThread.anyRemoveAllWithInstantation(transaction: transaction)
             TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
-            TSThread.anyRemoveAllWithoutInstantation(transaction: transaction)
-            TSInteraction.anyRemoveAllWithoutInstantation(transaction: transaction)
         }
     }
 }
