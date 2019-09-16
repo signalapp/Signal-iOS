@@ -152,6 +152,11 @@ class ParsedClass:
             result.append(subclass_property_map[name])
         return result
 
+    def record_id_source(self):
+        for property in self.properties():
+            if property.name == 'sortId':
+                return property.name
+        return None
                     
     def is_sds_model(self):
         if self.super_class_name is None:
@@ -1621,17 +1626,19 @@ class %sSerializer: SDSSerializer {
     root_class = clazz.table_superclass()
     root_record_name = remove_prefix_from_class_name(root_class.name) + 'Record'
     
+    record_id_source = "nil"
+    if root_class.record_id_source() is not None:
+        record_id_source = "model.%(source)s > 0 ? Int64(model.%(source)s) : nil" % { "source": root_class.record_id_source() }
 
-    serialize_record_type = get_record_type_enum_name(clazz.name)
     swift_body += '''
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        let id: Int64? = %(record_id_source)s
 
-        let recordType: SDSRecordType = .%s
+        let recordType: SDSRecordType = .%(record_type)s
         let uniqueId: String = model.uniqueId
-''' % ( serialize_record_type, )
+''' % { "record_type": get_record_type_enum_name(clazz.name), "record_id_source": record_id_source }
     
     initializer_args = ['id', 'recordType', 'uniqueId', ]
     
@@ -1687,7 +1694,6 @@ class %sSerializer: SDSSerializer {
 
 
     initializer_args = ['%s: %s' % ( arg, arg, ) for arg in initializer_args]
-    serialize_record_type = get_record_type_enum_name(clazz.name)
     swift_body += '''
         return %s(%s)
     }
