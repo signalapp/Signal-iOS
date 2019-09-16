@@ -1079,7 +1079,7 @@ private class SignalCallData: NSObject {
         do {
             try peerConnectionClient.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack())
         } catch {
-            Logger.error("peerConnectionClient.setLocalVideoEnabled failed \(error)")
+            owsFailDebug("peerConnectionClient.setLocalVideoEnabled failed \(error)")
         }
     }
 
@@ -1214,7 +1214,7 @@ private class SignalCallData: NSObject {
             do {
                 try peerConnectionClient.setLocalAudioEnabled(enabled: false)
             } catch {
-                Logger.error("peerConnectionClient.setLocalAudioEnabled failed")
+                owsFailDebug("peerConnectionClient.setLocalAudioEnabled failed")
             }
             return
         }
@@ -1222,7 +1222,7 @@ private class SignalCallData: NSObject {
             do {
                 try peerConnectionClient.setLocalAudioEnabled(enabled: false)
             } catch {
-                Logger.error("peerConnectionClient.setLocalAudioEnabled failed")
+                owsFailDebug("peerConnectionClient.setLocalAudioEnabled failed")
             }
             return
         }
@@ -1230,7 +1230,7 @@ private class SignalCallData: NSObject {
             do {
                 try peerConnectionClient.setLocalAudioEnabled(enabled: false)
             } catch {
-                Logger.error("peerConnectionClient.setLocalAudioEnabled failed")
+                owsFailDebug("peerConnectionClient.setLocalAudioEnabled failed")
             }
             return
         }
@@ -1238,7 +1238,7 @@ private class SignalCallData: NSObject {
         do {
             try peerConnectionClient.setLocalAudioEnabled(enabled: true)
         } catch {
-            Logger.error("peerConnectionClient.setLocalAudioEnabled failed")
+            owsFailDebug("peerConnectionClient.setLocalAudioEnabled failed")
         }
     }
 
@@ -1296,7 +1296,7 @@ private class SignalCallData: NSObject {
             do {
                 try peerConnectionClient.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack())
             } catch {
-                Logger.error("peerConnectionClient.setLocalVideoEnabled failed \(error)")
+                owsFailDebug("peerConnectionClient.setLocalVideoEnabled failed \(error)")
             }
         }
     }
@@ -1835,7 +1835,7 @@ private class SignalCallData: NSObject {
             try peerConnectionClient.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack)
             try peerConnectionClient.sendLocalVideoStatus(enabled: shouldHaveLocalVideoTrack)
         } catch {
-            Logger.error("error: \(error)")
+            owsFailDebug("error: \(error)")
         }
     }
 
