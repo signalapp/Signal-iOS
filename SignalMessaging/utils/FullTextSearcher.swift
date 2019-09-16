@@ -264,13 +264,15 @@ public class FullTextSearcher: NSObject {
             }
         }
 
-        if !signalContacts.contains(where: { $0.signalAccount.recipientAddress.isLocalAddress }) {
-            if let localAddress = TSAccountManager.localAddress {
-                let localAccount = SignalAccount(address: localAddress)
-                let localResult = ContactSearchResult(signalAccount: localAccount)
-                signalContacts.append(localResult)
-            } else {
-                owsFailDebug("localAddress was unexpectedly nil")
+        if matchesNoteToSelf(searchText: searchText) {
+            if !signalContacts.contains(where: { $0.signalAccount.recipientAddress.isLocalAddress }) {
+                if let localAddress = TSAccountManager.localAddress {
+                    let localAccount = SignalAccount(address: localAddress)
+                    let localResult = ContactSearchResult(signalAccount: localAccount)
+                    signalContacts.append(localResult)
+                } else {
+                    owsFailDebug("localAddress was unexpectedly nil")
+                }
             }
         }
 
@@ -282,6 +284,18 @@ public class FullTextSearcher: NSObject {
         groups.sort(by: >)
 
         return ComposeScreenSearchResultSet(searchText: searchText, groups: groups, signalContacts: signalContacts)
+    }
+
+    func matchesNoteToSelf(searchText: String) -> Bool {
+        guard let localAddress = TSAccountManager.localAddress else {
+            return false
+        }
+        let noteToSelfText = self.conversationIndexingString(address: localAddress)
+        let matchedTerm = searchText.split(separator: " ").first { term in
+            return noteToSelfText.contains(term)
+        }
+
+        return matchedTerm != nil
     }
 
     public func searchForHomeScreen(searchText: String,
