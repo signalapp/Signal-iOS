@@ -16,6 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable, readonly) SignalServiceAddress *sender;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(TSThread *)contact
+                      messageType:(TSInfoMessageType)infoMessage NS_UNAVAILABLE;
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
                            thread:(TSThread *)thread
                            sender:(nullable SignalServiceAddress *)sender
                   protocolVersion:(NSUInteger)protocolVersion NS_DESIGNATED_INITIALIZER;
