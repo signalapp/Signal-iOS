@@ -162,8 +162,7 @@ extension LongTextViewController: SDSDatabaseStorageObserver {
     public func databaseStorageDidUpdate(change: SDSDatabaseStorageChange) {
         AssertIsOnMainThread()
 
-        let uniqueId = self.viewItem.interaction.uniqueId
-        guard change.didUpdate(interactionId: uniqueId) else {
+        guard change.didUpdate(interaction: self.viewItem.interaction) else {
             return
         }
         assert(change.didUpdateInteractions)

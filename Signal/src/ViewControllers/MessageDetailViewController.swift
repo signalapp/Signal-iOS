@@ -908,8 +908,7 @@ extension MessageDetailViewController: SDSDatabaseStorageObserver {
     func databaseStorageDidUpdate(change: SDSDatabaseStorageChange) {
         AssertIsOnMainThread()
 
-        let uniqueId = self.message.uniqueId
-        guard change.didUpdate(interactionId: uniqueId) else {
+        guard change.didUpdate(interaction: self.message) else {
             return
         }
 
