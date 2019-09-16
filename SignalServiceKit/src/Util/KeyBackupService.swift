@@ -322,6 +322,18 @@ public class KeyBackupService: NSObject {
         return Cryptography.computeSHA256HMAC(data, withHMACKey: masterKey)?.hexadecimalString
     }
 
+    @objc
+    static func deriveKBSAccessKey(from stretchedPin: Data) -> Data? {
+        assertIsOnBackgroundQueue()
+
+        guard let data = "KBS Access Key".data(using: .utf8) else {
+            owsFailDebug("Failed to encode data")
+            return nil
+        }
+
+        return Cryptography.computeSHA256HMAC(data, withHMACKey: stretchedPin)
+    }
+
     // PRAGMA MARK: - Keychain
 
     private static let keychainService = "OWSKeyBackup"
@@ -472,6 +484,11 @@ public class KeyBackupService: NSObject {
 
     private static func backupKeyRequest(stretchedPin: Data, keyData: Data, and auth: RemoteAttestationAuth? = nil) -> Promise<KeyBackupProtoBackupResponse> {
         return enclaveRequest(with: auth) { nonce -> KeyBackupProtoBackupRequest in
+            guard let kbsAccessKey = deriveKBSAccessKey(from: stretchedPin) else {
+                owsFailDebug("failed to dervive KBS Access key")
+                throw KBSError.assertion
+            }
+
             guard let serviceId = Data.data(fromHex: keyBackupServiceId) else {
                 owsFailDebug("failed to encode service id")
                 throw KBSError.assertion
@@ -479,7 +496,7 @@ public class KeyBackupService: NSObject {
 
             let backupRequestBuilder = KeyBackupProtoBackupRequest.builder()
             backupRequestBuilder.setData(keyData)
-            backupRequestBuilder.setPin(stretchedPin)
+            backupRequestBuilder.setPin(kbsAccessKey)
             backupRequestBuilder.setNonce(nonce.nonce)
             backupRequestBuilder.setBackupID(nonce.backupId)
             backupRequestBuilder.setTries(maximumKeyAttempts)
@@ -500,13 +517,18 @@ public class KeyBackupService: NSObject {
 
     private static func restoreKeyRequest(stretchedPin: Data, with auth: RemoteAttestationAuth? = nil) -> Promise<KeyBackupProtoRestoreResponse> {
         return enclaveRequest(with: auth) { nonce -> KeyBackupProtoRestoreRequest in
+            guard let kbsAccessKey = deriveKBSAccessKey(from: stretchedPin) else {
+                owsFailDebug("failed to dervive KBS Access key")
+                throw KBSError.assertion
+            }
+
             guard let serviceId = Data.data(fromHex: keyBackupServiceId) else {
                 owsFailDebug("failed to encode service id")
                 throw KBSError.assertion
             }
 
             let restoreRequestBuilder = KeyBackupProtoRestoreRequest.builder()
-            restoreRequestBuilder.setPin(stretchedPin)
+            restoreRequestBuilder.setPin(kbsAccessKey)
             restoreRequestBuilder.setNonce(nonce.nonce)
             restoreRequestBuilder.setBackupID(nonce.backupId)
             restoreRequestBuilder.setServiceID(serviceId)
