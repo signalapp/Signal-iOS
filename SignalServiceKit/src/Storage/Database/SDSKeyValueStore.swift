@@ -22,6 +22,7 @@ public class SDSKeyValueStore: NSObject {
     //   GRDB maintains a mapping between tables and collections.
     //   For the purposes of this mapping only we use dataStoreCollection.
     static let dataStoreCollection = "keyvalue"
+    static let tableName = "keyvalue"
 
     // By default, all reads/writes use this collection.
     @objc
@@ -32,7 +33,7 @@ public class SDSKeyValueStore: NSObject {
     static let valueColumn = SDSColumnMetadata(columnName: "value", columnType: .blob, isOptional: false)
     // TODO: For now, store all key-value in a single table.
     public static let table = SDSTableMetadata(collection: SDSKeyValueStore.dataStoreCollection,
-        tableName: "keyvalue",
+        tableName: SDSKeyValueStore.tableName,
         columns: [
         collectionColumn,
         keyColumn,

@@ -79,6 +79,7 @@ public class GRDBGenericDatabaseObserver: NSObject {
         for table in GRDBDatabaseStorageAdapter.tables {
             result[table.tableName] = table.collection
         }
+        result[SDSKeyValueStore.tableName] = SDSKeyValueStore.dataStoreCollection
         return result
     }()
 
