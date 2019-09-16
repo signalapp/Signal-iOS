@@ -254,6 +254,11 @@ class PeerConnectionClient: NSObject, CallConnectionDelegate {
 
         Logger.debug("sendOffer")
 
+        guard self.callConnection == nil else {
+            owsFailDebug("callConnection was unexpectedly already set")
+            throw CallError.fatalError(description: "callConnection was unexpectedly already set")
+        }
+
         guard let callConnectionfactory = self.callConnectionfactory else {
             throw CallError.fatalError(description: "Missing factory")
         }
@@ -268,6 +273,11 @@ class PeerConnectionClient: NSObject, CallConnectionDelegate {
         AssertIsOnMainThread()
 
         Logger.debug("receivedOffer")
+
+        guard self.callConnection == nil else {
+            owsFailDebug("callConnection was unexpectedly already set")
+            throw CallError.fatalError(description: "callConnection was unexpectedly already set")
+        }
 
         guard let callConnectionfactory = self.callConnectionfactory else {
             throw CallError.fatalError(description: "Missing factory")
