@@ -86,9 +86,6 @@ NS_ASSUME_NONNULL_BEGIN
                   storageServiceManager:(id<StorageServiceManagerProtocol>)storageServiceManager
                      storageCoordinator:(StorageCoordinator *)storageCoordinator NS_DESIGNATED_INITIALIZER;
 
-
-- (instancetype)init NS_UNAVAILABLE;
-
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
 + (void)setShared:(SSKEnvironment *)env;

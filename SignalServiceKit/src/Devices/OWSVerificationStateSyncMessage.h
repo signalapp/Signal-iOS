@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSVerificationStateSyncMessage : OWSOutgoingSyncMessage
 
 - (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithThread:(TSThread *)thread NS_UNAVAILABLE;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread NS_UNAVAILABLE;
 
 - (instancetype)initWithThread:(TSThread *)thread
                   verificationState:(OWSVerificationState)verificationState

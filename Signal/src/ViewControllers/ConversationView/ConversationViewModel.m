@@ -1877,6 +1877,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             case OWSInteractionType_ThreadDetails:
             case OWSInteractionType_TypingIndicator:
                 break;
+            case OWSInteractionType_Offer:
+                break;
         }
     }
     return nil;

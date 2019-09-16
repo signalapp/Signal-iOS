@@ -15,6 +15,8 @@ typedef NS_ENUM(NSUInteger, StickerPackOperationType) {
 @interface OWSStickerPackSyncMessage : OWSOutgoingSyncMessage
 
 - (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithThread:(TSThread *)thread NS_UNAVAILABLE;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread NS_UNAVAILABLE;
 
 - (instancetype)initWithThread:(TSThread *)thread
                          packs:(NSArray<StickerPackInfo *> *)packs
