@@ -310,7 +310,22 @@ public class ExperienceUpgradeViewController: OWSViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
+        // TODO Xcode 11: Delete this once we're compiling only in Xcode 11
+        #if swift(>=5.1)
+
+        // Don't allow interactive dismissal.
+        if #available(iOS 13, *) {
+            presentationController?.delegate = self
+            isModalInPresentation = !canDismissWithGesture
+        } else {
+            addDismissGesture()
+        }
+
+        #else
+
         addDismissGesture()
+
+        #endif
     }
 
     // MARK: -
@@ -324,6 +339,11 @@ public class ExperienceUpgradeViewController: OWSViewController {
 
     @objc
     public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+        markAsSeen()
+        super.dismiss(animated: flag, completion: completion)
+    }
+
+    func markAsSeen() {
         // Blocking write before dismiss, to be sure they're marked as complete
         // before HomeView.didAppear is re-fired.
         databaseStorage.write { transaction in
@@ -331,7 +351,6 @@ public class ExperienceUpgradeViewController: OWSViewController {
             ExperienceUpgradeFinder.shared.markAsSeen(experienceUpgrade: self.experienceUpgrade,
                                                       transaction: transaction)
         }
-        super.dismiss(animated: flag, completion: completion)
     }
 
     @objc
@@ -352,5 +371,11 @@ public class ExperienceUpgradeViewController: OWSViewController {
 
     override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return .portrait
+    }
+}
+
+extension ExperienceUpgradeViewController: UIAdaptivePresentationControllerDelegate {
+    public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        markAsSeen()
     }
 }

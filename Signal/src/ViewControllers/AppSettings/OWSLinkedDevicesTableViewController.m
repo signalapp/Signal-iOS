@@ -49,14 +49,11 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 {
     [super viewDidLoad];
 
-    self.view.backgroundColor = Theme.backgroundColor;
-
     self.title = NSLocalizedString(@"LINKED_DEVICES_TITLE", @"Menu item and navbar title for the device manager");
 
     self.isExpectingMoreDevices = NO;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 60;
-    self.tableView.separatorColor = Theme.cellSeparatorColor;
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"AddNewDevice"];
     [self.tableView registerClass:[OWSDeviceTableViewCell class] forCellReuseIdentifier:@"ExistingDevice"];
     [self.tableView applyScrollViewInsetsFix];
@@ -80,6 +77,16 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     [self.refreshControl addTarget:self action:@selector(refreshDevices) forControlEvents:UIControlEventValueChanged];
 
     [self updateDeviceList];
+}
+
+- (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection
+{
+    [super traitCollectionDidChange:previousTraitCollection];
+
+    self.view.backgroundColor = Theme.backgroundColor;
+    self.tableView.separatorColor = Theme.cellSeparatorColor;
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:OWSLinkedDevicesTableViewControllerSectionAddDevice]
+                  withRowAnimation:UITableViewRowAnimationNone];
 }
 
 #pragma mark - SDSDatabaseStorageObserver

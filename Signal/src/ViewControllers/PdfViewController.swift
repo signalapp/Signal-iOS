@@ -28,8 +28,6 @@ public class PdfViewController: OWSViewController {
         self.attachmentStream = attachmentStream
 
         super.init(nibName: nil, bundle: nil)
-
-        self.modalPresentationStyle = .overFullScreen
     }
 
     @objc

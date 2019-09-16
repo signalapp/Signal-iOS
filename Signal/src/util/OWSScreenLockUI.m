@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSScreenLockUI.h"
@@ -381,7 +381,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(rootWindow);
 
-    UIWindow *window = [[UIWindow alloc] initWithFrame:rootWindow.bounds];
+    UIWindow *window = [[OWSWindow alloc] initWithFrame:rootWindow.bounds];
     window.hidden = NO;
     window.windowLevel = UIWindowLevel_Background;
     window.opaque = YES;

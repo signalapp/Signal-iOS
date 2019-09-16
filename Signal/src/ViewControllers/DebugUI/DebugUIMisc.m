@@ -121,6 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
                                              reminderVC = [OWSPinReminderViewController new];
                                          } else {
                                              reminderVC = [OWS2FAReminderViewController wrappedInNavController];
+                                             reminderVC.modalPresentationStyle = UIModalPresentationFullScreen;
                                          }
 
                                          [[[UIApplication sharedApplication] frontmostViewController]

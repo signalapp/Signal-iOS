@@ -46,15 +46,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(device);
 
-    [OWSTableItem configureCell:self];
-
     self.nameLabel.font = UIFont.ows_dynamicTypeBodyFont;
     self.linkedLabel.font = UIFont.ows_dynamicTypeCaption1Font;
     self.lastSeenLabel.font = UIFont.ows_dynamicTypeCaption1Font;
-
-    self.nameLabel.textColor = Theme.primaryColor;
-    self.linkedLabel.textColor = Theme.secondaryColor;
-    self.lastSeenLabel.textColor = Theme.secondaryColor;
 
     self.nameLabel.text = device.displayName;
 
@@ -78,6 +72,17 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.lastSeenLabel.text =
         [NSString stringWithFormat:lastSeenFormatString, [DateUtil.dateFormatter stringFromDate:displayedLastSeenAt]];
+}
+
+- (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection
+{
+    [super traitCollectionDidChange:previousTraitCollection];
+
+    [OWSTableItem configureCell:self];
+
+    self.nameLabel.textColor = Theme.primaryColor;
+    self.linkedLabel.textColor = Theme.secondaryColor;
+    self.lastSeenLabel.textColor = Theme.secondaryColor;
 }
 
 @end

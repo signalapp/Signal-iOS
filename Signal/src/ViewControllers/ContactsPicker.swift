@@ -96,7 +96,6 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         self.view = UIView()
         let tableView = UITableView()
         self.tableView = tableView
-        self.tableView.separatorColor = Theme.cellSeparatorColor
 
         view.addSubview(tableView)
         tableView.autoPinEdge(toSuperviewEdge: .top)
@@ -117,9 +116,6 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     override open func viewDidLoad() {
         super.viewDidLoad()
 
-        self.view.backgroundColor = Theme.backgroundColor
-        self.tableView.backgroundColor = Theme.backgroundColor
-
         searchBar.placeholder = NSLocalizedString("INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER", comment: "Search")
 
         // Auto size cells for dynamic type
@@ -137,6 +133,14 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         updateSearchResults(searchText: "")
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.didChangePreferredContentSize), name: UIContentSizeCategory.didChangeNotification, object: nil)
+    }
+
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        view.backgroundColor = Theme.backgroundColor
+        tableView.backgroundColor = Theme.backgroundColor
+        tableView.separatorColor = Theme.cellSeparatorColor
     }
 
     @objc

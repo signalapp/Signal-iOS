@@ -38,7 +38,11 @@ public class StickerPackViewController: OWSViewController {
 
         super.init(nibName: nil, bundle: nil)
 
-        self.modalPresentationStyle = .overFullScreen
+        if #available(iOS 13, *) {
+            // do nothing, use automatic style
+        } else {
+            modalPresentationStyle = .overFullScreen
+        }
 
         stickerCollectionView.stickerDelegate = self
         stickerCollectionView.show(dataSource: dataSource)

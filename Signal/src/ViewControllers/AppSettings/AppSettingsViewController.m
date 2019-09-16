@@ -179,6 +179,22 @@
                                               actionBlock:^{
                                                   [weakSelf showInviteFlow];
                                               }]];
+
+    // TODO Xcode 11: Delete this once we're compiling only in Xcode 11
+#ifdef __IPHONE_13_0
+    // Starting with iOS 13, show an appearance section to allow setting the app theme
+    // to match the "system" dark/light mode settings and to adjust the app specific
+    // language settings.
+    if (@available(iOS 13, *)) {
+        [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_APPEARANCE_TITLE",
+                                                                  @"The title for the appearance settings.")
+                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"appearance")
+                                                  actionBlock:^{
+                                                      [weakSelf showAppearance];
+                                                  }]];
+    }
+#endif
+
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_PRIVACY_TITLE",
                                                               @"Settings table view cell label")
                                   accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"privacy")
@@ -395,6 +411,12 @@
     [self.navigationController pushViewController:vc animated:YES];
 }
 
+- (void)showAppearance
+{
+    AppearanceSettingsTableViewController *vc = [AppearanceSettingsTableViewController new];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
 - (void)showNotifications
 {
     NotificationSettingsViewController *vc = [[NotificationSettingsViewController alloc] init];
@@ -524,20 +546,27 @@
 
 - (void)didPressEnableDarkTheme:(id)sender
 {
-    [Theme setIsDarkThemeEnabled:YES];
+    [Theme setCurrentTheme:ThemeMode_Dark];
     [self updateRightBarButtonForTheme];
     [self updateTableContents];
 }
 
 - (void)didPressDisableDarkTheme:(id)sender
 {
-    [Theme setIsDarkThemeEnabled:NO];
+    [Theme setCurrentTheme:ThemeMode_Light];
     [self updateRightBarButtonForTheme];
     [self updateTableContents];
 }
 
 - (void)updateRightBarButtonForTheme
 {
+    // TODO Xcode 11: Delete this once we're compiling only in Xcode 11
+#ifdef __IPHONE_13_0
+    if (@available(iOS 13, *)) {
+        // Don't show the moon button in iOS 13+, theme settings are now in a menu
+        return;
+    }
+#endif
     self.navigationItem.rightBarButtonItem = [self darkThemeBarButton];
 }
 

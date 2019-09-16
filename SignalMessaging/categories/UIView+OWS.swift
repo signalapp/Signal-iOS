@@ -161,6 +161,14 @@ public extension UIViewController {
                         completion()
         })
     }
+
+    /// A convenience function to present a modal view full screen, not using
+    /// the default card style added in iOS 13.
+    @objc(presentFullScreenViewController:animated:completion:)
+    func presentFullScreen(_ viewControllerToPresent: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
+        viewControllerToPresent.modalPresentationStyle = .fullScreen
+        present(viewControllerToPresent, animated: animated, completion: completion)
+    }
 }
 
 // MARK: -
@@ -487,8 +495,11 @@ public extension UIImageView {
 @objc
 public extension UISearchBar {
     var textField: UITextField? {
-        // TODO: iOS 13 – a public accessor for this textField as been added in iOS 13,
-        // once we start building with that SDK switch to using it for 13+
+        // TODO Xcode 11: Delete this once we're compiling only in Xcode 11
+        #if swift(>=5.1)
+        if #available(iOS 13, *) { return searchTextField }
+        #endif
+
         guard let textField = self.value(forKey: "_searchField") as? UITextField else {
             owsFailDebug("Couldn't find UITextField.")
             return nil

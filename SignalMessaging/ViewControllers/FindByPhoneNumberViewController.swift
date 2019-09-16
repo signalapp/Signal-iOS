@@ -21,6 +21,8 @@ public class FindByPhoneNumberViewController: OWSViewController {
     let phoneNumberTextField = OWSTextField()
     let exampleLabel = UILabel()
     let button = OWSFlatButton()
+    let countryRowTitleLabel = UILabel()
+    let phoneNumberRowTitleLabel = UILabel()
 
     @objc
     init(delegate: FindByPhoneNumberDelegate, buttonText: String?, requiresRegisteredNumber: Bool) {
@@ -40,8 +42,6 @@ public class FindByPhoneNumberViewController: OWSViewController {
         title = NSLocalizedString("NEW_NONCONTACT_CONVERSATION_VIEW_TITLE",
                                   comment: "Title for the 'new non-contact conversation' view.")
 
-        view.backgroundColor = Theme.backgroundColor
-
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.isLayoutMarginsRelativeArrangement = true
@@ -57,9 +57,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
         countryRow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCountryRow)))
         stackView.addArrangedSubview(countryRow)
 
-        let countryRowTitleLabel = UILabel()
         countryRowTitleLabel.text = NSLocalizedString("REGISTRATION_DEFAULT_COUNTRY_NAME", comment: "Label for the country code field")
-        countryRowTitleLabel.textColor = Theme.primaryColor
         countryRowTitleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
 
         countryRow.addSubview(countryRowTitleLabel)
@@ -80,10 +78,8 @@ public class FindByPhoneNumberViewController: OWSViewController {
         let phoneNumberRow = UIView.container()
         stackView.addArrangedSubview(phoneNumberRow)
 
-        let phoneNumberRowTitleLabel = UILabel()
         phoneNumberRowTitleLabel.text = NSLocalizedString("REGISTRATION_PHONENUMBER_BUTTON",
                                                           comment: "Label for the phone number textfield")
-        phoneNumberRowTitleLabel.textColor = Theme.primaryColor
         phoneNumberRowTitleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
 
         phoneNumberRow.addSubview(phoneNumberRowTitleLabel)
@@ -111,7 +107,6 @@ public class FindByPhoneNumberViewController: OWSViewController {
         stackView.addArrangedSubview(exampleLabel)
 
         exampleLabel.font = .ows_dynamicTypeFootnoteClamped
-        exampleLabel.textColor = Theme.secondaryColor
         exampleLabel.textAlignment = .right
 
         populateDefaultCountryCode()
@@ -129,6 +124,15 @@ public class FindByPhoneNumberViewController: OWSViewController {
         button.setBackgroundColors(upColor: .ows_signalBrandBlue)
         button.addTarget(target: self, selector: #selector(tryToSelectPhoneNumber))
         button.setEnabled(false)
+    }
+
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        view.backgroundColor = Theme.backgroundColor
+        countryRowTitleLabel.textColor = Theme.primaryColor
+        phoneNumberRowTitleLabel.textColor = Theme.primaryColor
+        exampleLabel.textColor = Theme.secondaryColor
     }
 
     func updateButtonState() {

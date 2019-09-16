@@ -159,6 +159,10 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
             [self.databaseStorage addDatabaseStorageObserver:self];
         }
         [[self updateAccountAttributesIfNecessary] retainUntilComplete];
+
+        if (!CurrentAppContext().isMainApp) {
+            [self.databaseStorage addDatabaseStorageObserver:self];
+        }
     }];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -174,7 +178,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-+ (instancetype)sharedInstance
++ (TSAccountManager *)sharedInstance
 {
     OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
     

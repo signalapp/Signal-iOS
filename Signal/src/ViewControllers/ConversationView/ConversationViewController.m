@@ -2483,7 +2483,7 @@ typedef enum : NSUInteger {
 
     PdfViewController *pdfView = [[PdfViewController alloc] initWithAttachmentStream:attachmentStream];
     UIViewController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:pdfView];
-    [self presentViewController:navigationController animated:YES completion:nil];
+    [self presentFullScreenViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)didTapTruncatedTextMessage:(id<ConversationViewItem>)conversationItem
@@ -3009,7 +3009,7 @@ typedef enum : NSUInteger {
             pickerModal.sendMediaNavDelegate = self;
 
             [self dismissKeyBoard];
-            [self presentViewController:pickerModal animated:YES completion:nil];
+            [self presentFullScreenViewController:pickerModal animated:YES completion:nil];
         }];
     }];
 }
@@ -3043,7 +3043,7 @@ typedef enum : NSUInteger {
         pickerModal.sendMediaNavDelegate = self;
 
         [self dismissKeyBoard];
-        [self presentViewController:pickerModal animated:YES completion:nil];
+        [self presentFullScreenViewController:pickerModal animated:YES completion:nil];
     }];
 }
 
@@ -3417,7 +3417,7 @@ typedef enum : NSUInteger {
                                                                        attachment:attachment
                                                                          delegate:self];
 
-    [self presentViewController:pickerModal animated:true completion:nil];
+    [self presentFullScreenViewController:pickerModal animated:true completion:nil];
 }
 
 - (nullable NSIndexPath *)lastVisibleIndexPath
@@ -3689,7 +3689,7 @@ typedef enum : NSUInteger {
     OWSNavigationController *modal =
         [AttachmentApprovalViewController wrappedInNavControllerWithAttachments:attachments approvalDelegate:self];
 
-    [self presentViewController:modal animated:YES completion:nil];
+    [self presentFullScreenViewController:modal animated:YES completion:nil];
 }
 
 - (void)tryToSendAttachments:(NSArray<SignalAttachment *> *)attachments messageText:(NSString *_Nullable)messageText
