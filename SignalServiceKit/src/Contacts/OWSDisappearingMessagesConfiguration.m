@@ -9,14 +9,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@implementation OWSDisappearingMessagesConfiguration
+@interface OWSDisappearingMessagesConfiguration ()
 
-- (instancetype)initDefaultWithThreadId:(NSString *)threadId
-{
-    return [self initWithThreadId:threadId
-                          enabled:NO
-                  durationSeconds:OWSDisappearingMessagesConfigurationDefaultExpirationDuration];
-}
+@property (nonatomic, getter=isEnabled) BOOL enabled;
+@property (nonatomic) uint32_t durationSeconds;
+
+@end
+
+#pragma mark -
+
+@implementation OWSDisappearingMessagesConfiguration
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
@@ -27,6 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithThreadId:(NSString *)threadId enabled:(BOOL)isEnabled durationSeconds:(uint32_t)seconds
 {
+    OWSAssertDebug(threadId.length > 0);
+
+    // Thread id == configuration id.
     self = [super initWithUniqueId:threadId];
     if (!self) {
         return self;
@@ -65,15 +70,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 // --- CODE GENERATION MARKER
 
++ (nullable instancetype)fetchWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self fetchWithThreadId:thread.uniqueId transaction:transaction];
+}
+
++ (instancetype)fetchOrBuildDefaultWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self fetchOrBuildDefaultWithThreadId:thread.uniqueId transaction:transaction];
+}
+
++ (nullable instancetype)fetchWithThreadId:(NSString *)threadId transaction:(SDSAnyReadTransaction *)transaction
+{
+    // Thread id == configuration id.
+    return [self anyFetchWithUniqueId:threadId transaction:transaction];
+}
+
 + (instancetype)fetchOrBuildDefaultWithThreadId:(NSString *)threadId transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSDisappearingMessagesConfiguration *savedConfiguration =
-        [self anyFetchWithUniqueId:threadId transaction:transaction];
-    if (savedConfiguration) {
-        return savedConfiguration;
-    } else {
-        return [[self alloc] initDefaultWithThreadId:threadId];
+    OWSDisappearingMessagesConfiguration *_Nullable configuration = [self fetchWithThreadId:threadId
+                                                                                transaction:transaction];
+    if (configuration != nil) {
+        return configuration;
     }
+
+    return [[self alloc] initWithThreadId:threadId
+                                  enabled:NO
+                          durationSeconds:OWSDisappearingMessagesConfigurationDefaultExpirationDuration];
 }
 
 + (NSArray<NSNumber *> *)validDurationsSeconds
@@ -117,23 +140,37 @@ NS_ASSUME_NONNULL_BEGIN
     return [NSString formatDurationSeconds:self.durationSeconds useShortFormat:NO];
 }
 
-#pragma mark - Dirty Tracking
-
-+ (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationForThreadId:(NSString *)threadId
-                                                                           transaction:
-                                                                               (SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(threadId.length > 0);
-    OWSAssertDebug(transaction != nil);
-
-    return [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:threadId transaction:transaction];
-}
-
 - (BOOL)hasChangedWithTransaction:(SDSAnyReadTransaction *)transaction
 {
+    OWSAssertDebug(transaction != nil);
+
+    // Thread id == configuration id.
     OWSDisappearingMessagesConfiguration *oldConfiguration =
         [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:self.uniqueId transaction:transaction];
-    return ![self.dictionaryValue isEqual:[oldConfiguration dictionaryValue]];
+
+    return (self.isEnabled != oldConfiguration.isEnabled || self.durationSeconds != oldConfiguration.durationSeconds);
+}
+
+- (instancetype)copyWithIsEnabled:(BOOL)isEnabled
+{
+    OWSDisappearingMessagesConfiguration *newInstance = [self copy];
+    newInstance.enabled = isEnabled;
+    return newInstance;
+}
+
+- (instancetype)copyWithDurationSeconds:(uint32_t)durationSeconds
+{
+    OWSDisappearingMessagesConfiguration *newInstance = [self copy];
+    newInstance.durationSeconds = durationSeconds;
+    return newInstance;
+}
+
+- (instancetype)copyAsEnabledWithDurationSeconds:(uint32_t)durationSeconds
+{
+    OWSDisappearingMessagesConfiguration *newInstance = [self copy];
+    newInstance.enabled = YES;
+    newInstance.durationSeconds = durationSeconds;
+    return newInstance;
 }
 
 @end

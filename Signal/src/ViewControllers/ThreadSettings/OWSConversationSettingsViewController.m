@@ -287,8 +287,7 @@ const CGFloat kIconViewLength = 24;
 
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         self.disappearingMessagesConfiguration =
-            [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:self.thread.uniqueId
-                                                                      transaction:transaction];
+            [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:self.thread transaction:transaction];
     }];
 
 #ifdef SHOW_COLOR_PICKER
@@ -1351,7 +1350,7 @@ const CGFloat kIconViewLength = 24;
 
 - (void)toggleDisappearingMessages:(BOOL)flag
 {
-    self.disappearingMessagesConfiguration.enabled = flag;
+    self.disappearingMessagesConfiguration = [self.disappearingMessagesConfiguration copyWithIsEnabled:flag];
 
     [self updateTableContents];
 }
@@ -1362,7 +1361,9 @@ const CGFloat kIconViewLength = 24;
     NSUInteger index = (NSUInteger)(slider.value + 0.5);
     [slider setValue:index animated:YES];
     NSNumber *numberOfSeconds = self.disappearingMessagesDurations[index];
-    self.disappearingMessagesConfiguration.durationSeconds = [numberOfSeconds unsignedIntValue];
+    uint32_t durationSeconds = [numberOfSeconds unsignedIntValue];
+    self.disappearingMessagesConfiguration =
+        [self.disappearingMessagesConfiguration copyAsEnabledWithDurationSeconds:durationSeconds];
 
     [self updateDisappearingMessagesDurationLabel];
 }

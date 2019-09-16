@@ -9,12 +9,12 @@ NS_ASSUME_NONNULL_BEGIN
 #define OWSDisappearingMessagesConfigurationDefaultExpirationDuration kDayInterval
 
 @class SDSAnyReadTransaction;
+@class TSThread;
 
 @interface OWSDisappearingMessagesConfiguration : BaseModel
 
-- (instancetype)initDefaultWithThreadId:(NSString *)threadId;
-
-- (instancetype)initWithThreadId:(NSString *)threadId enabled:(BOOL)isEnabled durationSeconds:(uint32_t)seconds;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
 // --- CODE GENERATION MARKER
 
@@ -32,21 +32,27 @@ NS_SWIFT_NAME(init(uniqueId:durationSeconds:enabled:));
 
 // --- CODE GENERATION MARKER
 
-@property (nonatomic, getter=isEnabled) BOOL enabled;
-@property (nonatomic) uint32_t durationSeconds;
+@property (nonatomic, readonly, getter=isEnabled) BOOL enabled;
+@property (nonatomic, readonly) uint32_t durationSeconds;
 @property (nonatomic, readonly) NSUInteger durationIndex;
 @property (nonatomic, readonly) NSString *durationString;
 
-+ (instancetype)fetchOrBuildDefaultWithThreadId:(NSString *)threadId transaction:(SDSAnyReadTransaction *)transaction;
+// These methods are the only correct way to load configurations
+// for a given thread; do not use anyFetchWithUniqueId.
++ (instancetype)fetchOrBuildDefaultWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
 
 + (NSArray<NSNumber *> *)validDurationsSeconds;
 + (uint32_t)maxDurationSeconds;
 
-+ (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationForThreadId:(NSString *)threadId
-                                                                           transaction:
-                                                                               (SDSAnyReadTransaction *)transaction;
-
 - (BOOL)hasChangedWithTransaction:(SDSAnyReadTransaction *)transaction;
+
+// It's critical that we only modify copies.
+// Otherwise any modifications will be made to the
+// instance in the YDB object cache and hasChangedForThread:
+// won't be able to detect changes.
+- (instancetype)copyWithIsEnabled:(BOOL)isEnabled;
+- (instancetype)copyWithDurationSeconds:(uint32_t)durationSeconds;
+- (instancetype)copyAsEnabledWithDurationSeconds:(uint32_t)durationSeconds;
 
 @end
 

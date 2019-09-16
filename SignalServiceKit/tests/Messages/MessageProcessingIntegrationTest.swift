@@ -72,6 +72,10 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
     func test_contactMessage_e164Envelope() {
         storageCoordinator.useGRDBForTests()
 
+        // Re-initialize this state now that we've just switched databases.
+        identityManager.generateNewIdentityKey()
+        tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
+
         write { transaction in
             try! self.runner.initialize(senderClient: self.bobClient,
                                         recipientClient: self.localClient,

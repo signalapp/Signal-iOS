@@ -113,6 +113,8 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 - (NSString *)appSharedDataDirectoryPath;
 
+- (NSString *)appDatabaseBaseDirectoryPath;
+
 - (NSUserDefaults *)appUserDefaults;
 
 @end

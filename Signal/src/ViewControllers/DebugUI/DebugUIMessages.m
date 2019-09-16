@@ -3516,9 +3516,10 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         {
             NSNumber *durationSeconds = [OWSDisappearingMessagesConfiguration validDurationsSeconds][0];
             OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
-                [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:thread.uniqueId
-                                                                       enabled:YES
-                                                               durationSeconds:(uint32_t)[durationSeconds intValue]];
+                [thread disappearingMessagesConfigurationWithTransaction:transaction];
+            disappearingMessagesConfiguration = [disappearingMessagesConfiguration
+                copyAsEnabledWithDurationSeconds:(uint32_t)[durationSeconds intValue]];
+
             // MJK - should be safe to remove this senderTimestamp
             [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
                                        initWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -3531,9 +3532,10 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         {
             NSNumber *durationSeconds = [OWSDisappearingMessagesConfiguration validDurationsSeconds][0];
             OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
-                [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:thread.uniqueId
-                                                                       enabled:YES
-                                                               durationSeconds:(uint32_t)[durationSeconds intValue]];
+                [thread disappearingMessagesConfigurationWithTransaction:transaction];
+            disappearingMessagesConfiguration = [disappearingMessagesConfiguration
+                copyAsEnabledWithDurationSeconds:(uint32_t)[durationSeconds intValue]];
+
             // MJK - should be safe to remove this senderTimestamp
             [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
                                        initWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -3546,9 +3548,10 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         {
             NSNumber *durationSeconds = [[OWSDisappearingMessagesConfiguration validDurationsSeconds] lastObject];
             OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
-                [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:thread.uniqueId
-                                                                       enabled:YES
-                                                               durationSeconds:(uint32_t)[durationSeconds intValue]];
+                [thread disappearingMessagesConfigurationWithTransaction:transaction];
+            disappearingMessagesConfiguration = [disappearingMessagesConfiguration
+                copyAsEnabledWithDurationSeconds:(uint32_t)[durationSeconds intValue]];
+
             // MJK TODO - remove senderTimestamp
             [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
                                        initWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -3559,9 +3562,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         }
         {
             OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
-                [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:thread.uniqueId
-                                                                       enabled:NO
-                                                               durationSeconds:0];
+                [thread disappearingMessagesConfigurationWithTransaction:transaction];
+            disappearingMessagesConfiguration = [disappearingMessagesConfiguration copyWithIsEnabled:NO];
+
             // MJK TODO - remove senderTimestamp
             [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
                                        initWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -4198,7 +4201,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     for (NSUInteger i =0; i < count; i++) {
         NSString *text = [self randomText];
         OWSDisappearingMessagesConfiguration *configuration =
-            [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId transaction:transaction];
+            [thread disappearingMessagesConfigurationWithTransaction:transaction];
 
         uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
         TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
@@ -4227,7 +4230,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     for (NSUInteger i =0; i < count; i++) {
         NSString *text = [self randomText];
         OWSDisappearingMessagesConfiguration *configuration =
-            [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId transaction:initialTransaction];
+            [thread disappearingMessagesConfigurationWithTransaction:initialTransaction];
 
         uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
         TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
@@ -4265,7 +4268,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     for (NSUInteger i =0; i < count; i++) {
         NSString *text = [self randomText];
         OWSDisappearingMessagesConfiguration *configuration =
-            [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId transaction:initialTransaction];
+            [thread disappearingMessagesConfigurationWithTransaction:initialTransaction];
 
         // MJK TODO - remove senderTimestamp
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc]
