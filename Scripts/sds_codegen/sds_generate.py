@@ -80,30 +80,30 @@ def to_swift_identifier_name(identifier_name):
     return identifier_name[0].lower() + identifier_name[1:]
     
 class ParsedClass:
-     def __init__(self, json_dict):
-         self.name = json_dict.get('name')
-         self.super_class_name = json_dict.get('super_class_name')
-         self.filepath = sds_common.sds_from_relative_path(json_dict.get('filepath'))
-         self.finalize_method_name = json_dict.get('finalize_method_name')
-         self.property_map = {}
-         for property_dict in json_dict.get('properties'):
-             property = ParsedProperty(property_dict)
-             property.class_name = self.name
-             
-             # TODO: We should handle all properties?
-             if property.should_ignore_property():
-                 print 'Ignoring property:', property.name
-                 continue
-             
-             self.property_map[property.name] = property
+    def __init__(self, json_dict):
+        self.name = json_dict.get('name')
+        self.super_class_name = json_dict.get('super_class_name')
+        self.filepath = sds_common.sds_from_relative_path(json_dict.get('filepath'))
+        self.finalize_method_name = json_dict.get('finalize_method_name')
+        self.property_map = {}
+        for property_dict in json_dict.get('properties'):
+            property = ParsedProperty(property_dict)
+            property.class_name = self.name
+            
+            # TODO: We should handle all properties?
+            if property.should_ignore_property():
+                print 'Ignoring property:', property.name
+                continue
+            
+            self.property_map[property.name] = property
 
-     def properties(self):
-         result = []
-         for name in sorted(self.property_map.keys()):
-             result.append(self.property_map[name])
-         return result
+    def properties(self):
+        result = []
+        for name in sorted(self.property_map.keys()):
+            result.append(self.property_map[name])
+        return result
 
-     def database_subclass_properties(self):
+    def database_subclass_properties(self):
         # More than one subclass of a SDS model may declare properties
         # with the same name.  This is fine, so long as they have
         # the same type.
@@ -151,64 +151,64 @@ class ParsedClass:
         for name in sorted(subclass_property_map.keys()):
             result.append(subclass_property_map[name])
         return result
+
                     
-     
-     def is_sds_model(self):
-         if self.super_class_name is None:
-             # print 'is_sds_model (1):', self.name, self.super_class_name
-             return False
-         if not self.super_class_name in global_class_map:
-             # print 'is_sds_model (2):', self.name, self.super_class_name
-             return False
-         if self.super_class_name in (OLD_BASE_MODEL_CLASS_NAME, NEW_BASE_MODEL_CLASS_NAME, ):
-             # print 'is_sds_model (3):', self.name, self.super_class_name
-             return True
-         super_class = global_class_map[self.super_class_name]
-         # print 'is_sds_model (4):', self.name, self.super_class_name
-         return super_class.is_sds_model()
-     
-     def has_sds_superclass(self):
-         # print 'has_sds_superclass'
-         # print 'self.super_class_name:', self.super_class_name, self.super_class_name in global_class_map, self.super_class_name != BASE_MODEL_CLASS_NAME
-         return (self.super_class_name and
-                self.super_class_name in global_class_map
-                and self.super_class_name != OLD_BASE_MODEL_CLASS_NAME
-                and self.super_class_name != NEW_BASE_MODEL_CLASS_NAME)
-        
-     def table_superclass(self):
-         if self.super_class_name is None:
-             return self
-         if not self.super_class_name in global_class_map:
-             return self
-         if self.super_class_name == OLD_BASE_MODEL_CLASS_NAME:
-             return self
-         if self.super_class_name == NEW_BASE_MODEL_CLASS_NAME:
-             return self
-         super_class = global_class_map[self.super_class_name]
-         return super_class.table_superclass()
-        
-     def should_generate_extensions(self):
-        if self.name in (OLD_BASE_MODEL_CLASS_NAME, NEW_BASE_MODEL_CLASS_NAME, ):
-            print 'Ignoring class (1):', self.name 
+    def is_sds_model(self):
+        if self.super_class_name is None:
+            # print 'is_sds_model (1):', self.name, self.super_class_name
             return False
-        if should_ignore_class(self):
-            print 'Ignoring class (2):', self.name 
+        if not self.super_class_name in global_class_map:
+            # print 'is_sds_model (2):', self.name, self.super_class_name
             return False
+        if self.super_class_name in (OLD_BASE_MODEL_CLASS_NAME, NEW_BASE_MODEL_CLASS_NAME, ):
+            # print 'is_sds_model (3):', self.name, self.super_class_name
+            return True
+        super_class = global_class_map[self.super_class_name]
+        # print 'is_sds_model (4):', self.name, self.super_class_name
+        return super_class.is_sds_model()
     
-        if not self.is_sds_model():
-            # Only write serialization extensions for SDS models.
-            print 'Ignoring class (3):', self.name 
-            return False
+    def has_sds_superclass(self):
+        # print 'has_sds_superclass'
+        # print 'self.super_class_name:', self.super_class_name, self.super_class_name in global_class_map, self.super_class_name != BASE_MODEL_CLASS_NAME
+        return (self.super_class_name and
+               self.super_class_name in global_class_map
+               and self.super_class_name != OLD_BASE_MODEL_CLASS_NAME
+               and self.super_class_name != NEW_BASE_MODEL_CLASS_NAME)
+       
+    def table_superclass(self):
+        if self.super_class_name is None:
+            return self
+        if not self.super_class_name in global_class_map:
+            return self
+        if self.super_class_name == OLD_BASE_MODEL_CLASS_NAME:
+            return self
+        if self.super_class_name == NEW_BASE_MODEL_CLASS_NAME:
+            return self
+        super_class = global_class_map[self.super_class_name]
+        return super_class.table_superclass()
+       
+    def should_generate_extensions(self):
+       if self.name in (OLD_BASE_MODEL_CLASS_NAME, NEW_BASE_MODEL_CLASS_NAME, ):
+           print 'Ignoring class (1):', self.name 
+           return False
+       if should_ignore_class(self):
+           print 'Ignoring class (2):', self.name 
+           return False
+    
+       if not self.is_sds_model():
+           # Only write serialization extensions for SDS models.
+           print 'Ignoring class (3):', self.name 
+           return False
 
-         # The migration should not be persisted in the data store.
-        if self.name in ('OWSDatabaseMigration', 'YDBDatabaseMigration', 'OWSResaveCollectionDBMigration', ):
-            print 'Ignoring class (4):', self.name 
-            return False
-        if self.super_class_name in ('OWSDatabaseMigration', 'YDBDatabaseMigration', 'OWSResaveCollectionDBMigration', ):
-            print 'Ignoring class (5):', self.name 
-            return False
+        # The migration should not be persisted in the data store.
+       if self.name in ('OWSDatabaseMigration', 'YDBDatabaseMigration', 'OWSResaveCollectionDBMigration', ):
+           print 'Ignoring class (4):', self.name 
+           return False
+       if self.super_class_name in ('OWSDatabaseMigration', 'YDBDatabaseMigration', 'OWSResaveCollectionDBMigration', ):
+           print 'Ignoring class (5):', self.name 
+           return False
 
-        return True
+       return True
         
         
         
