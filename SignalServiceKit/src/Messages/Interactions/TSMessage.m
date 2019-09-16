@@ -516,7 +516,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 
 - (void)generateLinkPreviewIfNeededFromURL:(NSString *)url {
-    // If we already havea link previews or attachment then don't bother
+    // If we already have a link preview or attachment then don't bother
     if (self.linkPreview != nil || self.hasAttachments) { return; }
     [OWSLinkPreview tryToBuildPreviewInfoObjcWithPreviewUrl:url]
     .thenOn(dispatch_get_main_queue(), ^(OWSLinkPreviewDraft *linkPreviewDraft) {

@@ -962,16 +962,18 @@ const CGFloat kMaxTextViewHeight = 98;
 
     // It's key that we use the *raw/unstripped* text, so we can reconcile cursor position with the
     // selectedRange.
-    NSString *_Nullable previewUrl = [OWSLinkPreview previewUrlForRawBodyText:self.inputTextView.text
-                                                                selectedRange:self.inputTextView.selectedRange];
+    NSString *_Nullable previewUrl = [OWSLinkPreview previewUrlForRawBodyText:self.inputTextView.text selectedRange:self.inputTextView.selectedRange];
+    
+    if ([previewUrl hasSuffix:@".gif"]) {
+        return [self clearLinkPreviewStateAndView];
+    }
+    
     if (previewUrl.length < 1) {
-        [self clearLinkPreviewStateAndView];
-        return;
+        return [self clearLinkPreviewStateAndView];
     }
 
     if (self.inputLinkPreview && [self.inputLinkPreview.previewUrl isEqualToString:previewUrl]) {
-        // No need to update.
-        return;
+        return; // No need to update.
     }
 
     InputLinkPreview *inputLinkPreview = [InputLinkPreview new];

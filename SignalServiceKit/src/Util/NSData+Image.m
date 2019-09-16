@@ -267,14 +267,10 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 {
     ImageFormat format = [self ows_guessImageFormat];
     switch (format) {
-        case ImageFormat_Gif:
-            return OWSMimeTypeImageGif;
-        case ImageFormat_Png:
-            return OWSMimeTypeImagePng;
-        case ImageFormat_Jpeg:
-            return OWSMimeTypeImageJpeg;
-        default:
-            return nil;
+        case ImageFormat_Gif: return OWSMimeTypeImageGif;
+        case ImageFormat_Png: return OWSMimeTypeImagePng;
+        case ImageFormat_Jpeg: return OWSMimeTypeImageJpeg;
+        default: return nil;
     }
 }
 

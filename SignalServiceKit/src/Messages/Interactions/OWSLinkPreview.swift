@@ -338,7 +338,8 @@ public class OWSLinkPreview: MTLModel {
         // Giphy
         "giphy.com",
         "media.giphy.com",
-        "gph.is",
+        "gph.is"
+        
     ]
 
     // For media domains, we DO NOT require an exact match - subdomains are allowed.
@@ -360,7 +361,7 @@ public class OWSLinkPreview: MTLModel {
         "pinimg.com",
         
         // Giphy
-        "giphy.com",
+        "giphy.com"
     ]
 
     private static let protocolWhitelist = [
@@ -654,11 +655,13 @@ public class OWSLinkPreview: MTLModel {
                                 return
                             }
                             if let contentType = response.allHeaderFields["Content-Type"] as? String {
+                                /*
                                 guard contentType.lowercased().hasPrefix("text/") else {
                                     Logger.warn("Invalid content type: \(contentType).")
                                     resolver.reject(LinkPreviewError.invalidContent)
                                     return
                                 }
+                                 */
                             }
                             guard let data = value as? Data else {
                                 Logger.warn("Result is not data: \(type(of: value)).")
@@ -793,7 +796,7 @@ public class OWSLinkPreview: MTLModel {
                     return Promise(error: LinkPreviewError.invalidContent)
                 }
                 
-                // Loki: If it's a GIF then ensure it's validity and don't download it as a JPG
+                // Loki: If it's a GIF then ensure its validity and don't download it as a JPG
                 if (imageMimeType == OWSMimeTypeImageGif && NSData(data: data).ows_isValidImage(withMimeType: OWSMimeTypeImageGif)) { return Promise.value(data) }
 
                 let maxImageSize: CGFloat = 1024
@@ -864,7 +867,7 @@ public class OWSLinkPreview: MTLModel {
                     return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
             }
         } catch {
-            owsFailDebug("Could not parse link data: \(error).")
+            // owsFailDebug("Could not parse link data: \(error).")
             return Promise(error: error)
         }
     }
@@ -875,7 +878,7 @@ public class OWSLinkPreview: MTLModel {
     //    <meta property="og:image" content="https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg">
     class func parse(linkData: Data) throws -> OWSLinkPreviewContents {
         guard let linkText = String(bytes: linkData, encoding: .utf8) else {
-            owsFailDebug("Could not parse link text.")
+            // owsFailDebug("Could not parse link text.")
             throw LinkPreviewError.invalidInput
         }
 
@@ -918,14 +921,10 @@ public class OWSLinkPreview: MTLModel {
     
     class func fileExtension(forMimeType mimeType: String) -> String? {
         switch mimeType {
-        case OWSMimeTypeImageGif:
-            return "gif"
-        case OWSMimeTypeImagePng:
-            return "png"
-        case OWSMimeTypeImageJpeg:
-            return "jpg"
-        default:
-            return nil
+        case OWSMimeTypeImageGif: return "gif"
+        case OWSMimeTypeImagePng: return "png"
+        case OWSMimeTypeImageJpeg: return "jpg"
+        default: return nil
         }
     }
 
