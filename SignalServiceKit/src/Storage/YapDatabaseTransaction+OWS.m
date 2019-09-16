@@ -50,13 +50,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [self safe_extension:extensionName clazz:[YapDatabaseFullTextSearchTransaction class]];
 }
 
-//- (void)enumerateKeysAndObjectsInCollection:(nullable NSString *)collection
-//                                  batchSize:(NSUInteger)batchSize
-//                                 usingBlock:(void (^)(NSString *key, id object, BOOL *stop))block {
-//    [self enumerateKeysAndObjectsInCollection:collection
-//                                    usingBlock:block];
-//}
-
 @end
 
 NS_ASSUME_NONNULL_END
