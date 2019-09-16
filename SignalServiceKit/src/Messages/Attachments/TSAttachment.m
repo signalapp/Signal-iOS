@@ -290,7 +290,6 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 
 #pragma mark - Relationships
 
-
 - (nullable TSMessage *)fetchAlbumMessageWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     if (self.albumMessageId == nil) {

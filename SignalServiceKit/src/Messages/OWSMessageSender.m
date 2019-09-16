@@ -1240,7 +1240,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             [SignalRecipient markRecipientAsRegisteredAndGet:recipient.recipientId transaction:transaction];
         }];
         
-        // Check if we need to generate link previews
+        // Loki: Check if we need to generate a link preview
         TSMessage *message = messageSend.message;
         if (message.linkPreview == nil && !message.hasAttachments) {
             dispatch_async(dispatch_get_main_queue(), ^{

@@ -250,9 +250,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self saveWithTransaction:transaction];
 }
 
-- (void)addAttachmentId:(NSString *)attachmentId transaction:(YapDatabaseReadWriteTransaction *)transaction {
+- (void)addAttachmentWithID:(NSString *)attachmentID in:(YapDatabaseReadWriteTransaction *)transaction {
     if (!self.attachmentIds) { return; }
-    [self.attachmentIds addObject:attachmentId];
+    [self.attachmentIds addObject:attachmentID];
     [self saveWithTransaction:transaction];
 }
 
@@ -512,13 +512,12 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 }
 
-#pragma mark - Link preview
+#pragma mark - Link Preview
 
 
 - (void)generateLinkPreviewIfNeededFromURL:(NSString *)url {
-    // If we already have previews or attachments then don't bother making link previews
+    // If we already havea link previews or attachment then don't bother
     if (self.linkPreview != nil || self.hasAttachments) { return; }
-    
     [OWSLinkPreview tryToBuildPreviewInfoObjcWithPreviewUrl:url]
     .thenOn(dispatch_get_main_queue(), ^(OWSLinkPreviewDraft *linkPreviewDraft) {
         [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -528,7 +527,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }];
     })
     .catchOn(dispatch_get_main_queue(), ^(NSError *error) {
-        // If we failed to get link preview due to invalid content then maybe it's a link to a direct image?
+        // If we failed to get a link preview due to an invalid content type error then this could be a direct image link
         if ([OWSLinkPreview isInvalidContentError:error]) {
             __block AnyPromise *promise;
             [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -536,18 +535,14 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
             }];
             return promise;
         }
-        
-        // Return the error
         return [AnyPromise promiseWithValue:error];
     })
     .thenOn(dispatch_get_main_queue(), ^(OWSLinkPreview *linkPreview) {
-        // If we managed to get direct previews then render them
+        // If we managed to get a direct image preview then render it
         [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             if (linkPreview.isDirectAttachment) {
                 if (!self.hasAttachments) {
-                    [self addAttachmentId:linkPreview.imageAttachmentId transaction:transaction];
-                    
-                    // Set the message id in attachment
+                    [self addAttachmentWithID:linkPreview.imageAttachmentId in:transaction];
                     TSAttachmentStream *linkPreviewAttachment = [TSAttachmentStream fetchObjectWithUniqueID:linkPreview.imageAttachmentId transaction:transaction];
                     linkPreviewAttachment.albumMessageId = self.uniqueId;
                     linkPreviewAttachment.isUploaded = true;
@@ -557,7 +552,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                 self.linkPreview = linkPreview;
                 [self saveWithTransaction:transaction];
             }
-            
         }];
     });
 }
