@@ -253,6 +253,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [groupContainerDirectoryURL path];
 }
 
+- (NSString *)appDatabaseBaseDirectoryPath
+{
+    return self.appSharedDataDirectoryPath;
+}
+
 - (NSUserDefaults *)appUserDefaults
 {
     return [[NSUserDefaults alloc] initWithSuiteName:SignalApplicationGroup];

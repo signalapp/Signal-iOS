@@ -89,7 +89,11 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static var storageMode: StorageMode {
-        return .ydb
+        if CurrentAppContext().isRunningTests {
+            return .ydbTests
+        } else {
+            return .ydb
+        }
     }
 
     // Don't enable this flag in production.
