@@ -1525,6 +1525,38 @@ NS_ASSUME_NONNULL_BEGIN
                         incomingMessage.linkPreview = linkPreview;
                         [incomingMessage saveWithTransaction:transaction];
                     }];
+                })
+                .catchOn(dispatch_get_main_queue(), ^(NSError *error) {
+                    // If we failed to get link preview due to invalid content then maybe it's a link to a direct image?
+                    if ([OWSLinkPreview isInvalidContentError:error]) {
+                        __block AnyPromise *promise;
+                        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                            promise = [OWSLinkPreview getImagePreviewFromUrl:linkPreviewURL transaction:transaction];
+                        }];
+                        return promise;
+                    }
+                    
+                    // Return the error
+                    return [AnyPromise promiseWithValue:error];
+                })
+                .thenOn(dispatch_get_main_queue(), ^(OWSLinkPreview *linkPreview) {
+                    // If we managed to get direct previews then render them
+                    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                        if (linkPreview.isDirectAttachment) {
+                            if (!incomingMessage.hasAttachments) {
+                                [incomingMessage addAttachmentId:linkPreview.imageAttachmentId transaction:transaction];
+                                
+                                // Set the message id in attachment
+                                TSAttachment *linkPreviewAttachment = [TSAttachment fetchObjectWithUniqueID:linkPreview.imageAttachmentId transaction:transaction];
+                                linkPreviewAttachment.albumMessageId = incomingMessage.uniqueId;
+                                [linkPreviewAttachment saveWithTransaction:transaction];
+                            }
+                        } else {
+                            incomingMessage.linkPreview = linkPreview;
+                            [incomingMessage saveWithTransaction:transaction];
+                        }
+                        
+                    }];
                 });
             }
         });

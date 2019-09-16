@@ -67,6 +67,7 @@ typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
 - (NSArray<TSAttachment *> *)attachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction;
 - (NSArray<TSAttachment *> *)mediaAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction;
 - (nullable TSAttachment *)oversizeTextAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (void)addAttachmentId:(NSString *)attachmentId transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (void)removeAttachment:(TSAttachment *)attachment
              transaction:(YapDatabaseReadWriteTransaction *)transaction NS_SWIFT_NAME(removeAttachment(_:transaction:));

@@ -13,6 +13,8 @@ public enum LinkPreviewError: Int, Error {
     case couldNotDownload
     case featureDisabled
     case invalidContent
+    case invalidMediaContent
+    case attachmentFailedToSave
 }
 
 // MARK: - OWSLinkPreviewDraft
@@ -81,12 +83,17 @@ public class OWSLinkPreview: MTLModel {
 
     @objc
     public var imageAttachmentId: String?
+    
+    // Whether this preview can be rendered as an attachment
+    @objc
+    public var isDirectAttachment: Bool = false
 
     @objc
-    public init(urlString: String, title: String?, imageAttachmentId: String?) {
+    public init(urlString: String, title: String?, imageAttachmentId: String?, isDirectAttachment: Bool = false) {
         self.urlString = urlString
         self.title = title
         self.imageAttachmentId = imageAttachmentId
+        self.isDirectAttachment = isDirectAttachment
 
         super.init()
     }
@@ -112,6 +119,15 @@ public class OWSLinkPreview: MTLModel {
             return false
         }
         return error == .noPreview
+    }
+    
+    @objc
+    public class func isInvalidContentError(_ error: Error) -> Bool {
+        guard let error = error as? LinkPreviewError else {
+            return false
+        }
+        
+        return error == .invalidContent
     }
 
     @objc
@@ -203,41 +219,45 @@ public class OWSLinkPreview: MTLModel {
 
         return linkPreview
     }
-
+    
     private class func saveAttachmentIfPossible(jpegImageData: Data?,
                                                 transaction: YapDatabaseReadWriteTransaction) -> String? {
-        guard let jpegImageData = jpegImageData else {
-            return nil
-        }
-        let fileSize = jpegImageData.count
+        return saveAttachmentIfPossible(imageData: jpegImageData, mimeType: OWSMimeTypeImageJpeg, transaction: transaction);
+    }
+    
+    private class func saveAttachmentIfPossible(imageData: Data?, mimeType: String, transaction: YapDatabaseReadWriteTransaction) -> String? {
+        guard let imageData = imageData else { return nil }
+        
+        let fileSize = imageData.count
         guard fileSize > 0 else {
             owsFailDebug("Invalid file size for image data.")
             return nil
         }
-        let fileExtension = "jpg"
-        let contentType = OWSMimeTypeImageJpeg
-
+        
+        guard let fileExtension = fileExtension(forMimeType: mimeType) else { return nil }
         let filePath = OWSFileSystem.temporaryFilePath(withFileExtension: fileExtension)
         do {
-            try jpegImageData.write(to: NSURL.fileURL(withPath: filePath), options: .atomicWrite)
+            try imageData.write(to: NSURL.fileURL(withPath: filePath), options: .atomicWrite)
         } catch let error as NSError {
             owsFailDebug("file write failed: \(filePath), \(error)")
             return nil
         }
-
+        
         guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath, shouldDeleteOnDeallocation: true) else {
             owsFailDebug("Could not create data source for path: \(filePath)")
             return nil
         }
-        let attachment = TSAttachmentStream(contentType: contentType, byteCount: UInt32(fileSize), sourceFilename: nil, caption: nil, albumMessageId: nil)
+        let attachment = TSAttachmentStream(contentType: mimeType, byteCount: UInt32(fileSize), sourceFilename: nil, caption: nil, albumMessageId: nil)
         guard attachment.write(dataSource) else {
             owsFailDebug("Could not write data source for path: \(filePath)")
             return nil
         }
         attachment.save(with: transaction)
-
+        
         return attachment.uniqueId
     }
+
+    
 
     private func isValid() -> Bool {
         var hasTitle = false
@@ -318,7 +338,12 @@ public class OWSLinkPreview: MTLModel {
         // Pinterest
         "pinterest.com",
         "www.pinterest.com",
-        "pin.it"
+        "pin.it",
+        
+        // Giphy
+        "giphy.com",
+        "media.giphy.com",
+        "gph.is",
     ]
 
     // For media domains, we DO NOT require an exact match - subdomains are allowed.
@@ -337,7 +362,10 @@ public class OWSLinkPreview: MTLModel {
         "fbcdn.net",
 
         // Pinterest
-        "pinimg.com"
+        "pinimg.com",
+        
+        // Giphy
+        "giphy.com",
     ]
 
     private static let protocolWhitelist = [
@@ -672,6 +700,66 @@ public class OWSLinkPreview: MTLModel {
         })
         return promise
     }
+    
+    public class func getImagePreview(fromUrl imageUrl: String, transaction: YapDatabaseReadWriteTransaction) -> Promise<OWSLinkPreview> {
+        // Get the mime types the url
+        guard let imageFileExtension = fileExtension(forImageUrl: imageUrl),
+            let imageMimeType = mimetype(forImageFileExtension: imageFileExtension) else {
+                return Promise(error: LinkPreviewError.invalidInput)
+        }
+        
+        return downloadImage(url: imageUrl).map { data in
+            // Make sure the downloaded image has the correct mime type
+            guard let newImageMimeType = NSData(data: data).ows_guessMimeType() else {
+                throw LinkPreviewError.invalidContent
+            }
+            
+            // Save the attachment
+            guard let attachmentId = saveAttachmentIfPossible(imageData: data, mimeType: newImageMimeType, transaction: transaction) else {
+                Logger.verbose("Error: Failed to save attachment for \(imageUrl)")
+                throw LinkPreviewError.attachmentFailedToSave
+            }
+            
+            // If we had a GIF and the data we have is not a GIF then we need to render a link preview without attachments
+            if (imageMimeType == OWSMimeTypeImageGif && newImageMimeType != OWSMimeTypeImageGif) {
+                return OWSLinkPreview(urlString: imageUrl, title: nil, imageAttachmentId: attachmentId)
+            }
+            
+            return OWSLinkPreview(urlString: imageUrl, title: nil, imageAttachmentId: attachmentId, isDirectAttachment: true)
+        }
+    }
+    
+    @objc(getImagePreviewFromUrl:transaction:)
+    public class func objc_getImagePreview(url imageUrl: String, transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
+        return AnyPromise.from(getImagePreview(fromUrl: imageUrl, transaction: transaction))
+    }
+    
+    public class func downloadImage(url imageUrl: String) -> Promise<Data> {
+        guard OWSLinkPreview.featureEnabled else {
+            return Promise(error: LinkPreviewError.featureDisabled)
+        }
+        
+        guard SSKPreferences.areLinkPreviewsEnabled else {
+            return Promise(error: LinkPreviewError.featureDisabled)
+        }
+
+        guard isValidMediaUrl(imageUrl) else {
+            Logger.error("Invalid image URL.")
+            return Promise.init(error: LinkPreviewError.invalidInput)
+        }
+        
+        guard let imageFileExtension = fileExtension(forImageUrl: imageUrl) else {
+            Logger.error("Image URL has unknown or invalid file extension: \(imageUrl).")
+            return Promise.init(error: LinkPreviewError.invalidInput)
+        }
+        
+        guard let imageMimeType = mimetype(forImageFileExtension: imageFileExtension) else {
+            Logger.error("Image URL has unknown or invalid content type: \(imageUrl).")
+            return Promise.init(error: LinkPreviewError.invalidInput)
+        }
+        
+        return downloadImage(url: imageUrl, imageMimeType: imageMimeType)
+    }
 
     private class func downloadImage(url urlString: String, imageMimeType: String) -> Promise<Data> {
 
@@ -710,6 +798,9 @@ public class OWSLinkPreview: MTLModel {
                     Logger.error("Could not parse image.")
                     return Promise(error: LinkPreviewError.invalidContent)
                 }
+                
+                // If we have a gif then don't download it as a jpg and also we need to ensure that it's a valid GIF
+                if (imageMimeType == OWSMimeTypeImageGif && NSData(data: data).ows_isValidImage(withMimeType: OWSMimeTypeImageGif)) { return Promise.value(data) }
 
                 let maxImageSize: CGFloat = 1024
                 let shouldResize = imageSize.width > maxImageSize || imageSize.height > maxImageSize
@@ -830,6 +921,19 @@ public class OWSLinkPreview: MTLModel {
         }
         return imageFileExtension
     }
+    
+    class func fileExtension(forMimeType mimeType: String) -> String? {
+        switch mimeType {
+        case OWSMimeTypeImageGif:
+            return "gif"
+        case OWSMimeTypeImagePng:
+            return "png"
+        case OWSMimeTypeImageJpeg:
+            return "jpg"
+        default:
+            return nil
+        }
+    }
 
     class func mimetype(forImageFileExtension imageFileExtension: String) -> String? {
         guard imageFileExtension.count > 0 else {
@@ -841,7 +945,8 @@ public class OWSLinkPreview: MTLModel {
         }
         let kValidMimeTypes = [
             OWSMimeTypeImagePng,
-            OWSMimeTypeImageJpeg
+            OWSMimeTypeImageJpeg,
+            OWSMimeTypeImageGif,
         ]
         guard kValidMimeTypes.contains(imageMimeType) else {
             Logger.error("Image URL has invalid content type: \(imageMimeType).")

@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)ows_isValidImageAtPath:(NSString *)filePath mimeType:(nullable NSString *)mimeType;
 - (BOOL)ows_isValidImage;
 - (BOOL)ows_isValidImageWithMimeType:(nullable NSString *)mimeType;
+- (NSString *_Nullable)ows_guessMimeType;
 
 // Returns the image size in pixels.
 //

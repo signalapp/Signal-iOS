@@ -250,6 +250,12 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self saveWithTransaction:transaction];
 }
 
+- (void)addAttachmentId:(NSString *)attachmentId transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    if (!self.attachmentIds) { return; }
+    [self.attachmentIds addObject:attachmentId];
+    [self saveWithTransaction:transaction];
+}
+
 - (NSString *)debugDescription
 {
     if ([self hasAttachments] && self.body.length > 0) {
