@@ -10,7 +10,6 @@
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import <AxolotlKit/PreKeyBundle.h>
-#import <SignalCoreKit/Randomness.h>
 #import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
@@ -170,11 +169,6 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem itemWithTitle:@"Cycle websockets"
                                      actionBlock:^() {
                                          [SSKEnvironment.shared.socketManager cycleSocket];
-                                     }]];
-
-    [items addObject:[OWSTableItem itemWithTitle:@"Add random key-value stores"
-                                     actionBlock:^() {
-                                         [DebugUIMisc populateRandomKeyValueStores];
                                      }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
@@ -378,30 +372,6 @@ NS_ASSUME_NONNULL_BEGIN
      fromAssetLoaders:@[
                         [DebugUIMessagesAssetLoader tinyPdfInstance],
                         ]];
-}
-
-+ (void)populateRandomKeyValueStores
-{
-    const NSUInteger kKVStoreCount = 10;
-    const NSUInteger kKeyCount = 100 * 1000;
-    for (NSUInteger storeIndex = 0; storeIndex < kKVStoreCount; storeIndex++) {
-        @autoreleasepool {
-            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                NSString *collection = [@"debug-" stringByAppendingString:NSUUID.UUID.UUIDString];
-                SDSKeyValueStore *store = [[SDSKeyValueStore alloc] initWithCollection:collection];
-
-                // Set three values at a time.
-                for (NSUInteger keyIndex = 0; keyIndex < kKeyCount; keyIndex += 3) {
-                    NSData *value = [Randomness generateRandomBytes:4096];
-                    [store setData:value key:NSUUID.UUID.UUIDString transaction:transaction];
-
-                    [store setString:NSUUID.UUID.UUIDString key:NSUUID.UUID.UUIDString transaction:transaction];
-
-                    [store setBool:true key:NSUUID.UUID.UUIDString transaction:transaction];
-                }
-            }];
-        }
-    }
 }
 
 @end
