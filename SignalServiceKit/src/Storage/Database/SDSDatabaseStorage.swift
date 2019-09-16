@@ -102,7 +102,7 @@ public class SDSDatabaseStorage: SDSTransactable {
     // GRDB TODO: Remove
     @objc
     public static var shouldUseDisposableGrdb: Bool {
-        // We don't need to use a "disable" database in our tests;
+        // We don't need to use a "disposable" database in our tests;
         // TestAppContext ensures that our entire appSharedDataDirectoryPath
         // is disposable in that case.
 
