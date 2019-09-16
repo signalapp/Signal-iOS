@@ -9,7 +9,7 @@ import GRDB
 public protocol GRDBGenericDatabaseObserverDelegate: AnyObject {
     func genericDatabaseSnapshotWillUpdate()
     func genericDatabaseSnapshotDidUpdate(updatedCollections: Set<String>,
-                                          updatedInteractionIds: Set<Int64>)
+                                          updatedInteractionRowIds: Set<Int64>)
     func genericDatabaseSnapshotDidUpdateExternally()
     func genericDatabaseSnapshotDidReset()
 }
@@ -36,7 +36,7 @@ public class GRDBGenericDatabaseObserver: NSObject {
     private struct PendingChanges {
         var collections: Set<String> = Set()
         var tableNames: Set<String> = Set()
-        var interactionIds: Set<Int64> = Set()
+        var interactionRowIds: Set<Int64> = Set()
     }
 
     private var _pendingChanges = PendingChanges()
@@ -55,7 +55,7 @@ public class GRDBGenericDatabaseObserver: NSObject {
 
     private struct CommittedChanges {
         let collections: Set<String>
-        let interactionIds: Set<Int64>
+        let interactionRowIds: Set<Int64>
     }
 
     private typealias CollectionName = String
@@ -84,7 +84,7 @@ public class GRDBGenericDatabaseObserver: NSObject {
 
     private func committedChanges(forPendingChanges pendingChanges: PendingChanges, db: Database) throws -> CommittedChanges {
         return CommittedChanges(collections: collections(forPendingChanges: pendingChanges, db: db),
-                                interactionIds: pendingChanges.interactionIds)
+                                interactionRowIds: pendingChanges.interactionRowIds)
     }
 
     private func collections(forPendingChanges pendingChanges: PendingChanges, db: Database) -> Set<String> {
@@ -126,7 +126,7 @@ public class GRDBGenericDatabaseObserver: NSObject {
         // in the expected way.
         AssertIsOnUIDatabaseObserverSerialQueue()
         let rowId = RowId(interaction.sortId)
-        pendingChanges.interactionIds.insert(rowId)
+        pendingChanges.interactionRowIds.insert(rowId)
         pendingChanges.tableNames.insert(TSInteraction.table.tableName)
     }
 }
@@ -143,7 +143,7 @@ extension GRDBGenericDatabaseObserver: DatabaseSnapshotDelegate {
         _ = pendingChanges.tableNames.insert(event.tableName)
 
         if event.tableName == InteractionRecord.databaseTableName {
-            _ = pendingChanges.interactionIds.insert(event.rowID)
+            _ = pendingChanges.interactionRowIds.insert(event.rowID)
         }
     }
 
@@ -192,7 +192,7 @@ extension GRDBGenericDatabaseObserver: DatabaseSnapshotDelegate {
 
             for delegate in snapshotDelegates {
                 delegate.genericDatabaseSnapshotDidUpdate(updatedCollections: committedChanges.collections,
-                                                          updatedInteractionIds: committedChanges.interactionIds)
+                                                          updatedInteractionRowIds: committedChanges.interactionRowIds)
             }
         } catch {
             owsFailDebug("unknown error: \(error)")

@@ -18,8 +18,9 @@ public class SDSDatabaseStorageChange: NSObject {
 
     enum ChangeSet {
         // In the GRDB case, we collect modified collections and interactions.
-        case grdb(updatedCollections: Set<String>, updatedInteractionIds: Set<Int64>)
+        case grdb(updatedCollections: Set<String>, updatedInteractionRowIds: Set<Int64>)
 
+        // POST GRDB TODO - remove the ydb machinery
         // In the YDB case, we use notifications to lazy-evaluate.
         case ydb(notifications: [Notification])
     }
@@ -61,7 +62,7 @@ public class SDSDatabaseStorageChange: NSObject {
 
     private func didUpdate(collection: String) -> Bool {
         switch changeSet {
-        case .grdb(updatedCollections: let updatedCollections, updatedInteractionIds: _):
+        case .grdb(updatedCollections: let updatedCollections, updatedInteractionRowIds: _):
             return updatedCollections.contains(collection)
         case .ydb(notifications: let notifications):
             guard let primaryStorage = self.primaryStorage else {
@@ -94,8 +95,8 @@ public class SDSDatabaseStorageChange: NSObject {
     @objc(didUpdateInteraction:)
     public func didUpdate(interaction: TSInteraction) -> Bool {
         switch changeSet {
-        case .grdb(updatedCollections: _, updatedInteractionIds: let updatedInteractionIds):
-            return updatedInteractionIds.contains(Int64(interaction.sortId))
+        case .grdb(updatedCollections: _, updatedInteractionRowIds: let rowIds):
+            return rowIds.contains(Int64(interaction.sortId))
         case .ydb(notifications: let notifications):
             guard let primaryStorage = self.primaryStorage else {
                 owsFailDebug("Missing primaryStorage.")
@@ -256,11 +257,11 @@ extension SDSDatabaseStorageObservation: GRDBGenericDatabaseObserverDelegate {
     }
 
     func genericDatabaseSnapshotDidUpdate(updatedCollections: Set<String>,
-                                          updatedInteractionIds: Set<Int64>) {
+                                          updatedInteractionRowIds: Set<Int64>) {
         AssertIsOnMainThread()
 
         let change = SDSDatabaseStorageChange(.grdb(updatedCollections: updatedCollections,
-                                                    updatedInteractionIds: updatedInteractionIds))
+                                                    updatedInteractionRowIds: updatedInteractionRowIds))
         notifyDidUpdate(change: change)
     }
 
