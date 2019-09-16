@@ -185,13 +185,13 @@ public struct FakeService {
         return SDSDatabaseStorage.shared
     }
 
-    public func envelopeBuilder(fromSenderClient senderClient: SignalClient) throws -> SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
+    public func envelopeBuilder(fromSenderClient senderClient: SignalClient, bodyText: String? = nil) throws -> SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
         envelopeId += 1
         let builder = SSKProtoEnvelope.builder(timestamp: envelopeId)
         builder.setType(.ciphertext)
         builder.setSourceDevice(senderClient.deviceId)
 
-        let content = try buildEncryptedContentData(fromSenderClient: senderClient)
+        let content = try buildEncryptedContentData(fromSenderClient: senderClient, bodyText: bodyText)
         builder.setContent(content)
 
         // builder.setServerTimestamp(serverTimestamp)
@@ -200,8 +200,8 @@ public struct FakeService {
         return builder
     }
 
-    public func buildEncryptedContentData(fromSenderClient senderClient: SignalClient) throws -> Data {
-        let plaintext = try buildContentData()
+    public func buildEncryptedContentData(fromSenderClient senderClient: SignalClient, bodyText: String?) throws -> Data {
+        let plaintext = try buildContentData(bodyText: bodyText)
         let cipherMessage: CipherMessage = databaseStorage.writeReturningResult { transaction in
             return try! self.runner.encrypt(plaintext: plaintext,
                                             senderClient: senderClient,
@@ -213,9 +213,13 @@ public struct FakeService {
         return cipherMessage.serialized()
     }
 
-    public func buildContentData() throws -> Data {
+    public func buildContentData(bodyText: String?) throws -> Data {
         let dataMessageBuilder = SSKProtoDataMessage.builder()
-        dataMessageBuilder.setBody(CommonGenerator.paragraph)
+        if let bodyText = bodyText {
+            dataMessageBuilder.setBody(bodyText)
+        } else {
+            dataMessageBuilder.setBody(CommonGenerator.paragraph)
+        }
 
         let contentBuilder = SSKProtoContent.builder()
         contentBuilder.setDataMessage(try dataMessageBuilder.build())
