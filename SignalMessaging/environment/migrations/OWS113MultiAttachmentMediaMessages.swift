@@ -44,7 +44,7 @@ public class OWS113MultiAttachmentMediaMessages: YDBDatabaseMigration {
 
                         let messageId = message.uniqueId
                         for attachmentId in message.attachmentIds {
-                            legacyAttachments.append((attachmentId: attachmentId as! String, messageId: messageId))
+                            legacyAttachments.append((attachmentId: attachmentId, messageId: messageId))
                         }
                     }
                 }
