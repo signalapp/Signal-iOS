@@ -10,8 +10,10 @@
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import <AxolotlKit/PreKeyBundle.h>
+#import <SignalCoreKit/Randomness.h>
 #import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/Environment.h>
+#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
@@ -169,6 +171,27 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem itemWithTitle:@"Cycle websockets"
                                      actionBlock:^() {
                                          [SSKEnvironment.shared.socketManager cycleSocket];
+                                     }]];
+
+    [items addObject:[OWSTableItem itemWithTitle:@"Add 1k KV keys"
+                                     actionBlock:^() {
+                                         [DebugUIMisc populateRandomKeyValueStores:1 * 1000];
+                                     }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Add 10k KV keys"
+                                     actionBlock:^() {
+                                         [DebugUIMisc populateRandomKeyValueStores:10 * 1000];
+                                     }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Add 100k KV keys"
+                                     actionBlock:^() {
+                                         [DebugUIMisc populateRandomKeyValueStores:100 * 1000];
+                                     }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Add 1m KV keys"
+                                     actionBlock:^() {
+                                         [DebugUIMisc populateRandomKeyValueStores:1000 * 1000];
+                                     }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Clear Random KV keys"
+                                     actionBlock:^() {
+                                         [DebugUIMisc clearRandomKeyValueStores];
                                      }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
@@ -372,6 +395,41 @@ NS_ASSUME_NONNULL_BEGIN
      fromAssetLoaders:@[
                         [DebugUIMessagesAssetLoader tinyPdfInstance],
                         ]];
+}
+
++ (void)populateRandomKeyValueStores:(NSUInteger)keyCount
+{
+    const NSUInteger kBatchSize = 1000;
+    const NSUInteger batchCount = keyCount / kBatchSize;
+    OWSLogVerbose(@"keyCount: %i", (int)keyCount);
+    OWSLogVerbose(@"batchCount: %i", (int)batchCount);
+    for (NSUInteger batchIndex = 0; batchIndex < batchCount; batchIndex++) {
+        OWSLogVerbose(@"batchIndex: %i / %i", (int)batchIndex, (int)batchCount);
+
+        @autoreleasepool {
+            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                SDSKeyValueStore *store = [OWSBlockingManager keyValueStore];
+
+                // Set three values at a time.
+                for (NSUInteger keyIndex = 0; keyIndex < kBatchSize; keyIndex += 3) {
+                    NSData *value = [Randomness generateRandomBytes:4096];
+                    [store setData:value key:NSUUID.UUID.UUIDString transaction:transaction];
+
+                    [store setString:NSUUID.UUID.UUIDString key:NSUUID.UUID.UUIDString transaction:transaction];
+
+                    [store setBool:true key:NSUUID.UUID.UUIDString transaction:transaction];
+                }
+            }];
+        }
+    }
+}
+
++ (void)clearRandomKeyValueStores
+{
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        SDSKeyValueStore *store = [OWSBlockingManager keyValueStore];
+        [store removeAllWithTransaction:transaction];
+    }];
 }
 
 @end

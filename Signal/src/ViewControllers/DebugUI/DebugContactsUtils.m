@@ -1180,7 +1180,10 @@ NS_ASSUME_NONNULL_BEGIN
                         NSError *saveError = nil;
                         if (![store executeSaveRequest:request error:&saveError]) {
                             OWSLogError(@"Error saving fake contacts: %@", saveError);
-                            [OWSAlerts showAlertWithTitle:@"Error" message:saveError.localizedDescription];
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [OWSAlerts showAlertWithTitle:@"Error" message:saveError.localizedDescription];
+                            });
+                            return;
                         } else {
                             if (contactHandler) {
                                 [contacts enumerateObjectsUsingBlock:contactHandler];

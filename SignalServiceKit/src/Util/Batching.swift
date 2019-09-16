@@ -51,7 +51,11 @@ public class Batching: NSObject {
         }
 
         // With batching.
+        var batchIndex = 0
         while true {
+            if batchIndex > 0 {
+                Logger.verbose("batch: \(batchIndex)")
+            }
             autoreleasepool {
                 for _ in 0..<batchSize {
                     guard !stop.boolValue else {
@@ -60,6 +64,7 @@ public class Batching: NSObject {
                     loopBlock(&stop)
                 }
             }
+            batchIndex += 1
         }
     }
 }

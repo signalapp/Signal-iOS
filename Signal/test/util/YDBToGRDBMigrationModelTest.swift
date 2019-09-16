@@ -80,7 +80,7 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
         let migratorGroups = [
             GRDBMigratorGroup { ydbTransaction in
                 return [
-                    GRDBUnorderedRecordMigrator<KnownStickerPack>(label: "KnownStickerPack", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.2)
+                    GRDBUnorderedRecordMigrator<KnownStickerPack>(label: "KnownStickerPack", ydbTransaction: ydbTransaction)
                 ]
             }
         ]
@@ -498,8 +498,8 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
         let migratorGroups = [
             GRDBMigratorGroup { ydbTransaction in
                 return [
-                    GRDBUnorderedRecordMigrator<TSAttachment>(label: "attachments", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.003),
-                    GRDBUnorderedRecordMigrator<TSThread>(label: "threads", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.2)
+                    GRDBUnorderedRecordMigrator<TSAttachment>(label: "attachments", ydbTransaction: ydbTransaction),
+                    GRDBUnorderedRecordMigrator<TSThread>(label: "threads", ydbTransaction: ydbTransaction)
                 ]
             },
             GRDBMigratorGroup { ydbTransaction in

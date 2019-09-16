@@ -68,9 +68,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     }
 
     static let tables: [SDSTableMetadata] = [
-        // Key-Value Stores
-        SDSKeyValueStore.table,
-
         // Models
         TSThread.table,
         TSInteraction.table,
@@ -97,6 +94,10 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     lazy var migrator: DatabaseMigrator = {
         var migrator = DatabaseMigrator()
         migrator.registerMigration("create initial schema") { db in
+
+            // Key-Value Stores
+            try SDSKeyValueStore.createTable(database: db)
+
             for table in GRDBDatabaseStorageAdapter.tables {
                 try table.createTable(database: db)
 
