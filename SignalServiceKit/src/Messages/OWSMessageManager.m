@@ -1409,7 +1409,7 @@ NS_ASSUME_NONNULL_BEGIN
                 dispatch_async(dispatch_get_main_queue(), ^{
                     NSString *url = [OWSLinkPreview previewURLForRawBodyText:incomingMessage.body];
                     if (url != nil) {
-                        [self handleLinkPreviewsIfNeededWithUrl:url message:incomingMessage];
+                        [incomingMessage generateLinkPreviewIfNeededFromURL:url];
                     }
                 });
 
@@ -1511,55 +1511,12 @@ NS_ASSUME_NONNULL_BEGIN
                 linkPreviewURL = [OWSLinkPreview previewURLForRawBodyText:incomingMessage.body];
             }
             if (linkPreviewURL != nil) {
-                [self handleLinkPreviewsIfNeededWithUrl:linkPreviewURL message:incomingMessage];
+                [incomingMessage generateLinkPreviewIfNeededFromURL:linkPreviewURL];
             }
         });
         
         return incomingMessage;
     }
-}
-
-- (void)handleLinkPreviewsIfNeededWithUrl:(NSString *)linkPreviewURL message:(TSMessage *)message {
-    [OWSLinkPreview tryToBuildPreviewInfoObjcWithPreviewUrl:linkPreviewURL]
-    .thenOn(dispatch_get_main_queue(), ^(OWSLinkPreviewDraft *linkPreviewDraft) {
-        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            OWSLinkPreview *linkPreview = [OWSLinkPreview buildValidatedLinkPreviewFromInfo:linkPreviewDraft transaction:transaction error:nil];
-            message.linkPreview = linkPreview;
-            [message saveWithTransaction:transaction];
-        }];
-    })
-    .catchOn(dispatch_get_main_queue(), ^(NSError *error) {
-        // If we failed to get link preview due to invalid content then maybe it's a link to a direct image?
-        if ([OWSLinkPreview isInvalidContentError:error]) {
-            __block AnyPromise *promise;
-            [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                promise = [OWSLinkPreview getImagePreviewFromUrl:linkPreviewURL transaction:transaction];
-            }];
-            return promise;
-        }
-        
-        // Return the error
-        return [AnyPromise promiseWithValue:error];
-    })
-    .thenOn(dispatch_get_main_queue(), ^(OWSLinkPreview *linkPreview) {
-        // If we managed to get direct previews then render them
-        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            if (linkPreview.isDirectAttachment) {
-                if (!message.hasAttachments) {
-                    [message addAttachmentId:linkPreview.imageAttachmentId transaction:transaction];
-                    
-                    // Set the message id in attachment
-                    TSAttachment *linkPreviewAttachment = [TSAttachment fetchObjectWithUniqueID:linkPreview.imageAttachmentId transaction:transaction];
-                    linkPreviewAttachment.albumMessageId = message.uniqueId;
-                    [linkPreviewAttachment saveWithTransaction:transaction];
-                }
-            } else {
-                message.linkPreview = linkPreview;
-                [message saveWithTransaction:transaction];
-            }
-            
-        }];
-    });
 }
 
 // The difference between this function and `handleFriendRequestAcceptIfNeededWithEnvelope:` is that this will setup the incoming message for display to the user

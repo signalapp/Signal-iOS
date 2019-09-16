@@ -1239,6 +1239,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // have a valid Signal account.
             [SignalRecipient markRecipientAsRegisteredAndGet:recipient.recipientId transaction:transaction];
         }];
+        
+        // Check if we need to generate link previews
+        TSMessage *message = messageSend.message;
+        if (message.linkPreview == nil && !message.hasAttachments) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSString *url = [OWSLinkPreview previewURLForRawBodyText:message.body];
+                if (url) { [message generateLinkPreviewIfNeededFromURL:url]; }
+            });
+        }
 
         messageSend.success();
     });
