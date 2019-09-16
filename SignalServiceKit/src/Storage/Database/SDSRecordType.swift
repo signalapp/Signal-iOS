@@ -69,4 +69,5 @@ public enum SDSRecordType: UInt {
     case recipientReadReceipt = 12
     case thread = 2
     case unreadIndicatorInteraction = 4
+    case testModel = 59
 }
