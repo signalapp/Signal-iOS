@@ -102,8 +102,6 @@ class SDSPerformanceTest: PerformanceBaseTest {
         write { transaction in
             TSThread.anyRemoveAllWithInstantation(transaction: transaction)
             TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
-            TSThread.anyRemoveAllWithoutInstantation(transaction: transaction)
-            TSInteraction.anyRemoveAllWithoutInstantation(transaction: transaction)
         }
     }
 
@@ -123,7 +121,7 @@ class SDSPerformanceTest: PerformanceBaseTest {
         }
     }
 
-    func enumerateMessages() {
+    func enumerateMessagesUnbatched() {
         let messageCount = 100
         let enumerationCount = 10
 
@@ -153,8 +151,39 @@ class SDSPerformanceTest: PerformanceBaseTest {
         write { transaction in
             TSThread.anyRemoveAllWithInstantation(transaction: transaction)
             TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
-            TSThread.anyRemoveAllWithoutInstantation(transaction: transaction)
-            TSInteraction.anyRemoveAllWithoutInstantation(transaction: transaction)
+        }
+    }
+
+    func enumerateMessagesBatched() {
+        let messageCount = 100
+        let enumerationCount = 10
+
+        var uniqueIds = [String]()
+        write { transaction in
+            XCTAssert(TSInteraction.anyCount(transaction: transaction) == 0)
+
+            for _ in 0..<messageCount {
+                let message = OutgoingMessageFactory().create(transaction: transaction)
+                uniqueIds.append(message.uniqueId)
+            }
+        }
+
+        startMeasuring()
+        read { transaction in
+            var enumeratedCount = 0
+            for _ in 0..<enumerationCount {
+                TSInteraction.anyEnumerate(transaction: transaction, batched: true) { _, _ in
+                    enumeratedCount += 1
+                }
+            }
+            XCTAssertEqual(enumeratedCount, messageCount * enumerationCount)
+        }
+        stopMeasuring()
+
+        // cleanup for next iteration
+        write { transaction in
+            TSThread.anyRemoveAllWithInstantation(transaction: transaction)
+            TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
         }
     }
 }

@@ -202,6 +202,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     NSMutableArray<TSGroupThread *> *groupThreads = [NSMutableArray new];
 
     [TSThread anyEnumerateWithTransaction:transaction
+                                  batched:YES
                                     block:^(TSThread *thread, BOOL *stop) {
                                         if ([thread isKindOfClass:[TSGroupThread class]]) {
                                             TSGroupThread *groupThread = (TSGroupThread *)thread;

@@ -1077,6 +1077,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         OWSLogError(@"logUserProfiles: %ld", (unsigned long)[OWSUserProfile anyCountWithTransaction:transaction]);
 
         [OWSUserProfile anyEnumerateWithTransaction:transaction
+                                            batched:YES
                                               block:^(OWSUserProfile *userProfile, BOOL *stop) {
                                                   OWSLogError(@"\t [%@]: has profile key: %d, has avatar URL: %d, has "
                                                               @"avatar file: %d, name: %@, username: %@",

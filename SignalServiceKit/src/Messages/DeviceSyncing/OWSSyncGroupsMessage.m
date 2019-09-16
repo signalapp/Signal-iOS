@@ -67,6 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [TSGroupThread
         anyEnumerateWithTransaction:transaction
+                            batched:YES
                               block:^(TSThread *thread, BOOL *stop) {
                                   if (![thread isKindOfClass:[TSGroupThread class]]) {
                                       if (![thread isKindOfClass:[TSContactThread class]]) {

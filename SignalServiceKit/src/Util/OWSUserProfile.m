@@ -541,6 +541,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     NSString *profileAvatarsDirPath = self.profileAvatarsDirPath;
     NSMutableSet<NSString *> *profileAvatarFilePaths = [NSMutableSet new];
     [OWSUserProfile anyEnumerateWithTransaction:transaction
+                                        batched:YES
                                           block:^(OWSUserProfile *userProfile, BOOL *stop) {
                                               if (!userProfile.avatarFileName) {
                                                   return;

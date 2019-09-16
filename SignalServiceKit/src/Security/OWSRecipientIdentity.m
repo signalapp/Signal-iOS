@@ -196,6 +196,7 @@ NSUInteger const RecipientIdentitySchemaVersion = 1;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         [OWSRecipientIdentity
             anyEnumerateWithTransaction:transaction
+                                batched:YES
                                   block:^(OWSRecipientIdentity *recipientIdentity, BOOL *stop) {
                                       OWSLogInfo(@"Identity %d: %@", count, recipientIdentity.debugDescription);
                                   }];

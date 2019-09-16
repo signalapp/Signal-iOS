@@ -330,6 +330,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         [TSAttachmentStream
             anyEnumerateWithTransaction:transaction
+                                batched:YES
                                   block:^(TSAttachment *attachment, BOOL *stop) {
                                       if (!self.isMainAppAndActive) {
                                           shouldAbort = YES;
@@ -360,6 +361,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         threadIds = [NSSet setWithArray:[TSThread anyAllUniqueIdsWithTransaction:transaction]];
 
         [TSInteraction anyEnumerateWithTransaction:transaction
+                                           batched:YES
                                              block:^(TSInteraction *interaction, BOOL *stop) {
                                                  if (!self.isMainAppAndActive) {
                                                      shouldAbort = YES;

@@ -185,6 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         [TSInteraction
             anyEnumerateWithTransaction:transaction
+                                batched:YES
                                   block:^(TSInteraction *interaction, BOOL *stop) {
                                       interactionCount++;
                                       NSData *_Nullable data = [NSKeyedArchiver archivedDataWithRootObject:interaction];
@@ -193,6 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   }];
         [TSAttachment
             anyEnumerateWithTransaction:transaction
+                                batched:YES
                                   block:^(TSAttachment *attachment, BOOL *stop) {
                                       attachmentCount++;
                                       NSData *_Nullable data = [NSKeyedArchiver archivedDataWithRootObject:attachment];

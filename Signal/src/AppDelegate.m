@@ -1279,7 +1279,8 @@ static NSTimeInterval launchStartedAt;
         [self.databaseStorage
             asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
                 [TSAttachment anyEnumerateWithTransaction:transaction
-                                                    block:^(TSAttachment *attachment, BOOL *stop){
+                                                  batched:YES
+                                                    block:^(TSAttachment *attachment, BOOL *stop) {
                                                         // no-op. It's sufficient to initWithCoder: each object.
                                                     }];
             }
