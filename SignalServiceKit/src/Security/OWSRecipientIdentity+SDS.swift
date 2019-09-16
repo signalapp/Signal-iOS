@@ -373,17 +373,13 @@ public extension OWSRecipientIdentity {
         case .grdbRead(let grdbTransaction):
             do {
                 let cursor = OWSRecipientIdentity.grdbFetchCursor(transaction: grdbTransaction)
-                var stop: ObjCBool = false
                 try Batching.loop(batchSize: batchSize,
-                                  conditionBlock: {
-                                      return !stop.boolValue
-                },
-                                  loopBlock: {
+                                  loopBlock: { stop in
                                       guard let value = try cursor.next() else {
-                                          stop = true
-                                          return
+                                        stop.pointee = true
+                                        return
                                       }
-                                      block(value, &stop)
+                                      block(value, stop)
                 })
             } catch let error {
                 owsFailDebug("Couldn't fetch models: \(error)")
@@ -484,10 +480,11 @@ public extension OWSRecipientIdentity {
         var index: Int = 0
         do {
             try Batching.loop(batchSize: Batching.kDefaultBatchSize,
-                              conditionBlock: {
-                                  return index < uniqueIds.count
-            },
-                              loopBlock: {
+                              loopBlock: { stop in
+                                  guard index < uniqueIds.count else {
+                                    stop.pointee = true
+                                    return
+                                  }
                                   let uniqueId = uniqueIds[index]
                                   index = index + 1
                                   guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {

@@ -126,17 +126,13 @@ public extension SDSModel {
         do {
             let cursor = try String.fetchCursor(transaction.database,
                                                 sql: sql)
-            var stop: ObjCBool = false
             try Batching.loop(batchSize: batchSize,
-                              conditionBlock: {
-                                return !stop.boolValue
-            },
-                              loopBlock: {
+                              loopBlock: { stop in
                                 guard let uniqueId = try cursor.next() else {
-                                    stop = true
+                                    stop.pointee = true
                                     return
                                 }
-                                block(uniqueId, &stop)
+                                block(uniqueId, stop)
             })
         } catch let error as NSError {
             owsFailDebug("Couldn't fetch uniqueIds: \(error)")
