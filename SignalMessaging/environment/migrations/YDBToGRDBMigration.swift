@@ -364,62 +364,6 @@ private class LegacyUnorderedFinder<RecordType>: LegacyObjectFinder<RecordType> 
 
 // MARK: -
 
-private class LegacyInteractionFinder {
-    let extensionName = TSMessageDatabaseViewExtensionName
-
-    // HACK: normally we don't want to retain transactions, as it allows them to escape their
-    // closure. This is a work around since YapDB transactions want to be on their own sync queue
-    // while GRDB also wants to be on their own sync queue, so nesting a YapDB transaction from
-    // one DB inside a GRDB transaction on another DB is currently not possible.
-    let ext: YapDatabaseAutoViewTransaction?
-
-    init(transaction: YapDatabaseReadTransaction) {
-        self.ext = transaction.safeAutoViewTransaction(extensionName)
-    }
-
-    public var count: UInt {
-        guard let ext = ext else {
-            owsFailDebug("Missing view transcation.")
-            return 0
-        }
-        return ext.numberOfItemsInAllGroups()
-    }
-
-    public func enumerateInteractions(block: @escaping (TSInteraction) throws -> Void) throws {
-        try enumerateInteractions(transaction: ext, block: block)
-    }
-
-    func enumerateInteractions(transaction: YapDatabaseAutoViewTransaction?, block: @escaping (TSInteraction) throws -> Void) throws {
-        guard let transaction = transaction else {
-            owsFailDebug("Missing transaction.")
-            return
-        }
-        var errorToRaise: Error?
-        transaction.enumerateGroups { groupId, stopPtr in
-            transaction.enumerateKeysAndObjects(inGroup: groupId) { (_, _, object, _, stopPtr) in
-                do {
-                    guard let interaction = object as? TSInteraction else {
-                        owsFailDebug("unexpected object: \(type(of: object))")
-                        return
-                    }
-
-                    try block(interaction)
-                } catch {
-                    owsFailDebug("error: \(error)")
-                    errorToRaise = error
-                    stopPtr.pointee = true
-                }
-            }
-        }
-
-        if let errorToRaise = errorToRaise {
-            throw errorToRaise
-        }
-    }
-}
-
-// MARK: -
-
 private class LegacyJobRecordFinder {
 
     let extensionName = YAPDBJobRecordFinder.dbExtensionName
@@ -640,11 +584,11 @@ public class GRDBJobRecordMigrator: GRDBMigrator {
 
 public class GRDBInteractionMigrator: GRDBMigrator {
     public let label: String
-    private let finder: LegacyInteractionFinder
+    private let finder: LegacyUnorderedFinder<TSInteraction>
 
     init(ydbTransaction: YapDatabaseReadTransaction) {
         self.label = "Migrate Interactions"
-        self.finder = LegacyInteractionFinder(transaction: ydbTransaction)
+        self.finder = LegacyUnorderedFinder(transaction: ydbTransaction)
     }
 
     public var count: UInt {
@@ -656,7 +600,7 @@ public class GRDBInteractionMigrator: GRDBMigrator {
         Logger.info("\(label): \(count)")
         try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count)) { memorySampler in
             var recordCount = 0
-            try finder.enumerateInteractions { legacyInteraction in
+            try finder.enumerateLegacyObjects { legacyInteraction in
                 legacyInteraction.anyInsert(transaction: grdbTransaction.asAnyWrite)
                 recordCount += 1
                 if (recordCount % 500 == 0) {
