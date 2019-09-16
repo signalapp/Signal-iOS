@@ -59,7 +59,7 @@ public class SDSKeyValueStore: NSObject {
                 )
             )
         """
-        let statement = try database.cachedUpdateStatement(sql: sql)
+        let statement = try database.makeUpdateStatement(sql: sql)
         try statement.execute()
     }
 

@@ -539,13 +539,11 @@ extension GRDBMigrator {
 
 public class GRDBKeyValueStoreMigrator<T>: GRDBMigrator {
     public let label: String
-    private let ydbTransaction: YapDatabaseReadTransaction
     private let keyStore: SDSKeyValueStore
     private let finder: LegacyKeyValueFinder<T>
 
     init(label: String, keyStore: SDSKeyValueStore, ydbTransaction: YapDatabaseReadTransaction) {
         self.label = "Migrate \(label)"
-        self.ydbTransaction = ydbTransaction
         self.keyStore = keyStore
         self.finder = LegacyKeyValueFinder(store: keyStore, transaction: ydbTransaction)
     }
@@ -558,7 +556,9 @@ public class GRDBKeyValueStoreMigrator<T>: GRDBMigrator {
         let count = self.count
         Logger.info("\(label): \(count)")
         try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count)) { memorySampler in
+            var recordCount = 0
             try finder.enumerateLegacyKeysAndObjects { legacyKey, legacyObject in
+                recordCount += 1
                 if let legacyData = legacyObject as? Data {
                     self.finder.store.setData(legacyData, key: legacyKey, transaction: grdbTransaction.asAnyWrite)
                 } else {
@@ -566,6 +566,7 @@ public class GRDBKeyValueStoreMigrator<T>: GRDBMigrator {
                 }
                 memorySampler.sample()
             }
+            Logger.info("Completed with recordCount: \(recordCount)")
         }
     }
 }
@@ -595,7 +596,7 @@ public class GRDBUnorderedRecordMigrator<T>: GRDBMigrator where T: SDSModel {
                 legacyRecord.anyInsert(transaction: grdbTransaction.asAnyWrite)
                 memorySampler.sample()
             }
-            Logger.info("completed with recordCount: \(recordCount)")
+            Logger.info("Completed with recordCount: \(recordCount)")
         }
     }
 }
@@ -625,7 +626,7 @@ public class GRDBJobRecordMigrator: GRDBMigrator {
                 legacyRecord.anyInsert(transaction: grdbTransaction.asAnyWrite)
                 memorySampler.sample()
             }
-            Logger.info("completed with recordCount: \(recordCount)")
+            Logger.info("Completed with recordCount: \(recordCount)")
         }
     }
 }
@@ -634,12 +635,10 @@ public class GRDBJobRecordMigrator: GRDBMigrator {
 
 public class GRDBInteractionMigrator: GRDBMigrator {
     public let label: String
-    private let ydbTransaction: YapDatabaseReadTransaction
     private let finder: LegacyInteractionFinder
 
     init(ydbTransaction: YapDatabaseReadTransaction) {
         self.label = "Migrate Interactions"
-        self.ydbTransaction = ydbTransaction
         self.finder = LegacyInteractionFinder(transaction: ydbTransaction)
     }
 
@@ -652,8 +651,6 @@ public class GRDBInteractionMigrator: GRDBMigrator {
         Logger.info("\(label): \(count)")
         try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count)) { memorySampler in
             var recordCount = 0
-            let count = TSInteraction.anyCount(transaction: ydbTransaction.asAnyRead)
-            Logger.info("Interaction count: \(count)")
             try finder.enumerateInteractions { legacyInteraction in
                 legacyInteraction.anyInsert(transaction: grdbTransaction.asAnyWrite)
                 recordCount += 1
@@ -662,7 +659,7 @@ public class GRDBInteractionMigrator: GRDBMigrator {
                 }
                 memorySampler.sample()
             }
-            Logger.info("completed with recordCount: \(recordCount)")
+            Logger.info("Completed with recordCount: \(recordCount)")
         }
     }
 }
@@ -696,7 +693,7 @@ public class GRDBDecryptJobMigrator: GRDBMigrator {
                 }
                 memorySampler.sample()
             }
-            Logger.info("completed with recordCount: \(recordCount)")
+            Logger.info("Completed with recordCount: \(recordCount)")
         }
     }
 }
