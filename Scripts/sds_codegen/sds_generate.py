@@ -1062,6 +1062,9 @@ extension %sSerializer {
             
             is_optional = property.is_optional or force_optional
             optional_split = ', isOptional: true' if is_optional else ''
+
+            is_unique = column_name == str('uniqueId')
+            is_unique_split = ', isUnique: true' if is_unique else ''
             
             # print 'property', property.swift_type_safe()
             database_column_type = property.database_column_type()
@@ -1069,8 +1072,8 @@ extension %sSerializer {
                 database_column_type = '.primaryKey'
             
             # TODO: Use skipSelect.
-            return '''    static let %sColumn = SDSColumnMetadata(columnName: "%s", columnType: %s%s, columnIndex: %s)
-''' % ( str(column_name), str(column_name), database_column_type, optional_split, str(column_index) )
+            return '''    static let %sColumn = SDSColumnMetadata(columnName: "%s", columnType: %s%s%s, columnIndex: %s)
+''' % ( str(column_name), str(column_name), database_column_type, optional_split, is_unique_split, str(column_index) )
        
         for property in sds_properties:
             swift_body += write_column_metadata(property)
