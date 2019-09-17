@@ -206,6 +206,10 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             OWSFailDebug(@"Incoming envelope is missing type.");
             return failureBlock();
         }
+        if (envelope.timestamp > INT64_MAX) {
+            OWSFailDebug(@"Invalid timestamp.");
+            return failureBlock();
+        }
 
         if (envelope.unwrappedType != SSKProtoEnvelopeTypeUnidentifiedSender) {
             if (!envelope.hasValidSource) {
@@ -441,6 +445,12 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         return failureBlock(error);
     }
     UInt64 serverTimestamp = envelope.serverTimestamp;
+    if (serverTimestamp > INT64_MAX) {
+        NSString *errorDescription = @"Invalid serverTimestamp.";
+        OWSFailDebug(@"%@", errorDescription);
+        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptUDMessage, errorDescription);
+        return failureBlock(error);
+    }
 
     id<SMKCertificateValidator> certificateValidator =
         [[SMKCertificateDefaultValidator alloc] initWithTrustRoot:self.udManager.trustRoot];
