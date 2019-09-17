@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBackupJob.h"
@@ -297,6 +297,10 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
         // uncompressedDataLength is an optional field.
         if (uncompressedDataLength && ![uncompressedDataLength isKindOfClass:[NSNumber class]]) {
             OWSFailDebug(@"manifest has invalid uncompressedDataLength: %@.", uncompressedDataLength);
+            return nil;
+        }
+        if (uncompressedDataLength.unsignedLongLongValue > INT64_MAX) {
+            OWSFailDebug(@"Invalid export item.");
             return nil;
         }
 
