@@ -3,7 +3,6 @@ final class SeedViewController : OnboardingBaseViewController {
     private var mode: Mode = .register { didSet { if mode != oldValue { handleModeChanged() } } }
     private var seed: Data! { didSet { updateMnemonic() } }
     private var mnemonic: String! { didSet { handleMnemonicChanged() } }
-    private var userName: String?
     
     // MARK: Components
     private lazy var registerStackView: UIStackView = {
@@ -111,11 +110,6 @@ final class SeedViewController : OnboardingBaseViewController {
     enum Mode { case register, restore }
     
     // MARK: Lifecycle
-    init(onboardingController: OnboardingController, userName: String?) {
-        super.init(onboardingController: onboardingController)
-        self.userName = userName
-    }
-    
     override func viewDidLoad() {
         super.loadView()
         setUpViewHierarchy()
@@ -232,19 +226,11 @@ final class SeedViewController : OnboardingBaseViewController {
         let accountManager = TSAccountManager.sharedInstance()
         accountManager.phoneNumberAwaitingVerification = hexEncodedPublicKey
         accountManager.didRegister()
-        let onSuccess = { [weak self] in
-            switch mode {
-            case .register: Analytics.shared.track("Seed Created")
-            case .restore: Analytics.shared.track("Seed Restored")
-            }
-            guard let strongSelf = self else { return }
-            strongSelf.onboardingController.verificationDidComplete(fromView: strongSelf)
-            UserDefaults.standard.set(true, forKey: "didUpdateForMainnet")
+        switch mode {
+        case .register: Analytics.shared.track("Seed Created")
+        case .restore: Analytics.shared.track("Seed Restored")
         }
-        if let userName = userName {
-            OWSProfileManager.shared().updateLocalProfileName(userName, avatarImage: nil, success: onSuccess, failure: onSuccess) // Try to save the user name but ignore the result
-        } else {
-            onSuccess()
-        }
+        onboardingController.verificationDidComplete(fromView: self)
+        UserDefaults.standard.set(true, forKey: "didUpdateForMainnet")
     }
 }

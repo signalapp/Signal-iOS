@@ -12,18 +12,12 @@
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import "NSObject+Casting.h"
 
-#define OWSPrimaryStoragePreKeyStoreCollection @"TSStorageManagerPreKeyStoreCollection"
-#define LKPreKeyContactCollection @"LKPreKeyContactCollection"
-#define LKPreKeyBundleCollection @"LKPreKeyBundleCollection"
-#define LKLastMessageHashCollection @"LKLastMessageHashCollection"
-#define LKReceivedMessageHashesKey @"LKReceivedMessageHashesKey"
-#define LKReceivedMessageHashesCollection @"LKReceivedMessageHashesCollection"
-#define LKMessageIDCollection @"LKMessageIDCollection"
-#define LKModerationPermissionCollection @"LKModerationPermissionCollection"
-
 @implementation OWSPrimaryStorage (Loki)
 
-# pragma mark - Dependencies
+# pragma mark - Convenience
+
+#define OWSPrimaryStoragePreKeyStoreCollection @"TSStorageManagerPreKeyStoreCollection"
+#define LKPreKeyContactCollection @"LKPreKeyContactCollection"
 
 - (OWSIdentityManager *)identityManager {
     return OWSIdentityManager.sharedManager;
@@ -33,7 +27,7 @@
     return TSAccountManager.sharedInstance;
 }
 
-# pragma mark - Prekey for Contact
+# pragma mark - Pre Key for Contact
 
 - (BOOL)hasPreKeyForContact:(NSString *)pubKey {
     int preKeyId = [self.dbReadWriteConnection intForKey:pubKey inCollection:LKPreKeyContactCollection];
@@ -64,7 +58,7 @@
     @try {
         return [self throws_loadPreKey:preKeyId];
     } @catch (NSException *exception) {
-        NSLog(@"[Loki] New prekey generated for %@.", pubKey);
+        NSLog(@"[Loki] New pre key generated for %@.", pubKey);
         return [self generateAndStorePreKeyForContact:pubKey];
     }
 }
@@ -83,10 +77,12 @@
     return record;
 }
 
-# pragma mark - PreKeyBundle
+# pragma mark - Pre Key Bundle
+
+#define LKPreKeyBundleCollection @"LKPreKeyBundleCollection"
 
 - (PreKeyBundle *)generatePreKeyBundleForContact:(NSString *)pubKey {
-    // Check prekeys to make sure we have them for this function
+    // Check pre keys to make sure we have them
     [TSPreKeyManager checkPreKeys];
     
     ECKeyPair *_Nullable keyPair = self.identityManager.identityKeyPair;
@@ -103,7 +99,7 @@
 
     SignedPreKeyRecord *_Nullable signedPreKey = self.currentSignedPreKey;
     if (!signedPreKey) {
-        OWSFailDebug(@"Signed prekey is null");
+        OWSFailDebug(@"Signed pre key is null.");
     }
     
     PreKeyRecord *preKey = [self getOrCreatePreKeyForContact:pubKey];
@@ -125,16 +121,16 @@
 }
 
 - (void)setPreKeyBundle:(PreKeyBundle *)bundle forContact:(NSString *)pubKey transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    [transaction setObject:bundle
-                    forKey:pubKey
-              inCollection:LKPreKeyBundleCollection];
+    [transaction setObject:bundle forKey:pubKey inCollection:LKPreKeyBundleCollection];
 }
 
 - (void)removePreKeyBundleForContact:(NSString *)pubKey transaction:(YapDatabaseReadWriteTransaction *)transaction {
     [transaction removeObjectForKey:pubKey inCollection:LKPreKeyBundleCollection];
 }
 
-# pragma mark - Last Hash
+# pragma mark - Last Message Hash
+
+#define LKLastMessageHashCollection @"LKLastMessageHashCollection"
 
 - (NSString *_Nullable)getLastMessageHashForServiceNode:(NSString *)serviceNode transaction:(YapDatabaseReadWriteTransaction *)transaction {
     NSDictionary *_Nullable dict = [transaction objectForKey:serviceNode inCollection:LKLastMessageHashCollection];
@@ -165,6 +161,8 @@
 }
 
 # pragma mark - Group Chat
+
+#define LKMessageIDCollection @"LKMessageIDCollection"
 
 - (void)setIDForMessageWithServerID:(NSUInteger)serverID to:(NSString *)messageID in:(YapDatabaseReadWriteTransaction *)transaction {
     NSString *key = [NSString stringWithFormat:@"%@", @(serverID)];

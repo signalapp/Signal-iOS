@@ -18,7 +18,7 @@
     NSError *error;
     SSKProtoPrekeyBundleMessage *_Nullable message = [preKeyBuilder buildAndReturnError:&error];
     if (error || !message) {
-        OWSFailDebug(@"Failed to build preKeyBundle for %@: %@", recipient.recipientId, error);
+        OWSFailDebug(@"Failed to build pre key bundle for %@: %@", recipient.recipientId, error);
     } else {
          [contentBuilder setPrekeyBundleMessage:message];
     }

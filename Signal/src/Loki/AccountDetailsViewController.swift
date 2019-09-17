@@ -62,7 +62,8 @@ final class AccountDetailsViewController : OnboardingBaseViewController {
             guard !OWSProfileManager.shared().isProfileNameTooLong(normalizedName) else {
                 return OWSAlerts.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG", comment: "Error message shown when user tries to update profile with a profile name that is too long"))
             }
+            OWSProfileManager.shared().updateLocalProfileName(normalizedUserName, avatarImage: nil, success: { }, failure: { }) // Try to save the user name but ignore the result
         }
-        onboardingController.pushKeyPairViewController(from: self, userName: normalizedUserName)
+        onboardingController.pushKeyPairViewController(from: self)
     }
 }

@@ -1803,7 +1803,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(recipientId.length > 0);
     
     // Loki: Handle friend requests differently
-    Boolean isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
+    BOOL isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
     if (isFriendRequest) {
         return [self throws_encryptedFriendMessageForMessageSend:messageSend deviceId:deviceId plainText:plainText];
     }
