@@ -128,14 +128,7 @@ public class SDSTableMetadata: NSObject {
                     column.notNull()
                 }
                 if columnMetadata.isUnique {
-                    let conflictResolution: Database.ConflictResolution
-                    switch FeatureFlags.storageModeStrictness {
-                    case .fail:
-                        conflictResolution = .fail
-                    case .failDebug, .log:
-                        conflictResolution = .ignore
-                    }
-                    column.unique(onConflict: conflictResolution)
+                    column.unique(onConflict: .fail)
                 }
             }
         }
