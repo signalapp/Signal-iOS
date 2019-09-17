@@ -263,6 +263,17 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     return ImageFormat_Unknown;
 }
 
+- (NSString *_Nullable)ows_guessMimeType
+{
+    ImageFormat format = [self ows_guessImageFormat];
+    switch (format) {
+        case ImageFormat_Gif: return OWSMimeTypeImageGif;
+        case ImageFormat_Png: return OWSMimeTypeImagePng;
+        case ImageFormat_Jpeg: return OWSMimeTypeImageJpeg;
+        default: return nil;
+    }
+}
+
 + (BOOL)ows_areByteArraysEqual:(NSUInteger)length left:(unsigned char *)left right:(unsigned char *)right
 {
     for (NSUInteger i = 0; i < length; i++) {

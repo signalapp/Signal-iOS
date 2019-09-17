@@ -43,7 +43,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 #pragma mark - Media Album
 
 @property (nonatomic, readonly, nullable) NSString *caption;
-@property (nonatomic, readonly, nullable) NSString *albumMessageId;
+@property (nonatomic, nullable) NSString *albumMessageId;
 - (nullable TSMessage *)fetchAlbumMessageWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 // `migrateAlbumMessageId` is only used in the migration to the new multi-attachment message scheme,

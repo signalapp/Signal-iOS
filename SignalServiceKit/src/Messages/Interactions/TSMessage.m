@@ -250,6 +250,12 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self saveWithTransaction:transaction];
 }
 
+- (void)addAttachmentWithID:(NSString *)attachmentID in:(YapDatabaseReadWriteTransaction *)transaction {
+    if (!self.attachmentIds) { return; }
+    [self.attachmentIds addObject:attachmentID];
+    [self saveWithTransaction:transaction];
+}
+
 - (NSString *)debugDescription
 {
     if ([self hasAttachments] && self.body.length > 0) {
@@ -504,6 +510,50 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         [self saveWithTransaction:transaction];
         [transaction.connection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:^{}];
     }
+}
+
+#pragma mark - Link Preview
+
+
+- (void)generateLinkPreviewIfNeededFromURL:(NSString *)url {
+    // If we already have a link preview or attachment then don't bother
+    if (self.linkPreview != nil || self.hasAttachments) { return; }
+    [OWSLinkPreview tryToBuildPreviewInfoObjcWithPreviewUrl:url]
+    .thenOn(dispatch_get_main_queue(), ^(OWSLinkPreviewDraft *linkPreviewDraft) {
+        [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            OWSLinkPreview *linkPreview = [OWSLinkPreview buildValidatedLinkPreviewFromInfo:linkPreviewDraft transaction:transaction error:nil];
+            self.linkPreview = linkPreview;
+            [self saveWithTransaction:transaction];
+        }];
+    })
+    .catchOn(dispatch_get_main_queue(), ^(NSError *error) {
+        // If we failed to get a link preview due to an invalid content type error then this could be a direct image link
+        if ([OWSLinkPreview isInvalidContentError:error]) {
+            __block AnyPromise *promise;
+            [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                promise = [OWSLinkPreview getImagePreviewFromUrl:url transaction:transaction];
+            }];
+            return promise;
+        }
+        return [AnyPromise promiseWithValue:error];
+    })
+    .thenOn(dispatch_get_main_queue(), ^(OWSLinkPreview *linkPreview) {
+        // If we managed to get a direct image preview then render it
+        [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            if (linkPreview.isDirectAttachment) {
+                if (!self.hasAttachments) {
+                    [self addAttachmentWithID:linkPreview.imageAttachmentId in:transaction];
+                    TSAttachmentStream *linkPreviewAttachment = [TSAttachmentStream fetchObjectWithUniqueID:linkPreview.imageAttachmentId transaction:transaction];
+                    linkPreviewAttachment.albumMessageId = self.uniqueId;
+                    linkPreviewAttachment.isUploaded = true;
+                    [linkPreviewAttachment saveWithTransaction:transaction];
+                }
+            } else {
+                self.linkPreview = linkPreview;
+                [self saveWithTransaction:transaction];
+            }
+        }];
+    });
 }
 
 @end

@@ -67,6 +67,7 @@ typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
 - (NSArray<TSAttachment *> *)attachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction;
 - (NSArray<TSAttachment *> *)mediaAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction;
 - (nullable TSAttachment *)oversizeTextAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (void)addAttachmentWithID:(NSString *)attachmentID in:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (void)removeAttachment:(TSAttachment *)attachment
              transaction:(YapDatabaseReadWriteTransaction *)transaction NS_SWIFT_NAME(removeAttachment(_:transaction:));
@@ -96,6 +97,10 @@ typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
 #pragma mark - Group Chat
 
 - (void)saveGroupChatMessageID:(uint64_t)serverMessageID in:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
+
+#pragma mark - Link Preview
+
+- (void)generateLinkPreviewIfNeededFromURL:(NSString *)url;
 
 @end
 

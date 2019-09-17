@@ -1409,14 +1409,7 @@ NS_ASSUME_NONNULL_BEGIN
                 dispatch_async(dispatch_get_main_queue(), ^{
                     NSString *url = [OWSLinkPreview previewURLForRawBodyText:incomingMessage.body];
                     if (url != nil) {
-                        [OWSLinkPreview tryToBuildPreviewInfoObjcWithPreviewUrl:url]
-                        .thenOn(dispatch_get_main_queue(), ^(OWSLinkPreviewDraft *linkPreviewDraft) {
-                            [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                OWSLinkPreview *linkPreview = [OWSLinkPreview buildValidatedLinkPreviewFromInfo:linkPreviewDraft transaction:transaction error:nil];
-                                incomingMessage.linkPreview = linkPreview;
-                                [incomingMessage saveWithTransaction:transaction];
-                            }];
-                        });
+                        [incomingMessage generateLinkPreviewIfNeededFromURL:url];
                     }
                 });
 
@@ -1518,14 +1511,7 @@ NS_ASSUME_NONNULL_BEGIN
                 linkPreviewURL = [OWSLinkPreview previewURLForRawBodyText:incomingMessage.body];
             }
             if (linkPreviewURL != nil) {
-                [OWSLinkPreview tryToBuildPreviewInfoObjcWithPreviewUrl:linkPreviewURL]
-                .thenOn(dispatch_get_main_queue(), ^(OWSLinkPreviewDraft *linkPreviewDraft) {
-                    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        OWSLinkPreview *linkPreview = [OWSLinkPreview buildValidatedLinkPreviewFromInfo:linkPreviewDraft transaction:transaction error:nil];
-                        incomingMessage.linkPreview = linkPreview;
-                        [incomingMessage saveWithTransaction:transaction];
-                    }];
-                });
+                [incomingMessage generateLinkPreviewIfNeededFromURL:linkPreviewURL];
             }
         });
         
