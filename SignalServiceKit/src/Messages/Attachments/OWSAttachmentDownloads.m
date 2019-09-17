@@ -347,8 +347,8 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                                                                            = TSAttachmentPointerStateDownloading;
                                                                    }];
 
-            if (job.message) {
-                [self.databaseStorage touchInteraction:job.message transaction:transaction];
+            if (job.message != nil) {
+                [self reloadAndTouchLatestVersionOfMessage:job.message transaction:transaction];
             }
         }];
 
@@ -374,13 +374,8 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                     [existingAttachment anyRemoveWithTransaction:transaction];
                     [attachmentStream anyInsertWithTransaction:transaction];
 
-                    if (job.message) {
-                        [self.databaseStorage touchInteraction:job.message transaction:transaction];
-                        [transaction
-                            addCompletionWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-                                             block:^{
-                                                 [OWSDisappearingMessagesJob.sharedJob schedulePass];
-                                             }];
+                    if (job.message != nil) {
+                        [self reloadAndTouchLatestVersionOfMessage:job.message transaction:transaction];
                     }
                 }];
 
@@ -412,8 +407,8 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                                                                                    = TSAttachmentPointerStateFailed;
                                                                            }];
 
-                    if (job.message) {
-                        [self.databaseStorage touchInteraction:job.message transaction:transaction];
+                    if (job.message != nil) {
+                        [self reloadAndTouchLatestVersionOfMessage:job.message transaction:transaction];
                     }
                 }];
 
@@ -426,6 +421,13 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                 [self tryToStartNextDownload];
             }];
     });
+}
+
+- (void)reloadAndTouchLatestVersionOfMessage:(TSMessage *)message transaction:(SDSAnyWriteTransaction *)transaction
+{
+    // Ensure relevant sortId is loaded for touch to succeed.
+    [message anyReloadWithTransaction:transaction];
+    [self.databaseStorage touchInteraction:message transaction:transaction];
 }
 
 #pragma mark -

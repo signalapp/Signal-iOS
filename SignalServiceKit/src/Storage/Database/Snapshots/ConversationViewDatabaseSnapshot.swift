@@ -33,6 +33,7 @@ public class ConversationViewDatabaseObserver: NSObject {
         // in the expected way.
         AssertIsOnUIDatabaseObserverSerialQueue()
         let rowId = RowId(interaction.sortId)
+        assert(rowId > 0)
         pendingInteractionChanges.insert(rowId)
     }
 
