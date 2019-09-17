@@ -66,32 +66,38 @@ class TestModelTests: SSKBaseTestSwift {
         self.write { transaction in
 
             // SQLite doesn't support numeric values larger than Int64.max;
-            // UInt64.max for example is not valid.  Our serialization
-            // will round these "unsafe" values to "safe" values, i.e.
-            // the max valid value.
+            // UInt64.max for example is not valid.
             let uint64MaxUnsafe: UInt64 = UInt64.max
             let uint64MaxSafe: UInt64 = UInt64(Int64.max)
+            let uint64Max: UInt64 = uint64MaxSafe
             XCTAssertLessThanOrEqual(uint64MaxSafe, uint64MaxUnsafe)
+
             let int64Max: Int64 = Int64.max
+
             let nsUintMaxUnsafe: UInt = NSUIntegerMaxValue()
             let nsUintMaxSafe: UInt = NSUIntegerMaxValue() < Int64.max ? NSUIntegerMaxValue() : UInt(Int64.max)
+            let nsUintMax: UInt = nsUintMaxSafe
             XCTAssertLessThanOrEqual(nsUintMaxSafe, nsUintMaxUnsafe)
+
             let nsIntMax: Int = NSIntegerMax
             let nsNumberUsingInt64 = int64Max
+
             let nsNumberUsingUInt64Unsafe = uint64MaxUnsafe
             let nsNumberUsingUInt64Safe = uint64MaxSafe
+            let nsNumberUsingUInt64 = nsNumberUsingUInt64Safe
             XCTAssertLessThanOrEqual(nsNumberUsingUInt64Safe, nsNumberUsingUInt64Unsafe)
+
             let dateMax = Date(timeIntervalSince1970: Double.greatestFiniteMagnitude)
 
             writeModel.anyUpdate(transaction: transaction) { model in
                 model.doubleValue = Double.greatestFiniteMagnitude
                 model.floatValue = Float.greatestFiniteMagnitude
-                model.uint64Value = uint64MaxUnsafe
+                model.uint64Value = uint64Max
                 model.int64Value = int64Max
-                model.nsuIntegerValue = nsUintMaxUnsafe
+                model.nsuIntegerValue = nsUintMax
                 model.nsIntegerValue = nsIntMax
                 model.nsNumberValueUsingInt64 = NSNumber(value: nsNumberUsingInt64)
-                model.nsNumberValueUsingUInt64 = NSNumber(value: nsNumberUsingUInt64Unsafe)
+                model.nsNumberValueUsingUInt64 = NSNumber(value: nsNumberUsingUInt64)
                 model.dateValue = dateMax
             }
 
@@ -99,12 +105,12 @@ class TestModelTests: SSKBaseTestSwift {
             XCTAssertFalse(writeModel === readModel)
             XCTAssertEqual(Double.greatestFiniteMagnitude, readModel.doubleValue)
             XCTAssertEqual(Float.greatestFiniteMagnitude, readModel.floatValue)
-            XCTAssertEqual(uint64MaxSafe, readModel.uint64Value)
+            XCTAssertEqual(uint64Max, readModel.uint64Value)
             XCTAssertEqual(int64Max, readModel.int64Value)
-            XCTAssertEqual(nsUintMaxSafe, readModel.nsuIntegerValue)
+            XCTAssertEqual(nsUintMax, readModel.nsuIntegerValue)
             XCTAssertEqual(nsIntMax, readModel.nsIntegerValue)
             XCTAssertEqual(NSNumber(value: nsNumberUsingInt64), readModel.nsNumberValueUsingInt64)
-            XCTAssertEqual(NSNumber(value: nsNumberUsingUInt64Safe), readModel.nsNumberValueUsingUInt64)
+            XCTAssertEqual(NSNumber(value: nsNumberUsingUInt64), readModel.nsNumberValueUsingUInt64)
             XCTAssertEqual(dateMax, readModel.dateValue)
         }
 
@@ -139,18 +145,19 @@ class TestModelTests: SSKBaseTestSwift {
 
         self.write { transaction in
 
-            let now = Date(timeIntervalSince1970: 123456.123456)
+            let interval: TimeInterval = 123456.123456
+            let dateValue = Date(timeIntervalSince1970: interval)
 
             writeModel.anyUpdate(transaction: transaction) { model in
-                model.dateValue = now
+                model.dateValue = dateValue
             }
 
             let readModel = TestModel.anyFetch(uniqueId: writeModel.uniqueId, transaction: transaction)!
             XCTAssertFalse(writeModel === readModel)
-            // This date value will be truncated during the roundtrip.
-            // NSDate is backed by NSTimeInterval (seconds as double) but we
-            // persist using ms as UInt64.
-            XCTAssertNotEqual(now, readModel.dateValue)
+            // This date value will NOT be truncated during the roundtrip.
+            // NSDate is backed by NSTimeInterval (seconds as double) and we
+            // serialiuze using TimeInterval/timeIntervalSince1970.
+            XCTAssertEqual(dateValue, readModel.dateValue)
         }
     }
 }
