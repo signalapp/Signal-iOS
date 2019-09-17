@@ -345,7 +345,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     if (deliveryTimestamp != nil && deliveryTimestamp.unsignedLongLongValue > INT64_MAX) {
         OWSFailDebug(@"Invalid timestamp.");
-        continue;
+        return;
     }
 
     for (NSNumber *nsTimestamp in sentTimestamps) {

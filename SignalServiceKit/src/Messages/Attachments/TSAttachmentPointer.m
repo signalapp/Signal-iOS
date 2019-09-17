@@ -208,7 +208,12 @@ NS_ASSUME_NONNULL_BEGIN
         mediaSize = CGSizeMake(attachmentProto.width, attachmentProto.height);
     }
 
-    TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:attachmentProto.id
+    UInt64 serverId = attachmentProto.id;
+    if (serverId > INT64_MAX) {
+        OWSFailDebug(@"Invalid server id.");
+        return nil;
+    }
+    TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:serverId
                                                                              key:attachmentProto.key
                                                                           digest:digest
                                                                        byteCount:attachmentProto.size
