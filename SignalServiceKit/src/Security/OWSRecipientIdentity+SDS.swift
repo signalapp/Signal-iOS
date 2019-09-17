@@ -578,7 +578,7 @@ class OWSRecipientIdentitySerializer: SDSSerializer {
         let createdAt: Double = archiveDate(model.createdAt)
         let identityKey: Data = model.identityKey
         let isFirstKnownKey: Bool = model.isFirstKnownKey
-        let recipientIdentitySchemaVersion: UInt = serializationSafeUInt(model.recipientIdentitySchemaVersion)
+        let recipientIdentitySchemaVersion: UInt = model.recipientIdentitySchemaVersion
         let verificationState: OWSVerificationState = model.verificationState
 
         return RecipientIdentityRecord(id: id, recordType: recordType, uniqueId: uniqueId, accountId: accountId, createdAt: createdAt, identityKey: identityKey, isFirstKnownKey: isFirstKnownKey, recipientIdentitySchemaVersion: recipientIdentitySchemaVersion, verificationState: verificationState)

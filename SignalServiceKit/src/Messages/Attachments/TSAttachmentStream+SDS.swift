@@ -62,14 +62,14 @@ class TSAttachmentStreamSerializer: SDSSerializer {
 
         // Base class properties
         let albumMessageId: String? = model.albumMessageId
-        let attachmentSchemaVersion: UInt = serializationSafeUInt(model.attachmentSchemaVersion)
+        let attachmentSchemaVersion: UInt = model.attachmentSchemaVersion
         let attachmentType: TSAttachmentType = model.attachmentType
         let byteCount: UInt32 = model.byteCount
         let caption: String? = model.caption
         let contentType: String = model.contentType
         let encryptionKey: Data? = model.encryptionKey
         let isDownloaded: Bool = model.isDownloaded
-        let serverId: UInt64 = serializationSafeUInt64(model.serverId)
+        let serverId: UInt64 = model.serverId
         let sourceFilename: String? = model.sourceFilename
 
         // Subclass properties

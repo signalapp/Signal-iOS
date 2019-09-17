@@ -1803,8 +1803,8 @@ class TSInteractionSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Base class properties
-        let receivedAtTimestamp: UInt64 = serializationSafeUInt64(model.receivedAtTimestamp)
-        let timestamp: UInt64 = serializationSafeUInt64(model.timestamp)
+        let receivedAtTimestamp: UInt64 = model.receivedAtTimestamp
+        let timestamp: UInt64 = model.timestamp
         let threadUniqueId: String = model.uniqueThreadId
 
         // Subclass properties

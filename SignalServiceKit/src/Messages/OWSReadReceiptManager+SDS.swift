@@ -554,8 +554,8 @@ class TSRecipientReadReceiptSerializer: SDSSerializer {
 
         // Base class properties
         let recipientMap: Data = requiredArchive(model.recipientMap)
-        let recipientReadReceiptSchemaVersion: UInt = serializationSafeUInt(model.recipientReadReceiptSchemaVersion)
-        let sentTimestamp: UInt64 = serializationSafeUInt64(model.sentTimestamp)
+        let recipientReadReceiptSchemaVersion: UInt = model.recipientReadReceiptSchemaVersion
+        let sentTimestamp: UInt64 = model.sentTimestamp
 
         return RecipientReadReceiptRecord(id: id, recordType: recordType, uniqueId: uniqueId, recipientMap: recipientMap, recipientReadReceiptSchemaVersion: recipientReadReceiptSchemaVersion, sentTimestamp: sentTimestamp)
     }

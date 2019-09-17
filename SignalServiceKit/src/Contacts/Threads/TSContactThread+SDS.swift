@@ -62,7 +62,7 @@ class TSContactThreadSerializer: SDSSerializer {
 
         // Base class properties
         let archivalDate: Double? = archiveOptionalDate(model.archivalDate)
-        let archivedAsOfMessageSortId: UInt64? = archiveOptionalNSNumber(model.archivedAsOfMessageSortId, conversion: { serializationSafeUInt64($0.uint64Value) })
+        let archivedAsOfMessageSortId: UInt64? = archiveOptionalNSNumber(model.archivedAsOfMessageSortId, conversion: { $0.uint64Value })
         let conversationColorName: String = model.conversationColorName.rawValue
         let creationDate: Double? = archiveOptionalDate(model.creationDate)
         let isArchivedByLegacyTimestampForSorting: Bool = model.isArchivedByLegacyTimestampForSorting
@@ -73,7 +73,7 @@ class TSContactThreadSerializer: SDSSerializer {
 
         // Subclass properties
         let contactPhoneNumber: String? = model.contactPhoneNumber
-        let contactThreadSchemaVersion: UInt? = serializationSafeUInt(model.contactThreadSchemaVersion)
+        let contactThreadSchemaVersion: UInt? = model.contactThreadSchemaVersion
         let contactUUID: String? = model.contactUUID
         let groupModel: Data? = nil
         let hasDismissedOffers: Bool? = model.hasDismissedOffers

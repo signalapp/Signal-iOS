@@ -594,7 +594,7 @@ class OWSUserProfileSerializer: SDSSerializer {
         let profileName: String? = model.profileName
         let recipientPhoneNumber: String? = model.recipientPhoneNumber
         let recipientUUID: String? = model.recipientUUID
-        let userProfileSchemaVersion: UInt = serializationSafeUInt(model.userProfileSchemaVersion)
+        let userProfileSchemaVersion: UInt = model.userProfileSchemaVersion
         let username: String? = model.username
 
         return UserProfileRecord(id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, userProfileSchemaVersion: userProfileSchemaVersion, username: username)

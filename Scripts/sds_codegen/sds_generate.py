@@ -426,20 +426,11 @@ class TypeInfo:
             conversion_method = conversion_map[self.swift_type()]
             if conversion_method is None:
                 fail('Could not convert:', self.swift_type())
-            serialization_conversion = '$0.%s' % ( conversion_method, )
-            if self.swift_type() == 'UInt64':
-                serialization_conversion = 'serializationSafeUInt64(%s)' % ( serialization_conversion, )
-            elif self.swift_type() == 'UInt':
-                serialization_conversion = 'serializationSafeUInt(%s)' % ( serialization_conversion, )
-            serialization_conversion = '{ %s }' % ( serialization_conversion, )
+            serialization_conversion = '{ $0.%s }' % ( conversion_method, )
             if is_optional or did_force_optional:
                 return 'archiveOptionalNSNumber(%s, conversion: %s)' % ( value_expr, serialization_conversion, )
             else:
                 return 'archiveNSNumber(%s, conversion: %s)' % ( value_expr, serialization_conversion, )
-        elif self.swift_type() == 'UInt64':
-            value_expr = 'serializationSafeUInt64(%s)' % ( value_expr, )
-        elif self.swift_type() == 'UInt':
-            value_expr = 'serializationSafeUInt(%s)' % ( value_expr, )
 
         return value_expr
     

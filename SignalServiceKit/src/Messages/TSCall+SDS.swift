@@ -61,8 +61,8 @@ class TSCallSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Base class properties
-        let receivedAtTimestamp: UInt64 = serializationSafeUInt64(model.receivedAtTimestamp)
-        let timestamp: UInt64 = serializationSafeUInt64(model.timestamp)
+        let receivedAtTimestamp: UInt64 = model.receivedAtTimestamp
+        let timestamp: UInt64 = model.timestamp
         let threadUniqueId: String = model.uniqueThreadId
 
         // Subclass properties
@@ -72,7 +72,7 @@ class TSCallSerializer: SDSSerializer {
         let authorUUID: String? = nil
         let beforeInteractionId: String? = nil
         let body: String? = nil
-        let callSchemaVersion: UInt? = serializationSafeUInt(model.callSchemaVersion)
+        let callSchemaVersion: UInt? = model.callSchemaVersion
         let callType: RPRecentCallType? = model.callType
         let configurationDurationSeconds: UInt32? = nil
         let configurationIsEnabled: Bool? = nil

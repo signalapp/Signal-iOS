@@ -601,9 +601,9 @@ class TestModelSerializer: SDSSerializer {
         let int64Value: Int64 = model.int64Value
         let nsIntegerValue: Int = model.nsIntegerValue
         let nsNumberValueUsingInt64: Int64? = archiveOptionalNSNumber(model.nsNumberValueUsingInt64, conversion: { $0.int64Value })
-        let nsNumberValueUsingUInt64: UInt64? = archiveOptionalNSNumber(model.nsNumberValueUsingUInt64, conversion: { serializationSafeUInt64($0.uint64Value) })
-        let nsuIntegerValue: UInt = serializationSafeUInt(model.nsuIntegerValue)
-        let uint64Value: UInt64 = serializationSafeUInt64(model.uint64Value)
+        let nsNumberValueUsingUInt64: UInt64? = archiveOptionalNSNumber(model.nsNumberValueUsingUInt64, conversion: { $0.uint64Value })
+        let nsuIntegerValue: UInt = model.nsuIntegerValue
+        let uint64Value: UInt64 = model.uint64Value
 
         return TestModelRecord(id: id, recordType: recordType, uniqueId: uniqueId, dateValue: dateValue, doubleValue: doubleValue, floatValue: floatValue, int64Value: int64Value, nsIntegerValue: nsIntegerValue, nsNumberValueUsingInt64: nsNumberValueUsingInt64, nsNumberValueUsingUInt64: nsNumberValueUsingUInt64, nsuIntegerValue: nsuIntegerValue, uint64Value: uint64Value)
     }

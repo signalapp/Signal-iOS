@@ -61,7 +61,7 @@ class OWSBroadcastMediaMessageJobRecordSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Base class properties
-        let failureCount: UInt = serializationSafeUInt(model.failureCount)
+        let failureCount: UInt = model.failureCount
         let label: String = model.label
         let status: SSKJobRecordStatus = model.status
 

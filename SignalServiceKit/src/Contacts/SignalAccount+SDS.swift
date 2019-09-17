@@ -574,7 +574,7 @@ class SignalAccountSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Base class properties
-        let accountSchemaVersion: UInt = serializationSafeUInt(model.accountSchemaVersion)
+        let accountSchemaVersion: UInt = model.accountSchemaVersion
         let contact: Data? = optionalArchive(model.contact)
         let hasMultipleAccountContact: Bool = model.hasMultipleAccountContact
         let multipleAccountLabelText: String = model.multipleAccountLabelText

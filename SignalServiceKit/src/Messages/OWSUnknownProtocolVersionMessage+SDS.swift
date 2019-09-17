@@ -61,8 +61,8 @@ class OWSUnknownProtocolVersionMessageSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Base class properties
-        let receivedAtTimestamp: UInt64 = serializationSafeUInt64(model.receivedAtTimestamp)
-        let timestamp: UInt64 = serializationSafeUInt64(model.timestamp)
+        let receivedAtTimestamp: UInt64 = model.receivedAtTimestamp
+        let timestamp: UInt64 = model.timestamp
         let threadUniqueId: String = model.uniqueThreadId
 
         // Subclass properties
@@ -84,8 +84,8 @@ class OWSUnknownProtocolVersionMessageSerializer: SDSSerializer {
         let envelopeData: Data? = nil
         let errorMessageSchemaVersion: UInt? = nil
         let errorType: TSErrorMessageType? = nil
-        let expireStartedAt: UInt64? = serializationSafeUInt64(model.expireStartedAt)
-        let expiresAt: UInt64? = serializationSafeUInt64(model.expiresAt)
+        let expireStartedAt: UInt64? = model.expireStartedAt
+        let expiresAt: UInt64? = model.expiresAt
         let expiresInSeconds: UInt32? = model.expiresInSeconds
         let groupMetaMessage: TSGroupMetaMessage? = nil
         let hasAddToContactsOffer: Bool? = nil
@@ -94,7 +94,7 @@ class OWSUnknownProtocolVersionMessageSerializer: SDSSerializer {
         let hasLegacyMessageState: Bool? = nil
         let hasSyncedTranscript: Bool? = nil
         let incomingMessageSchemaVersion: UInt? = nil
-        let infoMessageSchemaVersion: UInt? = serializationSafeUInt(model.infoMessageSchemaVersion)
+        let infoMessageSchemaVersion: UInt? = model.infoMessageSchemaVersion
         let isFromLinkedDevice: Bool? = nil
         let isLocalChange: Bool? = nil
         let isViewOnceComplete: Bool? = model.isViewOnceComplete
@@ -109,18 +109,18 @@ class OWSUnknownProtocolVersionMessageSerializer: SDSSerializer {
         let mostRecentFailureText: String? = nil
         let outgoingMessageSchemaVersion: UInt? = nil
         let preKeyBundle: Data? = nil
-        let protocolVersion: UInt? = serializationSafeUInt(model.protocolVersion)
+        let protocolVersion: UInt? = model.protocolVersion
         let quotedMessage: Data? = optionalArchive(model.quotedMessage)
         let read: Bool? = model.wasRead
         let recipientAddress: Data? = nil
         let recipientAddressStates: Data? = nil
-        let schemaVersion: UInt? = serializationSafeUInt(model.schemaVersion)
+        let schemaVersion: UInt? = model.schemaVersion
         let sender: Data? = optionalArchive(model.sender)
         let serverTimestamp: UInt64? = nil
         let sourceDeviceId: UInt32? = nil
         let storedMessageState: TSOutgoingMessageState? = nil
         let storedShouldStartExpireTimer: Bool? = model.storedShouldStartExpireTimer
-        let unknownProtocolVersionMessageSchemaVersion: UInt? = serializationSafeUInt(model.unknownProtocolVersionMessageSchemaVersion)
+        let unknownProtocolVersionMessageSchemaVersion: UInt? = model.unknownProtocolVersionMessageSchemaVersion
         let unregisteredAddress: Data? = optionalArchive(model.unregisteredAddress)
         let verificationState: OWSVerificationState? = nil
         let wasReceivedByUD: Bool? = nil
