@@ -316,7 +316,7 @@ extension TSAttachmentSerializer {
     // where this model (and any subclasses) are persisted.
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
+    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
     // Base class properties
     static let albumMessageIdColumn = SDSColumnMetadata(columnName: "albumMessageId", columnType: .unicodeString, isOptional: true, columnIndex: 3)
     static let attachmentSchemaVersionColumn = SDSColumnMetadata(columnName: "attachmentSchemaVersion", columnType: .int64, columnIndex: 4)

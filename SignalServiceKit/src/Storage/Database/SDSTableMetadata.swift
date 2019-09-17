@@ -30,6 +30,9 @@ public class SDSColumnMetadata: NSObject {
     @objc
     public let isOptional: Bool
 
+    @objc
+    public let isUnique: Bool
+
     // If true, this column isn't needed for deserialization and can be skipped in SELECT statements.
     @objc
     public let skipSelect: Bool
@@ -38,10 +41,11 @@ public class SDSColumnMetadata: NSObject {
     public let columnIndex: Int32
 
     @objc
-    public init(columnName: String, columnType: SDSColumnType, isOptional: Bool = false, skipSelect: Bool = false, columnIndex: Int32 = 0) {
+    public init(columnName: String, columnType: SDSColumnType, isOptional: Bool = false, isUnique: Bool = false, skipSelect: Bool = false, columnIndex: Int32 = 0) {
         self.columnName = columnName
         self.columnType = columnType
         self.isOptional = isOptional
+        self.isUnique = isUnique
         self.skipSelect = skipSelect
         self.columnIndex = columnIndex
     }
@@ -122,6 +126,9 @@ public class SDSTableMetadata: NSObject {
 
                 if !columnMetadata.isOptional {
                     column.notNull()
+                }
+                if columnMetadata.isUnique {
+                    column.unique(onConflict: .fail)
                 }
             }
         }

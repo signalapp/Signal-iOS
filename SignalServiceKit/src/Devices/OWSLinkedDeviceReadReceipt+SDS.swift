@@ -149,7 +149,7 @@ extension OWSLinkedDeviceReadReceiptSerializer {
     // where this model (and any subclasses) are persisted.
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
+    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
     // Base class properties
     static let linkedDeviceReadReceiptSchemaVersionColumn = SDSColumnMetadata(columnName: "linkedDeviceReadReceiptSchemaVersion", columnType: .int64, columnIndex: 3)
     static let messageIdTimestampColumn = SDSColumnMetadata(columnName: "messageIdTimestamp", columnType: .int64, columnIndex: 4)
