@@ -107,21 +107,35 @@ class SDSPerformanceTest: PerformanceBaseTest {
 
     // MARK: - Enumerate Messages
 
-    func testYDBPerf_enumerateMessages() {
+    func testYDBPerf_enumerateMessagesUnbatched() {
         storageCoordinator.useYDBForTests()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
-            enumerateMessages()
+            enumerateMessages(batched: false)
         }
     }
 
-    func testGRDBPerf_enumerateMessages() {
+    func testGRDBPerf_enumerateMessagesUnbatched() {
         storageCoordinator.useGRDBForTests()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
-            enumerateMessages()
+            enumerateMessages(batched: false)
         }
     }
 
-    func enumerateMessagesUnbatched() {
+    func testYDBPerf_enumerateMessagesBatched() {
+        storageCoordinator.useYDBForTests()
+        measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
+            enumerateMessages(batched: true)
+        }
+    }
+
+    func testGRDBPerf_enumerateMessagesBatched() {
+        storageCoordinator.useGRDBForTests()
+        measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
+            enumerateMessages(batched: true)
+        }
+    }
+
+    func enumerateMessages(batched: Bool) {
         let messageCount = 100
         let enumerationCount = 10
 
@@ -139,40 +153,7 @@ class SDSPerformanceTest: PerformanceBaseTest {
         read { transaction in
             var enumeratedCount = 0
             for _ in 0..<enumerationCount {
-                TSInteraction.anyEnumerate(transaction: transaction) { _, _ in
-                    enumeratedCount += 1
-                }
-            }
-            XCTAssertEqual(enumeratedCount, messageCount * enumerationCount)
-        }
-        stopMeasuring()
-
-        // cleanup for next iteration
-        write { transaction in
-            TSThread.anyRemoveAllWithInstantation(transaction: transaction)
-            TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
-        }
-    }
-
-    func enumerateMessagesBatched() {
-        let messageCount = 100
-        let enumerationCount = 10
-
-        var uniqueIds = [String]()
-        write { transaction in
-            XCTAssert(TSInteraction.anyCount(transaction: transaction) == 0)
-
-            for _ in 0..<messageCount {
-                let message = OutgoingMessageFactory().create(transaction: transaction)
-                uniqueIds.append(message.uniqueId)
-            }
-        }
-
-        startMeasuring()
-        read { transaction in
-            var enumeratedCount = 0
-            for _ in 0..<enumerationCount {
-                TSInteraction.anyEnumerate(transaction: transaction, batched: true) { _, _ in
+                TSInteraction.anyEnumerate(transaction: transaction, batched: batched) { _, _ in
                     enumeratedCount += 1
                 }
             }
