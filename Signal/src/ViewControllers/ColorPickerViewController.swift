@@ -349,6 +349,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var lastAudioMessageView: OWSAudioMessageView?
     var audioDurationSeconds: CGFloat = 0
     var audioProgressSeconds: CGFloat = 0
+    var audioWaveform: AudioWaveform?
     var messageCellType: OWSMessageCellType = .textOnlyMessage
     var displayableBodyText: DisplayableText?
     var attachmentStream: TSAttachmentStream?

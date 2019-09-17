@@ -113,6 +113,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 @property (nonatomic) AudioPlaybackState audioPlaybackState;
 @property (nonatomic) CGFloat audioProgressSeconds;
 @property (nonatomic) CGFloat audioDurationSeconds;
+@property (nonatomic, nullable) AudioWaveform *audioWaveform;
 
 #pragma mark - View State
 
@@ -879,6 +880,8 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
                 if (audioDurationSeconds > 0) {
                     self.audioDurationSeconds = audioDurationSeconds;
                     self.messageCellType = OWSMessageCellType_Audio;
+                    self.audioWaveform = [[AudioWaveform alloc]
+                        initWithAsset:[AVURLAsset assetWithURL:self.attachmentStream.originalMediaURL]];
                 } else {
                     self.messageCellType = OWSMessageCellType_GenericAttachment;
                 }

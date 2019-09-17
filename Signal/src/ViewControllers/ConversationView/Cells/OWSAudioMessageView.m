@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) UIButton *audioPlayPauseButton;
 @property (nonatomic, nullable) UILabel *playbackTimeLabel;
 @property (nonatomic, nullable) UISlider *audioProgressSlider;
+@property (nonatomic, nullable) AudioWaveformProgressView *waveformProgressView;
 
 @end
 
@@ -61,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Don't update the position if we're current scrubbing, as it conflicts with the user interaction.
     if (!self.isScrubbing) {
-        [self updateAudioProgressSlider];
+        [self updateWaveformProgressView];
         [self updateAudioBottomLabel:self.audioProgressSeconds];
     }
 }
@@ -111,39 +112,52 @@ NS_ASSUME_NONNULL_BEGIN
     [self setAudioIcon:[UIImage imageNamed:@"pause-filled-24"]];
 }
 
-- (void)updateAudioProgressSlider
+- (void)updateWaveformProgressView
 {
     float progressRatio = 0;
     if (self.audioDurationSeconds > 0) {
         progressRatio = (float)(self.audioProgressSeconds / self.audioDurationSeconds);
     }
-    [self.audioProgressSlider setValue:progressRatio];
 
+    [self setProgressRatio:progressRatio];
 
-    UIColor *minimumTrackColor = nil;
-    UIColor *maximumTrackColor = nil;
+    UIColor *playedColor = nil;
+    UIColor *unplayedColor = nil;
     UIColor *thumbColor = nil;
 
     if (self.isIncoming) {
-        minimumTrackColor = [UIColor colorWithRGBHex:0x92caff];
-        maximumTrackColor = [[Theme secondaryColor] colorWithAlphaComponent:0.3];
+        playedColor = [UIColor colorWithRGBHex:0x92caff];
+        unplayedColor = [[Theme secondaryColor] colorWithAlphaComponent:0.3];
         thumbColor = [Theme secondaryColor];
     } else {
-        minimumTrackColor = [UIColor ows_whiteColor];
-        maximumTrackColor = [[UIColor ows_whiteColor] colorWithAlphaComponent:0.6];
+        playedColor = [UIColor ows_whiteColor];
+        unplayedColor = [[UIColor ows_whiteColor] colorWithAlphaComponent:0.6];
         thumbColor = [UIColor ows_whiteColor];
     }
-
-    [self.audioProgressSlider setMaximumTrackImage:[self trackImageWithColor:maximumTrackColor]
-                                          forState:UIControlStateNormal];
-    [self.audioProgressSlider setMinimumTrackImage:[self trackImageWithColor:minimumTrackColor]
-                                          forState:UIControlStateNormal];
 
     [self.audioProgressSlider
         setThumbImage:[[UIImage imageNamed:@"audio_message_thumb"] asTintedImageWithColor:thumbColor]
              forState:UIControlStateNormal];
+    [self.audioProgressSlider setMinimumTrackImage:[self trackImageWithColor:playedColor]
+                                          forState:UIControlStateNormal];
+    [self.audioProgressSlider setMaximumTrackImage:[self trackImageWithColor:unplayedColor]
+                                          forState:UIControlStateNormal];
 
     self.audioPlayPauseButton.imageView.tintColor = thumbColor;
+
+    self.waveformProgressView.playedColor = playedColor;
+    self.waveformProgressView.unplayedColor = unplayedColor;
+    self.waveformProgressView.thumbColor = thumbColor;
+    self.waveformProgressView.audioWaveform = self.viewItem.audioWaveform;
+
+    self.audioProgressSlider.hidden = self.viewItem.audioWaveform != nil;
+    self.waveformProgressView.hidden = self.viewItem.audioWaveform == nil;
+}
+
+- (void)setProgressRatio:(float)progressRatio
+{
+    [self.audioProgressSlider setValue:progressRatio];
+    self.waveformProgressView.value = progressRatio;
 }
 
 - (UIImage *)trackImageWithColor:(UIColor *)color
@@ -195,12 +209,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)hMargin
 {
-    return 8.f;
+    return 0.f;
 }
 
 - (CGFloat)hSpacing
 {
-    return 15.f;
+    return 12.f;
 }
 
 + (CGFloat)vMargin
@@ -215,10 +229,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (CGFloat)bubbleHeight
 {
-    CGFloat iconHeight = self.iconSize;
-    CGFloat labelsHeight = ([OWSAudioMessageView labelFont].lineHeight * 2 +
-        [OWSAudioMessageView audioProgressSliderHeight] + [OWSAudioMessageView labelVSpacing] * 2);
-    CGFloat contentHeight = MAX(iconHeight, labelsHeight);
+    CGFloat contentHeight = ([OWSAudioMessageView labelFont].lineHeight + [OWSAudioMessageView waveformMaxHeight] +
+        [OWSAudioMessageView vSpacing]);
     return contentHeight + self.vMargin * 2;
 }
 
@@ -244,18 +256,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createContents
 {
-    self.axis = UILayoutConstraintAxisHorizontal;
-    self.alignment = UIStackViewAlignmentCenter;
-    self.spacing = self.hSpacing;
-    self.layoutMarginsRelativeArrangement = YES;
-    self.layoutMargins = UIEdgeInsetsMake(self.vMargin, self.hMargin, self.vMargin, self.hMargin);
-
-    _audioPlayPauseButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.audioPlayPauseButton.enabled = NO;
-    [self addArrangedSubview:self.audioPlayPauseButton];
-    [self.audioPlayPauseButton setContentHuggingHigh];
-
-    [self replaceIconWithDownloadProgressIfNecessary:self.audioPlayPauseButton];
+    self.axis = UILayoutConstraintAxisVertical;
+    self.spacing = [OWSAudioMessageView vSpacing];
 
     NSString *_Nullable filename = self.attachment.sourceFilename;
     if (filename.length < 1) {
@@ -276,27 +278,29 @@ NS_ASSUME_NONNULL_BEGIN
     topLabel.textColor = [self.conversationStyle bubbleTextColorWithIsIncoming:self.isIncoming];
     topLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     topLabel.font = [OWSAudioMessageView labelFont];
+    [self addArrangedSubview:topLabel];
+    topLabel.hidden = topText == nil;
+
+    _audioPlayPauseButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.audioPlayPauseButton.enabled = NO;
+    [self.audioPlayPauseButton setContentHuggingHigh];
+
+    UIView *waveformContainer = [UIView containerView];
+    [waveformContainer autoSetDimension:ALDimensionHeight toSize:[OWSAudioMessageView waveformMaxHeight]];
+
+    AudioWaveformProgressView *waveformProgressView = [AudioWaveformProgressView new];
+    self.waveformProgressView = waveformProgressView;
+    [waveformContainer addSubview:waveformProgressView];
+    [waveformProgressView autoPinEdgesToSuperviewEdges];
 
     UISlider *audioProgressSlider = [UISlider new];
     self.audioProgressSlider = audioProgressSlider;
-    [self updateAudioProgressSlider];
-    [audioProgressSlider autoSetDimension:ALDimensionHeight toSize:[OWSAudioMessageView audioProgressSliderHeight]];
+    [waveformContainer addSubview:audioProgressSlider];
+    [audioProgressSlider autoPinWidthToSuperview];
+    [audioProgressSlider autoSetDimension:ALDimensionHeight toSize:12];
+    [audioProgressSlider autoVCenterInSuperview];
 
-    UIStackView *labelsView = [UIStackView new];
-    labelsView.axis = UILayoutConstraintAxisVertical;
-    labelsView.spacing = [OWSAudioMessageView labelVSpacing];
-    [labelsView addArrangedSubview:topLabel];
-    [labelsView addArrangedSubview:audioProgressSlider];
-
-    // Ensure the "audio progress" and "play button" are v-center-aligned using a container.
-    UIView *labelsContainerView = [UIView containerView];
-    [self addArrangedSubview:labelsContainerView];
-    [labelsContainerView addSubview:labelsView];
-    [labelsView autoPinWidthToSuperview];
-    [labelsView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
-    [labelsView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
-
-    [audioProgressSlider autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.audioPlayPauseButton];
+    [self updateWaveformProgressView];
 
     UILabel *playbackTimeLabel = [UILabel new];
     self.playbackTimeLabel = playbackTimeLabel;
@@ -304,15 +308,27 @@ NS_ASSUME_NONNULL_BEGIN
     playbackTimeLabel.textColor = [self.conversationStyle bubbleSecondaryTextColorWithIsIncoming:self.isIncoming];
     playbackTimeLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     playbackTimeLabel.font = [OWSAudioMessageView progressLabelFont];
-    [self addArrangedSubview:playbackTimeLabel];
     [playbackTimeLabel setContentHuggingHigh];
+
+    UIStackView *playerStack = [[UIStackView alloc]
+        initWithArrangedSubviews:@[ self.audioPlayPauseButton, waveformContainer, playbackTimeLabel ]];
+    playerStack.layoutMarginsRelativeArrangement = YES;
+    playerStack.layoutMargins = UIEdgeInsetsMake(self.vMargin, self.hMargin, self.vMargin, self.hMargin);
+    playerStack.axis = UILayoutConstraintAxisHorizontal;
+    playerStack.spacing = self.hSpacing;
+
+    [self addArrangedSubview:playerStack];
+
+    [waveformContainer autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.audioPlayPauseButton];
+
+    [self replaceIconWithDownloadProgressIfNecessary:self.audioPlayPauseButton];
 
     [self updateContents];
 }
 
-+ (CGFloat)audioProgressSliderHeight
++ (CGFloat)waveformMaxHeight
 {
-    return 12.f;
+    return 35.f;
 }
 
 + (UIFont *)labelFont
@@ -325,21 +341,21 @@ NS_ASSUME_NONNULL_BEGIN
     return [[UIFont ows_dynamicTypeCaption1Font] ows_monospaced];
 }
 
-+ (CGFloat)labelVSpacing
++ (CGFloat)vSpacing
 {
     return 2.f;
 }
 
 - (BOOL)isPointInScrubbableRegion:(CGPoint)location
 {
-    CGPoint locationInSlider = [self convertPoint:location toView:self.audioProgressSlider];
-    return locationInSlider.x >= 0 && locationInSlider.x <= self.audioProgressSlider.width;
+    CGPoint locationInSlider = [self convertPoint:location toView:self.waveformProgressView];
+    return locationInSlider.x >= 0 && locationInSlider.x <= self.waveformProgressView.width;
 }
 
 - (NSTimeInterval)scrubToLocation:(CGPoint)location
 {
-    CGRect sliderContainer = [self convertRect:self.audioProgressSlider.frame
-                                      fromView:self.audioProgressSlider.superview];
+    CGRect sliderContainer = [self convertRect:self.waveformProgressView.frame
+                                      fromView:self.waveformProgressView.superview];
 
     CGFloat newRatio = CGFloatClamp01(CGFloatInverseLerp(location.x, CGRectGetMinX(sliderContainer), CGRectGetMaxX(sliderContainer)));
 
@@ -348,7 +364,7 @@ NS_ASSUME_NONNULL_BEGIN
         newRatio = 1 - newRatio;
     }
 
-    [self.audioProgressSlider setValue:(float)newRatio];
+    [self setProgressRatio:newRatio];
 
     CGFloat newProgressSeconds = newRatio * self.audioDurationSeconds;
 

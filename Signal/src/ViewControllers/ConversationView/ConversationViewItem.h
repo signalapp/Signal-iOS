@@ -37,6 +37,7 @@ typedef NS_ENUM(NSUInteger, ViewOnceMessageState) {
 
 NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 
+@class AudioWaveform;
 @class ContactShareViewModel;
 @class ConversationViewCell;
 @class DisplayableText;
@@ -122,6 +123,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 
 @property (nonatomic, readonly) CGFloat audioDurationSeconds;
 @property (nonatomic, readonly) CGFloat audioProgressSeconds;
+@property (nonatomic, readonly, nullable) AudioWaveform *audioWaveform;
 
 #pragma mark - View State Caching
 
