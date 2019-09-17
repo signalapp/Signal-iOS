@@ -941,6 +941,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (syncMessage.sent) {
+        if (syncMessage.sent.timestamp > INT64_MAX) {
+            OWSFailDebug(@"Invalid timestamp.");
+            return;
+        }
+        if (syncMessage.sent.expirationStartTimestamp > INT64_MAX) {
+            OWSFailDebug(@"Invalid expirationStartTimestamp.");
+            return;
+        }
         OWSIncomingSentMessageTranscript *transcript =
             [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent transaction:transaction];
 

@@ -157,6 +157,10 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
     uint64_t timestamp = [quoteProto id];
+    if (timestamp > INT64_MAX) {
+        OWSFailDebug(@"Invalid timestamp");
+        return nil;
+    }
 
     if (!quoteProto.hasValidAuthor) {
         OWSFailDebug(@"quoted message missing author");

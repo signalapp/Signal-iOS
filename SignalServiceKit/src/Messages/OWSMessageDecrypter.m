@@ -210,6 +210,10 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             OWSFailDebug(@"Invalid timestamp.");
             return failureBlock();
         }
+        if (envelope.hasServerTimestamp && envelope.serverTimestamp > INT64_MAX) {
+            OWSFailDebug(@"Invalid serverTimestamp.");
+            return failureBlock();
+        }
 
         if (envelope.unwrappedType != SSKProtoEnvelopeTypeUnidentifiedSender) {
             if (!envelope.hasValidSource) {
