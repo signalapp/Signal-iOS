@@ -127,6 +127,7 @@ public class GRDBGenericDatabaseObserver: NSObject {
         // in the expected way.
         AssertIsOnUIDatabaseObserverSerialQueue()
         let rowId = RowId(interaction.sortId)
+        assert(rowId > 0)
         pendingChanges.interactionRowIds.insert(rowId)
         pendingChanges.tableNames.insert(TSInteraction.table.tableName)
     }

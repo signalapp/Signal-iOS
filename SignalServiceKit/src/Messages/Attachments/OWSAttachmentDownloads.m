@@ -347,7 +347,9 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                                                                            = TSAttachmentPointerStateDownloading;
                                                                    }];
 
-            if (job.message) {
+            if (job.message != nil) {
+                // Ensure relevant sortId is loaded for touch to succeed.
+                [job.message anyReloadWithTransaction:transaction];
                 [self.databaseStorage touchInteraction:job.message transaction:transaction];
             }
         }];
@@ -374,7 +376,9 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                     [existingAttachment anyRemoveWithTransaction:transaction];
                     [attachmentStream anyInsertWithTransaction:transaction];
 
-                    if (job.message) {
+                    if (job.message != nil) {
+                        // Ensure relevant sortId is loaded for touch to succeed.
+                        [job.message anyReloadWithTransaction:transaction];
                         [self.databaseStorage touchInteraction:job.message transaction:transaction];
                         [transaction
                             addCompletionWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
@@ -412,7 +416,9 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                                                                                    = TSAttachmentPointerStateFailed;
                                                                            }];
 
-                    if (job.message) {
+                    if (job.message != nil) {
+                        // Ensure relevant sortId is loaded for touch to succeed.
+                        [job.message anyReloadWithTransaction:transaction];
                         [self.databaseStorage touchInteraction:job.message transaction:transaction];
                     }
                 }];
