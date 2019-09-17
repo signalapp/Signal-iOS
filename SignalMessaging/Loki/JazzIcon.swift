@@ -8,24 +8,26 @@ extension String {
 }
 
 private class RNG {
+    private static let int32Max: Int = Int(Int32.max) // 2147483647
+    
     private var seed: Int
     private var initial: Int
     
     init(seed: Int) {
-        self.seed = seed % 2147483647
-        if (self.seed <= 0) { self.seed += 2147483646 }
+        self.seed = seed % int32Max
+        if (self.seed <= 0) { self.seed += int32Max - 1 }
         self.initial = self.seed
     }
     
     func next() -> Int {
         // Casting to Int64 incase number goes above Int32
-        let seed = (Int64(self.seed) * 16807) % 2147483647
+        let seed = (Int64(self.seed) * 16807) % int32Max
         self.seed = Int(seed)
         return self.seed
     }
     
     func nextFloat() -> Float {
-        return Float(next() - 1) / 2147483647.0
+        return Float(next() - 1) / Float(int32Max - 1)
     }
     
     func nextCGFloat() -> CGFloat {
