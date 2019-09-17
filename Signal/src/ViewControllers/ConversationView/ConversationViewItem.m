@@ -696,9 +696,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     if (self.hasBodyText) {
         if (self.messageCellType == OWSMessageCellType_Unknown) {
-            OWSAssertDebug(message.attachmentIds.count == 0
-                || (message.attachmentIds.count == 1 &&
-                       [message oversizeTextAttachmentWithTransaction:transaction] != nil));
+//            OWSAssertDebug(message.attachmentIds.count == 0
+//                || (message.attachmentIds.count == 1 &&
+//                       [message oversizeTextAttachmentWithTransaction:transaction] != nil));
             self.messageCellType = OWSMessageCellType_TextOnlyMessage;
         }
         OWSAssertDebug(self.displayableBodyText);

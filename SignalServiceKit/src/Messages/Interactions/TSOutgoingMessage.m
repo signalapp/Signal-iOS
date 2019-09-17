@@ -738,7 +738,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                  TSOutgoingMessageRecipientState *_Nullable recipientState
                                      = message.recipientStateMap[recipientId];
                                  if (!recipientState) {
-                                     OWSFailDebug(@"Missing recipient state for delivered recipient: %@", recipientId);
+                                     // OWSFailDebug(@"Missing recipient state for delivered recipient: %@", recipientId);
                                      return;
                                  }
                                  if (recipientState.state != OWSOutgoingMessageRecipientStateSent) {
@@ -762,7 +762,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                  TSOutgoingMessageRecipientState *_Nullable recipientState
                                      = message.recipientStateMap[recipientId];
                                  if (!recipientState) {
-                                     OWSFailDebug(@"Missing recipient state for delivered recipient: %@", recipientId);
+                                     // OWSFailDebug(@"Missing recipient state for delivered recipient: %@", recipientId);
                                      return;
                                  }
                                  if (recipientState.state != OWSOutgoingMessageRecipientStateSent) {
