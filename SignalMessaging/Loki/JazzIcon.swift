@@ -8,7 +8,7 @@ extension String {
 }
 
 private class RNG {
-    private static let int32Max: Int = Int(Int32.max) // 2147483647
+    private let int32Max: Int = Int(Int32.max) // 2147483647
     
     private var seed: Int
     private var initial: Int
@@ -21,7 +21,7 @@ private class RNG {
     
     func next() -> Int {
         // Casting to Int64 incase number goes above Int32
-        let seed = (Int64(self.seed) * 16807) % int32Max
+        let seed = (Int64(self.seed) * 16807) % Int64(int32Max)
         self.seed = Int(seed)
         return self.seed
     }
