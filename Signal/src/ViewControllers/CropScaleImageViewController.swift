@@ -390,6 +390,11 @@ import SignalMessaging
             srcTranslation = srcTranslationAtPinchStart
             imageScale = imageScaleAtPinchStart
             break
+        @unknown default:
+            owsFailDebug("Unexpected enum value.")
+            srcTranslation = srcTranslationAtPinchStart
+            imageScale = imageScaleAtPinchStart
+            break
         }
 
         updateImageLayout()
@@ -419,6 +424,11 @@ import SignalMessaging
                                      y: srcTranslationAtPanStart.y + gestureTranslation.y * -viewToSrcRatio)
             break
         case .cancelled, .failed:
+            srcTranslation
+                = srcTranslationAtPanStart
+            break
+        @unknown default:
+            owsFailDebug("Unexpected enum value.")
             srcTranslation
                 = srcTranslationAtPanStart
             break

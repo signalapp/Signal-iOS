@@ -179,6 +179,10 @@ class PhotoCapture: NSObject {
             newPosition = .front
         case .unspecified:
             newPosition = .front
+        @unknown default:
+            owsFailDebug("Unexpected enum value.")
+            newPosition = .front
+            break
         }
         desiredPosition = newPosition
 
