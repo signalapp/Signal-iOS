@@ -150,7 +150,7 @@ NSErrorDomain const SSKJobRecordErrorDomain = @"SignalServiceKit.JobRecord";
         case SSKJobRecordStatus_Running: {
             [self anyUpdateWithTransaction:transaction
                                      block:^(SSKJobRecord *record) {
-                                         record.failureCount++;
+                                         record.failureCount = MIN(record.failureCount + 1, INT64_MAX);
                                      }];
             return YES;
         }

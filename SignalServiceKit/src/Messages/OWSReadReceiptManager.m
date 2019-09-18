@@ -501,6 +501,10 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             OWSFailDebug(@"messageIdTimestamp was unexpectedly 0");
             continue;
         }
+        if (![SDS fitsInInt64:messageIdTimestamp]) {
+            OWSFailDebug(@"Invalid messageIdTimestamp.");
+            continue;
+        }
 
         NSError *error;
         NSArray<TSIncomingMessage *> *messages = (NSArray<TSIncomingMessage *> *)[InteractionFinder

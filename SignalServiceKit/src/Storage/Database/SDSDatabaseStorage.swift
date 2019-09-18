@@ -591,3 +591,28 @@ protocol SDSDatabaseStorageAdapter {
     func read(block: @escaping (ReadTransaction) -> Void) throws
     func write(block: @escaping (WriteTransaction) -> Void) throws
 }
+
+// MARK: -
+
+@objc
+public class SDS: NSObject {
+    @objc
+    public class func fitsInInt64(_ value: UInt64) -> Bool {
+        return value <= Int64.max
+    }
+
+    @objc
+    public func fitsInInt64(_ value: UInt64) -> Bool {
+        return SDS.fitsInInt64(value)
+    }
+
+    @objc(fitsInInt64WithNSNumber:)
+    public class func fitsInInt64(nsNumber value: NSNumber) -> Bool {
+        return fitsInInt64(value.uint64Value)
+    }
+
+    @objc(fitsInInt64WithNSNumber:)
+    public func fitsInInt64(nsNumber value: NSNumber) -> Bool {
+        return SDS.fitsInInt64(nsNumber: value)
+    }
+}

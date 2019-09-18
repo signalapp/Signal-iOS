@@ -309,7 +309,10 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"Missing transaction.");
         return;
     }
-
+    if (![SDS fitsInInt64:envelope.timestamp]) {
+        OWSFailDebug(@"Invalid timestamp.");
+        return;
+    }
     // Old-style delivery notices don't include a "delivery timestamp".
     [self processDeliveryReceiptsFromRecipient:envelope.sourceAddress
                                 sentTimestamps:@[
@@ -340,9 +343,17 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"Missing transaction.");
         return;
     }
+    if (deliveryTimestamp != nil && ![SDS fitsInInt64WithNSNumber:deliveryTimestamp]) {
+        OWSFailDebug(@"Invalid timestamp.");
+        return;
+    }
 
     for (NSNumber *nsTimestamp in sentTimestamps) {
         uint64_t timestamp = [nsTimestamp unsignedLongLongValue];
+        if (![SDS fitsInInt64:timestamp]) {
+            OWSFailDebug(@"Invalid timestamp.");
+            continue;
+        }
 
         NSError *error;
         NSArray<TSOutgoingMessage *> *messages = (NSArray<TSOutgoingMessage *> *)[InteractionFinder
@@ -395,6 +406,10 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if (envelope.timestamp < 1) {
+        OWSFailDebug(@"Invalid timestamp.");
+        return;
+    }
+    if (![SDS fitsInInt64:envelope.timestamp]) {
         OWSFailDebug(@"Invalid timestamp.");
         return;
     }
@@ -502,6 +517,10 @@ NS_ASSUME_NONNULL_BEGIN
         if (dataMessage.timestamp <= 0) {
             OWSFailDebug(@"Ignoring message with invalid data message timestamp: %@", envelope.sourceAddress);
             // TODO: Add analytics.
+            return;
+        }
+        if (![SDS fitsInInt64:dataMessage.timestamp]) {
+            OWSFailDebug(@"Invalid timestamp.");
             return;
         }
         // This prevents replay attacks by the service.
@@ -632,6 +651,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSArray<NSNumber *> *sentTimestamps = receiptMessage.timestamp;
+    for (NSNumber *sentTimestamp in sentTimestamps) {
+        if (![SDS fitsInInt64:sentTimestamp.unsignedLongLongValue]) {
+            OWSFailDebug(@"Invalid timestamp.");
+            return;
+        }
+    }
 
     switch (receiptMessage.unwrappedType) {
         case SSKProtoReceiptMessageTypeDelivery:
@@ -916,6 +941,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (syncMessage.sent) {
+        if (![SDS fitsInInt64:syncMessage.sent.timestamp]) {
+            OWSFailDebug(@"Invalid timestamp.");
+            return;
+        }
+        if (![SDS fitsInInt64:syncMessage.sent.expirationStartTimestamp]) {
+            OWSFailDebug(@"Invalid expirationStartTimestamp.");
+            return;
+        }
         OWSIncomingSentMessageTranscript *transcript =
             [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent transaction:transaction];
 
@@ -1463,6 +1496,10 @@ NS_ASSUME_NONNULL_BEGIN
     uint64_t timestamp = envelope.timestamp;
     NSString *body = dataMessage.body;
     NSNumber *_Nullable serverTimestamp = (envelope.hasServerTimestamp ? @(envelope.serverTimestamp) : nil);
+    if (serverTimestamp != nil && ![SDS fitsInInt64WithNSNumber:serverTimestamp]) {
+        OWSFailDebug(@"Invalid timestamp.");
+        return nil;
+    }
 
     TSQuotedMessage *_Nullable quotedMessage =
         [TSQuotedMessage quotedMessageForDataMessage:dataMessage thread:thread transaction:transaction];

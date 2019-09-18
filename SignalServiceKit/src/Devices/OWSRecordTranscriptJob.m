@@ -81,6 +81,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSLogInfo(@"Recording transcript in thread: %@ timestamp: %llu", transcript.thread.uniqueId, transcript.timestamp);
 
+    if (![SDS fitsInInt64:transcript.timestamp]) {
+        OWSFailDebug(@"Invalid timestamp.");
+        return;
+    }
+
     if (transcript.isEndSessionMessage) {
         OWSLogInfo(@"EndSession was sent to recipient: %@.", transcript.recipientAddress);
         [self.sessionStore deleteAllSessionsForAddress:transcript.recipientAddress transaction:transaction];
@@ -240,6 +245,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSFailDebug(@"Unknown protocol version: %@", transcript.requiredProtocolVersion);
 
+    if (![SDS fitsInInt64:transcript.timestamp]) {
+        OWSFailDebug(@"Invalid timestamp.");
+        return;
+    }
+
     TSInteraction *message =
         [[OWSUnknownProtocolVersionMessage alloc] initWithTimestamp:transcript.timestamp
                                                              thread:transcript.thread
@@ -269,6 +279,10 @@ NS_ASSUME_NONNULL_BEGIN
     uint64_t timestamp = transcript.timestamp;
     if (timestamp < 1) {
         OWSFailDebug(@"'recipient update' transcript has invalid timestamp.");
+        return;
+    }
+    if (![SDS fitsInInt64:timestamp]) {
+        OWSFailDebug(@"Invalid timestamp.");
         return;
     }
 

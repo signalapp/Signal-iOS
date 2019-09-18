@@ -822,6 +822,10 @@ NS_ASSUME_NONNULL_BEGIN
                 exportItem.encryptedItem = attachmentExport.encryptedItem;
                 exportItem.recordName = recordName;
                 exportItem.attachmentExport = attachmentExport;
+                if (![SDS fitsInInt64WithNSNumber:exportItem.uncompressedDataLength]) {
+                    OWSFailDebug(@"Invalid export item.");
+                    continue;
+                }
                 [self.savedAttachmentItems addObject:exportItem];
 
                 // Immediately save the record metadata to facilitate export resume.
