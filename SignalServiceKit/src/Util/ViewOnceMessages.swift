@@ -165,13 +165,13 @@ public class ViewOnceMessages: NSObject {
         }
         let messageIdTimestamp: UInt64 = message.timestamp
         guard messageIdTimestamp > 0,
-        messageIdTimestamp <= Int64.max else {
+        SDS.fitsInInt64(messageIdTimestamp) else {
             owsFailDebug("Invalid messageIdTimestamp.")
             return
         }
         let readTimestamp: UInt64 = envelope.timestamp
         guard readTimestamp > 0,
-            readTimestamp <= Int64.max else {
+            SDS.fitsInInt64(Int64.max) else {
             owsFailDebug("Invalid readTimestamp.")
             return
         }
