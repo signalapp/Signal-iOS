@@ -8,7 +8,7 @@ public final class LokiGroupChatAPI : NSObject {
     
     // MARK: Settings
     private static let fallbackBatchCount = 20
-    private static let maxRetryCount: UInt = 4
+    private static let maxRetryCount: UInt = 8
     
     // MARK: Public Chat
     #if DEBUG
