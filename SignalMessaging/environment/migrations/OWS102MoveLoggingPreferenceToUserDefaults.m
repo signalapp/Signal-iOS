@@ -25,7 +25,7 @@ static NSString *const OWS102MoveLoggingPreferenceToUserDefaultsMigrationId = @"
     OWSLogWarn(@"[OWS102MoveLoggingPreferenceToUserDefaultsMigrationId] copying existing logging preference to "
                @"NSUserDefaults");
 
-    NSNumber *existingValue =
+    NSNumber *_Nullable existingValue =
         [transaction objectForKey:OWSPreferencesKeyEnableDebugLog inCollection:OWSPreferencesSignalDatabaseCollection];
 
     if (existingValue) {
