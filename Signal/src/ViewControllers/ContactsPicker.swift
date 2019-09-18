@@ -217,8 +217,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
                     Logger.error("Failed to fetch contacts with error:\(error)")
                 }
         @unknown default:
-            owsFailDebug("Unexpected enum value.")
-            errorHandler(OWSErrorMakeAssertionError("Unexpected enum value"))
+            errorHandler(OWSAssertionError("Unexpected enum value"))
             break
         }
     }
