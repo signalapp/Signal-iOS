@@ -38,6 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+const NSUInteger kMinimumSearchLength = 2;
+
 @interface RecipientPickerViewController () <UISearchBarDelegate,
     ContactsViewHelperDelegate,
     OWSTableViewControllerDelegate,
@@ -1024,7 +1026,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setSearchResults:(nullable ComposeScreenSearchResultSet *)searchResults
 {
     if (searchResults == nil) {
-        if (self.searchText.length > 0) {
+        if (self.searchText.length >= kMinimumSearchLength) {
             OWSLogVerbose(@"user has entered text since clearing results. Skipping stale results.");
             return;
         }
@@ -1047,7 +1049,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *searchText = self.searchText;
 
-    if (searchText.length == 0) {
+    if (searchText.length < kMinimumSearchLength) {
         self.searchResults = nil;
         return;
     }
