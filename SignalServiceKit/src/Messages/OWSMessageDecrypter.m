@@ -206,11 +206,11 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             OWSFailDebug(@"Incoming envelope is missing type.");
             return failureBlock();
         }
-        if (envelope.timestamp > INT64_MAX) {
+        if (![SDS fitsInInt64:envelope.timestamp]) {
             OWSFailDebug(@"Invalid timestamp.");
             return failureBlock();
         }
-        if (envelope.hasServerTimestamp && envelope.serverTimestamp > INT64_MAX) {
+        if (envelope.hasServerTimestamp && ![SDS fitsInInt64:envelope.serverTimestamp]) {
             OWSFailDebug(@"Invalid serverTimestamp.");
             return failureBlock();
         }

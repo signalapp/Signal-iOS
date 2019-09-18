@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSLogInfo(@"Recording transcript in thread: %@ timestamp: %llu", transcript.thread.uniqueId, transcript.timestamp);
 
-    if (transcript.timestamp > INT64_MAX) {
+    if (![SDS fitsInInt64:transcript.timestamp]) {
         OWSFailDebug(@"Invalid timestamp.");
         return;
     }
@@ -245,7 +245,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSFailDebug(@"Unknown protocol version: %@", transcript.requiredProtocolVersion);
 
-    if (transcript.timestamp > INT64_MAX) {
+    if (![SDS fitsInInt64:transcript.timestamp]) {
         OWSFailDebug(@"Invalid timestamp.");
         return;
     }
@@ -281,7 +281,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"'recipient update' transcript has invalid timestamp.");
         return;
     }
-    if (timestamp > INT64_MAX) {
+    if (![SDS fitsInInt64:timestamp]) {
         OWSFailDebug(@"Invalid timestamp.");
         return;
     }

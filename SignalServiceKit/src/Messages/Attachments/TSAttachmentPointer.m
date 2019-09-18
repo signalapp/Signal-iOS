@@ -209,7 +209,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     UInt64 serverId = attachmentProto.id;
-    if (serverId > INT64_MAX) {
+    if (![SDS fitsInInt64:serverId]) {
         OWSFailDebug(@"Invalid server id.");
         return nil;
     }

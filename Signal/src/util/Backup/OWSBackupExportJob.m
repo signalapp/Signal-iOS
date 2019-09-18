@@ -822,7 +822,7 @@ NS_ASSUME_NONNULL_BEGIN
                 exportItem.encryptedItem = attachmentExport.encryptedItem;
                 exportItem.recordName = recordName;
                 exportItem.attachmentExport = attachmentExport;
-                if (exportItem.uncompressedDataLength.unsignedLongLongValue > INT64_MAX) {
+                if (![SDS fitsInInt64WithNSNumber:exportItem.uncompressedDataLength]) {
                     OWSFailDebug(@"Invalid export item.");
                     continue;
                 }

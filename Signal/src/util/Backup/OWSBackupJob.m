@@ -299,7 +299,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
             OWSFailDebug(@"manifest has invalid uncompressedDataLength: %@.", uncompressedDataLength);
             return nil;
         }
-        if (uncompressedDataLength.unsignedLongLongValue > INT64_MAX) {
+        if (![SDS fitsInInt64WithNSNumber:uncompressedDataLength]) {
             OWSFailDebug(@"Invalid export item.");
             return nil;
         }

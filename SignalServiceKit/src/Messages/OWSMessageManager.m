@@ -309,7 +309,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"Missing transaction.");
         return;
     }
-    if (envelope.timestamp > INT64_MAX) {
+    if (![SDS fitsInInt64:envelope.timestamp]) {
         OWSFailDebug(@"Invalid timestamp.");
         return;
     }
@@ -343,14 +343,14 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"Missing transaction.");
         return;
     }
-    if (deliveryTimestamp != nil && deliveryTimestamp.unsignedLongLongValue > INT64_MAX) {
+    if (deliveryTimestamp != nil && ![SDS fitsInInt64WithNSNumber:deliveryTimestamp]) {
         OWSFailDebug(@"Invalid timestamp.");
         return;
     }
 
     for (NSNumber *nsTimestamp in sentTimestamps) {
         uint64_t timestamp = [nsTimestamp unsignedLongLongValue];
-        if (timestamp > INT64_MAX) {
+        if (![SDS fitsInInt64:timestamp]) {
             OWSFailDebug(@"Invalid timestamp.");
             continue;
         }
@@ -409,7 +409,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Invalid timestamp.");
         return;
     }
-    if (envelope.timestamp > INT64_MAX) {
+    if (![SDS fitsInInt64:envelope.timestamp]) {
         OWSFailDebug(@"Invalid timestamp.");
         return;
     }
@@ -519,7 +519,7 @@ NS_ASSUME_NONNULL_BEGIN
             // TODO: Add analytics.
             return;
         }
-        if (dataMessage.timestamp > INT64_MAX) {
+        if (![SDS fitsInInt64:dataMessage.timestamp]) {
             OWSFailDebug(@"Invalid timestamp.");
             return;
         }
@@ -652,7 +652,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSArray<NSNumber *> *sentTimestamps = receiptMessage.timestamp;
     for (NSNumber *sentTimestamp in sentTimestamps) {
-        if (sentTimestamp.unsignedLongLongValue > INT64_MAX) {
+        if (![SDS fitsInInt64:sentTimestamp.unsignedLongLongValue]) {
             OWSFailDebug(@"Invalid timestamp.");
             return;
         }
@@ -941,11 +941,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (syncMessage.sent) {
-        if (syncMessage.sent.timestamp > INT64_MAX) {
+        if (![SDS fitsInInt64:syncMessage.sent.timestamp]) {
             OWSFailDebug(@"Invalid timestamp.");
             return;
         }
-        if (syncMessage.sent.expirationStartTimestamp > INT64_MAX) {
+        if (![SDS fitsInInt64:syncMessage.sent.expirationStartTimestamp]) {
             OWSFailDebug(@"Invalid expirationStartTimestamp.");
             return;
         }
@@ -1496,7 +1496,7 @@ NS_ASSUME_NONNULL_BEGIN
     uint64_t timestamp = envelope.timestamp;
     NSString *body = dataMessage.body;
     NSNumber *_Nullable serverTimestamp = (envelope.hasServerTimestamp ? @(envelope.serverTimestamp) : nil);
-    if (serverTimestamp != nil && serverTimestamp.unsignedLongLongValue > INT64_MAX) {
+    if (serverTimestamp != nil && ![SDS fitsInInt64WithNSNumber:serverTimestamp]) {
         OWSFailDebug(@"Invalid timestamp.");
         return nil;
     }

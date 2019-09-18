@@ -501,7 +501,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             OWSFailDebug(@"messageIdTimestamp was unexpectedly 0");
             continue;
         }
-        if (messageIdTimestamp > INT64_MAX) {
+        if (![SDS fitsInInt64:messageIdTimestamp]) {
             OWSFailDebug(@"Invalid messageIdTimestamp.");
             continue;
         }
