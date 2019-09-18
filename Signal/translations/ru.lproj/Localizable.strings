@@ -126,7 +126,7 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "Вложение";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Не удалось скачать. Нажмите, чтобы повторить.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Не удалось скачать. Повторить?";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Ошибка отправки вложения";
@@ -690,7 +690,7 @@
 "CONVERSATION_SETTINGS_SEARCH" = "Искать в разговоре";
 
 /* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Нажмите, чтобы изменить";
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Изменить…";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Включить звуки";
@@ -1015,13 +1015,13 @@
 "EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Поехали";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Ваша версия Signal устарела! Сообщения больше не будут отправляться успешно. Нажмите, чтобы обновиться до последней версии.";
+"EXPIRATION_ERROR" = "Ваша версия Signal устарела! Сообщения более не будут отправляться. Обновиться до последней версии…";
 
 /* Label warning the user that the app will expire soon. */
-"EXPIRATION_WARNING_SOON" = "Ваша версия Signal перестанет работать через %d дней. Нажмите, чтобы обновиться до последней версии.";
+"EXPIRATION_WARNING_SOON" = "Ваша версия Signal перестанет работать через %d дней. Обновиться до последней версии?";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "Ваша версия Signal перестанет работать сегодня. Нажмите, чтобы обновиться до последней версии.";
+"EXPIRATION_WARNING_TODAY" = "Ваша версия Signal перестанет работать сегодня. Обновиться до последней версии?";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Слишком много ошибок с этим контактом. Пожалуйста, попробуйте позже.";
@@ -1069,7 +1069,7 @@
 "GIF_PICKER_VIEW_TITLE" = "Поиск GIF";
 
 /* Indicates that an error occurred while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Ошибка. Нажмите, чтобы повторить попытку.";
+"GIF_VIEW_SEARCH_ERROR" = "Ошибка. Повторить попытку?";
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "Нет результатов.";
@@ -1084,7 +1084,7 @@
 "GROUP_CREATED" = "Группа создана.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "Не всех участников удалось добавить в группу. Нажмите, чтобы повторить попытку.";
+"GROUP_CREATION_FAILED" = "Не всех участников удалось добавить в группу. Повторить попытку?";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Управление группой";
@@ -1450,13 +1450,13 @@
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Новое сообщение";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ больше не отмечен как подтверждённый. Нажмите для показа опций.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ больше не отмечен как подтверждённый. Показать опции…";
 
 /* Indicates that this 1:1 conversation has been blocked. */
 "MESSAGES_VIEW_CONTACT_BLOCKED" = "Вы заблокировали этого пользователя";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ больше не отмечен как подтверждённый. Нажмите для показа опций.";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ больше не отмечен как подтверждённый. Показать опции…";
 
 /* Indicates that a single member of this group has been blocked. */
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Вы заблокировали 1 участника этой группы";
@@ -1468,10 +1468,10 @@
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Вы заблокировали %@ участников этой группы";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Более одного участника этой группы больше не отмечены как подтверждённые. Нажмите для показа опций.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Более одного участника этой группы больше не отмечены как подтверждённые. Показать опции…";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Нажмите здесь для настроек";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Показать настройки…";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Новые сообщения";
@@ -2829,7 +2829,7 @@
 "USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ занято.";
 
 /* Error moessage shown when a username update fails. */
-"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Не удалось обновить имя пользователя.";
+"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Не удалось изменить имя пользователя.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Вы отметили %@ как неподтверждённый.";
@@ -2859,7 +2859,7 @@
 "VOICE_MESSAGE_FILE_NAME" = "Голосовое сообщение";
 
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Нажмите и удерживайте, чтобы записать голосовое сообщение.";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Удерживайте, чтобы записать голосовое сообщение.";
 
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Голосовое сообщение";
