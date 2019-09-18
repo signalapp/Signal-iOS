@@ -76,7 +76,7 @@ class TSAttachmentPointerSerializer: SDSSerializer {
         let cachedAudioDurationSeconds: Double? = nil
         let cachedImageHeight: Double? = nil
         let cachedImageWidth: Double? = nil
-        let creationTimestamp: Date? = nil
+        let creationTimestamp: Double? = nil
         let digest: Data? = model.digest
         let isUploaded: Bool? = nil
         let isValidImageCached: Bool? = nil

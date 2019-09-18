@@ -29,6 +29,19 @@ public extension SDSSerializer {
         return conversion(value)
     }
 
+    // MARK: - Date
+
+    func archiveOptionalDate(_ value: Date?) -> Double? {
+        guard let value = value else {
+            return nil
+        }
+        return archiveDate(value)
+    }
+
+    func archiveDate(_ value: Date) -> Double {
+        return value.timeIntervalSince1970
+    }
+
     // MARK: - Blob
 
     func optionalArchive(_ value: Any?) -> Data? {

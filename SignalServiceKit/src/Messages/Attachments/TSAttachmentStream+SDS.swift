@@ -76,7 +76,7 @@ class TSAttachmentStreamSerializer: SDSSerializer {
         let cachedAudioDurationSeconds: Double? = archiveOptionalNSNumber(model.cachedAudioDurationSeconds, conversion: { $0.doubleValue })
         let cachedImageHeight: Double? = archiveOptionalNSNumber(model.cachedImageHeight, conversion: { $0.doubleValue })
         let cachedImageWidth: Double? = archiveOptionalNSNumber(model.cachedImageWidth, conversion: { $0.doubleValue })
-        let creationTimestamp: Date? = model.creationTimestamp
+        let creationTimestamp: Double? = archiveOptionalDate(model.creationTimestamp)
         let digest: Data? = model.digest
         let isUploaded: Bool? = model.isUploaded
         let isValidImageCached: Bool? = archiveOptionalNSNumber(model.isValidImageCached, conversion: { $0.boolValue })

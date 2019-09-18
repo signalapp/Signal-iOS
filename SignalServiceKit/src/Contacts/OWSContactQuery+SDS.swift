@@ -26,7 +26,7 @@ public struct ContactQueryRecord: SDSRecord {
     public let uniqueId: String
 
     // Base class properties
-    public let lastQueried: Date
+    public let lastQueried: Double
     public let nonce: Data
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
@@ -86,7 +86,8 @@ extension OWSContactQuery {
         case .contactQuery:
 
             let uniqueId: String = record.uniqueId
-            let lastQueried: Date = record.lastQueried
+            let lastQueriedInterval: Double = record.lastQueried
+            let lastQueried: Date = SDSDeserialization.requiredDoubleAsDate(lastQueriedInterval, name: "lastQueried")
             let nonce: Data = record.nonce
 
             return OWSContactQuery(uniqueId: uniqueId,
@@ -136,7 +137,7 @@ extension OWSContactQuerySerializer {
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
     // Base class properties
-    static let lastQueriedColumn = SDSColumnMetadata(columnName: "lastQueried", columnType: .int64, columnIndex: 3)
+    static let lastQueriedColumn = SDSColumnMetadata(columnName: "lastQueried", columnType: .double, columnIndex: 3)
     static let nonceColumn = SDSColumnMetadata(columnName: "nonce", columnType: .blob, columnIndex: 4)
 
     // TODO: We should decide on a naming convention for
@@ -545,7 +546,7 @@ class OWSContactQuerySerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Base class properties
-        let lastQueried: Date = model.lastQueried
+        let lastQueried: Double = archiveDate(model.lastQueried)
         let nonce: Data = model.nonce
 
         return ContactQueryRecord(id: id, recordType: recordType, uniqueId: uniqueId, lastQueried: lastQueried, nonce: nonce)

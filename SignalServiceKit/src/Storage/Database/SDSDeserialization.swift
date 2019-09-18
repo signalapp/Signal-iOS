@@ -30,6 +30,19 @@ public class SDSDeserialization {
         return value
     }
 
+    // MARK: - Date
+
+    public class func requiredDoubleAsDate(_ value: Double, name: String) -> Date {
+        return Date(timeIntervalSince1970: value)
+    }
+
+    public class func optionalDoubleAsDate(_ value: Double?, name: String) -> Date? {
+        guard let value = value else {
+            return nil
+        }
+        return requiredDoubleAsDate(value, name: name)
+    }
+
     // MARK: - Numeric Primitive
 
     public class func optionalNumericAsNSNumber<T>(_ value: T?, name: String, conversion: (T) -> NSNumber) -> NSNumber? {

@@ -26,9 +26,9 @@ public struct DeviceRecord: SDSRecord {
     public let uniqueId: String
 
     // Base class properties
-    public let createdAt: Date
+    public let createdAt: Double
     public let deviceId: Int
-    public let lastSeenAt: Date
+    public let lastSeenAt: Double
     public let name: String?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
@@ -92,9 +92,11 @@ extension OWSDevice {
         case .device:
 
             let uniqueId: String = record.uniqueId
-            let createdAt: Date = record.createdAt
+            let createdAtInterval: Double = record.createdAt
+            let createdAt: Date = SDSDeserialization.requiredDoubleAsDate(createdAtInterval, name: "createdAt")
             let deviceId: Int = record.deviceId
-            let lastSeenAt: Date = record.lastSeenAt
+            let lastSeenAtInterval: Double = record.lastSeenAt
+            let lastSeenAt: Date = SDSDeserialization.requiredDoubleAsDate(lastSeenAtInterval, name: "lastSeenAt")
             let name: String? = record.name
 
             return OWSDevice(uniqueId: uniqueId,
@@ -146,9 +148,9 @@ extension OWSDeviceSerializer {
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
     // Base class properties
-    static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .int64, columnIndex: 3)
+    static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .double, columnIndex: 3)
     static let deviceIdColumn = SDSColumnMetadata(columnName: "deviceId", columnType: .int64, columnIndex: 4)
-    static let lastSeenAtColumn = SDSColumnMetadata(columnName: "lastSeenAt", columnType: .int64, columnIndex: 5)
+    static let lastSeenAtColumn = SDSColumnMetadata(columnName: "lastSeenAt", columnType: .double, columnIndex: 5)
     static let nameColumn = SDSColumnMetadata(columnName: "name", columnType: .unicodeString, isOptional: true, columnIndex: 6)
 
     // TODO: We should decide on a naming convention for
@@ -559,9 +561,9 @@ class OWSDeviceSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Base class properties
-        let createdAt: Date = model.createdAt
+        let createdAt: Double = archiveDate(model.createdAt)
         let deviceId: Int = model.deviceId
-        let lastSeenAt: Date = model.lastSeenAt
+        let lastSeenAt: Double = archiveDate(model.lastSeenAt)
         let name: String? = model.name
 
         return DeviceRecord(id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, deviceId: deviceId, lastSeenAt: lastSeenAt, name: name)
