@@ -162,7 +162,7 @@ public final class LokiGroupChatAPI : NSObject {
                     quote = nil
                 }
                 return LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote)
-            }
+            }.sorted { $0.timestamp < $1.timestamp }
         }
     }
     
