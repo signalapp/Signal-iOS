@@ -449,7 +449,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         return failureBlock(error);
     }
     UInt64 serverTimestamp = envelope.serverTimestamp;
-    if (serverTimestamp > INT64_MAX) {
+    if (![SDS fitsInInt64:serverTimestamp]) {
         NSString *errorDescription = @"Invalid serverTimestamp.";
         OWSFailDebug(@"%@", errorDescription);
         NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptUDMessage, errorDescription);
