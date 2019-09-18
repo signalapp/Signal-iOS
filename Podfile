@@ -47,7 +47,8 @@ def shared_pods
 
   # Forked for compatibily with the ShareExtension, changes have an open PR, but have not been merged.
   # pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release'
-  pod 'YapDatabase/SQLCipher', path: '../YapDatabase'
+  pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'charlesmchen/ydbQueuesVsMigration'
+  # pod 'YapDatabase/SQLCipher', path: '../YapDatabase'
 
   # Forked to incorporate our self-built binary artifact.
   pod 'GRKOpenSSLFramework', git: 'https://github.com/signalapp/GRKOpenSSLFramework', branch: 'mkirk/1.0.2t'
