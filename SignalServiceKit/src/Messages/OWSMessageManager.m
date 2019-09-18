@@ -414,9 +414,9 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     
-    // Loki: Handle any friend request accepts if we need to
-    // TODO: We'll need to fix this up if we ever start using Sync messages
-    [self handleFriendRequestAcceptIfNeededWithEnvelope:envelope transaction:transaction];
+    // Loki: Handle friend request acceptance if needed
+    // TODO: We'll need to fix this up if we ever start using sync messages
+    [self handleFriendRequestAcceptanceIfNeededWithEnvelope:envelope transaction:transaction];
 
     if (envelope.content != nil) {
         NSError *error;
@@ -1488,9 +1488,8 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
         
-        // Loki
-        // If we received a message from a contact in the last 2 minues that was not p2p, then we need to ping them.
-        // We assume this occurred because they don't have our p2p details.
+        // Loki: If we received a message from a contact in the last 2 minutes that wasn't P2P, then we need to ping them.
+        // We assume this occurred because they don't have our P2P details.
         if (!envelope.isPtpMessage && envelope.source != nil) {
             uint64_t timestamp = envelope.timestamp;
             uint64_t now = NSDate.ows_millisecondTimeStamp;
@@ -1519,12 +1518,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-// The difference between this function and `handleFriendRequestAcceptIfNeededWithEnvelope:` is that this will setup the incoming message for display to the user
-// While `handleFriendRequestAcceptIfNeededWithEnvelope:` handles friend request accepting logic and doesn't need a message
 - (void)handleFriendRequestMessageIfNeededWithEnvelope:(SSKProtoEnvelope *)envelope message:(TSIncomingMessage *)message thread:(TSThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    // Check if it's a friend request message and make sure it's not a group message
     if (envelope.isGroupChatMessage || envelope.type != SSKProtoEnvelopeTypeFriendRequest) return;
-    
     if (thread.hasCurrentUserSentFriendRequest) {
         // This can happen if Alice sent Bob a friend request, Bob declined, but then Bob changed his
         // mind and sent a friend request to Alice. In this case we want Alice to auto-accept the request
@@ -1555,18 +1550,15 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)handleFriendRequestAcceptIfNeededWithEnvelope:(SSKProtoEnvelope *)envelope transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    // If we get any other envelope type then we can assume that we had to use signal cipher decryption
-    // and that means we must have a session with the other person.
-    // We also need to ensure that we're contacting the person directly and not through a public chat
+- (void)handleFriendRequestAcceptanceIfNeededWithEnvelope:(SSKProtoEnvelope *)envelope transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    // If we get an envelope that isn't a friend request, then we can infer that we had to use
+    // Signal cipher decryption and thus that we have a session with the other person.
     if (envelope.isGroupChatMessage || envelope.type == SSKProtoEnvelopeTypeFriendRequest) return;
-    
     // If we're already friends then there's no point in continuing
-    // TODO: We'll need to fix this up if we ever start using Sync messages
-    // Currently it'll use `envelope.source` but with sync messages we need to use the message sender id
+    // TODO: We'll need to fix this up if we ever start using sync messages
+    // Currently it'll use `envelope.source` but with sync messages we need to use the message sender ID
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
     if (thread.isContactFriend) return;
-    
     // Become happy friends and go on great adventures
     [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];
     TSOutgoingMessage *existingFriendRequestMessage = (TSOutgoingMessage *)[thread.lastInteraction as:TSOutgoingMessage.class];

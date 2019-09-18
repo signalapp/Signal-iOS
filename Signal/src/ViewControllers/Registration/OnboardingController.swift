@@ -98,7 +98,7 @@ public class OnboardingController: NSObject {
     // MARK: - Transitions
 
     public func onboardingSplashDidComplete(viewController: UIViewController) {
-        pushAccountDetailsViewController(from: viewController)
+        pushSeedViewController(from: viewController)
     }
 
     public func onboardingPermissionsWasSkipped(viewController: UIViewController) {
@@ -106,7 +106,7 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        pushAccountDetailsViewController(from: viewController)
+        pushSeedViewController(from: viewController)
     }
 
     public func onboardingPermissionsDidComplete(viewController: UIViewController) {
@@ -114,19 +114,19 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        pushAccountDetailsViewController(from: viewController)
-    }
-
-    private func pushAccountDetailsViewController(from viewController: UIViewController) {
-        AssertIsOnMainThread()
-        let accountDetailsVC = AccountDetailsViewController(onboardingController: self)
-        viewController.navigationController?.pushViewController(accountDetailsVC, animated: true)
+        pushSeedViewController(from: viewController)
     }
     
-    func pushKeyPairViewController(from viewController: UIViewController) {
+    public func pushSeedViewController(from viewController: UIViewController) {
         AssertIsOnMainThread()
         let seedVC = SeedViewController(onboardingController: self)
         viewController.navigationController?.pushViewController(seedVC, animated: true)
+    }
+    
+    public func pushAccountDetailsViewController(from viewController: UIViewController) {
+        AssertIsOnMainThread()
+        let accountDetailsVC = AccountDetailsViewController(onboardingController: self)
+        viewController.navigationController?.pushViewController(accountDetailsVC, animated: true)
     }
 
     public func onboardingRegistrationSucceeded(viewController: UIViewController) {

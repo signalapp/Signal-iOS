@@ -64,6 +64,8 @@ final class AccountDetailsViewController : OnboardingBaseViewController {
             }
             OWSProfileManager.shared().updateLocalProfileName(normalizedUserName, avatarImage: nil, success: { }, failure: { }) // Try to save the user name but ignore the result
         }
-        onboardingController.pushKeyPairViewController(from: self)
+        TSAccountManager.sharedInstance().didRegister()
+        UserDefaults.standard.set(true, forKey: "didUpdateForMainnet")
+        onboardingController.verificationDidComplete(fromView: self)
     }
 }

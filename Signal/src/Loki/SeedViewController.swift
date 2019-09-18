@@ -225,12 +225,10 @@ final class SeedViewController : OnboardingBaseViewController {
         let hexEncodedPublicKey = keyPair.hexEncodedPublicKey
         let accountManager = TSAccountManager.sharedInstance()
         accountManager.phoneNumberAwaitingVerification = hexEncodedPublicKey
-        accountManager.didRegister()
         switch mode {
         case .register: Analytics.shared.track("Seed Created")
         case .restore: Analytics.shared.track("Seed Restored")
         }
-        onboardingController.verificationDidComplete(fromView: self)
-        UserDefaults.standard.set(true, forKey: "didUpdateForMainnet")
+        onboardingController.pushAccountDetailsViewController(from: self)
     }
 }

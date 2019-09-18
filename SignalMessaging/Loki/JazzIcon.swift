@@ -8,7 +8,7 @@ extension String {
 }
 
 private class RNG {
-    private let int32Max: Int = Int(Int32.max) // 2147483647
+    private let int32Max = Int(Int32.max) // 2147483647
     
     private var seed: Int
     private var initial: Int

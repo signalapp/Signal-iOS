@@ -11,7 +11,11 @@ public final class LokiGroupChatAPI : NSObject {
     private static let maxRetryCount: UInt = 4
     
     // MARK: Public Chat
+    #if DEBUG
+    @objc public static let publicChatServer = "https://chat-dev.lokinet.org"
+    #else
     @objc public static let publicChatServer = "https://chat.lokinet.org"
+    #endif
     @objc public static let publicChatMessageType = "network.loki.messenger.publicChat"
     @objc public static let publicChatServerID: UInt64 = 1
     
