@@ -148,10 +148,12 @@ NS_ASSUME_NONNULL_BEGIN
     self.waveformProgressView.playedColor = playedColor;
     self.waveformProgressView.unplayedColor = unplayedColor;
     self.waveformProgressView.thumbColor = thumbColor;
-    self.waveformProgressView.audioWaveform = self.viewItem.audioWaveform;
 
-    self.audioProgressSlider.hidden = self.viewItem.audioWaveform != nil;
-    self.waveformProgressView.hidden = self.viewItem.audioWaveform == nil;
+    AudioWaveform *_Nullable waveform = self.attachmentStream.audioWaveform;
+    self.waveformProgressView.audioWaveform = waveform;
+
+    self.audioProgressSlider.hidden = waveform != nil;
+    self.waveformProgressView.hidden = waveform == nil;
 }
 
 - (void)setProgressRatio:(float)progressRatio

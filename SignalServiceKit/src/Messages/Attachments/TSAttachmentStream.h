@@ -12,6 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AudioWaveform;
 @class SSKProtoAttachmentPointer;
 @class TSAttachmentPointer;
 
@@ -131,6 +132,7 @@ NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentTyp
 - (CGSize)imageSize;
 
 - (CGFloat)audioDurationSeconds;
+- (nullable AudioWaveform *)audioWaveform;
 
 + (nullable NSError *)migrateToSharedData;
 

@@ -33,6 +33,26 @@ public class AudioWaveform: NSObject {
         sampleOperation?.cancel()
     }
 
+    // MARK: - Caching
+
+    @objc
+    public init(contentsOfFile filePath: String) throws {
+        guard let unarchivedSamples = NSKeyedUnarchiver.unarchiveObject(withFile: filePath) as? [Float] else {
+            throw OWSAssertionError("Failed to unarchive decibel samples")
+        }
+        decibelSamples = unarchivedSamples
+    }
+
+    @objc
+    public func write(toFile filePath: String, atomically: Bool) throws {
+        guard isSamplingComplete, let decibelSamples = decibelSamples else {
+            throw OWSAssertionError("can't write incomplete waveform to file \(filePath)")
+        }
+
+        let archivedData = NSKeyedArchiver.archivedData(withRootObject: decibelSamples)
+        try archivedData.write(to: URL(fileURLWithPath: filePath), options: atomically ? .atomicWrite : .init())
+    }
+
     // MARK: -
 
     @objc
@@ -73,6 +93,9 @@ public class AudioWaveform: NSObject {
     ///
     /// If rendering waveforms at a higher resolution, this value may
     /// need to be adjusted appropriately.
+    ///
+    /// Currently, these samples are cached to disk in `TSAttachmentStream`,
+    /// so we need to make sure that sample count produces a reasonably file size.
     fileprivate static let sampleCount = 100
 
     /// The maximum duration asset that we will display waveforms for.

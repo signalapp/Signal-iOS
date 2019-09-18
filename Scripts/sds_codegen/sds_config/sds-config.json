@@ -16,7 +16,8 @@
 	"properties_to_ignore": [
 		"OWSDynamicOutgoingMessage.block",
 		"OWSDisappearingMessagesConfiguration.originalDictionaryValue",
-		"OWSDisappearingMessagesConfiguration.newRecord"
+		"OWSDisappearingMessagesConfiguration.newRecord",
+		"TSAttachmentStream.cachedAudioWaveform"
 	],
 	"custom_property_column_sources": {
 		"TSInteraction.sortId": "id",
