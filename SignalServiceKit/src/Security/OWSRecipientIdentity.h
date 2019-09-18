@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, OWSVerificationState) {
+typedef NS_CLOSED_ENUM(NSUInteger, OWSVerificationState) {
     OWSVerificationStateDefault,
     OWSVerificationStateVerified,
     OWSVerificationStateNoLongerVerified,

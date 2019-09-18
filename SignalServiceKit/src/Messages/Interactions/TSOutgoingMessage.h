@@ -30,7 +30,7 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
 
 NSString *NSStringForOutgoingMessageState(TSOutgoingMessageState value);
 
-typedef NS_ENUM(NSInteger, OWSOutgoingMessageRecipientState) {
+typedef NS_CLOSED_ENUM(NSInteger, OWSOutgoingMessageRecipientState) {
     // Message could not be sent to recipient.
     OWSOutgoingMessageRecipientStateFailed = 0,
     // Message is being sent to the recipient (enqueued, uploading or sending).

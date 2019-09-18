@@ -1314,6 +1314,9 @@ fileprivate extension RTCSignalingState {
             return "haveRemotePrAnswer"
         case .closed:
             return "closed"
+        @unknown default:
+            owsFailDebug("Unexpected enum value.")
+            return "unknown"
         }
     }
 }
@@ -1327,6 +1330,9 @@ fileprivate extension RTCIceGatheringState {
             return "gathering"
         case .complete:
             return "complete"
+        @unknown default:
+            owsFailDebug("Unexpected enum value.")
+            return "unknown"
         }
     }
 }
@@ -1350,6 +1356,9 @@ fileprivate extension RTCIceConnectionState {
             return "closed"
         case .count:
             return "count"
+        @unknown default:
+            owsFailDebug("Unexpected enum value.")
+            return "unknown"
         }
     }
 }
@@ -1369,6 +1378,9 @@ fileprivate extension RTCPeerConnectionState {
             return "failed"
         case .closed:
             return "closed"
+        @unknown default:
+            owsFailDebug("Unexpected enum value.")
+            return "unknown"
         }
     }
 }
