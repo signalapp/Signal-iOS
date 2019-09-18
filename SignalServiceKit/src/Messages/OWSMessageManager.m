@@ -1407,9 +1407,9 @@ NS_ASSUME_NONNULL_BEGIN
                 }
 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    NSString *url = [OWSLinkPreview previewURLForRawBodyText:incomingMessage.body];
-                    if (url != nil) {
-                        [incomingMessage generateLinkPreviewIfNeededFromURL:url];
+                    NSString *linkPreviewURL = [OWSLinkPreview previewURLForRawBodyText:incomingMessage.body];
+                    if (linkPreviewURL != nil) {
+                        [incomingMessage generateLinkPreviewIfNeededFromURL:linkPreviewURL];
                     }
                 });
 

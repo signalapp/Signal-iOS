@@ -1244,8 +1244,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         TSMessage *message = messageSend.message;
         if (message.linkPreview == nil && !message.hasAttachments) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                NSString *url = [OWSLinkPreview previewURLForRawBodyText:message.body];
-                if (url) { [message generateLinkPreviewIfNeededFromURL:url]; }
+                NSString *linkPreviewURL = [OWSLinkPreview previewURLForRawBodyText:message.body];
+                if (linkPreviewURL) { [message generateLinkPreviewIfNeededFromURL:linkPreviewURL]; }
             });
         }
 

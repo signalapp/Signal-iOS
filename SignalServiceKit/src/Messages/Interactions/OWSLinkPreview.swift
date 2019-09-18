@@ -338,6 +338,9 @@ public class OWSLinkPreview: MTLModel {
         // Giphy
         "giphy.com",
         "media.giphy.com",
+        "media1.giphy.com",
+        "media2.giphy.com",
+        "media3.giphy.com",
         "gph.is"
         
     ]
@@ -724,7 +727,7 @@ public class OWSLinkPreview: MTLModel {
         }
     }
     
-    @objc(getImagePreviewFromUrl:transaction:)
+    @objc(getImagePreviewWithURL:transaction:)
     public class func objc_getImagePreview(url: String, in transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
         return AnyPromise.from(getImagePreview(from: url, in: transaction))
     }

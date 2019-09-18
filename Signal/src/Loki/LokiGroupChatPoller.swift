@@ -105,14 +105,8 @@ public final class LokiGroupChatPoller : NSObject {
                 guard let messageID = message.uniqueId else { return print("[Loki] Failed to save group message.") }
                 storage.setIDForMessageWithServerID(UInt(messageServerID), to: messageID, in: transaction)
             }
-            if let url = OWSLinkPreview.previewUrl(forMessageBodyText: message.body, selectedRange: nil) {
-                let _ = OWSLinkPreview.tryToBuildPreviewInfo(previewUrl: url).done { linkPreviewDraft in
-                    OWSPrimaryStorage.shared().dbReadWriteConnection.readWrite { transaction in
-                        guard let linkPreview = try? OWSLinkPreview.buildValidatedLinkPreview(fromInfo: linkPreviewDraft, transaction: transaction) else { return }
-                        message.linkPreview = linkPreview
-                        message.save(with: transaction)
-                    }
-                }
+            if let linkPreviewURL = OWSLinkPreview.previewUrl(forMessageBodyText: message.body, selectedRange: nil) {
+                message.generateLinkPreviewIfNeeded(fromURL: linkPreviewURL)
             }
         }
         // Poll
