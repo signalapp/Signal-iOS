@@ -10,11 +10,17 @@ public class MenuAction: NSObject {
     let image: UIImage
     let title: String
     let subtitle: String?
+    let accessibilityIdentifier: String
 
-    public init(image: UIImage, title: String, subtitle: String?, block: @escaping (MenuAction) -> Void) {
+    public init(image: UIImage,
+                title: String,
+                subtitle: String?,
+                accessibilityIdentifier: String,
+                block: @escaping (MenuAction) -> Void) {
         self.image = image
         self.title = title
         self.subtitle = subtitle
+        self.accessibilityIdentifier = accessibilityIdentifier
         self.block = block
     }
 }
@@ -445,6 +451,8 @@ class MenuActionView: UIButton {
         contentRow.autoSetDimension(.height, toSize: 56, relation: .greaterThanOrEqual)
 
         self.isUserInteractionEnabled = false
+
+        self.accessibilityIdentifier = action.accessibilityIdentifier
     }
 
     private var defaultBackgroundColor: UIColor {

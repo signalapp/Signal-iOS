@@ -249,8 +249,7 @@ public class PinSetupViewController: OWSViewController {
         pinStackRow.setContentHuggingVerticalHigh()
 
         let font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
-        // Button height should be 48pt if the font is 17pt.
-        let buttonHeight = font.pointSize * 48 / 17
+        let buttonHeight = OWSFlatButton.heightForFont(font)
         let nextButton = OWSFlatButton.button(
             title: NSLocalizedString("BUTTON_NEXT",
                                      comment: "Label for the 'next' button."),

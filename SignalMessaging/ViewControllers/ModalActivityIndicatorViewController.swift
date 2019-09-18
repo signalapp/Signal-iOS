@@ -84,12 +84,13 @@ public class ModalActivityIndicatorViewController: OWSViewController {
             cancelButton.setTitle(CommonStrings.cancelButton, for: .normal)
             cancelButton.setTitleColor(UIColor.white, for: .normal)
             cancelButton.backgroundColor = UIColor.ows_darkGray
-            cancelButton.titleLabel?.font = UIFont.ows_mediumFont(withSize: ScaleFromIPhone5To7Plus(18, 22))
+            let font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
+            cancelButton.titleLabel?.font = font
             cancelButton.layer.cornerRadius = ScaleFromIPhone5To7Plus(4, 5)
             cancelButton.clipsToBounds = true
             cancelButton.addTarget(self, action: #selector(cancelPressed), for: .touchUpInside)
             let buttonWidth = ScaleFromIPhone5To7Plus(140, 160)
-            let buttonHeight = ScaleFromIPhone5To7Plus(40, 50)
+            let buttonHeight = OWSFlatButton.heightForFont(font)
             self.view.addSubview(cancelButton)
             cancelButton.autoHCenterInSuperview()
             cancelButton.autoPinEdge(toSuperviewEdge: .bottom, withInset: 50)
