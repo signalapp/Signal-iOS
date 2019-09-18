@@ -7,19 +7,19 @@ import Accelerate
 import AVFoundation
 
 @objc
-protocol AudioWaveformSamplingObserver: class {
+public protocol AudioWaveformSamplingObserver: class {
     func audioWaveformDidFinishSampling(_ audioWaveform: AudioWaveform)
 }
 
 @objc
-class AudioWaveform: NSObject {
+public class AudioWaveform: NSObject {
     @objc
-    var isSamplingComplete: Bool {
+    public var isSamplingComplete: Bool {
         return decibelSamples != nil
     }
 
     @objc
-    init?(asset: AVAsset) {
+    public init?(asset: AVAsset) {
         guard CMTimeGetSeconds(asset.duration) <= AudioWaveform.maximumDuration else {
             return nil
         }
@@ -35,7 +35,8 @@ class AudioWaveform: NSObject {
 
     // MARK: -
 
-    func normalizedLevelsToDisplay(sampleCount: Int) -> [Float]? {
+    @objc
+    public func normalizedLevelsToDisplay(sampleCount: Int) -> [Float]? {
         guard isSamplingComplete else { return nil }
 
         // Do nothing if the number of requested samples is less than 1
@@ -156,7 +157,7 @@ class AudioWaveform: NSObject {
     }
 
     @objc
-    func addSamplingObserver(_ observer: AudioWaveformSamplingObserver) {
+    public func addSamplingObserver(_ observer: AudioWaveformSamplingObserver) {
         observers.append(Weak(value: observer))
 
         // If sampling is already complete, notify the observer immediately.
