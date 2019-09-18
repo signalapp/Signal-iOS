@@ -298,8 +298,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     [super anyDidInsertWithTransaction:transaction];
 
     [self updateLastMessageWithTransaction:transaction];
-
-    [self touchThreadWithTransaction:transaction];
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -307,13 +305,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     [super anyDidUpdateWithTransaction:transaction];
 
     [self updateLastMessageWithTransaction:transaction];
-
-    [self touchThreadWithTransaction:transaction];
-}
-
-- (void)touchThreadWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self.databaseStorage touchThreadId:self.uniqueThreadId transaction:transaction];
 }
 
 - (void)updateLastMessageWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -327,7 +318,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 {
     [super anyDidRemoveWithTransaction:transaction];
 
-    [self touchThreadWithTransaction:transaction];
+    TSThread *thread = [self threadWithTransaction:transaction];
+    [self.databaseStorage touchThread:thread transaction:transaction];
 }
 
 #pragma mark -
