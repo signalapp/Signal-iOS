@@ -57,5 +57,6 @@
     "TSOutgoingMessage": 21, 
     "TSRecipientReadReceipt": 12, 
     "TSThread": 2, 
-    "TSUnreadIndicatorInteraction": 4
+    "TSUnreadIndicatorInteraction": 4, 
+    "TestModel": 59
 }
