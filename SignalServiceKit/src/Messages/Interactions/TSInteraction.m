@@ -259,10 +259,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"%@ in thread: %@ timestamp: %lu",
-                     [super description],
-                     self.uniqueThreadId,
-                     (unsigned long)self.timestamp];
+    return [NSString
+        stringWithFormat:@"%@ in thread: %@ timestamp: %llu", [super description], self.uniqueThreadId, self.timestamp];
 }
 
 - (BOOL)isSpecialMessage
