@@ -118,7 +118,7 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
-    public static let shouldPadAllOutgoingAttachments = false
+    public static let shouldPadAllOutgoingAttachments = true
 
     @objc
     public static let stickerReceive = true
