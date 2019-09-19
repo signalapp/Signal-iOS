@@ -112,6 +112,10 @@ extension YDBToGRDBMigration {
         return SSKEnvironment.shared.primaryStorage
     }
 
+    private var storageCoordinator: StorageCoordinator {
+        return SSKEnvironment.shared.storageCoordinator
+    }
+
     // MARK: -
 
     func run() throws {
@@ -176,8 +180,6 @@ extension YDBToGRDBMigration {
     }
 
     func migrate(migratorGroups: [GRDBMigratorGroup]) throws {
-        assert(OWSStorage.isStorageReady())
-
         Logger.info("")
 
         // We can't nest ydbTransactions in GRDB and vice-versa

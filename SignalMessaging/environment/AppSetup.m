@@ -102,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSSounds *sounds = [OWSSounds new];
         id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
         OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
-        
+
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
                                                              preferences:preferences
                                               proximityMonitoringManager:proximityMonitoringManager
@@ -167,7 +167,7 @@ NS_ASSUME_NONNULL_BEGIN
                     
                     migrationCompletion();
 
-                    [StorageCoordinator postStorageIsReadyNotification];
+                    [storageCoordinator storageSetupDidComplete];
 
                     OWSAssertDebug(backgroundTask);
                     backgroundTask = nil;

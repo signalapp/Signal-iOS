@@ -27,6 +27,8 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
 
 @property (atomic, readonly) BOOL isMigrating;
 
+@property (atomic, readonly) BOOL isStorageReady;
+
 - (instancetype)init;
 
 // These methods should only be called by the migration itself.
@@ -43,7 +45,7 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
 - (void)useYDBForTests;
 #endif
 
-+ (void)postStorageIsReadyNotification;
+- (void)storageSetupDidComplete;
 
 @end
 

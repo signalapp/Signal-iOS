@@ -35,6 +35,8 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
 
 @property (atomic) StorageCoordinatorState state;
 
+@property (atomic) BOOL isStorageSetupComplete;
+
 @end
 
 #pragma mark -
@@ -191,7 +193,14 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
     [OWSStorage deleteDBKeys];
 }
 
-+ (void)postStorageIsReadyNotification
+- (void)storageSetupDidComplete
+{
+    self.isStorageSetupComplete = YES;
+
+    [self postStorageIsReadyNotification];
+}
+
+- (void)postStorageIsReadyNotification
 {
     OWSLogInfo(@"");
     
@@ -201,6 +210,21 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
                                                                  object:nil
                                                                userInfo:nil];
     });
+}
+
+- (BOOL)isStorageReady
+{
+    switch (self.state) {
+        case StorageCoordinatorStateYDB:
+        case StorageCoordinatorStateYDBTests:
+            return [OWSStorage isStorageReady] && self.isStorageSetupComplete;
+        case StorageCoordinatorStateBeforeYDBToGRDBMigration:
+        case StorageCoordinatorStateDuringYDBToGRDBMigration:
+            return NO;
+        case StorageCoordinatorStateGRDB:
+        case StorageCoordinatorStateGRDBTests:
+            return self.isStorageSetupComplete;
+    }
 }
 
 @end
