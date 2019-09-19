@@ -7,8 +7,8 @@ public final class LokiGroupChatAPI : NSObject {
     private static var moderators: [String:[UInt64:Set<String>]] = [:] // Server URL to (channel ID to set of moderator IDs)
     
     // MARK: Settings
-    private static let fallbackBatchCount = 40
-    private static let maxRetryCount: UInt = 4
+    private static let fallbackBatchCount = 20
+    private static let maxRetryCount: UInt = 8
     
     // MARK: Public Chat
     #if DEBUG
@@ -162,7 +162,7 @@ public final class LokiGroupChatAPI : NSObject {
                     quote = nil
                 }
                 return LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote)
-            }
+            }.sorted { $0.timestamp < $1.timestamp }
         }
     }
     

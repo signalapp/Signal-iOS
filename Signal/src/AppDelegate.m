@@ -359,7 +359,10 @@ static NSTimeInterval launchStartedAt;
         NSDictionary *properties = @{ @"configuration" : LKBuildConfiguration.current };
         [Mixpanel.sharedInstance track:event properties:properties];
     };
+#if DEBUG
+#else
     [FIRApp configure];
+#endif
     
     return YES;
 }

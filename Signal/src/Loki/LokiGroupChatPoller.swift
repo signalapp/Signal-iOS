@@ -111,7 +111,7 @@ public final class LokiGroupChatPoller : NSObject {
         }
         // Poll
         let _ = LokiGroupChatAPI.getMessages(for: group.serverID, on: group.server).done(on: .main) { messages in
-            messages.reversed().forEach { message in
+            messages.forEach { message in
                 if message.hexEncodedPublicKey != userHexEncodedPublicKey {
                     processIncomingMessage(message)
                 } else {
