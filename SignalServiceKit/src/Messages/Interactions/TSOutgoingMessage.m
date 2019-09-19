@@ -651,7 +651,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
             // no longer be considered sent.
             // So here we take extra care not to stop any expiration that had previously started.
             // This can also happen under normal cirumstances with an outgoing group message.
-            OWSLogWarn(@"expiration previously started");
+            OWSFailDebug(@"expiration previously started");
 
             return YES;
         }

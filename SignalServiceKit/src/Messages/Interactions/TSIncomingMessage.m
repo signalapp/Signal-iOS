@@ -177,7 +177,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     if (self.wasRead && [super shouldStartExpireTimerWithTransaction:transaction]) {
         return YES;
     } else if (self.hasPerConversationExpiration && self.expireStartedAt > 0) {
-        OWSLogWarn(@"expiration previously started");
+        OWSFailDebug(@"expiration previously started");
         return YES;
     } else {
         return NO;
