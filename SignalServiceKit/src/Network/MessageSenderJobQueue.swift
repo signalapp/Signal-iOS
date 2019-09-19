@@ -70,6 +70,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     // MARK: JobQueue
 
     public typealias DurableOperationType = MessageSenderOperation
+    @objc
     public static let jobRecordLabel: String = "MessageSender"
     public static let maxRetries: UInt = 30
     public let requiresInternet: Bool = true

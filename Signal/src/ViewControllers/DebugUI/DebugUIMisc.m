@@ -542,12 +542,9 @@ NS_ASSUME_NONNULL_BEGIN
                                              nonce:[Randomness generateRandomBytes:16]]
             anyInsertWithTransaction:transaction];
         // OWSUnknownDBObject
-        [[[OWSUnknownDBObject alloc] init] anyInsertWithTransaction:transaction];
-        // SSKJobRecord
-        //        [[[SSKJobRecord alloc] initWithUniqueId:NSUUID.UUID.UUIDString
-        //                                       lastQueried:[NSDate new]
-        //                                             nonce:[Randomness generateRandomBytes:16]]
-        //         anyInsertWithTransaction:transaction];
+        //
+        // We don't bother.
+
         // OWSDevice
         [[[OWSDevice alloc] initWithUniqueId:NSUUID.UUID.UUIDString
                                    createdAt:[NSDate new]
@@ -558,6 +555,38 @@ NS_ASSUME_NONNULL_BEGIN
         [[[OWSLinkedDeviceReadReceipt alloc] initWithSenderAddress:address1
                                                 messageIdTimestamp:[NSDate ows_millisecondTimeStamp]
                                                      readTimestamp:[NSDate ows_millisecondTimeStamp]]
+            anyInsertWithTransaction:transaction];
+
+        // SSKJobRecord
+        [[[SSKMessageDecryptJobRecord alloc] initWithEnvelopeData:[Randomness generateRandomBytes:16]
+                                                            label:SSKMessageDecryptJobQueue.jobRecordLabel]
+            anyInsertWithTransaction:transaction];
+        NSError *_Nullable error;
+        TSOutgoingMessage *queuedMessage =
+            [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                               inThread:thread
+                                                            messageBody:@"some body"
+                                                          attachmentIds:[NSMutableArray new]
+                                                       expiresInSeconds:0
+                                                        expireStartedAt:0
+                                                         isVoiceMessage:NO
+                                                       groupMetaMessage:TSGroupMetaMessageUnspecified
+                                                          quotedMessage:nil
+                                                           contactShare:nil
+                                                            linkPreview:nil
+                                                         messageSticker:nil
+                                                      isViewOnceMessage:NO];
+        [queuedMessage anyInsertWithTransaction:transaction];
+        [[[SSKMessageSenderJobRecord alloc] initWithMessage:queuedMessage
+                                  removeMessageAfterSending:NO
+                                                      label:MessageSenderJobQueue.jobRecordLabel
+                                                transaction:transaction
+                                                      error:&error] anyInsertWithTransaction:transaction];
+        OWSAssertDebug(error == nil);
+        [[[OWSBroadcastMediaMessageJobRecord alloc]
+            initWithAttachmentIdMap:[NSMutableDictionary new]
+                              label:BroadcastMediaMessageJobQueue.jobRecordLabel] anyInsertWithTransaction:transaction];
+        [[[OWSSessionResetJobRecord alloc] initWithContactThread:thread label:OWSSessionResetJobQueue.jobRecordLabel]
             anyInsertWithTransaction:transaction];
     }];
 }

@@ -4,12 +4,17 @@
 
 import Foundation
 
+@objc
 public class BroadcastMediaMessageJobQueue: NSObject, JobQueue {
 
     public typealias DurableOperationType = BroadcastMediaMessageOperation
     public let requiresInternet: Bool = true
     public static let maxRetries: UInt = 4
-    public let jobRecordLabel: String = "BroadcastMediaMessage"
+    @objc
+    public static let jobRecordLabel: String = "BroadcastMediaMessage"
+    public var jobRecordLabel: String {
+        return type(of: self).jobRecordLabel
+    }
 
     public var runningOperations: [BroadcastMediaMessageOperation] = []
     public var isSetup: Bool = false
