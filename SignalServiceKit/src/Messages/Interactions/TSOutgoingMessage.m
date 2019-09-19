@@ -860,6 +860,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     if (![self shouldStartExpireTimerWithTransaction:transaction]) {
         return;
     }
+    if (self.expireStartedAt > 0) {
+        // Expiration already started.
+        return;
+    }
     uint64_t nowMs = [NSDate ows_millisecondTimeStamp];
     [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:self
                                                      expirationStartedAt:nowMs
