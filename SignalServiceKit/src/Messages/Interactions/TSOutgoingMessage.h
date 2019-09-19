@@ -253,8 +253,10 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 // This method is used to forge the message state for fake messages.
 //
 // NOTE: This method should only be used by Debug UI, etc.
+#ifdef DEBUG
 - (void)updateWithFakeMessageState:(TSOutgoingMessageState)messageState
                        transaction:(SDSAnyWriteTransaction *)transaction;
+#endif
 
 // This method is used to record a failed send to all "sending" recipients.
 - (void)updateWithSendingError:(NSError *)error

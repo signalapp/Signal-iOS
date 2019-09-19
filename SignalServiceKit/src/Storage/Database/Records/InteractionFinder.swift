@@ -824,10 +824,6 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .storedShouldStartExpireTimer) IS TRUE
         AND \(interactionColumn: .expiresAt) IS 0
-        AND (
-                \(interactionColumn: .recordType) != ? OR
-                \(interactionColumn: .read) IS 1
-            )
         """
         let arguments: StatementArguments = [SDSRecordType.incomingMessage.rawValue]
         let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
@@ -1031,8 +1027,6 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
     func enumerateUnstartedExpiringMessages(transaction: GRDBReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
         // NOTE: We DO consult storedShouldStartExpireTimer here.
         //       We don't want to start expiration until it is true.
-        // TODO: We could filter by .read IS TRUE for incoming messages
-        //       to improve perf.
         let sql = """
         SELECT *
         FROM \(InteractionRecord.databaseTableName)

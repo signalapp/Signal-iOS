@@ -171,6 +171,19 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
 
 #pragma mark - OWSReadTracking
 
+- (BOOL)shouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    // Don't start expiration for unread messages.
+    if (self.wasRead && [super shouldStartExpireTimerWithTransaction:transaction]) {
+        return YES;
+    } else if (self.hasPerConversationExpiration && self.expireStartedAt > 0) {
+        OWSLogWarn(@"expiration previously started");
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
 - (BOOL)shouldAffectUnreadCounts
 {
     return YES;
@@ -217,6 +230,18 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
         [OWSReadReceiptManager.sharedManager messageWasReadLocally:self];
     }
 }
+
+#ifdef DEBUG
+- (void)markAsReadForTestsWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+
+    [self anyUpdateIncomingMessageWithTransaction:transaction
+                                            block:^(TSIncomingMessage *message) {
+                                                message.read = YES;
+                                            }];
+}
+#endif
 
 - (SignalServiceAddress *)authorAddress
 {
