@@ -161,7 +161,7 @@ NS_ASSUME_NONNULL_BEGIN
         if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
             TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)attachment;
 
-            OWSLogDebug(@"downloading attachments for transcript: %lu", (unsigned long)transcript.timestamp);
+            OWSLogDebug(@"downloading attachments for transcript: %llu", transcript.timestamp);
 
             [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
                 message:outgoingMessage
@@ -179,9 +179,8 @@ NS_ASSUME_NONNULL_BEGIN
                     }];
                 }
                 failure:^(NSError *error) {
-                    OWSLogWarn(@"failed to fetch thumbnail for transcript: %lu with error: %@",
-                        (unsigned long)transcript.timestamp,
-                        error);
+                    OWSLogWarn(
+                        @"failed to fetch thumbnail for transcript: %llu with error: %@", transcript.timestamp, error);
                 }];
         }
     }

@@ -1591,7 +1591,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         TSAttachmentPointer *_Nullable attachmentPointer = (TSAttachmentPointer *)attachment;
 
-        OWSLogDebug(@"Downloading attachment for message: %lu", (unsigned long)incomingMessage.timestamp);
+        OWSLogDebug(@"Downloading attachment for message: %llu", incomingMessage.timestamp);
 
         // Use a separate download for each attachment so that:
         //
@@ -1620,8 +1620,8 @@ NS_ASSUME_NONNULL_BEGIN
                 }];
             }
             failure:^(NSError *error) {
-                OWSLogWarn(@"failed to download attachment for message: %lu with error: %@",
-                    (unsigned long)incomingMessage.timestamp,
+                OWSLogWarn(@"failed to download attachment for message: %llu with error: %@",
+                    incomingMessage.timestamp,
                     error);
             }];
     }

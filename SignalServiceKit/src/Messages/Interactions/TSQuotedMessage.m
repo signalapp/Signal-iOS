@@ -226,17 +226,15 @@ NS_ASSUME_NONNULL_BEGIN
                                              transaction:transaction];
 
         if (localThumbnail) {
-            OWSLogDebug(@"Generated local thumbnail for quoted quoted message: %@:%lu",
-                thread.uniqueId,
-                (unsigned long)timestamp);
+            OWSLogDebug(@"Generated local thumbnail for quoted quoted message: %@:%llu", thread.uniqueId, timestamp);
 
             [localThumbnail anyInsertWithTransaction:transaction];
 
             attachmentInfo.thumbnailAttachmentStreamId = localThumbnail.uniqueId;
         } else if (quotedAttachment.thumbnail) {
-            OWSLogDebug(@"Saving reference for fetching remote thumbnail for quoted message: %@:%lu",
+            OWSLogDebug(@"Saving reference for fetching remote thumbnail for quoted message: %@:%llu",
                 thread.uniqueId,
-                (unsigned long)timestamp);
+                timestamp);
 
             SSKProtoAttachmentPointer *thumbnailAttachmentProto = quotedAttachment.thumbnail;
             TSAttachmentPointer *_Nullable thumbnailPointer =
@@ -249,7 +247,7 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFailDebug(@"Invalid thumbnail attachment.");
             }
         } else {
-            OWSLogDebug(@"No thumbnail for quoted message: %@:%lu", thread.uniqueId, (unsigned long)timestamp);
+            OWSLogDebug(@"No thumbnail for quoted message: %@:%llu", thread.uniqueId, timestamp);
         }
 
         [attachmentInfos addObject:attachmentInfo];

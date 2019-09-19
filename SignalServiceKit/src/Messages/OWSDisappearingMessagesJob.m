@@ -397,7 +397,7 @@ void AssertIsOnDisappearingMessagesQueue()
 {
     [self.disappearingMessagesFinder
         enumerateMessagesWhichFailedToStartExpiringWithBlock:^(TSMessage *message, BOOL *stop) {
-            OWSFailDebug(@"starting old timer for message timestamp: %lu", (unsigned long)message.timestamp);
+            OWSFailDebug(@"starting old timer for message timestamp: %llu", message.timestamp);
 
             // We don't know when it was actually read, so assume it was read as soon as it was received.
             uint64_t readTimeBestGuess = message.receivedAtTimestamp;
