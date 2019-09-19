@@ -454,14 +454,12 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         OWSLogError(@"remove file failed with: %@", error);
     }
 
+
+
     // Remove the attachment specific directory and any associated files stored for this attachment.
     NSString *_Nullable attachmentFolder = self.uniqueIdAttachmentFolder;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:attachmentFolder]) {
-        BOOL success = [[NSFileManager defaultManager] removeItemAtPath:attachmentFolder error:&error];
-
-        if (error || !success) {
-            OWSLogError(@"remove unique attachment folder failed with: %@", error);
-        }
+    if (attachmentFolder && ![OWSFileSystem deleteFileIfExists:attachmentFolder]) {
+        OWSFailDebug(@"remove unique attachment folder failed.");
     }
 }
 
@@ -802,8 +800,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                 OWSFailDebug(@"Failed to intialize audio waveform from cached file: %@", error);
 
                 // Remove the file from disk and create a new one.
-                [[NSFileManager defaultManager] removeItemAtPath:audioWaveformPath error:&error];
-                if (error) {
+                if (![OWSFileSystem deleteFileIfExists:audioWaveformPath]) {
                     OWSFailDebug(@"failed to remove corrupt waveform from disk: %@", error);
                     return nil;
                 }

@@ -100,7 +100,7 @@ public class AudioWaveform: NSObject {
 
     /// The maximum duration asset that we will display waveforms for.
     /// It's too intensive to sample a waveform for really long audio files.
-    private static let maximumDuration: TimeInterval = 600 // 10m
+    private static let maximumDuration: TimeInterval = 10 * kMinuteInterval
 
     private weak var sampleOperation: Operation?
 
@@ -129,11 +129,11 @@ public class AudioWaveform: NSObject {
         // are weighted differently than others in the resulting output.
         let sampleLength = Int(ceil(sampleDistribution))
 
-        // Calculate the percentage we want to weight of each sample
-        // in a downsampled group. For whole number `sampleDistribution`
-        // the distribution is always equivalent across all of the samples.
-        // If the sampleDistribution is _not_ a whole number, we factor the
-        // bookending values in relative to remainder proportion
+        // Calculate the weight of each sample in the downsampled group.
+        // For whole number `sampleDistribution` the distribution is always
+        // equivalent across all of the samples. If the sampleDistribution
+        // is _not_ a whole number, we factor the bookending values in
+        // relative to remainder proportion
         let distribution: [Float] = {
             let averageProportion = 1 / sampleDistribution
 

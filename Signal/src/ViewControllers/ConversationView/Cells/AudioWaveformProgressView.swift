@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import Accelerate
 
 @objc
 class AudioWaveformProgressView: UIView {
@@ -162,7 +161,7 @@ class AudioWaveformProgressView: UIView {
                         width: sampleWidth,
                         height: height
                     ),
-                    cornerRadius: sampleWidth
+                    cornerRadius: sampleWidth / 2
                 )
             )
         }
