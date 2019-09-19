@@ -130,7 +130,7 @@ public class FeatureFlags: NSObject {
     public static let stickerSend = build.includes(.qa)
 
     @objc
-    public static let stickerSharing = build.includes(.qa)
+    public static let stickerSharing = true
 
     @objc
     public static let stickerAutoEnable = true
