@@ -225,6 +225,10 @@ NS_ASSUME_NONNULL_BEGIN
     TSOutgoingMessage *expiringSentOutgoingMessage = [self outgoingMessageWithBody:@"expiringSentOutgoingMessage"
                                                                   expiresInSeconds:10
                                                                    expireStartedAt:0];
+    TSOutgoingMessage *expiringDeliveredOutgoingMessage =
+        [self outgoingMessageWithBody:@"expiringDeliveredOutgoingMessage" expiresInSeconds:10 expireStartedAt:0];
+    TSOutgoingMessage *expiringDeliveredAndReadOutgoingMessage =
+        [self outgoingMessageWithBody:@"expiringDeliveredAndReadOutgoingMessage" expiresInSeconds:10 expireStartedAt:0];
     TSMessage *unExpiringOutgoingMessage = [self outgoingMessageWithBody:@"outgoing unexpiringMessage"
                                                         expiresInSeconds:0
                                                          expireStartedAt:0];
@@ -242,8 +246,15 @@ NS_ASSUME_NONNULL_BEGIN
         [unstartedExpiringOutgoingMessage updateWithFakeMessageState:TSOutgoingMessageStateSent
                                                          transaction:transaction];
 
-        // Mark outgoing message as "sent" using a production method.
+        // Mark outgoing message as "sent", "delivered" or "delivered and read" using production methods.
         [expiringSentOutgoingMessage updateWithSentRecipient:self.otherAddress wasSentByUD:NO transaction:transaction];
+        [expiringDeliveredOutgoingMessage updateWithDeliveredRecipient:self.otherAddress
+                                                     deliveryTimestamp:nil
+                                                           transaction:transaction];
+        uint64_t nowMs = [NSDate ows_millisecondTimeStamp];
+        [expiringDeliveredAndReadOutgoingMessage updateWithReadRecipient:self.otherAddress
+                                                           readTimestamp:nowMs
+                                                             transaction:transaction];
     }];
 
     NSArray<TSMessage *> *shouldBeExpiringMessages = @[
@@ -252,6 +263,8 @@ NS_ASSUME_NONNULL_BEGIN
         readExpiringIncomingMessage,
 
         expiringSentOutgoingMessage,
+        expiringDeliveredOutgoingMessage,
+        expiringDeliveredAndReadOutgoingMessage,
         expiredOutgoingMessage,
         notYetExpiredOutgoingMessage,
     ];

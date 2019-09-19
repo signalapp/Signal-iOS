@@ -855,7 +855,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     [self ensurePerConversationExpirationWithTransaction:transaction];
 }
 
-
 - (void)ensurePerConversationExpirationWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     if (![self shouldStartExpireTimerWithTransaction:transaction]) {
