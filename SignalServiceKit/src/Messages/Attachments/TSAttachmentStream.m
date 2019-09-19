@@ -26,7 +26,7 @@ const NSUInteger ThumbnailDimensionPointsLarge()
 
 typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
-@interface TSAttachmentStream ()
+@interface TSAttachmentStream () <AudioWaveformSamplingObserver>
 
 // We only want to generate the file path for this attachment once, so that
 // changes in the file path generation logic don't break existing attachments.
@@ -38,6 +38,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 // This property should only be accessed on the main thread.
 @property (nullable, nonatomic) NSNumber *cachedAudioDurationSeconds;
+@property (nullable, nonatomic) AudioWaveform *cachedAudioWaveform;
 
 @property (atomic, nullable) NSNumber *isValidImageCached;
 @property (atomic, nullable) NSNumber *isValidVideoCached;
@@ -351,6 +352,27 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return [[[self class] attachmentsFolder] stringByAppendingPathComponent:self.localRelativeFilePath];
 }
 
+/// For new attachments, we create a folder based on the uniqueId where we store all attachment data.
+/// Legacy attachments may have data stored directly in the `attachmentsFolder`.
+- (nullable NSString *)uniqueIdAttachmentFolder
+{
+    return [[[self class] attachmentsFolder] stringByAppendingPathComponent:self.uniqueId];
+}
+
+- (BOOL)ensureUniqueIdAttachmentFolder
+{
+    return [OWSFileSystem ensureDirectoryExists:self.uniqueIdAttachmentFolder];
+}
+
+- (nullable NSString *)audioWaveformPath
+{
+    if (!self.isAudio) {
+        return nil;
+    }
+
+    return [self.uniqueIdAttachmentFolder stringByAppendingPathComponent:@"waveform.dat"];
+}
+
 - (nullable NSString *)legacyThumbnailPath
 {
     NSString *filePath = self.originalFilePath;
@@ -430,6 +452,14 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     BOOL success = [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
     if (error || !success) {
         OWSLogError(@"remove file failed with: %@", error);
+    }
+
+
+
+    // Remove the attachment specific directory and any associated files stored for this attachment.
+    NSString *_Nullable attachmentFolder = self.uniqueIdAttachmentFolder;
+    if (attachmentFolder && ![OWSFileSystem deleteFileIfExists:attachmentFolder]) {
+        OWSFailDebug(@"remove unique attachment folder failed.");
     }
 }
 
@@ -745,6 +775,52 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return audioDurationSeconds;
 }
 
+- (nullable AudioWaveform *)audioWaveform
+{
+    @synchronized(self) {
+        if (self.cachedAudioWaveform) {
+            return self.cachedAudioWaveform;
+        }
+
+        NSString *_Nullable audioWaveformPath = self.audioWaveformPath;
+
+        // This attachment doesn't support waveforms, likely because it's not audio.
+        if (!audioWaveformPath) {
+            OWSAssertDebug(!self.isAudio);
+            return nil;
+        }
+
+        AudioWaveform *_Nullable waveform;
+
+        // We have a cached waveform on disk, read it into memory.
+        if ([[NSFileManager defaultManager] fileExistsAtPath:audioWaveformPath]) {
+            NSError *error;
+            waveform = [[AudioWaveform alloc] initWithContentsOfFile:audioWaveformPath error:&error];
+            if (error || !waveform) {
+                OWSFailDebug(@"Failed to intialize audio waveform from cached file: %@", error);
+
+                // Remove the file from disk and create a new one.
+                if (![OWSFileSystem deleteFileIfExists:audioWaveformPath]) {
+                    OWSFailDebug(@"failed to remove corrupt waveform from disk: %@", error);
+                    return nil;
+                }
+
+                return self.audioWaveform;
+            }
+        } else {
+            AVURLAsset *asset = [AVURLAsset assetWithURL:self.originalMediaURL];
+            waveform = [[AudioWaveform alloc] initWithAsset:asset];
+
+            // Listen for sampling completion so we can cache the final waveform to disk.
+            [waveform addSamplingObserver:self];
+        }
+
+        self.cachedAudioWaveform = waveform;
+
+        return waveform;
+    }
+}
+
 #pragma mark - Thumbnails
 
 - (nullable UIImage *)thumbnailImageWithSizeHint:(CGSize)sizeHint
@@ -1036,6 +1112,28 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         return nil;
     }
     return attachmentProto;
+}
+
+#pragma mark - AudioWaveformSamplingObserver
+
+- (void)audioWaveformDidFinishSampling:(AudioWaveform *)audioWaveform
+{
+    // We finished sampling the audio waveform, write it to disk.
+    __typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        __typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+
+        [strongSelf ensureUniqueIdAttachmentFolder];
+
+        NSError *error;
+        [audioWaveform writeToFile:strongSelf.audioWaveformPath atomically:YES error:&error];
+        if (error) {
+            OWSFailDebug(@"could not cache audio waveform to disk: %@", error);
+        }
+    });
 }
 
 @end
