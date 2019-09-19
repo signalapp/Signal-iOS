@@ -20,7 +20,8 @@ NSUInteger NSUIntegerMaxValue(void);
 @property (nonatomic, nullable) NSNumber *nsNumberValueUsingUInt64;
 @property (nonatomic, nullable) NSDate *dateValue;
 
-- (instancetype)init;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
