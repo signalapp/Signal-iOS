@@ -132,6 +132,11 @@ public class UIDatabaseObserver: NSObject {
 extension UIDatabaseObserver: TransactionObserver {
 
     public func observes(eventsOfKind eventKind: DatabaseEventKind) -> Bool {
+        guard !eventKind.tableName.hasPrefix(GRDBFullTextSearchFinder.databaseTableName) else {
+            // Ignore updates to the GRDB FTS table(s)
+            return false
+        }
+
         return true
     }
 

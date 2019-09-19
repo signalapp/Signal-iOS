@@ -97,7 +97,7 @@ public class GRDBGenericDatabaseObserver: NSObject {
         var allCollections = pendingChanges.collections
         for tableName in pendingChanges.tableNames {
             guard !tableName.hasPrefix(GRDBFullTextSearchFinder.databaseTableName) else {
-                // Ignore updates to the GRDB FTS table(s).
+                owsFailDebug("should not have been notified for changes to FTS tables")
                 continue
             }
             guard let collection = self.tableNameToCollectionMap[tableName] else {
