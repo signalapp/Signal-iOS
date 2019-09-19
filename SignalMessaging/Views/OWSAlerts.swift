@@ -128,9 +128,13 @@ import Foundation
     @objc
     public class func showIOSUpgradeNagIfNecessary() {
         // Our min SDK is iOS9, so this will only show for iOS9 users
-        if #available(iOS 10.0, *) {
-            return
-        }
+        // TODO: Start nagging iOS 10 users now that we're bumping up
+        // our min SDK to iOS 10.
+        if #available(iOS 10.0, *) { return }
+
+        // Don't nag legacy users if this is an end of life build
+        // (the last build their OS version supports)
+        guard !AppExpiry.isEndOfLifeOSVersion else { return }
 
         // Don't show the nag to users who have just launched
         // the app for the first time.
