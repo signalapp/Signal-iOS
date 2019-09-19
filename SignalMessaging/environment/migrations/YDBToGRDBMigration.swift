@@ -117,6 +117,8 @@ extension YDBToGRDBMigration {
     func run() throws {
         Logger.info("")
 
+        let startDate = Date()
+
         // We migrate the data store contents in phases
         // or batches.  Each "group" defines the data to
         // migrate in a given batch.
@@ -144,6 +146,9 @@ extension YDBToGRDBMigration {
         try self.migrate(migratorGroups: migratorGroups)
 
         removeYdb()
+
+        let migrationDuration = abs(startDate.timeIntervalSinceNow)
+        Logger.info("Migration duration: \(OWSFormat.formatDurationSeconds(Int(migrationDuration))) (\(migrationDuration))")
     }
 
     func removeYdb() {
