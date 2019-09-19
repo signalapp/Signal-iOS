@@ -234,24 +234,20 @@ public class SDSDatabaseStorage: SDSTransactable {
                 } else if AppReadiness.isAppReady() {
                     owsFailDebug("genericDatabaseObserver was unexpectedly nil")
                 }
+                GRDBFullTextSearchFinder.modelWasUpdated(model: interaction, transaction: grdb)
             }
         }
     }
 
     @objc(touchThread:transaction:)
     public func touch(thread: TSThread, transaction: SDSAnyWriteTransaction) {
-        touch(threadId: thread.uniqueId, transaction: transaction)
-    }
-
-    @objc(touchThreadId:transaction:)
-    public func touch(threadId: String, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let yap):
-            yap.touchObject(forKey: threadId, inCollection: TSThread.collection())
+            yap.touchObject(forKey: thread.uniqueId, inCollection: TSThread.collection())
         case .grdbWrite(let grdb):
             UIDatabaseObserver.serializedSync {
                 if let homeViewDatabaseObserver = grdbStorage.homeViewDatabaseObserver {
-                    homeViewDatabaseObserver.didTouch(threadId: threadId, transaction: grdb)
+                    homeViewDatabaseObserver.didTouch(threadId: thread.uniqueId, transaction: grdb)
                 } else if AppReadiness.isAppReady() {
                     owsFailDebug("homeViewDatabaseObserver was unexpectedly nil")
                 }
@@ -260,6 +256,7 @@ public class SDSDatabaseStorage: SDSTransactable {
                 } else if AppReadiness.isAppReady() {
                     owsFailDebug("genericDatabaseObserver was unexpectedly nil")
                 }
+                GRDBFullTextSearchFinder.modelWasUpdated(model: thread, transaction: grdb)
             }
         }
     }
