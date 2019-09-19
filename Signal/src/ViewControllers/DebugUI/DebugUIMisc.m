@@ -45,6 +45,11 @@ NS_ASSUME_NONNULL_BEGIN
     return SDSDatabaseStorage.shared;
 }
 
++ (StorageCoordinator *)storageCoordinator
+{
+    return SSKEnvironment.shared.storageCoordinator;
+}
+
 #pragma mark - Factory Methods
 
 - (NSString *)name
@@ -445,6 +450,7 @@ NS_ASSUME_NONNULL_BEGIN
         // TSThread
         TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:address1
                                                                            transaction:transaction];
+
         // TSInteraction
         [[[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                             inThread:thread
@@ -469,6 +475,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                              stickerId:0];
         // InstalledSticker
         [[[InstalledSticker alloc] initWithInfo:stickerInfo emojiString:nil] anyInsertWithTransaction:transaction];
+
         // StickerPack
         [[[StickerPack alloc] initWithInfo:stickerPackInfo
                                      title:@"some title"
@@ -478,22 +485,30 @@ NS_ASSUME_NONNULL_BEGIN
                                       [[StickerPackItem alloc] initWithStickerId:1 emojiString:@""],
                                       [[StickerPackItem alloc] initWithStickerId:2 emojiString:@""],
                                   ]] anyInsertWithTransaction:transaction];
+
         // KnownStickerPack
         [[[KnownStickerPack alloc] initWithInfo:stickerPackInfo] anyInsertWithTransaction:transaction];
+
         // OWSMessageDecryptJob
         //
         // TODO: Generate real envelope data.
-        [[[OWSMessageDecryptJob alloc] initWithEnvelopeData:[Randomness generateRandomBytes:16]]
-            anyInsertWithTransaction:transaction];
+        if (self.storageCoordinator.state == StorageCoordinatorStateYDB
+            || self.storageCoordinator.state == StorageCoordinatorStateYDBTests) {
+            [[[OWSMessageDecryptJob alloc] initWithEnvelopeData:[Randomness generateRandomBytes:16]]
+                anyInsertWithTransaction:transaction];
+        }
+
         // TSRecipientReadReceipt
         [[[TSRecipientReadReceipt alloc] initWithSentTimestamp:[NSDate ows_millisecondTimeStamp]]
             anyInsertWithTransaction:transaction];
+
         // OWSMessageContentJob
         //
         // TODO: Generate real envelope data.
         [[[OWSMessageContentJob alloc] initWithEnvelopeData:[Randomness generateRandomBytes:16]
                                               plaintextData:nil
                                             wasReceivedByUD:NO] anyInsertWithTransaction:transaction];
+
         // TSAttachment
         [[[TSAttachmentPointer alloc] initWithServerId:12345
                                                    key:[Randomness generateRandomBytes:16]
@@ -511,17 +526,22 @@ NS_ASSUME_NONNULL_BEGIN
                                                  caption:nil
                                           albumMessageId:nil
                                          shouldAlwaysPad:YES] anyInsertWithTransaction:transaction];
+
         // ExperienceUpgrade
         //
         // We don't bother.
 
         // TestModel
         [[[TestModel alloc] init] anyInsertWithTransaction:transaction];
+
         // OWSUserProfile
         [[OWSUserProfile getOrBuildUserProfileForAddress:address1
                                              transaction:transaction] updateWithUsername:nil transaction:transaction];
+
         // OWSBackupFragment
-        [[[OWSBackupFragment alloc] initWithUniqueId:@"some backup"] anyInsertWithTransaction:transaction];
+        //
+        // We don't bother.
+
         // OWSRecipientIdentity
         [[[OWSRecipientIdentity alloc] initWithAccountId:NSUUID.UUID.UUIDString
                                              identityKey:[Randomness generateRandomBytes:16]
@@ -529,18 +549,23 @@ NS_ASSUME_NONNULL_BEGIN
                                                createdAt:[NSDate new]
                                        verificationState:OWSVerificationStateDefault]
             anyInsertWithTransaction:transaction];
+
         // SignalAccount
         [[[SignalAccount alloc] initWithSignalServiceAddress:address1] anyInsertWithTransaction:transaction];
+
         // OWSDisappearingMessagesConfiguration
         [[OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread transaction:transaction]
             anyInsertWithTransaction:transaction];
+
         // SignalRecipient
         [[[SignalRecipient alloc] initWithAddress:address1] anyInsertWithTransaction:transaction];
+
         // OWSContactQuery
         [[[OWSContactQuery alloc] initWithUniqueId:NSUUID.UUID.UUIDString
                                        lastQueried:[NSDate new]
                                              nonce:[Randomness generateRandomBytes:16]]
             anyInsertWithTransaction:transaction];
+
         // OWSUnknownDBObject
         //
         // We don't bother.
@@ -551,6 +576,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     deviceId:1
                                   lastSeenAt:[NSDate new]
                                         name:nil] anyInsertWithTransaction:transaction];
+
         // OWSLinkedDeviceReadReceipt
         [[[OWSLinkedDeviceReadReceipt alloc] initWithSenderAddress:address1
                                                 messageIdTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -558,6 +584,8 @@ NS_ASSUME_NONNULL_BEGIN
             anyInsertWithTransaction:transaction];
 
         // SSKJobRecord
+        //
+        // NOTE: We insert every kind of job record.
         [[[SSKMessageDecryptJobRecord alloc] initWithEnvelopeData:[Randomness generateRandomBytes:16]
                                                             label:SSKMessageDecryptJobQueue.jobRecordLabel]
             anyInsertWithTransaction:transaction];

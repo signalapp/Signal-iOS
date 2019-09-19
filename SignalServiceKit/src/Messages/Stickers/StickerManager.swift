@@ -1014,6 +1014,10 @@ public class StickerManager: NSObject {
     }
 
     private class func cleanupOrphans() {
+        guard !FeatureFlags.suppressBackgroundActivity else {
+            // Don't clean up.
+            return
+        }
         DispatchQueue.global().async {
             databaseStorage.write { (transaction) in
                 var stickerPackMap = [String: StickerPack]()

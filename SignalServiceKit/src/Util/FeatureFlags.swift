@@ -197,4 +197,8 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let profileDisplayChanges = build.includes(.qa)
+
+    // This can be used to shut down various background operations.
+    @objc
+    public static let suppressBackgroundActivity = false
 }
