@@ -3,10 +3,13 @@
 //
 
 #import <SignalServiceKit/StorageCoordinator.h>
+#import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSString *const StorageIsReadyNotification = @"StorageIsReadyNotification";
 
 NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
 {
@@ -186,6 +189,18 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
 
     [OWSStorage deleteDatabaseFiles];
     [OWSStorage deleteDBKeys];
+}
+
++ (void)postStorageIsReadyNotification
+{
+    OWSLogInfo(@"");
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:StorageIsReadyNotification
+                                                                 object:nil
+                                                               userInfo:nil];
+    });
 }
 
 @end

@@ -143,7 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (self.databaseStorage.canLoadYdb) {
         __block dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-        [OWSStorage registerExtensionsWithMigrationBlock:^() {
+        [OWSStorage registerExtensionsWithCompletionBlock:^() {
             dispatch_semaphore_signal(semaphore);
         }];
 

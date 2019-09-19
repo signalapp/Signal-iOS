@@ -6,6 +6,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SDSDatabaseStorage;
 
+extern NSString *const StorageIsReadyNotification;
+
 typedef NS_ENUM(NSUInteger, StorageCoordinatorState) {
     // GRDB TODO: Remove .ydb and ydbTests once we ship GRDB to production.
     StorageCoordinatorStateYDB,
@@ -40,6 +42,8 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
 - (void)useGRDBForTests;
 - (void)useYDBForTests;
 #endif
+
++ (void)postStorageIsReadyNotification;
 
 @end
 

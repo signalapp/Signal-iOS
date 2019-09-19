@@ -157,7 +157,7 @@ NS_ASSUME_NONNULL_BEGIN
         [NSKeyedUnarchiver setClass:[ExperienceUpgrade class] forClassName:[ExperienceUpgrade collection]];
         [NSKeyedUnarchiver setClass:[ExperienceUpgrade class] forClassName:@"Signal.ExperienceUpgrade"];
 
-        dispatch_block_t warmCachesRunMigrationsAndComplete = ^{
+        dispatch_block_t completionBlock = ^{
             [SSKEnvironment.shared warmCaches];
 
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -166,7 +166,9 @@ NS_ASSUME_NONNULL_BEGIN
                     OWSAssertIsOnMainThread();
                     
                     migrationCompletion();
-                    
+
+                    [StorageCoordinator postStorageIsReadyNotification];
+
                     OWSAssertDebug(backgroundTask);
                     backgroundTask = nil;
                 }];
@@ -174,11 +176,9 @@ NS_ASSUME_NONNULL_BEGIN
         };
 
         if (databaseStorage.canLoadYdb) {
-            [OWSStorage registerExtensionsWithMigrationBlock:^() {
-                warmCachesRunMigrationsAndComplete();
-            }];
+            [OWSStorage registerExtensionsWithCompletionBlock:completionBlock];
         } else {
-            warmCachesRunMigrationsAndComplete();
+            completionBlock();
         }
     });
 }
