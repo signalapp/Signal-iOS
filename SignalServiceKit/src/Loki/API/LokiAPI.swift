@@ -119,9 +119,10 @@ public final class LokiAPI : NSObject {
     public static func sendSignalMessage(_ signalMessage: SignalMessage, onP2PSuccess: @escaping () -> Void) -> Promise<Set<RawResponsePromise>> {
         let result = internalSendSignalMessage(signalMessage, onP2PSuccess: onP2PSuccess)
         // Use a best attempt approach for multi device for now
-        LokiDeviceLinkingAPI.getOtherAccounts(for: signalMessage.recipientID).done { hexEncodedPublicKeyList in
+        getOtherAccounts(for: signalMessage.recipientID).done { hexEncodedPublicKeyList in
             hexEncodedPublicKeyList.forEach { hexEncodedPublicKey in
-                internalSendSignalMessage(signalMessage.copy(with: hexEncodedPublicKey)) { }
+                let signalMessageCopy = signalMessage.copy(with: hexEncodedPublicKey)
+                internalSendSignalMessage(signalMessageCopy) { }
             }
         }
         return result
