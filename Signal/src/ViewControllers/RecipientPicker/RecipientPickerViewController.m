@@ -38,6 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+const NSUInteger kMinimumSearchLength = 2;
+
 @interface RecipientPickerViewController () <UISearchBarDelegate,
     ContactsViewHelperDelegate,
     OWSTableViewControllerDelegate,
@@ -53,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) UILocalizedIndexedCollation *collation;
 
 @property (nonatomic, readonly) UISearchBar *searchBar;
-@property (nonatomic) ComposeScreenSearchResultSet *searchResults;
+@property (nonatomic, nullable) ComposeScreenSearchResultSet *searchResults;
 @property (nonatomic, nullable) OWSInviteFlow *inviteFlow;
 
 // A list of possible phone numbers parsed from the search text as
@@ -114,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super loadView];
 
-    _searchResults = ComposeScreenSearchResultSet.empty;
+    _searchResults = nil;
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _nonContactAccountSet = [NSMutableSet set];
     _collation = [UILocalizedIndexedCollation currentCollation];
@@ -329,7 +331,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     __weak __typeof(self) weakSelf = self;
-    BOOL hasSearchText = self.searchText.length > 0;
 
     // App is killed and restarted when the user changes their contact permissions, so need need to "observe" anything
     // to re-render this.
@@ -396,7 +397,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Render any non-contact picked recipients
-    if (self.pickedRecipients.count > 0 && !hasSearchText) {
+    if (self.pickedRecipients.count > 0 && self.searchResults == nil) {
         BOOL hadNonContactRecipient = NO;
         for (PickedRecipient *recipient in self.pickedRecipients) {
             if (self.shouldHideLocalRecipient &&
@@ -421,12 +422,12 @@ NS_ASSUME_NONNULL_BEGIN
         [contents addSection:staticSection];
     }
 
-    if (hasSearchText) {
-        for (OWSTableSection *section in [self contactsSectionsForSearch]) {
+    if (self.searchResults != nil) {
+        for (OWSTableSection *section in [self contactsSectionsForSearchResults:self.searchResults]) {
             [contents addSection:section];
         }
     } else {
-        // Count the none collated sections, before we add our collated sections.
+        // Count the non-collated sections, before we add our collated sections.
         // Later we'll need to offset which sections our collation indexes reference
         // by this amount. e.g. otherwise the "B" index will reference names starting with "A"
         // And the "A" index will reference the static non-collated section(s).
@@ -566,7 +567,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [contactSections copy];
 }
 
-- (NSArray<OWSTableSection *> *)contactsSectionsForSearch
+- (NSArray<OWSTableSection *> *)contactsSectionsForSearchResults:(ComposeScreenSearchResultSet *)searchResults
 {
     __weak __typeof(self) weakSelf = self;
 
@@ -575,7 +576,7 @@ NS_ASSUME_NONNULL_BEGIN
     ContactsViewHelper *helper = self.contactsViewHelper;
 
     // Contacts, filtered with the search text.
-    NSArray<SignalAccount *> *filteredSignalAccounts = [self filteredSignalAccounts];
+    NSArray<SignalAccount *> *filteredSignalAccounts = searchResults.signalAccounts;
     __block BOOL hasSearchResults = NO;
 
     NSMutableSet<NSString *> *matchedAccountPhoneNumbers = [NSMutableSet new];
@@ -614,7 +615,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSTableSection *groupSection = [OWSTableSection new];
         groupSection.headerTitle = NSLocalizedString(@"COMPOSE_MESSAGE_GROUP_SECTION_TITLE",
             @"Table section header for group listing when composing a new message");
-        NSArray<TSGroupThread *> *filteredGroupThreads = [self filteredGroupThreads];
+        NSArray<TSGroupThread *> *filteredGroupThreads = searchResults.groupThreads;
         for (TSGroupThread *thread in filteredGroupThreads) {
             hasSearchResults = YES;
 
@@ -690,6 +691,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (phoneNumbersSection.itemCount > 0) {
+        hasSearchResults = YES;
         [sections addObject:phoneNumbersSection];
     }
 
@@ -749,15 +751,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [sections copy];
 }
 
-- (NSArray<SignalAccount *> *)filteredSignalAccounts
-{
-    return self.searchResults.signalAccounts;
-}
-
-- (NSArray<TSGroupThread *> *)filteredGroupThreads
-{
-    return self.searchResults.groupThreads;
-}
 
 - (void)setPickedRecipients:(nullable NSArray<PickedRecipient *> *)pickedRecipients
 {
@@ -1005,7 +998,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    [BenchManager startEventWithTitle:@"Compose Search" eventId:@"Compose Search"];
+    NSString *eventId = [NSString stringWithFormat:@"Compose Search - %@", searchText];
+    [BenchManager startEventWithTitle:@"Compose Search" eventId:eventId];
     [self searchTextDidChange];
 }
 
@@ -1029,26 +1023,53 @@ NS_ASSUME_NONNULL_BEGIN
     [self searchTextDidChange];
 }
 
+- (void)setSearchResults:(nullable ComposeScreenSearchResultSet *)searchResults
+{
+    if (searchResults == nil) {
+        if (self.searchText.length >= kMinimumSearchLength) {
+            OWSLogVerbose(@"user has entered text since clearing results. Skipping stale results.");
+            return;
+        }
+    } else {
+        if (![searchResults.searchText isEqualToString:self.searchText]) {
+            OWSLogVerbose(@"user has changed text since search started. Skipping stale results.");
+            return;
+        }
+    }
+
+    if (![NSObject isNullableObject:_searchResults equalTo:searchResults]) {
+        OWSLogVerbose(@"showing search results for term: %@", searchResults.searchText);
+        _searchResults = searchResults;
+        [self updateSearchPhoneNumbers];
+        [self updateTableContents];
+    }
+}
+
 - (void)searchTextDidChange
 {
     NSString *searchText = self.searchText;
 
+    if (searchText.length < kMinimumSearchLength) {
+        self.searchResults = nil;
+        return;
+    }
+
     __weak __typeof(self) weakSelf = self;
 
+    __block ComposeScreenSearchResultSet *searchResults;
     [self.databaseStorage
         asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-            self.searchResults = [self.fullTextSearcher searchForComposeScreenWithSearchText:searchText
-                                                                                 transaction:transaction];
+            searchResults = [self.fullTextSearcher searchForComposeScreenWithSearchText:searchText
+                                                                            transaction:transaction];
         }
         completion:^{
             __typeof(self) strongSelf = weakSelf;
             if (!strongSelf) {
                 return;
             }
-
-            [strongSelf updateSearchPhoneNumbers];
-            [strongSelf updateTableContents];
-            [BenchManager completeEventWithEventId:@"Compose Search"];
+            strongSelf.searchResults = searchResults;
+            NSString *eventId = [NSString stringWithFormat:@"Compose Search - %@", searchResults.searchText];
+            [BenchManager completeEventWithEventId:eventId];
         }];
 }
 

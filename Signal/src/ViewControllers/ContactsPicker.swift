@@ -220,6 +220,9 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
                 } catch let error as NSError {
                     Logger.error("Failed to fetch contacts with error:\(error)")
                 }
+        @unknown default:
+            errorHandler(OWSAssertionError("Unexpected enum value"))
+            break
         }
     }
 

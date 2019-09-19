@@ -907,7 +907,7 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Pincode komt niet overeen.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too long. */
-"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN kan niet langer zijn dan 20 getallen.";
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "Pincode kan niet langer zijn dan 20 cijfers.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too short. */
 "ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "Je pincode moet ten minste 4 getallen lang zijn.";
