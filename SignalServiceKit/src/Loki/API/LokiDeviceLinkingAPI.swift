@@ -3,15 +3,25 @@ import PromiseKit
 @objc(LKDeviceLinkingAPI)
 final class LokiDeviceLinkingAPI : NSObject {
 
+    private static var timerStartDate: Date?
+    public static var isListeningForLinkingRequests = false
+
     // MARK: Settings
-    private static let listeningTimeout = 60
+    private static let listeningTimeout: TimeInterval = 60
 
     // MARK: Lifecycle
     override private init() { }
 
     // MARK: Public API
-    @objc public static func startListeningForLinkingRequests(onLinkingRequestReceived: (String) -> Void, onTimeout: () -> Void) {
-        // Listens for linking requests until either one is received or listeningTimeout is reached
+    @objc public static func startListeningForLinkingRequests(onLinkingRequestReceived: (String) -> Void, onTimeout: @escaping () -> Void) {
+        isListeningForLinkingRequests = true
+        timerStartDate = Date()
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            if Date().timeIntervalSince1970 - timerStartDate!.timeIntervalSince1970 >= listeningTimeout {
+                isListeningForLinkingRequests = false
+                onTimeout()
+            }
+        }
     }
 
     @objc public static func authorizeLinkingRequest(with signature: String) {
