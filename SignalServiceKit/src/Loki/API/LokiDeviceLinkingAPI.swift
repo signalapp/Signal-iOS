@@ -6,12 +6,6 @@ final class LokiDeviceLinkingAPI : NSObject {
     // MARK: Settings
     private static let listeningTimeout = 60
 
-    // MARK: Types
-    public struct Account {
-        public let hexEncodedPublicKey: String
-        public let isMaster: Bool
-    }
-
     // MARK: Lifecycle
     override private init() { }
 
@@ -34,7 +28,7 @@ final class LokiDeviceLinkingAPI : NSObject {
         notImplemented()
     }
 
-    public static func getAccounts(for hexEncodedPublicKey: String) -> Promise<[Account]> {
+    public static func getOtherAccounts(for hexEncodedPublicKey: String) -> Promise<[String]> {
         // Gets the accounts associated with the given hex encoded public key from the server
         notImplemented()
     }

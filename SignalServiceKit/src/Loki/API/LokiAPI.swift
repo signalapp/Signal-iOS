@@ -60,15 +60,8 @@ public final class LokiAPI : NSObject {
         let timeout: TimeInterval? = useLongPolling ? longPollingTimeout : nil
         return invoke(.getMessages, on: target, associatedWith: userHexEncodedPublicKey, parameters: parameters, headers: headers, timeout: timeout)
     }
-    
-    // MARK: Public API
-    public static func getMessages() -> Promise<Set<MessageListPromise>> {
-        return getTargetSnodes(for: userHexEncodedPublicKey).mapValues { targetSnode in
-            return getRawMessages(from: targetSnode, usingLongPolling: false).map { parseRawMessagesResponse($0, from: targetSnode) }
-        }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount)
-    }
-    
-    public static func sendSignalMessage(_ signalMessage: SignalMessage, onP2PSuccess: @escaping () -> Void) -> Promise<Set<RawResponsePromise>> {
+
+    internal static func internalSendSignalMessage(_ signalMessage: SignalMessage, onP2PSuccess: @escaping () -> Void) -> Promise<Set<RawResponsePromise>> {
         guard let lokiMessage = LokiMessage.from(signalMessage: signalMessage) else { return Promise(error: Error.messageConversionFailed) }
         let destination = lokiMessage.destination
         func sendLokiMessage(_ lokiMessage: LokiMessage, to target: LokiAPITarget) -> RawResponsePromise {
@@ -114,6 +107,24 @@ public final class LokiAPI : NSObject {
         } else {
             return sendLokiMessageUsingSwarmAPI()
         }
+    }
+    
+    // MARK: Public API
+    public static func getMessages() -> Promise<Set<MessageListPromise>> {
+        return getTargetSnodes(for: userHexEncodedPublicKey).mapValues { targetSnode in
+            return getRawMessages(from: targetSnode, usingLongPolling: false).map { parseRawMessagesResponse($0, from: targetSnode) }
+        }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount)
+    }
+    
+    public static func sendSignalMessage(_ signalMessage: SignalMessage, onP2PSuccess: @escaping () -> Void) -> Promise<Set<RawResponsePromise>> {
+        let result = internalSendSignalMessage(signalMessage, onP2PSuccess: onP2PSuccess)
+        // Use a best attempt approach for multi device for now
+        LokiDeviceLinkingAPI.getOtherAccounts(for: signalMessage.recipientID).done { hexEncodedPublicKeyList in
+            hexEncodedPublicKeyList.forEach { hexEncodedPublicKey in
+                internalSendSignalMessage(signalMessage.copy(with: hexEncodedPublicKey)) { }
+            }
+        }
+        return result
     }
     
     // MARK: Public API (Obj-C)
