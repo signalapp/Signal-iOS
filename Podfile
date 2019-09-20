@@ -131,6 +131,7 @@ def configure_testable_build(installer)
       build_configuration.build_settings['OTHER_SWIFT_FLAGS'] ||= '$(inherited) -DTESTABLE_BUILD'
       build_configuration.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= '$(inherited) TESTABLE_BUILD=1'
       build_configuration.build_settings['ENABLE_TESTABILITY'] = 'YES'
+      build_configuration.build_settings['ONLY_ACTIVE_ARCH'] = 'YES'
     end
   end
 end
