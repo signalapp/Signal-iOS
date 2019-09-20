@@ -29,12 +29,22 @@ final class LokiDeviceLinkingSession : NSObject {
         let master = LokiDeviceLink.Device(hexEncodedPublicKey: OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey)
         let slave = LokiDeviceLink.Device(hexEncodedPublicKey: slaveHexEncodedPublicKey, signature: slaveSignature)
         let deviceLink = LokiDeviceLink(between: master, and: slave)
-        delegate.authorizeDeviceLinkIfValid(deviceLink)
+        guard isValid(deviceLink) else { return }
+        delegate.requestUserAuthorization(for: deviceLink)
+    }
+    
+    public func authorizeDeviceLink(_ deviceLink: LokiDeviceLink) {
+        // TODO: Send a device link authorized message
     }
     
     public func stopListeningForLinkingRequests() {
         timer?.invalidate()
         timer = nil
         isListeningForLinkingRequests = false
+    }
+    
+    // MARK: Private API
+    private func isValid(_ deviceLink: LokiDeviceLink) -> Bool {
+        return true // TODO: Implement
     }
 }

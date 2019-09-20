@@ -29,7 +29,18 @@ internal final class LokiAPITarget : NSObject, NSCoding {
         coder.encode(address, forKey: "address")
         coder.encode(port, forKey: "port")
     }
+    
+    // MARK: Equality
+    override internal func isEqual(_ other: Any?) -> Bool {
+        guard let other = other as? LokiAPITarget else { return false }
+        return address == other.address && port == other.port
+    }
+    
+    // MARK: Hashing
+    override internal var hash: Int { // Override NSObject.hash and not Hashable.hashValue or Hashable.hash(into:)
+        return address.hashValue ^ port.hashValue
+    }
 
     // MARK: Description
-    override var description: String { return "\(address):\(port)" }
+    override internal var description: String { return "\(address):\(port)" }
 }
