@@ -25,4 +25,10 @@ public final class SignalMessage : NSObject {
         self.isPing = isPing
         super.init()
     }
+
+    public func copy(with recipientID: String) -> SignalMessage {
+        return SignalMessage(type: type, timestamp: timestamp, senderID: senderID, senderDeviceID: senderDeviceID, content: content,
+            recipientID: recipientID, ttl: objc_ttl, isPing: isPing)
+
+    }
 }

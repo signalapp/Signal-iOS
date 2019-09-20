@@ -83,6 +83,9 @@ public final class LokiGroupChatAPI : NSObject {
             transaction.setObject(newValue, forKey: "\(server).\(group)", inCollection: lastDeletionServerIDCollection)
         }
     }
+
+    // MARK: Lifecycle
+    override private init() { }
     
     // MARK: Private API
     private static func requestNewAuthToken(for server: String) -> Promise<String> {
