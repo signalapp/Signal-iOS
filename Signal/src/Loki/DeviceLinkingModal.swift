@@ -60,49 +60,34 @@ final class DeviceLinkingModal : UIViewController, LokiDeviceLinkingSessionDeleg
         view.backgroundColor = .clear
         // Content view
         view.addSubview(contentView)
-        contentView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            contentView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
-            view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 32),
-            contentView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        ])
+        contentView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32).isActive = true
+        view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 32).isActive = true
+        contentView.center(.vertical, in: view)
         // Spinner
         contentView.addSubview(spinner)
-        spinner.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            spinner.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            spinner.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 32),
-            spinner.heightAnchor.constraint(equalToConstant: 64),
-            spinner.widthAnchor.constraint(equalToConstant: 64)
-        ])
+        spinner.center(.horizontal, in: contentView)
+        spinner.pin(.top, to: .top, of: contentView, withInset: 32)
+        spinner.set(.width, to: 64)
+        spinner.set(.height, to: 64)
         spinner.startAnimating()
         // Title label
         contentView.addSubview(titleLabel)
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            titleLabel.topAnchor.constraint(equalTo: spinner.bottomAnchor, constant: 32),
-            contentView.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 16)
-        ])
+        titleLabel.pin(.leading, to: .leading, of: contentView, withInset: 16)
+        titleLabel.pin(.top, to: .bottom, of: spinner, withInset: 32)
+        contentView.pin(.trailing, to: .trailing, of: titleLabel, withInset: 16)
         // Subtitle label
         contentView.addSubview(subtitleLabel)
-        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            subtitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
-            contentView.trailingAnchor.constraint(equalTo: subtitleLabel.trailingAnchor, constant: 16)
-        ])
+        subtitleLabel.pin(.leading, to: .leading, of: contentView, withInset: 16)
+        subtitleLabel.pin(.top, to: .bottom, of: titleLabel, withInset: 32)
+        contentView.pin(.trailing, to: .trailing, of: subtitleLabel, withInset: 16)
         // Cancel button
         contentView.addSubview(cancelButton)
-        cancelButton.translatesAutoresizingMaskIntoConstraints = false
+        cancelButton.pin(.leading, to: .leading, of: contentView, withInset: 16)
+        cancelButton.pin(.top, to: .bottom, of: subtitleLabel, withInset: 16)
+        contentView.pin(.trailing, to: .trailing, of: cancelButton, withInset: 16)
+        contentView.pin(.bottom, to: .bottom, of: cancelButton, withInset: 16)
         let cancelButtonHeight = cancelButton.button.titleLabel!.font.pointSize * 48 / 17
-        NSLayoutConstraint.activate([
-            cancelButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            cancelButton.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 16),
-            contentView.trailingAnchor.constraint(equalTo: cancelButton.trailingAnchor, constant: 16),
-            contentView.bottomAnchor.constraint(equalTo: cancelButton.bottomAnchor, constant: 16),
-            cancelButton.heightAnchor.constraint(equalToConstant: cancelButtonHeight)
-        ])
+        cancelButton.set(.height, to: cancelButtonHeight)
     }
     
     // MARK: Device Linking
@@ -121,11 +106,12 @@ final class DeviceLinkingModal : UIViewController, LokiDeviceLinkingSessionDeleg
         if contentView.frame.contains(location) {
             super.touchesBegan(touches, with: event)
         } else {
-            dismiss(animated: true, completion: nil)
+            cancel()
         }
     }
     
     @objc private func cancel() {
+        deviceLinkingSession.stopListeningForLinkingRequests()
         dismiss(animated: true, completion: nil)
     }
 }
