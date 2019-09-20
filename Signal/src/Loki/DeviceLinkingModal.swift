@@ -1,5 +1,7 @@
 import NVActivityIndicatorView
 
+// TODO: Use the same kind of modal to show the user their QR code and seed
+
 @objc(LKDeviceLinkingModal)
 final class DeviceLinkingModal : UIViewController, LokiDeviceLinkingSessionDelegate {
     
