@@ -241,6 +241,7 @@
 
     [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Share Public Key", @"") actionBlock:^{ [weakSelf sharePublicKey]; }]];
     [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Show QR Code", @"") actionBlock:^{ [weakSelf showQRCode]; }]];
+    [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Link Device", @"") actionBlock:^{ [weakSelf linkDevice]; }]];
     [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Show Seed", @"") actionBlock:^{ [weakSelf showSeed]; }]];
     [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Clear All Data", @"") actionBlock:^{ [weakSelf clearAllData]; }]];
     
@@ -509,6 +510,11 @@
 {
     QRCodeViewController *qrCodeVC = [QRCodeViewController new];
     [self.navigationController pushViewController:qrCodeVC animated:YES];
+}
+
+- (void)linkDevice
+{
+    
 }
 
 - (void)showSeed

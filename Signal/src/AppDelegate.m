@@ -60,7 +60,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 static NSTimeInterval launchStartedAt;
 
-@interface AppDelegate () <UNUserNotificationCenterDelegate>
+@interface AppDelegate () <UNUserNotificationCenterDelegate, LKDeviceLinkingSessionDelegate>
 
 @property (nonatomic) BOOL hasInitialRootViewController;
 @property (nonatomic) BOOL areVersionMigrationsComplete;
@@ -72,6 +72,7 @@ static NSTimeInterval launchStartedAt;
 @property (nonatomic) LKGroupChatPoller *lokiPublicChatPoller;
 @property (nonatomic) LKRSSFeedPoller *lokiNewsFeedPoller;
 @property (nonatomic) LKRSSFeedPoller *lokiMessengerUpdatesFeedPoller;
+@property (nonatomic) LKDeviceLinkingSession *lokiDeviceLinkingSession;
 
 @end
 
@@ -1636,6 +1637,23 @@ static NSTimeInterval launchStartedAt;
         [self.lokiNewsFeedPoller stop];
         self.lokiNewsFeedPoller = nil;
     }
+}
+
+- (void)startListeningForLinkingRequests
+{
+    [self.lokiDeviceLinkingSession stopListeningForLinkingRequests];
+    self.lokiDeviceLinkingSession = [[LKDeviceLinkingSession alloc] initWithDelegate:self];
+    [self.lokiDeviceLinkingSession startListeningForLinkingRequests];
+}
+
+- (void)requestUserAuthorizationFor:(LKDeviceLink *)deviceLink
+{
+    
+}
+
+- (void)handleDeviceLinkingSessionTimeout
+{
+    
 }
 
 @end

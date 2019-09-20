@@ -1,12 +1,13 @@
 import PromiseKit
 
+@objc (LKDeviceLinkingSession)
 final class LokiDeviceLinkingSession : NSObject {
     private let delegate: LokiDeviceLinkingSessionDelegate
     private var timer: Timer?
-    public var isListeningForLinkingRequests = false
+    @objc public var isListeningForLinkingRequests = false
     
     // MARK: Lifecycle
-    public init(delegate: LokiDeviceLinkingSessionDelegate) {
+    @objc public init(delegate: LokiDeviceLinkingSessionDelegate) {
         self.delegate = delegate
     }
     
@@ -14,7 +15,7 @@ final class LokiDeviceLinkingSession : NSObject {
     private let listeningTimeout: TimeInterval = 60
 
     // MARK: Public API
-    public func startListeningForLinkingRequests() {
+    @objc public func startListeningForLinkingRequests() {
         isListeningForLinkingRequests = true
         timer = Timer.scheduledTimer(withTimeInterval: listeningTimeout, repeats: false) { [weak self] timer in
             guard let self = self else { return }
@@ -23,7 +24,7 @@ final class LokiDeviceLinkingSession : NSObject {
         }
     }
     
-    public func processLinkingRequest(from slaveHexEncodedPublicKey: String, with slaveSignature: Data) {
+    @objc public func processLinkingRequest(from slaveHexEncodedPublicKey: String, with slaveSignature: Data) {
         guard isListeningForLinkingRequests else { return }
         stopListeningForLinkingRequests()
         let master = LokiDeviceLink.Device(hexEncodedPublicKey: OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey)
@@ -33,11 +34,11 @@ final class LokiDeviceLinkingSession : NSObject {
         delegate.requestUserAuthorization(for: deviceLink)
     }
     
-    public func authorizeDeviceLink(_ deviceLink: LokiDeviceLink) {
+    @objc public func authorizeDeviceLink(_ deviceLink: LokiDeviceLink) {
         // TODO: Send a device link authorized message
     }
     
-    public func stopListeningForLinkingRequests() {
+    @objc public func stopListeningForLinkingRequests() {
         timer?.invalidate()
         timer = nil
         isListeningForLinkingRequests = false

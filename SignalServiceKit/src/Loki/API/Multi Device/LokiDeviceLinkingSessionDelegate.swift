@@ -1,6 +1,7 @@
 
+@objc(LKDeviceLinkingSessionDelegate)
 public protocol LokiDeviceLinkingSessionDelegate {
     
-    func requestUserAuthorization(for deviceLink: LokiDeviceLink)
-    func handleDeviceLinkingSessionTimeout()
+    @objc func requestUserAuthorization(for deviceLink: LokiDeviceLink)
+    @objc func handleDeviceLinkingSessionTimeout()
 }
