@@ -17,7 +17,7 @@ public final class LokiStorageAPI : NSObject {
         notImplemented()
     }
     
-    public static func getOtherAccounts(for hexEncodedPublicKey: String) -> Promise<[String]> {
+    public static func getAssociatedAccounts(for hexEncodedPublicKey: String) -> Promise<[String]> {
         // Gets the accounts associated with the given hex encoded public key from the server
         notImplemented()
     }

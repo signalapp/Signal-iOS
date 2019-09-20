@@ -1,4 +1,6 @@
+
 extension OWSPrimaryStorage {
+    
     private func getCollection(for primaryDevice: String) -> String {
         return "LokiMultiDevice-\(primaryDevice)"
     }

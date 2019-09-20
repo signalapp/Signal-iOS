@@ -1,6 +1,6 @@
 
 public protocol LokiDeviceLinkingSessionDelegate {
     
-    func handleDeviceLinkingRequestReceived(with signature: String)
+    func authorizeDeviceLinkIfValid(_ deviceLink: LokiDeviceLink)
     func handleDeviceLinkingSessionTimeout()
 }

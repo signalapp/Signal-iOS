@@ -1,6 +1,5 @@
 import PromiseKit
 
-@objc(LKDeviceLinkingAPI)
 final class LokiDeviceLinkingSession : NSObject {
     private let delegate: LokiDeviceLinkingSessionDelegate
     private var timer: Timer?
@@ -24,19 +23,18 @@ final class LokiDeviceLinkingSession : NSObject {
         }
     }
     
+    public func processLinkingRequest(from slaveHexEncodedPublicKey: String, with slaveSignature: Data) {
+        guard isListeningForLinkingRequests else { return }
+        stopListeningForLinkingRequests()
+        let master = LokiDeviceLink.Device(hexEncodedPublicKey: OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey)
+        let slave = LokiDeviceLink.Device(hexEncodedPublicKey: slaveHexEncodedPublicKey, signature: slaveSignature)
+        let deviceLink = LokiDeviceLink(between: master, and: slave)
+        delegate.authorizeDeviceLinkIfValid(deviceLink)
+    }
+    
     public func stopListeningForLinkingRequests() {
         timer?.invalidate()
         timer = nil
         isListeningForLinkingRequests = false
-    }
-    
-    public func processLinkingRequest(with signature: String) {
-        guard isListeningForLinkingRequests else { return }
-        stopListeningForLinkingRequests()
-        delegate.handleDeviceLinkingRequestReceived(with: signature)
-    }
-
-    public func authorizeLinkingRequest(with signature: String) {
-        // TODO: Authorize the linking request with the given signature
     }
 }
