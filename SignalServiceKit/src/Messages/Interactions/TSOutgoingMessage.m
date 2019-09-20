@@ -16,6 +16,7 @@
 #import "TSQuotedMessage.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
+#import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
@@ -510,6 +511,11 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 {
     if (self.shouldBeSaved) {
         // Message is not transient; no need to clean up attachments.
+        return;
+    }
+    if (!AppReadiness.isAppReady) {
+        // We don't want or need to do this clean up while registering extensions,
+        // migrating, etc.
         return;
     }
     NSArray<NSString *> *_Nullable attachmentIds = self.attachmentIds;
