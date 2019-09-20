@@ -159,7 +159,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "المفرق لا يحتوي على معلومات.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "ادرج صورة من الالبوم او بإستخدام الكاميرا قبل الارسال.";
+"ATTACHMENT_HINT" = "Choose Media to Send";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "الكاميرا";
@@ -930,6 +930,9 @@
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "لم ينجح الاتصال الهاتفي.";
 
+/* Label indicating that this OS version is no longer supported. */
+"END_OF_LIFE_OS_WARNING" = "The latest Signal features won’t work on this version of iOS. Please upgrade this device to receive future Signal updates.";
+
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Could not access contacts.";
 
@@ -1205,6 +1208,12 @@
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ is on Signal!";
+
+/* accessibility label for the button which shows the sticker picker */
+"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "لصاقات";
+
+/* accessibility label for the button which records voice memos */
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "رسالة صوتية.";
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "ملف صوتي غير صالح.";
