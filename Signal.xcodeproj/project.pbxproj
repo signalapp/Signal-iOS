@@ -568,6 +568,7 @@
 		B82584A02315024B001B41CB /* LokiRSSFeedPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */; };
 		B845B4D4230CD09100D759F0 /* LokiGroupChatPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B845B4D3230CD09000D759F0 /* LokiGroupChatPoller.swift */; };
 		B846365B22B7418B00AF1514 /* Identicon+ObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */; };
+		B885D5F4233491AB00EE0D8E /* DeviceLinkingModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B885D5F3233491AB00EE0D8E /* DeviceLinkingModal.swift */; };
 		B891105C2320872800F15FCC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B891105B2320872800F15FCC /* GoogleService-Info.plist */; };
 		B891105E2320872800F15FCC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B891105B2320872800F15FCC /* GoogleService-Info.plist */; };
 		B891105F2320872800F15FCC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B891105B2320872800F15FCC /* GoogleService-Info.plist */; };
@@ -1371,6 +1372,7 @@
 		B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokiRSSFeedPoller.swift; sourceTree = "<group>"; };
 		B845B4D3230CD09000D759F0 /* LokiGroupChatPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokiGroupChatPoller.swift; sourceTree = "<group>"; };
 		B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Identicon+ObjC.swift"; sourceTree = "<group>"; };
+		B885D5F3233491AB00EE0D8E /* DeviceLinkingModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLinkingModal.swift; sourceTree = "<group>"; };
 		B891105B2320872800F15FCC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B89841E222B7579F00B1BDC6 /* NewConversationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationViewController.swift; sourceTree = "<group>"; };
 		B90418E4183E9DD40038554A /* DateUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtil.h; sourceTree = "<group>"; };
@@ -2640,6 +2642,7 @@
 				B8258491230FA5DA001B41CB /* ScanQRCodeViewController.h */,
 				B8258492230FA5E9001B41CB /* ScanQRCodeViewController.m */,
 				B821F2F92272CEEE002C88C0 /* SeedViewController.swift */,
+				B885D5F3233491AB00EE0D8E /* DeviceLinkingModal.swift */,
 			);
 			path = Loki;
 			sourceTree = "<group>";
@@ -3319,6 +3322,7 @@
 				"${BUILT_PRODUCTS_DIR}/IGIdenticon/IGIdenticon.framework",
 				"${BUILT_PRODUCTS_DIR}/Mantle/Mantle.framework",
 				"${BUILT_PRODUCTS_DIR}/Mixpanel/Mixpanel.framework",
+				"${BUILT_PRODUCTS_DIR}/NVActivityIndicatorView/NVActivityIndicatorView.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 				"${BUILT_PRODUCTS_DIR}/PureLayout/PureLayout.framework",
 				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
@@ -3349,6 +3353,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IGIdenticon.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mantle.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mixpanel.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NVActivityIndicatorView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PureLayout.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
@@ -3706,6 +3711,7 @@
 				450D19131F85236600970622 /* RemoteVideoView.m in Sources */,
 				34129B8621EF877A005457A8 /* LinkPreviewView.swift in Sources */,
 				34386A54207D271D009F5D9C /* NeverClearView.swift in Sources */,
+				B885D5F4233491AB00EE0D8E /* DeviceLinkingModal.swift in Sources */,
 				45DF5DF21DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */,
 				451166C01FD86B98000739BA /* AccountManager.swift in Sources */,
 				3430FE181F7751D4000EC51B /* GiphyAPI.swift in Sources */,

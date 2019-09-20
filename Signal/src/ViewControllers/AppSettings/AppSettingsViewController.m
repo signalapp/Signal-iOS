@@ -514,7 +514,9 @@
 
 - (void)linkDevice
 {
-    
+    LKDeviceLinkingModal *deviceLinkingModal = [LKDeviceLinkingModal new];
+    deviceLinkingModal.modalPresentationStyle = UIModalPresentationOverFullScreen;
+    [self presentViewController:deviceLinkingModal animated:YES completion:nil];
 }
 
 - (void)showSeed

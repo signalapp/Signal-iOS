@@ -1,7 +1,7 @@
 import PromiseKit
 
 @objc (LKDeviceLinkingSession)
-final class LokiDeviceLinkingSession : NSObject {
+public final class LokiDeviceLinkingSession : NSObject {
     private let delegate: LokiDeviceLinkingSessionDelegate
     private var timer: Timer?
     @objc public var isListeningForLinkingRequests = false

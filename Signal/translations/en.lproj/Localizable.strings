@@ -2622,3 +2622,5 @@
 "Loki Messenger is currently in beta. For development purposes the beta version collects basic usage statistics and crash logs. In addition, the beta version doesn't provide full privacy and shouldn't be used to transmit sensitive information." = "Loki Messenger is currently in beta. For development purposes the beta version collects basic usage statistics and crash logs. In addition, the beta version doesn't provide full privacy and shouldn't be used to transmit sensitive information.";
 "Copy Public Key" = "Copy Public Key";
 "Link Device" = "Link Device";
+"Waiting for Device" = "Waiting for Device";
+"Click the \"Link Device\" button on your other device to start the linking process" = "Click the \"Link Device\" button on your other device to start the linking process";

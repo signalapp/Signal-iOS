@@ -62,6 +62,9 @@ PODS:
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
   - Mixpanel (3.4.7)
+  - NVActivityIndicatorView (4.7.0):
+    - NVActivityIndicatorView/Presenter (= 4.7.0)
+  - NVActivityIndicatorView/Presenter (4.7.0)
   - PromiseKit (6.5.3):
     - PromiseKit/CorePromise (= 6.5.3)
     - PromiseKit/Foundation (= 6.5.3)
@@ -220,6 +223,7 @@ DEPENDENCIES:
   - IGIdenticon
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
   - Mixpanel (~> 3.4)
+  - NVActivityIndicatorView (~> 4.7)
   - PromiseKit (= 6.5.3)
   - PureLayout
   - Reachability
@@ -249,6 +253,7 @@ SPEC REPOS:
     - IGIdenticon
     - libPhoneNumber-iOS
     - Mixpanel
+    - NVActivityIndicatorView
     - PromiseKit
     - PureLayout
     - Reachability
@@ -331,6 +336,7 @@ SPEC CHECKSUMS:
   libPhoneNumber-iOS: e444379ac18bbfbdefad571da735b2cd7e096caa
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   Mixpanel: 696e0a1c7f2685aa06bb23829b7a58ab7203d6c7
+  NVActivityIndicatorView: b19ddab2576f805cbe0fb2306cba3476e09a1dea
   PromiseKit: c609029bdd801f792551a504c695c7d3098b42cd
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
@@ -345,6 +351,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: 1240a47686acf0d2d7e61e6ec3a925fbded184fa
+PODFILE CHECKSUM: ff66104e65cc960ed08a74b71c27f5caf59f4239
 
 COCOAPODS: 1.5.3

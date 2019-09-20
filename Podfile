@@ -78,6 +78,7 @@ target 'Signal' do
   pod 'FirebaseCore', '~> 6.0', :inhibit_warnings => true
   pod 'Fabric', '~> 1.10', :inhibit_warnings => true
   pod 'Crashlytics', '~> 3.13', :inhibit_warnings => true
+  pod 'NVActivityIndicatorView', '~> 4.7', :inhibit_warnings => true
 
   target 'SignalTests' do
     inherit! :search_paths
