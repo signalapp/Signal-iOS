@@ -46,7 +46,6 @@
 #import <SignalServiceKit/TSSocketManager.h>
 #import <UserNotifications/UserNotifications.h>
 #import <WebRTC/WebRTC.h>
-#import <sys/utsname.h>
 
 NSString *const AppDelegateStoryboardMain = @"Main";
 
@@ -410,7 +409,9 @@ static NSTimeInterval launchStartedAt;
 
 - (void)startupLogging
 {
-    OWSLogInfo(@"iOS Version: %@", [UIDevice currentDevice].systemVersion);
+    OWSLogInfo(@"iOS Version: %@ (%@)",
+        [UIDevice currentDevice].systemVersion,
+        [NSString stringFromSysctlKey:@"kern.osversion"]);
 
     NSString *localeIdentifier = [NSLocale.currentLocale objectForKey:NSLocaleIdentifier];
     if (localeIdentifier.length > 0) {
@@ -425,12 +426,7 @@ static NSTimeInterval launchStartedAt;
         OWSLogInfo(@"Language Code: %@", languageCode);
     }
 
-    struct utsname systemInfo;
-    uname(&systemInfo);
-
-    OWSLogInfo(@"Device Model: %@ (%@)",
-        UIDevice.currentDevice.model,
-        [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding]);
+    OWSLogInfo(@"Device Model: %@ (%@)", UIDevice.currentDevice.model, [NSString stringFromSysctlKey:@"hw.machine"]);
 
     NSDictionary<NSString *, NSString *> *buildDetails =
         [[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildDetails"];
