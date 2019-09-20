@@ -22,6 +22,7 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
 
         guard let fromVC = transitionContext.viewController(forKey: .from) else {
             owsFailDebug("fromVC was unexpectedly nil")
+            transitionContext.completeTransition(false)
             return
         }
 
@@ -32,42 +33,50 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
         case let navController as UINavigationController:
             guard let contextProvider = navController.topViewController as? MediaPresentationContextProvider else {
                 owsFailDebug("unexpected contextProvider: \(String(describing: navController.topViewController))")
+                transitionContext.completeTransition(false)
                 return
             }
             fromContextProvider = contextProvider
         default:
             owsFailDebug("unexpected fromVC: \(fromVC)")
+            transitionContext.completeTransition(false)
             return
         }
 
         guard let fromMediaContext = fromContextProvider.mediaPresentationContext(galleryItem: galleryItem, in: containerView) else {
             owsFailDebug("fromPresentationContext was unexpectedly nil")
+            transitionContext.completeTransition(false)
             return
         }
 
         guard let toVC = transitionContext.viewController(forKey: .to) else {
             owsFailDebug("toVC was unexpectedly nil")
+            transitionContext.completeTransition(false)
             return
         }
 
         guard let toContextProvider = toVC as? MediaPresentationContextProvider else {
             owsFailDebug("toContext was unexpectedly nil")
+            transitionContext.completeTransition(false)
             return
         }
 
         guard let toView = transitionContext.view(forKey: .to) else {
             owsFailDebug("toView was unexpectedly nil")
+            transitionContext.completeTransition(false)
             return
         }
         containerView.addSubview(toView)
 
         guard let toMediaContext = toContextProvider.mediaPresentationContext(galleryItem: galleryItem, in: containerView) else {
             owsFailDebug("toPresentationContext was unexpectedly nil")
+            transitionContext.completeTransition(false)
             return
         }
 
         guard let presentationImage = galleryItem.attachmentStream.originalImage else {
             owsFailDebug("presentationImage was unexpectedly nil")
+            transitionContext.completeTransition(true)
             return
         }
 
