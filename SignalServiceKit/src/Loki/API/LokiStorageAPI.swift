@@ -1,7 +1,12 @@
 import PromiseKit
 
-public extension LokiAPI {
+@objc(LKStorageAPI)
+public final class LokiStorageAPI : NSObject {
     
+    // MARK: Lifecycle
+    override private init() { }
+    
+    // MARK: Public API
     public static func addSlaveAccount(with hexEncodedPublicKey: String) -> Promise<Void> {
         // Adds the given slave account to the user's device mapping on the server
         notImplemented()
