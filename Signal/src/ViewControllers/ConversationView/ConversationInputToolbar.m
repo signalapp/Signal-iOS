@@ -229,11 +229,15 @@ const CGFloat kMaxTextViewHeight = 98;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _sendButton);
 
     _voiceMemoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.voiceMemoButton.accessibilityLabel = NSLocalizedString(@"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL",
+        @"accessibility label for the button which records voice memos");
     [self.voiceMemoButton setTemplateImageName:@"mic-outline-24" tintColor:Theme.navbarIconColor];
     [self.voiceMemoButton autoSetDimensionsToSize:CGSizeMake(40, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _voiceMemoButton);
 
     _stickerButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.stickerButton.accessibilityLabel = NSLocalizedString(@"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL",
+        @"accessibility label for the button which shows the sticker picker");
     [self.stickerButton setTemplateImageName:@"sticker-smiley-outline-24" tintColor:Theme.navbarIconColor];
     [self.stickerButton addTarget:self
                            action:@selector(stickerButtonPressed)

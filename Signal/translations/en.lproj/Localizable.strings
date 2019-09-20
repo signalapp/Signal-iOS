@@ -159,7 +159,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+"ATTACHMENT_HINT" = "Choose Media to Send";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "Camera";
@@ -1208,6 +1208,12 @@
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ is on Signal!";
+
+/* accessibility label for the button which shows the sticker picker */
+"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Stickers";
+
+/* accessibility label for the button which records voice memos */
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Voice Message";
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Invalid audio file.";
