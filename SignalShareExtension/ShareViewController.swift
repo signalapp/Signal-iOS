@@ -363,7 +363,12 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     func startupLogging() {
-        Logger.info("iOS Version: \(UIDevice.current.systemVersion)}")
+
+        if let osBuild = String(sysctlKey: "kern.osversion") {
+            Logger.info("iOS Version: \(UIDevice.current.systemVersion) (\(osBuild))")
+        } else {
+            Logger.info("iOS Version: \(UIDevice.current.systemVersion)")
+        }
 
         let locale = NSLocale.current as NSLocale
         if let localeIdentifier = locale.object(forKey: NSLocale.Key.identifier) as? String,

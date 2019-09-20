@@ -36,12 +36,29 @@ public extension String {
             return Character("\(number)")
         })
     }
+
+    init?(sysctlKey key: String) {
+        var size: Int = 0
+        sysctlbyname(key, nil, &size, nil, 0)
+
+        guard size > 0 else { return nil }
+
+        var value = Array<CChar>(repeating: 0, count: size)
+        sysctlbyname(key, &value, &size, nil, 0)
+
+        self.init(cString: value)
+    }
 }
 
 public extension NSString {
     @objc
     var ensureArabicNumerals: String {
         return (self as String).ensureArabicNumerals
+    }
+
+    @objc
+    class func stringFromSysctlKey(_ key: String) -> String? {
+        return String(sysctlKey: key)
     }
 }
 
