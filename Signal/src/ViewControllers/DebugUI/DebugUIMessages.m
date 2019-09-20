@@ -3808,7 +3808,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     }
     uint32_t sendDelay = arc4random_uniform((uint32_t)(0.01 * NSEC_PER_SEC));
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, sendDelay), dispatch_get_main_queue(), ^{
-        [self sendFakeMessages:1 thread:thread];
+        [self sendFakeMessages:1 thread:thread isTextOnly:YES];
     });
 
     uint32_t deleteDelay = arc4random_uniform((uint32_t)(0.01 * NSEC_PER_SEC));
@@ -3870,7 +3870,6 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             }
             case 2: {
                 UInt32 filesize = 64;
-                // MJKFOO
                 TSAttachmentPointer *pointer =
                     [[TSAttachmentPointer alloc] initWithServerId:237391539706350548
                                                               key:[self createRandomNSDataOfSize:filesize]
