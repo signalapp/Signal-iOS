@@ -79,6 +79,12 @@ NSString *NSStringForImageFormat(ImageFormat value)
     return [self ows_isValidImageWithPath:nil mimeType:declaredMimeType];
 }
 
+// If filePath and/or declaredMimeType is supplied, we warn
+// if they do not match the actual file contents.  But they are
+// both optional, we consider the actual image format (deduced
+// using magic numbers) to be authoritative.  The file extension
+// and declared MIME type could be wrong, but we can proceed in
+// that case.
 - (BOOL)ows_isValidImageWithPath:(nullable NSString *)filePath mimeType:(nullable NSString *)declaredMimeType
 {
     ImageFormat imageFormat = [self ows_guessImageFormat];
