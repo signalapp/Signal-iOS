@@ -77,7 +77,13 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
         guard let presentationImage = galleryItem.attachmentStream.originalImage else {
             owsFailDebug("presentationImage was unexpectedly nil")
             // Complete transition immediately.
-            transitionContext.completeTransition(true)
+            fromContextProvider.mediaWillPresent(fromContext: fromMediaContext)
+            toContextProvider.mediaWillPresent(toContext: toMediaContext)
+            DispatchQueue.main.async {
+                fromContextProvider.mediaDidPresent(fromContext: fromMediaContext)
+                toContextProvider.mediaDidPresent(toContext: toMediaContext)
+                transitionContext.completeTransition(true)
+            }
             return
         }
 

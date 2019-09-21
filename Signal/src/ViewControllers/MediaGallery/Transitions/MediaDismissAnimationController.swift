@@ -96,7 +96,17 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
         guard let presentationImage = galleryItem.attachmentStream.originalImage else {
             owsFailDebug("presentationImage was unexpectedly nil")
             // Complete transition immediately.
-            transitionContext.completeTransition(true)
+            fromContextProvider.mediaWillPresent(fromContext: fromMediaContext)
+            if let toMediaContext = toMediaContext {
+                toContextProvider.mediaWillPresent(toContext: toMediaContext)
+            }
+            DispatchQueue.main.async {
+                fromContextProvider.mediaDidPresent(fromContext: fromMediaContext)
+                if let toMediaContext = toMediaContext {
+                    toContextProvider.mediaDidPresent(toContext: toMediaContext)
+                }
+                transitionContext.completeTransition(true)
+            }
             return
         }
 
