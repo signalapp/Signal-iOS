@@ -85,7 +85,7 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self
             enumerateIncompleteCallsWithBlock:^(TSCall *call) {
-                if (call.timestamp <= cutoffTimestamp) {
+                if (call.timestamp > cutoffTimestamp) {
                     OWSLogInfo(@"ignoring new call: %@", call.uniqueId);
                     return;
                 }
