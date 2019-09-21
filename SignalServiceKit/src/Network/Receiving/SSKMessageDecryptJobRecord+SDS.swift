@@ -55,7 +55,7 @@ class SSKMessageDecryptJobRecordSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        let id: Int64? = model.sortId > 0 ? Int64(model.sortId) : nil
 
         let recordType: SDSRecordType = .messageDecryptJobRecord
         let uniqueId: String = model.uniqueId

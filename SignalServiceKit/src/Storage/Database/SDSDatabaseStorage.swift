@@ -149,7 +149,11 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
 
         // crash if we can't read the DB.
-        return try! GRDBDatabaseStorageAdapter(baseDir: type(of: self).baseDir())
+        do {
+            return try GRDBDatabaseStorageAdapter(baseDir: type(of: self).baseDir())
+        } catch {
+            owsFail("\(error)")
+        }
     }
 
     @objc
