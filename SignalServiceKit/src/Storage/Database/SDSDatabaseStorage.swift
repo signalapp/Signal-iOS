@@ -124,6 +124,11 @@ public class SDSDatabaseStorage: SDSTransactable {
     }
 
     @objc
+    public static var grdbDatabaseDirUrl: URL {
+        return GRDBDatabaseStorageAdapter.databaseDirUrl(baseDir: baseDir())
+    }
+
+    @objc
     public static var grdbDatabaseFileUrl: URL {
         return GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir())
     }

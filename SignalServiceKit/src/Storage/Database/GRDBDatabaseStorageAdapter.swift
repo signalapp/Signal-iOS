@@ -20,8 +20,12 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     // MARK: -
 
+    static func databaseDirUrl(baseDir: URL) -> URL {
+        return baseDir.appendingPathComponent("grdb", isDirectory: true)
+    }
+
     static func databaseFileUrl(baseDir: URL) -> URL {
-        let databaseDir = baseDir.appendingPathComponent("grdb_database", isDirectory: true)
+        let databaseDir = databaseDirUrl(baseDir: baseDir)
         OWSFileSystem.ensureDirectoryExists(databaseDir.path)
         return databaseDir.appendingPathComponent("signal.sqlite", isDirectory: false)
     }
