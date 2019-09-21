@@ -298,7 +298,7 @@ NSString *NSStringForImageFormat(ImageFormat value)
     }
 }
 
-- (BOOL)ows_isValidMimeType:(NSString *)mimeType imageFormat:(ImageFormat)imageFormat
+- (BOOL)ows_isValidMimeType:(nullable NSString *)mimeType imageFormat:(ImageFormat)imageFormat
 {
     OWSAssertDebug(mimeType.length > 0);
 
@@ -306,19 +306,19 @@ NSString *NSStringForImageFormat(ImageFormat value)
         case ImageFormat_Unknown:
             return NO;
         case ImageFormat_Png:
-            return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImagePng]);
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImagePng] == NSOrderedSame);
         case ImageFormat_Gif:
-            return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageGif]);
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageGif] == NSOrderedSame);
         case ImageFormat_Tiff:
-            return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageTiff1] ||
-                [mimeType isEqualToString:OWSMimeTypeImageTiff2]);
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageTiff1] == NSOrderedSame ||
+                [mimeType caseInsensitiveCompare:OWSMimeTypeImageTiff2] == NSOrderedSame);
         case ImageFormat_Jpeg:
-            return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageJpeg]);
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageJpeg] == NSOrderedSame);
         case ImageFormat_Bmp:
-            return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageBmp1] ||
-                [mimeType isEqualToString:OWSMimeTypeImageBmp2]);
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageBmp1] == NSOrderedSame ||
+                [mimeType caseInsensitiveCompare:OWSMimeTypeImageBmp2] == NSOrderedSame);
         case ImageFormat_Webp:
-            return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageWebp]);
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageWebp] == NSOrderedSame);
     }
 }
 
