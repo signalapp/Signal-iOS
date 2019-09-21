@@ -136,7 +136,7 @@ public enum OWSMediaError: Error {
     @objc
     public static let kMaxFileSizeAnimatedImage = UInt(25 * 1024 * 1024)
     @objc
-    public static let kMaxFileSizeImage = UInt(6 * 1024 * 1024)
+    public static let kMaxFileSizeImage = UInt(8 * 1024 * 1024)
     @objc
     public static let kMaxFileSizeVideo = UInt(100 * 1024 * 1024)
     @objc
@@ -149,5 +149,5 @@ public enum OWSMediaError: Error {
     @objc
     public static let kMaxAnimatedImageDimensions: UInt = 1 * 1024
     @objc
-    public static let kMaxStillImageDimensions: UInt = 8 * 1024
+    public static let kMaxStillImageDimensions: UInt = 12 * 1024
 }
