@@ -23,6 +23,29 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     ImageFormat_Webp,
 };
 
+NSString *NSStringForImageFormat(ImageFormat value)
+{
+    switch (value) {
+        case ImageFormat_Unknown:
+            return @"ImageFormat_Unknown";
+        case ImageFormat_Png:
+            return @"ImageFormat_Png";
+        case ImageFormat_Gif:
+            return @"ImageFormat_Gif";
+        case ImageFormat_Tiff:
+            return @"ImageFormat_Tiff";
+        case ImageFormat_Jpeg:
+            return @"ImageFormat_Jpeg";
+        case ImageFormat_Bmp:
+            return @"ImageFormat_Bmp";
+        case ImageFormat_Webp:
+            return @"ImageFormat_Webp";
+        default:
+            OWSCFailDebug(@"Unknown ImageFormat.");
+            return @"Unknown";
+    }
+}
+
 @implementation NSData (Image)
 
 + (BOOL)ows_isValidImageAtUrl:(NSURL *)fileUrl mimeType:(nullable NSString *)mimeType
@@ -35,11 +58,63 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     return [self ows_isValidImageAtPath:filePath mimeType:nil];
 }
 
++ (BOOL)ows_isValidImageAtPath:(NSString *)filePath mimeType:(nullable NSString *)declaredMimeType
+{
+    NSError *error = nil;
+    NSData *_Nullable data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
+    if (!data || error) {
+        OWSLogError(@"Could not read image data: %@", error);
+        return NO;
+    }
+    return [data ows_isValidImageWithPath:filePath mimeType:declaredMimeType];
+}
+
 - (BOOL)ows_isValidImage
+{
+    return [self ows_isValidImageWithPath:nil mimeType:nil];
+}
+
+- (BOOL)ows_isValidImageWithMimeType:(nullable NSString *)declaredMimeType
+{
+    return [self ows_isValidImageWithPath:nil mimeType:declaredMimeType];
+}
+
+// If filePath and/or declaredMimeType is supplied, we warn
+// if they do not match the actual file contents.  But they are
+// both optional, we consider the actual image format (deduced
+// using magic numbers) to be authoritative.  The file extension
+// and declared MIME type could be wrong, but we can proceed in
+// that case.
+- (BOOL)ows_isValidImageWithPath:(nullable NSString *)filePath mimeType:(nullable NSString *)declaredMimeType
 {
     ImageFormat imageFormat = [self ows_guessImageFormat];
 
-    BOOL isAnimated = imageFormat == ImageFormat_Gif;
+    if (![self ows_hasValidImageFormat:imageFormat]) {
+        return NO;
+    }
+
+    NSString *_Nullable mimeType = [self mimeTypeForImageFormat:imageFormat];
+    if (mimeType.length < 1) {
+        return NO;
+    }
+
+    if (declaredMimeType.length > 0 && ![self ows_isValidMimeType:declaredMimeType imageFormat:imageFormat]) {
+        OWSFailDebug(@"Mimetypes do not match: %@, %@", mimeType, declaredMimeType);
+        // Do not fail in production.
+    }
+
+    if (filePath.length > 0) {
+        NSString *fileExtension = [filePath pathExtension].lowercaseString;
+        NSString *_Nullable mimeTypeForFileExtension = [MIMETypeUtil mimeTypeForFileExtension:fileExtension];
+        if (mimeTypeForFileExtension.length > 0 &&
+            [mimeType caseInsensitiveCompare:mimeTypeForFileExtension] != NSOrderedSame) {
+            OWSFailDebug(
+                @"fileExtension does not match: %@, %@, %@", fileExtension, mimeType, mimeTypeForFileExtension);
+            // Do not fail in production.
+        }
+    }
+
+    BOOL isAnimated = [self isAnimatedWithImageFormat:imageFormat];
 
     const NSUInteger kMaxFileSize
         = (isAnimated ? OWSMediaUtils.kMaxFileSizeAnimatedImage : OWSMediaUtils.kMaxFileSizeImage);
@@ -49,62 +124,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
         return NO;
     }
 
-    if (![self ows_isValidImageWithMimeType:nil imageFormat:imageFormat]) {
-        return NO;
-    }
-
     if (![self ows_hasValidImageDimensionsWithIsAnimated:isAnimated imageFormat:imageFormat]) {
-        return NO;
-    }
-
-    return YES;
-}
-
-+ (BOOL)ows_isValidImageAtPath:(NSString *)filePath mimeType:(nullable NSString *)mimeType
-{
-    if (mimeType.length < 1) {
-        NSString *fileExtension = [filePath pathExtension].lowercaseString;
-        mimeType = [MIMETypeUtil mimeTypeForFileExtension:fileExtension];
-    }
-    if (mimeType.length < 1) {
-        OWSLogError(@"Image has unknown MIME type.");
-        return NO;
-    }
-    NSNumber *_Nullable fileSize = [OWSFileSystem fileSizeOfPath:filePath];
-    if (!fileSize) {
-        OWSLogError(@"Could not determine file size.");
-        return NO;
-    }
-
-    BOOL isAnimated = [MIMETypeUtil isSupportedAnimatedMIMEType:mimeType];
-    if (isAnimated) {
-        if (fileSize.unsignedIntegerValue > OWSMediaUtils.kMaxFileSizeAnimatedImage) {
-            OWSLogWarn(@"Oversize animated image.");
-            return NO;
-        }
-    } else if ([MIMETypeUtil isSupportedImageMIMEType:mimeType]) {
-        if (fileSize.unsignedIntegerValue > OWSMediaUtils.kMaxFileSizeImage) {
-            OWSLogWarn(@"Oversize still image.");
-            return NO;
-        }
-    } else {
-        OWSLogError(@"Image has unsupported MIME type.");
-        return NO;
-    }
-
-    NSError *error = nil;
-    NSData *_Nullable data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
-    if (!data || error) {
-        OWSLogError(@"Could not read image data: %@", error);
-        return NO;
-    }
-
-    if (![data ows_isValidImageWithMimeType:mimeType]) {
-        return NO;
-    }
-
-    if (![self ows_hasValidImageDimensionsAtPath:filePath isAnimated:isAnimated]) {
-        OWSLogError(@"%@ image had invalid dimensions.", self.logTag);
         return NO;
     }
 
@@ -127,9 +147,11 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     return result;
 }
 
-+ (BOOL)ows_hasValidImageDimensionsAtPath:(NSString *)path isAnimated:(BOOL)isAnimated
++ (BOOL)ows_hasValidImageDimensionsAtPath:(NSString *)path
+                              imageFormat:(ImageFormat)imageFormat
+                               isAnimated:(BOOL)isAnimated
 {
-    if ([self isWebpFilePath:path]) {
+    if (imageFormat == ImageFormat_Webp) {
         CGSize imageSize = [self sizeForWebpFilePath:path];
         return [self ows_isValidImageDimension:imageSize depthBytes:1 isAnimated:YES];
     }
@@ -227,13 +249,33 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     return YES;
 }
 
-- (BOOL)ows_isValidImageWithMimeType:(nullable NSString *)mimeType
+- (nullable NSString *)mimeTypeForImageFormat:(ImageFormat)imageFormat
 {
-    ImageFormat imageFormat = [self ows_guessImageFormat];
-    return [self ows_isValidImageWithMimeType:mimeType imageFormat:imageFormat];
+    switch (imageFormat) {
+        case ImageFormat_Unknown:
+            return nil;
+        case ImageFormat_Png:
+            return OWSMimeTypeImagePng;
+        case ImageFormat_Gif:
+            return OWSMimeTypeImageGif;
+        case ImageFormat_Tiff:
+            return OWSMimeTypeImageTiff1;
+        case ImageFormat_Jpeg:
+            return OWSMimeTypeImageJpeg;
+        case ImageFormat_Bmp:
+            return OWSMimeTypeImageBmp1;
+        case ImageFormat_Webp:
+            return OWSMimeTypeImageWebp;
+    }
 }
 
-- (BOOL)ows_isValidImageWithMimeType:(nullable NSString *)mimeType imageFormat:(ImageFormat)imageFormat
+- (BOOL)isAnimatedWithImageFormat:(ImageFormat)imageFormat
+{
+    // TODO: ImageFormat_Webp
+    return imageFormat == ImageFormat_Gif;
+}
+
+- (BOOL)ows_hasValidImageFormat:(ImageFormat)imageFormat
 {
     // Don't trust the file extension; iOS (e.g. UIKit, Core Graphics) will happily
     // load a .gif with a .png file extension.
@@ -245,23 +287,38 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     switch (imageFormat) {
         case ImageFormat_Unknown:
             return NO;
-        case ImageFormat_Png:
-            return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImagePng]);
         case ImageFormat_Gif:
-            if (![self ows_hasValidGifSize]) {
-                return NO;
-            }
-            return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageGif]);
+            return [self ows_hasValidGifSize];
+        case ImageFormat_Png:
         case ImageFormat_Tiff:
-            return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageTiff1] ||
-                [mimeType isEqualToString:OWSMimeTypeImageTiff2]);
         case ImageFormat_Jpeg:
-            return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageJpeg]);
         case ImageFormat_Bmp:
-            return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageBmp1] ||
-                [mimeType isEqualToString:OWSMimeTypeImageBmp2]);
         case ImageFormat_Webp:
-            return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageWebp]);
+            return YES;
+    }
+}
+
+- (BOOL)ows_isValidMimeType:(nullable NSString *)mimeType imageFormat:(ImageFormat)imageFormat
+{
+    OWSAssertDebug(mimeType.length > 0);
+
+    switch (imageFormat) {
+        case ImageFormat_Unknown:
+            return NO;
+        case ImageFormat_Png:
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImagePng] == NSOrderedSame);
+        case ImageFormat_Gif:
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageGif] == NSOrderedSame);
+        case ImageFormat_Tiff:
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageTiff1] == NSOrderedSame ||
+                [mimeType caseInsensitiveCompare:OWSMimeTypeImageTiff2] == NSOrderedSame);
+        case ImageFormat_Jpeg:
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageJpeg] == NSOrderedSame);
+        case ImageFormat_Bmp:
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageBmp1] == NSOrderedSame ||
+                [mimeType caseInsensitiveCompare:OWSMimeTypeImageBmp2] == NSOrderedSame);
+        case ImageFormat_Webp:
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageWebp] == NSOrderedSame);
     }
 }
 
