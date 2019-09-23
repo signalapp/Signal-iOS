@@ -58,14 +58,15 @@ message TypingMessage {
 }
 
 message Content {
-  optional DataMessage          dataMessage         = 1;
-  optional SyncMessage          syncMessage         = 2;
-  optional CallMessage          callMessage         = 3;
-  optional NullMessage          nullMessage         = 4;
-  optional ReceiptMessage       receiptMessage      = 5;
-  optional TypingMessage        typingMessage       = 6;
-  optional PrekeyBundleMessage  prekeyBundleMessage = 101; // Loki
-  optional LokiAddressMessage   lokiAddressMessage  = 102; // Loki
+  optional DataMessage              dataMessage         = 1;
+  optional SyncMessage              syncMessage         = 2;
+  optional CallMessage              callMessage         = 3;
+  optional NullMessage              nullMessage         = 4;
+  optional ReceiptMessage           receiptMessage      = 5;
+  optional TypingMessage            typingMessage       = 6;
+  optional PrekeyBundleMessage      prekeyBundleMessage = 101; // Loki
+  optional LokiAddressMessage       lokiAddressMessage  = 102; // Loki
+  optional LokiDeviceLinkingMessage lokiDeviceLinkingMessage = 103; // Loki
 }
 
 message PrekeyBundleMessage { // Loki
@@ -83,6 +84,19 @@ message LokiAddressMessage { // Loki
   // It doesn't like p2p much :(
   optional string ptpAddress  = 1;
   optional uint32 ptpPort     = 2;
+}
+
+message LokiDeviceLinkingMessage { // Loki
+  enum Type {
+    REQUEST = 1;
+    GRANT = 2;
+    REVOKE = 3;
+  }
+  optional string masterHexEncodedPublicKey = 1;
+  optional string slaveHexEncodedPublicKey  = 2;
+  optional bytes  masterSignature           = 3;
+  optional bytes  slaveSignature            = 4;
+  optional Type   type                      = 5;
 }
 
 message CallMessage {
@@ -124,7 +138,6 @@ message CallMessage {
     // @required
     optional uint64 id = 1;
   }
-
 
   optional Offer     offer     = 1;
   optional Answer    answer    = 2;
@@ -304,6 +317,7 @@ message SyncMessage {
     optional AttachmentPointer blob       = 1;
     // Signal-iOS renamed this property.
     optional bool              isComplete = 2 [default = false];
+    optional bytes             data     = 101; // Loki
   }
 
   message Groups {
@@ -404,6 +418,7 @@ message ContactDetails {
   optional bytes    profileKey  = 6;
   optional bool     blocked     = 7;
   optional uint32   expireTimer = 8;
+  optional string   nickname    = 101; // Loki
 }
 
 message GroupDetails {

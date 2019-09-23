@@ -353,6 +353,16 @@ struct SignalServiceProtos_Content {
   /// Clears the value of `lokiAddressMessage`. Subsequent reads from it will return its default value.
   mutating func clearLokiAddressMessage() {_uniqueStorage()._lokiAddressMessage = nil}
 
+  /// Loki
+  var lokiDeviceLinkingMessage: SignalServiceProtos_LokiDeviceLinkingMessage {
+    get {return _storage._lokiDeviceLinkingMessage ?? SignalServiceProtos_LokiDeviceLinkingMessage()}
+    set {_uniqueStorage()._lokiDeviceLinkingMessage = newValue}
+  }
+  /// Returns true if `lokiDeviceLinkingMessage` has been explicitly set.
+  var hasLokiDeviceLinkingMessage: Bool {return _storage._lokiDeviceLinkingMessage != nil}
+  /// Clears the value of `lokiDeviceLinkingMessage`. Subsequent reads from it will return its default value.
+  mutating func clearLokiDeviceLinkingMessage() {_uniqueStorage()._lokiDeviceLinkingMessage = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -475,6 +485,105 @@ struct SignalServiceProtos_LokiAddressMessage {
   fileprivate var _ptpAddress: String? = nil
   fileprivate var _ptpPort: UInt32? = nil
 }
+
+/// Loki
+struct SignalServiceProtos_LokiDeviceLinkingMessage {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var masterHexEncodedPublicKey: String {
+    get {return _masterHexEncodedPublicKey ?? String()}
+    set {_masterHexEncodedPublicKey = newValue}
+  }
+  /// Returns true if `masterHexEncodedPublicKey` has been explicitly set.
+  var hasMasterHexEncodedPublicKey: Bool {return self._masterHexEncodedPublicKey != nil}
+  /// Clears the value of `masterHexEncodedPublicKey`. Subsequent reads from it will return its default value.
+  mutating func clearMasterHexEncodedPublicKey() {self._masterHexEncodedPublicKey = nil}
+
+  var slaveHexEncodedPublicKey: String {
+    get {return _slaveHexEncodedPublicKey ?? String()}
+    set {_slaveHexEncodedPublicKey = newValue}
+  }
+  /// Returns true if `slaveHexEncodedPublicKey` has been explicitly set.
+  var hasSlaveHexEncodedPublicKey: Bool {return self._slaveHexEncodedPublicKey != nil}
+  /// Clears the value of `slaveHexEncodedPublicKey`. Subsequent reads from it will return its default value.
+  mutating func clearSlaveHexEncodedPublicKey() {self._slaveHexEncodedPublicKey = nil}
+
+  var masterSignature: Data {
+    get {return _masterSignature ?? SwiftProtobuf.Internal.emptyData}
+    set {_masterSignature = newValue}
+  }
+  /// Returns true if `masterSignature` has been explicitly set.
+  var hasMasterSignature: Bool {return self._masterSignature != nil}
+  /// Clears the value of `masterSignature`. Subsequent reads from it will return its default value.
+  mutating func clearMasterSignature() {self._masterSignature = nil}
+
+  var slaveSignature: Data {
+    get {return _slaveSignature ?? SwiftProtobuf.Internal.emptyData}
+    set {_slaveSignature = newValue}
+  }
+  /// Returns true if `slaveSignature` has been explicitly set.
+  var hasSlaveSignature: Bool {return self._slaveSignature != nil}
+  /// Clears the value of `slaveSignature`. Subsequent reads from it will return its default value.
+  mutating func clearSlaveSignature() {self._slaveSignature = nil}
+
+  var type: SignalServiceProtos_LokiDeviceLinkingMessage.TypeEnum {
+    get {return _type ?? .request}
+    set {_type = newValue}
+  }
+  /// Returns true if `type` has been explicitly set.
+  var hasType: Bool {return self._type != nil}
+  /// Clears the value of `type`. Subsequent reads from it will return its default value.
+  mutating func clearType() {self._type = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  enum TypeEnum: SwiftProtobuf.Enum {
+    typealias RawValue = Int
+    case request // = 1
+    case grant // = 2
+    case revoke // = 3
+
+    init() {
+      self = .request
+    }
+
+    init?(rawValue: Int) {
+      switch rawValue {
+      case 1: self = .request
+      case 2: self = .grant
+      case 3: self = .revoke
+      default: return nil
+      }
+    }
+
+    var rawValue: Int {
+      switch self {
+      case .request: return 1
+      case .grant: return 2
+      case .revoke: return 3
+      }
+    }
+
+  }
+
+  init() {}
+
+  fileprivate var _masterHexEncodedPublicKey: String? = nil
+  fileprivate var _slaveHexEncodedPublicKey: String? = nil
+  fileprivate var _masterSignature: Data? = nil
+  fileprivate var _slaveSignature: Data? = nil
+  fileprivate var _type: SignalServiceProtos_LokiDeviceLinkingMessage.TypeEnum? = nil
+}
+
+#if swift(>=4.2)
+
+extension SignalServiceProtos_LokiDeviceLinkingMessage.TypeEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
 
 struct SignalServiceProtos_CallMessage {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -1835,6 +1944,16 @@ struct SignalServiceProtos_SyncMessage {
     /// Clears the value of `isComplete`. Subsequent reads from it will return its default value.
     mutating func clearIsComplete() {_uniqueStorage()._isComplete = nil}
 
+    /// Loki
+    var data: Data {
+      get {return _storage._data ?? SwiftProtobuf.Internal.emptyData}
+      set {_uniqueStorage()._data = newValue}
+    }
+    /// Returns true if `data` has been explicitly set.
+    var hasData: Bool {return _storage._data != nil}
+    /// Clears the value of `data`. Subsequent reads from it will return its default value.
+    mutating func clearData() {_uniqueStorage()._data = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
@@ -2352,6 +2471,16 @@ struct SignalServiceProtos_ContactDetails {
   /// Clears the value of `expireTimer`. Subsequent reads from it will return its default value.
   mutating func clearExpireTimer() {_uniqueStorage()._expireTimer = nil}
 
+  /// Loki
+  var nickname: String {
+    get {return _storage._nickname ?? String()}
+    set {_uniqueStorage()._nickname = newValue}
+  }
+  /// Returns true if `nickname` has been explicitly set.
+  var hasNickname: Bool {return _storage._nickname != nil}
+  /// Clears the value of `nickname`. Subsequent reads from it will return its default value.
+  mutating func clearNickname() {_uniqueStorage()._nickname = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   struct Avatar {
@@ -2682,6 +2811,7 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
     6: .same(proto: "typingMessage"),
     101: .same(proto: "prekeyBundleMessage"),
     102: .same(proto: "lokiAddressMessage"),
+    103: .same(proto: "lokiDeviceLinkingMessage"),
   ]
 
   fileprivate class _StorageClass {
@@ -2693,6 +2823,7 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
     var _typingMessage: SignalServiceProtos_TypingMessage? = nil
     var _prekeyBundleMessage: SignalServiceProtos_PrekeyBundleMessage? = nil
     var _lokiAddressMessage: SignalServiceProtos_LokiAddressMessage? = nil
+    var _lokiDeviceLinkingMessage: SignalServiceProtos_LokiDeviceLinkingMessage? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -2707,6 +2838,7 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
       _typingMessage = source._typingMessage
       _prekeyBundleMessage = source._prekeyBundleMessage
       _lokiAddressMessage = source._lokiAddressMessage
+      _lokiDeviceLinkingMessage = source._lokiDeviceLinkingMessage
     }
   }
 
@@ -2730,6 +2862,7 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
         case 6: try decoder.decodeSingularMessageField(value: &_storage._typingMessage)
         case 101: try decoder.decodeSingularMessageField(value: &_storage._prekeyBundleMessage)
         case 102: try decoder.decodeSingularMessageField(value: &_storage._lokiAddressMessage)
+        case 103: try decoder.decodeSingularMessageField(value: &_storage._lokiDeviceLinkingMessage)
         default: break
         }
       }
@@ -2762,6 +2895,9 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
       if let v = _storage._lokiAddressMessage {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 102)
       }
+      if let v = _storage._lokiDeviceLinkingMessage {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 103)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -2779,6 +2915,7 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
         if _storage._typingMessage != rhs_storage._typingMessage {return false}
         if _storage._prekeyBundleMessage != rhs_storage._prekeyBundleMessage {return false}
         if _storage._lokiAddressMessage != rhs_storage._lokiAddressMessage {return false}
+        if _storage._lokiDeviceLinkingMessage != rhs_storage._lokiDeviceLinkingMessage {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -2886,6 +3023,67 @@ extension SignalServiceProtos_LokiAddressMessage: SwiftProtobuf.Message, SwiftPr
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension SignalServiceProtos_LokiDeviceLinkingMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".LokiDeviceLinkingMessage"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "masterHexEncodedPublicKey"),
+    2: .same(proto: "slaveHexEncodedPublicKey"),
+    3: .same(proto: "masterSignature"),
+    4: .same(proto: "slaveSignature"),
+    5: .same(proto: "type"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularStringField(value: &self._masterHexEncodedPublicKey)
+      case 2: try decoder.decodeSingularStringField(value: &self._slaveHexEncodedPublicKey)
+      case 3: try decoder.decodeSingularBytesField(value: &self._masterSignature)
+      case 4: try decoder.decodeSingularBytesField(value: &self._slaveSignature)
+      case 5: try decoder.decodeSingularEnumField(value: &self._type)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._masterHexEncodedPublicKey {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+    }
+    if let v = self._slaveHexEncodedPublicKey {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    }
+    if let v = self._masterSignature {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
+    }
+    if let v = self._slaveSignature {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
+    }
+    if let v = self._type {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 5)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_LokiDeviceLinkingMessage, rhs: SignalServiceProtos_LokiDeviceLinkingMessage) -> Bool {
+    if lhs._masterHexEncodedPublicKey != rhs._masterHexEncodedPublicKey {return false}
+    if lhs._slaveHexEncodedPublicKey != rhs._slaveHexEncodedPublicKey {return false}
+    if lhs._masterSignature != rhs._masterSignature {return false}
+    if lhs._slaveSignature != rhs._slaveSignature {return false}
+    if lhs._type != rhs._type {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_LokiDeviceLinkingMessage.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "REQUEST"),
+    2: .same(proto: "GRANT"),
+    3: .same(proto: "REVOKE"),
+  ]
 }
 
 extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
@@ -4371,11 +4569,13 @@ extension SignalServiceProtos_SyncMessage.Contacts: SwiftProtobuf.Message, Swift
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "blob"),
     2: .same(proto: "isComplete"),
+    101: .same(proto: "data"),
   ]
 
   fileprivate class _StorageClass {
     var _blob: SignalServiceProtos_AttachmentPointer? = nil
     var _isComplete: Bool? = nil
+    var _data: Data? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -4384,6 +4584,7 @@ extension SignalServiceProtos_SyncMessage.Contacts: SwiftProtobuf.Message, Swift
     init(copying source: _StorageClass) {
       _blob = source._blob
       _isComplete = source._isComplete
+      _data = source._data
     }
   }
 
@@ -4401,6 +4602,7 @@ extension SignalServiceProtos_SyncMessage.Contacts: SwiftProtobuf.Message, Swift
         switch fieldNumber {
         case 1: try decoder.decodeSingularMessageField(value: &_storage._blob)
         case 2: try decoder.decodeSingularBoolField(value: &_storage._isComplete)
+        case 101: try decoder.decodeSingularBytesField(value: &_storage._data)
         default: break
         }
       }
@@ -4415,6 +4617,9 @@ extension SignalServiceProtos_SyncMessage.Contacts: SwiftProtobuf.Message, Swift
       if let v = _storage._isComplete {
         try visitor.visitSingularBoolField(value: v, fieldNumber: 2)
       }
+      if let v = _storage._data {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 101)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4426,6 +4631,7 @@ extension SignalServiceProtos_SyncMessage.Contacts: SwiftProtobuf.Message, Swift
         let rhs_storage = _args.1
         if _storage._blob != rhs_storage._blob {return false}
         if _storage._isComplete != rhs_storage._isComplete {return false}
+        if _storage._data != rhs_storage._data {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -4861,6 +5067,7 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
     6: .same(proto: "profileKey"),
     7: .same(proto: "blocked"),
     8: .same(proto: "expireTimer"),
+    101: .same(proto: "nickname"),
   ]
 
   fileprivate class _StorageClass {
@@ -4872,6 +5079,7 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
     var _profileKey: Data? = nil
     var _blocked: Bool? = nil
     var _expireTimer: UInt32? = nil
+    var _nickname: String? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -4886,6 +5094,7 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
       _profileKey = source._profileKey
       _blocked = source._blocked
       _expireTimer = source._expireTimer
+      _nickname = source._nickname
     }
   }
 
@@ -4909,6 +5118,7 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
         case 6: try decoder.decodeSingularBytesField(value: &_storage._profileKey)
         case 7: try decoder.decodeSingularBoolField(value: &_storage._blocked)
         case 8: try decoder.decodeSingularUInt32Field(value: &_storage._expireTimer)
+        case 101: try decoder.decodeSingularStringField(value: &_storage._nickname)
         default: break
         }
       }
@@ -4941,6 +5151,9 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
       if let v = _storage._expireTimer {
         try visitor.visitSingularUInt32Field(value: v, fieldNumber: 8)
       }
+      if let v = _storage._nickname {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 101)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4958,6 +5171,7 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
         if _storage._profileKey != rhs_storage._profileKey {return false}
         if _storage._blocked != rhs_storage._blocked {return false}
         if _storage._expireTimer != rhs_storage._expireTimer {return false}
+        if _storage._nickname != rhs_storage._nickname {return false}
         return true
       }
       if !storagesAreEqual {return false}

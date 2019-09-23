@@ -1,4 +1,6 @@
 
+// TODO: Split this into multiple VCs?
+
 final class SeedViewController : OnboardingBaseViewController {
     private var mode: Mode = .register { didSet { if mode != oldValue { handleModeChanged() } } }
     private var seed: Data! { didSet { updateMnemonic() } }
@@ -326,6 +328,9 @@ final class SeedViewController : OnboardingBaseViewController {
         case .register: Analytics.shared.track("Seed Created")
         case .restore: Analytics.shared.track("Seed Restored")
         case .link: Analytics.shared.track("Device Linked")
+        }
+        if mode == .link {
+            
         }
         onboardingController.pushAccountDetailsViewController(from: self)
     }
