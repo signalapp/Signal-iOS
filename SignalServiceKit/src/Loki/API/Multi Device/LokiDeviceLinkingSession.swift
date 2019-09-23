@@ -17,12 +17,16 @@ public final class LokiDeviceLinkingSession : NSObject {
     
     @objc public func processLinkingRequest(from slaveHexEncodedPublicKey: String, with slaveSignature: Data) {
         guard isListeningForLinkingRequests else { return }
-        isListeningForLinkingRequests = false
+        stopListeningForLinkingRequests()
         let master = LokiDeviceLink.Device(hexEncodedPublicKey: OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey)
         let slave = LokiDeviceLink.Device(hexEncodedPublicKey: slaveHexEncodedPublicKey, signature: slaveSignature)
         let deviceLink = LokiDeviceLink(between: master, and: slave)
         guard isValid(deviceLink) else { return }
         delegate.requestUserAuthorization(for: deviceLink)
+    }
+    
+    @objc public func stopListeningForLinkingRequests() {
+        isListeningForLinkingRequests = false
     }
     
     @objc public func authorizeDeviceLink(_ deviceLink: LokiDeviceLink) {

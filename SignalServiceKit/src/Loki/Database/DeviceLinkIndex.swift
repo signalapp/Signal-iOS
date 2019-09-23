@@ -1,0 +1,40 @@
+
+@objc(LKDeviceLinkIndex)
+public final class DeviceLinkIndex : NSObject {
+    
+    private static let name = "loki_device_link_index"
+    
+    @objc public static let masterHexEncodedPublicKey = "master_hex_encoded_public_key"
+    @objc public static let slaveHexEncodedPublicKey = "slave_hex_encoded_public_key"
+    @objc public static let isAuthorized = "is_authorized"
+    
+    @objc public static let indexDatabaseExtension: YapDatabaseSecondaryIndex = {
+        let setup = YapDatabaseSecondaryIndexSetup()
+        setup.addColumn(masterHexEncodedPublicKey, with: .text)
+        setup.addColumn(slaveHexEncodedPublicKey, with: .text)
+        setup.addColumn(isAuthorized, with: .integer)
+        let handler = YapDatabaseSecondaryIndexHandler.withObjectBlock { _, map, _, _, object in
+            guard let deviceLink = object as? LokiDeviceLink else { return }
+            map[masterHexEncodedPublicKey] = deviceLink.master.hexEncodedPublicKey
+            map[slaveHexEncodedPublicKey] = deviceLink.slave.hexEncodedPublicKey
+            map[isAuthorized] = deviceLink.isAuthorized
+        }
+        return YapDatabaseSecondaryIndex(setup: setup, handler: handler)
+    }()
+    
+    @objc public static var databaseExtensionName: String { return name }
+    
+    @objc public static func asyncRegisterDatabaseExtensions(_ storage: OWSStorage) {
+        storage.register(indexDatabaseExtension, withName: name)
+    }
+    
+    @objc public static func getDeviceLinks(for query: YapDatabaseQuery, in transaction: YapDatabaseReadTransaction) -> [LokiDeviceLink] {
+        guard let ext = transaction.ext(DeviceLinkIndex.name) as? YapDatabaseSecondaryIndexTransaction else { return [] }
+        var result: [LokiDeviceLink] = []
+        ext.enumerateKeysAndObjects(matching: query) { _, _, object, _ in
+            guard let deviceLink = object as? LokiDeviceLink else { return }
+            result.append(deviceLink)
+        }
+        return result
+    }
+}

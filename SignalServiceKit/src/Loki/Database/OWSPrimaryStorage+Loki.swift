@@ -1,6 +1,10 @@
 
 extension OWSPrimaryStorage {
     
+    private func getCollection(for primaryDevice: String) -> String {
+        return "LokiDeviceLinkCollection-\(primaryDevice)"
+    }
+    
     public func storeDeviceLink(_ deviceLink: LokiDeviceLink, in transaction: YapDatabaseReadWriteTransaction) {
         let collection = getCollection(for: deviceLink.master.hexEncodedPublicKey)
         transaction.setObject(deviceLink, forKey: deviceLink.slave.hexEncodedPublicKey, inCollection: collection)
@@ -16,7 +20,13 @@ extension OWSPrimaryStorage {
         return result
     }
     
-    private func getCollection(for primaryDevice: String) -> String {
-        return "LokiDeviceLinkCollection-\(primaryDevice)"
+    public func getDeviceLink(for slaveHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> LokiDeviceLink? {
+        let query = YapDatabaseQuery(string: "WHERE \(DeviceLinkIndex.slaveHexEncodedPublicKey) = ?", parameters: [ slaveHexEncodedPublicKey ])
+        let deviceLinks = DeviceLinkIndex.getDeviceLinks(for: query, in: transaction)
+        guard deviceLinks.count <= 1 else {
+            print("[Loki] Found multiple device links for slave hex encoded public key: \(slaveHexEncodedPublicKey).")
+            return nil
+        }
+        return deviceLinks.first
     }
 }
