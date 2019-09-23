@@ -500,6 +500,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
             OWSLogVerbose(@"Updating isValidImageCached.");
             self.isValidImageCached = @([NSData ows_isValidImageAtPath:self.originalFilePath
                                                               mimeType:self.contentType]);
+            if (!self.isValidImageCached) {
+                OWSLogWarn(@"Invalid image.");
+            }
             didUpdateCache = YES;
         }
         result = self.isValidImageCached.boolValue;
@@ -529,6 +532,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         if (!self.isValidVideoCached) {
             OWSLogVerbose(@"Updating isValidVideoCached.");
             self.isValidVideoCached = @([OWSMediaUtils isValidVideoWithPath:self.originalFilePath]);
+            if (!self.isValidVideoCached) {
+                OWSLogWarn(@"Invalid video.");
+            }
             didUpdateCache = YES;
         }
         result = self.isValidVideoCached.boolValue;
