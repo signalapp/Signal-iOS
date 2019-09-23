@@ -10,8 +10,9 @@ import SignalMetadataKit
 @objc
 public class ProfileFetcherJob: NSObject {
 
-    // This property is only accessed on the main queue.
+    // This property is only accessed on the serial queue.
     static var fetchDateMap = [SignalServiceAddress: Date]()
+    static let serialQueue = DispatchQueue(label: "org.signal.profileFetcherJob")
 
     let ignoreThrottling: Bool
 
@@ -167,7 +168,7 @@ public class ProfileFetcherJob: NSObject {
 
     public func getProfile(address: SignalServiceAddress) -> Promise<SignalServiceProfile> {
         if !ignoreThrottling {
-            if let lastDate = ProfileFetcherJob.fetchDateMap[address] {
+            if let lastDate = lastFetchDate(for: address) {
                 let lastTimeInterval = fabs(lastDate.timeIntervalSinceNow)
                 // Don't check a profile more often than every N seconds.
                 //
@@ -179,7 +180,8 @@ public class ProfileFetcherJob: NSObject {
                 }
             }
         }
-        ProfileFetcherJob.fetchDateMap[address] = Date()
+
+        recordLastFetchDate(for: address)
 
         Logger.info("getProfile: \(address)")
 
@@ -270,6 +272,18 @@ public class ProfileFetcherJob: NSObject {
             } else {
                 // no change in identity.
             }
+        }
+    }
+
+    private func lastFetchDate(for address: SignalServiceAddress) -> Date? {
+        return ProfileFetcherJob.serialQueue.sync {
+            return ProfileFetcherJob.fetchDateMap[address]
+        }
+    }
+
+    private func recordLastFetchDate(for address: SignalServiceAddress) {
+        ProfileFetcherJob.serialQueue.sync {
+            ProfileFetcherJob.fetchDateMap[address] = Date()
         }
     }
 }

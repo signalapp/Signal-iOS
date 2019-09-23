@@ -434,9 +434,16 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wblock-capture-autoreleasing"
                                self.isConsumed = YES;
-                               success = [NSFileManager.defaultManager moveItemAtURL:self.fileUrl
-                                                                               toURL:dstUrl
-                                                                               error:error];
+                               if ([[NSFileManager defaultManager] isWritableFileAtPath:self.fileUrl.path]) {
+                                   success = [NSFileManager.defaultManager moveItemAtURL:self.fileUrl
+                                                                                   toURL:dstUrl
+                                                                                   error:error];
+                               } else {
+                                   OWSLogError(@"File was not writeable. Copying instead of moving.");
+                                   success = [NSFileManager.defaultManager copyItemAtURL:self.fileUrl
+                                                                                   toURL:dstUrl
+                                                                                   error:error];
+                               }
 #pragma clang diagnostic pop
                            }];
 

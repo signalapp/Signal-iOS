@@ -448,6 +448,11 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
         deleteDBKeys()
 
+        guard FeatureFlags.storageMode != .ydb else {
+            owsFailDebug("Unexpected GRDB storage usage.")
+            return
+        }
+
         KeyBackupService.clearKeychain()
 
         if (CurrentAppContext().isMainApp) {

@@ -547,6 +547,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         OWSLogVerbose(@"Ignoring audit orphan data in tests.");
         return;
     }
+    OWSLogInfo(@"");
 
     // Orphan cleanup has two risks:
     //

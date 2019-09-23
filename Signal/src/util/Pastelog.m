@@ -524,15 +524,13 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     [body appendString:@"Tell us about the issue: \n\n\n"];
     [body appendString:@"Generated Report: \n"];
     [body appendFormat:@"Subject: %@ \n", subject];
-    size_t size;
-    sysctlbyname("hw.machine", NULL, &size, NULL, 0);
-    char *machine = malloc(size);
-    sysctlbyname("hw.machine", machine, &size, NULL, 0);
-    NSString *platform = [NSString stringWithUTF8String:machine];
-    free(machine);
 
-    [body appendFormat:@"Device: %@ (%@)\n", UIDevice.currentDevice.model, platform];
-    [body appendFormat:@"iOS Version: %@ \n", [UIDevice currentDevice].systemVersion];
+    [body
+        appendFormat:@"Device: %@ (%@)\n", UIDevice.currentDevice.model, [NSString stringFromSysctlKey:@"hw.machine"]];
+    [body appendFormat:@"iOS Version: %@ (%@)\n",
+          [UIDevice currentDevice].systemVersion,
+          [NSString stringFromSysctlKey:@"kern.osversion"]];
+
     [body appendFormat:@"Signal Version: %@ \n", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
     if (url != nil) {
         [body appendFormat:@"Log URL: %@ \n", url];

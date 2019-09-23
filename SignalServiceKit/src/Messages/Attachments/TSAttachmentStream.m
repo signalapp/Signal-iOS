@@ -557,7 +557,12 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         if (![self isValidImage]) {
             return nil;
         }
-        return [[UIImage alloc] initWithContentsOfFile:self.originalFilePath];
+        UIImage *_Nullable image = [[UIImage alloc] initWithContentsOfFile:self.originalFilePath];
+        if (image == nil) {
+            OWSFailDebug(
+                @"Couldn't load original image: %d.", [OWSFileSystem fileOrFolderExistsAtPath:self.originalFilePath]);
+        }
+        return image;
     } else {
         return nil;
     }

@@ -1258,7 +1258,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         OWSFailDebug(@"Unknown MIME type: %@", attachment.contentType);
         utiType = (NSString *)kUTTypeGIF;
     }
-    NSData *data = [NSData dataWithContentsOfURL:[attachment originalMediaURL]];
+    NSData *_Nullable data = [NSData dataWithContentsOfURL:[attachment originalMediaURL]];
     if (!data) {
         OWSFailDebug(@"Could not load attachment data");
         return;

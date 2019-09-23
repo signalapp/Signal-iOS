@@ -50,7 +50,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
 
         view.addSubview(stackView)
         stackView.autoPinWidthToSuperviewMargins()
-        stackView.autoPinEdge(toSuperviewSafeArea: .top)
+        stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
 
         // Country Row
         let countryRow = UIView.container()

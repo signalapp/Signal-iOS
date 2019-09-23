@@ -371,6 +371,9 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                         OWSFailDebug(@"Attachment no longer exists.");
                         return;
                     }
+                    if (![existingAttachment isKindOfClass:[TSAttachmentPointer class]]) {
+                        OWSFailDebug(@"Unexpected attachment pointer class: %@", existingAttachment.class);
+                    }
                     [existingAttachment anyRemoveWithTransaction:transaction];
                     [attachmentStream anyInsertWithTransaction:transaction];
 
