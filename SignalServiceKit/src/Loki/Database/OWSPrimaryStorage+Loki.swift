@@ -29,4 +29,8 @@ extension OWSPrimaryStorage {
         }
         return deviceLinks.first
     }
+    
+    public func getMasterHexEncodedPublicKey(for slaveHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> String? {
+        return getDeviceLink(for: slaveHexEncodedPublicKey, in: transaction)?.master.hexEncodedPublicKey
+    }
 }

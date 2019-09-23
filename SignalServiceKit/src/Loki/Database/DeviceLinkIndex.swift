@@ -22,14 +22,17 @@ public final class DeviceLinkIndex : NSObject {
         return YapDatabaseSecondaryIndex(setup: setup, handler: handler)
     }()
     
-    @objc public static var databaseExtensionName: String { return name }
+    @objc public static let databaseExtensionName: String = name
     
     @objc public static func asyncRegisterDatabaseExtensions(_ storage: OWSStorage) {
-        storage.register(indexDatabaseExtension, withName: name)
+        storage.asyncRegister(indexDatabaseExtension, withName: name)
     }
     
     @objc public static func getDeviceLinks(for query: YapDatabaseQuery, in transaction: YapDatabaseReadTransaction) -> [LokiDeviceLink] {
-        guard let ext = transaction.ext(DeviceLinkIndex.name) as? YapDatabaseSecondaryIndexTransaction else { return [] }
+        guard let ext = transaction.ext(DeviceLinkIndex.name) as? YapDatabaseSecondaryIndexTransaction else {
+            print("[Loki] Couldn't get device link index database extension.")
+            return []
+        }
         var result: [LokiDeviceLink] = []
         ext.enumerateKeysAndObjects(matching: query) { _, _, object, _ in
             guard let deviceLink = object as? LokiDeviceLink else { return }
