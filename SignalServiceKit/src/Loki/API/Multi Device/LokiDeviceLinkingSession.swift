@@ -6,13 +6,18 @@ public final class LokiDeviceLinkingSession : NSObject {
     @objc public var isListeningForLinkingRequests = false
     
     // MARK: Lifecycle
-    @objc public init(delegate: LokiDeviceLinkingSessionDelegate) {
+    @objc public static var current: LokiDeviceLinkingSession?
+    
+    private init(delegate: LokiDeviceLinkingSessionDelegate) {
         self.delegate = delegate
     }
 
     // MARK: Public API
-    @objc public func startListeningForLinkingRequests() {
-        isListeningForLinkingRequests = true
+    public static func startListeningForLinkingRequests(with delegate: LokiDeviceLinkingSessionDelegate) -> LokiDeviceLinkingSession {
+        let session = LokiDeviceLinkingSession(delegate: delegate)
+        session.isListeningForLinkingRequests = true
+        LokiDeviceLinkingSession.current = session
+        return session
     }
     
     @objc public func processLinkingRequest(from slaveHexEncodedPublicKey: String, with slaveSignature: Data) {
@@ -25,11 +30,12 @@ public final class LokiDeviceLinkingSession : NSObject {
         delegate.requestUserAuthorization(for: deviceLink)
     }
     
-    @objc public func stopListeningForLinkingRequests() {
+    public func stopListeningForLinkingRequests() {
+        LokiDeviceLinkingSession.current = nil
         isListeningForLinkingRequests = false
     }
     
-    @objc public func authorizeDeviceLink(_ deviceLink: LokiDeviceLink) {
+    public func authorizeDeviceLink(_ deviceLink: LokiDeviceLink) {
         // TODO: Send a device link authorized message
     }
     

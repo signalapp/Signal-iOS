@@ -417,7 +417,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Loki: Handle friend request acceptance if needed
     // TODO: We'll need to fix this up if we ever start using sync messages
     [self handleFriendRequestAcceptanceIfNeededWithEnvelope:envelope transaction:transaction];
-
+    
     if (envelope.content != nil) {
         NSError *error;
         SSKProtoContent *_Nullable contentProto = [SSKProtoContent parseData:plaintextData error:&error];
@@ -427,17 +427,27 @@ NS_ASSUME_NONNULL_BEGIN
         }
         OWSLogInfo(@"handling content: <Content: %@>", [self descriptionForContent:contentProto]);
         
+        // Loki: Handle device linking message
+        if (contentProto.lokiDeviceLinkingMessage != nil) {
+            OWSLogInfo(@"[Loki] Received a device linking request from: %@", envelope.source);
+            NSData *signature = [contentProto.lokiDeviceLinkingMessage.slaveSignature];
+            if (signature == nil) {
+                OWSFailDebug(@"Received a device linking request without an attached slave signature.");
+            }
+            [LKDeviceLinkingSession.current processLinkingRequestFrom:envelope.source with:signature];
+        }
+        
         // Loki: Handle pre key bundle message
         if (contentProto.prekeyBundleMessage) {
-            OWSLogInfo(@"Received a pre key bundle message from: %@.", envelope.source);
+            OWSLogInfo(@"[Loki] Received a pre key bundle message from: %@.", envelope.source);
             PreKeyBundle *_Nullable bundle = [contentProto.prekeyBundleMessage createPreKeyBundleWithTransaction:transaction];
             if (!bundle) {
-                OWSFailDebug(@"Failed to create PreKeyBundle from message.");
+                OWSFailDebug(@"Failed to create a pre key bundle.");
             }
             [self.primaryStorage setPreKeyBundle:bundle forContact:envelope.source transaction:transaction];
         }
         
-        // Loki: Check if we got p2p address
+        // Loki: Check if we got a P2P address
         if (contentProto.lokiAddressMessage) {
             NSString *address = contentProto.lokiAddressMessage.ptpAddress;
             uint32_t port = contentProto.lokiAddressMessage.ptpPort;
@@ -1570,6 +1580,10 @@ NS_ASSUME_NONNULL_BEGIN
     if (onlineMessage != nil) {
         [self.messageSenderJobQueue addMessage:onlineMessage transaction:transaction];
     }
+}
+
+- (void)handleDeviceLinkingMessageIfNeeded:(TSIncomingMessage *)message transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    
 }
 
 - (void)finalizeIncomingMessage:(TSIncomingMessage *)incomingMessage

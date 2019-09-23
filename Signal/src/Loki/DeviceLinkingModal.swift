@@ -5,10 +5,6 @@ import NVActivityIndicatorView
 @objc(LKDeviceLinkingModal)
 final class DeviceLinkingModal : UIViewController, LokiDeviceLinkingSessionDelegate {
     
-    private lazy var deviceLinkingSession: LokiDeviceLinkingSession = {
-        return LokiDeviceLinkingSession(delegate: self)
-    }()
-    
     // MARK: Components
     private lazy var contentView: UIView = {
         let result = UIView()
@@ -55,7 +51,7 @@ final class DeviceLinkingModal : UIViewController, LokiDeviceLinkingSessionDeleg
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpViewHierarchy()
-        deviceLinkingSession.startListeningForLinkingRequests()
+        LokiDeviceLinkingSession.startListeningForLinkingRequests(with: self)
     }
     
     private func setUpViewHierarchy() {
@@ -109,7 +105,7 @@ final class DeviceLinkingModal : UIViewController, LokiDeviceLinkingSessionDeleg
     }
     
     @objc private func cancel() {
-        deviceLinkingSession.stopListeningForLinkingRequests()
+        LokiDeviceLinkingSession.current?.stopListeningForLinkingRequests()
         dismiss(animated: true, completion: nil)
     }
 }
