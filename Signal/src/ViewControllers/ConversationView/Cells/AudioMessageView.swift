@@ -109,7 +109,7 @@ class AudioMessageView: UIStackView {
 
         waveformContainer.autoAlignAxis(.horizontal, toSameAxisOf: playPauseAnimation)
 
-        updateContents()
+        updateContents(animated: false)
     }
 
     required init(coder: NSCoder) {
@@ -122,6 +122,11 @@ class AudioMessageView: UIStackView {
 
     @objc
     func isPointInScrubbableRegion(_ point: CGPoint) -> Bool {
+        // If we have a waveform but aren't done sampling it, don't allow scrubbing yet.
+        if let waveform = attachmentStream?.audioWaveform(), !waveform.isSamplingComplete {
+            return false
+        }
+
         let locationInSlider = convert(point, to: waveformProgress)
         return locationInSlider.x >= 0 && locationInSlider.x <= waveformProgress.width()
     }
@@ -163,7 +168,11 @@ class AudioMessageView: UIStackView {
 
     @objc
     func updateContents() {
-        updatePlaybackState()
+        updateContents(animated: true)
+    }
+
+    func updateContents(animated: Bool) {
+        updatePlaybackState(animated: animated)
         updateAudioProgress()
         showDownloadProgressIfNecessary()
     }
@@ -231,7 +240,7 @@ class AudioMessageView: UIStackView {
 
         // Add the download view to the play pause animation. This view
         // will get recreated once the download completes so we don't
-        // have to worry about reseting anything.
+        // have to worry about resetting anything.
         let downloadView = MediaDownloadView(attachmentId: attachmentPointer.uniqueId, radius: iconSize * 0.5)
         playPauseAnimation.animation = nil
         playPauseAnimation.addSubview(downloadView)
