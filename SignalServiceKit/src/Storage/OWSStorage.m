@@ -923,7 +923,11 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         // "known good state" and behave like a new install.
         BOOL doesDBExist = [NSFileManager.defaultManager fileExistsAtPath:[self databaseFilePath]];
         if (doesDBExist) {
-            OWSFail(@"Could not load database metadata");
+            if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+                OWSFail(@"Could not load database metadata");
+            } else {
+                OWSFailDebug(@"Could not load database metadata");
+            }
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
         }
 
