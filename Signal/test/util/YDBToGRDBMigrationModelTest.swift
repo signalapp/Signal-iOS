@@ -447,7 +447,7 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
                                              sourceFilename: "some.gif", caption: nil, albumMessageId: nil,
                                              shouldAlwaysPad: true)
         let attachmentData2 = Randomness.generateRandomBytes(2048)
-        let attachment2 = TSAttachmentStream(contentType: OWSMimeTypeImagePdf,
+        let attachment2 = TSAttachmentStream(contentType: OWSMimeTypePdf,
                                              byteCount: UInt32(attachmentData2.count),
                                              sourceFilename: "some.df", caption: nil, albumMessageId: nil,
                                              shouldAlwaysPad: true)

@@ -143,6 +143,11 @@ public extension JobQueue {
     func workStep() {
         Logger.debug("")
 
+        guard !FeatureFlags.suppressBackgroundActivity else {
+            // Don't process queues.
+            return
+        }
+
         guard isSetup else {
             if !CurrentAppContext().isRunningTests {
                 owsFailDebug("not setup")
@@ -191,6 +196,10 @@ public extension JobQueue {
     }
 
     func restartOldJobs() {
+        guard !FeatureFlags.suppressBackgroundActivity else {
+            // Don't process queues.
+            return
+        }
         databaseStorage.write { transaction in
             let runningRecords = self.finder.allRecords(label: self.jobRecordLabel, status: .running, transaction: transaction)
             Logger.info("marking old `running` JobRecords as ready: \(runningRecords.count)")

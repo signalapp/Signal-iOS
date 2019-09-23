@@ -39,6 +39,7 @@ public class SSKMessageDecryptJobQueue: NSObject, JobQueue {
     // MARK: JobQueue
 
     public typealias DurableOperationType = SSKMessageDecryptOperation
+    @objc
     public static let jobRecordLabel: String = "SSKMessageDecrypt"
     public static let maxRetries: UInt = 1
     public let requiresInternet: Bool = false

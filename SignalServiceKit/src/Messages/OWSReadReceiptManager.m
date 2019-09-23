@@ -272,6 +272,11 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 - (void)process
 {
+    if (SSKFeatureFlags.suppressBackgroundActivity) {
+        // Don't process queues.
+        return;
+    }
+
     @synchronized(self)
     {
         OWSLogVerbose(@"Processing read receipts.");

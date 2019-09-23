@@ -245,6 +245,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     AssertOnDispatchQueue(self.serialQueue);
 
+    if (SSKFeatureFlags.suppressBackgroundActivity) {
+        // Don't process queues.
+        return;
+    }
+
     // We want a value that is just high enough to yield perf benefits.
     const NSUInteger kIncomingMessageBatchSize = 32;
 
