@@ -408,7 +408,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         // a push notification, we won't be able to access the keychain to
         // process that notification, so we should just terminate by throwing
         // an uncaught exception.
-        var errorDescription = "CipherKeySpec inaccessible. New install or no unlock since device restart?"
+        var errorDescription = "CipherKeySpec inaccessible. New install, migration or no unlock since device restart?"
         if CurrentAppContext().isMainApp {
             let applicationState = CurrentAppContext().reportedApplicationState
             errorDescription += ", ApplicationState: \(NSStringForUIApplicationState(applicationState))"
@@ -433,12 +433,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         let databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir)
         let doesDBExist = FileManager.default.fileExists(atPath: databaseUrl.path)
         if doesDBExist {
-            owsFailDebug("Could not load database metadata")
-        }
-
-        if !CurrentAppContext().isRunningTests {
-            // Try to reset app by deleting database.
-            resetAllStorage(baseDir: baseDir)
+            owsFail("Could not load database metadata")
         }
 
         keyspec.generateAndStore()
@@ -446,16 +441,13 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     @objc
     public static func resetAllStorage(baseDir: URL) {
+        Logger.info("")
+
         // This might be redundant but in the spirit of thoroughness...
 
         GRDBDatabaseStorageAdapter.removeAllFiles(baseDir: baseDir)
 
         deleteDBKeys()
-
-        guard FeatureFlags.storageMode != .ydb else {
-            owsFailDebug("Unexpected GRDB storage usage.")
-            return
-        }
 
         KeyBackupService.clearKeychain()
 

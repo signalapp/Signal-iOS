@@ -792,6 +792,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 + (void)resetAllStorage
 {
+    OWSLogInfo(@"");
+
     [[NSNotificationCenter defaultCenter] postNotificationName:OWSResetStorageNotification object:nil];
 
     // This might be redundant but in the spirit of thoroughness...
@@ -921,13 +923,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         // "known good state" and behave like a new install.
         BOOL doesDBExist = [NSFileManager.defaultManager fileExistsAtPath:[self databaseFilePath]];
         if (doesDBExist) {
-            OWSFailDebug(@"Could not load database metadata");
+            OWSFail(@"Could not load database metadata");
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
-        }
-
-        if (!CurrentAppContext().isRunningTests) {
-            // Try to reset app by deleting database.
-            [OWSStorage resetAllStorage];
         }
 
         keySpec = [Randomness generateRandomBytes:(int)kSQLCipherKeySpecLength];
