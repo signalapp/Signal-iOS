@@ -12,5 +12,5 @@ before_install:
     - bundle
     - bundle exec pod repo update --silent # log output is too long without --silent
 
-script: make ci
+script: make test
 
