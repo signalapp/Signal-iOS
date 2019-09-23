@@ -428,7 +428,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogInfo(@"handling content: <Content: %@>", [self descriptionForContent:contentProto]);
         
         // Loki: Handle device linking message
-        if (contentProto.lokiDeviceLinkingMessage != nil) {
+        if (contentProto.lokiDeviceLinkingMessage != nil && contentProto.lokiDeviceLinkingMessage.type == SSKProtoLokiDeviceLinkingMessageTypeRequest) {
             OWSLogInfo(@"[Loki] Received a device linking request from: %@", envelope.source);
             NSData *signature = contentProto.lokiDeviceLinkingMessage.slaveSignature;
             if (signature == nil) {
