@@ -37,10 +37,10 @@ typedef NS_ENUM(NSUInteger, ViewOnceMessageState) {
 
 NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 
+@class AudioMessageView;
 @class ContactShareViewModel;
 @class ConversationViewCell;
 @class DisplayableText;
-@class OWSAudioMessageView;
 @class OWSLinkPreview;
 @class OWSQuotedReplyModel;
 @class OWSUnreadIndicator;
@@ -118,7 +118,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 
 #pragma mark - Audio Playback
 
-@property (nonatomic, weak) OWSAudioMessageView *lastAudioMessageView;
+@property (nonatomic, weak) AudioMessageView *lastAudioMessageView;
 
 @property (nonatomic, readonly) CGFloat audioDurationSeconds;
 @property (nonatomic, readonly) CGFloat audioProgressSeconds;

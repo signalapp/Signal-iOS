@@ -5,7 +5,6 @@
 #import "OWSMessageBubbleView.h"
 #import "AttachmentUploadView.h"
 #import "ConversationViewItem.h"
-#import "OWSAudioMessageView.h"
 #import "OWSBubbleShapeView.h"
 #import "OWSBubbleView.h"
 #import "OWSContactShareButtonsView.h"
@@ -866,12 +865,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(attachment);
     OWSAssertDebug([attachment isAudio]);
 
-    OWSAudioMessageView *audioMessageView = [[OWSAudioMessageView alloc] initWithAttachment:attachment
-                                                                                 isIncoming:self.isIncoming
-                                                                                   viewItem:self.viewItem
-                                                                          conversationStyle:self.conversationStyle];
+    AudioMessageView *audioMessageView = [[AudioMessageView alloc] initWithAttachment:attachment
+                                                                           isIncoming:self.isIncoming
+                                                                             viewItem:self.viewItem
+                                                                    conversationStyle:self.conversationStyle];
     self.viewItem.lastAudioMessageView = audioMessageView;
-    [audioMessageView createContents];
     [self addProgressViewsIfNecessary:audioMessageView shouldShowDownloadProgress:NO];
 
     self.loadCellContentBlock = ^{
@@ -1106,7 +1104,7 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
         case OWSMessageCellType_Audio:
-            result = CGSizeMake(maxMediaMessageWidth, OWSAudioMessageView.bubbleHeight);
+            result = CGSizeMake(maxMediaMessageWidth, AudioMessageView.bubbleHeight);
             break;
         case OWSMessageCellType_GenericAttachment: {
             TSAttachment *attachment = (self.viewItem.attachmentStream ?: self.viewItem.attachmentPointer);
@@ -1629,12 +1627,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(self.delegate);
 
-    if (![self.bodyMediaView isKindOfClass:[OWSAudioMessageView class]]) {
+    if (![self.bodyMediaView isKindOfClass:[AudioMessageView class]]) {
         OWSFailDebug(@"Unexpected body media view: %@", self.bodyMediaView.class);
         return NO;
     }
 
-    OWSAudioMessageView *audioMessageView = (OWSAudioMessageView *)self.bodyMediaView;
+    AudioMessageView *audioMessageView = (AudioMessageView *)self.bodyMediaView;
 
     CGPoint locationInAudioView = [sender locationInView:audioMessageView];
 

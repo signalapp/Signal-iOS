@@ -346,7 +346,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var isFirstInCluster: Bool = true
     var isLastInCluster: Bool = true
     var unreadIndicator: OWSUnreadIndicator?
-    var lastAudioMessageView: OWSAudioMessageView?
+    var lastAudioMessageView: AudioMessageView?
     var audioDurationSeconds: CGFloat = 0
     var audioProgressSeconds: CGFloat = 0
     var messageCellType: OWSMessageCellType = .textOnlyMessage
@@ -439,15 +439,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
         return false
     }
 
-    func audioPlaybackState() -> AudioPlaybackState {
-        owsFailDebug("unexpected invocation")
-        return AudioPlaybackState.paused
-    }
-
-    func setAudioPlaybackState(_ state: AudioPlaybackState) {
-        owsFailDebug("unexpected invocation")
-        return
-    }
+    var audioPlaybackState: AudioPlaybackState = .paused
 
     func setAudioProgress(_ progress: CGFloat, duration: CGFloat) {
         owsFailDebug("unexpected invocation")
