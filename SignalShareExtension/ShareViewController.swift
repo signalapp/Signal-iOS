@@ -30,6 +30,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         return SSKEnvironment.shared.syncManager
     }
 
+    private var storageCoordinator: StorageCoordinator {
+        return SSKEnvironment.shared.storageCoordinator
+    }
+
     // MARK: -
 
     enum ShareViewControllerError: Error {
@@ -257,7 +261,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         guard areVersionMigrationsComplete else {
             return
         }
-        guard OWSStorage.isStorageReady() else {
+        guard storageCoordinator.isStorageReady else {
             return
         }
         guard !AppReadiness.isAppReady() else {

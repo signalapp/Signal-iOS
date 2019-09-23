@@ -102,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSSounds *sounds = [OWSSounds new];
         id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
         OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
-        
+
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
                                                              preferences:preferences
                                               proximityMonitoringManager:proximityMonitoringManager
@@ -157,16 +157,18 @@ NS_ASSUME_NONNULL_BEGIN
         [NSKeyedUnarchiver setClass:[ExperienceUpgrade class] forClassName:[ExperienceUpgrade collection]];
         [NSKeyedUnarchiver setClass:[ExperienceUpgrade class] forClassName:@"Signal.ExperienceUpgrade"];
 
-        dispatch_block_t warmCachesRunMigrationsAndComplete = ^{
+        dispatch_block_t completionBlock = ^{
             [SSKEnvironment.shared warmCaches];
 
             dispatch_async(dispatch_get_main_queue(), ^{
+                [storageCoordinator markStorageSetupAsComplete];
+
                 // Don't start database migrations until storage is ready.
                 [VersionMigrations performUpdateCheckWithCompletion:^() {
                     OWSAssertIsOnMainThread();
                     
                     migrationCompletion();
-                    
+
                     OWSAssertDebug(backgroundTask);
                     backgroundTask = nil;
                 }];
@@ -174,11 +176,9 @@ NS_ASSUME_NONNULL_BEGIN
         };
 
         if (databaseStorage.canLoadYdb) {
-            [OWSStorage registerExtensionsWithMigrationBlock:^() {
-                warmCachesRunMigrationsAndComplete();
-            }];
+            [OWSStorage registerExtensionsWithCompletionBlock:completionBlock];
         } else {
-            warmCachesRunMigrationsAndComplete();
+            completionBlock();
         }
     });
 }

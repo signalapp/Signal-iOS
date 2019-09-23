@@ -7,6 +7,7 @@
 #import "Signal-Swift.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Randomness.h>
+#import <SignalServiceKit/StorageCoordinator.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -46,6 +47,15 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
 @implementation OWSBackupJob
 
+#pragma mark - Dependencies
+
+- (StorageCoordinator *)storageCoordinator
+{
+    return SSKEnvironment.shared.storageCoordinator;
+}
+
+#pragma mark -
+
 - (instancetype)initWithDelegate:(id<OWSBackupJobDelegate>)delegate recipientId:(NSString *)recipientId
 {
     self = [super init];
@@ -55,7 +65,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
     }
 
     OWSAssertDebug(recipientId.length > 0);
-    OWSAssertDebug([OWSStorage isStorageReady]);
+    OWSAssertDebug([self.storageCoordinator isStorageReady]);
 
     self.delegate = delegate;
     self.recipientId = recipientId;

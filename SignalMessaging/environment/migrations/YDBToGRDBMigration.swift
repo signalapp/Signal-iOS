@@ -176,8 +176,6 @@ extension YDBToGRDBMigration {
     }
 
     func migrate(migratorGroups: [GRDBMigratorGroup]) throws {
-        assert(OWSStorage.isStorageReady())
-
         Logger.info("")
 
         // We can't nest ydbTransactions in GRDB and vice-versa

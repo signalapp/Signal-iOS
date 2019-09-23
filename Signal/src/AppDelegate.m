@@ -1231,7 +1231,7 @@ static NSTimeInterval launchStartedAt;
     if (!self.areVersionMigrationsComplete) {
         return;
     }
-    if (![OWSStorage isStorageReady]) {
+    if (![self.storageCoordinator isStorageReady]) {
         return;
     }
     if ([AppReadiness isAppReady]) {

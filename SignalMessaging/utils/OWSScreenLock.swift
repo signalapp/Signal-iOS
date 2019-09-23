@@ -14,6 +14,10 @@ public class OWSScreenLock: NSObject {
         return SDSDatabaseStorage.shared
     }
 
+    private var storageCoordinator: StorageCoordinator {
+        return SSKEnvironment.shared.storageCoordinator
+    }
+
     // MARK: -
 
     public enum OWSScreenLockOutcome {
@@ -63,7 +67,7 @@ public class OWSScreenLock: NSObject {
     public func isScreenLockEnabled() -> Bool {
         AssertIsOnMainThread()
 
-        if !OWSStorage.isStorageReady() {
+        if !storageCoordinator.isStorageReady {
             owsFailDebug("accessed screen lock state before storage is ready.")
             return false
         }
@@ -78,7 +82,7 @@ public class OWSScreenLock: NSObject {
     @objc
     public func setIsScreenLockEnabled(_ value: Bool) {
         AssertIsOnMainThread()
-        assert(OWSStorage.isStorageReady())
+        assert(storageCoordinator.isStorageReady)
 
         databaseStorage.write { transaction in
             self.keyValueStore.setBool(value,
@@ -93,7 +97,7 @@ public class OWSScreenLock: NSObject {
     public func screenLockTimeout() -> TimeInterval {
         AssertIsOnMainThread()
 
-        if !OWSStorage.isStorageReady() {
+        if !storageCoordinator.isStorageReady {
             owsFailDebug("accessed screen lock state before storage is ready.")
             return 0
         }
@@ -108,7 +112,7 @@ public class OWSScreenLock: NSObject {
     @objc
     public func setScreenLockTimeout(_ value: TimeInterval) {
         AssertIsOnMainThread()
-        assert(OWSStorage.isStorageReady())
+        assert(storageCoordinator.isStorageReady)
 
         databaseStorage.write { transaction in
             self.keyValueStore.setDouble(value,

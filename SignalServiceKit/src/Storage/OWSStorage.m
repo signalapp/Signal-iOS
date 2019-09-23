@@ -27,7 +27,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const StorageIsReadyNotification = @"StorageIsReadyNotification";
 NSString *const OWSResetStorageNotification = @"OWSResetStorageNotification";
 
 static NSString *keychainService = @"TSKeyChainService";
@@ -474,45 +473,23 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     OWSAbstractMethod();
 }
 
-+ (void)registerExtensionsWithMigrationBlock:(OWSStorageMigrationBlock)migrationBlock
++ (void)registerExtensionsWithCompletionBlock:(OWSStorageCompletionBlock)completionBlock
 {
     OWSAssertDebug(self.databaseStorage.canLoadYdb);
-    OWSAssertDebug(migrationBlock);
-
-    __block OWSBackgroundTask *_Nullable backgroundTask =
-        [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+    OWSAssertDebug(completionBlock);
 
     [self.primaryStorage runSyncRegistrations];
 
     [self.primaryStorage runAsyncRegistrationsWithCompletion:^{
         OWSAssertDebug(self.isStorageReady);
 
-        [self postRegistrationCompleteNotification];
-
-        migrationBlock();
-
-        backgroundTask = nil;
+        completionBlock();
     }];
 }
 
 - (YapDatabaseConnection *)registrationConnection
 {
     return self.database.registrationConnection;
-}
-
-// Returns YES IFF all registrations are complete.
-+ (void)postRegistrationCompleteNotification
-{
-    OWSAssertDebug(self.isStorageReady);
-
-    OWSLogInfo(@"");
-
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:StorageIsReadyNotification
-                                                                 object:nil
-                                                               userInfo:nil];
-    });
 }
 
 + (BOOL)isStorageReady

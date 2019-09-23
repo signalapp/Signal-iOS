@@ -3,10 +3,13 @@
 //
 
 #import <SignalServiceKit/StorageCoordinator.h>
+#import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSString *const StorageIsReadyNotification = @"StorageIsReadyNotification";
 
 NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
 {
@@ -31,6 +34,8 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
 @interface StorageCoordinator () <SDSDatabaseStorageDelegate>
 
 @property (atomic) StorageCoordinatorState state;
+
+@property (atomic) BOOL isStorageSetupComplete;
 
 @end
 
@@ -186,6 +191,40 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
 
     [OWSStorage deleteDatabaseFiles];
     [OWSStorage deleteDBKeys];
+}
+
+- (void)markStorageSetupAsComplete
+{
+    self.isStorageSetupComplete = YES;
+
+    [self postStorageIsReadyNotification];
+}
+
+- (void)postStorageIsReadyNotification
+{
+    OWSLogInfo(@"");
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:StorageIsReadyNotification
+                                                                 object:nil
+                                                               userInfo:nil];
+    });
+}
+
+- (BOOL)isStorageReady
+{
+    switch (self.state) {
+        case StorageCoordinatorStateYDB:
+        case StorageCoordinatorStateYDBTests:
+            return [OWSStorage isStorageReady] && self.isStorageSetupComplete;
+        case StorageCoordinatorStateBeforeYDBToGRDBMigration:
+        case StorageCoordinatorStateDuringYDBToGRDBMigration:
+            return NO;
+        case StorageCoordinatorStateGRDB:
+        case StorageCoordinatorStateGRDBTests:
+            return self.isStorageSetupComplete;
+    }
 }
 
 @end

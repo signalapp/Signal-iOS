@@ -26,6 +26,7 @@
 #import "StorageCoordinator.h"
 #import "TSAccountManager.h"
 #import "TSSocketManager.h"
+#import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/ProfileManagerProtocol.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -57,6 +58,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init
 {
+    // Ensure that OWSBackgroundTaskManager is created now.
+    [OWSBackgroundTaskManager sharedManager];
+
     StorageCoordinator *storageCoordinator = [StorageCoordinator new];
     SDSDatabaseStorage *databaseStorage = storageCoordinator.databaseStorage;
     // Unlike AppSetup, we always load YDB in the tests.
@@ -136,6 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.callMessageHandler = [OWSFakeCallMessageHandler new];
     self.notificationsManager = [NoopNotificationsManager new];
+
     return self;
 }
 
@@ -143,7 +148,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (self.databaseStorage.canLoadYdb) {
         __block dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-        [OWSStorage registerExtensionsWithMigrationBlock:^() {
+        [OWSStorage registerExtensionsWithCompletionBlock:^() {
+            [self.storageCoordinator markStorageSetupAsComplete];
+
             dispatch_semaphore_signal(semaphore);
         }];
 
