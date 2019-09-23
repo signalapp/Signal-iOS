@@ -254,7 +254,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self updateExpiresAt];
 }
 
-- (BOOL)shouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction
+- (BOOL)shouldStartExpireTimer
 {
     return self.hasPerConversationExpiration;
 }
@@ -503,21 +503,19 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
     }
 
-    [self updateStoredShouldStartExpireTimerWithTransaction:transaction];
+    [self updateStoredShouldStartExpireTimer];
 }
 
 - (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyWillUpdateWithTransaction:transaction];
 
-    [self updateStoredShouldStartExpireTimerWithTransaction:transaction];
+    [self updateStoredShouldStartExpireTimer];
 }
 
-- (void)updateStoredShouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction
+- (void)updateStoredShouldStartExpireTimer
 {
-    OWSAssertDebug(transaction);
-
-    _storedShouldStartExpireTimer = [self shouldStartExpireTimerWithTransaction:transaction];
+    _storedShouldStartExpireTimer = [self shouldStartExpireTimer];
 }
 
 - (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction

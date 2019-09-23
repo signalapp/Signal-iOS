@@ -289,10 +289,10 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSLogVerbose(@"Missing message: %@ %@", messageId, oldMessage.body);
                 continue;
             }
-            if (shouldBeExpiring != [message shouldStartExpireTimerWithTransaction:transaction]) {
+            if (shouldBeExpiring != [message shouldStartExpireTimer]) {
                 OWSLogVerbose(@"!shouldBeExpiring: %@ %@", messageId, oldMessage.body);
             }
-            XCTAssertEqual(shouldBeExpiring, [message shouldStartExpireTimerWithTransaction:transaction]);
+            XCTAssertEqual(shouldBeExpiring, [message shouldStartExpireTimer]);
             XCTAssertEqual(shouldBeExpiring, message.storedShouldStartExpireTimer);
             XCTAssertTrue(message.expiresAt > 0);
         }
@@ -305,7 +305,7 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSLogVerbose(@"Missing message: %@ %@", messageId, oldMessage.body);
                 continue;
             }
-            XCTAssertEqual(shouldBeExpiring, [message shouldStartExpireTimerWithTransaction:transaction]);
+            XCTAssertEqual(shouldBeExpiring, [message shouldStartExpireTimer]);
             XCTAssertEqual(shouldBeExpiring, message.storedShouldStartExpireTimer);
             XCTAssertEqual(0, message.expiresAt);
         }
@@ -313,7 +313,7 @@ NS_ASSUME_NONNULL_BEGIN
             [TSMessage anyFetchMessageWithUniqueId:unstartedExpiringIncomingMessage.uniqueId transaction:transaction];
         XCTAssertNotNil(unstartedIncoming);
         if (unstartedIncoming != nil) {
-            XCTAssertEqual(YES, [unstartedIncoming shouldStartExpireTimerWithTransaction:transaction]);
+            XCTAssertEqual(YES, [unstartedIncoming shouldStartExpireTimer]);
             XCTAssertEqual(YES, unstartedIncoming.storedShouldStartExpireTimer);
             XCTAssertEqual(0, unstartedIncoming.expiresAt);
         }
@@ -321,7 +321,7 @@ NS_ASSUME_NONNULL_BEGIN
             [TSMessage anyFetchMessageWithUniqueId:unstartedExpiringOutgoingMessage.uniqueId transaction:transaction];
         XCTAssertNotNil(unstartedOutgoing);
         if (unstartedOutgoing != nil) {
-            XCTAssertEqual(YES, [unstartedOutgoing shouldStartExpireTimerWithTransaction:transaction]);
+            XCTAssertEqual(YES, [unstartedOutgoing shouldStartExpireTimer]);
             XCTAssertEqual(YES, unstartedOutgoing.storedShouldStartExpireTimer);
             XCTAssertEqual(0, unstartedOutgoing.expiresAt);
         }

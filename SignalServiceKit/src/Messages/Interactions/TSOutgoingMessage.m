@@ -631,7 +631,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     }
 }
 
-- (BOOL)shouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction
+- (BOOL)shouldStartExpireTimer
 {
     // It's not clear if we should wait until _all_ recipients have reached "sent or later"
     // (which could never occur if one group member is unregistered) or only wait until
@@ -857,7 +857,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
 - (void)ensurePerConversationExpirationWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    if (![self shouldStartExpireTimerWithTransaction:transaction]) {
+    if (![self shouldStartExpireTimer]) {
         return;
     }
     if (self.expireStartedAt > 0) {

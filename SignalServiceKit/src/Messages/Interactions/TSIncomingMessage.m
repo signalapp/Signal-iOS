@@ -171,10 +171,10 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
 
 #pragma mark - OWSReadTracking
 
-- (BOOL)shouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction
+- (BOOL)shouldStartExpireTimer
 {
     // Don't start expiration for unread messages.
-    if (self.wasRead && [super shouldStartExpireTimerWithTransaction:transaction]) {
+    if (self.wasRead && [super shouldStartExpireTimer]) {
         return YES;
     } else if (self.hasPerConversationExpiration && self.expireStartedAt > 0) {
         OWSFailDebug(@"expiration previously started");

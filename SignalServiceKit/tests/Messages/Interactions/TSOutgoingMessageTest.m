@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                        contactShare:nil
                                                         linkPreview:nil];
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        XCTAssertFalse([message shouldStartExpireTimerWithTransaction:transaction]);
+        XCTAssertFalse([message shouldStartExpireTimer]);
     }];
 }
 
@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                         linkPreview:nil];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [message updateWithSentRecipient:self.contactId wasSentByUD:NO transaction:transaction];
-        XCTAssertTrue([message shouldStartExpireTimerWithTransaction:transaction]);
+        XCTAssertTrue([message shouldStartExpireTimer]);
     }];
 }
 
@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                        contactShare:nil
                                                         linkPreview:nil];
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        XCTAssertFalse([message shouldStartExpireTimerWithTransaction:transaction]);
+        XCTAssertFalse([message shouldStartExpireTimer]);
     }];
 }
 
@@ -103,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                         linkPreview:nil];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [message updateWithMarkingAllUnsentRecipientsAsSendingWithTransaction:transaction];
-        XCTAssertFalse([message shouldStartExpireTimerWithTransaction:transaction]);
+        XCTAssertFalse([message shouldStartExpireTimer]);
     }];
 }
 

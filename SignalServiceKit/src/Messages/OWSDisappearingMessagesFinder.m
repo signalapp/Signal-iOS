@@ -153,7 +153,7 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
                                            return;
                                        }
                                        TSMessage *message = (TSMessage *)object;
-                                       if (![message shouldStartExpireTimerWithTransaction:transaction.asAnyRead]) {
+                                       if (![message shouldStartExpireTimer]) {
                                            OWSFailDebug(@"object: %@ shouldn't expire.", message);
                                            return;
                                        }
@@ -283,7 +283,7 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
             }
             TSMessage *message = (TSMessage *)object;
 
-            if (![message shouldStartExpireTimerWithTransaction:transaction.asAnyRead]) {
+            if (![message shouldStartExpireTimer]) {
                 return;
             }
 
