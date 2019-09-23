@@ -889,6 +889,11 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                                                                      success:(OWSLoadedThumbnailSuccess)success
                                                                      failure:(OWSThumbnailFailure)failure
 {
+    if (!self.isValidVisualMedia) {
+        // Never thumbnail (or try to use the original of) invalid media.
+        return nil;
+    }
+
     CGSize originalSize = self.imageSize;
     if (originalSize.width < 1 || originalSize.height < 1) {
         // Any time we return nil from this method we have to call the failure handler
