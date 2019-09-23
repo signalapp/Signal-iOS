@@ -50,7 +50,7 @@ def shared_pods
   # pod 'YapDatabase/SQLCipher', path: '../YapDatabase'
 
   # Forked to incorporate our self-built binary artifact.
-  pod 'GRKOpenSSLFramework', git: 'https://github.com/signalapp/GRKOpenSSLFramework', branch: 'mkirk/1.0.2t'
+  pod 'GRKOpenSSLFramework', git: 'https://github.com/signalapp/GRKOpenSSLFramework'
   #pod 'GRKOpenSSLFramework', path: '../GRKOpenSSLFramework'
 
   pod 'Starscream', git: 'git@github.com:signalapp/Starscream.git', branch: 'signal-release'
