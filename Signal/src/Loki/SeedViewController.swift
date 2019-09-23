@@ -6,7 +6,7 @@ final class SeedViewController : OnboardingBaseViewController {
     
     // MARK: Components
     private lazy var registerStackView: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [ explanationLabel1, UIView.spacer(withHeight: 32), mnemonicLabel, UIView.spacer(withHeight: 24), copyButton, UIView.spacer(withHeight: 8), restoreButton ])
+        let result = UIStackView(arrangedSubviews: [ explanationLabel1, UIView.spacer(withHeight: 32), mnemonicLabel, UIView.spacer(withHeight: 24), copyButton, UIView.spacer(withHeight: 8), restoreButton1, linkButton1 ])
         result.accessibilityIdentifier = "onboarding.keyPairStep.registerStackView"
         result.axis = .vertical
         return result
@@ -39,21 +39,22 @@ final class SeedViewController : OnboardingBaseViewController {
         return result
     }()
     
-    private lazy var restoreButton: OWSFlatButton = {
-        let result = createLinkButton(title: NSLocalizedString("Restore Using Seed", comment: ""), selector: #selector(switchMode))
-        result.accessibilityIdentifier = "onboarding.keyPairStep.restoreButton"
+    private lazy var restoreButton1: OWSFlatButton = {
+        let result = createLinkButton(title: NSLocalizedString("Restore Using Seed", comment: ""), selector: #selector(handleSwitchModeButton1Tapped))
+        result.accessibilityIdentifier = "onboarding.keyPairStep.restoreButton1"
         result.setBackgroundColors(upColor: .clear, downColor: .clear)
         return result
     }()
     
-    private lazy var errorLabelSpacer: UIView = {
-        let result = UIView.spacer(withHeight: 32)
-        result.isHidden = true
+    private lazy var linkButton1: OWSFlatButton = {
+        let result = createLinkButton(title: NSLocalizedString("Link Device", comment: ""), selector: #selector(handleSwitchModeButton2Tapped))
+        result.accessibilityIdentifier = "onboarding.keyPairStep.linkButton1"
+        result.setBackgroundColors(upColor: .clear, downColor: .clear)
         return result
     }()
     
     private lazy var restoreStackView: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [ explanationLabel2, UIView.spacer(withHeight: 32), errorLabel, errorLabelSpacer, mnemonicTextField, UIView.spacer(withHeight: 24), registerButton ])
+        let result = UIStackView(arrangedSubviews: [ explanationLabel2, UIView.spacer(withHeight: 32), errorLabel1, errorLabel1Spacer, mnemonicTextField, UIView.spacer(withHeight: 24), registerButton1, linkButton2 ])
         result.accessibilityIdentifier = "onboarding.keyPairStep.restoreStackView"
         result.axis = .vertical
         return result
@@ -69,13 +70,19 @@ final class SeedViewController : OnboardingBaseViewController {
         return result
     }()
     
-    private lazy var errorLabel: UILabel = {
+    private lazy var errorLabel1: UILabel = {
         let result = createExplanationLabel(text: "")
-        result.accessibilityIdentifier = "onboarding.keyPairStep.errorLabel"
+        result.accessibilityIdentifier = "onboarding.keyPairStep.errorLabel1"
         result.textColor = UIColor.red
         var fontTraits = result.font.fontDescriptor.symbolicTraits
         fontTraits.insert(.traitBold)
         result.font = UIFont(descriptor: result.font.fontDescriptor.withSymbolicTraits(fontTraits)!, size: 12)
+        return result
+    }()
+    
+    private lazy var errorLabel1Spacer: UIView = {
+        let result = UIView.spacer(withHeight: 32)
+        result.isHidden = true
         return result
     }()
     
@@ -93,21 +100,90 @@ final class SeedViewController : OnboardingBaseViewController {
         return result
     }()
     
-    private lazy var registerButton: OWSFlatButton = {
-        let result = createLinkButton(title: NSLocalizedString("Register a New Account", comment: ""), selector: #selector(switchMode))
-        result.accessibilityIdentifier = "onboarding.keyPairStep.registerButton"
+    private lazy var registerButton1: OWSFlatButton = {
+        let result = createLinkButton(title: NSLocalizedString("Register a New Account", comment: ""), selector: #selector(handleSwitchModeButton1Tapped))
+        result.accessibilityIdentifier = "onboarding.keyPairStep.registerButton1"
         result.setBackgroundColors(upColor: .clear, downColor: .clear)
         return result
     }()
     
-    private lazy var registerOrRestoreButton: OWSFlatButton = {
-        let result = createButton(title: "", selector: #selector(registerOrRestore))
-        result.accessibilityIdentifier = "onboarding.keyPairStep.registerOrRestoreButton"
+    private lazy var linkButton2: OWSFlatButton = {
+        let result = createLinkButton(title: NSLocalizedString("Link Device", comment: ""), selector: #selector(handleSwitchModeButton2Tapped))
+        result.accessibilityIdentifier = "onboarding.keyPairStep.linkButton2"
+        result.setBackgroundColors(upColor: .clear, downColor: .clear)
+        return result
+    }()
+    
+    private lazy var linkStackView: UIStackView = {
+        let result = UIStackView(arrangedSubviews: [ explanationLabel3, UIView.spacer(withHeight: 32), errorLabel2, errorLabel2Spacer, masterHexEncodedPublicKeyTextField, UIView.spacer(withHeight: 24), registerButton2, restoreButton2 ])
+        result.accessibilityIdentifier = "onboarding.keyPairStep.linkStackView"
+        result.axis = .vertical
+        return result
+    }()
+    
+    private lazy var explanationLabel3: UILabel = {
+        let result = createExplanationLabel(text: NSLocalizedString("Link an existing device by going into Loki Messenger's in-app settings and clicking \"Link Device\".", comment: ""))
+        result.accessibilityIdentifier = "onboarding.keyPairStep.explanationLabel3"
+        result.textColor = Theme.primaryColor
+        var fontTraits = result.font.fontDescriptor.symbolicTraits
+        fontTraits.insert(.traitBold)
+        result.font = UIFont(descriptor: result.font.fontDescriptor.withSymbolicTraits(fontTraits)!, size: result.font.pointSize)
+        return result
+    }()
+    
+    private lazy var errorLabel2: UILabel = {
+        let result = createExplanationLabel(text: "")
+        result.accessibilityIdentifier = "onboarding.keyPairStep.errorLabel2"
+        result.textColor = UIColor.red
+        var fontTraits = result.font.fontDescriptor.symbolicTraits
+        fontTraits.insert(.traitBold)
+        result.font = UIFont(descriptor: result.font.fontDescriptor.withSymbolicTraits(fontTraits)!, size: 12)
+        return result
+    }()
+    
+    private lazy var errorLabel2Spacer: UIView = {
+        let result = UIView.spacer(withHeight: 32)
+        result.isHidden = true
+        return result
+    }()
+    
+    private lazy var masterHexEncodedPublicKeyTextField: UITextField = {
+        let result = UITextField(frame: CGRect.zero)
+        result.textColor = Theme.primaryColor
+        result.font = UIFont.ows_dynamicTypeBodyClamped
+        result.textAlignment = .center
+        let placeholder = NSMutableAttributedString(string: NSLocalizedString("Enter Your Primary Account's Public Key", comment: ""))
+        placeholder.addAttribute(.foregroundColor, value: Theme.placeholderColor, range: NSRange(location: 0, length: placeholder.length))
+        result.attributedPlaceholder = placeholder
+        result.tintColor = UIColor.lokiGreen()
+        result.accessibilityIdentifier = "onboarding.keyPairStep.masterHexEncodedPublicKeyTextField"
+        result.keyboardAppearance = .dark
+        return result
+    }()
+    
+    private lazy var registerButton2: OWSFlatButton = {
+        let result = createLinkButton(title: NSLocalizedString("Register a New Account", comment: ""), selector: #selector(handleSwitchModeButton1Tapped))
+        result.accessibilityIdentifier = "onboarding.keyPairStep.registerButton2"
+        result.setBackgroundColors(upColor: .clear, downColor: .clear)
+        return result
+    }()
+    
+    private lazy var restoreButton2: OWSFlatButton = {
+        let result = createLinkButton(title: NSLocalizedString("Restore Using Seed", comment: ""), selector: #selector(handleSwitchModeButton2Tapped))
+        result.accessibilityIdentifier = "onboarding.keyPairStep.restoreButton2"
+        result.setBackgroundColors(upColor: .clear, downColor: .clear)
+        return result
+    }()
+    
+    // Shared
+    private lazy var mainButton: OWSFlatButton = {
+        let result = createButton(title: "", selector: #selector(handleMainButtonTapped))
+        result.accessibilityIdentifier = "onboarding.keyPairStep.mainButton"
         return result
     }()
     
     // MARK: Types
-    enum Mode { case register, restore }
+    enum Mode { case register, restore, link }
     
     // MARK: Lifecycle
     override func viewDidLoad() {
@@ -128,7 +204,8 @@ final class SeedViewController : OnboardingBaseViewController {
         let mainView = UIView(frame: CGRect.zero)
         mainView.addSubview(restoreStackView)
         mainView.addSubview(registerStackView)
-        let mainStackView = UIStackView(arrangedSubviews: [ titleLabel, mainView, registerOrRestoreButton ])
+        mainView.addSubview(linkStackView)
+        let mainStackView = UIStackView(arrangedSubviews: [ titleLabel, mainView, mainButton ])
         mainStackView.axis = .vertical
         mainStackView.layoutMargins = UIEdgeInsets(top: 32, left: 32, bottom: 32, right: 32)
         mainStackView.isLayoutMarginsRelativeArrangement = true
@@ -141,6 +218,8 @@ final class SeedViewController : OnboardingBaseViewController {
         registerStackView.autoVCenterInSuperview()
         restoreStackView.autoPinWidthToSuperview()
         restoreStackView.autoVCenterInSuperview()
+        linkStackView.autoPinWidthToSuperview()
+        linkStackView.autoVCenterInSuperview()
     }
     
     // MARK: General
@@ -153,20 +232,29 @@ final class SeedViewController : OnboardingBaseViewController {
     
     // MARK: Updating
     private func handleModeChanged() {
+        let (activeStackView, otherStackViews) = { () -> (UIStackView, [UIStackView]) in
+            switch mode {
+            case .register: return (registerStackView, [ restoreStackView, linkStackView ])
+            case .restore: return (restoreStackView, [ registerStackView, linkStackView ])
+            case .link: return (linkStackView, [ registerStackView, restoreStackView ])
+            }
+        }()
         UIView.animate(withDuration: 0.25) {
-            self.registerStackView.alpha = (self.mode == .register ? 1 : 0)
-            self.restoreStackView.alpha = (self.mode == .restore ? 1 : 0)
+            activeStackView.alpha = 1
+            otherStackViews.forEach { $0.alpha = 0 }
         }
-        let registerOrRestoreButtonTitle: String = {
+        let mainButtonTitle: String = {
             switch mode {
             case .register: return NSLocalizedString("Register", comment: "")
             case .restore: return NSLocalizedString("Restore", comment: "")
+            case .link: return NSLocalizedString("Link", comment: "")
             }
         }()
-        UIView.transition(with: registerOrRestoreButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
-            self.registerOrRestoreButton.setTitle(registerOrRestoreButtonTitle)
+        UIView.transition(with: mainButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
+            self.mainButton.setTitle(mainButtonTitle)
         }, completion: nil)
-        if mode == .register { mnemonicTextField.resignFirstResponder() }
+        if mode != .restore { mnemonicTextField.resignFirstResponder() }
+        if mode != .link { masterHexEncodedPublicKeyTextField.resignFirstResponder() }
     }
     
     private func updateSeed() {
@@ -192,18 +280,27 @@ final class SeedViewController : OnboardingBaseViewController {
         Timer.scheduledTimer(timeInterval: 4, target: self, selector: #selector(enableCopyButton), userInfo: nil, repeats: false)
     }
     
-    @objc private func switchMode() {
+    @objc private func handleSwitchModeButton1Tapped() {
         switch mode {
         case .register: mode = .restore
         case .restore: mode = .register
+        case .link: mode = .register
+        }
+    }
+    
+    @objc private func handleSwitchModeButton2Tapped() {
+        switch mode {
+        case .register: mode = .link
+        case .restore: mode = .link
+        case .link: mode = .restore
         }
     }
 
-    @objc private func registerOrRestore() {
+    @objc private func handleMainButtonTapped() {
         var seed: Data
         let mode = self.mode
         switch mode {
-        case .register: seed = self.seed
+        case .register, .link: seed = self.seed
         case .restore:
             let mnemonic = mnemonicTextField.text!
             do {
@@ -211,8 +308,8 @@ final class SeedViewController : OnboardingBaseViewController {
                 seed = Data(hex: hexEncodedSeed)
             } catch let error {
                 let error = error as? Mnemonic.DecodingError ?? Mnemonic.DecodingError.generic
-                errorLabelSpacer.isHidden = false
-                return errorLabel.text = error.errorDescription
+                errorLabel1Spacer.isHidden = false
+                return errorLabel1.text = error.errorDescription
             }
         }
         // Use KVC to access dbConnection even though it's private
@@ -228,6 +325,7 @@ final class SeedViewController : OnboardingBaseViewController {
         switch mode {
         case .register: Analytics.shared.track("Seed Created")
         case .restore: Analytics.shared.track("Seed Restored")
+        case .link: Analytics.shared.track("Device Linked")
         }
         onboardingController.pushAccountDetailsViewController(from: self)
     }
