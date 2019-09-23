@@ -335,6 +335,10 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         }
     }
 
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        searchBar.resignFirstResponder()
+    }
+
     // MARK: - Button Actions
 
     @objc func onTouchCancelButton() {
@@ -348,6 +352,10 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     // MARK: - Search Actions
     open func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         updateSearchResults(searchText: searchText)
+    }
+
+    public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
     }
 
     open func updateSearchResults(searchText: String) {
