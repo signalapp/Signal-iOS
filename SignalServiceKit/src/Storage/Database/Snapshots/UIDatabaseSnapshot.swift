@@ -101,6 +101,11 @@ public class UIDatabaseObserver: NSObject {
     }
 
     let pool: DatabasePool
+
+    var isRunningCheckpoint = false
+    var needsTruncatingCheckpoint = false
+    let checkPointQueue = DispatchQueue(label: "checkpointQueue")
+
     internal var latestSnapshot: DatabaseSnapshot {
         didSet {
             AssertIsOnMainThread()
@@ -155,26 +160,6 @@ extension UIDatabaseObserver: TransactionObserver {
             }
         }
 
-        let getNewSnapshot: () -> DatabaseSnapshot? = {
-            do {
-                return try self.pool.makeSnapshot()
-            } catch {
-                if CurrentAppContext().isRunningTests {
-                    // SQLite error 14
-                    ///Can happen during tests wherein we sometimes delete
-                    // the db.
-                    Logger.warn("failed to make new snapshot")
-                } else {
-                    owsFail("failed to make new snapshot")
-                }
-            }
-            return nil
-        }
-
-        guard let newSnapshot = getNewSnapshot() else {
-            return
-        }
-
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             Logger.verbose("databaseSnapshotWillUpdate")
@@ -182,7 +167,13 @@ extension UIDatabaseObserver: TransactionObserver {
                 delegate.databaseSnapshotWillUpdate()
             }
 
-            self.latestSnapshot = newSnapshot
+            self.latestSnapshot.read { db in
+                do {
+                    try self.fastForwardDatabaseSnapshot(db: db)
+                } catch {
+                    owsFailDebug("\(error)")
+                }
+            }
 
             Logger.verbose("databaseSnapshotDidUpdate")
             for delegate in self.snapshotDelegates {
@@ -196,6 +187,86 @@ extension UIDatabaseObserver: TransactionObserver {
             for snapshotDelegate in snapshotDelegates {
                 snapshotDelegate.snapshotTransactionDidRollback(db: db)
             }
+        }
+    }
+
+    // Currently GRDB offers no built in way to fast-forward a
+    // database snapshot.
+    // See: https://github.com/groue/GRDB.swift/issues/619
+    func fastForwardDatabaseSnapshot(db: Database) throws {
+        // [1] end the old transaction from the old db state
+        try db.commit()
+
+        // [2] Checkpoint the WAL
+        // Checkpointing is the process of moving data from the WAL back into the main database file.
+        // Without it, the WAL will grow indefinitely.
+        //
+        // Checkpointing has several flavors, including `passive` which opportunistically checkpoints
+        // what it can without requiring blocking of reads or writes.
+        //
+        // SQLite's default auto-checkpointing uses `passive` checkpointing, but because our
+        // DatabaseSnapshot maintains a long running read transaction, passive checkpointing can
+        // never successfully truncate the WAL (because there is at least the one read transaction
+        // using it).
+        //
+        // The only time the long-lived read transaction is *not* reading the database is
+        // *right here*, between committing the last transaction and starting the next one.
+        //
+        // Solution:
+        //   Under normal load, when the WAL is not known to be large, prefer the lighter weight
+        //   passive checkpoint, and do it async to further minimize main thread impact.
+        //   When the WAL is known to be large however, we synchronously checkpoint and truncate
+        //   the WAL before resuming the snapshot read transaction.
+        let needsTruncatingCheckpoint = checkPointQueue.sync {
+            return self.needsTruncatingCheckpoint
+        }
+
+        if needsTruncatingCheckpoint {
+            Logger.info("running truncating checkpoint.")
+            try pool.writeWithoutTransaction { db in
+                try checkpointWal(db: db, mode: .truncate)
+            }
+        } else {
+            pool.asyncWriteWithoutTransaction { db in
+                do {
+                    try self.checkpointWal(db: db, mode: .passive)
+                } catch {
+                    owsFailDebug("error \(error)")
+                }
+            }
+        }
+
+        // [3] open a new transaction from the current db state
+        try db.beginTransaction(.deferred)
+
+        // [4] do *any* read to acquire non-deferred read lock
+        _ = try Row.fetchCursor(db, sql: "SELECT rootpage FROM sqlite_master LIMIT 1").next()
+    }
+
+    func checkpointWal(db: Database, mode: Database.CheckpointMode) throws {
+        var walSizePages: Int32 = 0
+        var pagesCheckpointed: Int32 = 0
+
+        checkPointQueue.sync {
+            guard !isRunningCheckpoint else {
+                return
+            }
+            isRunningCheckpoint = true
+        }
+
+        let code = sqlite3_wal_checkpoint_v2(db.sqliteConnection, nil, mode.rawValue, &walSizePages, &pagesCheckpointed)
+        // Logger.verbose("checkpoint mode: \(mode), walSizePages: \(walSizePages),  pagesCheckpointed:\(pagesCheckpointed)")
+        guard code == SQLITE_OK else {
+            throw OWSAssertionError("checkpoint sql error with code: \(code)")
+        }
+
+        let maxWalFileSizeBytes = 2 * 1024 * 1024
+        let pageSize = 4 * 1024
+        let maxWalPages = maxWalFileSizeBytes / pageSize
+        needsTruncatingCheckpoint = walSizePages > maxWalPages
+
+        checkPointQueue.sync {
+            isRunningCheckpoint = false
         }
     }
 }

@@ -128,7 +128,7 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
             messageReceiver.handleReceivedEnvelopeData(envelopeData)
         }
 
-        waitForExpectations(timeout: 10.0) { _ in
+        waitForExpectations(timeout: 15.0) { _ in
             self.stopMeasuring()
 
             self.dbObserverBlock = nil
