@@ -3,6 +3,7 @@
 //
 
 import UIKit
+import Contacts
 import PromiseKit
 
 @objc

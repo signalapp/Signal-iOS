@@ -3,6 +3,7 @@
 //
 
 import XCTest
+import Contacts
 @testable import Signal
 @testable import SignalMessaging
 
