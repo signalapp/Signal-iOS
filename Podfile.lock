@@ -149,7 +149,7 @@ PODS:
     - SQLCipher/common
   - SSZipArchive (2.1.4)
   - Starscream (3.0.6)
-  - SwiftProtobuf (1.3.1)
+  - SwiftProtobuf (1.6.0)
   - YapDatabase/SQLCipher (3.1.1):
     - YapDatabase/SQLCipher/Core (= 3.1.1)
     - YapDatabase/SQLCipher/Extensions (= 3.1.1)
@@ -286,25 +286,25 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: 8d4451262de7dc26887f25051ee26659c3512907
+    :commit: 4a4899ea145a446403cd31549b11df847a3ee9e2
     :git: https://github.com/signalapp/SignalProtocolKit.git
   Curve25519Kit:
-    :commit: 9b5981d7e366e1cd514be483e199d6fc1dd872af
+    :commit: 3d09b9480f60e4f95ecbbc6f83d9449c6833d95e
     :git: https://github.com/signalapp/Curve25519Kit
   GRKOpenSSLFramework:
     :commit: ff71044fdaf6122de03c442b5bd25f2fb54c81a2
     :git: https://github.com/signalapp/GRKOpenSSLFramework
   HKDFKit:
-    :commit: 3e0c2371d125f2d3db26daa498d5d436961b1795
+    :commit: b6985abcacda0292b82785ba93b8be47c0d608b6
     :git: https://github.com/signalapp/HKDFKit.git
   Mantle:
     :commit: b72c2d1e6132501db906de2cffa8ded7803c54f4
     :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
-    :commit: 4330f7d0ef0f06628b3bb1e961d947638cfd098f
+    :commit: 7996f4764c0f11c29c9f02e49dfab553f61117c9
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
-    :commit: f7c0c7bd979cbac06223cd2d41da542c6c33f62b
+    :commit: ad13dd470c635bb0c3b7853618215cad96395f8c
     :git: "git@github.com:signalapp/SignalMetadataKit"
   Starscream:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
@@ -315,12 +315,12 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
-  AxolotlKit: bb02741a93400b915df1be3365ad13d3768b0103
+  AxolotlKit: ac03e4d79486b62d08282c840da410116227683e
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
-  Curve25519Kit: b3e77b7152ebe95fee2b3fb6c955449492bc14f7
+  Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
   GRDB.swift: 083ec261ce573888d8ed2eae1b49bc0bf40d9e2c
   GRKOpenSSLFramework: 4abc733a8fcbc37060619a86a54202d2938dd70e
-  HKDFKit: 3b6dbbb9d59c221cc6c52c3aa915700cbf24e376
+  HKDFKit: bd6b9566654253aa45ef60a205979ec291f00641
   libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
   libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
@@ -328,16 +328,16 @@ SPEC CHECKSUMS:
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
-  SignalCoreKit: c2d8132cdedb95d35eb2f8ae7eac0957695d0a8b
-  SignalMetadataKit: 6fa5e9a53c7f104568662521a2f3874672ff7a02
-  SignalServiceKit: ef70f246cd3d780c444e2ed2ae40394aaedf9c06
+  SignalCoreKit: 4562b2bbd9830077439ca003f952a798457d4ea5
+  SignalMetadataKit: a7aacedf262d947c22e2c619f0fd217163d2a637
+  SignalServiceKit: e80c4b7c967b832cc57ea3495bfe935578284787
   SQLCipher: 4636a257060f6f1b4e143a143028b61a2b462d0d
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
-  SwiftProtobuf: 84cd6b8f4fd2fc3d9fbd80a0aaf2e957d52824ec
+  SwiftProtobuf: e905ca1366405696411aaf174411c4b19c0ef73d
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: 36c7db8d6685e018e0c55ae5be004d61f5df80aa
+PODFILE CHECKSUM: c7564b6ed5c01b9947c62846de7595ed2637cb48
 
 COCOAPODS: 1.7.5
