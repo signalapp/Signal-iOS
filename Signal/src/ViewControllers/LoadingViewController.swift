@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -13,6 +13,9 @@ public class LoadingViewController: UIViewController {
     var logoView: UIImageView!
     var topLabel: UILabel!
     var bottomLabel: UILabel!
+    let labelStack = UIStackView()
+    var topLabelTimer: Timer?
+    var bottomLabelTimer: Timer?
 
     override public func loadView() {
         self.view = UIView()
@@ -29,13 +32,14 @@ public class LoadingViewController: UIViewController {
         topLabel.alpha = 0
         topLabel.font = UIFont.ows_dynamicTypeTitle2
         topLabel.text = NSLocalizedString("DATABASE_VIEW_OVERLAY_TITLE", comment: "Title shown while the app is updating its database.")
+        labelStack.addArrangedSubview(topLabel)
 
         self.bottomLabel = buildLabel()
         bottomLabel.alpha = 0
         bottomLabel.font = UIFont.ows_dynamicTypeBody
         bottomLabel.text = NSLocalizedString("DATABASE_VIEW_OVERLAY_SUBTITLE", comment: "Subtitle shown while the app is updating its database.")
+        labelStack.addArrangedSubview(bottomLabel)
 
-        let labelStack = UIStackView(arrangedSubviews: [topLabel, bottomLabel])
         labelStack.axis = .vertical
         labelStack.alignment = .center
         labelStack.spacing = 8
@@ -46,48 +50,75 @@ public class LoadingViewController: UIViewController {
         labelStack.autoPinTrailingToSuperviewMargin()
         labelStack.setCompressionResistanceHigh()
         labelStack.setContentHuggingHigh()
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(didBecomeActive),
+                                               name: NSNotification.Name.OWSApplicationDidBecomeActive,
+                                               object: nil)
     }
 
-    var isShowingTopLabel = false
-    var isShowingBottomLabel = false
     override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         // We only show the "loading" UI if it's a slow launch. Otherwise this ViewController
         // should be indistinguishable from the launch screen.
         let kTopLabelThreshold: TimeInterval = 5
-        DispatchQueue.main.asyncAfter(deadline: .now() + kTopLabelThreshold) { [weak self] in
-            guard let strongSelf = self else {
-                return
-            }
-
-            guard !strongSelf.isShowingTopLabel else {
-                return
-            }
-
-            strongSelf.isShowingTopLabel = true
-            UIView.animate(withDuration: 0.1) {
-                strongSelf.topLabel.alpha = 1
-            }
-            UIView.animate(withDuration: 0.9, delay: 2, options: [.autoreverse, .repeat, .curveEaseInOut], animations: {
-                strongSelf.topLabel.alpha = 0.2
-            }, completion: nil)
-        }
+        topLabelTimer = Timer.weakScheduledTimer(withTimeInterval: kTopLabelThreshold, target: self, selector: #selector(showTopLabel), userInfo: nil, repeats: false)
 
         let kBottomLabelThreshold: TimeInterval = 15
-        DispatchQueue.main.asyncAfter(deadline: .now() + kBottomLabelThreshold) { [weak self] in
-            guard let strongSelf = self else {
-                return
-            }
-            guard !strongSelf.isShowingBottomLabel else {
-                return
-            }
+        topLabelTimer = Timer.weakScheduledTimer(withTimeInterval: kBottomLabelThreshold, target: self, selector: #selector(showBottomLabelAnimated), userInfo: nil, repeats: false)
+    }
 
-            strongSelf.isShowingBottomLabel = true
-            UIView.animate(withDuration: 0.1) {
-                strongSelf.bottomLabel.alpha = 1
-            }
+    // UIStackView removes hidden subviews from the layout.
+    // UIStackView considers views with a sufficiently low
+    // alpha to be "hidden".  This can cause layout to glitch
+    // briefly when returning from background.  Therefore we
+    // use a "min" alpha value when fading in labels that is
+    // high enough to avoid this UIStackView behavior.
+    private let kMinAlpha: CGFloat = 0.1
+
+    @objc
+    private func showBottomLabelAnimated() {
+        Logger.verbose("")
+
+        bottomLabel.layer.removeAllAnimations()
+        bottomLabel.alpha = kMinAlpha
+        UIView.animate(withDuration: 0.1) {
+            self.bottomLabel.alpha = 1
         }
+    }
+
+    @objc
+    private func showTopLabel() {
+        topLabel.layer.removeAllAnimations()
+        topLabel.alpha = 0.2
+        UIView.animate(withDuration: 0.9, delay: 0, options: [.autoreverse, .repeat, .curveEaseInOut], animations: {
+            self.topLabel.alpha = 1.0
+        }, completion: nil)
+    }
+
+    private func showBottomLabel() {
+        bottomLabel.layer.removeAllAnimations()
+        self.bottomLabel.alpha = 1
+    }
+
+    // MARK: -
+
+    @objc func didBecomeActive() {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        topLabelTimer?.invalidate()
+        topLabelTimer = nil
+        bottomLabelTimer?.invalidate()
+        bottomLabelTimer = nil
+
+        showTopLabel()
+        showBottomLabel()
+
+        labelStack.layoutSubviews()
+        view.layoutSubviews()
     }
 
     // MARK: Orientation
