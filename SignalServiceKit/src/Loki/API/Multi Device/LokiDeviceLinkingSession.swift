@@ -1,3 +1,4 @@
+import Curve25519Kit
 import PromiseKit
 
 @objc (LKDeviceLinkingSession)
@@ -41,6 +42,8 @@ public final class LokiDeviceLinkingSession : NSObject {
     
     // MARK: Private API
     private func isValid(_ deviceLink: LokiDeviceLink) -> Bool {
-        return true // TODO: Implement
+        let signature = deviceLink.slave.signature!
+        let publicKey = Data(hex: deviceLink.slave.hexEncodedPublicKey)
+        return try? Ed25519.verifySignature(signature, publicKey: publicKey, data: Data()) ?? false // TODO: Data
     }
 }
