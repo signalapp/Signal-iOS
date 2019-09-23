@@ -18,6 +18,7 @@
 #import <SignalServiceKit/TSMessage.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
 #import <SignalServiceKit/TSThread.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
