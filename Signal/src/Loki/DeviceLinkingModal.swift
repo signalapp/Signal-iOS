@@ -94,10 +94,6 @@ final class DeviceLinkingModal : UIViewController, LokiDeviceLinkingSessionDeleg
     
     // MARK: Device Linking
     func requestUserAuthorization(for deviceLink: LokiDeviceLink) {
-    
-    }
-    
-    func handleDeviceLinkingSessionTimeout() {
         
     }
     
