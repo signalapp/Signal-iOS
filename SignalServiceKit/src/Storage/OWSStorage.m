@@ -925,6 +925,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         if (doesDBExist) {
             if (SSKFeatureFlags.storageMode == StorageModeYdb) {
                 OWSFail(@"Could not load database metadata");
+            } else if (SSKFeatureFlags.storageMode == StorageModeGrdb && ![SSKPreferences isYdbMigrated]) {
+                OWSFail(@"Could not load database metadata");
             } else {
                 OWSFailDebug(@"Could not load database metadata");
             }
