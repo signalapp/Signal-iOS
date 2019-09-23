@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import Lottie
 
 @objc
 class AudioWaveformProgressView: UIView {
@@ -16,8 +17,10 @@ class AudioWaveformProgressView: UIView {
     @objc
     var unplayedColor: UIColor = Theme.secondaryColor {
         didSet {
-            activityIndicator.color = unplayedColor
             unplayedShapeLayer.fillColor = unplayedColor.cgColor
+
+            let strokeColorKeypath = AnimationKeypath(keypath: "**.Stroke 1.Color")
+            loadingAnimation.setValueProvider(ColorValueProvider(unplayedColor.lottieColorValue), keypath: strokeColorKeypath)
         }
     }
 
@@ -79,7 +82,7 @@ class AudioWaveformProgressView: UIView {
     )
     private let playedShapeLayer = CAShapeLayer()
     private let unplayedShapeLayer = CAShapeLayer()
-    private let activityIndicator = UIActivityIndicatorView(style: .white)
+    private let loadingAnimation = AnimationView(name: "waveformLoading")
 
     @objc
     init() {
@@ -94,9 +97,14 @@ class AudioWaveformProgressView: UIView {
         thumbImageView.tintColor = thumbColor
         addSubview(thumbImageView)
 
-        addSubview(activityIndicator)
-        activityIndicator.autoCenterInSuperview()
-        activityIndicator.isHidden = true
+        loadingAnimation.contentMode = .scaleAspectFit
+        loadingAnimation.loopMode = .loop
+        loadingAnimation.backgroundBehavior = .pauseAndRestore
+
+        addSubview(loadingAnimation)
+        loadingAnimation.autoHCenterInSuperview()
+        loadingAnimation.autoPinHeightToSuperview()
+        loadingAnimation.isHidden = true
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -110,13 +118,13 @@ class AudioWaveformProgressView: UIView {
         // TODO: This will eventually be a lottie animation of a waveform moving up and down
         guard audioWaveform?.isSamplingComplete == true else {
             thumbImageView.isHidden = true
-            activityIndicator.isHidden = false
-            activityIndicator.startAnimating()
+            loadingAnimation.isHidden = false
+            loadingAnimation.play()
             return
         }
 
-        activityIndicator.stopAnimating()
-        activityIndicator.isHidden = true
+        loadingAnimation.stop()
+        loadingAnimation.isHidden = true
         thumbImageView.isHidden = false
 
         let playedBezierPath = UIBezierPath()
