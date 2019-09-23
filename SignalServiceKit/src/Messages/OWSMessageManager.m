@@ -430,7 +430,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Loki: Handle device linking message
         if (contentProto.lokiDeviceLinkingMessage != nil) {
             OWSLogInfo(@"[Loki] Received a device linking request from: %@", envelope.source);
-            NSData *signature = [contentProto.lokiDeviceLinkingMessage.slaveSignature];
+            NSData *signature = contentProto.lokiDeviceLinkingMessage.slaveSignature;
             if (signature == nil) {
                 OWSFailDebug(@"Received a device linking request without an attached slave signature.");
             }
@@ -438,10 +438,10 @@ NS_ASSUME_NONNULL_BEGIN
         }
         
         // Loki: Handle pre key bundle message
-        if (contentProto.prekeyBundleMessage) {
+        if (contentProto.prekeyBundleMessage != nil) {
             OWSLogInfo(@"[Loki] Received a pre key bundle message from: %@.", envelope.source);
             PreKeyBundle *_Nullable bundle = [contentProto.prekeyBundleMessage createPreKeyBundleWithTransaction:transaction];
-            if (!bundle) {
+            if (bundle == nil) {
                 OWSFailDebug(@"Failed to create a pre key bundle.");
             }
             [self.primaryStorage setPreKeyBundle:bundle forContact:envelope.source transaction:transaction];

@@ -4,6 +4,7 @@ import NVActivityIndicatorView
 
 @objc(LKDeviceLinkingModal)
 final class DeviceLinkingModal : UIViewController, LokiDeviceLinkingSessionDelegate {
+    private var deviceLink: LokiDeviceLink?
     
     // MARK: Components
     private lazy var contentView: UIView = {
@@ -16,6 +17,8 @@ final class DeviceLinkingModal : UIViewController, LokiDeviceLinkingSessionDeleg
         result.layer.shadowOpacity = 0.64
         return result
     }()
+    
+    private lazy var topSpacer = UIView.spacer(withHeight: 8)
     
     private lazy var spinner = NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: .white, padding: nil)
     
@@ -41,6 +44,23 @@ final class DeviceLinkingModal : UIViewController, LokiDeviceLinkingSessionDeleg
         return result
     }()
     
+    private lazy var mnemonicLabel: UILabel = {
+        let result = UILabel()
+        result.textColor = Theme.primaryColor
+        result.font = UIFont.ows_dynamicTypeCaption1Clamped
+        result.text = "word word word"
+        result.numberOfLines = 0
+        result.lineBreakMode = .byWordWrapping
+        result.textAlignment = .center
+        return result
+    }()
+    
+    private lazy var authorizeButton: OWSFlatButton = {
+        let result = OWSFlatButton.button(title: NSLocalizedString("Authorize", comment: ""), font: .ows_dynamicTypeBodyClamped, titleColor: .white, backgroundColor: .clear, target: self, selector: #selector(authorizeDeviceLink))
+        result.setBackgroundColors(upColor: .clear, downColor: .clear)
+        return result
+    }()
+    
     private lazy var cancelButton: OWSFlatButton = {
         let result = OWSFlatButton.button(title: NSLocalizedString("Cancel", comment: ""), font: .ows_dynamicTypeBodyClamped, titleColor: .white, backgroundColor: .clear, target: self, selector: #selector(cancel))
         result.setBackgroundColors(upColor: .clear, downColor: .clear)
@@ -51,46 +71,45 @@ final class DeviceLinkingModal : UIViewController, LokiDeviceLinkingSessionDeleg
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpViewHierarchy()
-        LokiDeviceLinkingSession.startListeningForLinkingRequests(with: self)
+        let _ = LokiDeviceLinkingSession.startListeningForLinkingRequests(with: self)
     }
     
     private func setUpViewHierarchy() {
         view.backgroundColor = .clear
-        // Content view
         view.addSubview(contentView)
         contentView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32).isActive = true
         view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 32).isActive = true
         contentView.center(.vertical, in: view)
-        // Spinner
-        contentView.addSubview(spinner)
-        spinner.center(.horizontal, in: contentView)
-        spinner.pin(.top, to: .top, of: contentView, withInset: 32)
-        spinner.set(.width, to: 64)
+        let buttonStackView = UIStackView(arrangedSubviews: [ authorizeButton, cancelButton ])
+        buttonStackView.axis = .horizontal
+        buttonStackView.distribution = .fillEqually
+        let stackView = UIStackView(arrangedSubviews: [ topSpacer, spinner, UIView.spacer(withHeight: 8), titleLabel, subtitleLabel, mnemonicLabel, buttonStackView ])
+        stackView.spacing = 16
+        contentView.addSubview(stackView)
+        stackView.axis = .vertical
+        stackView.pin(.leading, to: .leading, of: contentView, withInset: 16)
+        stackView.pin(.top, to: .top, of: contentView, withInset: 16)
+        contentView.pin(.trailing, to: .trailing, of: stackView, withInset: 16)
+        contentView.pin(.bottom, to: .bottom, of: stackView, withInset: 16)
         spinner.set(.height, to: 64)
         spinner.startAnimating()
-        // Title label
-        contentView.addSubview(titleLabel)
-        titleLabel.pin(.leading, to: .leading, of: contentView, withInset: 16)
-        titleLabel.pin(.top, to: .bottom, of: spinner, withInset: 32)
-        contentView.pin(.trailing, to: .trailing, of: titleLabel, withInset: 16)
-        // Subtitle label
-        contentView.addSubview(subtitleLabel)
-        subtitleLabel.pin(.leading, to: .leading, of: contentView, withInset: 16)
-        subtitleLabel.pin(.top, to: .bottom, of: titleLabel, withInset: 32)
-        contentView.pin(.trailing, to: .trailing, of: subtitleLabel, withInset: 16)
-        // Cancel button
-        contentView.addSubview(cancelButton)
-        cancelButton.pin(.leading, to: .leading, of: contentView, withInset: 16)
-        cancelButton.pin(.top, to: .bottom, of: subtitleLabel, withInset: 16)
-        contentView.pin(.trailing, to: .trailing, of: cancelButton, withInset: 16)
-        contentView.pin(.bottom, to: .bottom, of: cancelButton, withInset: 16)
-        let cancelButtonHeight = cancelButton.button.titleLabel!.font.pointSize * 48 / 17
-        cancelButton.set(.height, to: cancelButtonHeight)
+        mnemonicLabel.isHidden = true
+        let buttonHeight = cancelButton.button.titleLabel!.font.pointSize * 48 / 17
+        authorizeButton.set(.height, to: buttonHeight)
+        cancelButton.set(.height, to: buttonHeight)
+        authorizeButton.isHidden = true
     }
     
     // MARK: Device Linking
     func requestUserAuthorization(for deviceLink: LokiDeviceLink) {
-        
+        self.deviceLink = deviceLink
+        self.topSpacer.isHidden = true
+        self.spinner.stopAnimating()
+        self.spinner.isHidden = true
+        self.titleLabel.text = NSLocalizedString("Linking Request Received", comment: "")
+        self.subtitleLabel.text = NSLocalizedString("Please check that the words below match the words shown on the device being linked.", comment: "")
+        self.mnemonicLabel.isHidden = false
+        self.authorizeButton.isHidden = false
     }
     
     // MARK: Interaction
@@ -102,6 +121,14 @@ final class DeviceLinkingModal : UIViewController, LokiDeviceLinkingSessionDeleg
         } else {
             cancel()
         }
+    }
+    
+    @objc private func authorizeDeviceLink() {
+        let deviceLink = self.deviceLink!
+        let session = LokiDeviceLinkingSession.current!
+        session.authorizeDeviceLink(deviceLink)
+        session.stopListeningForLinkingRequests()
+        dismiss(animated: true, completion: nil)
     }
     
     @objc private func cancel() {
