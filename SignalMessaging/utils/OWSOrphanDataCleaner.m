@@ -307,6 +307,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     NSMutableSet<NSString *> *databaseFilePaths = [NSMutableSet new];
     for (NSString *filePath in allOnDiskFilePaths) {
         if ([filePath hasPrefix:grdbDirectoryPath] || [filePath hasPrefix:ydbDirectoryPath]) {
+            OWSLogInfo(@"Protecting database file: %@", filePath);
             [databaseFilePaths addObject:filePath];
         }
     }
