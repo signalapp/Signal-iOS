@@ -45,7 +45,7 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
 - (void)useYDBForTests;
 #endif
 
-- (void)storageSetupDidComplete;
+- (void)markStorageSetupAsComplete;
 
 @end
 

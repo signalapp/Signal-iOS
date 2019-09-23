@@ -112,10 +112,6 @@ extension YDBToGRDBMigration {
         return SSKEnvironment.shared.primaryStorage
     }
 
-    private var storageCoordinator: StorageCoordinator {
-        return SSKEnvironment.shared.storageCoordinator
-    }
-
     // MARK: -
 
     func run() throws {

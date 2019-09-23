@@ -161,7 +161,7 @@ NS_ASSUME_NONNULL_BEGIN
             [SSKEnvironment.shared warmCaches];
 
             dispatch_async(dispatch_get_main_queue(), ^{
-                [storageCoordinator storageSetupDidComplete];
+                [storageCoordinator markStorageSetupAsComplete];
 
                 // Don't start database migrations until storage is ready.
                 [VersionMigrations performUpdateCheckWithCompletion:^() {

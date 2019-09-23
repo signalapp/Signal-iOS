@@ -193,7 +193,7 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
     [OWSStorage deleteDBKeys];
 }
 
-- (void)storageSetupDidComplete
+- (void)markStorageSetupAsComplete
 {
     self.isStorageSetupComplete = YES;
 
