@@ -135,7 +135,7 @@ private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeV
         self.view.backgroundColor = Theme.backgroundColor
 
         let heroImageView = UIImageView()
-        heroImageView.setImage(imageName: "introducing-pins-\(Theme.isDarkThemeEnabled ? "dark" : "light")")
+        heroImageView.setImage(imageName: Theme.isDarkThemeEnabled ? "introducing-pins-dark" : "introducing-pins-light")
         if let heroImage = heroImageView.image {
             heroImageView.autoPinToAspectRatio(with: heroImage.size)
         } else {

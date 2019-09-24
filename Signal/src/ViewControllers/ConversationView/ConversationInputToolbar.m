@@ -213,10 +213,8 @@ const CGFloat kMaxTextViewHeight = 98;
                               action:@selector(attachmentButtonPressed)
                     forControlEvents:UIControlEventTouchUpInside];
     [self.attachmentButton setTemplateImageName:@"plus-24" tintColor:Theme.primaryIconColor];
-    [self.attachmentButton
-        setImage:[UIImage imageNamed:[@"x-box-filled-28-"
-                                         stringByAppendingString:Theme.isDarkThemeEnabled ? @"dark" : @"light"]]
-        forState:UIControlStateSelected];
+    NSString *imageName = Theme.isDarkThemeEnabled ? @"x-box-filled-28-dark" : @"x-box-filled-28-light";
+    [self.attachmentButton setImage:[UIImage imageNamed:imageName] forState:UIControlStateSelected];
     [self.attachmentButton autoSetDimensionsToSize:CGSizeMake(55, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _attachmentButton);
 
