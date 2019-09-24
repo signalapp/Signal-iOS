@@ -508,8 +508,9 @@
 
 - (void)showQRCode
 {
-    QRCodeViewController *qrCodeVC = [QRCodeViewController new];
-    [self.navigationController pushViewController:qrCodeVC animated:YES];
+    LKQRCodeModal *qrCodeModal = [LKQRCodeModal new];
+    qrCodeModal.modalPresentationStyle = UIModalPresentationOverFullScreen;
+    [self presentViewController:qrCodeModal animated:YES completion:nil];
 }
 
 - (void)linkDevice
@@ -521,16 +522,9 @@
 
 - (void)showSeed
 {
-    NSString *title = NSLocalizedString(@"Your Seed", @"");
-    OWSIdentityManager *identityManager = OWSIdentityManager.sharedManager;
-    YapDatabaseConnection *databaseConnection = (YapDatabaseConnection *)[identityManager valueForKey:@"dbConnection"];
-    NSString *hexEncodedSeed = [databaseConnection objectForKey:@"LKLokiSeed" inCollection:OWSPrimaryStorageIdentityKeyStoreCollection];
-    if (hexEncodedSeed == nil) { hexEncodedSeed = identityManager.identityKeyPair.hexEncodedPrivateKey; } // Legacy account
-    NSString *mnemonic = [LKMnemonic encodeHexEncodedString:hexEncodedSeed];
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:mnemonic preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { /* Do nothing */ }]];
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Copy", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { UIPasteboard.generalPasteboard.string = mnemonic; }]];
-    [self presentAlert:alert];
+    LKSeedModal *seedModal = [LKSeedModal new];
+    seedModal.modalPresentationStyle = UIModalPresentationOverFullScreen;
+    [self presentViewController:seedModal animated:YES completion:nil];
 }
 
 - (void)clearAllData

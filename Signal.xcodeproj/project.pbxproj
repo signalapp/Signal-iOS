@@ -563,11 +563,13 @@
 		B8162F0522892C5F00D46544 /* FriendRequestViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */; };
 		B821F2F82272CED3002C88C0 /* AccountDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F72272CED3002C88C0 /* AccountDetailsViewController.swift */; };
 		B821F2FA2272CEEE002C88C0 /* SeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F92272CEEE002C88C0 /* SeedViewController.swift */; };
-		B825848B230F94FE001B41CB /* QRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825848A230F94FE001B41CB /* QRCodeViewController.swift */; };
 		B8258493230FA5E9001B41CB /* ScanQRCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B8258492230FA5E9001B41CB /* ScanQRCodeViewController.m */; };
 		B82584A02315024B001B41CB /* LokiRSSFeedPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */; };
 		B845B4D4230CD09100D759F0 /* LokiGroupChatPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B845B4D3230CD09000D759F0 /* LokiGroupChatPoller.swift */; };
 		B846365B22B7418B00AF1514 /* Identicon+ObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */; };
+		B86BD08123399883000F5AE3 /* QRCodeModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08023399883000F5AE3 /* QRCodeModal.swift */; };
+		B86BD08423399ACF000F5AE3 /* Modal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08323399ACF000F5AE3 /* Modal.swift */; };
+		B86BD08623399CEF000F5AE3 /* SeedModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08523399CEF000F5AE3 /* SeedModal.swift */; };
 		B885D5F4233491AB00EE0D8E /* DeviceLinkingModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B885D5F3233491AB00EE0D8E /* DeviceLinkingModal.swift */; };
 		B885D5F62334A32100EE0D8E /* UIView+Constraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B885D5F52334A32100EE0D8E /* UIView+Constraint.swift */; };
 		B891105C2320872800F15FCC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B891105B2320872800F15FCC /* GoogleService-Info.plist */; };
@@ -1367,12 +1369,14 @@
 		B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendRequestViewDelegate.swift; sourceTree = "<group>"; };
 		B821F2F72272CED3002C88C0 /* AccountDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDetailsViewController.swift; sourceTree = "<group>"; };
 		B821F2F92272CEEE002C88C0 /* SeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedViewController.swift; sourceTree = "<group>"; };
-		B825848A230F94FE001B41CB /* QRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeViewController.swift; sourceTree = "<group>"; };
 		B8258491230FA5DA001B41CB /* ScanQRCodeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScanQRCodeViewController.h; sourceTree = "<group>"; };
 		B8258492230FA5E9001B41CB /* ScanQRCodeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScanQRCodeViewController.m; sourceTree = "<group>"; };
 		B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokiRSSFeedPoller.swift; sourceTree = "<group>"; };
 		B845B4D3230CD09000D759F0 /* LokiGroupChatPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokiGroupChatPoller.swift; sourceTree = "<group>"; };
 		B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Identicon+ObjC.swift"; sourceTree = "<group>"; };
+		B86BD08023399883000F5AE3 /* QRCodeModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeModal.swift; sourceTree = "<group>"; };
+		B86BD08323399ACF000F5AE3 /* Modal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modal.swift; sourceTree = "<group>"; };
+		B86BD08523399CEF000F5AE3 /* SeedModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedModal.swift; sourceTree = "<group>"; };
 		B885D5F3233491AB00EE0D8E /* DeviceLinkingModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLinkingModal.swift; sourceTree = "<group>"; };
 		B885D5F52334A32100EE0D8E /* UIView+Constraint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Constraint.swift"; sourceTree = "<group>"; };
 		B891105B2320872800F15FCC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -2633,15 +2637,14 @@
 		B8439518228510E9000563FE /* Loki */ = {
 			isa = PBXGroup;
 			children = (
+				B86BD08223399ABF000F5AE3 /* Modals */,
 				B821F2F72272CED3002C88C0 /* AccountDetailsViewController.swift */,
-				B885D5F3233491AB00EE0D8E /* DeviceLinkingModal.swift */,
 				B8162F0222891AD600D46544 /* FriendRequestView.swift */,
 				B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */,
 				B845B4D3230CD09000D759F0 /* LokiGroupChatPoller.swift */,
 				24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */,
 				B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */,
 				B89841E222B7579F00B1BDC6 /* NewConversationViewController.swift */,
-				B825848A230F94FE001B41CB /* QRCodeViewController.swift */,
 				B8258491230FA5DA001B41CB /* ScanQRCodeViewController.h */,
 				B8258492230FA5E9001B41CB /* ScanQRCodeViewController.m */,
 				B821F2F92272CEEE002C88C0 /* SeedViewController.swift */,
@@ -2659,6 +2662,17 @@
 				241C6310231F5C4400B4198E /* UIColor+Helper.swift */,
 			);
 			path = Loki;
+			sourceTree = "<group>";
+		};
+		B86BD08223399ABF000F5AE3 /* Modals */ = {
+			isa = PBXGroup;
+			children = (
+				B86BD08323399ACF000F5AE3 /* Modal.swift */,
+				B885D5F3233491AB00EE0D8E /* DeviceLinkingModal.swift */,
+				B86BD08023399883000F5AE3 /* QRCodeModal.swift */,
+				B86BD08523399CEF000F5AE3 /* SeedModal.swift */,
+			);
+			path = Modals;
 			sourceTree = "<group>";
 		};
 		D221A07E169C9E5E00537ABF = {
@@ -3695,6 +3709,7 @@
 				348570A820F67575004FF32B /* OWSMessageHeaderView.m in Sources */,
 				450DF2091E0DD2C6003D14BE /* UserNotificationsAdaptee.swift in Sources */,
 				34B6A907218B5241007C4606 /* TypingIndicatorCell.swift in Sources */,
+				B86BD08123399883000F5AE3 /* QRCodeModal.swift in Sources */,
 				4CFD151D22415AA400F2450F /* CallVideoHintView.swift in Sources */,
 				34D1F0AB1F867BFC0066283D /* OWSContactOffersCell.m in Sources */,
 				343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */,
@@ -3721,7 +3736,6 @@
 				4C2F454F214C00E1004871FF /* AvatarTableViewCell.swift in Sources */,
 				346E9D5421B040B700562252 /* RegistrationController.swift in Sources */,
 				340FC8AD204DAC8D007AEB0F /* OWSLinkedDevicesTableViewController.m in Sources */,
-				B825848B230F94FE001B41CB /* QRCodeViewController.swift in Sources */,
 				340FC8AA204DAC8D007AEB0F /* NotificationSettingsViewController.m in Sources */,
 				4C090A1B210FD9C7001FD7F9 /* HapticFeedback.swift in Sources */,
 				3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */,
@@ -3746,6 +3760,7 @@
 				452037D11EE84975004E4CDF /* DebugUISessionState.m in Sources */,
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
 				3496957221A301A100DCFE74 /* OWSBackup.m in Sources */,
+				B86BD08623399CEF000F5AE3 /* SeedModal.swift in Sources */,
 				34B3F87B1E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift in Sources */,
 				3448E1622213585C004B052E /* OnboardingBaseViewController.swift in Sources */,
 				34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */,
@@ -3872,6 +3887,7 @@
 				34D1F0B01F867BFC0066283D /* OWSSystemMessageCell.m in Sources */,
 				45A663C51F92EC760027B59E /* GroupTableViewCell.swift in Sources */,
 				34CA631B2097806F00E526A0 /* OWSContactShareView.m in Sources */,
+				B86BD08423399ACF000F5AE3 /* Modal.swift in Sources */,
 				34D1F0861F8678AA0066283D /* ConversationViewController.m in Sources */,
 				3427C64320F500E000EEC730 /* OWSMessageTimerView.m in Sources */,
 				B8258493230FA5E9001B41CB /* ScanQRCodeViewController.m in Sources */,
