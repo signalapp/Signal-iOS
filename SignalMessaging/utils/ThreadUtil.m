@@ -94,13 +94,11 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     return message;
 }
 
-+ (LKDeviceLinkingMessage *)enqueueDeviceLinkingMessageInThread:(TSThread *)thread
++ (void)enqueueDeviceLinkingMessage:(LKDeviceLinkingMessage *)message
 {
-    LKDeviceLinkingMessage *message = [[LKDeviceLinkingMessage alloc] initInThread:thread];
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self.messageSenderJobQueue addMessage:message transaction:transaction];
     }];
-    return message;
 }
 
 + (TSOutgoingMessage *)enqueueMessageWithText:(NSString *)fullMessageText

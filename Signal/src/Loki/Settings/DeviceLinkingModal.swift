@@ -61,7 +61,8 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         super.init(nibName: nil, bundle: nil)
     }
     
-    @objc convenience init(modeAsString: String, delegate: DeviceLinkingModalDelegate?) {
+    @objc(initWithMode:delegate:)
+    convenience init(modeAsString: String, delegate: DeviceLinkingModalDelegate?) {
         guard let mode = Mode(rawValue: modeAsString) else { preconditionFailure("Invalid mode: \(modeAsString).") }
         self.init(mode: mode, delegate: delegate)
     }
@@ -110,10 +111,6 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         contentView.pin(.bottom, to: .bottom, of: stackView, withInset: 16)
     }
     
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
     // MARK: Device Linking
     func requestUserAuthorization(for deviceLink: DeviceLink) {
         self.deviceLink = deviceLink
@@ -128,9 +125,10 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     
     @objc private func authorizeDeviceLink() {
         let deviceLink = self.deviceLink!
+        let linkingAuthorizationMessage = DeviceLinkingUtilities.getLinkingAuthorizationMessage(for: deviceLink)
+        ThreadUtil.enqueue(linkingAuthorizationMessage)
         let session = DeviceLinkingSession.current!
         session.stopListeningForLinkingRequests()
-        // TODO: Send device link authorized message
         dismiss(animated: true, completion: nil)
     }
     

@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class LKDeviceLinkingMessage;
 @class OWSBlockingManager;
 @class OWSContact;
 @class OWSContactsManager;
@@ -45,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Durable Message Enqueue
 
 + (TSOutgoingMessage *)enqueueFriendRequestAcceptanceMessageInThread:(TSThread *)thread;
-+ (TSOutgoingMessage *)enqueueDeviceLinkingMessageInThread:(TSThread *)thread;
++ (void)enqueueDeviceLinkingMessage:(LKDeviceLinkingMessage *)message;
 
 + (TSOutgoingMessage *)enqueueMessageWithText:(NSString *)fullMessageText
                                      inThread:(TSThread *)thread

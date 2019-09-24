@@ -7,29 +7,30 @@
 
 @implementation LKDeviceLinkingMessage
 
-- (instancetype)initInThread:(nullable TSThread *)thread {
-    return [self initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:@"" attachmentIds:[NSMutableArray<NSString *> new]
+- (instancetype)initInThread:(TSThread *)thread masterHexEncodedPublicKey:(NSString *)masterHexEncodedPublicKey slaveHexEncodedPublicKey:(NSString *)slaveHexEncodedPublicKey masterSignature:(NSData *)masterSignature slaveSignature:(NSData *)slaveSignature {
+    self = [self initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:@"" attachmentIds:[NSMutableArray<NSString *> new]
         expiresInSeconds:0 expireStartedAt:0 isVoiceMessage:NO groupMetaMessage:TSGroupMetaMessageUnspecified quotedMessage:nil contactShare:nil linkPreview:nil];
+    if (self) {
+        _masterHexEncodedPublicKey = masterHexEncodedPublicKey;
+        _slaveHexEncodedPublicKey = slaveHexEncodedPublicKey;
+        _masterSignature = masterSignature;
+        _slaveSignature = slaveSignature;
+    }
+    return self;
 }
 
 - (SSKProtoContentBuilder *)contentBuilder:(SignalRecipient *)recipient {
-    SSKProtoContentBuilder *contentBuilder = [super contentBuilder:recipient];
-    // When authorizing a device link, the master device signs the slave device's public key. When requesting
-    // a device link, the slave device signs the master device's public key.
     SSKProtoLokiDeviceLinkingMessageBuilder *deviceLinkingMessageBuilder = [SSKProtoLokiDeviceLinkingMessage builder];
-    NSString *masterHexEncodedPublicKey = recipient.recipientId;
-    NSData *masterPublicKey = [NSData dataFromHexString:masterHexEncodedPublicKey];
-    [deviceLinkingMessageBuilder setMasterHexEncodedPublicKey:masterHexEncodedPublicKey];
-    ECKeyPair *slaveKeyPair = OWSIdentityManager.sharedManager.identityKeyPair;
-    NSString *slaveHexEncodedPublicKey = slaveKeyPair.hexEncodedPublicKey;
-    [deviceLinkingMessageBuilder setSlaveHexEncodedPublicKey:slaveHexEncodedPublicKey];
-    NSData *slaveSignature = [Ed25519 sign:masterPublicKey withKeyPair:slaveKeyPair error:nil];
-    [deviceLinkingMessageBuilder setSlaveSignature:slaveSignature];
+    [deviceLinkingMessageBuilder setMasterHexEncodedPublicKey:self.masterHexEncodedPublicKey];
+    [deviceLinkingMessageBuilder setSlaveHexEncodedPublicKey:self.slaveHexEncodedPublicKey];
+    if (self.masterSignature != nil) { [deviceLinkingMessageBuilder setMasterSignature:self.masterSignature]; }
+    [deviceLinkingMessageBuilder setSlaveSignature:self.slaveSignature];
     NSError *error;
     SSKProtoLokiDeviceLinkingMessage *deviceLinkingMessage = [deviceLinkingMessageBuilder buildAndReturnError:&error];
     if (error || deviceLinkingMessage == nil) {
-        OWSFailDebug(@"Failed to build device linking message for: %@ due to error: %@", masterHexEncodedPublicKey, error);
+        OWSFailDebug(@"Failed to build device linking message for: %@ due to error: %@", self.masterHexEncodedPublicKey, error);
     }
+    SSKProtoContentBuilder *contentBuilder = [super contentBuilder:recipient];
     [contentBuilder setLokiDeviceLinkingMessage:deviceLinkingMessage];
     return contentBuilder;
 }
