@@ -1,7 +1,7 @@
 
 // TODO: Split this into multiple VCs
 
-final class SeedVC : OnboardingBaseViewController {
+final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
     private var mode: Mode = .register { didSet { if mode != oldValue { handleModeChanged() } } }
     private var seed: Data! { didSet { updateMnemonic() } }
     private var mnemonic: String! { didSet { handleMnemonicChanged() } }
@@ -124,7 +124,7 @@ final class SeedVC : OnboardingBaseViewController {
     }()
     
     private lazy var explanationLabel3: UILabel = {
-        let result = createExplanationLabel(text: NSLocalizedString("Link an existing device by going into Loki Messenger's in-app settings and clicking \"Link Device\".", comment: ""))
+        let result = createExplanationLabel(text: NSLocalizedString("Link to an existing device by going into Loki Messenger's in-app settings and clicking \"Link Device\".", comment: ""))
         result.accessibilityIdentifier = "onboarding.keyPairStep.explanationLabel3"
         result.textColor = Theme.primaryColor
         var fontTraits = result.font.fontDescriptor.symbolicTraits
@@ -302,7 +302,7 @@ final class SeedVC : OnboardingBaseViewController {
         var seed: Data
         let mode = self.mode
         switch mode {
-        case .register, .link: seed = self.seed
+        case .register: seed = self.seed
         case .restore:
             let mnemonic = mnemonicTextField.text!
             do {
@@ -312,6 +312,13 @@ final class SeedVC : OnboardingBaseViewController {
                 let error = error as? Mnemonic.DecodingError ?? Mnemonic.DecodingError.generic
                 errorLabel1Spacer.isHidden = false
                 return errorLabel1.text = error.errorDescription
+            }
+        case .link:
+            seed = self.seed
+            let hexEncodedPublicKey = masterHexEncodedPublicKeyTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces)
+            if !ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) {
+                errorLabel2Spacer.isHidden = false
+                return errorLabel2.text = NSLocalizedString("Invalid public key", comment: "")
             }
         }
         // Use KVC to access dbConnection even though it's private
@@ -330,8 +337,17 @@ final class SeedVC : OnboardingBaseViewController {
         case .link: Analytics.shared.track("Device Linked")
         }
         if mode == .link {
-            
+            let deviceLinkingModal = DeviceLinkingModal(mode: .slave, delegate: self)
+            deviceLinkingModal.modalPresentationStyle = .overFullScreen
+            present(deviceLinkingModal, animated: true, completion: nil)
+        } else {
+            onboardingController.pushDisplayNameVC(from: self)
         }
-        onboardingController.pushDisplayNameVC(from: self)
+    }
+    
+    func handleDeviceLinked() {
+        TSAccountManager.sharedInstance().didRegister()
+        UserDefaults.standard.set(true, forKey: "didUpdateForMainnet")
+        onboardingController.verificationDidComplete(fromView: self)
     }
 }

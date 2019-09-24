@@ -570,6 +570,7 @@
 		B86BD08123399883000F5AE3 /* QRCodeModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08023399883000F5AE3 /* QRCodeModal.swift */; };
 		B86BD08423399ACF000F5AE3 /* Modal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08323399ACF000F5AE3 /* Modal.swift */; };
 		B86BD08623399CEF000F5AE3 /* SeedModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08523399CEF000F5AE3 /* SeedModal.swift */; };
+		B86BD08C2339AE43000F5AE3 /* DeviceLinkingModalDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08B2339AE43000F5AE3 /* DeviceLinkingModalDelegate.swift */; };
 		B885D5F4233491AB00EE0D8E /* DeviceLinkingModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B885D5F3233491AB00EE0D8E /* DeviceLinkingModal.swift */; };
 		B885D5F62334A32100EE0D8E /* UIView+Constraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B885D5F52334A32100EE0D8E /* UIView+Constraint.swift */; };
 		B891105C2320872800F15FCC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B891105B2320872800F15FCC /* GoogleService-Info.plist */; };
@@ -1377,6 +1378,7 @@
 		B86BD08023399883000F5AE3 /* QRCodeModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeModal.swift; sourceTree = "<group>"; };
 		B86BD08323399ACF000F5AE3 /* Modal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modal.swift; sourceTree = "<group>"; };
 		B86BD08523399CEF000F5AE3 /* SeedModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedModal.swift; sourceTree = "<group>"; };
+		B86BD08B2339AE43000F5AE3 /* DeviceLinkingModalDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLinkingModalDelegate.swift; sourceTree = "<group>"; };
 		B885D5F3233491AB00EE0D8E /* DeviceLinkingModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLinkingModal.swift; sourceTree = "<group>"; };
 		B885D5F52334A32100EE0D8E /* UIView+Constraint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Constraint.swift"; sourceTree = "<group>"; };
 		B891105B2320872800F15FCC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -2666,6 +2668,7 @@
 			isa = PBXGroup;
 			children = (
 				B885D5F3233491AB00EE0D8E /* DeviceLinkingModal.swift */,
+				B86BD08B2339AE43000F5AE3 /* DeviceLinkingModalDelegate.swift */,
 				B86BD08023399883000F5AE3 /* QRCodeModal.swift */,
 				B86BD08523399CEF000F5AE3 /* SeedModal.swift */,
 			);
@@ -3910,6 +3913,7 @@
 				45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */,
 				34D1F0B01F867BFC0066283D /* OWSSystemMessageCell.m in Sources */,
 				45A663C51F92EC760027B59E /* GroupTableViewCell.swift in Sources */,
+				B86BD08C2339AE43000F5AE3 /* DeviceLinkingModalDelegate.swift in Sources */,
 				34CA631B2097806F00E526A0 /* OWSContactShareView.m in Sources */,
 				B86BD08423399ACF000F5AE3 /* Modal.swift in Sources */,
 				34D1F0861F8678AA0066283D /* ConversationViewController.m in Sources */,

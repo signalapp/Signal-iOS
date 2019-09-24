@@ -2,7 +2,12 @@ import NVActivityIndicatorView
 
 @objc(LKDeviceLinkingModal)
 final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
+    private let mode: Mode
+    private let delegate: DeviceLinkingModalDelegate?
     private var deviceLink: DeviceLink?
+    
+    // MARK: Types
+    enum Mode : String { case master, slave }
     
     // MARK: Components
     private lazy var topSpacer = UIView.spacer(withHeight: 8)
@@ -13,7 +18,6 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         let result = UILabel()
         result.textColor = Theme.primaryColor
         result.font = UIFont.ows_dynamicTypeHeadlineClamped
-        result.text = NSLocalizedString("Waiting for Device", comment: "")
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
         result.textAlignment = .center
@@ -24,7 +28,6 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         let result = UILabel()
         result.textColor = Theme.primaryColor
         result.font = UIFont.ows_dynamicTypeCaption1Clamped
-        result.text = NSLocalizedString("Click the \"Link Device\" button on your other device to start the linking process", comment: "")
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
         result.textAlignment = .center
@@ -49,6 +52,23 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     }()
     
     // MARK: Lifecycle
+    init(mode: Mode, delegate: DeviceLinkingModalDelegate?) {
+        self.mode = mode
+        if mode == .slave {
+            guard delegate != nil else { preconditionFailure("Missing delegate for device linking modal in slave mode.") }
+        }
+        self.delegate = delegate
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @objc convenience init(modeAsString: String, delegate: DeviceLinkingModalDelegate?) {
+        guard let mode = Mode(rawValue: modeAsString) else { preconditionFailure("Invalid mode: \(modeAsString).") }
+        self.init(mode: mode, delegate: delegate)
+    }
+    
+    required init?(coder: NSCoder) { preconditionFailure() }
+    override init(nibName: String?, bundle: Bundle?) { preconditionFailure() }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         let _ = DeviceLinkingSession.startListeningForLinkingRequests(with: self)
@@ -64,7 +84,19 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         buttonStackView.distribution = .fillEqually
         spinner.set(.height, to: 64)
         spinner.startAnimating()
-        mnemonicLabel.isHidden = true
+        titleLabel.text = {
+            switch mode {
+            case .master: return NSLocalizedString("Waiting for Device", comment: "")
+            case .slave: return NSLocalizedString("Waiting for Authorization", comment: "")
+            }
+        }()
+        subtitleLabel.text = {
+            switch mode {
+            case .master: return NSLocalizedString("Click the \"Link Device\" button on your other device to start the linking process", comment: "")
+            case .slave: return NSLocalizedString("Please verify that the words below match the ones shown on your other device.", comment: "")
+            }
+        }()
+        mnemonicLabel.isHidden = (mode == .master)
         let buttonHeight = cancelButton.button.titleLabel!.font.pointSize * 48 / 17
         authorizeButton.set(.height, to: buttonHeight)
         cancelButton.set(.height, to: buttonHeight)

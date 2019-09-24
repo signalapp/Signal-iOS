@@ -515,7 +515,7 @@
 
 - (void)linkDevice
 {
-    LKDeviceLinkingModal *deviceLinkingModal = [LKDeviceLinkingModal new];
+    LKDeviceLinkingModal *deviceLinkingModal = [[LKDeviceLinkingModal alloc] initWithModeAsString:@"master" delegate:nil];
     deviceLinkingModal.modalPresentationStyle = UIModalPresentationOverFullScreen;
     [self presentViewController:deviceLinkingModal animated:YES completion:nil];
 }
