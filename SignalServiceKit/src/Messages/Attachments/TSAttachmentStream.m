@@ -500,6 +500,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
             OWSLogVerbose(@"Updating isValidImageCached.");
             self.isValidImageCached = @([NSData ows_isValidImageAtPath:self.originalFilePath
                                                               mimeType:self.contentType]);
+            if (!self.isValidImageCached) {
+                OWSLogWarn(@"Invalid image.");
+            }
             didUpdateCache = YES;
         }
         result = self.isValidImageCached.boolValue;
@@ -529,6 +532,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         if (!self.isValidVideoCached) {
             OWSLogVerbose(@"Updating isValidVideoCached.");
             self.isValidVideoCached = @([OWSMediaUtils isValidVideoWithPath:self.originalFilePath]);
+            if (!self.isValidVideoCached) {
+                OWSLogWarn(@"Invalid video.");
+            }
             didUpdateCache = YES;
         }
         result = self.isValidVideoCached.boolValue;
@@ -889,6 +895,15 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                                                                      success:(OWSLoadedThumbnailSuccess)success
                                                                      failure:(OWSThumbnailFailure)failure
 {
+    if (!self.isValidVisualMedia) {
+        // Never thumbnail (or try to use the original of) invalid media.
+        OWSFailDebug(@"Invalid image.");
+        // Any time we return nil from this method we have to call the failure handler
+        // or else the caller waits for an async thumbnail
+        failure();
+        return nil;
+    }
+
     CGSize originalSize = self.imageSize;
     if (originalSize.width < 1 || originalSize.height < 1) {
         // Any time we return nil from this method we have to call the failure handler
