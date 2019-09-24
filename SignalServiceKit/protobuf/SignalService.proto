@@ -66,7 +66,7 @@ message Content {
   optional TypingMessage            typingMessage       = 6;
   optional PrekeyBundleMessage      prekeyBundleMessage = 101; // Loki
   optional LokiAddressMessage       lokiAddressMessage  = 102; // Loki
-  optional LokiDeviceLinkingMessage lokiDeviceLinkingMessage = 103; // Loki
+  optional LokiDeviceLinkMessage    lokiDeviceLinkMessage = 103; // Loki
 }
 
 message PrekeyBundleMessage { // Loki
@@ -86,11 +86,11 @@ message LokiAddressMessage { // Loki
   optional uint32 ptpPort     = 2;
 }
 
-message LokiDeviceLinkingMessage { // Loki
+message LokiDeviceLinkMessage { // Loki
   enum Type {
     REQUEST = 1;
-    GRANT = 2;
-    REVOKE = 3;
+    AUTHORIZATION = 2;
+    REVOCATION = 3;
   }
   optional string masterHexEncodedPublicKey = 1;
   optional string slaveHexEncodedPublicKey  = 2;

@@ -94,7 +94,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     return message;
 }
 
-+ (void)enqueueDeviceLinkingMessage:(LKDeviceLinkingMessage *)message
++ (void)enqueueDeviceLinkMessage:(LKDeviceLinkMessage *)message
 {
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self.messageSenderJobQueue addMessage:message transaction:transaction];

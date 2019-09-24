@@ -20,7 +20,7 @@
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "LKEphemeralMessage.h"
-#import "LKDeviceLinkingMessage.h"
+#import "LKDeviceLinkMessage.h"
 #import "OWSIdentityManager.h"
 #import "OWSIncomingMessageFinder.h"
 #import "OWSIncomingSentMessageTranscript.h"
@@ -429,20 +429,20 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogInfo(@"handling content: <Content: %@>", [self descriptionForContent:contentProto]);
         
         // Loki: Handle device linking message
-        if (contentProto.lokiDeviceLinkingMessage != nil) {
-            NSString *masterHexEncodedPublicKey = contentProto.lokiDeviceLinkingMessage.masterHexEncodedPublicKey;
-            NSString *slaveHexEncodedPublicKey = contentProto.lokiDeviceLinkingMessage.slaveHexEncodedPublicKey;
-            NSData *slaveSignature = contentProto.lokiDeviceLinkingMessage.slaveSignature;
-            switch (contentProto.lokiDeviceLinkingMessage.type) {
-                case SSKProtoLokiDeviceLinkingMessageTypeRequest: {
+        if (contentProto.lokiDeviceLinkMessage != nil) {
+            NSString *masterHexEncodedPublicKey = contentProto.lokiDeviceLinkMessage.masterHexEncodedPublicKey;
+            NSString *slaveHexEncodedPublicKey = contentProto.lokiDeviceLinkMessage.slaveHexEncodedPublicKey;
+            NSData *slaveSignature = contentProto.lokiDeviceLinkMessage.slaveSignature;
+            switch (contentProto.lokiDeviceLinkMessage.type) {
+                case SSKProtoLokiDeviceLinkMessageTypeRequest: {
                     OWSLogInfo(@"[Loki] Received a device linking request from: %@", envelope.source); // Not slaveHexEncodedPublicKey
                     if (slaveSignature == nil) { OWSFailDebug(@"Received a device linking request from: %@ without a slave signature.", envelope.source); }
                     [LKDeviceLinkingSession.current processLinkingRequestFrom:slaveHexEncodedPublicKey to:masterHexEncodedPublicKey with:slaveSignature];
                     break;
                 }
-                case SSKProtoLokiDeviceLinkingMessageTypeGrant: {
+                case SSKProtoLokiDeviceLinkMessageTypeAuthorization: {
                     OWSLogInfo(@"[Loki] Received a device linking authorization from: %@", envelope.source); // Not slaveHexEncodedPublicKey
-                    NSData *masterSignature = contentProto.lokiDeviceLinkingMessage.masterSignature;
+                    NSData *masterSignature = contentProto.lokiDeviceLinkMessage.masterSignature;
                     if (masterSignature == nil) { OWSFailDebug(@"Received a device linking authorization from: %@ without a master signature.", envelope.source); }
                     if (slaveSignature == nil) { OWSFailDebug(@"Received a device linking authorization from: %@ without a slave signature.", envelope.source); }
                     [LKDeviceLinkingSession.current processLinkingAuthorizationFrom:masterHexEncodedPublicKey for:slaveHexEncodedPublicKey masterSignature:masterSignature slaveSignature:slaveSignature];
@@ -1597,7 +1597,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)handleDeviceLinkingMessageIfNeeded:(TSIncomingMessage *)message transaction:(YapDatabaseReadWriteTransaction *)transaction {
+- (void)handleDeviceLinkMessageIfNeeded:(TSIncomingMessage *)message transaction:(YapDatabaseReadWriteTransaction *)transaction {
     
 }
 

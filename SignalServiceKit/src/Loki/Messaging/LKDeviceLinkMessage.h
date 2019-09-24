@@ -1,7 +1,7 @@
 #import "TSOutgoingMessage.h"
 
-NS_SWIFT_NAME(DeviceLinkingMessage)
-@interface LKDeviceLinkingMessage : TSOutgoingMessage
+NS_SWIFT_NAME(DeviceLinkMessage)
+@interface LKDeviceLinkMessage : TSOutgoingMessage
 
 @property (nonatomic, readonly) NSString *masterHexEncodedPublicKey;
 @property (nonatomic, readonly) NSString *slaveHexEncodedPublicKey;

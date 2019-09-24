@@ -472,8 +472,8 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
         if let _value = lokiAddressMessage {
             builder.setLokiAddressMessage(_value)
         }
-        if let _value = lokiDeviceLinkingMessage {
-            builder.setLokiDeviceLinkingMessage(_value)
+        if let _value = lokiDeviceLinkMessage {
+            builder.setLokiDeviceLinkMessage(_value)
         }
         return builder
     }
@@ -516,8 +516,8 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
             proto.lokiAddressMessage = valueParam.proto
         }
 
-        @objc public func setLokiDeviceLinkingMessage(_ valueParam: SSKProtoLokiDeviceLinkingMessage) {
-            proto.lokiDeviceLinkingMessage = valueParam.proto
+        @objc public func setLokiDeviceLinkMessage(_ valueParam: SSKProtoLokiDeviceLinkMessage) {
+            proto.lokiDeviceLinkMessage = valueParam.proto
         }
 
         @objc public func build() throws -> SSKProtoContent {
@@ -547,7 +547,7 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
 
     @objc public let lokiAddressMessage: SSKProtoLokiAddressMessage?
 
-    @objc public let lokiDeviceLinkingMessage: SSKProtoLokiDeviceLinkingMessage?
+    @objc public let lokiDeviceLinkMessage: SSKProtoLokiDeviceLinkMessage?
 
     private init(proto: SignalServiceProtos_Content,
                  dataMessage: SSKProtoDataMessage?,
@@ -558,7 +558,7 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
                  typingMessage: SSKProtoTypingMessage?,
                  prekeyBundleMessage: SSKProtoPrekeyBundleMessage?,
                  lokiAddressMessage: SSKProtoLokiAddressMessage?,
-                 lokiDeviceLinkingMessage: SSKProtoLokiDeviceLinkingMessage?) {
+                 lokiDeviceLinkMessage: SSKProtoLokiDeviceLinkMessage?) {
         self.proto = proto
         self.dataMessage = dataMessage
         self.syncMessage = syncMessage
@@ -568,7 +568,7 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
         self.typingMessage = typingMessage
         self.prekeyBundleMessage = prekeyBundleMessage
         self.lokiAddressMessage = lokiAddressMessage
-        self.lokiDeviceLinkingMessage = lokiDeviceLinkingMessage
+        self.lokiDeviceLinkMessage = lokiDeviceLinkMessage
     }
 
     @objc
@@ -622,9 +622,9 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
             lokiAddressMessage = try SSKProtoLokiAddressMessage.parseProto(proto.lokiAddressMessage)
         }
 
-        var lokiDeviceLinkingMessage: SSKProtoLokiDeviceLinkingMessage? = nil
-        if proto.hasLokiDeviceLinkingMessage {
-            lokiDeviceLinkingMessage = try SSKProtoLokiDeviceLinkingMessage.parseProto(proto.lokiDeviceLinkingMessage)
+        var lokiDeviceLinkMessage: SSKProtoLokiDeviceLinkMessage? = nil
+        if proto.hasLokiDeviceLinkMessage {
+            lokiDeviceLinkMessage = try SSKProtoLokiDeviceLinkMessage.parseProto(proto.lokiDeviceLinkMessage)
         }
 
         // MARK: - Begin Validation Logic for SSKProtoContent -
@@ -640,7 +640,7 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
                                      typingMessage: typingMessage,
                                      prekeyBundleMessage: prekeyBundleMessage,
                                      lokiAddressMessage: lokiAddressMessage,
-                                     lokiDeviceLinkingMessage: lokiDeviceLinkingMessage)
+                                     lokiDeviceLinkMessage: lokiDeviceLinkMessage)
         return result
     }
 
@@ -960,43 +960,43 @@ extension SSKProtoLokiAddressMessage.SSKProtoLokiAddressMessageBuilder {
 
 #endif
 
-// MARK: - SSKProtoLokiDeviceLinkingMessage
+// MARK: - SSKProtoLokiDeviceLinkMessage
 
-@objc public class SSKProtoLokiDeviceLinkingMessage: NSObject {
+@objc public class SSKProtoLokiDeviceLinkMessage: NSObject {
 
-    // MARK: - SSKProtoLokiDeviceLinkingMessageType
+    // MARK: - SSKProtoLokiDeviceLinkMessageType
 
-    @objc public enum SSKProtoLokiDeviceLinkingMessageType: Int32 {
+    @objc public enum SSKProtoLokiDeviceLinkMessageType: Int32 {
         case request = 1
-        case grant = 2
-        case revoke = 3
+        case authorization = 2
+        case revocation = 3
     }
 
-    private class func SSKProtoLokiDeviceLinkingMessageTypeWrap(_ value: SignalServiceProtos_LokiDeviceLinkingMessage.TypeEnum) -> SSKProtoLokiDeviceLinkingMessageType {
+    private class func SSKProtoLokiDeviceLinkMessageTypeWrap(_ value: SignalServiceProtos_LokiDeviceLinkMessage.TypeEnum) -> SSKProtoLokiDeviceLinkMessageType {
         switch value {
         case .request: return .request
-        case .grant: return .grant
-        case .revoke: return .revoke
+        case .authorization: return .authorization
+        case .revocation: return .revocation
         }
     }
 
-    private class func SSKProtoLokiDeviceLinkingMessageTypeUnwrap(_ value: SSKProtoLokiDeviceLinkingMessageType) -> SignalServiceProtos_LokiDeviceLinkingMessage.TypeEnum {
+    private class func SSKProtoLokiDeviceLinkMessageTypeUnwrap(_ value: SSKProtoLokiDeviceLinkMessageType) -> SignalServiceProtos_LokiDeviceLinkMessage.TypeEnum {
         switch value {
         case .request: return .request
-        case .grant: return .grant
-        case .revoke: return .revoke
+        case .authorization: return .authorization
+        case .revocation: return .revocation
         }
     }
 
-    // MARK: - SSKProtoLokiDeviceLinkingMessageBuilder
+    // MARK: - SSKProtoLokiDeviceLinkMessageBuilder
 
-    @objc public class func builder() -> SSKProtoLokiDeviceLinkingMessageBuilder {
-        return SSKProtoLokiDeviceLinkingMessageBuilder()
+    @objc public class func builder() -> SSKProtoLokiDeviceLinkMessageBuilder {
+        return SSKProtoLokiDeviceLinkMessageBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> SSKProtoLokiDeviceLinkingMessageBuilder {
-        let builder = SSKProtoLokiDeviceLinkingMessageBuilder()
+    @objc public func asBuilder() -> SSKProtoLokiDeviceLinkMessageBuilder {
+        let builder = SSKProtoLokiDeviceLinkMessageBuilder()
         if let _value = masterHexEncodedPublicKey {
             builder.setMasterHexEncodedPublicKey(_value)
         }
@@ -1015,9 +1015,9 @@ extension SSKProtoLokiAddressMessage.SSKProtoLokiAddressMessageBuilder {
         return builder
     }
 
-    @objc public class SSKProtoLokiDeviceLinkingMessageBuilder: NSObject {
+    @objc public class SSKProtoLokiDeviceLinkMessageBuilder: NSObject {
 
-        private var proto = SignalServiceProtos_LokiDeviceLinkingMessage()
+        private var proto = SignalServiceProtos_LokiDeviceLinkMessage()
 
         @objc fileprivate override init() {}
 
@@ -1037,20 +1037,20 @@ extension SSKProtoLokiAddressMessage.SSKProtoLokiAddressMessageBuilder {
             proto.slaveSignature = valueParam
         }
 
-        @objc public func setType(_ valueParam: SSKProtoLokiDeviceLinkingMessageType) {
-            proto.type = SSKProtoLokiDeviceLinkingMessageTypeUnwrap(valueParam)
+        @objc public func setType(_ valueParam: SSKProtoLokiDeviceLinkMessageType) {
+            proto.type = SSKProtoLokiDeviceLinkMessageTypeUnwrap(valueParam)
         }
 
-        @objc public func build() throws -> SSKProtoLokiDeviceLinkingMessage {
-            return try SSKProtoLokiDeviceLinkingMessage.parseProto(proto)
+        @objc public func build() throws -> SSKProtoLokiDeviceLinkMessage {
+            return try SSKProtoLokiDeviceLinkMessage.parseProto(proto)
         }
 
         @objc public func buildSerializedData() throws -> Data {
-            return try SSKProtoLokiDeviceLinkingMessage.parseProto(proto).serializedData()
+            return try SSKProtoLokiDeviceLinkMessage.parseProto(proto).serializedData()
         }
     }
 
-    fileprivate let proto: SignalServiceProtos_LokiDeviceLinkingMessage
+    fileprivate let proto: SignalServiceProtos_LokiDeviceLinkMessage
 
     @objc public var masterHexEncodedPublicKey: String? {
         guard proto.hasMasterHexEncodedPublicKey else {
@@ -1092,14 +1092,14 @@ extension SSKProtoLokiAddressMessage.SSKProtoLokiAddressMessageBuilder {
         return proto.hasSlaveSignature
     }
 
-    @objc public var type: SSKProtoLokiDeviceLinkingMessageType {
-        return SSKProtoLokiDeviceLinkingMessage.SSKProtoLokiDeviceLinkingMessageTypeWrap(proto.type)
+    @objc public var type: SSKProtoLokiDeviceLinkMessageType {
+        return SSKProtoLokiDeviceLinkMessage.SSKProtoLokiDeviceLinkMessageTypeWrap(proto.type)
     }
     @objc public var hasType: Bool {
         return proto.hasType
     }
 
-    private init(proto: SignalServiceProtos_LokiDeviceLinkingMessage) {
+    private init(proto: SignalServiceProtos_LokiDeviceLinkMessage) {
         self.proto = proto
     }
 
@@ -1108,17 +1108,17 @@ extension SSKProtoLokiAddressMessage.SSKProtoLokiAddressMessageBuilder {
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoLokiDeviceLinkingMessage {
-        let proto = try SignalServiceProtos_LokiDeviceLinkingMessage(serializedData: serializedData)
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoLokiDeviceLinkMessage {
+        let proto = try SignalServiceProtos_LokiDeviceLinkMessage(serializedData: serializedData)
         return try parseProto(proto)
     }
 
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_LokiDeviceLinkingMessage) throws -> SSKProtoLokiDeviceLinkingMessage {
-        // MARK: - Begin Validation Logic for SSKProtoLokiDeviceLinkingMessage -
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_LokiDeviceLinkMessage) throws -> SSKProtoLokiDeviceLinkMessage {
+        // MARK: - Begin Validation Logic for SSKProtoLokiDeviceLinkMessage -
 
-        // MARK: - End Validation Logic for SSKProtoLokiDeviceLinkingMessage -
+        // MARK: - End Validation Logic for SSKProtoLokiDeviceLinkMessage -
 
-        let result = SSKProtoLokiDeviceLinkingMessage(proto: proto)
+        let result = SSKProtoLokiDeviceLinkMessage(proto: proto)
         return result
     }
 
@@ -1129,14 +1129,14 @@ extension SSKProtoLokiAddressMessage.SSKProtoLokiAddressMessageBuilder {
 
 #if DEBUG
 
-extension SSKProtoLokiDeviceLinkingMessage {
+extension SSKProtoLokiDeviceLinkMessage {
     @objc public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
-extension SSKProtoLokiDeviceLinkingMessage.SSKProtoLokiDeviceLinkingMessageBuilder {
-    @objc public func buildIgnoringErrors() -> SSKProtoLokiDeviceLinkingMessage? {
+extension SSKProtoLokiDeviceLinkMessage.SSKProtoLokiDeviceLinkMessageBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoLokiDeviceLinkMessage? {
         return try! self.build()
     }
 }

@@ -354,14 +354,14 @@ struct SignalServiceProtos_Content {
   mutating func clearLokiAddressMessage() {_uniqueStorage()._lokiAddressMessage = nil}
 
   /// Loki
-  var lokiDeviceLinkingMessage: SignalServiceProtos_LokiDeviceLinkingMessage {
-    get {return _storage._lokiDeviceLinkingMessage ?? SignalServiceProtos_LokiDeviceLinkingMessage()}
-    set {_uniqueStorage()._lokiDeviceLinkingMessage = newValue}
+  var lokiDeviceLinkMessage: SignalServiceProtos_LokiDeviceLinkMessage {
+    get {return _storage._lokiDeviceLinkMessage ?? SignalServiceProtos_LokiDeviceLinkMessage()}
+    set {_uniqueStorage()._lokiDeviceLinkMessage = newValue}
   }
-  /// Returns true if `lokiDeviceLinkingMessage` has been explicitly set.
-  var hasLokiDeviceLinkingMessage: Bool {return _storage._lokiDeviceLinkingMessage != nil}
-  /// Clears the value of `lokiDeviceLinkingMessage`. Subsequent reads from it will return its default value.
-  mutating func clearLokiDeviceLinkingMessage() {_uniqueStorage()._lokiDeviceLinkingMessage = nil}
+  /// Returns true if `lokiDeviceLinkMessage` has been explicitly set.
+  var hasLokiDeviceLinkMessage: Bool {return _storage._lokiDeviceLinkMessage != nil}
+  /// Clears the value of `lokiDeviceLinkMessage`. Subsequent reads from it will return its default value.
+  mutating func clearLokiDeviceLinkMessage() {_uniqueStorage()._lokiDeviceLinkMessage = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -487,7 +487,7 @@ struct SignalServiceProtos_LokiAddressMessage {
 }
 
 /// Loki
-struct SignalServiceProtos_LokiDeviceLinkingMessage {
+struct SignalServiceProtos_LokiDeviceLinkMessage {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -528,7 +528,7 @@ struct SignalServiceProtos_LokiDeviceLinkingMessage {
   /// Clears the value of `slaveSignature`. Subsequent reads from it will return its default value.
   mutating func clearSlaveSignature() {self._slaveSignature = nil}
 
-  var type: SignalServiceProtos_LokiDeviceLinkingMessage.TypeEnum {
+  var type: SignalServiceProtos_LokiDeviceLinkMessage.TypeEnum {
     get {return _type ?? .request}
     set {_type = newValue}
   }
@@ -542,8 +542,8 @@ struct SignalServiceProtos_LokiDeviceLinkingMessage {
   enum TypeEnum: SwiftProtobuf.Enum {
     typealias RawValue = Int
     case request // = 1
-    case grant // = 2
-    case revoke // = 3
+    case authorization // = 2
+    case revocation // = 3
 
     init() {
       self = .request
@@ -552,8 +552,8 @@ struct SignalServiceProtos_LokiDeviceLinkingMessage {
     init?(rawValue: Int) {
       switch rawValue {
       case 1: self = .request
-      case 2: self = .grant
-      case 3: self = .revoke
+      case 2: self = .authorization
+      case 3: self = .revocation
       default: return nil
       }
     }
@@ -561,8 +561,8 @@ struct SignalServiceProtos_LokiDeviceLinkingMessage {
     var rawValue: Int {
       switch self {
       case .request: return 1
-      case .grant: return 2
-      case .revoke: return 3
+      case .authorization: return 2
+      case .revocation: return 3
       }
     }
 
@@ -574,12 +574,12 @@ struct SignalServiceProtos_LokiDeviceLinkingMessage {
   fileprivate var _slaveHexEncodedPublicKey: String? = nil
   fileprivate var _masterSignature: Data? = nil
   fileprivate var _slaveSignature: Data? = nil
-  fileprivate var _type: SignalServiceProtos_LokiDeviceLinkingMessage.TypeEnum? = nil
+  fileprivate var _type: SignalServiceProtos_LokiDeviceLinkMessage.TypeEnum? = nil
 }
 
 #if swift(>=4.2)
 
-extension SignalServiceProtos_LokiDeviceLinkingMessage.TypeEnum: CaseIterable {
+extension SignalServiceProtos_LokiDeviceLinkMessage.TypeEnum: CaseIterable {
   // Support synthesized by the compiler.
 }
 
@@ -2811,7 +2811,7 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
     6: .same(proto: "typingMessage"),
     101: .same(proto: "prekeyBundleMessage"),
     102: .same(proto: "lokiAddressMessage"),
-    103: .same(proto: "lokiDeviceLinkingMessage"),
+    103: .same(proto: "lokiDeviceLinkMessage"),
   ]
 
   fileprivate class _StorageClass {
@@ -2823,7 +2823,7 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
     var _typingMessage: SignalServiceProtos_TypingMessage? = nil
     var _prekeyBundleMessage: SignalServiceProtos_PrekeyBundleMessage? = nil
     var _lokiAddressMessage: SignalServiceProtos_LokiAddressMessage? = nil
-    var _lokiDeviceLinkingMessage: SignalServiceProtos_LokiDeviceLinkingMessage? = nil
+    var _lokiDeviceLinkMessage: SignalServiceProtos_LokiDeviceLinkMessage? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -2838,7 +2838,7 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
       _typingMessage = source._typingMessage
       _prekeyBundleMessage = source._prekeyBundleMessage
       _lokiAddressMessage = source._lokiAddressMessage
-      _lokiDeviceLinkingMessage = source._lokiDeviceLinkingMessage
+      _lokiDeviceLinkMessage = source._lokiDeviceLinkMessage
     }
   }
 
@@ -2862,7 +2862,7 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
         case 6: try decoder.decodeSingularMessageField(value: &_storage._typingMessage)
         case 101: try decoder.decodeSingularMessageField(value: &_storage._prekeyBundleMessage)
         case 102: try decoder.decodeSingularMessageField(value: &_storage._lokiAddressMessage)
-        case 103: try decoder.decodeSingularMessageField(value: &_storage._lokiDeviceLinkingMessage)
+        case 103: try decoder.decodeSingularMessageField(value: &_storage._lokiDeviceLinkMessage)
         default: break
         }
       }
@@ -2895,7 +2895,7 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
       if let v = _storage._lokiAddressMessage {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 102)
       }
-      if let v = _storage._lokiDeviceLinkingMessage {
+      if let v = _storage._lokiDeviceLinkMessage {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 103)
       }
     }
@@ -2915,7 +2915,7 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
         if _storage._typingMessage != rhs_storage._typingMessage {return false}
         if _storage._prekeyBundleMessage != rhs_storage._prekeyBundleMessage {return false}
         if _storage._lokiAddressMessage != rhs_storage._lokiAddressMessage {return false}
-        if _storage._lokiDeviceLinkingMessage != rhs_storage._lokiDeviceLinkingMessage {return false}
+        if _storage._lokiDeviceLinkMessage != rhs_storage._lokiDeviceLinkMessage {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -3025,8 +3025,8 @@ extension SignalServiceProtos_LokiAddressMessage: SwiftProtobuf.Message, SwiftPr
   }
 }
 
-extension SignalServiceProtos_LokiDeviceLinkingMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".LokiDeviceLinkingMessage"
+extension SignalServiceProtos_LokiDeviceLinkMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".LokiDeviceLinkMessage"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "masterHexEncodedPublicKey"),
     2: .same(proto: "slaveHexEncodedPublicKey"),
@@ -3067,7 +3067,7 @@ extension SignalServiceProtos_LokiDeviceLinkingMessage: SwiftProtobuf.Message, S
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: SignalServiceProtos_LokiDeviceLinkingMessage, rhs: SignalServiceProtos_LokiDeviceLinkingMessage) -> Bool {
+  static func ==(lhs: SignalServiceProtos_LokiDeviceLinkMessage, rhs: SignalServiceProtos_LokiDeviceLinkMessage) -> Bool {
     if lhs._masterHexEncodedPublicKey != rhs._masterHexEncodedPublicKey {return false}
     if lhs._slaveHexEncodedPublicKey != rhs._slaveHexEncodedPublicKey {return false}
     if lhs._masterSignature != rhs._masterSignature {return false}
@@ -3078,11 +3078,11 @@ extension SignalServiceProtos_LokiDeviceLinkingMessage: SwiftProtobuf.Message, S
   }
 }
 
-extension SignalServiceProtos_LokiDeviceLinkingMessage.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+extension SignalServiceProtos_LokiDeviceLinkMessage.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "REQUEST"),
-    2: .same(proto: "GRANT"),
-    3: .same(proto: "REVOKE"),
+    2: .same(proto: "AUTHORIZATION"),
+    3: .same(proto: "REVOCATION"),
   ]
 }
 

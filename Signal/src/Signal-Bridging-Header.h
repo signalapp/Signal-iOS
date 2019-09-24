@@ -91,7 +91,7 @@
 #import <SignalServiceKit/OWSDispatch.h>
 #import <SignalServiceKit/OWSEndSessionMessage.h>
 #import <SignalServiceKit/LKEphemeralMessage.h>
-#import <SignalServiceKit/LKDeviceLinkingMessage.h>
+#import <SignalServiceKit/LKDeviceLinkMessage.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/LKFriendRequestMessage.h>
