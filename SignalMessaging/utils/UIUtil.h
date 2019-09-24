@@ -2,7 +2,6 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/UIImage+OWS.h>

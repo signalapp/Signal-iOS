@@ -9,7 +9,6 @@
 #import "OWSNavigationController.h"
 #import "Signal-Swift.h"
 #import "SignalsNavigationController.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalCoreKit/NSDate+OWS.h>
@@ -406,8 +405,8 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     } else {
         self.saveButton.enabled = NO;
         [self.saveButton
-            setBackgroundColorsWithUpColor:[[UIColor ows_signalBrandBlueColor] blendWithColor:Theme.backgroundColor
-                                                                                        alpha:0.5f]];
+            setBackgroundColorsWithUpColor:[[UIColor ows_signalBrandBlueColor] blendedWithColor:Theme.backgroundColor
+                                                                                          alpha:0.5f]];
     }
 }
 

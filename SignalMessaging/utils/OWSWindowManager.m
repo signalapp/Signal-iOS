@@ -4,7 +4,6 @@
 
 #import "OWSWindowManager.h"
 #import "Environment.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>

@@ -9,7 +9,6 @@
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
-#import "UIColor+OWS.h"
 #import "UIView+OWS.h"
 #import <MessageUI/MessageUI.h>
 #import <SignalMessaging/Environment.h>

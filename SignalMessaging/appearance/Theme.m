@@ -3,8 +3,8 @@
 //
 
 #import "Theme.h"
-#import "UIColor+OWS.h"
 #import "UIUtil.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 

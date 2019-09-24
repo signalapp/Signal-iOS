@@ -10,7 +10,6 @@
 #import "ViewControllerUtils.h"
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/OWSFormat.h>
-#import <SignalMessaging/UIColor+OWS.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 

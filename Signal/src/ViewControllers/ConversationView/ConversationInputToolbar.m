@@ -8,7 +8,6 @@
 #import "OWSContactsManager.h"
 #import "OWSMath.h"
 #import "Signal-Swift.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>

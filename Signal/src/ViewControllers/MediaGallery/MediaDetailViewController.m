@@ -10,7 +10,6 @@
 #import "Signal-Swift.h"
 #import "TSAttachmentStream.h"
 #import "TSInteraction.h"
-#import "UIColor+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
 #import <AVKit/AVKit.h>

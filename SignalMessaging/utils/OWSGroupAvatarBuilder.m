@@ -5,7 +5,6 @@
 #import "OWSGroupAvatarBuilder.h"
 #import "OWSContactsManager.h"
 #import "TSGroupThread.h"
-#import "UIColor+OWS.h"
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/SSKEnvironment.h>
