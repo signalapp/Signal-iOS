@@ -3,7 +3,6 @@
 //
 
 #import "ConversationViewItem.h"
-#import "OWSAudioMessageView.h"
 #import "OWSContactOffersCell.h"
 #import "OWSMessageCell.h"
 #import "OWSMessageHeaderView.h"
@@ -110,7 +109,6 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 
 #pragma mark - OWSAudioPlayerDelegate
 
-@property (nonatomic) AudioPlaybackState audioPlaybackState;
 @property (nonatomic) CGFloat audioProgressSeconds;
 @property (nonatomic) CGFloat audioDurationSeconds;
 
@@ -156,6 +154,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 @synthesize senderUsername = _senderUsername;
 @synthesize accessibilityAuthorName = _accessibilityAuthorName;
 @synthesize shouldHideFooter = _shouldHideFooter;
+@synthesize audioPlaybackState = _audioPlaybackState;
 
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
                              thread:(TSThread *)thread
@@ -631,6 +630,11 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 }
 
 #pragma mark - OWSAudioPlayerDelegate
+
+- (AudioPlaybackState)audioPlaybackState
+{
+    return _audioPlaybackState;
+}
 
 - (void)setAudioPlaybackState:(AudioPlaybackState)audioPlaybackState
 {

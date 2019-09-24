@@ -12,8 +12,7 @@ typedef NS_ENUM(NSInteger, AudioPlaybackState) {
 
 @protocol OWSAudioPlayerDelegate <NSObject>
 
-- (AudioPlaybackState)audioPlaybackState;
-- (void)setAudioPlaybackState:(AudioPlaybackState)state;
+@property (nonatomic) AudioPlaybackState audioPlaybackState;
 
 - (void)setAudioProgress:(CGFloat)progress duration:(CGFloat)duration;
 

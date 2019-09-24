@@ -35,15 +35,6 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     public var videoPlayButton: UIImageView?
 
     @objc
-    public var playbackState = AudioPlaybackState.stopped {
-        didSet {
-            AssertIsOnMainThread()
-
-            ensureButtonState()
-        }
-    }
-
-    @objc
     public var audioProgressSeconds: CGFloat = 0
 
     @objc
@@ -398,16 +389,17 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
 
     // MARK: - OWSAudioPlayerDelegate
 
-    public func audioPlaybackState() -> AudioPlaybackState {
-        return playbackState
-    }
+    @objc
+    public var audioPlaybackState = AudioPlaybackState.stopped {
+        didSet {
+            AssertIsOnMainThread()
 
-    public func setAudioPlaybackState(_ value: AudioPlaybackState) {
-        playbackState = value
+            ensureButtonState()
+        }
     }
 
     private func ensureButtonState() {
-        if playbackState == .playing {
+        if audioPlaybackState == .playing {
             setAudioIconToPause()
         } else {
             setAudioIconToPlay()

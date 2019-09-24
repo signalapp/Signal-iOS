@@ -41,7 +41,7 @@ def shared_pods
   pod 'SQLCipher', ">= 4.0.1"
 
   # Forked for performance optimizations that are not likely to be upstreamed as they are specific
-  # to our limited use of Mantle 
+  # to our limited use of Mantle
   pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master'
   # pod 'Mantle', path: '../Mantle'
 
@@ -63,6 +63,7 @@ def shared_pods
   pod 'AFNetworking', inhibit_warnings: true
   pod 'PureLayout', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true
+  pod 'lottie-ios', :inhibit_warnings => true
 end
 
 target 'Signal' do
@@ -105,15 +106,15 @@ def enable_extension_support_for_purelayout(installer)
   end
 end
 
-# We want some warning to be treated as errors. 
+# We want some warning to be treated as errors.
 #
 # NOTE: We have to manually keep this list in sync with what's in our
-# Signal.xcodeproj config in Xcode go to: 
+# Signal.xcodeproj config in Xcode go to:
 #   Signal Project > Build Settings > Other Warning Flags
 def configure_warning_flags(installer)
   installer.pods_project.targets.each do |target|
       target.build_configurations.each do |build_configuration|
-          build_configuration.build_settings['WARNING_CFLAGS'] = ['$(inherited)', 
+          build_configuration.build_settings['WARNING_CFLAGS'] = ['$(inherited)',
                                                                   '-Werror=incompatible-pointer-types',
                                                                   '-Werror=protocol',
                                                                   '-Werror=incomplete-implementation',
@@ -126,7 +127,7 @@ def configure_testable_build(installer)
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |build_configuration|
       next unless ["Testable Release", "Debug"].include?(build_configuration.name)
- 
+
       build_configuration.build_settings['OTHER_CFLAGS'] ||= '$(inherited) -DTESTABLE_BUILD'
       build_configuration.build_settings['OTHER_SWIFT_FLAGS'] ||= '$(inherited) -DTESTABLE_BUILD'
       build_configuration.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= '$(inherited) TESTABLE_BUILD=1'
