@@ -373,7 +373,8 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                                           OWSFailDebug(@"attachment has no file path.");
                                       }
 
-                                      [allAttachmentFilePaths addObjectsFromArray:attachmentStream.allThumbnailPaths];
+                                      [allAttachmentFilePaths
+                                          addObjectsFromArray:attachmentStream.allSecondaryFilePaths];
                                   }];
 
         if (shouldAbort) {
