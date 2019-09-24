@@ -301,10 +301,23 @@ class GRDBFullTextSearchFinder: NSObject {
         return type(of: model).collection()
     }
 
+    private static let serialQueue = DispatchQueue(label: "org.signal.fts")
+    // This should only be accessed on serialQueue.
+    private static let ftsCache: NSCache<NSString, NSString> = NSCache()
+
+    private class func cacheKey(collection: String, uniqueId: String) -> String {
+        return "\(collection).\(uniqueId)"
+    }
+
     public class func modelWasInserted(model: SDSModel, transaction: GRDBWriteTransaction) {
         let uniqueId = model.uniqueId
         let collection = self.collection(forModel: model)
         let ftsContent = AnySearchIndexer.indexContent(object: model, transaction: transaction.asAnyRead) ?? ""
+
+        serialQueue.sync {
+            let cacheKey = self.cacheKey(collection: collection, uniqueId: uniqueId)
+            ftsCache.setObject(ftsContent as NSString, forKey: cacheKey as NSString)
+        }
 
         executeUpdate(
             sql: """
@@ -322,6 +335,20 @@ class GRDBFullTextSearchFinder: NSObject {
         let collection = self.collection(forModel: model)
         let ftsContent = AnySearchIndexer.indexContent(object: model, transaction: transaction.asAnyRead) ?? ""
 
+        let shouldSkipUpdate: Bool = serialQueue.sync {
+            let cacheKey = self.cacheKey(collection: collection, uniqueId: uniqueId)
+            if let cachedValue = ftsCache.object(forKey: cacheKey as NSString),
+                (cachedValue as String) == ftsContent {
+                return true
+            }
+            ftsCache.setObject(ftsContent as NSString, forKey: cacheKey as NSString)
+            return false
+        }
+        guard !shouldSkipUpdate else {
+            Logger.verbose("Skipping FTS update")
+            return
+        }
+
         executeUpdate(
             sql: """
             UPDATE \(databaseTableName)
@@ -337,6 +364,11 @@ class GRDBFullTextSearchFinder: NSObject {
         let uniqueId = model.uniqueId
         let collection = self.collection(forModel: model)
 
+        serialQueue.sync {
+            let cacheKey = self.cacheKey(collection: collection, uniqueId: uniqueId)
+            ftsCache.removeObject(forKey: cacheKey as NSString)
+        }
+
         executeUpdate(
             sql: """
             DELETE FROM \(databaseTableName)
@@ -348,6 +380,11 @@ class GRDBFullTextSearchFinder: NSObject {
     }
 
     public class func allModelsWereRemoved(collection: String, transaction: GRDBWriteTransaction) {
+
+        serialQueue.sync {
+            ftsCache.removeAllObjects()
+        }
+
         executeUpdate(
             sql: """
             DELETE FROM \(databaseTableName)
