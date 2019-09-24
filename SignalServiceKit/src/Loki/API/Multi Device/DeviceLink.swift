@@ -1,6 +1,6 @@
 
 @objc(LKDeviceLink)
-public final class LokiDeviceLink : NSObject, NSCoding {
+public final class DeviceLink : NSObject, NSCoding {
     @objc public let master: Device
     @objc public let slave: Device
     
@@ -61,7 +61,7 @@ public final class LokiDeviceLink : NSObject, NSCoding {
     
     // MARK: Equality
     @objc override public func isEqual(_ other: Any?) -> Bool {
-        guard let other = other as? LokiDeviceLink else { return false }
+        guard let other = other as? DeviceLink else { return false }
         return master == other.master && slave == other.slave
     }
     

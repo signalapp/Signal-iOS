@@ -5,22 +5,22 @@ extension OWSPrimaryStorage {
         return "LokiDeviceLinkCollection-\(primaryDevice)"
     }
     
-    public func storeDeviceLink(_ deviceLink: LokiDeviceLink, in transaction: YapDatabaseReadWriteTransaction) {
+    public func storeDeviceLink(_ deviceLink: DeviceLink, in transaction: YapDatabaseReadWriteTransaction) {
         let collection = getCollection(for: deviceLink.master.hexEncodedPublicKey)
         transaction.setObject(deviceLink, forKey: deviceLink.slave.hexEncodedPublicKey, inCollection: collection)
     }
     
-    public func getDeviceLinks(for masterHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> [LokiDeviceLink] {
+    public func getDeviceLinks(for masterHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> [DeviceLink] {
         let collection = getCollection(for: masterHexEncodedPublicKey)
-        var result: [LokiDeviceLink] = []
+        var result: [DeviceLink] = []
         transaction.enumerateRows(inCollection: collection) { _, object, _, _ in
-            guard let deviceLink = object as? LokiDeviceLink else { return }
+            guard let deviceLink = object as? DeviceLink else { return }
             result.append(deviceLink)
         }
         return result
     }
     
-    public func getDeviceLink(for slaveHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> LokiDeviceLink? {
+    public func getDeviceLink(for slaveHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> DeviceLink? {
         let query = YapDatabaseQuery(string: "WHERE \(DeviceLinkIndex.slaveHexEncodedPublicKey) = ?", parameters: [ slaveHexEncodedPublicKey ])
         let deviceLinks = DeviceLinkIndex.getDeviceLinks(for: query, in: transaction)
         guard deviceLinks.count <= 1 else {

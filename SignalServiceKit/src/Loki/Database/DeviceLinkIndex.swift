@@ -14,7 +14,7 @@ public final class DeviceLinkIndex : NSObject {
         setup.addColumn(slaveHexEncodedPublicKey, with: .text)
         setup.addColumn(isAuthorized, with: .integer)
         let handler = YapDatabaseSecondaryIndexHandler.withObjectBlock { _, map, _, _, object in
-            guard let deviceLink = object as? LokiDeviceLink else { return }
+            guard let deviceLink = object as? DeviceLink else { return }
             map[masterHexEncodedPublicKey] = deviceLink.master.hexEncodedPublicKey
             map[slaveHexEncodedPublicKey] = deviceLink.slave.hexEncodedPublicKey
             map[isAuthorized] = deviceLink.isAuthorized
@@ -28,14 +28,14 @@ public final class DeviceLinkIndex : NSObject {
         storage.asyncRegister(indexDatabaseExtension, withName: name)
     }
     
-    @objc public static func getDeviceLinks(for query: YapDatabaseQuery, in transaction: YapDatabaseReadTransaction) -> [LokiDeviceLink] {
+    @objc public static func getDeviceLinks(for query: YapDatabaseQuery, in transaction: YapDatabaseReadTransaction) -> [DeviceLink] {
         guard let ext = transaction.ext(DeviceLinkIndex.name) as? YapDatabaseSecondaryIndexTransaction else {
             print("[Loki] Couldn't get device link index database extension.")
             return []
         }
-        var result: [LokiDeviceLink] = []
+        var result: [DeviceLink] = []
         ext.enumerateKeysAndObjects(matching: query) { _, _, object, _ in
-            guard let deviceLink = object as? LokiDeviceLink else { return }
+            guard let deviceLink = object as? DeviceLink else { return }
             result.append(deviceLink)
         }
         return result

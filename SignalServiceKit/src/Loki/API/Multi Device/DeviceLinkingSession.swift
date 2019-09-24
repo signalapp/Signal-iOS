@@ -2,46 +2,46 @@ import Curve25519Kit
 import PromiseKit
 
 @objc (LKDeviceLinkingSession)
-public final class LokiDeviceLinkingSession : NSObject {
-    private let delegate: LokiDeviceLinkingSessionDelegate
+public final class DeviceLinkingSession : NSObject {
+    private let delegate: DeviceLinkingSessionDelegate
     @objc public var isListeningForLinkingRequests = false
     
     // MARK: Lifecycle
-    @objc public static var current: LokiDeviceLinkingSession?
+    @objc public static var current: DeviceLinkingSession?
     
-    private init(delegate: LokiDeviceLinkingSessionDelegate) {
+    private init(delegate: DeviceLinkingSessionDelegate) {
         self.delegate = delegate
     }
 
     // MARK: Public API
-    public static func startListeningForLinkingRequests(with delegate: LokiDeviceLinkingSessionDelegate) -> LokiDeviceLinkingSession {
-        let session = LokiDeviceLinkingSession(delegate: delegate)
+    public static func startListeningForLinkingRequests(with delegate: DeviceLinkingSessionDelegate) -> DeviceLinkingSession {
+        let session = DeviceLinkingSession(delegate: delegate)
         session.isListeningForLinkingRequests = true
-        LokiDeviceLinkingSession.current = session
+        DeviceLinkingSession.current = session
         return session
     }
     
     @objc public func processLinkingRequest(from slaveHexEncodedPublicKey: String, with slaveSignature: Data) {
         guard isListeningForLinkingRequests else { return }
         stopListeningForLinkingRequests()
-        let master = LokiDeviceLink.Device(hexEncodedPublicKey: OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey)
-        let slave = LokiDeviceLink.Device(hexEncodedPublicKey: slaveHexEncodedPublicKey, signature: slaveSignature)
-        let deviceLink = LokiDeviceLink(between: master, and: slave)
+        let master = DeviceLink.Device(hexEncodedPublicKey: OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey)
+        let slave = DeviceLink.Device(hexEncodedPublicKey: slaveHexEncodedPublicKey, signature: slaveSignature)
+        let deviceLink = DeviceLink(between: master, and: slave)
         guard isValidLinkingRequest(deviceLink) else { return }
         delegate.requestUserAuthorization(for: deviceLink)
     }
     
     public func stopListeningForLinkingRequests() {
-        LokiDeviceLinkingSession.current = nil
+        DeviceLinkingSession.current = nil
         isListeningForLinkingRequests = false
     }
     
-    public func authorizeDeviceLink(_ deviceLink: LokiDeviceLink) {
+    public func authorizeDeviceLink(_ deviceLink: DeviceLink) {
         // TODO: Send a device link authorized message
     }
     
     // MARK: Private API
-    private func isValidLinkingRequest(_ deviceLink: LokiDeviceLink) -> Bool {
+    private func isValidLinkingRequest(_ deviceLink: DeviceLink) -> Bool {
         // When requesting a device link, the slave device signs the master device's public key. When authorizing
         // a device link, the master device signs the slave device's public key.
         let slaveSignature = deviceLink.slave.signature!

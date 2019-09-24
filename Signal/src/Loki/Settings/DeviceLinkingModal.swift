@@ -1,8 +1,8 @@
 import NVActivityIndicatorView
 
 @objc(LKDeviceLinkingModal)
-final class DeviceLinkingModal : Modal, LokiDeviceLinkingSessionDelegate {
-    private var deviceLink: LokiDeviceLink?
+final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
+    private var deviceLink: DeviceLink?
     
     // MARK: Components
     private lazy var topSpacer = UIView.spacer(withHeight: 8)
@@ -51,7 +51,7 @@ final class DeviceLinkingModal : Modal, LokiDeviceLinkingSessionDelegate {
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        let _ = LokiDeviceLinkingSession.startListeningForLinkingRequests(with: self)
+        let _ = DeviceLinkingSession.startListeningForLinkingRequests(with: self)
     }
     
     override func populateContentView() {
@@ -76,7 +76,7 @@ final class DeviceLinkingModal : Modal, LokiDeviceLinkingSessionDelegate {
     }
     
     // MARK: Device Linking
-    func requestUserAuthorization(for deviceLink: LokiDeviceLink) {
+    func requestUserAuthorization(for deviceLink: DeviceLink) {
         self.deviceLink = deviceLink
         self.topSpacer.isHidden = true
         self.spinner.stopAnimating()
@@ -89,7 +89,7 @@ final class DeviceLinkingModal : Modal, LokiDeviceLinkingSessionDelegate {
     
     @objc private func authorizeDeviceLink() {
         let deviceLink = self.deviceLink!
-        let session = LokiDeviceLinkingSession.current!
+        let session = DeviceLinkingSession.current!
         session.authorizeDeviceLink(deviceLink)
         session.stopListeningForLinkingRequests()
         dismiss(animated: true, completion: nil)
