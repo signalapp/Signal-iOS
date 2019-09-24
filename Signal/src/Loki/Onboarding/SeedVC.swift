@@ -1,7 +1,7 @@
 
-// TODO: Split this into multiple VCs?
+// TODO: Split this into multiple VCs
 
-final class SeedViewController : OnboardingBaseViewController {
+final class SeedVC : OnboardingBaseViewController {
     private var mode: Mode = .register { didSet { if mode != oldValue { handleModeChanged() } } }
     private var seed: Data! { didSet { updateMnemonic() } }
     private var mnemonic: String! { didSet { handleMnemonicChanged() } }
@@ -332,6 +332,6 @@ final class SeedViewController : OnboardingBaseViewController {
         if mode == .link {
             
         }
-        onboardingController.pushAccountDetailsViewController(from: self)
+        onboardingController.pushDisplayNameVC(from: self)
     }
 }

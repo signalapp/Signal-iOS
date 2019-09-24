@@ -1,6 +1,6 @@
 
 @objc(LKGroupChatPoller)
-public final class LokiGroupChatPoller : NSObject {
+public final class GroupChatPoller : NSObject {
     private let group: LokiGroupChat
     private var pollForNewMessagesTimer: Timer? = nil
     private var pollForDeletedMessagesTimer: Timer? = nil

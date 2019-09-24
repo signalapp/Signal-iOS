@@ -1,7 +1,7 @@
 import FeedKit
 
 @objc(LKRSSFeedPoller)
-public final class LokiRSSFeedPoller : NSObject {
+public final class RSSFeedPoller : NSObject {
     private let feed: LokiRSSFeed
     private var timer: Timer? = nil
     private var hasStarted = false
