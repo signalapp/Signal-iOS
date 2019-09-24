@@ -2,6 +2,7 @@ import PromiseKit
 
 @objc(LKAPI)
 public final class LokiAPI : NSObject {
+    private static var lastDeviceLinkUpdate: [String:Date] = [:] // Hex encoded public key to date
     internal static let storage = OWSPrimaryStorage.shared()
     
     // MARK: Convenience
@@ -14,6 +15,7 @@ public final class LokiAPI : NSObject {
     private static let maxRetryCount: UInt = 8
     private static let defaultTimeout: TimeInterval = 20
     private static let longPollingTimeout: TimeInterval = 40
+    private static let deviceLinkUpdateInterval: TimeInterval = 8 * 60
     public static let defaultMessageTTL: UInt64 = 24 * 60 * 60 * 1000
     internal static var powDifficulty: UInt = 40
     
@@ -31,6 +33,13 @@ public final class LokiAPI : NSObject {
             case .messageConversionFailed: return "Failed to convert Signal message to Loki message."
             }
         }
+    }
+    
+    internal struct Destination {
+        internal let hexEncodedPublicKey: String
+        internal let kind: Kind
+        
+        enum Kind { case master, slave }
     }
     
     public typealias MessageListPromise = Promise<[SSKProtoEnvelope]>
@@ -109,6 +118,37 @@ public final class LokiAPI : NSObject {
         }
     }
     
+    internal static func getDestinations(for hexEncodedPublicKey: String) -> Promise<[Destination]> {
+        let (promise, seal) = Promise<[Destination]>.pending()
+        func getDestinations() {
+            storage.dbReadConnection.read { transaction in
+                var destinations: [Destination] = []
+                let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
+                let masterDestination = Destination(hexEncodedPublicKey: masterHexEncodedPublicKey, kind: .master)
+                destinations.append(masterDestination)
+                let deviceLinks = storage.getDeviceLinks(for: masterHexEncodedPublicKey, in: transaction)
+                let slaveDestinations = deviceLinks.map { Destination(hexEncodedPublicKey: $0.slave.hexEncodedPublicKey, kind: .slave) }
+                destinations.append(contentsOf: slaveDestinations)
+                seal.fulfill(destinations)
+            }
+        }
+        let timeSinceLastUpdate: TimeInterval
+        if let lastDeviceLinkUpdate = lastDeviceLinkUpdate[hexEncodedPublicKey] {
+            timeSinceLastUpdate = Date().timeIntervalSince(lastDeviceLinkUpdate)
+        } else {
+            timeSinceLastUpdate = .infinity
+        }
+        if timeSinceLastUpdate > deviceLinkUpdateInterval {
+            storage.dbReadConnection.read { transaction in
+                let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
+                LokiStorageAPI.getDeviceLinks(associatedWith: masterHexEncodedPublicKey).done { _ in getDestinations() }.catch { seal.reject($0) }
+            }
+        } else {
+            getDestinations()
+        }
+        return promise
+    }
+    
     // MARK: Public API
     public static func getMessages() -> Promise<Set<MessageListPromise>> {
         return getTargetSnodes(for: userHexEncodedPublicKey).mapValues { targetSnode in
@@ -117,17 +157,17 @@ public final class LokiAPI : NSObject {
     }
     
     public static func sendSignalMessage(_ signalMessage: SignalMessage, onP2PSuccess: @escaping () -> Void) -> Promise<Set<RawResponsePromise>> {
-        let result = internalSendSignalMessage(signalMessage, onP2PSuccess: onP2PSuccess)
-        // Use a best attempt approach for multi device for now
-        // TODO: Caching & get master links if this is a slave
-        LokiStorageAPI.getDeviceLinks(associatedWith: signalMessage.recipientID).done { deviceLinks in
-            let associatedHexEncodedPublicKeys = Set(deviceLinks.flatMap { [ $0.master.hexEncodedPublicKey, $0.slave.hexEncodedPublicKey ] }).subtracting([ signalMessage.recipientID ])
-            associatedHexEncodedPublicKeys.forEach { hexEncodedPublicKey in
-                let signalMessageCopy = signalMessage.copy(with: hexEncodedPublicKey)
+        return getDestinations(for: signalMessage.recipientID).then { destinations -> Promise<Set<RawResponsePromise>> in
+            // Use a best attempt approach for multi device for now
+            let slaveDestinations = destinations.filter { $0.kind == .slave }
+            slaveDestinations.forEach { destination in
+                let signalMessageCopy = signalMessage.copy(with: destination.hexEncodedPublicKey)
                 internalSendSignalMessage(signalMessageCopy) { }
             }
+            let masterDestination = destinations.first { $0.kind == .master }!
+            let signalMessageCopy = signalMessage.copy(with: masterDestination.hexEncodedPublicKey)
+            return internalSendSignalMessage(signalMessage, onP2PSuccess: onP2PSuccess)
         }
-        return result
     }
     
     // MARK: Public API (Obj-C)
