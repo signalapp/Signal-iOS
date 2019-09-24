@@ -38,7 +38,6 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         let result = UILabel()
         result.textColor = Theme.primaryColor
         result.font = UIFont.ows_dynamicTypeCaption1Clamped
-        result.text = "word word word"
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
         result.textAlignment = .center
@@ -101,6 +100,10 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
             }
         }()
         mnemonicLabel.isHidden = (mode == .master)
+        if mode == .slave {
+            let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+            mnemonicLabel.text = Mnemonic.encode(hexEncodedString: hexEncodedPublicKey).split(separator: " ")[0..<3].joined(separator: " ")
+        }
         let buttonHeight = cancelButton.button.titleLabel!.font.pointSize * 48 / 17
         authorizeButton.set(.height, to: buttonHeight)
         cancelButton.set(.height, to: buttonHeight)
@@ -114,13 +117,14 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     // MARK: Device Linking
     func requestUserAuthorization(for deviceLink: DeviceLink) {
         self.deviceLink = deviceLink
-        self.topSpacer.isHidden = true
-        self.spinner.stopAnimating()
-        self.spinner.isHidden = true
-        self.titleLabel.text = NSLocalizedString("Linking Request Received", comment: "")
-        self.subtitleLabel.text = NSLocalizedString("Please check that the words below match the words shown on the device being linked.", comment: "")
-        self.mnemonicLabel.isHidden = false
-        self.authorizeButton.isHidden = false
+        topSpacer.isHidden = true
+        spinner.stopAnimating()
+        spinner.isHidden = true
+        titleLabel.text = NSLocalizedString("Linking Request Received", comment: "")
+        subtitleLabel.text = NSLocalizedString("Please check that the words below match the words shown on the device being linked.", comment: "")
+        mnemonicLabel.text = Mnemonic.encode(hexEncodedString: deviceLink.slave.hexEncodedPublicKey).split(separator: " ")[0..<3].joined(separator: " ")
+        mnemonicLabel.isHidden = false
+        authorizeButton.isHidden = false
     }
     
     @objc private func authorizeDeviceLink() {

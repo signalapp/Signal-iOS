@@ -8,6 +8,7 @@ NS_SWIFT_NAME(DeviceLinkMessage)
 @property (nonatomic, readonly) NSData *masterSignature; // nil for device linking requests
 @property (nonatomic, readonly) NSData *slaveSignature;
 
-- (instancetype)initInThread:(TSThread *)thread masterHexEncodedPublicKey:(NSString *)masterHexEncodedPublicKey slaveHexEncodedPublicKey:(NSString *)slaveHexEncodedPublicKey masterSignature:(NSData *)masterSignature slaveSignature:(NSData *)slaveSignature;
+- (instancetype)initInThread:(TSThread *)thread masterHexEncodedPublicKey:(NSString *)masterHexEncodedPublicKey slaveHexEncodedPublicKey:(NSString *)slaveHexEncodedPublicKey
+    masterSignature:(NSData *)masterSignature slaveSignature:(NSData *)slaveSignature;
 
 @end

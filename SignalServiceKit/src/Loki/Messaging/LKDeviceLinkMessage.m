@@ -7,7 +7,8 @@
 
 @implementation LKDeviceLinkMessage
 
-- (instancetype)initInThread:(TSThread *)thread masterHexEncodedPublicKey:(NSString *)masterHexEncodedPublicKey slaveHexEncodedPublicKey:(NSString *)slaveHexEncodedPublicKey masterSignature:(NSData *)masterSignature slaveSignature:(NSData *)slaveSignature {
+- (instancetype)initInThread:(TSThread *)thread masterHexEncodedPublicKey:(NSString *)masterHexEncodedPublicKey slaveHexEncodedPublicKey:(NSString *)slaveHexEncodedPublicKey
+    masterSignature:(NSData *)masterSignature slaveSignature:(NSData *)slaveSignature {
     self = [self initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:@"" attachmentIds:[NSMutableArray<NSString *> new]
         expiresInSeconds:0 expireStartedAt:0 isVoiceMessage:NO groupMetaMessage:TSGroupMetaMessageUnspecified quotedMessage:nil contactShare:nil linkPreview:nil];
     if (self) {
@@ -28,7 +29,7 @@
     NSError *error;
     SSKProtoLokiDeviceLinkMessage *deviceLinkMessage = [deviceLinkMessageBuilder buildAndReturnError:&error];
     if (error || deviceLinkMessage == nil) {
-        OWSFailDebug(@"Failed to build device linking message for: %@ due to error: %@", self.masterHexEncodedPublicKey, error);
+        OWSFailDebug(@"Failed to build device link message due to error: %@", error);
     }
     SSKProtoContentBuilder *contentBuilder = [super contentBuilder:recipient];
     [contentBuilder setLokiDeviceLinkMessage:deviceLinkMessage];
