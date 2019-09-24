@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     OWSAssertDebug(backImage);
     [backButton setImage:backImage forState:UIControlStateNormal];
-    backButton.tintColor = Theme.navbarIconColor;
+    backButton.tintColor = Theme.primaryIconColor;
 
     backButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
 

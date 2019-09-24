@@ -94,7 +94,7 @@ private class OnboardingCodeView: UIView {
         textfield.textAlignment = .left
         textfield.delegate = self
         textfield.keyboardType = .numberPad
-        textfield.textColor = Theme.primaryColor
+        textfield.textColor = Theme.primaryTextColor
         textfield.font = UIFont.ows_dynamicTypeLargeTitle1Clamped
         textfield.codeDelegate = self
 
@@ -128,12 +128,12 @@ private class OnboardingCodeView: UIView {
         let digitLabel = UILabel()
         digitLabel.text = text
         digitLabel.font = UIFont.ows_dynamicTypeLargeTitle1Clamped
-        digitLabel.textColor = Theme.primaryColor
+        digitLabel.textColor = Theme.primaryTextColor
         digitLabel.textAlignment = .center
         digitView.addSubview(digitLabel)
         digitLabel.autoCenterInSuperview()
 
-        let strokeColor = (hasStroke ? Theme.primaryColor : UIColor.clear)
+        let strokeColor = (hasStroke ? Theme.primaryTextColor : UIColor.clear)
         let strokeView = digitView.addBottomStroke(color: strokeColor, strokeWidth: 1)
 
         let vMargin: CGFloat = 4
@@ -182,7 +182,7 @@ private class OnboardingCodeView: UIView {
     }
 
     func setHasError(_ hasError: Bool) {
-        let backgroundColor = (hasError ? UIColor.ows_destructiveRed : Theme.primaryColor)
+        let backgroundColor = (hasError ? UIColor.ows_accentRed : Theme.primaryTextColor)
         for digitStroke in digitStrokes {
             digitStroke.backgroundColor = backgroundColor
         }
@@ -289,7 +289,7 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
 
         errorLabel.text = NSLocalizedString("ONBOARDING_VERIFICATION_INVALID_CODE",
                                             comment: "Label indicating that the verification code is incorrect in the 'onboarding verification' view.")
-        errorLabel.textColor = .ows_destructiveRed
+        errorLabel.textColor = .ows_accentRed
         errorLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
         errorLabel.textAlignment = .center
         errorLabel.autoSetDimension(.height, toSize: errorLabel.font.lineHeight)
@@ -427,17 +427,17 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
             let text = String(format: NSLocalizedString("ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT",
                                                         comment: "Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}."),
                               formattedCountdown)
-            codeStateLink.setTitle(title: text, font: .ows_dynamicTypeBodyClamped, titleColor: Theme.secondaryColor)
+            codeStateLink.setTitle(title: text, font: .ows_dynamicTypeBodyClamped, titleColor: Theme.secondaryTextAndIconColor)
         case .readyForResend:
             codeStateLink.setTitle(title: NSLocalizedString("ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK",
                                                             comment: "Label for link that can be used when the original code did not arrive."),
                                    font: .ows_dynamicTypeBodyClamped,
-                                   titleColor: .ows_materialBlue)
+                                   titleColor: .ows_signalBlue)
         case .resent:
             codeStateLink.setTitle(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK",
                                                             comment: "Label for link that can be used when the resent code did not arrive."),
                                    font: .ows_dynamicTypeBodyClamped,
-                                   titleColor: .ows_materialBlue)
+                                   titleColor: .ows_signalBlue)
         }
     }
 

@@ -83,7 +83,7 @@ public class ConversationHeaderView: UIStackView {
         titleLabel.setContentHuggingHigh()
 
         titleIconView = UIImageView()
-        titleIconView.tintColor = Theme.secondaryColor
+        titleIconView.tintColor = Theme.secondaryTextAndIconColor
         titleIconView.contentMode = .scaleAspectFit
         titleIconView.setCompressionResistanceHigh()
 

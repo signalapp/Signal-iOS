@@ -329,7 +329,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     private func createErrorLabel(text: String) -> UILabel {
         let label = UILabel()
         label.text = text
-        label.textColor = Theme.primaryColor
+        label.textColor = Theme.primaryTextColor
         label.font = UIFont.ows_mediumFont(withSize: 20)
         label.textAlignment = .center
         label.numberOfLines = 0

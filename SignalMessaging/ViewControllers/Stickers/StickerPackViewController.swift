@@ -94,7 +94,7 @@ public class StickerPackViewController: OWSViewController {
         authorLabel.textColor = Theme.darkThemePrimaryColor
         authorLabel.font = UIFont.ows_dynamicTypeBody
 
-        defaultPackIconView.setTemplateImageName("check-circle-filled-16", tintColor: UIColor.ows_signalBrandBlue)
+        defaultPackIconView.setTemplateImageName("check-circle-filled-16", tintColor: UIColor.ows_signalBlue)
         defaultPackIconView.isHidden = true
 
         if FeatureFlags.stickerSharing {
@@ -138,7 +138,7 @@ public class StickerPackViewController: OWSViewController {
 
         let installButton = OWSFlatButton.button(title: NSLocalizedString("STICKERS_INSTALL_BUTTON", comment: "Label for the 'install sticker pack' button."),
                                              font: UIFont.ows_dynamicTypeBody.ows_mediumWeight(),
-                                             titleColor: UIColor.ows_materialBlue,
+                                             titleColor: UIColor.ows_signalBlue,
                                              backgroundColor: UIColor.white,
                                              target: self,
                                              selector: #selector(didTapInstall))
@@ -146,7 +146,7 @@ public class StickerPackViewController: OWSViewController {
         installButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "installButton")
         let uninstallButton = OWSFlatButton.button(title: NSLocalizedString("STICKERS_UNINSTALL_BUTTON", comment: "Label for the 'uninstall sticker pack' button."),
                                              font: UIFont.ows_dynamicTypeBody.ows_mediumWeight(),
-                                             titleColor: UIColor.ows_materialBlue,
+                                             titleColor: UIColor.ows_signalBlue,
                                              backgroundColor: UIColor.white,
                                              target: self,
                                              selector: #selector(didTapUninstall))

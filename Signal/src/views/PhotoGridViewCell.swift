@@ -29,7 +29,7 @@ public class PhotoGridViewCell: UICollectionViewCell {
     private static let videoBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_video")
     private static let animatedBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_gif")
     private static let selectedBadgeImage = #imageLiteral(resourceName: "image_editor_checkmark_full").withRenderingMode(.alwaysTemplate)
-    public var loadingColor = Theme.offBackgroundColor
+    public var loadingColor = Theme.washColor
 
     override public var isSelected: Bool {
         didSet {

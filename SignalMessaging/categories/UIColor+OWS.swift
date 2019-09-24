@@ -51,96 +51,37 @@ public extension UIColor {
 @objc
 public extension UIColor {
 
-    @objc(ows_signalBrandBlueColor)
-    class var ows_signalBrandBlue: UIColor {
-        return UIColor(red: 0.1135657504, green: 0.4787300229, blue: 0.89595204589999999, alpha: 1)
-    }
+    // MARK: Brand Colors
 
-    @objc(ows_materialBlueColor)
-    class var ows_materialBlue: UIColor {
-        // blue: #2090EA
-        return UIColor(red: 32.0 / 255.0, green: 144.0 / 255.0, blue: 234.0 / 255.0, alpha: 1)
-    }
-
-    @objc(ows_darkIconColor)
-    class var ows_darkIcon: UIColor {
-        return UIColor(rgbHex: 0x505050)
-    }
-
-    @objc(ows_darkGrayColor)
-    class var ows_darkGray: UIColor {
-        return UIColor(red: 81.0 / 255.0, green: 81.0 / 255.0, blue: 81.0 / 255.0, alpha: 1)
-    }
-
-    @objc(ows_darkThemeBackgroundColor)
-    class var ows_darkThemeBackground: UIColor {
-        return UIColor(red: 35.0 / 255.0, green: 31.0 / 255.0, blue: 32.0 / 255.0, alpha: 1)
-    }
-
-    @objc(ows_fadedBlueColor)
-    class var ows_fadedBlue: UIColor {
-        // blue: #B6DEF4
-        return UIColor(red: 182.0 / 255.0, green: 222.0 / 255.0, blue: 244.0 / 255.0, alpha: 1)
-    }
-
-    @objc(ows_yellowColor)
-    class var ows_yellow: UIColor {
-        // gold: #FFBB5C
-        return UIColor(red: 245.0 / 255.0, green: 186.0 / 255.0, blue: 98.0 / 255.0, alpha: 1)
-    }
-
-    @objc(ows_reminderYellowColor)
-    class var ows_reminderYellow: UIColor {
-        return UIColor(red: 252.0 / 255.0, green: 240.0 / 255.0, blue: 217.0 / 255.0, alpha: 1)
-    }
-
-    @objc(ows_reminderDarkYellowColor)
-    class var ows_reminderDarkYellow: UIColor {
-        return UIColor(rgbHex: 0xFCDA91)
-    }
-
-    @objc(ows_destructiveRedColor)
-    class var ows_destructiveRed: UIColor {
-        return UIColor(rgbHex: 0xF44336)
-    }
-
-    @objc(ows_errorMessageBorderColor)
-    class var ows_errorMessageBorder: UIColor {
-        return UIColor(red: 195.0 / 255.0, green: 0, blue: 22.0 / 255.0, alpha: 1)
-    }
-
-    @objc(ows_infoMessageBorderColor)
-    class var ows_infoMessageBorder: UIColor {
-        return UIColor(red: 239.0 / 255.0, green: 189.0 / 255.0, blue: 88.0 / 255.0, alpha: 1)
-    }
-
-    @objc(ows_lightBackgroundColor)
-    class var ows_lightBackground: UIColor {
-        return UIColor(red: 242.0 / 255.0, green: 242.0 / 255.0, blue: 242.0 / 255.0, alpha: 1)
-    }
-
-    @objc(ows_systemPrimaryButtonColor)
-    static let ows_systemPrimaryButton: UIColor = UIView().tintColor
-
-    @objc(ows_messageBubbleLightGrayColor)
-    class var ows_messageBubbleLightGray: UIColor {
-        return UIColor(hue: 240.0 / 360.0, saturation: 0.02, brightness: 0.92, alpha: 1)
-    }
-
-    // MJK TODO: dedupe this color
     @objc(ows_signalBlueColor)
     class var ows_signalBlue: UIColor {
         return UIColor(rgbHex: 0x2090EA)
     }
 
-    @objc(ows_greenColor)
-    class var ows_green: UIColor {
-        return UIColor(rgbHex: 0x4caf50)
+    // MARK: Accent Colors
+
+    /// Nav Bar, Primary Buttons
+    @objc(ows_accentBlueColor)
+    class var ows_accentBlue: UIColor {
+        return self.ows_signalBlue
     }
 
-    @objc(ows_redColor)
-    class var ows_red: UIColor {
-        return UIColor(rgbHex: 0xf44336)
+    /// Making calls, success states
+    @objc(ows_accentGreenColor)
+    class var ows_accentGreen: UIColor {
+        return UIColor(rgbHex: 0x4CAF50)
+    }
+
+    /// Warning, update states
+    @objc(ows_accentYellowColor)
+    class var ows_accentYellow: UIColor {
+        return UIColor(rgbHex: 0xFFD624)
+    }
+
+    /// Ending calls, error states
+    @objc(ows_accentRedColor)
+    class var ows_accentRed: UIColor {
+        return UIColor(rgbHex: 0xF44336)
     }
 
     // MARK: - GreyScale
@@ -152,42 +93,47 @@ public extension UIColor {
 
     @objc(ows_gray02Color)
     class var ows_gray02: UIColor {
-        return UIColor(rgbHex: 0xF8F9F9)
+        return UIColor(rgbHex: 0xF6F6F6)
     }
 
     @objc(ows_gray05Color)
     class var ows_gray05: UIColor {
-        return UIColor(rgbHex: 0xEEEFEF)
+        return UIColor(rgbHex: 0xE9E9E9)
     }
 
     @objc(ows_gray10Color)
     class var ows_gray10: UIColor {
-        return UIColor(rgbHex: 0xE1E2E3)
+        return UIColor(rgbHex: 0xD4D4D4)
     }
 
     @objc(ows_gray15Color)
     class var ows_gray15: UIColor {
-        return UIColor(rgbHex: 0xD5D6D6)
+        return UIColor(rgbHex: 0xD4D4D4)
     }
 
     @objc(ows_gray25Color)
     class var ows_gray25: UIColor {
-        return UIColor(rgbHex: 0xBBBDBE)
+        return UIColor(rgbHex: 0xB9B9B9)
     }
 
     @objc(ows_gray45Color)
     class var ows_gray45: UIColor {
-        return UIColor(rgbHex: 0x898A8C)
+        return UIColor(rgbHex: 0x848484)
     }
 
     @objc(ows_gray60Color)
     class var ows_gray60: UIColor {
-        return UIColor(rgbHex: 0x6B6D70)
+        return UIColor(rgbHex: 0x5E5E5E)
     }
 
     @objc(ows_gray75Color)
     class var ows_gray75: UIColor {
-        return UIColor(rgbHex: 0x3D3E44)
+        return UIColor(rgbHex: 0x3B3B3B)
+    }
+
+    @objc(ows_gray80Color)
+    class var ows_gray80: UIColor {
+        return UIColor(rgbHex: 0x2E2E2E)
     }
 
     @objc(ows_gray85Color)
@@ -197,12 +143,12 @@ public extension UIColor {
 
     @objc(ows_gray90Color)
     class var ows_gray90: UIColor {
-        return UIColor(rgbHex: 0x17191D)
+        return UIColor(rgbHex: 0x1B1B1B)
     }
 
     @objc(ows_gray95Color)
     class var ows_gray95: UIColor {
-        return UIColor(rgbHex: 0x0F1012)
+        return UIColor(rgbHex: 0x121212)
     }
 
     @objc(ows_blackColor)
@@ -210,10 +156,59 @@ public extension UIColor {
         return UIColor(rgbHex: 0x000000)
     }
 
-    // TODO: dedupe
-    @objc(ows_darkSkyBlueColor)
-    class var ows_darkSkyBlue: UIColor {
-        // HEX 0xc2090EA
-        return UIColor(red: 32.0 / 255.0, green: 144.0 / 255.0, blue: 234.0 / 255.0, alpha: 1.0)
+    // MARK: Masks
+
+    @objc(ows_whiteAlpha20Color)
+    class var ows_whiteAlpha20: UIColor {
+        return UIColor(white: 1.0, alpha: 0.2)
+    }
+
+    @objc(ows_whiteAlpha60Color)
+    class var ows_whiteAlpha60: UIColor {
+        return UIColor(white: 1.0, alpha: 0.6)
+    }
+
+    @objc(ows_whiteAlpha80Color)
+    class var ows_whiteAlpha80: UIColor {
+        return UIColor(white: 1.0, alpha: 0.8)
+    }
+
+    @objc(ows_whiteAlpha90Color)
+    class var ows_whiteAlpha90: UIColor {
+        return UIColor(white: 1.0, alpha: 0.9)
+    }
+
+    @objc(ows_blackAlpha05Color)
+    class var ows_blackAlpha05: UIColor {
+        return UIColor(white: 0, alpha: 0.05)
+    }
+
+    @objc(ows_blackAlpha20Color)
+    class var ows_blackAlpha20: UIColor {
+        return UIColor(white: 0, alpha: 0.20)
+    }
+
+    @objc(ows_blackAlpha40Color)
+    class var ows_blackAlpha40: UIColor {
+        return UIColor(white: 0, alpha: 0.40)
+    }
+
+    @objc(ows_blackAlpha60Color)
+    class var ows_blackAlpha60: UIColor {
+        return UIColor(white: 0, alpha: 0.60)
+    }
+
+    // MARK: UI Colors
+
+    // FIXME OFF-PALETTE
+    @objc(ows_fadedBlueColor)
+    class var ows_fadedBlue: UIColor {
+        return UIColor(rgbHex: 0xB6DEF4)
+    }
+
+    // FIXME OFF-PALETTE
+    @objc(ows_reminderYellowColor)
+    class var ows_reminderYellow: UIColor {
+        return UIColor(rgbHex: 0xFCF0D9)
     }
 }

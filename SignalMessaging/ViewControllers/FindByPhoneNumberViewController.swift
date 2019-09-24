@@ -64,7 +64,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
         countryRowTitleLabel.autoPinLeadingToSuperviewMargin()
         countryRowTitleLabel.autoPinHeightToSuperviewMargins()
 
-        countryCodeLabel.textColor = .ows_materialBlue
+        countryCodeLabel.textColor = .ows_signalBlue
         countryCodeLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
         countryCodeLabel.textAlignment = .right
 
@@ -87,7 +87,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
         phoneNumberRowTitleLabel.autoPinHeightToSuperviewMargins()
 
         phoneNumberTextField.font = .ows_dynamicTypeBodyClamped
-        phoneNumberTextField.textColor = .ows_materialBlue
+        phoneNumberTextField.textColor = .ows_signalBlue
         phoneNumberTextField.autocorrectionType = .no
         phoneNumberTextField.autocapitalizationType = .none
         phoneNumberTextField.placeholder = NSLocalizedString("REGISTRATION_ENTERNUMBER_DEFAULT_TEXT",
@@ -121,7 +121,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
         button.useDefaultCornerRadius()
         button.autoSetDimension(.height, toSize: buttonHeight)
         button.setTitle(title: buttonTitle, font: OWSFlatButton.fontForHeight(buttonHeight), titleColor: .white)
-        button.setBackgroundColors(upColor: .ows_signalBrandBlue)
+        button.setBackgroundColors(upColor: .ows_signalBlue)
         button.addTarget(target: self, selector: #selector(tryToSelectPhoneNumber))
         button.setEnabled(false)
     }
@@ -130,9 +130,9 @@ public class FindByPhoneNumberViewController: OWSViewController {
         super.traitCollectionDidChange(previousTraitCollection)
 
         view.backgroundColor = Theme.backgroundColor
-        countryRowTitleLabel.textColor = Theme.primaryColor
-        phoneNumberRowTitleLabel.textColor = Theme.primaryColor
-        exampleLabel.textColor = Theme.secondaryColor
+        countryRowTitleLabel.textColor = Theme.primaryTextColor
+        phoneNumberRowTitleLabel.textColor = Theme.primaryTextColor
+        exampleLabel.textColor = Theme.secondaryTextAndIconColor
     }
 
     func updateButtonState() {

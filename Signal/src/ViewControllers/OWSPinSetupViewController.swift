@@ -10,7 +10,7 @@ public class PinSetupViewController: OWSViewController {
     private let pinTextField = UITextField()
 
     private lazy var pinStrokeNormal = pinTextField.addBottomStroke()
-    private lazy var pinStrokeError = pinTextField.addBottomStroke(color: .ows_destructiveRed, strokeWidth: 2)
+    private lazy var pinStrokeError = pinTextField.addBottomStroke(color: .ows_accentRed, strokeWidth: 2)
     private let validationWarningLabel = UILabel()
 
     enum Mode {
@@ -127,7 +127,7 @@ public class PinSetupViewController: OWSViewController {
             let topButton = UIButton()
             let topButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
 
-            topButton.setTemplateImage(topButtonImage, tintColor: Theme.secondaryColor)
+            topButton.setTemplateImage(topButtonImage, tintColor: Theme.secondaryTextAndIconColor)
             topButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
             topButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
 
@@ -139,7 +139,7 @@ public class PinSetupViewController: OWSViewController {
             // Title
 
             let label = UILabel()
-            label.textColor = Theme.primaryColor
+            label.textColor = Theme.primaryTextColor
             label.font = UIFont.ows_dynamicTypeTitle1Clamped.ows_semiBold()
             label.numberOfLines = 0
             label.lineBreakMode = .byWordWrapping
@@ -172,7 +172,7 @@ public class PinSetupViewController: OWSViewController {
         // Explanation
 
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Theme.secondaryColor
+        explanationLabel.textColor = Theme.secondaryTextAndIconColor
         explanationLabel.font = .ows_dynamicTypeSubheadlineClamped
 
         let placeholderText: String
@@ -218,7 +218,7 @@ public class PinSetupViewController: OWSViewController {
 
         pinTextField.delegate = self
         pinTextField.keyboardType = .numberPad
-        pinTextField.textColor = Theme.primaryColor
+        pinTextField.textColor = Theme.primaryTextColor
         pinTextField.font = .ows_dynamicTypeBodyClamped
         pinTextField.isSecureTextEntry = true
         pinTextField.defaultTextAttributes.updateValue(5, forKey: .kern)
@@ -229,7 +229,7 @@ public class PinSetupViewController: OWSViewController {
         pinTextField.attributedPlaceholder = NSAttributedString(string: placeholderText, attributes: [.foregroundColor: Theme.placeholderColor])
         pinTextField.accessibilityIdentifier = "pinCreation.pinTextField"
 
-        validationWarningLabel.textColor = .ows_destructiveRed
+        validationWarningLabel.textColor = .ows_accentRed
         validationWarningLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
         validationWarningLabel.accessibilityIdentifier = "pinCreation.validationWarningLabel"
 
@@ -255,7 +255,7 @@ public class PinSetupViewController: OWSViewController {
                                      comment: "Label for the 'next' button."),
             font: font,
             titleColor: .white,
-            backgroundColor: .ows_materialBlue,
+            backgroundColor: .ows_signalBlue,
             target: self,
             selector: #selector(nextPressed)
         )

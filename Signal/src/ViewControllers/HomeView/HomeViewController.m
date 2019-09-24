@@ -419,7 +419,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     emptyInboxLabel.text = NSLocalizedString(@"INBOX_VIEW_EMPTY_INBOX",
                                              @"Message shown in the home view when the inbox is empty.");
     emptyInboxLabel.font = UIFont.ows_dynamicTypeBodyClampedFont;
-    emptyInboxLabel.textColor = Theme.secondaryColor;
+    emptyInboxLabel.textColor = Theme.secondaryTextAndIconColor;
     emptyInboxLabel.textAlignment = NSTextAlignmentCenter;
     emptyInboxLabel.numberOfLines = 0;
     emptyInboxLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -1156,7 +1156,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     label.text = NSLocalizedString(@"HOME_VIEW_ARCHIVED_CONVERSATIONS", @"Label for 'archived conversations' button.");
     label.textAlignment = NSTextAlignmentCenter;
     label.font = [UIFont ows_dynamicTypeBodyFont];
-    label.textColor = Theme.primaryColor;
+    label.textColor = Theme.primaryTextColor;
 
     UIStackView *stackView = [UIStackView new];
     stackView.axis = UILayoutConstraintAxisHorizontal;

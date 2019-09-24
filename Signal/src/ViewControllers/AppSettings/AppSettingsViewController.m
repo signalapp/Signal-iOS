@@ -147,20 +147,20 @@
                                  if (TSAccountManager.sharedInstance.isDeregistered) {
                                      accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_DEREGISTERED",
                                          @"Error indicating that this device is no longer registered.");
-                                     accessoryLabel.textColor = [UIColor ows_redColor];
+                                     accessoryLabel.textColor = UIColor.ows_accentRedColor;
                                  } else {
                                      switch (TSSocketManager.shared.highestSocketState) {
                                          case OWSWebSocketStateClosed:
                                              accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_OFFLINE", @"");
-                                             accessoryLabel.textColor = [UIColor ows_redColor];
+                                             accessoryLabel.textColor = UIColor.ows_accentRedColor;
                                              break;
                                          case OWSWebSocketStateConnecting:
                                              accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTING", @"");
-                                             accessoryLabel.textColor = [UIColor ows_yellowColor];
+                                             accessoryLabel.textColor = UIColor.ows_accentYellowColor;
                                              break;
                                          case OWSWebSocketStateOpen:
                                              accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTED", @"");
-                                             accessoryLabel.textColor = [UIColor ows_greenColor];
+                                             accessoryLabel.textColor = UIColor.ows_accentGreenColor;
                                              break;
                                      }
                                  }
@@ -246,18 +246,18 @@
                                                                   @"Label for re-registration button.")
                                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"reregister")
                                                      selector:@selector(reregisterUser)
-                                                        color:[UIColor ows_materialBlueColor]]];
+                                                        color:UIColor.ows_signalBlueColor]];
         [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_DATA_BUTTON",
                                                                   @"Label for 'delete data' button.")
                                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_data")
                                                      selector:@selector(deleteUnregisterUserData)
-                                                        color:[UIColor ows_destructiveRedColor]]];
+                                                        color:UIColor.ows_accentRedColor]];
     } else {
         [section
             addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_account")
                                                 selector:@selector(unregisterUser)
-                                                   color:[UIColor ows_destructiveRedColor]]];
+                                                   color:UIColor.ows_accentRedColor]];
     }
 
     [contents addSection:section];
@@ -318,7 +318,7 @@
 
     if (!localProfileAvatarImage) {
         UIImageView *cameraImageView = [UIImageView new];
-        [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryColor];
+        [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryTextAndIconColor];
         [cell.contentView addSubview:cameraImageView];
 
         [cameraImageView autoSetDimensionsToSize:CGSizeMake(32, 32)];
@@ -326,7 +326,7 @@
         cameraImageView.backgroundColor = Theme.backgroundColor;
         cameraImageView.layer.cornerRadius = 16;
         cameraImageView.layer.shadowColor =
-            [(Theme.isDarkThemeEnabled ? Theme.darkThemeOffBackgroundColor : Theme.primaryColor) CGColor];
+            [(Theme.isDarkThemeEnabled ? Theme.darkThemeWashColor : Theme.primaryTextColor) CGColor];
         cameraImageView.layer.shadowOffset = CGSizeMake(1, 1);
         cameraImageView.layer.shadowOpacity = 0.5;
         cameraImageView.layer.shadowRadius = 4;
@@ -344,12 +344,12 @@
     NSString *_Nullable localProfileName = [OWSProfileManager.sharedManager localProfileName];
     if (localProfileName.length > 0) {
         titleLabel.text = localProfileName;
-        titleLabel.textColor = [Theme primaryColor];
+        titleLabel.textColor = Theme.primaryTextColor;
         titleLabel.font = [UIFont ows_dynamicTypeTitle2Font];
     } else {
         titleLabel.text = NSLocalizedString(
             @"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT", @"Text prompting user to edit their profile name.");
-        titleLabel.textColor = [UIColor ows_materialBlueColor];
+        titleLabel.textColor = UIColor.ows_signalBlueColor;
         titleLabel.font = [UIFont ows_dynamicTypeHeadlineFont];
     }
     titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -361,7 +361,7 @@
     const CGFloat kSubtitlePointSize = 12.f;
     void (^addSubtitle)(NSString *) = ^(NSString *subtitle) {
         UILabel *subtitleLabel = [UILabel new];
-        subtitleLabel.textColor = Theme.secondaryColor;
+        subtitleLabel.textColor = Theme.secondaryTextAndIconColor;
         subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
         subtitleLabel.text = subtitle;
         subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;

@@ -1040,7 +1040,7 @@ NS_ASSUME_NONNULL_BEGIN
     label.text = NSLocalizedString(
         @"ATTACHMENT_DOWNLOADING_STATUS_FAILED", @"Status label when an attachment download has failed.");
     label.font = UIFont.ows_dynamicTypeBodyFont;
-    label.textColor = Theme.secondaryColor;
+    label.textColor = Theme.secondaryTextAndIconColor;
     label.numberOfLines = 0;
     label.lineBreakMode = NSLineBreakByWordWrapping;
     label.textAlignment = NSTextAlignmentCenter;

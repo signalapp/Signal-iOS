@@ -93,7 +93,7 @@
 
     UILabel *copyrightLabel = [UILabel new];
     copyrightLabel.text = NSLocalizedString(@"SETTINGS_COPYRIGHT", @"");
-    copyrightLabel.textColor = [Theme secondaryColor];
+    copyrightLabel.textColor = Theme.secondaryTextAndIconColor;
     copyrightLabel.font = [UIFont ows_regularFontWithSize:15.0f];
     copyrightLabel.numberOfLines = 2;
     copyrightLabel.lineBreakMode = NSLineBreakByWordWrapping;

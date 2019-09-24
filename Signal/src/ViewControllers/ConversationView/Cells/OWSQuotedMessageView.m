@@ -319,7 +319,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         [cancelButton
             setImage:[[UIImage imageNamed:@"compose-cancel"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
             forState:UIControlStateNormal];
-        cancelButton.imageView.tintColor = Theme.secondaryColor;
+        cancelButton.imageView.tintColor = Theme.secondaryTextAndIconColor;
         [cancelButton addTarget:self action:@selector(didTapCancel) forControlEvents:UIControlEventTouchUpInside];
         [cancelButton setContentHuggingHorizontalHigh];
         [cancelButton setCompressionResistanceHorizontalHigh];
@@ -360,7 +360,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     OWSAssertDebug(CGSizeEqualToSize(
         CGSizeMake(kRemotelySourcedContentGlyphLength, kRemotelySourcedContentGlyphLength), glyphImage.size));
     UIImageView *glyphView = [[UIImageView alloc] initWithImage:glyphImage];
-    glyphView.tintColor = Theme.secondaryColor;
+    glyphView.tintColor = Theme.secondaryTextAndIconColor;
     [glyphView
         autoSetDimensionsToSize:CGSizeMake(kRemotelySourcedContentGlyphLength, kRemotelySourcedContentGlyphLength)];
 
@@ -477,7 +477,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     OWSAssertDebug(self.quoteContentSourceLabel);
 
     self.quoteContentSourceLabel.font = UIFont.ows_dynamicTypeFootnoteFont;
-    self.quoteContentSourceLabel.textColor = Theme.primaryColor;
+    self.quoteContentSourceLabel.textColor = Theme.primaryTextColor;
     self.quoteContentSourceLabel.text = NSLocalizedString(@"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE",
         @"Footer label that appears below quoted messages when the quoted content was not derived locally. When the "
         @"local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead "

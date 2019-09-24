@@ -39,11 +39,11 @@ public class NonContactTableViewCell: UITableViewCell {
         labelStack.addArrangedSubview(topSpacer)
 
         headerLabel.font = .ows_dynamicTypeBody
-        headerLabel.textColor = Theme.primaryColor
+        headerLabel.textColor = Theme.primaryTextColor
         labelStack.addArrangedSubview(headerLabel)
 
         identifierLabel.font = UIFont.ows_dynamicTypeBody.ows_semiBold()
-        identifierLabel.textColor = Theme.primaryColor
+        identifierLabel.textColor = Theme.primaryTextColor
         labelStack.addArrangedSubview(identifierLabel)
 
         let bottomSpacer = UIView.vStretchingSpacer()

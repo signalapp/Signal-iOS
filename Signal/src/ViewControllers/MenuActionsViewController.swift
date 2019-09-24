@@ -421,7 +421,7 @@ class MenuActionView: UIButton {
 
         let titleLabel = UILabel()
         titleLabel.font = UIFont.ows_dynamicTypeBody
-        titleLabel.textColor = Theme.primaryColor
+        titleLabel.textColor = Theme.primaryTextColor
         titleLabel.text = action.title
         titleLabel.isUserInteractionEnabled = false
 
@@ -429,7 +429,7 @@ class MenuActionView: UIButton {
         subtitleLabel.font = UIFont.ows_dynamicTypeSubheadline
         subtitleLabel.textColor = (Theme.isDarkThemeEnabled
             ? UIColor.ows_gray25
-            : Theme.secondaryColor)
+            : Theme.secondaryTextAndIconColor)
         subtitleLabel.text = action.subtitle
         subtitleLabel.isUserInteractionEnabled = false
 

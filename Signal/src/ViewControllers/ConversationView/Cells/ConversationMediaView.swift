@@ -98,7 +98,7 @@ public class ConversationMediaView: UIView {
 
         super.init(frame: .zero)
 
-        backgroundColor = Theme.offBackgroundColor
+        backgroundColor = Theme.washColor
         clipsToBounds = true
 
         createContents()
@@ -195,7 +195,7 @@ public class ConversationMediaView: UIView {
         // some performance cost.
         animatedImageView.layer.minificationFilter = .trilinear
         animatedImageView.layer.magnificationFilter = .trilinear
-        animatedImageView.backgroundColor = Theme.offBackgroundColor
+        animatedImageView.backgroundColor = Theme.washColor
         addSubview(animatedImageView)
         animatedImageView.autoPinEdgesToSuperviewEdges()
         _ = addUploadProgressIfNecessary(animatedImageView)
@@ -251,7 +251,7 @@ public class ConversationMediaView: UIView {
         // some performance cost.
         stillImageView.layer.minificationFilter = .trilinear
         stillImageView.layer.magnificationFilter = .trilinear
-        stillImageView.backgroundColor = Theme.offBackgroundColor
+        stillImageView.backgroundColor = Theme.washColor
         addSubview(stillImageView)
         stillImageView.autoPinEdgesToSuperviewEdges()
         _ = addUploadProgressIfNecessary(stillImageView)
@@ -303,7 +303,7 @@ public class ConversationMediaView: UIView {
         // some performance cost.
         stillImageView.layer.minificationFilter = .trilinear
         stillImageView.layer.magnificationFilter = .trilinear
-        stillImageView.backgroundColor = Theme.offBackgroundColor
+        stillImageView.backgroundColor = Theme.washColor
 
         addSubview(stillImageView)
         stillImageView.autoPinEdgesToSuperviewEdges()
@@ -380,7 +380,7 @@ public class ConversationMediaView: UIView {
             return
         }
         let iconView = UIImageView(image: icon.withRenderingMode(.alwaysTemplate))
-        iconView.tintColor = Theme.primaryColor.withAlphaComponent(0.6)
+        iconView.tintColor = Theme.primaryTextColor.withAlphaComponent(0.6)
         addSubview(iconView)
         iconView.autoCenterInSuperview()
     }

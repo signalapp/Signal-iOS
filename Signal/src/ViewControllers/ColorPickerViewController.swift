@@ -62,7 +62,7 @@ class ColorView: UIView {
         let cellHeight: CGFloat = ScaleFromIPhone5(60)
         selectedRing.autoSetDimensions(to: CGSize(width: cellHeight, height: cellHeight))
 
-        selectedRing.layer.borderColor = Theme.secondaryColor.cgColor
+        selectedRing.layer.borderColor = Theme.secondaryTextAndIconColor.cgColor
         selectedRing.layer.borderWidth = 2
         selectedRing.autoPinEdgesToSuperviewEdges()
         selectedRing.isHidden = true
@@ -213,7 +213,7 @@ class ColorPickerView: UIView, ColorViewDelegate {
         titleLabel.text = NSLocalizedString("COLOR_PICKER_SHEET_TITLE", comment: "Modal Sheet title when picking a conversation color.")
         titleLabel.textAlignment = .center
         titleLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
-        titleLabel.textColor = Theme.primaryColor
+        titleLabel.textColor = Theme.primaryTextColor
 
         headerView.addSubview(titleLabel)
         titleLabel.ows_autoPinToSuperviewMargins()

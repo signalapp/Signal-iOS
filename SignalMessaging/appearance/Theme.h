@@ -28,20 +28,20 @@ extern NSString *const ThemeDidChangeNotification;
 + (void)setCurrentTheme:(ThemeMode)mode;
 + (void)systemThemeChanged;
 
+#pragma mark - Global App Colors
+
 @property (class, readonly, nonatomic) UIColor *backgroundColor;
-@property (class, readonly, nonatomic) UIColor *primaryColor;
-@property (class, readonly, nonatomic) UIColor *secondaryColor;
+@property (class, readonly, nonatomic) UIColor *washColor;
+@property (class, readonly, nonatomic) UIColor *primaryTextColor;
+@property (class, readonly, nonatomic) UIColor *primaryIconColor;
+@property (class, readonly, nonatomic) UIColor *secondaryTextAndIconColor;
 @property (class, readonly, nonatomic) UIColor *boldColor;
-@property (class, readonly, nonatomic) UIColor *offBackgroundColor;
 @property (class, readonly, nonatomic) UIColor *middleGrayColor;
 @property (class, readonly, nonatomic) UIColor *placeholderColor;
 @property (class, readonly, nonatomic) UIColor *hairlineColor;
 @property (class, readonly, nonatomic) UIColor *outlineColor;
 
-#pragma mark - Global App Colors
-
 @property (class, readonly, nonatomic) UIColor *navbarBackgroundColor;
-@property (class, readonly, nonatomic) UIColor *navbarIconColor;
 @property (class, readonly, nonatomic) UIColor *navbarTitleColor;
 
 @property (class, readonly, nonatomic) UIColor *toolbarBackgroundColor;
@@ -63,10 +63,10 @@ extern NSString *const ThemeDidChangeNotification;
 @property (class, readonly, nonatomic) UIColor *darkThemeNavbarBackgroundColor;
 @property (class, readonly, nonatomic) UIColor *darkThemeBackgroundColor;
 @property (class, readonly, nonatomic) UIColor *darkThemePrimaryColor;
-@property (class, readonly, nonatomic) UIColor *darkThemeSecondaryColor;
+@property (class, readonly, nonatomic) UIColor *darkThemeSecondaryTextAndIconColor;
 @property (class, readonly, nonatomic) UIBlurEffect *darkThemeBarBlurEffect;
 @property (class, readonly, nonatomic) UIColor *galleryHighlightColor;
-@property (class, readonly, nonatomic) UIColor *darkThemeOffBackgroundColor;
+@property (class, readonly, nonatomic) UIColor *darkThemeWashColor;
 
 #pragma mark -
 

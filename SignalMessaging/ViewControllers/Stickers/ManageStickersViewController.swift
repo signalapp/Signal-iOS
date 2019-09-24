@@ -27,10 +27,10 @@ private class StickerPackActionButton: UIView {
         let actionIconSize: CGFloat = 20
         let actionCircleSize: CGFloat = 32
         let actionCircleView = CircleView(diameter: actionCircleSize)
-        actionCircleView.backgroundColor = Theme.offBackgroundColor
+        actionCircleView.backgroundColor = Theme.washColor
         let actionIcon = UIImage(named: actionIconName)?.withRenderingMode(.alwaysTemplate)
         let actionIconView = UIImageView(image: actionIcon)
-        actionIconView.tintColor = Theme.secondaryColor
+        actionIconView.tintColor = Theme.secondaryTextAndIconColor
         actionCircleView.addSubview(actionIconView)
         actionIconView.autoCenterInSuperview()
         actionIconView.autoSetDimensions(to: CGSize(width: actionIconSize, height: actionIconSize))
@@ -344,7 +344,7 @@ public class ManageStickersViewController: OWSTableViewController {
         let titleLabel = UILabel()
         titleLabel.text = title
         titleLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
-        titleLabel.textColor = Theme.primaryColor
+        titleLabel.textColor = Theme.primaryTextColor
         titleLabel.lineBreakMode = .byTruncatingTail
 
         let textStack = UIStackView(arrangedSubviews: [
@@ -363,7 +363,7 @@ public class ManageStickersViewController: OWSTableViewController {
         var authorViews = [UIView]()
         if isDefaultStickerPack {
             let builtInPackView = UIImageView()
-            builtInPackView.setTemplateImageName("check-circle-filled-16", tintColor: UIColor.ows_signalBrandBlue)
+            builtInPackView.setTemplateImageName("check-circle-filled-16", tintColor: UIColor.ows_signalBlue)
             builtInPackView.setCompressionResistanceHigh()
             builtInPackView.setContentHuggingHigh()
             authorViews.append(builtInPackView)
@@ -374,7 +374,7 @@ public class ManageStickersViewController: OWSTableViewController {
             let authorLabel = UILabel()
             authorLabel.text = authorName
             authorLabel.font = isDefaultStickerPack ? UIFont.ows_dynamicTypeCaption1.ows_mediumWeight() : UIFont.ows_dynamicTypeCaption1
-            authorLabel.textColor = isDefaultStickerPack ? UIColor.ows_signalBlue : Theme.secondaryColor
+            authorLabel.textColor = isDefaultStickerPack ? UIColor.ows_signalBlue : Theme.secondaryTextAndIconColor
             authorLabel.lineBreakMode = .byTruncatingTail
             authorViews.append(authorLabel)
         }
@@ -443,7 +443,7 @@ public class ManageStickersViewController: OWSTableViewController {
         let cell = OWSTableItem.newCell()
 
         let bubbleView = UIView()
-        bubbleView.backgroundColor = Theme.offBackgroundColor
+        bubbleView.backgroundColor = Theme.washColor
         bubbleView.layer.cornerRadius = 8
         bubbleView.setCompressionResistanceLow()
         bubbleView.setContentHuggingLow()
@@ -453,7 +453,7 @@ public class ManageStickersViewController: OWSTableViewController {
         let label = UILabel()
         label.text = labelText
         label.font = UIFont.ows_dynamicTypeCaption1
-        label.textColor = Theme.secondaryColor
+        label.textColor = Theme.secondaryTextAndIconColor
         label.textAlignment = .center
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping

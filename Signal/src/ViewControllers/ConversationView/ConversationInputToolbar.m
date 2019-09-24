@@ -200,7 +200,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.cameraButton addTarget:self
                           action:@selector(cameraButtonPressed)
                 forControlEvents:UIControlEventTouchUpInside];
-    [self.cameraButton setTemplateImageName:@"camera-outline-24" tintColor:Theme.navbarIconColor];
+    [self.cameraButton setTemplateImageName:@"camera-outline-24" tintColor:Theme.primaryIconColor];
     [self.cameraButton autoSetDimensionsToSize:CGSizeMake(40, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _cameraButton);
 
@@ -212,7 +212,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.attachmentButton addTarget:self
                               action:@selector(attachmentButtonPressed)
                     forControlEvents:UIControlEventTouchUpInside];
-    [self.attachmentButton setTemplateImageName:@"plus-24" tintColor:Theme.navbarIconColor];
+    [self.attachmentButton setTemplateImageName:@"plus-24" tintColor:Theme.primaryIconColor];
     [self.attachmentButton
         setImage:[UIImage imageNamed:[@"x-box-filled-28-"
                                          stringByAppendingString:Theme.isDarkThemeEnabled ? @"dark" : @"light"]]
@@ -230,14 +230,14 @@ const CGFloat kMaxTextViewHeight = 98;
     _voiceMemoButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.voiceMemoButton.accessibilityLabel = NSLocalizedString(@"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL",
         @"accessibility label for the button which records voice memos");
-    [self.voiceMemoButton setTemplateImageName:@"mic-outline-24" tintColor:Theme.navbarIconColor];
+    [self.voiceMemoButton setTemplateImageName:@"mic-outline-24" tintColor:Theme.primaryIconColor];
     [self.voiceMemoButton autoSetDimensionsToSize:CGSizeMake(40, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _voiceMemoButton);
 
     _stickerButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.stickerButton.accessibilityLabel = NSLocalizedString(@"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL",
         @"accessibility label for the button which shows the sticker picker");
-    [self.stickerButton setTemplateImageName:@"sticker-smiley-outline-24" tintColor:Theme.navbarIconColor];
+    [self.stickerButton setTemplateImageName:@"sticker-smiley-outline-24" tintColor:Theme.primaryIconColor];
     [self.stickerButton addTarget:self
                            action:@selector(stickerButtonPressed)
                  forControlEvents:UIControlEventTouchUpInside];
@@ -630,7 +630,7 @@ const CGFloat kMaxTextViewHeight = 98;
         if (!hideStickerButton) {
             self.stickerButton.imageView.tintColor
                 = (self.desiredKeyboardType == KeyboardType_Sticker ? UIColor.ows_signalBlueColor
-                                                                    : Theme.navbarIconColor);
+                                                                    : Theme.primaryIconColor);
         }
 
         self.attachmentButton.selected = self.desiredKeyboardType == KeyboardType_Attachment;
@@ -815,7 +815,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.voiceMemoContentView autoPinEdgesToSuperviewMargins];
 
     self.recordingLabel = [UILabel new];
-    self.recordingLabel.textColor = [UIColor ows_destructiveRedColor];
+    self.recordingLabel.textColor = UIColor.ows_accentRedColor;
     self.recordingLabel.font = [UIFont ows_mediumFontWithSize:14.f];
     [self.voiceMemoContentView addSubview:self.recordingLabel];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _recordingLabel);
@@ -833,7 +833,7 @@ const CGFloat kMaxTextViewHeight = 98;
     OWSAssertDebug(icon);
     UIImageView *imageView =
         [[UIImageView alloc] initWithImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
-    imageView.tintColor = [UIColor ows_destructiveRedColor];
+    imageView.tintColor = UIColor.ows_accentRedColor;
     [imageView setContentHuggingHigh];
     [self.voiceMemoContentView addSubview:imageView];
 
@@ -846,7 +846,7 @@ const CGFloat kMaxTextViewHeight = 98;
                                    initWithString:arrowHead
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : UIColor.ows_accentRedColor,
                                            NSBaselineOffsetAttributeName : @(-1.f),
                                        }]];
     [cancelString
@@ -854,7 +854,7 @@ const CGFloat kMaxTextViewHeight = 98;
                                    initWithString:@"  "
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : UIColor.ows_accentRedColor,
                                            NSBaselineOffsetAttributeName : @(-1.f),
                                        }]];
     [cancelString
@@ -863,14 +863,14 @@ const CGFloat kMaxTextViewHeight = 98;
                                                       @"Indicates how to cancel a voice message.")
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_mediumFontWithSize:cancelFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : UIColor.ows_accentRedColor,
                                        }]];
     [cancelString
         appendAttributedString:[[NSAttributedString alloc]
                                    initWithString:@"  "
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : UIColor.ows_accentRedColor,
                                            NSBaselineOffsetAttributeName : @(-1.f),
                                        }]];
     [cancelString
@@ -878,7 +878,7 @@ const CGFloat kMaxTextViewHeight = 98;
                                    initWithString:arrowHead
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : UIColor.ows_accentRedColor,
                                            NSBaselineOffsetAttributeName : @(-1.f),
                                        }]];
     UILabel *cancelLabel = [UILabel new];
@@ -889,7 +889,7 @@ const CGFloat kMaxTextViewHeight = 98;
     const CGFloat kRedCircleSize = 100.f;
     UIView *redCircleView = [[OWSCircleView alloc] initWithDiameter:kRedCircleSize];
     self.voiceMemoRedRecordingCircle = redCircleView;
-    redCircleView.backgroundColor = [UIColor ows_destructiveRedColor];
+    redCircleView.backgroundColor = UIColor.ows_accentRedColor;
     [self.voiceMemoContentView addSubview:redCircleView];
     [redCircleView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.voiceMemoButton];
     [redCircleView autoAlignAxis:ALAxisVertical toSameAxisOfView:self.voiceMemoButton];
@@ -1021,7 +1021,7 @@ const CGFloat kMaxTextViewHeight = 98;
         [weakSelf.inputToolbarDelegate voiceMemoGestureDidCancel];
     }];
     [cancelButton setTitle:CommonStrings.cancelButton forState:UIControlStateNormal];
-    [cancelButton setTitleColor:UIColor.ows_destructiveRedColor forState:UIControlStateNormal];
+    [cancelButton setTitleColor:UIColor.ows_accentRedColor forState:UIControlStateNormal];
     cancelButton.alpha = 0;
     cancelButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, cancelButton);

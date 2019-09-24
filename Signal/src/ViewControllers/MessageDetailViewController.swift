@@ -332,7 +332,7 @@ class MessageDetailViewController: OWSViewController {
             if self.shouldShowUD, incomingMessage.wasReceivedByUD {
                 let icon = #imageLiteral(resourceName: "ic_secret_sender_indicator").withRenderingMode(.alwaysTemplate)
                 let iconView = UIImageView(image: icon)
-                iconView.tintColor = Theme.secondaryColor
+                iconView.tintColor = Theme.secondaryTextAndIconColor
                 iconView.setContentHuggingHigh()
                 sentRow.addArrangedSubview(iconView)
                 // keep the icon close to the label.
@@ -500,7 +500,7 @@ class MessageDetailViewController: OWSViewController {
 
     private func buildUDAccessoryView(text: String) -> UIView {
         let label = UILabel()
-        label.textColor = Theme.secondaryColor
+        label.textColor = Theme.secondaryTextAndIconColor
         label.text = text
         label.textAlignment = .right
         label.font = UIFont.ows_mediumFont(withSize: 13)
@@ -518,7 +518,7 @@ class MessageDetailViewController: OWSViewController {
 
     private func nameLabel(text: String) -> UILabel {
         let label = UILabel()
-        label.textColor = Theme.primaryColor
+        label.textColor = Theme.primaryTextColor
         label.font = UIFont.ows_mediumFont(withSize: 14)
         label.text = text
         label.setContentHuggingHorizontalHigh()
@@ -527,7 +527,7 @@ class MessageDetailViewController: OWSViewController {
 
     private func valueLabel(text: String) -> UILabel {
         let label = UILabel()
-        label.textColor = Theme.primaryColor
+        label.textColor = Theme.primaryTextColor
         label.font = UIFont.ows_regularFont(withSize: 14)
         label.text = text
         label.setContentHuggingHorizontalLow()
@@ -545,7 +545,7 @@ class MessageDetailViewController: OWSViewController {
 
         if subtitle.count > 0 {
             let subtitleLabel = self.valueLabel(text: subtitle)
-            subtitleLabel.textColor = Theme.secondaryColor
+            subtitleLabel.textColor = Theme.secondaryTextAndIconColor
             hStackView.addArrangedSubview(subtitleLabel)
         }
 

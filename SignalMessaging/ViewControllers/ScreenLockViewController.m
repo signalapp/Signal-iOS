@@ -36,7 +36,7 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
 {
     [super loadView];
 
-    self.view.backgroundColor = UIColor.ows_materialBlueColor;
+    self.view.backgroundColor = UIColor.ows_signalBlueColor;
 
     UIView *edgesView = [UIView containerView];
     [self.view addSubview:edgesView];
@@ -61,7 +61,7 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
         [OWSFlatButton buttonWithTitle:NSLocalizedString(@"SCREEN_LOCK_UNLOCK_SIGNAL",
                                            @"Label for button on lock screen that lets users unlock Signal.")
                                   font:[OWSFlatButton fontForHeight:kButtonHeight]
-                            titleColor:[UIColor ows_materialBlueColor]
+                            titleColor:UIColor.ows_signalBlueColor
                        backgroundColor:[UIColor whiteColor]
                                 target:self
                               selector:@selector(showUnlockUI)];

@@ -158,8 +158,8 @@ class AudioMessageView: UIStackView {
 
     private lazy var playedColor: UIColor = isIncoming ? .init(rgbHex: 0x92caff) : .ows_white
     private lazy var unplayedColor: UIColor =
-        isIncoming ? Theme.secondaryColor.withAlphaComponent(0.3) : UIColor.ows_white.withAlphaComponent(0.6)
-    private lazy var thumbColor: UIColor = isIncoming ? Theme.secondaryColor : .ows_white
+        isIncoming ? Theme.secondaryTextAndIconColor.withAlphaComponent(0.3) : UIColor.ows_white.withAlphaComponent(0.6)
+    private lazy var thumbColor: UIColor = isIncoming ? Theme.secondaryTextAndIconColor : .ows_white
 
     @objc
     static var bubbleHeight: CGFloat {

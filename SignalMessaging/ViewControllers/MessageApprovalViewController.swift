@@ -85,7 +85,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         textView = OWSTextView()
         textView.delegate = self
         textView.backgroundColor = Theme.backgroundColor
-        textView.textColor = Theme.primaryColor
+        textView.textColor = Theme.primaryTextColor
         textView.font = UIFont.ows_dynamicTypeBody
         textView.text = self.initialMessageText
         textView.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
@@ -127,12 +127,12 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         let toLabel = UILabel()
         toLabel.text = NSLocalizedString("MESSAGE_APPROVAL_RECIPIENT_LABEL",
                                          comment: "Label for the recipient name in the 'message approval' dialog.")
-        toLabel.textColor = Theme.secondaryColor
+        toLabel.textColor = Theme.secondaryTextAndIconColor
         toLabel.font = font
         recipientRow.addSubview(toLabel)
 
         let nameLabel = UILabel()
-        nameLabel.textColor = Theme.primaryColor
+        nameLabel.textColor = Theme.primaryTextColor
         nameLabel.font = font
         nameLabel.lineBreakMode = .byTruncatingTail
         recipientRow.addSubview(nameLabel)

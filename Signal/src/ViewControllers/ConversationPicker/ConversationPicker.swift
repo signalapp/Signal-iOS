@@ -712,7 +712,7 @@ private class ConversationPickerFooterView: UIView {
     lazy var namesLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.ows_dynamicTypeBody
-        label.textColor = Theme.secondaryColor
+        label.textColor = Theme.secondaryTextAndIconColor
 
         label.setContentHuggingLow()
 

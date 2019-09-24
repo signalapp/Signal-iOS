@@ -334,13 +334,13 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                         label.text
                             = NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS", @"switch label");
                         label.font = [UIFont ows_regularFontWithSize:18.f];
-                        label.textColor = [Theme primaryColor];
+                        label.textColor = Theme.primaryTextColor;
                         [label setContentHuggingHorizontalHigh];
 
                         UIImage *icon = [UIImage imageNamed:@"ic_secret_sender_indicator"];
                         UIImageView *iconView = [[UIImageView alloc]
                             initWithImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
-                        iconView.tintColor = Theme.secondaryColor;
+                        iconView.tintColor = Theme.secondaryTextAndIconColor;
                         [iconView setContentHuggingHorizontalHigh];
 
                         UIView *spacer = [UIView new];

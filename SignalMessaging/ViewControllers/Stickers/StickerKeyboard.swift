@@ -152,7 +152,7 @@ public class StickerKeyboard: CustomKeyboard {
     }
 
     private func buildHeaderButton(_ imageName: String, block: @escaping () -> Void) -> UIView {
-        let button = OWSButton(imageName: imageName, tintColor: Theme.secondaryColor, block: block)
+        let button = OWSButton(imageName: imageName, tintColor: Theme.secondaryTextAndIconColor, block: block)
         button.setContentHuggingHigh()
         button.setCompressionResistanceHigh()
         return button

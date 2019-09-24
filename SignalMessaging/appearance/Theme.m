@@ -213,27 +213,32 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
     return (Theme.isDarkThemeEnabled ? Theme.darkThemeBackgroundColor : UIColor.ows_whiteColor);
 }
 
-+ (UIColor *)darkThemeOffBackgroundColor
++ (UIColor *)washColor
 {
-    return [UIColor colorWithWhite:0.2f alpha:1.f];
+    return (Theme.isDarkThemeEnabled ? self.darkThemeWashColor : UIColor.ows_gray05Color);
 }
 
-+ (UIColor *)offBackgroundColor
++ (UIColor *)darkThemeWashColor
 {
-    return (Theme.isDarkThemeEnabled ? self.darkThemeOffBackgroundColor : UIColor.ows_gray05Color);
+    return UIColor.ows_gray80Color;
 }
 
-+ (UIColor *)primaryColor
++ (UIColor *)primaryTextColor
 {
     return (Theme.isDarkThemeEnabled ? Theme.darkThemePrimaryColor : UIColor.ows_gray90Color);
 }
 
-+ (UIColor *)secondaryColor
++ (UIColor *)primaryIconColor
 {
-    return (Theme.isDarkThemeEnabled ? Theme.darkThemeSecondaryColor : UIColor.ows_gray60Color);
+    return (Theme.isDarkThemeEnabled ? self.darkThemeNavbarIconColor : UIColor.ows_gray75Color);
 }
 
-+ (UIColor *)darkThemeSecondaryColor
++ (UIColor *)secondaryTextAndIconColor
+{
+    return (Theme.isDarkThemeEnabled ? Theme.darkThemeSecondaryTextAndIconColor : UIColor.ows_gray60Color);
+}
+
++ (UIColor *)darkThemeSecondaryTextAndIconColor
 {
     return UIColor.ows_gray25Color;
 }
@@ -255,7 +260,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 + (UIColor *)hairlineColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray25Color);
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray15Color);
 }
 
 + (UIColor *)outlineColor
@@ -275,19 +280,14 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
     return UIColor.ows_blackColor;
 }
 
-+ (UIColor *)navbarIconColor
-{
-    return (Theme.isDarkThemeEnabled ? self.darkThemeNavbarIconColor : UIColor.ows_gray60Color);
-}
-
 + (UIColor *)darkThemeNavbarIconColor
 {
-    return UIColor.ows_gray25Color;
+    return UIColor.ows_gray15Color;
 }
 
 + (UIColor *)navbarTitleColor
 {
-    return Theme.primaryColor;
+    return Theme.primaryTextColor;
 }
 
 + (UIColor *)toolbarBackgroundColor
@@ -322,7 +322,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 + (UIColor *)cursorColor
 {
-    return Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_materialBlueColor;
+    return Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_signalBlueColor;
 }
 
 + (UIColor *)darkThemeBackgroundColor
@@ -380,7 +380,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 + (UIColor *)searchFieldBackgroundColor
 {
-    return Theme.offBackgroundColor;
+    return Theme.washColor;
 }
 
 #pragma mark -

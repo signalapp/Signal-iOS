@@ -113,7 +113,7 @@ public class LongTextViewController: OWSViewController {
         messageTextView.showsHorizontalScrollIndicator = false
         messageTextView.showsVerticalScrollIndicator = true
         messageTextView.isUserInteractionEnabled = true
-        messageTextView.textColor = Theme.primaryColor
+        messageTextView.textColor = Theme.primaryTextColor
         if let displayableText = displayableText {
             messageTextView.text = fullText
             messageTextView.textAlignment = displayableText.fullTextNaturalAlignment
@@ -124,8 +124,8 @@ public class LongTextViewController: OWSViewController {
         }
 
         let linkTextAttributes: [NSAttributedString.Key: Any] = [
-            NSAttributedString.Key.foregroundColor: Theme.primaryColor,
-            NSAttributedString.Key.underlineColor: Theme.primaryColor,
+            NSAttributedString.Key.foregroundColor: Theme.primaryTextColor,
+            NSAttributedString.Key.underlineColor: Theme.primaryTextColor,
             NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue
         ]
         messageTextView.linkTextAttributes = linkTextAttributes

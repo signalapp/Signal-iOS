@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIColor *foregroundColor = Theme.placeholderColor;
     searchBar.barTintColor = Theme.backgroundColor;
-    searchBar.tintColor = Theme.primaryColor;
+    searchBar.tintColor = Theme.primaryTextColor;
     searchBar.barStyle = Theme.barStyle;
 
     // Hide searchBar border.
@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
         if ([view isKindOfClass:[UITextField class]]) {
             UITextField *textField = (UITextField *)view;
             textField.backgroundColor = Theme.searchFieldBackgroundColor;
-            textField.textColor = Theme.primaryColor;
+            textField.textColor = Theme.primaryTextColor;
             textField.keyboardAppearance = Theme.keyboardAppearance;
         }
     }];

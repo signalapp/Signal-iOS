@@ -8,14 +8,14 @@ import Lottie
 @objc
 class AudioWaveformProgressView: UIView {
     @objc
-    var playedColor: UIColor = Theme.primaryColor {
+    var playedColor: UIColor = Theme.primaryTextColor {
         didSet {
             playedShapeLayer.fillColor = playedColor.cgColor
         }
     }
 
     @objc
-    var unplayedColor: UIColor = Theme.secondaryColor {
+    var unplayedColor: UIColor = Theme.secondaryTextAndIconColor {
         didSet {
             unplayedShapeLayer.fillColor = unplayedColor.cgColor
 
@@ -25,7 +25,7 @@ class AudioWaveformProgressView: UIView {
     }
 
     @objc
-    var thumbColor: UIColor = Theme.primaryColor {
+    var thumbColor: UIColor = Theme.primaryTextColor {
         didSet {
             thumbImageView.tintColor = thumbColor
         }

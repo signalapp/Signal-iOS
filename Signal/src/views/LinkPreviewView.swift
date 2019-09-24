@@ -573,7 +573,7 @@ public class LinkPreviewView: UIStackView {
         let label = UILabel()
         label.text = text
         label.font = UIFont.systemFont(ofSize: sentTitleFontSizePoints).ows_mediumWeight()
-        label.textColor = Theme.primaryColor
+        label.textColor = Theme.primaryTextColor
         label.numberOfLines = sentTitleLineCount
         label.lineBreakMode = .byWordWrapping
         return label
@@ -588,7 +588,7 @@ public class LinkPreviewView: UIStackView {
             label.text = NSLocalizedString("LINK_PREVIEW_UNKNOWN_DOMAIN", comment: "Label for link previews with an unknown host.").uppercased()
         }
         label.font = UIFont.systemFont(ofSize: sentDomainFontSizePoints)
-        label.textColor = Theme.secondaryColor
+        label.textColor = Theme.secondaryTextAndIconColor
         return label
     }
 
@@ -650,7 +650,7 @@ public class LinkPreviewView: UIStackView {
             title.count > 0 {
             let label = UILabel()
             label.text = title
-            label.textColor = Theme.primaryColor
+            label.textColor = Theme.primaryTextColor
             label.font = UIFont.ows_dynamicTypeBody
             textStack.addArrangedSubview(label)
         }
@@ -658,7 +658,7 @@ public class LinkPreviewView: UIStackView {
             displayDomain.count > 0 {
             let label = UILabel()
             label.text = displayDomain.uppercased()
-            label.textColor = Theme.secondaryColor
+            label.textColor = Theme.secondaryTextAndIconColor
             label.font = UIFont.ows_dynamicTypeCaption1
             textStack.addArrangedSubview(label)
         }
@@ -684,7 +684,7 @@ public class LinkPreviewView: UIStackView {
         cancelButton.setImage(cancelImage, for: .normal)
         cancelButton.addTarget(self, action: #selector(didTapCancel(sender:)), for: .touchUpInside)
         self.cancelButton = cancelButton
-        cancelButton.tintColor = Theme.secondaryColor
+        cancelButton.tintColor = Theme.secondaryTextAndIconColor
         cancelButton.setContentHuggingHigh()
         cancelButton.setCompressionResistanceHigh()
         cancelStack.addArrangedSubview(cancelButton)
@@ -693,7 +693,7 @@ public class LinkPreviewView: UIStackView {
 
         // Stroke
         let strokeView = UIView()
-        strokeView.backgroundColor = Theme.secondaryColor
+        strokeView.backgroundColor = Theme.secondaryTextAndIconColor
         rightStack.addSubview(strokeView)
         strokeView.autoPinWidthToSuperview()
         strokeView.autoPinEdge(toSuperviewEdge: .bottom)
@@ -753,7 +753,7 @@ public class LinkPreviewView: UIStackView {
 
         // Stroke
         let strokeView = UIView()
-        strokeView.backgroundColor = Theme.secondaryColor
+        strokeView.backgroundColor = Theme.secondaryTextAndIconColor
         self.addSubview(strokeView)
         strokeView.autoPinWidthToSuperview(withMargin: 12)
         strokeView.autoPinEdge(toSuperviewEdge: .bottom)
@@ -849,7 +849,7 @@ public class LinkPreviewView: UIStackView {
     public func addBorderViews(bubbleView: OWSBubbleView) {
         if let heroImageView = self.heroImageView {
             let borderView = OWSBubbleShapeView(draw: ())
-            borderView.strokeColor = Theme.primaryColor
+            borderView.strokeColor = Theme.primaryTextColor
             borderView.strokeThickness = CGHairlineWidthFraction(1.8)
             heroImageView.addSubview(borderView)
             bubbleView.addPartnerView(borderView)

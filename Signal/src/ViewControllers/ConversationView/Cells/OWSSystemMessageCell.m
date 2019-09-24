@@ -105,7 +105,7 @@ typedef void (^SystemMessageActionBlock)(void);
     contentStackView.alignment = UIStackViewAlignmentCenter;
 
     self.button = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.button setTitleColor:[UIColor ows_darkSkyBlueColor] forState:UIControlStateNormal];
+    [self.button setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
     self.button.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.button.layer.cornerRadius = 4.f;
     [self.button addTarget:self action:@selector(buttonWasPressed:) forControlEvents:UIControlEventTouchUpInside];
@@ -239,14 +239,14 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (UIColor *)textColor
 {
-    return Theme.secondaryColor;
+    return Theme.secondaryTextAndIconColor;
 }
 
 - (UIColor *)iconColorForInteraction:(TSInteraction *)interaction
 {
     // "Phone", "Shield" and "Hourglass" icons have a lot of "ink" so they
     // are less dark for balance.
-    return Theme.secondaryColor;
+    return Theme.secondaryTextAndIconColor;
 }
 
 - (nullable UIImage *)iconForInteraction:(TSInteraction *)interaction

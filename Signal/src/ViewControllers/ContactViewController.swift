@@ -232,7 +232,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         }
         let backIconView = UIImageView(image: backIconImage.withRenderingMode(.alwaysTemplate))
         backIconView.contentMode = .scaleAspectFit
-        backIconView.tintColor = Theme.primaryColor.withAlphaComponent(0.6)
+        backIconView.tintColor = Theme.primaryTextColor.withAlphaComponent(0.6)
         backButton.addSubview(backIconView)
         backIconView.autoCenterInSuperview()
 
@@ -248,7 +248,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         let nameLabel = UILabel()
         nameLabel.text = contactShare.displayName
         nameLabel.font = UIFont.ows_dynamicTypeTitle1
-        nameLabel.textColor = Theme.primaryColor
+        nameLabel.textColor = Theme.primaryTextColor
         nameLabel.lineBreakMode = .byTruncatingTail
         nameLabel.textAlignment = .center
         topView.addSubview(nameLabel)
@@ -262,7 +262,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             let phoneNumberLabel = UILabel()
             phoneNumberLabel.text = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber)
             phoneNumberLabel.font = UIFont.ows_dynamicTypeFootnote
-            phoneNumberLabel.textColor = Theme.primaryColor
+            phoneNumberLabel.textColor = Theme.primaryTextColor
             phoneNumberLabel.lineBreakMode = .byTruncatingTail
             phoneNumberLabel.textAlignment = .center
             topView.addSubview(phoneNumberLabel)
@@ -413,7 +413,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         let label = UILabel()
         label.text = labelText
         label.font = UIFont.ows_dynamicTypeBody
-        label.textColor = UIColor.ows_materialBlue
+        label.textColor = UIColor.ows_signalBlue
         label.lineBreakMode = .byTruncatingTail
         row.addSubview(label)
         label.autoPinTopToSuperviewMargin()
@@ -443,14 +443,14 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             return button
         }
         let imageView = UIImageView(image: image.withRenderingMode(.alwaysTemplate))
-        imageView.tintColor = Theme.primaryColor.withAlphaComponent(0.6)
+        imageView.tintColor = Theme.primaryTextColor.withAlphaComponent(0.6)
         circleView.addSubview(imageView)
         imageView.autoCenterInSuperview()
 
         let label = UILabel()
         label.text = text
         label.font = UIFont.ows_dynamicTypeCaption2
-        label.textColor = Theme.primaryColor
+        label.textColor = Theme.primaryTextColor
         label.lineBreakMode = .byTruncatingTail
         label.textAlignment = .center
         button.addSubview(label)
@@ -472,7 +472,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         let label = UILabel()
         label.text = text
         label.font = UIFont.ows_dynamicTypeBody
-        label.textColor = UIColor.ows_materialBlue
+        label.textColor = UIColor.ows_signalBlue
         label.lineBreakMode = .byTruncatingTail
         label.textAlignment = .center
         button.addSubview(label)

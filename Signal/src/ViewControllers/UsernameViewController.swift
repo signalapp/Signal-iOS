@@ -75,7 +75,7 @@ class UsernameViewController: OWSViewController {
 
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("USERNAME_FIELD", comment: "Label for the username field in the username view.")
-        titleLabel.textColor = Theme.primaryColor
+        titleLabel.textColor = Theme.primaryTextColor
         titleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
 
         usernameRow.addSubview(titleLabel)
@@ -83,7 +83,7 @@ class UsernameViewController: OWSViewController {
         titleLabel.autoPinHeightToSuperviewMargins()
 
         usernameTextField.font = .ows_dynamicTypeBodyClamped
-        usernameTextField.textColor = Theme.primaryColor
+        usernameTextField.textColor = Theme.primaryTextColor
         usernameTextField.autocorrectionType = .no
         usernameTextField.autocapitalizationType = .none
         usernameTextField.placeholder = NSLocalizedString("USERNAME_PLACEHOLDER",
@@ -105,7 +105,7 @@ class UsernameViewController: OWSViewController {
         stackView.addArrangedSubview(errorRow)
         errorRow.isHidden = true
 
-        errorLabel.textColor = .ows_red
+        errorLabel.textColor = .ows_accentRed
         errorLabel.textAlignment = .center
         errorLabel.numberOfLines = 0
         errorLabel.lineBreakMode = .byWordWrapping
@@ -121,7 +121,7 @@ class UsernameViewController: OWSViewController {
         stackView.addArrangedSubview(infoRow)
 
         let infoLabel = UILabel()
-        infoLabel.textColor = Theme.secondaryColor
+        infoLabel.textColor = Theme.secondaryTextAndIconColor
         infoLabel.text = NSLocalizedString("USERNAME_DESCRIPTION", comment: "An explanation of how usernames work on the username view.")
         infoLabel.font = .ows_dynamicTypeCaption1Clamped
         infoLabel.numberOfLines = 0

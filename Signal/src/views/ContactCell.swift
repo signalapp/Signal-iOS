@@ -124,8 +124,8 @@ class ContactCell: UITableViewCell {
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
-        titleLabel.textColor = Theme.primaryColor
-        subtitleLabel.textColor = Theme.secondaryColor
+        titleLabel.textColor = Theme.primaryTextColor
+        subtitleLabel.textColor = Theme.secondaryTextAndIconColor
 
         OWSTableItem.configureCell(self)
     }

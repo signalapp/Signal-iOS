@@ -82,9 +82,9 @@ NS_ASSUME_NONNULL_BEGIN
     UIColor *backgroundColor;
     if (self.hasUnreadMessages) {
         foregroundColor = UIColor.whiteColor;
-        backgroundColor = UIColor.ows_materialBlueColor;
+        backgroundColor = UIColor.ows_signalBlueColor;
     } else {
-        foregroundColor = UIColor.ows_materialBlueColor;
+        foregroundColor = UIColor.ows_signalBlueColor;
         backgroundColor = Theme.scrollButtonBackgroundColor;
     }
 

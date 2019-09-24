@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
                                  UILabel *countryCodeLabel = [UILabel new];
                                  countryCodeLabel.text = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
                                  countryCodeLabel.font = [UIFont ows_regularFontWithSize:16.f];
-                                 countryCodeLabel.textColor = Theme.secondaryColor;
+                                 countryCodeLabel.textColor = Theme.secondaryTextAndIconColor;
                                  [countryCodeLabel sizeToFit];
                                  cell.accessoryView = countryCodeLabel;
 

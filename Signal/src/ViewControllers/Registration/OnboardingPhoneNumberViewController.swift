@@ -40,7 +40,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
         let rowHeight: CGFloat = 40
 
-        countryNameLabel.textColor = Theme.primaryColor
+        countryNameLabel.textColor = Theme.primaryTextColor
         countryNameLabel.font = UIFont.ows_dynamicTypeBodyClamped
         countryNameLabel.setContentHuggingHorizontalLow()
         countryNameLabel.setCompressionResistanceHorizontalLow()
@@ -68,7 +68,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         _ = countryRow.addBottomStroke()
         countryRow.accessibilityIdentifier = "onboarding.phoneNumber." + "countryRow"
 
-        callingCodeLabel.textColor = Theme.primaryColor
+        callingCodeLabel.textColor = Theme.primaryTextColor
         callingCodeLabel.font = UIFont.ows_dynamicTypeBodyClamped
         callingCodeLabel.setContentHuggingHorizontalHigh()
         callingCodeLabel.setCompressionResistanceHorizontalHigh()
@@ -81,14 +81,14 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         phoneNumberTextField.textAlignment = .left
         phoneNumberTextField.delegate = self
         phoneNumberTextField.keyboardType = .numberPad
-        phoneNumberTextField.textColor = Theme.primaryColor
+        phoneNumberTextField.textColor = Theme.primaryTextColor
         phoneNumberTextField.font = UIFont.ows_dynamicTypeBodyClamped
         phoneNumberTextField.setContentHuggingHorizontalLow()
         phoneNumberTextField.setCompressionResistanceHorizontalLow()
         phoneNumberTextField.accessibilityIdentifier = "onboarding.phoneNumber." + "phoneNumberTextField"
 
         phoneStrokeNormal = phoneNumberTextField.addBottomStroke()
-        phoneStrokeError = phoneNumberTextField.addBottomStroke(color: .ows_destructiveRed, strokeWidth: 2)
+        phoneStrokeError = phoneNumberTextField.addBottomStroke(color: .ows_accentRed, strokeWidth: 2)
 
         let phoneNumberRow = UIStackView(arrangedSubviews: [
             callingCodeLabel,
@@ -102,7 +102,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
         validationWarningLabel.text = NSLocalizedString("ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING",
                                                         comment: "Label indicating that the phone number is invalid in the 'onboarding phone number' view.")
-        validationWarningLabel.textColor = .ows_destructiveRed
+        validationWarningLabel.textColor = .ows_accentRed
         validationWarningLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
         validationWarningLabel.autoSetDimension(.height, toSize: validationWarningLabel.font.lineHeight)
         validationWarningLabel.accessibilityIdentifier = "onboarding.phoneNumber." + "validationWarningLabel"

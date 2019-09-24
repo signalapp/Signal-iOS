@@ -121,7 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
     [super traitCollectionDidChange:previousTraitCollection];
 
     self.view.backgroundColor = Theme.backgroundColor;
-    self.scanningInstructionsLabel.textColor = Theme.primaryColor;
+    self.scanningInstructionsLabel.textColor = Theme.primaryTextColor;
 }
 
 #pragma mark - OWSQRScannerDelegate

@@ -118,9 +118,9 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.subtitleLabel.font = [UIFont ows_regularFontWithSize:11.f];
     self.accessoryLabel.font = [UIFont ows_mediumFontWithSize:13.f];
 
-    self.nameLabel.textColor = [Theme primaryColor];
-    self.profileNameLabel.textColor = [Theme secondaryColor];
-    self.subtitleLabel.textColor = [Theme secondaryColor];
+    self.nameLabel.textColor = Theme.primaryTextColor;
+    self.profileNameLabel.textColor = Theme.secondaryTextAndIconColor;
+    self.subtitleLabel.textColor = Theme.secondaryTextAndIconColor;
     self.accessoryLabel.textColor = Theme.middleGrayColor;
 }
 
@@ -176,7 +176,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     NSAttributedString *attributedText =
         [[NSAttributedString alloc] initWithString:threadName
                                         attributes:@{
-                                            NSForegroundColorAttributeName : [Theme primaryColor],
+                                            NSForegroundColorAttributeName : Theme.primaryTextColor,
                                         }];
     self.nameLabel.attributedText = attributedText;
 

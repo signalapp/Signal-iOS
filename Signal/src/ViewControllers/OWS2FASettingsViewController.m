@@ -119,7 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (UILabel *)createLabelWithText:(NSString *)text
 {
     UILabel *label = [UILabel new];
-    label.textColor = [Theme primaryColor];
+    label.textColor = Theme.primaryTextColor;
     label.text = text;
     label.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
     label.numberOfLines = 0;
@@ -132,7 +132,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)createPinTextfield
 {
     self.pinTextfield = [OWSTextField new];
-    self.pinTextfield.textColor = [Theme primaryColor];
+    self.pinTextfield.textColor = Theme.primaryTextColor;
     self.pinTextfield.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(30.f, 36.f)];
     self.pinTextfield.textAlignment = NSTextAlignmentCenter;
     self.pinTextfield.keyboardType = UIKeyboardTypeNumberPad;
@@ -227,7 +227,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.errorLabel = [UILabel new];
     self.errorLabel.font = UIFont.ows_dynamicTypeCaption1ClampedFont;
     self.errorLabel.textAlignment = NSTextAlignmentCenter;
-    self.errorLabel.textColor = UIColor.ows_redColor;
+    self.errorLabel.textColor = UIColor.ows_accentRedColor;
     self.errorLabel.numberOfLines = 0;
     self.errorLabel.lineBreakMode = NSLineBreakByWordWrapping;
 
