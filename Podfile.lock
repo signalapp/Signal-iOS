@@ -37,7 +37,7 @@ PODS:
     - SignalCoreKit
   - GRDB.swift/SQLCipher (4.3.0):
     - SQLCipher (>= 3.4.0)
-  - GRKOpenSSLFramework (1.0.2.19)
+  - GRKOpenSSLFramework (1.0.2.12)
   - HKDFKit (0.0.4):
     - CocoaLumberjack
     - SignalCoreKit
@@ -224,7 +224,7 @@ DEPENDENCIES:
   - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit`)
   - Curve25519Kit/Tests (from `https://github.com/signalapp/Curve25519Kit`)
   - GRDB.swift/SQLCipher
-  - GRKOpenSSLFramework (from `https://github.com/signalapp/GRKOpenSSLFramework`, branch `mkirk/1.0.2t`)
+  - GRKOpenSSLFramework (from `https://github.com/signalapp/GRKOpenSSLFramework`)
   - HKDFKit (from `https://github.com/signalapp/HKDFKit.git`)
   - HKDFKit/Tests (from `https://github.com/signalapp/HKDFKit.git`)
   - lottie-ios
@@ -267,7 +267,6 @@ EXTERNAL SOURCES:
   Curve25519Kit:
     :git: https://github.com/signalapp/Curve25519Kit
   GRKOpenSSLFramework:
-    :branch: mkirk/1.0.2t
     :git: https://github.com/signalapp/GRKOpenSSLFramework
   HKDFKit:
     :git: https://github.com/signalapp/HKDFKit.git
@@ -295,7 +294,7 @@ CHECKOUT OPTIONS:
     :commit: 3d09b9480f60e4f95ecbbc6f83d9449c6833d95e
     :git: https://github.com/signalapp/Curve25519Kit
   GRKOpenSSLFramework:
-    :commit: 4d9944de35ed56a95879c5a8a1b410ae03f71d57
+    :commit: b799c27e7927e5304ec1e4ad53c6d33c6fd1cae7
     :git: https://github.com/signalapp/GRKOpenSSLFramework
   HKDFKit:
     :commit: b6985abcacda0292b82785ba93b8be47c0d608b6
@@ -322,7 +321,7 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
   GRDB.swift: 083ec261ce573888d8ed2eae1b49bc0bf40d9e2c
-  GRKOpenSSLFramework: 4abc733a8fcbc37060619a86a54202d2938dd70e
+  GRKOpenSSLFramework: 8a3735ad41e7dc1daff460467bccd32ca5d6ae3e
   HKDFKit: bd6b9566654253aa45ef60a205979ec291f00641
   libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
   libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
@@ -342,6 +341,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: 237d5a49f4b7cc6f72d107bd40b372f72f433475
+PODFILE CHECKSUM: 351fa7aa9d59a636737fb4867d36a4ac0d2fd011
 
 COCOAPODS: 1.7.5
