@@ -194,6 +194,7 @@ extension UIDatabaseObserver: TransactionObserver {
     // database snapshot.
     // See: https://github.com/groue/GRDB.swift/issues/619
     func fastForwardDatabaseSnapshot(db: Database) throws {
+        AssertIsOnMainThread()
         // [1] end the old transaction from the old db state
         try db.commit()
 
