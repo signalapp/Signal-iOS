@@ -86,7 +86,7 @@ class ReminderView: UIView {
 
         self.addSubview(container)
         container.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
-        container.ows_autoPinToSuperviewEdges()
+        container.autoPinEdgesToSuperviewEdges()
 
         // Label
         label.font = UIFont.ows_dynamicTypeSubheadline
