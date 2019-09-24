@@ -638,7 +638,7 @@ typedef enum : NSUInteger {
     self.loadMoreHeader = [UILabel new];
     self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
         @"Indicates that the app is loading more messages in this conversation.");
-    self.loadMoreHeader.textColor = [UIColor ows_materialBlueColor];
+    self.loadMoreHeader.textColor = UIColor.ows_signalBlueColor;
     self.loadMoreHeader.textAlignment = NSTextAlignmentCenter;
     self.loadMoreHeader.font = [UIFont ows_mediumFontWithSize:16.f];
     [self.collectionView addSubview:self.loadMoreHeader];
@@ -956,7 +956,7 @@ typedef enum : NSUInteger {
         }
 
         [self createBannerWithTitle:message
-                        bannerColor:[UIColor ows_destructiveRedColor]
+                        bannerColor:UIColor.ows_accentRedColor
                         tapSelector:@selector(noLongerVerifiedBannerViewWasTapped:)];
         return;
     }
@@ -986,7 +986,7 @@ typedef enum : NSUInteger {
 
     if (blockStateMessage) {
         [self createBannerWithTitle:blockStateMessage
-                        bannerColor:[UIColor ows_destructiveRedColor]
+                        bannerColor:UIColor.ows_accentRedColor
                         tapSelector:@selector(blockBannerViewWasTapped:)];
         return;
     }
@@ -1512,11 +1512,11 @@ typedef enum : NSUInteger {
         if (OWSWindowManager.sharedManager.hasCall) {
             callButton.enabled = NO;
             callButton.userInteractionEnabled = NO;
-            callButton.tintColor = [Theme.navbarIconColor colorWithAlphaComponent:0.7];
+            callButton.tintColor = [Theme.primaryIconColor colorWithAlphaComponent:0.7];
         } else {
             callButton.enabled = YES;
             callButton.userInteractionEnabled = YES;
-            callButton.tintColor = Theme.navbarIconColor;
+            callButton.tintColor = Theme.primaryIconColor;
         }
 
         UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
@@ -1549,7 +1549,7 @@ typedef enum : NSUInteger {
         DisappearingTimerConfigurationView *timerView = [[DisappearingTimerConfigurationView alloc]
             initWithDurationSeconds:self.disappearingMessagesConfiguration.durationSeconds];
         timerView.delegate = self;
-        timerView.tintColor = Theme.navbarIconColor;
+        timerView.tintColor = Theme.primaryIconColor;
 
         // As of iOS11, we can size barButton item custom views with autoLayout.
         // Before that, though we can still use autoLayout *within* the customView,

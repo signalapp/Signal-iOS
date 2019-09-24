@@ -6,7 +6,6 @@
 #import "ConversationViewItem.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/OWSUnreadIndicator.h>
-#import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIView+OWS.h>
 
@@ -79,8 +78,8 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     OWSAssertDebug(conversationStyle);
     OWSAssertDebug(viewItem.unreadIndicator || viewItem.shouldShowDate);
 
-    self.titleLabel.textColor = Theme.primaryColor;
-    self.subtitleLabel.textColor = Theme.primaryColor;
+    self.titleLabel.textColor = Theme.primaryTextColor;
+    self.subtitleLabel.textColor = Theme.primaryTextColor;
 
     [self configureLabelsWithViewItem:viewItem];
 
@@ -116,7 +115,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     OWSAssertDebug(viewItem);
 
     if (viewItem.unreadIndicator) {
-        return Theme.secondaryColor;
+        return Theme.secondaryTextAndIconColor;
     } else {
         return Theme.hairlineColor;
     }

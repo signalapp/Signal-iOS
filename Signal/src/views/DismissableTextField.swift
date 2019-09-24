@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -18,7 +18,7 @@ class DismissInputBar: UIToolbar {
         let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let dismissButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(didTapDone))
         dismissButton.imageInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 40)
-        dismissButton.tintColor = UIColor.ows_systemPrimaryButton
+        dismissButton.tintColor = UIColor.ows_signalBlue
 
         self.items = [spacer, dismissButton]
         self.isTranslucent = false

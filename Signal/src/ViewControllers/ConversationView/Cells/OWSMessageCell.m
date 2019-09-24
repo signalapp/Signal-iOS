@@ -207,7 +207,7 @@ NS_ASSUME_NONNULL_BEGIN
             self.sendFailureBadgeView = [UIImageView new];
             self.sendFailureBadgeView.image =
                 [self.sendFailureBadge imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-            self.sendFailureBadgeView.tintColor = [UIColor ows_destructiveRedColor];
+            self.sendFailureBadgeView.tintColor = UIColor.ows_accentRedColor;
             [self.contentView addSubview:self.sendFailureBadgeView];
 
             CGFloat sendFailureBadgeBottomMargin

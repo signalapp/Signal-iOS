@@ -164,7 +164,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.unreadLabel setCompressionResistanceHigh];
 
     self.unreadBadge = [NeverClearView new];
-    self.unreadBadge.backgroundColor = [UIColor ows_materialBlueColor];
+    self.unreadBadge.backgroundColor = UIColor.ows_signalBlueColor;
     [self.unreadBadge addSubview:self.unreadLabel];
     [self.unreadLabel autoCenterInSuperview];
     [self.unreadBadge setContentHuggingHigh];
@@ -246,9 +246,9 @@ NS_ASSUME_NONNULL_BEGIN
         self.dateTimeLabel.text = nil;
     }
 
-    UIColor *textColor = [Theme secondaryColor];
+    UIColor *textColor = Theme.secondaryTextAndIconColor;
     if (hasUnreadMessages && overrideSnippet == nil) {
-        textColor = [Theme primaryColor];
+        textColor = Theme.primaryTextColor;
         self.dateTimeLabel.font = self.dateTimeFont.ows_mediumWeight;
     } else {
         self.dateTimeLabel.font = self.dateTimeFont;
@@ -328,7 +328,7 @@ NS_ASSUME_NONNULL_BEGIN
                     break;
                 case MessageReceiptStatusFailed:
                     statusIndicatorImage = [UIImage imageNamed:@"message_status_failed"];
-                    messageStatusViewTintColor = [UIColor ows_destructiveRedColor];
+                    messageStatusViewTintColor = UIColor.ows_accentRedColor;
                     break;
             }
         }
@@ -378,7 +378,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                 @"Table cell subtitle label for a conversation the user has blocked.")
                                  attributes:@{
                                      NSFontAttributeName : self.snippetFont.ows_mediumWeight,
-                                     NSForegroundColorAttributeName : [Theme primaryColor],
+                                     NSForegroundColorAttributeName : Theme.primaryTextColor,
                                  }]];
     } else if (thread.hasPendingMessageRequest) {
         // If you haven't accepted the message request for this thread, don't show the latest message
@@ -389,7 +389,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        @"Table cell subtitle label for a conversation the user has not accepted.")
                         attributes:@{
                             NSFontAttributeName : self.snippetFont.ows_mediumWeight,
-                            NSForegroundColorAttributeName : [Theme primaryColor],
+                            NSForegroundColorAttributeName : Theme.primaryTextColor,
                         }]];
     } else {
         if ([thread isMuted]) {
@@ -398,8 +398,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                         attributes:@{
                                                             NSFontAttributeName : [UIFont ows_elegantIconsFont:9.f],
                                                             NSForegroundColorAttributeName :
-                                                                (hasUnreadMessages ? [Theme primaryColor]
-                                                                                   : [Theme secondaryColor]),
+                                                                (hasUnreadMessages ? Theme.primaryTextColor
+                                                                                   : Theme.secondaryTextAndIconColor),
                                                         }]];
         }
         NSString *displayableText = thread.lastMessageText;
@@ -411,8 +411,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 (hasUnreadMessages ? self.snippetFont.ows_mediumWeight
                                                                                    : self.snippetFont),
                                                             NSForegroundColorAttributeName :
-                                                                (hasUnreadMessages ? [Theme primaryColor]
-                                                                                   : [Theme secondaryColor]),
+                                                                (hasUnreadMessages ? Theme.primaryTextColor
+                                                                                   : Theme.secondaryTextAndIconColor),
                                                         }]];
         }
     }
@@ -502,7 +502,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     self.nameLabel.font = self.nameFont;
-    self.nameLabel.textColor = [Theme primaryColor];
+    self.nameLabel.textColor = Theme.primaryTextColor;
 
     ThreadViewModel *thread = self.thread;
     if (thread == nil) {

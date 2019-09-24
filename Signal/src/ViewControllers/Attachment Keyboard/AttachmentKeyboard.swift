@@ -268,7 +268,7 @@ private class RecentPhotosErrorView: UIView {
 
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
-        label.textColor = Theme.primaryColor
+        label.textColor = Theme.primaryTextColor
         label.font = .ows_dynamicTypeSubheadlineClamped
         label.textAlignment = .center
 

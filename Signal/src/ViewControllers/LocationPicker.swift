@@ -402,9 +402,9 @@ class LocationSearchResults: UITableViewController {
 
         let location = locations[indexPath.row]
         cell.textLabel?.text = location.name
-        cell.textLabel?.textColor = Theme.primaryColor
+        cell.textLabel?.textColor = Theme.primaryTextColor
         cell.detailTextLabel?.text = location.address
-        cell.detailTextLabel?.textColor = Theme.secondaryColor
+        cell.detailTextLabel?.textColor = Theme.secondaryTextAndIconColor
         cell.backgroundColor = Theme.backgroundColor
 
         return cell

@@ -38,7 +38,7 @@ private class IntroducingStickersExperienceUpgradeViewController: ExperienceUpgr
         titleLabel.text = title
         titleLabel.textAlignment = .center
         titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_mediumWeight()
-        titleLabel.textColor = Theme.primaryColor
+        titleLabel.textColor = Theme.primaryTextColor
         titleLabel.minimumScaleFactor = 0.5
         titleLabel.adjustsFontSizeToFitWidth = true
         view.addSubview(titleLabel)
@@ -50,7 +50,7 @@ private class IntroducingStickersExperienceUpgradeViewController: ExperienceUpgr
         let bodyLabel = UILabel()
         bodyLabel.text = body
         bodyLabel.font = UIFont.ows_dynamicTypeBody
-        bodyLabel.textColor = Theme.primaryColor
+        bodyLabel.textColor = Theme.primaryTextColor
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byWordWrapping
         bodyLabel.textAlignment = .center
@@ -61,7 +61,7 @@ private class IntroducingStickersExperienceUpgradeViewController: ExperienceUpgr
 
         // Icon
         let iconImageView = UIImageView()
-        iconImageView.setTemplateImageName("sticker-smiley-outline-24", tintColor: Theme.secondaryColor)
+        iconImageView.setTemplateImageName("sticker-smiley-outline-24", tintColor: Theme.secondaryTextAndIconColor)
         iconImageView.layer.minificationFilter = .trilinear
         iconImageView.layer.magnificationFilter = .trilinear
         view.addSubview(iconImageView)
@@ -75,7 +75,7 @@ private class IntroducingStickersExperienceUpgradeViewController: ExperienceUpgr
         let dismissButton = OWSFlatButton.button(title: dismissButtonTitle(),
                                                  font: UIFont.ows_dynamicTypeBody.ows_mediumWeight(),
                                                  titleColor: UIColor.white,
-                                                 backgroundColor: UIColor.ows_materialBlue,
+                                                 backgroundColor: UIColor.ows_signalBlue,
                                                  target: self,
                                                  selector: #selector(didTapDismissButton))
         dismissButton.autoSetHeightUsingFont()
@@ -165,7 +165,7 @@ private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeV
         titleLabel.text = title
         titleLabel.textAlignment = .center
         titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_semiBold()
-        titleLabel.textColor = Theme.primaryColor
+        titleLabel.textColor = Theme.primaryTextColor
         titleLabel.minimumScaleFactor = 0.5
         titleLabel.adjustsFontSizeToFitWidth = true
         view.addSubview(titleLabel)
@@ -179,7 +179,7 @@ private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeV
         let bodyLabel = UILabel()
         bodyLabel.text = body
         bodyLabel.font = UIFont.ows_dynamicTypeBody
-        bodyLabel.textColor = Theme.primaryColor
+        bodyLabel.textColor = Theme.primaryTextColor
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byWordWrapping
         bodyLabel.textAlignment = .center
@@ -192,7 +192,7 @@ private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeV
         let primaryButton = OWSFlatButton.button(title: primaryButtonTitle(),
                                                  font: UIFont.ows_dynamicTypeBody.ows_semiBold(),
                                                  titleColor: .white,
-                                                 backgroundColor: .ows_materialBlue,
+                                                 backgroundColor: .ows_signalBlue,
                                                  target: self,
                                                  selector: #selector(didTapPrimaryButton))
         primaryButton.autoSetHeightUsingFont()
@@ -205,7 +205,7 @@ private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeV
         // Secondary button
         let secondaryButton = UIButton()
         secondaryButton.setTitle(secondaryButtonTitle(), for: .normal)
-        secondaryButton.setTitleColor(.ows_materialBlue, for: .normal)
+        secondaryButton.setTitleColor(.ows_signalBlue, for: .normal)
         secondaryButton.titleLabel?.font = .ows_dynamicTypeBody
         secondaryButton.addTarget(self, action: #selector(didTapSecondaryButton), for: .touchUpInside)
         view.addSubview(secondaryButton)

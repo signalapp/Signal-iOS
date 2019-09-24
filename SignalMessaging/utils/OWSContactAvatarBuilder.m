@@ -7,7 +7,6 @@
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "TSThread.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/SSKEnvironment.h>

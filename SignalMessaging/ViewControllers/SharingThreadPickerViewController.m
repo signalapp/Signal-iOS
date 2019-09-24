@@ -6,7 +6,6 @@
 #import "Environment.h"
 #import "SignalApp.h"
 #import "ThreadUtil.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalCoreKit/NSString+OWS.h>

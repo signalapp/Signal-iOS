@@ -21,7 +21,7 @@ public class OnboardingAccountLockedViewController: OnboardingBaseViewController
             NSLocalizedString("ONBOARDING_ACCOUNT_LOCKED_EXPLANATION",
                               comment: "Explanation of the 'onboarding account locked' view."))
         explanationLabel.font = UIFont.ows_dynamicTypeBodyClamped
-        explanationLabel.textColor = Theme.primaryColor
+        explanationLabel.textColor = Theme.primaryTextColor
         explanationLabel.accessibilityIdentifier = "onboarding.accountLocked." + "explanationLabel"
 
         let okayButton = self.button(

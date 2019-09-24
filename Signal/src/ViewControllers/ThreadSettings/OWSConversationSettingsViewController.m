@@ -503,7 +503,7 @@ const CGFloat kIconViewLength = 24;
                                  UILabel *rowLabel = [UILabel new];
                                  rowLabel.text = NSLocalizedString(
                                      @"DISAPPEARING_MESSAGES", @"table cell label in conversation settings");
-                                 rowLabel.textColor = [Theme primaryColor];
+                                 rowLabel.textColor = Theme.primaryTextColor;
                                  rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
                                  rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
@@ -523,7 +523,7 @@ const CGFloat kIconViewLength = 24;
                                  UILabel *subtitleLabel = [UILabel new];
                                  subtitleLabel.text = NSLocalizedString(
                                      @"DISAPPEARING_MESSAGES_DESCRIPTION", @"subheading in conversation settings");
-                                 subtitleLabel.textColor = [Theme primaryColor];
+                                 subtitleLabel.textColor = Theme.primaryTextColor;
                                  subtitleLabel.font = [UIFont ows_dynamicTypeCaption1Font];
                                  subtitleLabel.numberOfLines = 0;
                                  subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -560,7 +560,7 @@ const CGFloat kIconViewLength = 24;
 
                             UILabel *rowLabel = strongSelf.disappearingMessagesDurationLabel;
                             [strongSelf updateDisappearingMessagesDurationLabel];
-                            rowLabel.textColor = [Theme primaryColor];
+                            rowLabel.textColor = Theme.primaryTextColor;
                             rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
                             // don't truncate useful duration info which is in the tail
                             rowLabel.lineBreakMode = NSLineBreakByTruncatingHead;
@@ -703,7 +703,7 @@ const CGFloat kIconViewLength = 24;
                             UILabel *rowLabel = [UILabel new];
                             rowLabel.text = NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
                                 @"Label for settings view that allows user to change the notification sound.");
-                            rowLabel.textColor = [Theme primaryColor];
+                            rowLabel.textColor = Theme.primaryTextColor;
                             rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
                             rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
@@ -747,7 +747,7 @@ const CGFloat kIconViewLength = 24;
                         UILabel *rowLabel = [UILabel new];
                         rowLabel.text = NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_LABEL",
                             @"label for 'mute thread' cell in conversation settings");
-                        rowLabel.textColor = [Theme primaryColor];
+                        rowLabel.textColor = Theme.primaryTextColor;
                         rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
                         rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
@@ -890,7 +890,7 @@ const CGFloat kIconViewLength = 24;
 
     UILabel *rowLabel = [UILabel new];
     rowLabel.text = name;
-    rowLabel.textColor = [Theme primaryColor];
+    rowLabel.textColor = Theme.primaryTextColor;
     rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
     rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
@@ -944,7 +944,7 @@ const CGFloat kIconViewLength = 24;
 
     if (self.isGroupThread && !self.hasSavedGroupIcon) {
         UIImageView *cameraImageView = [UIImageView new];
-        [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryColor];
+        [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryTextAndIconColor];
         [threadInfoView addSubview:cameraImageView];
 
         [cameraImageView autoSetDimensionsToSize:CGSizeMake(32, 32)];
@@ -952,7 +952,7 @@ const CGFloat kIconViewLength = 24;
         cameraImageView.backgroundColor = Theme.backgroundColor;
         cameraImageView.layer.cornerRadius = 16;
         cameraImageView.layer.shadowColor =
-            [(Theme.isDarkThemeEnabled ? Theme.darkThemeOffBackgroundColor : Theme.primaryColor) CGColor];
+            [(Theme.isDarkThemeEnabled ? Theme.darkThemeWashColor : Theme.primaryTextColor) CGColor];
         cameraImageView.layer.shadowOffset = CGSizeMake(1, 1);
         cameraImageView.layer.shadowOpacity = 0.5;
         cameraImageView.layer.shadowRadius = 4;
@@ -969,7 +969,7 @@ const CGFloat kIconViewLength = 24;
 
     UILabel *threadTitleLabel = [UILabel new];
     threadTitleLabel.text = self.threadName;
-    threadTitleLabel.textColor = [Theme primaryColor];
+    threadTitleLabel.textColor = Theme.primaryTextColor;
     threadTitleLabel.font = [UIFont ows_dynamicTypeTitle2Font];
     threadTitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [threadNameView addSubview:threadTitleLabel];
@@ -981,7 +981,7 @@ const CGFloat kIconViewLength = 24;
     const CGFloat kSubtitlePointSize = 12.f;
     void (^addSubtitle)(NSAttributedString *) = ^(NSAttributedString *subtitle) {
         UILabel *subtitleLabel = [UILabel new];
-        subtitleLabel.textColor = [Theme secondaryColor];
+        subtitleLabel.textColor = Theme.secondaryTextAndIconColor;
         subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
         subtitleLabel.attributedText = subtitle;
         subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -1099,7 +1099,7 @@ const CGFloat kIconViewLength = 24;
     OWSAssertDebug(icon);
     UIImageView *iconView = [UIImageView new];
     iconView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    iconView.tintColor = [Theme secondaryColor];
+    iconView.tintColor = Theme.secondaryTextAndIconColor;
     iconView.contentMode = UIViewContentModeScaleAspectFit;
     iconView.layer.minificationFilter = kCAFilterTrilinear;
     iconView.layer.magnificationFilter = kCAFilterTrilinear;

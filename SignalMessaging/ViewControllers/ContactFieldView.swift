@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -118,14 +118,14 @@ public class ContactFieldView: UIView {
         let nameLabel = UILabel()
         nameLabel.text = name.lowercased()
         nameLabel.font = UIFont.ows_dynamicTypeSubheadline
-        nameLabel.textColor = Theme.secondaryColor
+        nameLabel.textColor = Theme.secondaryTextAndIconColor
         nameLabel.lineBreakMode = .byTruncatingTail
         stackView.addArrangedSubview(nameLabel)
 
         let valueLabel = UILabel()
         valueLabel.text = value
         valueLabel.font = UIFont.ows_dynamicTypeBody
-        valueLabel.textColor = Theme.primaryColor
+        valueLabel.textColor = Theme.primaryTextColor
         valueLabel.lineBreakMode = .byTruncatingTail
         stackView.addArrangedSubview(valueLabel)
 
@@ -148,7 +148,7 @@ public class ContactFieldView: UIView {
         let nameLabel = UILabel()
         nameLabel.text = address.localizedLabel()
         nameLabel.font = UIFont.ows_dynamicTypeSubheadline
-        nameLabel.textColor = Theme.secondaryColor
+        nameLabel.textColor = Theme.secondaryTextAndIconColor
         nameLabel.lineBreakMode = .byTruncatingTail
         stackView.addArrangedSubview(nameLabel)
 
@@ -169,7 +169,7 @@ public class ContactFieldView: UIView {
             let nameLabel = UILabel()
             nameLabel.text = propertyName
             nameLabel.font = UIFont.ows_dynamicTypeBody
-            nameLabel.textColor = Theme.secondaryColor
+            nameLabel.textColor = Theme.secondaryTextAndIconColor
             nameLabel.lineBreakMode = .byTruncatingTail
             row.addArrangedSubview(nameLabel)
             nameLabel.setContentHuggingHigh()
@@ -178,7 +178,7 @@ public class ContactFieldView: UIView {
             let valueLabel = UILabel()
             valueLabel.text = propertyValue
             valueLabel.font = UIFont.ows_dynamicTypeBody
-            valueLabel.textColor = Theme.primaryColor
+            valueLabel.textColor = Theme.primaryTextColor
             valueLabel.lineBreakMode = .byTruncatingTail
             row.addArrangedSubview(valueLabel)
 

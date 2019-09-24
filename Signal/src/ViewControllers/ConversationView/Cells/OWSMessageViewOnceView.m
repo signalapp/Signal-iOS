@@ -10,7 +10,6 @@
 #import "OWSLabel.h"
 #import "OWSMessageFooterView.h"
 #import "Signal-Swift.h"
-#import "UIColor+OWS.h"
 #import <SignalMessaging/UIView+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -260,7 +259,7 @@ NS_ASSUME_NONNULL_BEGIN
         case ViewOnceMessageState_IncomingFailed:
             return pendingColor;
         case ViewOnceMessageState_IncomingAvailable:
-            return Theme.offBackgroundColor;
+            return Theme.washColor;
         case ViewOnceMessageState_OutgoingFailed:
             return pendingColor;
         case ViewOnceMessageState_OutgoingSending:
@@ -299,7 +298,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Invalid value.");
             // Fall through.
         case ViewOnceMessageState_IncomingExpired:
-            return Theme.offBackgroundColor;
+            return Theme.washColor;
         case ViewOnceMessageState_IncomingDownloading:
             return nil;
         case ViewOnceMessageState_IncomingFailed:
@@ -312,7 +311,7 @@ NS_ASSUME_NONNULL_BEGIN
         case ViewOnceMessageState_OutgoingSentExpired:
             return nil;
         case ViewOnceMessageState_IncomingInvalidContent:
-            return UIColor.ows_destructiveRedColor;
+            return UIColor.ows_accentRedColor;
     }
 }
 
@@ -337,7 +336,7 @@ NS_ASSUME_NONNULL_BEGIN
         case ViewOnceMessageState_OutgoingSentExpired:
             return ConversationStyle.bubbleTextColorOutgoing;
         case ViewOnceMessageState_IncomingInvalidContent:
-            return Theme.secondaryColor;
+            return Theme.secondaryTextAndIconColor;
     }
 }
 
@@ -362,7 +361,7 @@ NS_ASSUME_NONNULL_BEGIN
         case ViewOnceMessageState_OutgoingSentExpired:
             return ConversationStyle.bubbleTextColorOutgoing;
         case ViewOnceMessageState_IncomingInvalidContent:
-            return Theme.secondaryColor;
+            return Theme.secondaryTextAndIconColor;
     }
 }
 
@@ -455,7 +454,7 @@ NS_ASSUME_NONNULL_BEGIN
                 @"PER_MESSAGE_EXPIRATION_INVALID_CONTENT", @"Label for view-once messages that have invalid content.");
             // Reconfigure label for this state only.
             self.label.font = UIFont.ows_dynamicTypeSubheadlineFont;
-            self.label.textColor = Theme.secondaryColor;
+            self.label.textColor = Theme.secondaryTextAndIconColor;
             self.label.numberOfLines = 0;
             self.label.lineBreakMode = NSLineBreakByWordWrapping;
             break;

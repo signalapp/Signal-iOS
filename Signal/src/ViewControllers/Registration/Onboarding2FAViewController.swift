@@ -14,7 +14,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
     private let pinTextField = UITextField()
 
     private lazy var pinStrokeNormal = pinTextField.addBottomStroke()
-    private lazy var pinStrokeError = pinTextField.addBottomStroke(color: .ows_destructiveRed, strokeWidth: 2)
+    private lazy var pinStrokeError = pinTextField.addBottomStroke(color: .ows_accentRed, strokeWidth: 2)
     private let validationWarningLabel = UILabel()
 
     enum PinAttemptState {
@@ -68,7 +68,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         pinTextField.delegate = self
         pinTextField.isSecureTextEntry = true
         pinTextField.keyboardType = .numberPad
-        pinTextField.textColor = Theme.primaryColor
+        pinTextField.textColor = Theme.primaryTextColor
         pinTextField.font = .ows_dynamicTypeBodyClamped
         pinTextField.isSecureTextEntry = true
         pinTextField.defaultTextAttributes.updateValue(5, forKey: .kern)
@@ -78,7 +78,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         pinTextField.autoSetDimension(.height, toSize: 40)
         pinTextField.accessibilityIdentifier = "onboarding.2fa.pinTextField"
 
-        validationWarningLabel.textColor = .ows_destructiveRed
+        validationWarningLabel.textColor = .ows_accentRed
         validationWarningLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
         validationWarningLabel.accessibilityIdentifier = "onboarding.2fa.validationWarningLabel"
         validationWarningLabel.numberOfLines = 0

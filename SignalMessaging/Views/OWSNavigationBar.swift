@@ -249,9 +249,9 @@ public class OWSNavigationBar: UINavigationBar {
 
         let removeDarkThemeOverride = {
             self.barStyle = Theme.barStyle
-            self.titleTextAttributes = [NSAttributedString.Key.foregroundColor: Theme.primaryColor]
+            self.titleTextAttributes = [NSAttributedString.Key.foregroundColor: Theme.primaryTextColor]
             self.barTintColor = Theme.backgroundColor.withAlphaComponent(0.6)
-            self.tintColor = Theme.primaryColor
+            self.tintColor = Theme.primaryTextColor
         }
 
         let applyTransparentBarOverride = {

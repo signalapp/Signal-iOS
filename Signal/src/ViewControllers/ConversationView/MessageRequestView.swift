@@ -133,7 +133,7 @@ class MessageRequestView: UIStackView {
             string: promptString,
             attributes: [
                 .font: UIFont.ows_dynamicTypeSubheadlineClamped,
-                .foregroundColor: Theme.secondaryColor
+                .foregroundColor: Theme.secondaryTextAndIconColor
             ]
         )
         attributedString.addAttributes([.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semiBold()], range: boldRange)
@@ -153,7 +153,7 @@ class MessageRequestView: UIStackView {
         if hasSentMessages {
             let learnMoreButton = prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON",
                                                                             comment: "A button used to learn more about why you must share your profile."),
-                                                   titleColor: Theme.secondaryColor) { [weak self] in
+                                                   titleColor: Theme.secondaryTextAndIconColor) { [weak self] in
                                                     self?.delegate?.messageRequestViewDidTapLearnMore()
             }
             buttonsStack.addArrangedSubview(learnMoreButton)
@@ -170,14 +170,14 @@ class MessageRequestView: UIStackView {
         } else {
             let blockButton = prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_BLOCK_BUTTON",
                                                                      comment: "A button used to block a user on an incoming message request."),
-                                            titleColor: .ows_red) { [weak self] in
+                                            titleColor: .ows_accentRed) { [weak self] in
                                                 self?.delegate?.messageRequestViewDidTapBlock()
             }
             buttonsStack.addArrangedSubview(blockButton)
 
             let deleteButton = prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
                                                                       comment: "A button used to block a user on an incoming message request."),
-                                             titleColor: .ows_red) { [weak self] in
+                                             titleColor: .ows_accentRed) { [weak self] in
                                                 self?.delegate?.messageRequestViewDidTapDelete()
             }
             buttonsStack.addArrangedSubview(deleteButton)

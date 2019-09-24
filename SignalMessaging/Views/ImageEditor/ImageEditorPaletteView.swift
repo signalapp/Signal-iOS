@@ -324,7 +324,7 @@ public class ImageEditorPaletteView: UIView {
         let segmentPhase = palettePhase.inverseLerp(segment.palettePhase0, segment.palettePhase1).clamp01()
         // If CAGradientLayer doesn't do naive RGB color interpolation,
         // this won't be WYSIWYG.
-        let color = segment.color0.blend(with: segment.color1, alpha: segmentPhase)
+        let color = segment.color0.blended(with: segment.color1, alpha: segmentPhase)
         return ImageEditorColor(color: color, palettePhase: palettePhase)
     }
 

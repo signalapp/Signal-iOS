@@ -269,7 +269,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 if let messageSnippet = searchResult.snippet {
                     overrideSnippet = NSAttributedString(string: messageSnippet,
                                                          attributes: [
-                                                            NSAttributedString.Key.foregroundColor: Theme.secondaryColor
+                                                            NSAttributedString.Key.foregroundColor: Theme.secondaryTextAndIconColor
                     ])
                 } else {
                     owsFailDebug("message search result is missing message snippet")
@@ -302,13 +302,13 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         }
 
         let label = UILabel()
-        label.textColor = Theme.secondaryColor
+        label.textColor = Theme.secondaryTextAndIconColor
         label.text = title
         label.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
         label.tag = section
 
         let wrapper = UIView()
-        wrapper.backgroundColor = Theme.offBackgroundColor
+        wrapper.backgroundColor = Theme.washColor
         wrapper.addSubview(label)
         label.autoPinEdgesToSuperviewMargins()
 
@@ -459,7 +459,7 @@ class EmptySearchResultCell: UITableViewCell {
         let messageText: String = NSString(format: format as NSString, searchText) as String
         self.messageLabel.text = messageText
 
-        messageLabel.textColor = Theme.primaryColor
+        messageLabel.textColor = Theme.primaryTextColor
         messageLabel.font = UIFont.ows_dynamicTypeBody
     }
 }

@@ -173,7 +173,7 @@ class AttachmentCaptionViewController: OWSViewController {
         let lengthLimitLabel = UILabel()
 
         // Length Limit Label shown when the user inputs too long of a message
-        lengthLimitLabel.textColor = UIColor.ows_destructiveRed
+        lengthLimitLabel.textColor = UIColor.ows_accentRed
         lengthLimitLabel.text = NSLocalizedString("ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED", comment: "One-line label indicating the user can add no more text to the attachment caption.")
         lengthLimitLabel.textAlignment = .center
 

@@ -30,7 +30,7 @@ public class OnboardingBaseViewController: OWSViewController {
     func titleLabel(text: String) -> UILabel {
         let titleLabel = UILabel()
         titleLabel.text = text
-        titleLabel.textColor = Theme.primaryColor
+        titleLabel.textColor = Theme.primaryTextColor
         titleLabel.font = UIFont.ows_dynamicTypeTitle1Clamped.ows_mediumWeight()
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
@@ -40,7 +40,7 @@ public class OnboardingBaseViewController: OWSViewController {
 
     func explanationLabel(explanationText: String) -> UILabel {
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Theme.secondaryColor
+        explanationLabel.textColor = Theme.secondaryTextAndIconColor
         explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
         explanationLabel.text = explanationText
         explanationLabel.numberOfLines = 0
@@ -50,11 +50,11 @@ public class OnboardingBaseViewController: OWSViewController {
     }
 
     func button(title: String, selector: Selector) -> OWSFlatButton {
-        return button(title: title, selector: selector, titleColor: .white, backgroundColor: .ows_materialBlue)
+        return button(title: title, selector: selector, titleColor: .white, backgroundColor: .ows_signalBlue)
     }
 
     func linkButton(title: String, selector: Selector) -> OWSFlatButton {
-        return button(title: title, selector: selector, titleColor: .ows_materialBlue, backgroundColor: .white)
+        return button(title: title, selector: selector, titleColor: .ows_signalBlue, backgroundColor: .white)
     }
 
     private func button(title: String, selector: Selector, titleColor: UIColor, backgroundColor: UIColor) -> OWSFlatButton {

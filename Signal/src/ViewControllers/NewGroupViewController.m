@@ -165,7 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
     [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
 
     UIImageView *cameraImageView = [UIImageView new];
-    [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryColor];
+    [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryTextAndIconColor];
     [threadInfoView addSubview:cameraImageView];
 
     [cameraImageView autoSetDimensionsToSize:CGSizeMake(32, 32)];
@@ -173,7 +173,7 @@ NS_ASSUME_NONNULL_BEGIN
     cameraImageView.backgroundColor = Theme.backgroundColor;
     cameraImageView.layer.cornerRadius = 16;
     cameraImageView.layer.shadowColor =
-        [(Theme.isDarkThemeEnabled ? Theme.darkThemeOffBackgroundColor : Theme.primaryColor) CGColor];
+        [(Theme.isDarkThemeEnabled ? Theme.darkThemeWashColor : Theme.primaryTextColor) CGColor];
     cameraImageView.layer.shadowOffset = CGSizeMake(1, 1);
     cameraImageView.layer.shadowOpacity = 0.5;
     cameraImageView.layer.shadowRadius = 4;
@@ -191,13 +191,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     UITextField *groupNameTextField = [OWSTextField new];
     _groupNameTextField = groupNameTextField;
-    groupNameTextField.textColor = Theme.primaryColor;
+    groupNameTextField.textColor = Theme.primaryTextColor;
     groupNameTextField.font = [UIFont ows_dynamicTypeTitle2Font];
     groupNameTextField.attributedPlaceholder =
         [[NSAttributedString alloc] initWithString:NSLocalizedString(@"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT",
                                                        @"Placeholder text for group name field")
                                         attributes:@{
-                                            NSForegroundColorAttributeName : Theme.secondaryColor,
+                                            NSForegroundColorAttributeName : Theme.secondaryTextAndIconColor,
                                         }];
     groupNameTextField.delegate = self;
     [groupNameTextField addTarget:self

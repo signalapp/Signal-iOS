@@ -31,7 +31,7 @@
         let titleLabel = UILabel()
         titleLabel.text = "\(fileURL)"
         titleLabel.sizeToFit()
-        titleLabel.textColor = Theme.primaryColor
+        titleLabel.textColor = Theme.primaryTextColor
         titleLabel.lineBreakMode = .byTruncatingHead
         self.navigationItem.titleView = titleLabel
     }

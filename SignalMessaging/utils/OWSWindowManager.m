@@ -4,7 +4,6 @@
 
 #import "OWSWindowManager.h"
 #import "Environment.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -281,10 +280,10 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     window.windowLevel = UIWindowLevel_CallView();
     window.opaque = YES;
     // TODO: What's the right color to use here?
-    window.backgroundColor = [UIColor ows_materialBlueColor];
+    window.backgroundColor = UIColor.ows_signalBlueColor;
 
     UIViewController *viewController = [OWSWindowRootViewController new];
-    viewController.view.backgroundColor = [UIColor ows_materialBlueColor];
+    viewController.view.backgroundColor = UIColor.ows_signalBlueColor;
 
     // NOTE: Do not use OWSNavigationController for call window.
     // It adjusts the size of the navigation bar to reflect the

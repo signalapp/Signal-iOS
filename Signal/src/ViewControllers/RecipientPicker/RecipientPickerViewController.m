@@ -9,7 +9,6 @@
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
-#import "UIColor+OWS.h"
 #import "UIView+OWS.h"
 #import <MessageUI/MessageUI.h>
 #import <SignalMessaging/Environment.h>
@@ -224,7 +223,7 @@ const NSUInteger kMinimumSearchLength = 2;
     UILabel *titleLabel = [UILabel new];
     titleLabel.text = NSLocalizedString(
         @"EMPTY_CONTACTS_LABEL_LINE1", "Full width label displayed when attempting to compose message");
-    titleLabel.textColor = [Theme primaryColor];
+    titleLabel.textColor = Theme.primaryTextColor;
     titleLabel.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(17.f, 20.f)];
     titleLabel.textAlignment = NSTextAlignmentCenter;
     titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -237,7 +236,7 @@ const NSUInteger kMinimumSearchLength = 2;
     UILabel *subtitleLabel = [UILabel new];
     subtitleLabel.text = NSLocalizedString(
         @"EMPTY_CONTACTS_LABEL_LINE2", "Full width label displayed when attempting to compose message");
-    subtitleLabel.textColor = [Theme secondaryColor];
+    subtitleLabel.textColor = Theme.secondaryTextAndIconColor;
     subtitleLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(12.f, 14.f)];
     subtitleLabel.textAlignment = NSTextAlignmentCenter;
     subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -252,7 +251,7 @@ const NSUInteger kMinimumSearchLength = 2;
         [inviteContactsButton setTitle:NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
                                            "Label for the cell that presents the 'invite contacts' workflow.")
                               forState:UIControlStateNormal];
-        [inviteContactsButton setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
+        [inviteContactsButton setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
         [inviteContactsButton.titleLabel setFont:[UIFont ows_regularFontWithSize:17.f]];
         [contents addSubview:inviteContactsButton];
         [inviteContactsButton autoHCenterInSuperview];
@@ -270,7 +269,7 @@ const NSUInteger kMinimumSearchLength = 2;
             setTitle:NSLocalizedString(@"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER",
                          @"Label for a button that lets users search for contacts by phone number")
             forState:UIControlStateNormal];
-        [searchByPhoneNumberButton setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
+        [searchByPhoneNumberButton setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
         [searchByPhoneNumberButton.titleLabel setFont:[UIFont ows_regularFontWithSize:17.f]];
         [contents addSubview:searchByPhoneNumberButton];
         [searchByPhoneNumberButton autoHCenterInSuperview];

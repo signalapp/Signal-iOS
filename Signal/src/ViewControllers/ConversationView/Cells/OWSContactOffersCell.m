@@ -5,7 +5,6 @@
 #import "OWSContactOffersCell.h"
 #import "ConversationViewItem.h"
 #import "Signal-Swift.h"
-#import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalServiceKit/OWSContactOffersInteraction.h>
@@ -121,9 +120,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self configureFonts];
 
-    self.titleLabel.textColor = Theme.secondaryColor;
+    self.titleLabel.textColor = Theme.secondaryTextAndIconColor;
     for (UIButton *button in self.buttons) {
-        [button setTitleColor:[UIColor ows_signalBlueColor] forState:UIControlStateNormal];
+        [button setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
         [button setBackgroundColor:Theme.conversationButtonBackgroundColor];
     }
 

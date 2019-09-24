@@ -5,7 +5,6 @@
 #import "OWSTableViewController.h"
 #import "OWSNavigationController.h"
 #import "Theme.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 
@@ -111,8 +110,8 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     cell.backgroundColor = [Theme backgroundColor];
     cell.contentView.backgroundColor = [Theme backgroundColor];
     cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-    cell.textLabel.textColor = [Theme primaryColor];
-    cell.detailTextLabel.textColor = [Theme secondaryColor];
+    cell.textLabel.textColor = Theme.primaryTextColor;
+    cell.detailTextLabel.textColor = Theme.secondaryTextAndIconColor;
 
     UIView *selectedBackgroundView = [UIView new];
     selectedBackgroundView.backgroundColor = Theme.cellSelectedColor;
@@ -392,7 +391,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
         UILabel *accessoryLabel = [UILabel new];
         accessoryLabel.text = accessoryText;
-        accessoryLabel.textColor = [Theme secondaryColor];
+        accessoryLabel.textColor = Theme.secondaryTextAndIconColor;
         accessoryLabel.font = [UIFont ows_regularFontWithSize:16.0f];
         accessoryLabel.textAlignment = NSTextAlignmentRight;
         [accessoryLabel sizeToFit];

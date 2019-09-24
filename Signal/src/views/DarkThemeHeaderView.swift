@@ -43,7 +43,7 @@ public class DarkThemeHeaderView: UIView {
 
     override init(frame: CGRect) {
         label = UILabel()
-        label.textColor = Theme.darkThemeSecondaryColor
+        label.textColor = Theme.darkThemeSecondaryTextAndIconColor
         label.font = type(of: self).labelFont
 
         let blurEffect = Theme.darkThemeBarBlurEffect

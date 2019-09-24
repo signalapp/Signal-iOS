@@ -7,7 +7,6 @@
 #import "OWSMessageBubbleView.h"
 #import "OWSMessageFooterView.h"
 #import "Signal-Swift.h"
-#import "UIColor+OWS.h"
 #import <SignalMessaging/UIView+OWS.h>
 #import <YYImage/YYImage.h>
 
@@ -276,12 +275,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                layoutCallback:^(UIView *view) {
                                                    view.layer.cornerRadius = MIN(view.width, view.height) * 0.5f;
                                                }];
-    pillboxView.backgroundColor = Theme.offBackgroundColor;
+    pillboxView.backgroundColor = Theme.washColor;
     [roundedRectView addSubview:pillboxView];
     [pillboxView autoCenterInSuperview];
 
-    UIImageView *iconView =
-        [UIImageView withTemplateImageName:@"download-filled-2-24" tintColor:Theme.offBackgroundColor];
+    UIImageView *iconView = [UIImageView withTemplateImageName:@"download-filled-2-24" tintColor:Theme.washColor];
     UIView *circleView = [UIView new];
     circleView.backgroundColor = UIColor.ows_gray45Color;
     circleView.layer.cornerRadius = 12.f;

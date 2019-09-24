@@ -80,9 +80,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     [OWSTableItem configureCell:self];
 
-    self.nameLabel.textColor = Theme.primaryColor;
-    self.linkedLabel.textColor = Theme.secondaryColor;
-    self.lastSeenLabel.textColor = Theme.secondaryColor;
+    self.nameLabel.textColor = Theme.primaryTextColor;
+    self.linkedLabel.textColor = Theme.secondaryTextAndIconColor;
+    self.lastSeenLabel.textColor = Theme.secondaryTextAndIconColor;
 }
 
 @end

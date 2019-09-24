@@ -234,7 +234,7 @@ class ViewOnceMessageViewController: OWSViewController {
         contentView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
 
         let defaultMediaView = UIView()
-        defaultMediaView.backgroundColor = Theme.darkThemeOffBackgroundColor
+        defaultMediaView.backgroundColor = Theme.darkThemeWashColor
         let mediaView = buildMediaView() ?? defaultMediaView
 
         contentView.addSubview(mediaView)

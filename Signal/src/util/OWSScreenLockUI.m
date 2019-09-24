@@ -385,7 +385,7 @@ NS_ASSUME_NONNULL_BEGIN
     window.hidden = NO;
     window.windowLevel = UIWindowLevel_Background;
     window.opaque = YES;
-    window.backgroundColor = UIColor.ows_materialBlueColor;
+    window.backgroundColor = UIColor.ows_signalBlueColor;
 
     ScreenLockViewController *viewController = [ScreenLockViewController new];
     viewController.delegate = self;

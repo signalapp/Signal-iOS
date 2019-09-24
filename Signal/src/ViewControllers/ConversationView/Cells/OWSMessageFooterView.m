@@ -100,7 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (isOverlayingMedia) {
         textColor = [UIColor whiteColor];
     } else if (isOutsideBubble) {
-        textColor = Theme.secondaryColor;
+        textColor = Theme.secondaryTextAndIconColor;
     } else {
         textColor = [conversationStyle bubbleSecondaryTextColorWithIsIncoming:isIncoming];
     }

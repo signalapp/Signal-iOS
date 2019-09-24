@@ -200,7 +200,7 @@ class RecentPhotoCell: UICollectionViewCell {
         get { return imageView.image }
         set {
             imageView.image = newValue
-            imageView.backgroundColor = newValue == nil ? Theme.offBackgroundColor : .clear
+            imageView.backgroundColor = newValue == nil ? Theme.washColor : .clear
         }
     }
 
