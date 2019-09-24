@@ -36,7 +36,7 @@ static const NSTimeInterval kKeepAliveDuration_Default = 20.f;
 // b) It has received a message over the socket in the last N seconds.
 static const NSTimeInterval kKeepAliveDuration_ReceiveMessage = 15.f;
 // c) It is in the process of making a request.
-static const NSTimeInterval kKeepAliveDuration_MakeRequestInForeground = 30.f;
+static const NSTimeInterval kKeepAliveDuration_MakeRequestInForeground = 25.f;
 static const NSTimeInterval kKeepAliveDuration_MakeRequestInBackground = 20.f;
 // d) It has just received the response to a request.
 static const NSTimeInterval kKeepAliveDuration_ReceiveResponse = 5.f;
