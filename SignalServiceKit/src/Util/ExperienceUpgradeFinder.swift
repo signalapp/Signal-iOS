@@ -65,7 +65,7 @@ public enum ExperienceUpgradeId: String {
     @objc
     public func markAsSeen(experienceUpgrade: ExperienceUpgrade, transaction: SDSAnyWriteTransaction) {
         Logger.info("marking experience upgrade as seen")
-        experienceUpgrade.anyInsert(transaction: transaction)
+        experienceUpgrade.anyUpsert(transaction: transaction)
     }
 
     @objc
