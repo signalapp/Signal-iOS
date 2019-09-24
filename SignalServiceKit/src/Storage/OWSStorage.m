@@ -918,9 +918,10 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
             [self raiseKeySpecInaccessibleExceptionWithErrorDescription:@"CipherKeySpec inaccessible; not main app."];
         }
 
-        // At this point, either this is a new install so there's no existing password to retrieve
-        // or the keychain has become corrupt.  Either way, we want to get back to a
-        // "known good state" and behave like a new install.
+        // At this point, either:
+        //
+        // * This is a new install so there's no existing password to retrieve.
+        // * The keychain has become corrupt.
         BOOL doesDBExist = [NSFileManager.defaultManager fileExistsAtPath:[self databaseFilePath]];
         if (doesDBExist) {
             if (SSKFeatureFlags.storageMode == StorageModeYdb) {

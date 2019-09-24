@@ -427,9 +427,11 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             throw OWSAssertionError("CipherKeySpec inaccessible; not main app.")
         }
 
-        // At this point, either this is a new install so there's no existing password to retrieve
-        // or the keychain has become corrupt.  Either way, we want to get back to a
-        // "known good state" and behave like a new install.
+        // At this point, either:
+        //
+        // * This is a new install so there's no existing password to retrieve.
+        // * The keychain has become corrupt.
+        // * We are about to do a ydb-to-grdb migration.
         let databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir)
         let doesDBExist = FileManager.default.fileExists(atPath: databaseUrl.path)
         if doesDBExist {
