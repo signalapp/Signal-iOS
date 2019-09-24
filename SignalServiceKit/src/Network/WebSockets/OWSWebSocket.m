@@ -38,6 +38,8 @@ static const CGFloat kBackgroundKeepSocketAliveDurationSeconds = 15.f;
 // c) It is in the process of making a request.
 static const CGFloat kMakeRequestKeepSocketAliveDurationSecondsBackground = 20.f;
 static const CGFloat kMakeRequestKeepSocketAliveDurationSecondsForeground = 30.f;
+// d) It has just received the response to a request.
+static const CGFloat kReceiveResponseKeepSocketAliveDurationSeconds = 5.f;
 
 NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_OWSWebSocketStateDidChange";
 
@@ -480,6 +482,13 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     OWSAssertDebug(success);
     OWSAssertDebug(failure);
 
+    DispatchMainThreadSafe(^{
+        CGFloat keepAlive
+            = (CurrentAppContext().isMainAppAndActive ? kMakeRequestKeepSocketAliveDurationSecondsForeground
+                                                      : kMakeRequestKeepSocketAliveDurationSecondsBackground);
+        [self requestSocketAliveForAtLeastSeconds:keepAlive];
+    });
+
     TSSocketMessage *socketMessage = [[TSSocketMessage alloc] initWithRequestId:[Cryptography randomUInt64]
                                                                         success:success
                                                                         failure:failure];
@@ -583,10 +592,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     OWSLogInfo(@"received WebSocket response requestId: %llu, status: %u", message.requestID, message.status);
 
     DispatchMainThreadSafe(^{
-        CGFloat keepAlive = (CurrentAppContext().isMainAppAndActive
-                             ? kMakeRequestKeepSocketAliveDurationSecondsForeground
-                             : kMakeRequestKeepSocketAliveDurationSecondsBackground);
-        [self requestSocketAliveForAtLeastSeconds:keepAlive];
+        [self requestSocketAliveForAtLeastSeconds:kReceiveResponseKeepSocketAliveDurationSeconds];
     });
 
     UInt64 requestId = message.requestID;
