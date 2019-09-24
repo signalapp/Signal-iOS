@@ -1,6 +1,6 @@
 
-@objc(LKDeviceLinkingSessionDelegate)
 public protocol DeviceLinkingSessionDelegate {
     
-    @objc func requestUserAuthorization(for deviceLink: DeviceLink)
+    func requestUserAuthorization(for deviceLink: DeviceLink)
+    func handleDeviceLinkAuthorized(_ deviceLink: DeviceLink)
 }

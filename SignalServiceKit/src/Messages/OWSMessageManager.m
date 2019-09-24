@@ -431,11 +431,12 @@ NS_ASSUME_NONNULL_BEGIN
         // Loki: Handle device linking message
         if (contentProto.lokiDeviceLinkingMessage != nil && contentProto.lokiDeviceLinkingMessage.type == SSKProtoLokiDeviceLinkingMessageTypeRequest) {
             OWSLogInfo(@"[Loki] Received a device linking request from: %@", envelope.source);
-            NSData *signature = contentProto.lokiDeviceLinkingMessage.slaveSignature;
-            if (signature == nil) {
+            NSData *slaveSignature = contentProto.lokiDeviceLinkingMessage.slaveSignature;
+            if (slaveSignature == nil) {
                 OWSFailDebug(@"Received a device linking request without an attached slave signature.");
             }
-            [LKDeviceLinkingSession.current processLinkingRequestFrom:envelope.source with:signature];
+            NSString *masterHexEncodedPublicKey = contentProto.lokiDeviceLinkingMessage.masterHexEncodedPublicKey;
+            [LKDeviceLinkingSession.current processLinkingRequestFrom:envelope.source to:masterHexEncodedPublicKey with:slaveSignature];
         }
         
         // Loki: Handle pre key bundle message

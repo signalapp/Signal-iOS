@@ -71,7 +71,10 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let _ = DeviceLinkingSession.startListeningForLinkingRequests(with: self)
+        switch mode {
+        case .master: let _ = DeviceLinkingSession.startListeningForLinkingRequests(with: self)
+        case .slave: let _ = DeviceLinkingSession.startListeningForLinkingAuthorization(with: self)
+        }
     }
     
     override func populateContentView() {
@@ -107,6 +110,10 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         contentView.pin(.bottom, to: .bottom, of: stackView, withInset: 16)
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     // MARK: Device Linking
     func requestUserAuthorization(for deviceLink: DeviceLink) {
         self.deviceLink = deviceLink
@@ -125,5 +132,9 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         session.stopListeningForLinkingRequests()
         // TODO: Send device link authorized message
         dismiss(animated: true, completion: nil)
+    }
+    
+    func handleDeviceLinkAuthorized(_ deviceLink: DeviceLink) {
+        delegate?.handleDeviceLinkAuthorized(deviceLink)
     }
 }

@@ -51,32 +51,32 @@ public final class GroupChatPoller : NSObject {
             let cutoffIndex = senderHexEncodedPublicKey.index(endIndex, offsetBy: -8)
             let senderDisplayName = "\(message.displayName) (...\(senderHexEncodedPublicKey[cutoffIndex..<endIndex]))"
             let id = group.id.data(using: String.Encoding.utf8)!
-            let x1 = SSKProtoGroupContext.builder(id: id, type: .deliver)
-            x1.setName(group.displayName)
-            let x2 = SSKProtoDataMessage.builder()
-            x2.setTimestamp(message.timestamp)
-            x2.setGroup(try! x1.build())
+            let groupContext = SSKProtoGroupContext.builder(id: id, type: .deliver)
+            groupContext.setName(group.displayName)
+            let dataMessage = SSKProtoDataMessage.builder()
+            dataMessage.setTimestamp(message.timestamp)
+            dataMessage.setGroup(try! groupContext.build())
             if let quote = message.quote {
-                let x5 = SSKProtoDataMessageQuote.builder(id: quote.quotedMessageTimestamp, author: quote.quoteeHexEncodedPublicKey)
-                x5.setText(quote.quotedMessageBody)
-                x2.setQuote(try! x5.build())
+                let signalQuote = SSKProtoDataMessageQuote.builder(id: quote.quotedMessageTimestamp, author: quote.quoteeHexEncodedPublicKey)
+                signalQuote.setText(quote.quotedMessageBody)
+                dataMessage.setQuote(try! signalQuote.build())
             }
-            x2.setBody(message.body)
+            dataMessage.setBody(message.body)
             if let messageServerID = message.serverID {
                 let publicChatInfo = SSKProtoPublicChatInfo.builder()
                 publicChatInfo.setServerID(messageServerID)
-                x2.setPublicChatInfo(try! publicChatInfo.build())
+                dataMessage.setPublicChatInfo(try! publicChatInfo.build())
             }
-            let x3 = SSKProtoContent.builder()
-            x3.setDataMessage(try! x2.build())
-            let x4 = SSKProtoEnvelope.builder(type: .ciphertext, timestamp: message.timestamp)
-            x4.setSource(senderHexEncodedPublicKey)
-            x4.setSourceDevice(OWSDevicePrimaryDeviceId)
-            x4.setContent(try! x3.build().serializedData())
+            let content = SSKProtoContent.builder()
+            content.setDataMessage(try! dataMessage.build())
+            let envelope = SSKProtoEnvelope.builder(type: .ciphertext, timestamp: message.timestamp)
+            envelope.setSource(senderHexEncodedPublicKey)
+            envelope.setSourceDevice(OWSDevicePrimaryDeviceId)
+            envelope.setContent(try! content.build().serializedData())
             let storage = OWSPrimaryStorage.shared()
             storage.dbReadWriteConnection.readWrite { transaction in
                 transaction.setObject(senderDisplayName, forKey: senderHexEncodedPublicKey, inCollection: group.id)
-                SSKEnvironment.shared.messageManager.throws_processEnvelope(try! x4.build(), plaintextData: try! x3.build().serializedData(), wasReceivedByUD: false, transaction: transaction)
+                SSKEnvironment.shared.messageManager.throws_processEnvelope(try! envelope.build(), plaintextData: try! content.build().serializedData(), wasReceivedByUD: false, transaction: transaction)
             }
         }
         // Processing logic for outgoing messages

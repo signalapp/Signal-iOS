@@ -49,20 +49,20 @@ public final class RSSFeedPoller : NSObject {
                 let options = [ NSAttributedString.DocumentReadingOptionKey.documentType : NSAttributedString.DocumentType.html ]
                 guard let body = try? NSAttributedString(data: bodyAsData, options: options, documentAttributes: nil).string else { return }
                 let id = feed.id.data(using: String.Encoding.utf8)!
-                let x1 = SSKProtoGroupContext.builder(id: id, type: .deliver)
-                x1.setName(feed.displayName)
-                let x2 = SSKProtoDataMessage.builder()
-                x2.setTimestamp(timestamp)
-                x2.setGroup(try! x1.build())
-                x2.setBody(body)
-                let x3 = SSKProtoContent.builder()
-                x3.setDataMessage(try! x2.build())
-                let x4 = SSKProtoEnvelope.builder(type: .ciphertext, timestamp: timestamp)
-                x4.setSource(NSLocalizedString("Loki", comment: ""))
-                x4.setSourceDevice(OWSDevicePrimaryDeviceId)
-                x4.setContent(try! x3.build().serializedData())
+                let groupContext = SSKProtoGroupContext.builder(id: id, type: .deliver)
+                groupContext.setName(feed.displayName)
+                let dataMessage = SSKProtoDataMessage.builder()
+                dataMessage.setTimestamp(timestamp)
+                dataMessage.setGroup(try! groupContext.build())
+                dataMessage.setBody(body)
+                let content = SSKProtoContent.builder()
+                content.setDataMessage(try! dataMessage.build())
+                let envelope = SSKProtoEnvelope.builder(type: .ciphertext, timestamp: timestamp)
+                envelope.setSource(NSLocalizedString("Loki", comment: ""))
+                envelope.setSourceDevice(OWSDevicePrimaryDeviceId)
+                envelope.setContent(try! content.build().serializedData())
                 OWSPrimaryStorage.shared().dbReadWriteConnection.readWrite { transaction in
-                    SSKEnvironment.shared.messageManager.throws_processEnvelope(try! x4.build(), plaintextData: try! x3.build().serializedData(), wasReceivedByUD: false, transaction: transaction)
+                    SSKEnvironment.shared.messageManager.throws_processEnvelope(try! envelope.build(), plaintextData: try! content.build().serializedData(), wasReceivedByUD: false, transaction: transaction)
                 }
             }
         }

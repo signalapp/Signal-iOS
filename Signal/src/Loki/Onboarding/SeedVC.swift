@@ -337,10 +337,10 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
         case .link: Analytics.shared.track("Device Linked")
         }
         if mode == .link {
-            let masterHexEncodedPublicKey = masterHexEncodedPublicKeyTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces)
             let deviceLinkingModal = DeviceLinkingModal(mode: .slave, delegate: self)
             deviceLinkingModal.modalPresentationStyle = .overFullScreen
             present(deviceLinkingModal, animated: true, completion: nil)
+            let masterHexEncodedPublicKey = masterHexEncodedPublicKeyTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces)
             let thread = TSContactThread.getOrCreateThread(contactId: masterHexEncodedPublicKey)
             ThreadUtil.enqueueDeviceLinkingMessage(in: thread)
         } else {
@@ -348,7 +348,7 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
         }
     }
     
-    func handleDeviceLinkingRequestAuthorized() {
+    func handleDeviceLinkAuthorized(_ deviceLink: DeviceLink) {
         TSAccountManager.sharedInstance().didRegister()
         UserDefaults.standard.set(true, forKey: "didUpdateForMainnet")
         onboardingController.verificationDidComplete(fromView: self)
