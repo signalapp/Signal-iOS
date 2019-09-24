@@ -792,6 +792,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 + (void)resetAllStorage
 {
+    OWSLogInfo(@"");
+
     [[NSNotificationCenter defaultCenter] postNotificationName:OWSResetStorageNotification object:nil];
 
     // This might be redundant but in the spirit of thoroughness...
@@ -916,18 +918,20 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
             [self raiseKeySpecInaccessibleExceptionWithErrorDescription:@"CipherKeySpec inaccessible; not main app."];
         }
 
-        // At this point, either this is a new install so there's no existing password to retrieve
-        // or the keychain has become corrupt.  Either way, we want to get back to a
-        // "known good state" and behave like a new install.
+        // At this point, either:
+        //
+        // * This is a new install so there's no existing password to retrieve.
+        // * The keychain has become corrupt.
         BOOL doesDBExist = [NSFileManager.defaultManager fileExistsAtPath:[self databaseFilePath]];
         if (doesDBExist) {
-            OWSFailDebug(@"Could not load database metadata");
+            if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+                OWSFail(@"Could not load database metadata");
+            } else if (SSKFeatureFlags.storageMode == StorageModeGrdb && ![SSKPreferences isYdbMigrated]) {
+                OWSFail(@"Could not load database metadata");
+            } else {
+                OWSFailDebug(@"Could not load database metadata");
+            }
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
-        }
-
-        if (!CurrentAppContext().isRunningTests) {
-            // Try to reset app by deleting database.
-            [OWSStorage resetAllStorage];
         }
 
         keySpec = [Randomness generateRandomBytes:(int)kSQLCipherKeySpecLength];

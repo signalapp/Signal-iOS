@@ -408,7 +408,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         // a push notification, we won't be able to access the keychain to
         // process that notification, so we should just terminate by throwing
         // an uncaught exception.
-        var errorDescription = "CipherKeySpec inaccessible. New install or no unlock since device restart?"
+        var errorDescription = "CipherKeySpec inaccessible. New install, migration or no unlock since device restart?"
         if CurrentAppContext().isMainApp {
             let applicationState = CurrentAppContext().reportedApplicationState
             errorDescription += ", ApplicationState: \(NSStringForUIApplicationState(applicationState))"
@@ -427,18 +427,15 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             throw OWSAssertionError("CipherKeySpec inaccessible; not main app.")
         }
 
-        // At this point, either this is a new install so there's no existing password to retrieve
-        // or the keychain has become corrupt.  Either way, we want to get back to a
-        // "known good state" and behave like a new install.
+        // At this point, either:
+        //
+        // * This is a new install so there's no existing password to retrieve.
+        // * The keychain has become corrupt.
+        // * We are about to do a ydb-to-grdb migration.
         let databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir)
         let doesDBExist = FileManager.default.fileExists(atPath: databaseUrl.path)
         if doesDBExist {
-            owsFailDebug("Could not load database metadata")
-        }
-
-        if !CurrentAppContext().isRunningTests {
-            // Try to reset app by deleting database.
-            resetAllStorage(baseDir: baseDir)
+            owsFail("Could not load database metadata")
         }
 
         keyspec.generateAndStore()
@@ -446,16 +443,13 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     @objc
     public static func resetAllStorage(baseDir: URL) {
+        Logger.info("")
+
         // This might be redundant but in the spirit of thoroughness...
 
         GRDBDatabaseStorageAdapter.removeAllFiles(baseDir: baseDir)
 
         deleteDBKeys()
-
-        guard FeatureFlags.storageMode != .ydb else {
-            owsFailDebug("Unexpected GRDB storage usage.")
-            return
-        }
 
         KeyBackupService.clearKeychain()
 
