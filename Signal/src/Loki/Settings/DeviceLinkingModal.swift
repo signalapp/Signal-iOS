@@ -122,8 +122,8 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     @objc private func authorizeDeviceLink() {
         let deviceLink = self.deviceLink!
         let session = DeviceLinkingSession.current!
-        session.authorizeDeviceLink(deviceLink)
         session.stopListeningForLinkingRequests()
+        // TODO: Send device link authorized message
         dismiss(animated: true, completion: nil)
     }
 }

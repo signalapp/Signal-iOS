@@ -4,6 +4,7 @@
 
 import UIKit
 import PromiseKit
+import Contacts
 
 @objc
 public class OnboardingPermissionsViewController: OnboardingBaseViewController {

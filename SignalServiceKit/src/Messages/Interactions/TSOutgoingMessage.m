@@ -1103,12 +1103,12 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
     [ProtoUtils addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId dataMessageBuilder:builder];
 
+    // Loki: Set display name if needed
     id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
     NSString *displayName = profileManager.localProfileName;
     if (displayName != nil) {
         SSKProtoDataMessageLokiProfileBuilder *profileBuilder = [SSKProtoDataMessageLokiProfile builder];
         [profileBuilder setDisplayName:displayName];
-        
         SSKProtoDataMessageLokiProfile *profile = [profileBuilder buildAndReturnError:nil];
         [builder setProfile:profile];
     }

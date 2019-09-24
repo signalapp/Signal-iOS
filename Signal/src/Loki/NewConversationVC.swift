@@ -1,6 +1,6 @@
 
-@objc(LKNewConversationViewController)
-final class NewConversationViewController : OWSViewController, OWSQRScannerDelegate {
+@objc(LKNewConversationVC)
+final class NewConversationVC : OWSViewController, OWSQRScannerDelegate {
 
     // MARK: Components
     private lazy var publicKeyTextField: UITextField = {

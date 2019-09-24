@@ -20,6 +20,7 @@
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "LKEphemeralMessage.h"
+#import "LKDeviceLinkingMessage.h"
 #import "OWSIdentityManager.h"
 #import "OWSIncomingMessageFinder.h"
 #import "OWSIncomingSentMessageTranscript.h"
@@ -1546,7 +1547,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (existingFriendRequestMessage != nil && existingFriendRequestMessage.isFriendRequest) {
             [existingFriendRequestMessage saveFriendRequestStatus:LKMessageFriendRequestStatusAccepted withTransaction:transaction];
         }
-        // The two lines below are equivalent to calling [ThreadUtil enqueueAcceptFriendRequestMessageInThread:thread]
+        // The two lines below are equivalent to calling [ThreadUtil enqueueFriendRequestAcceptanceMessageInThread:thread]
         LKEphemeralMessage *backgroundMessage = [[LKEphemeralMessage alloc] initInThread:thread];
         [self.messageSenderJobQueue addMessage:backgroundMessage transaction:transaction];
     } else if (!thread.isContactFriend) {

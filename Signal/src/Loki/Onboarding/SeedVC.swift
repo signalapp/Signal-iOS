@@ -315,8 +315,8 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
             }
         case .link:
             seed = self.seed
-            let hexEncodedPublicKey = masterHexEncodedPublicKeyTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces)
-            if !ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) {
+            let masterHexEncodedPublicKey = masterHexEncodedPublicKeyTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces)
+            if !ECKeyPair.isValidHexEncodedPublicKey(candidate: masterHexEncodedPublicKey) {
                 errorLabel2Spacer.isHidden = false
                 return errorLabel2.text = NSLocalizedString("Invalid public key", comment: "")
             }
@@ -337,15 +337,18 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
         case .link: Analytics.shared.track("Device Linked")
         }
         if mode == .link {
+            let masterHexEncodedPublicKey = masterHexEncodedPublicKeyTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces)
             let deviceLinkingModal = DeviceLinkingModal(mode: .slave, delegate: self)
             deviceLinkingModal.modalPresentationStyle = .overFullScreen
             present(deviceLinkingModal, animated: true, completion: nil)
+            let thread = TSContactThread.getOrCreateThread(contactId: masterHexEncodedPublicKey)
+            ThreadUtil.enqueueDeviceLinkingMessage(in: thread)
         } else {
             onboardingController.pushDisplayNameVC(from: self)
         }
     }
     
-    func handleDeviceLinked() {
+    func handleDeviceLinkingRequestAuthorized() {
         TSAccountManager.sharedInstance().didRegister()
         UserDefaults.standard.set(true, forKey: "didUpdateForMainnet")
         onboardingController.verificationDidComplete(fromView: self)

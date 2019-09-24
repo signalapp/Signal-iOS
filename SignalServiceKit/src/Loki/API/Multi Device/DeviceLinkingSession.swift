@@ -36,10 +36,6 @@ public final class DeviceLinkingSession : NSObject {
         isListeningForLinkingRequests = false
     }
     
-    public func authorizeDeviceLink(_ deviceLink: DeviceLink) {
-        // TODO: Send a device link authorized message
-    }
-    
     // MARK: Private API
     private func isValidLinkingRequest(_ deviceLink: DeviceLink) -> Bool {
         // When requesting a device link, the slave device signs the master device's public key. When authorizing
