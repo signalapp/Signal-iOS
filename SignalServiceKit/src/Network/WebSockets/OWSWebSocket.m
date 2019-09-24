@@ -31,15 +31,15 @@ static const CGFloat kSocketReconnectDelaySeconds = 5.f;
 // If the app is in the background, it should keep the
 // websocket open if:
 //
-// a) It has received a notification in the last N seconds.
-static const CGFloat kBackgroundOpenSocketDurationSeconds = 20.f;
+// a) It has received a notification or app has been activated in the last N seconds.
+static const NSTimeInterval kKeepAliveDuration_Default = 20.f;
 // b) It has received a message over the socket in the last N seconds.
-static const CGFloat kBackgroundKeepSocketAliveDurationSeconds = 15.f;
+static const NSTimeInterval kKeepAliveDuration_ReceiveMessage = 15.f;
 // c) It is in the process of making a request.
-static const CGFloat kMakeRequestKeepSocketAliveDurationSecondsBackground = 20.f;
-static const CGFloat kMakeRequestKeepSocketAliveDurationSecondsForeground = 30.f;
+static const NSTimeInterval kKeepAliveDuration_MakeRequestInForeground = 30.f;
+static const NSTimeInterval kKeepAliveDuration_MakeRequestInBackground = 20.f;
 // d) It has just received the response to a request.
-static const CGFloat kReceiveResponseKeepSocketAliveDurationSeconds = 5.f;
+static const NSTimeInterval kKeepAliveDuration_ReceiveResponse = 5.f;
 
 NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_OWSWebSocketStateDidChange";
 
@@ -483,9 +483,9 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     OWSAssertDebug(failure);
 
     DispatchMainThreadSafe(^{
-        CGFloat keepAlive
-            = (CurrentAppContext().isMainAppAndActive ? kMakeRequestKeepSocketAliveDurationSecondsForeground
-                                                      : kMakeRequestKeepSocketAliveDurationSecondsBackground);
+        NSTimeInterval keepAlive
+            = (CurrentAppContext().isMainAppAndActive ? kKeepAliveDuration_MakeRequestInForeground
+                                                      : kKeepAliveDuration_MakeRequestInBackground);
         [self requestSocketAliveForAtLeastSeconds:keepAlive];
     });
 
@@ -592,7 +592,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     OWSLogInfo(@"received WebSocket response requestId: %llu, status: %u", message.requestID, message.status);
 
     DispatchMainThreadSafe(^{
-        [self requestSocketAliveForAtLeastSeconds:kReceiveResponseKeepSocketAliveDurationSeconds];
+        [self requestSocketAliveForAtLeastSeconds:kKeepAliveDuration_ReceiveResponse];
     });
 
     UInt64 requestId = message.requestID;
@@ -771,7 +771,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 
     // If we receive a message over the socket while the app is in the background,
     // prolong how long the socket stays open.
-    [self requestSocketAliveForAtLeastSeconds:kBackgroundKeepSocketAliveDurationSeconds];
+    [self requestSocketAliveForAtLeastSeconds:kKeepAliveDuration_ReceiveMessage];
 
     if ([message.path isEqualToString:@"/api/v1/message"] && [message.verb isEqualToString:@"PUT"]) {
 
@@ -946,7 +946,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     }
 }
 
-- (void)requestSocketAliveForAtLeastSeconds:(CGFloat)durationSeconds
+- (void)requestSocketAliveForAtLeastSeconds:(NSTimeInterval)durationSeconds
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(durationSeconds > 0.f);
@@ -1021,7 +1021,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
         //
         // If the app is inactive, it will open the websocket for a
         // period of time.
-        [self requestSocketAliveForAtLeastSeconds:kBackgroundOpenSocketDurationSeconds];
+        [self requestSocketAliveForAtLeastSeconds:kKeepAliveDuration_Default];
     });
 }
 
