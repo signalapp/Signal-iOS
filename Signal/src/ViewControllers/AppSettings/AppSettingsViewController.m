@@ -529,23 +529,9 @@
 
 - (void)clearAllData
 {
-    NSString *title = NSLocalizedString(@"Clear All Data", @"");
-    NSString *message = NSLocalizedString(@"Are you sure you want to clear all your data? This will delete your entire account, including all conversations and your personal key pair.", @"");
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-        [ThreadUtil deleteAllContent];
-        [SSKEnvironment.shared.identityManager clearIdentityKey];
-        [LKAPI clearRandomSnodePool];
-        AppDelegate *appDelegate = (AppDelegate *)UIApplication.sharedApplication.delegate;
-        [appDelegate stopLongPollerIfNeeded];
-        [SSKEnvironment.shared.tsAccountManager resetForReregistration];
-        UIViewController *rootViewController = [[OnboardingController new] initialViewController];
-        OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:rootViewController];
-        navigationController.navigationBarHidden = YES;
-        UIApplication.sharedApplication.keyWindow.rootViewController = navigationController;
-    }]];
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { /* Do nothing */ }]];
-    [self presentAlert:alert];
+    LKNukeDataModal *nukeDataModal = [LKNukeDataModal new];
+    nukeDataModal.modalPresentationStyle = UIModalPresentationOverFullScreen;
+    [self presentViewController:nukeDataModal animated:YES completion:nil];
 }
 
 - (void)reregisterUser

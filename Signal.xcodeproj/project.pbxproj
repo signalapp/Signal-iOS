@@ -576,6 +576,7 @@
 		B891105E2320872800F15FCC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B891105B2320872800F15FCC /* GoogleService-Info.plist */; };
 		B891105F2320872800F15FCC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B891105B2320872800F15FCC /* GoogleService-Info.plist */; };
 		B894D0712339D6F300B4D94D /* DeviceLinkingModalDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B894D0702339D6F300B4D94D /* DeviceLinkingModalDelegate.swift */; };
+		B894D0752339EDCF00B4D94D /* NukeDataModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B894D0742339EDCF00B4D94D /* NukeDataModal.swift */; };
 		B89841E322B7579F00B1BDC6 /* NewConversationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B89841E222B7579F00B1BDC6 /* NewConversationVC.swift */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
@@ -1382,6 +1383,7 @@
 		B885D5F52334A32100EE0D8E /* UIView+Constraint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Constraint.swift"; sourceTree = "<group>"; };
 		B891105B2320872800F15FCC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B894D0702339D6F300B4D94D /* DeviceLinkingModalDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLinkingModalDelegate.swift; sourceTree = "<group>"; };
+		B894D0742339EDCF00B4D94D /* NukeDataModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NukeDataModal.swift; sourceTree = "<group>"; };
 		B89841E222B7579F00B1BDC6 /* NewConversationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationVC.swift; sourceTree = "<group>"; };
 		B90418E4183E9DD40038554A /* DateUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtil.h; sourceTree = "<group>"; };
 		B90418E5183E9DD40038554A /* DateUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtil.m; sourceTree = "<group>"; };
@@ -2671,6 +2673,7 @@
 				B894D0702339D6F300B4D94D /* DeviceLinkingModalDelegate.swift */,
 				B86BD08023399883000F5AE3 /* QRCodeModal.swift */,
 				B86BD08523399CEF000F5AE3 /* SeedModal.swift */,
+				B894D0742339EDCF00B4D94D /* NukeDataModal.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -3909,6 +3912,7 @@
 				3496957321A301A100DCFE74 /* OWSBackupJob.m in Sources */,
 				340FC8B3204DAC8D007AEB0F /* AppSettingsViewController.m in Sources */,
 				34C4E2572118957600BEA353 /* OWSWebRTCDataProtos.pb.swift in Sources */,
+				B894D0752339EDCF00B4D94D /* NukeDataModal.swift in Sources */,
 				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,
 				45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */,
 				34D1F0B01F867BFC0066283D /* OWSSystemMessageCell.m in Sources */,
