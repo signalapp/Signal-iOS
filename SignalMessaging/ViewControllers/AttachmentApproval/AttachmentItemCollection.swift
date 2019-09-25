@@ -27,7 +27,7 @@ extension AddMoreRailItem: Equatable {
     }
 }
 
-public class AttachmentApprovalItem: Hashable {
+public struct AttachmentApprovalItem: Hashable {
 
     enum AttachmentApprovalItemError: Error {
         case noThumbnail
@@ -36,21 +36,29 @@ public class AttachmentApprovalItem: Hashable {
     public let attachment: SignalAttachment
 
     // This might be nil if the attachment is not a valid image.
-    var imageEditorModel: ImageEditorModel?
+    let imageEditorModel: ImageEditorModel?
+    let canSave: Bool
 
-    public init(attachment: SignalAttachment) {
+    public init(attachment: SignalAttachment, canSave: Bool) {
         self.attachment = attachment
+        self.canSave = canSave
 
         // Try and make a ImageEditorModel.
         // This will only apply for valid images.
-        if let dataUrl: URL = attachment.dataUrl, dataUrl.isFileURL {
+        if attachment.isValidImage,
+            !attachment.isAnimatedImage,
+            let dataUrl: URL = attachment.dataUrl,
+            dataUrl.isFileURL {
+
             let path = dataUrl.path
             do {
                 imageEditorModel = try ImageEditorModel(srcImagePath: path)
             } catch {
-                // Usually not an error; this usually indicates invalid input.
-                Logger.warn("Could not create image editor: \(error)")
+                owsFailDebug("Could not create image editor: \(error)")
+                imageEditorModel = nil
             }
+        } else {
+            imageEditorModel = nil
         }
     }
 

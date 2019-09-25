@@ -6,6 +6,7 @@
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/StorageCoordinator.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,6 +29,15 @@ NS_ASSUME_NONNULL_BEGIN
 {
     return [super initWithUniqueId:[self.class migrationId]];
 }
+
+#pragma mark - Dependencies
+
+- (StorageCoordinator *)storageCoordinator
+{
+    return SSKEnvironment.shared.storageCoordinator;
+}
+
+#pragma mark -
 
 + (NSString *)migrationId
 {
@@ -52,11 +62,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAbstractMethod();
 }
 
-- (void)markAsCompleteWithSneakyTransaction
-{
-    OWSAbstractMethod();
-}
-
 - (void)markAsCompleteWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!self.shouldBeSaved) {
@@ -69,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)markMigrationIdAsComplete:(NSString *)migrationId transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSLogInfo(@"Marking migration as incomplete: %@", migrationId);
+    OWSLogInfo(@"Marking migration as complete: %@", migrationId);
 
     [self.keyValueStore setBool:YES key:migrationId transaction:transaction];
 }
@@ -81,11 +86,20 @@ NS_ASSUME_NONNULL_BEGIN
     [self.keyValueStore removeValueForKey:migrationId transaction:transaction];
 }
 
+- (void)markAsCompleteWithSneakyTransaction
+{
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self markAsCompleteWithTransaction:transaction];
+    }];
+}
+
 - (BOOL)isCompleteWithSneakyTransaction
 {
-    OWSAbstractMethod();
-
-    return NO;
+    __block BOOL result;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [self isCompleteWithTransaction:transaction];
+    }];
+    return result;
 }
 
 - (BOOL)isCompleteWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -106,7 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Dependencies
 
-- (OWSPrimaryStorage *)primaryStorage
+- (nullable OWSPrimaryStorage *)primaryStorage
 {
     OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
 
@@ -139,26 +153,6 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (void)markAsCompleteWithSneakyTransaction
-{
-    // GRDB TODO: Which kind of transaction we should use depends on whether or not
-    //            we are pre- or post- the YDB-to-GRDB migration.
-    [self.ydbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self markAsCompleteWithTransaction:transaction.asAnyWrite];
-    }];
-}
-
-- (BOOL)isCompleteWithSneakyTransaction
-{
-    // GRDB TODO: Which kind of transaction we should use depends on whether or not
-    //            we are pre- or post- the YDB-to-GRDB migration.
-    __block BOOL result;
-    [self.ydbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        result = [self isCompleteWithTransaction:transaction.asAnyRead];
-    }];
-    return result;
-}
-
 #pragma mark - Database Connections
 
 + (YapDatabaseConnection *)ydbReadConnection
@@ -180,6 +174,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     return YDBDatabaseMigration.ydbReadWriteConnection;
 }
+
+@end
+
+#pragma mark -
+
+@implementation GRDBDatabaseMigration
 
 @end
 

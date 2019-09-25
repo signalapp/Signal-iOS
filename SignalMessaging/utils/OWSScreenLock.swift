@@ -276,6 +276,9 @@ public class OWSScreenLock: NSObject {
             case .notInteractive:
                 owsFailDebug("context not interactive.")
                 return .unexpectedFailure(error:defaultErrorDescription)
+            @unknown default:
+                owsFailDebug("Unexpected enum value.")
+                return .unexpectedFailure(error:defaultErrorDescription)
             }
         }
         return .failure(error:defaultErrorDescription)

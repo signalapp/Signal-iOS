@@ -75,7 +75,6 @@ class GRDBMessageContentJobFinder: MessageContentJobFinder {
             LIMIT \(batchSize)
         """
         let cursor = OWSMessageContentJob.grdbFetchCursor(sql: sql,
-                                                          arguments: [],
                                                           transaction: transaction)
 
         return try! cursor.all()

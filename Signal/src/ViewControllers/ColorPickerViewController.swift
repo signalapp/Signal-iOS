@@ -230,7 +230,8 @@ class ColorPickerView: UIView, ColorViewDelegate {
     private var outgoingViewItem: MockConversationViewItem {
         let thread = MockThread(contactAddress: SignalServiceAddress(phoneNumber: "+fake-id"))
         let outgoingText = NSLocalizedString("COLOR_PICKER_DEMO_MESSAGE_1", comment: "The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble.")
-        let outgoingItem = MockConversationViewItem(interaction: MockOutgoingMessage(messageBody: outgoingText, thread: thread))
+        let message = MockOutgoingMessage(messageBody: outgoingText, thread: thread)
+        let outgoingItem = MockConversationViewItem(interaction: message, thread: thread)
         outgoingItem.displayableBodyText = DisplayableText.displayableText(outgoingText)
         outgoingItem.interactionType = .outgoingMessage
         return outgoingItem
@@ -239,7 +240,8 @@ class ColorPickerView: UIView, ColorViewDelegate {
     private var incomingViewItem: MockConversationViewItem {
         let thread = MockThread(contactAddress: SignalServiceAddress(phoneNumber: "+fake-id"))
         let incomingText = NSLocalizedString("COLOR_PICKER_DEMO_MESSAGE_2", comment: "The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble.")
-        let incomingItem = MockConversationViewItem(interaction: MockIncomingMessage(messageBody: incomingText, thread: thread))
+        let message = MockIncomingMessage(messageBody: incomingText, thread: thread)
+        let incomingItem = MockConversationViewItem(interaction: message, thread: thread)
         incomingItem.displayableBodyText = DisplayableText.displayableText(incomingText)
         incomingItem.interactionType = .incomingMessage
         return incomingItem
@@ -323,6 +325,7 @@ private class MockThread: TSContactThread {
 
 @objc
 private class MockConversationViewItem: NSObject, ConversationViewItem {
+    var thread: TSThread
     var interaction: TSInteraction
     var interactionType: OWSInteractionType = OWSInteractionType.unknown
     var quotedReply: OWSQuotedReplyModel?
@@ -337,6 +340,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var shouldShowDate: Bool = false
     var shouldShowSenderAvatar: Bool = false
     var senderName: NSAttributedString?
+    var senderUsername: String?
     var accessibilityAuthorName: String?
     var shouldHideFooter: Bool = false
     var isFirstInCluster: Bool = true
@@ -369,8 +373,9 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var viewOnceMessageState: ViewOnceMessageState = .incomingExpired
     var mutualGroupNames: [String]?
 
-    init(interaction: TSInteraction) {
+    init(interaction: TSInteraction, thread: TSThread) {
         self.interaction = interaction
+        self.thread = thread
 
         super.init()
     }

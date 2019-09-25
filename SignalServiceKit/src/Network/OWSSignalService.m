@@ -7,7 +7,6 @@
 #import "OWSCensorshipConfiguration.h"
 #import "OWSError.h"
 #import "OWSHTTPSecurityPolicy.h"
-#import "OWSPrimaryStorage.h"
 #import "TSAccountManager.h"
 #import "TSConstants.h"
 #import <AFNetworking/AFHTTPSessionManager.h>
@@ -15,13 +14,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kOWSPrimaryStorage_isCensorshipCircumventionManuallyActivated
+NSString *const kisCensorshipCircumventionManuallyActivatedKey
     = @"kTSStorageManager_isCensorshipCircumventionManuallyActivated";
-NSString *const kOWSPrimaryStorage_isCensorshipCircumventionManuallyDisabled
+NSString *const kisCensorshipCircumventionManuallyDisabledKey
     = @"kTSStorageManager_isCensorshipCircumventionManuallyDisabled";
-NSString *const kOWSPrimaryStorage_ManualCensorshipCircumventionDomain
-    = @"kTSStorageManager_ManualCensorshipCircumventionDomain";
-NSString *const kOWSPrimaryStorage_ManualCensorshipCircumventionCountryCode
+NSString *const kManualCensorshipCircumventionCountryCodeKey
     = @"kTSStorageManager_ManualCensorshipCircumventionCountryCode";
 
 NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
@@ -120,7 +117,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 {
     __block BOOL result;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result = [self.keyValueStore getBool:kOWSPrimaryStorage_isCensorshipCircumventionManuallyActivated
+        result = [self.keyValueStore getBool:kisCensorshipCircumventionManuallyActivatedKey
                                 defaultValue:NO
                                  transaction:transaction];
     }];
@@ -130,9 +127,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 - (void)setIsCensorshipCircumventionManuallyActivated:(BOOL)value
 {
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self.keyValueStore setBool:value
-                                key:kOWSPrimaryStorage_isCensorshipCircumventionManuallyActivated
-                        transaction:transaction];
+        [self.keyValueStore setBool:value key:kisCensorshipCircumventionManuallyActivatedKey transaction:transaction];
     }];
 
     [self updateIsCensorshipCircumventionActive];
@@ -142,7 +137,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 {
     __block BOOL result;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result = [self.keyValueStore getBool:kOWSPrimaryStorage_isCensorshipCircumventionManuallyDisabled
+        result = [self.keyValueStore getBool:kisCensorshipCircumventionManuallyDisabledKey
                                 defaultValue:NO
                                  transaction:transaction];
     }];
@@ -152,9 +147,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 - (void)setIsCensorshipCircumventionManuallyDisabled:(BOOL)value
 {
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self.keyValueStore setBool:value
-                                key:kOWSPrimaryStorage_isCensorshipCircumventionManuallyDisabled
-                        transaction:transaction];
+        [self.keyValueStore setBool:value key:kisCensorshipCircumventionManuallyDisabledKey transaction:transaction];
     }];
 
     [self updateIsCensorshipCircumventionActive];
@@ -375,8 +368,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 {
     __block NSString *_Nullable result;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result = [self.keyValueStore getString:kOWSPrimaryStorage_ManualCensorshipCircumventionCountryCode
-                                   transaction:transaction];
+        result = [self.keyValueStore getString:kManualCensorshipCircumventionCountryCodeKey transaction:transaction];
     }];
     return result;
 }
@@ -384,9 +376,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 - (void)setManualCensorshipCircumventionCountryCode:(nullable NSString *)value
 {
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self.keyValueStore setString:value
-                                  key:kOWSPrimaryStorage_ManualCensorshipCircumventionCountryCode
-                          transaction:transaction];
+        [self.keyValueStore setString:value key:kManualCensorshipCircumventionCountryCodeKey transaction:transaction];
     }];
 }
 

@@ -171,6 +171,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
@@ -192,7 +193,8 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
                        linkPreview:linkPreview
                     messageSticker:messageSticker
                      quotedMessage:quotedMessage
-                     schemaVersion:schemaVersion];
+                     schemaVersion:schemaVersion
+      storedShouldStartExpireTimer:storedShouldStartExpireTimer];
 
     if (!self) {
         return self;
@@ -328,6 +330,14 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
                                          }];
 
     // Ignore sendReadReceipt - it doesn't apply to error messages.
+}
+
+- (BOOL)isSpecialMessage
+{
+    if (self.errorType == TSErrorMessageNonBlockingIdentityChange) {
+        return YES;
+    }
+    return [super isSpecialMessage];
 }
 
 @end

@@ -31,6 +31,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
 @property (atomic, nullable) OWSAES256Key *profileKey;
 @property (atomic, nullable) NSString *profileName;
+@property (atomic, nullable) NSString *username;
 @property (atomic, nullable) NSString *avatarUrlPath;
 @property (atomic, nullable) NSString *avatarFileName;
 
@@ -69,6 +70,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
         userProfileSchemaVersion:(NSUInteger)userProfileSchemaVersion
+                        username:(nullable NSString *)username
 {
     self = [super initWithUniqueId:uniqueId];
 
@@ -83,6 +85,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     _recipientPhoneNumber = recipientPhoneNumber;
     _recipientUUID = recipientUUID;
     _userProfileSchemaVersion = userProfileSchemaVersion;
+    _username = username;
 
     return self;
 }
@@ -107,8 +110,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     return [[SignalServiceAddress alloc] initWithPhoneNumber:kLocalProfileUniqueId];
 }
 
-+ (OWSUserProfile *)getUserProfileForAddress:(SignalServiceAddress *)address
-                                 transaction:(SDSAnyReadTransaction *)transaction
++ (nullable OWSUserProfile *)getUserProfileForAddress:(SignalServiceAddress *)address
+                                          transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
 
@@ -134,6 +137,14 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     OWSAssertDebug(userProfile);
 
     return userProfile;
+}
+
++ (nullable OWSUserProfile *)userProfileForUsername:(NSString *)username
+                                        transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(username.length > 0);
+
+    return [self.userProfileFinder userProfileForUsername:username transaction:transaction];
 }
 
 + (BOOL)localUserProfileExistsWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -354,6 +365,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 }
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
+                     username:(nullable NSString *)username
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
                   transaction:(SDSAnyWriteTransaction *)transaction
                    completion:(nullable OWSUserProfileCompletion)completion
@@ -361,6 +373,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     [self
         applyChanges:^(OWSUserProfile *userProfile) {
             [userProfile setProfileName:[profileName ows_stripped]];
+            [userProfile setUsername:username];
             [userProfile setAvatarUrlPath:avatarUrlPath];
         }
         functionName:__PRETTY_FUNCTION__
@@ -429,6 +442,19 @@ NSUInteger const kUserProfileSchemaVersion = 1;
         functionName:__PRETTY_FUNCTION__
          transaction:transaction
           completion:completion];
+}
+
+- (void)updateWithUsername:(nullable NSString *)username transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(username == nil || username.length > 0);
+
+    [self
+        applyChanges:^(OWSUserProfile *userProfile) {
+            [userProfile setUsername:username];
+        }
+        functionName:__PRETTY_FUNCTION__
+         transaction:transaction
+          completion:nil];
 }
 
 // This should only be used in verbose, developer-only logs.

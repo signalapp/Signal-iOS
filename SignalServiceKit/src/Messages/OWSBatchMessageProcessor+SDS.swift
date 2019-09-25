@@ -46,6 +46,24 @@ public struct MessageContentJobRecord: SDSRecord {
     }
 }
 
+// MARK: - Row Initializer
+
+public extension MessageContentJobRecord {
+    static var databaseSelection: [SQLSelectable] {
+        return CodingKeys.allCases
+    }
+
+    init(row: Row) {
+        id = row[0]
+        recordType = row[1]
+        uniqueId = row[2]
+        createdAt = row[3]
+        envelopeData = row[4]
+        plaintextData = row[5]
+        wasReceivedByUD = row[6]
+    }
+}
+
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
@@ -112,6 +130,10 @@ extension OWSMessageContentJob: SDSModel {
     public var sdsTableName: String {
         return MessageContentJobRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return OWSMessageContentJobSerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -120,8 +142,8 @@ extension OWSMessageContentJobSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
     static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .int64, columnIndex: 3)
@@ -131,9 +153,11 @@ extension OWSMessageContentJobSerializer {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_OWSMessageContentJob", columns: [
-        recordTypeColumn,
+    public static let table = SDSTableMetadata(collection: OWSMessageContentJob.collection(),
+                                               tableName: "model_OWSMessageContentJob",
+                                               columns: [
         idColumn,
+        recordTypeColumn,
         uniqueIdColumn,
         createdAtColumn,
         envelopeDataColumn,
@@ -430,20 +454,11 @@ public extension OWSMessageContentJob {
 
 public extension OWSMessageContentJob {
     class func grdbFetchCursor(sql: String,
-                               arguments: [DatabaseValueConvertible]?,
+                               arguments: StatementArguments = StatementArguments(),
                                transaction: GRDBReadTransaction) -> OWSMessageContentJobCursor {
-        var statementArguments: StatementArguments?
-        if let arguments = arguments {
-            guard let statementArgs = StatementArguments(arguments) else {
-                owsFailDebug("Could not convert arguments.")
-                return OWSMessageContentJobCursor(cursor: nil)
-            }
-            statementArguments = statementArgs
-        }
-        let database = transaction.database
         do {
-            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
-            let cursor = try MessageContentJobRecord.fetchCursor(statement, arguments: statementArguments)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
+            let cursor = try MessageContentJobRecord.fetchCursor(transaction.database, sqlRequest)
             return OWSMessageContentJobCursor(cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
@@ -453,13 +468,12 @@ public extension OWSMessageContentJob {
     }
 
     class func grdbFetchOne(sql: String,
-                            arguments: StatementArguments,
+                            arguments: StatementArguments = StatementArguments(),
                             transaction: GRDBReadTransaction) -> OWSMessageContentJob? {
         assert(sql.count > 0)
 
         do {
-            // There are significant perf benefits to using a cached statement.
-            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             guard let record = try MessageContentJobRecord.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }

@@ -134,6 +134,12 @@ public class OWSFlatButton: UIView {
         return UIFont.ows_mediumFont(withSize: fontPointSize)
     }
 
+    @objc
+    public class func heightForFont(_ font: UIFont) -> CGFloat {
+        // Button height should be 48pt if the font is 17pt.
+        return font.pointSize * 48 / 17
+    }
+
     // MARK: Methods
 
     @objc

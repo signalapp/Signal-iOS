@@ -5,6 +5,7 @@
 #import "TSAttachmentStream.h"
 #import "MIMETypeUtil.h"
 #import "NSData+Image.h"
+#import "OWSError.h"
 #import "OWSFileSystem.h"
 #import "TSAttachmentPointer.h"
 #import <AVFoundation/AVFoundation.h>
@@ -271,24 +272,38 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     *error = nil;
     NSString *_Nullable filePath = self.originalFilePath;
     if (!filePath) {
-        OWSFailDebug(@"Missing path for attachment.");
+        *error = OWSErrorMakeAssertionError(@"Missing path for attachment.");
         return NO;
     }
     OWSLogDebug(@"Writing attachment to file: %@", filePath);
     return [data writeToFile:filePath options:0 error:error];
 }
 
-- (BOOL)writeDataSource:(DataSource *)dataSource
+- (BOOL)writeCopyingDataSource:(id<DataSource>)dataSource error:(NSError **)error
 {
     OWSAssertDebug(dataSource);
 
-    NSString *_Nullable filePath = self.originalFilePath;
-    if (!filePath) {
-        OWSFailDebug(@"Missing path for attachment.");
+    NSURL *_Nullable originalMediaURL = self.originalMediaURL;
+    if (originalMediaURL == nil) {
+        *error = OWSErrorMakeAssertionError(@"Missing URL for attachment.");
         return NO;
     }
-    OWSLogDebug(@"Writing attachment to file: %@", filePath);
-    return [dataSource writeToPath:filePath];
+    OWSLogDebug(@"Writing attachment to file: %@", originalMediaURL);
+    return [dataSource writeToUrl:originalMediaURL
+                            error:error];
+}
+
+- (BOOL)writeConsumingDataSource:(id<DataSource>)dataSource error:(NSError **)error
+{
+    OWSAssertDebug(dataSource);
+
+    NSURL *_Nullable originalMediaURL = self.originalMediaURL;
+    if (originalMediaURL == nil) {
+        *error = OWSErrorMakeAssertionError(@"Missing URL for attachment.");
+        return NO;
+    }
+    OWSLogDebug(@"Writing attachment to file: %@", originalMediaURL);
+    return [dataSource moveToUrlAndConsume:originalMediaURL error:error];
 }
 
 + (NSString *)legacyAttachmentsDirPath
@@ -502,7 +517,12 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         if (![self isValidImage]) {
             return nil;
         }
-        return [[UIImage alloc] initWithContentsOfFile:self.originalFilePath];
+        UIImage *_Nullable image = [[UIImage alloc] initWithContentsOfFile:self.originalFilePath];
+        if (image == nil) {
+            OWSFailDebug(
+                @"Couldn't load original image: %d.", [OWSFileSystem fileOrFolderExistsAtPath:self.originalFilePath]);
+        }
+        return image;
     } else {
         return nil;
     }
@@ -901,20 +921,19 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 - (void)updateAsUploadedWithEncryptionKey:(NSData *)encryptionKey
                                    digest:(NSData *)digest
                                  serverId:(UInt64)serverId
-                               completion:(dispatch_block_t)completion
+                              transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(encryptionKey.length > 0);
     OWSAssertDebug(digest.length > 0);
     OWSAssertDebug(serverId > 0);
 
-    [self
-        applyChangeAsyncToLatestCopyWithChangeBlock:^(TSAttachmentStream *attachment) {
-            [attachment setEncryptionKey:encryptionKey];
-            [attachment setDigest:digest];
-            [attachment setServerId:serverId];
-            [attachment setIsUploaded:YES];
-        }
-                                         completion:completion];
+    [self anyUpdateAttachmentStreamWithTransaction:transaction
+                                             block:^(TSAttachmentStream *attachment) {
+                                                 [attachment setEncryptionKey:encryptionKey];
+                                                 [attachment setDigest:digest];
+                                                 [attachment setServerId:serverId];
+                                                 [attachment setIsUploaded:YES];
+                                             }];
 }
 
 - (nullable TSAttachmentStream *)cloneAsThumbnail

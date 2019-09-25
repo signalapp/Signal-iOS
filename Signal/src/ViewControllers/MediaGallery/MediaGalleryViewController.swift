@@ -54,7 +54,7 @@ public class MediaGalleryItem: Equatable, Hashable {
         self.attachmentStream = attachmentStream
         self.captionForDisplay = attachmentStream.caption?.filterForDisplay
         self.galleryDate = GalleryDate(message: message)
-        self.albumIndex = message.attachmentIds.index(of: attachmentStream.uniqueId)
+        self.albumIndex = message.attachmentIds.firstIndex(of: attachmentStream.uniqueId) ?? 0
         self.orderingKey = MediaGalleryItemOrderingKey(messageSortKey: message.sortId, attachmentSortKey: albumIndex)
     }
 
@@ -626,6 +626,14 @@ extension MediaGalleryNavigationController: MediaPresentationContextProvider {
 
 class MediaGallery: MediaGalleryDataSource {
 
+    // MARK: - Dependencies
+
+    private var primaryStorage: OWSPrimaryStorage? {
+        return SSKEnvironment.shared.primaryStorage
+    }
+
+    // MARK: -
+
     var deletedAttachments: Set<TSAttachment> = Set()
     var deletedGalleryItems: Set<MediaGalleryItem> = Set()
 
@@ -649,17 +657,21 @@ class MediaGallery: MediaGalleryDataSource {
     }
 
     func setupDatabaseObservation() {
-        if FeatureFlags.useGRDB {
+        if FeatureFlags.storageMode != .ydb {
             guard let mediaGalleryDatabaseObserver = databaseStorage.grdbStorage.mediaGalleryDatabaseObserver else {
                 owsFailDebug("observer was unexpectedly nil")
                 return
             }
             mediaGalleryDatabaseObserver.appendSnapshotDelegate(self)
         } else {
+            guard let primaryStorage = primaryStorage else {
+                owsFail("Missing primaryStorage.")
+            }
+
             NotificationCenter.default.addObserver(self,
                                                    selector: #selector(uiDatabaseDidUpdate),
                                                    name: .OWSUIDatabaseConnectionDidUpdate,
-                                                   object: OWSPrimaryStorage.shared().dbNotificationObject)
+                                                   object: primaryStorage.dbNotificationObject)
         }
     }
 
@@ -667,12 +679,16 @@ class MediaGallery: MediaGalleryDataSource {
 
     @objc
     func uiDatabaseDidUpdate(notification: Notification) {
+        guard let primaryStorage = primaryStorage else {
+            owsFail("Missing primaryStorage.")
+        }
+
         guard let notifications = notification.userInfo?[OWSUIDatabaseConnectionNotificationsKey] as? [Notification] else {
             owsFailDebug("notifications was unexpectedly nil")
             return
         }
 
-        guard mediaGalleryFinder.yapAdapter.hasMediaChanges(in: notifications, dbConnection: OWSPrimaryStorage.shared().uiDatabaseConnection) else {
+        guard mediaGalleryFinder.yapAdapter.hasMediaChanges(in: notifications, dbConnection: primaryStorage.uiDatabaseConnection) else {
             return
         }
 

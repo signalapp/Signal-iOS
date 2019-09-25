@@ -7,6 +7,8 @@ import Foundation
 @objc(OWSThreadDetailsCell)
 public class ThreadDetailsCell: ConversationViewCell {
 
+    // MARK: -
+
     @objc
     public static let cellReuseIdentifier = "ThreadDetailsCell"
 
@@ -108,17 +110,13 @@ public class ThreadDetailsCell: ConversationViewCell {
             return owsFailDebug("Missing viewItem")
         }
 
-        guard let threadDetails = viewItem.interaction as? ThreadDetailsInteraction else {
-            return owsFailDebug("Missing threadDetails")
-        }
-
         guard avatarView == nil else {
             self.avatarView?.updateImage()
             return
         }
 
         self.avatarView = ConversationAvatarImageView(
-            thread: threadDetails.thread,
+            thread: viewItem.thread,
             diameter: UInt(avatarDiameter),
             contactsManager: Environment.shared.contactsManager
         )
@@ -141,15 +139,12 @@ public class ThreadDetailsCell: ConversationViewCell {
             return owsFailDebug("Missing viewItem")
         }
 
-        guard let threadDetails = viewItem.interaction as? ThreadDetailsInteraction else {
-            return owsFailDebug("Missing threadDetails")
-        }
-
-        if let groupThread = threadDetails.thread as? TSGroupThread {
+        switch viewItem.thread {
+        case let groupThread as TSGroupThread:
             title = groupThread.groupNameOrDefault
-        } else if let contactThread = threadDetails.thread as? TSContactThread {
+        case let contactThread as TSContactThread:
             title = Environment.shared.contactsManager.displayName(for: contactThread.contactAddress)
-        } else {
+        default:
             return owsFailDebug("interaction incorrect thread type")
         }
     }
@@ -170,15 +165,29 @@ public class ThreadDetailsCell: ConversationViewCell {
             return owsFailDebug("Missing threadDetails")
         }
 
-        if let groupThread = threadDetails.thread as? TSGroupThread {
+        switch viewItem.thread {
+        case let groupThread as TSGroupThread:
             let formatString = NSLocalizedString("THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT",
                                                  comment: "The number of members in a group. Embeds {{member count}}")
             details = String(format: formatString, groupThread.groupModel.groupMembers.count)
-        } else if let contactThread = threadDetails.thread as? TSContactThread {
-            if let phoneNumber = contactThread.contactAddress.phoneNumber, phoneNumber != self.contactsManager.displayName(for: contactThread.contactAddress) {
-                details = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber)
+        case let contactThread as TSContactThread:
+            let threadName = self.contactsManager.displayName(for: contactThread.contactAddress)
+            if let phoneNumber = contactThread.contactAddress.phoneNumber, phoneNumber != threadName {
+                let formattedNumber = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber)
+                if threadName != formattedNumber {
+                    details = formattedNumber
+                }
             }
-        } else {
+            if let username = viewItem.senderUsername {
+                if let formattedUsername = CommonFormats.formatUsername(username), threadName != formattedUsername {
+                    if let existingDetails = details {
+                        details = existingDetails + "\n" + formattedUsername
+                    } else {
+                        details = formattedUsername
+                    }
+                }
+            }
+        default:
             return owsFailDebug("interaction incorrect thread type")
         }
     }

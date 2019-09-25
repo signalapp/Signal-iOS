@@ -144,6 +144,12 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)udSenderCertificateRequest;
 
+#pragma mark - Usernames
+
++ (TSRequest *)usernameSetRequest:(NSString *)username;
++ (TSRequest *)usernameDeleteRequest;
++ (TSRequest *)getProfileRequestWithUsername:(NSString *)username;
+
 @end
 
 NS_ASSUME_NONNULL_END

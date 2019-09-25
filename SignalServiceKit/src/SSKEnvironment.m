@@ -4,7 +4,10 @@
 
 #import "SSKEnvironment.h"
 #import "AppContext.h"
+#import "OWSBlockingManager.h"
 #import "OWSPrimaryStorage.h"
+#import "TSAccountManager.h"
+#import <SignalServiceKit/ProfileManagerProtocol.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,7 +18,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) id<ContactsManagerProtocol> contactsManager;
 @property (nonatomic) OWSMessageSender *messageSender;
 @property (nonatomic) id<ProfileManagerProtocol> profileManager;
-@property (nonatomic) OWSPrimaryStorage *primaryStorage;
+@property (nonatomic, nullable) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic) ContactsUpdater *contactsUpdater;
 @property (nonatomic) TSNetworkManager *networkManager;
 @property (nonatomic) OWSMessageManager *messageManager;
@@ -38,6 +41,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) OWSAttachmentDownloads *attachmentDownloads;
 @property (nonatomic) StickerManager *stickerManager;
 @property (nonatomic) SDSDatabaseStorage *databaseStorage;
+@property (nonatomic) StorageCoordinator *storageCoordinator;
 
 @end
 
@@ -47,16 +51,14 @@ static SSKEnvironment *sharedSSKEnvironment;
 
 @synthesize callMessageHandler = _callMessageHandler;
 @synthesize notificationsManager = _notificationsManager;
-@synthesize objectReadWriteConnection = _objectReadWriteConnection;
 @synthesize migrationDBConnection = _migrationDBConnection;
-@synthesize analyticsDBConnection = _analyticsDBConnection;
 
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
                      linkPreviewManager:(OWSLinkPreviewManager *)linkPreviewManager
                           messageSender:(OWSMessageSender *)messageSender
                   messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
                          profileManager:(id<ProfileManagerProtocol>)profileManager
-                         primaryStorage:(OWSPrimaryStorage *)primaryStorage
+                         primaryStorage:(nullable OWSPrimaryStorage *)primaryStorage
                         contactsUpdater:(ContactsUpdater *)contactsUpdater
                          networkManager:(TSNetworkManager *)networkManager
                          messageManager:(OWSMessageManager *)messageManager
@@ -85,6 +87,7 @@ static SSKEnvironment *sharedSSKEnvironment;
               signalServiceAddressCache:(SignalServiceAddressCache *)signalServiceAddressCache
                    accountServiceClient:(AccountServiceClient *)accountServiceClient
                   storageServiceManager:(id<StorageServiceManagerProtocol>)storageServiceManager
+                     storageCoordinator:(StorageCoordinator *)storageCoordinator
 {
     self = [super init];
     if (!self) {
@@ -96,7 +99,6 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(messageSender);
     OWSAssertDebug(messageSenderJobQueue);
     OWSAssertDebug(profileManager);
-    OWSAssertDebug(primaryStorage);
     OWSAssertDebug(contactsUpdater);
     OWSAssertDebug(networkManager);
     OWSAssertDebug(messageManager);
@@ -125,6 +127,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(signalServiceAddressCache);
     OWSAssertDebug(accountServiceClient);
     OWSAssertDebug(storageServiceManager);
+    OWSAssertDebug(storageCoordinator);
 
     _contactsManager = contactsManager;
     _linkPreviewManager = linkPreviewManager;
@@ -160,6 +163,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _signalServiceAddressCache = signalServiceAddressCache;
     _accountServiceClient = accountServiceClient;
     _storageServiceManager = storageServiceManager;
+    _storageCoordinator = storageCoordinator;
 
     return self;
 }
@@ -182,6 +186,11 @@ static SSKEnvironment *sharedSSKEnvironment;
 + (void)clearSharedForTests
 {
     sharedSSKEnvironment = nil;
+}
+
++ (BOOL)hasShared
+{
+    return sharedSSKEnvironment != nil;
 }
 
 #pragma mark - Mutable Accessors
@@ -229,17 +238,9 @@ static SSKEnvironment *sharedSSKEnvironment;
     return (self.callMessageHandler != nil && self.notificationsManager != nil);
 }
 
-- (YapDatabaseConnection *)objectReadWriteConnection
-{
-    @synchronized(self) {
-        if (!_objectReadWriteConnection) {
-            _objectReadWriteConnection = self.primaryStorage.newDatabaseConnection;
-        }
-        return _objectReadWriteConnection;
-    }
-}
-
 - (YapDatabaseConnection *)migrationDBConnection {
+    OWSAssert(self.primaryStorage);
+
     @synchronized(self) {
         if (!_migrationDBConnection) {
             _migrationDBConnection = self.primaryStorage.newDatabaseConnection;
@@ -248,13 +249,23 @@ static SSKEnvironment *sharedSSKEnvironment;
     }
 }
 
-- (YapDatabaseConnection *)analyticsDBConnection {
-    @synchronized(self) {
-        if (!_analyticsDBConnection) {
-            _analyticsDBConnection = self.primaryStorage.newDatabaseConnection;
-        }
-        return _analyticsDBConnection;
-    }
+- (void)warmCaches
+{
+    // Pre-heat caches to avoid sneaky transactions during the migrations.
+    // We need to warm these caches _before_ the migrations run.
+    //
+    // We need to do as few writes as possible here, to avoid conflicts
+    // with the migrations which haven't run yet.
+    [self.blockingManager warmCaches];
+    [self.profileManager warmCaches];
+    [self.tsAccountManager warmCaches];
+}
+
+- (nullable OWSPrimaryStorage *)primaryStorage
+{
+    OWSAssert(_primaryStorage != nil);
+
+    return _primaryStorage;
 }
 
 @end

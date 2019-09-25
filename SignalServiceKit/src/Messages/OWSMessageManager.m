@@ -24,7 +24,6 @@
 #import "OWSMessageSender.h"
 #import "OWSMessageUtils.h"
 #import "OWSOutgoingReceiptManager.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
 #import "OWSRecordTranscriptJob.h"
 #import "OWSSyncGroupsRequestMessage.h"
@@ -36,7 +35,6 @@
 #import "TSAttachmentPointer.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
-#import "TSDatabaseView.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
 #import "TSIncomingMessage.h"
@@ -50,9 +48,12 @@
 #import <SignalServiceKit/OWSUnknownProtocolVersionMessage.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface OWSMessageManager () <SDSDatabaseStorageObserver>
+
+@end
 
 #pragma mark -
 
@@ -163,28 +164,37 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)startObserving
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModified:)
-                                                 name:YapDatabaseModifiedNotification
-                                               object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModified:)
-                                                 name:YapDatabaseModifiedExternallyNotification
-                                               object:nil];
+    [self.databaseStorage addDatabaseStorageObserver:self];
 }
 
-- (void)yapDatabaseModified:(NSNotification *)notification
+#pragma mark - SDSDatabaseStorageObserver
+
+- (void)databaseStorageDidUpdateWithChange:(SDSDatabaseStorageChange *)change
 {
-    if (AppReadiness.isAppReady) {
-        [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
-    } else {
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-                [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
-            }];
-        });
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+
+    if (!change.didUpdateInteractions) {
+        return;
     }
+
+    [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
+}
+
+- (void)databaseStorageDidUpdateExternally
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+
+    [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
+}
+
+- (void)databaseStorageDidReset
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+
+    [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
 }
 
 #pragma mark - Blocking
@@ -597,7 +607,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
         [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread groupId:groupId];
 
-    [self.messageSenderJobQueue addMessage:syncGroupsRequestMessage transaction:transaction];
+    [self.messageSenderJobQueue addMessage:syncGroupsRequestMessage.asPreparer transaction:transaction];
 }
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
@@ -1061,23 +1071,27 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
+    OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
+        [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread transaction:transaction];
     if (dataMessage.hasExpireTimer && dataMessage.expireTimer > 0) {
         OWSLogInfo(
             @"Expiring messages duration turned to %u for thread %@", (unsigned int)dataMessage.expireTimer, thread);
         disappearingMessagesConfiguration =
-            [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:thread.uniqueId
-                                                                   enabled:YES
-                                                           durationSeconds:dataMessage.expireTimer];
+            [disappearingMessagesConfiguration copyAsEnabledWithDurationSeconds:dataMessage.expireTimer];
     } else {
         OWSLogInfo(@"Expiring messages have been turned off for thread %@", thread);
-        disappearingMessagesConfiguration = [[OWSDisappearingMessagesConfiguration alloc]
-            initWithThreadId:thread.uniqueId
-                     enabled:NO
-             durationSeconds:OWSDisappearingMessagesConfigurationDefaultExpirationDuration];
+        disappearingMessagesConfiguration = [disappearingMessagesConfiguration copyWithIsEnabled:NO];
     }
     OWSAssertDebug(disappearingMessagesConfiguration);
-    [disappearingMessagesConfiguration anyInsertWithTransaction:transaction];
+
+    // NOTE: We always update the configuration here, even if it hasn't changed
+    //       to leave an audit trail.
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [disappearingMessagesConfiguration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+
     NSString *name = [self.contactsManager displayNameForAddress:envelope.sourceAddress transaction:transaction];
 
     // MJK TODO - safe to remove senderTimestamp
@@ -1213,7 +1227,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSData *_Nullable data = UIImagePNGRepresentation(gThread.groupModel.groupImage);
         OWSAssertDebug(data);
         if (data) {
-            DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
+            _Nullable id<DataSource> dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
             [self.messageSenderJobQueue addMediaMessage:message
                                              dataSource:dataSource
                                             contentType:OWSMimeTypeImagePng
@@ -1223,7 +1237,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   isTemporaryAttachment:YES];
         }
     } else {
-        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
     }
 }
 
@@ -1506,10 +1520,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSArray<TSAttachmentPointer *> *attachmentPointers =
         [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments albumMessage:incomingMessage];
+
+    NSMutableArray<NSString *> *attachmentIds = [incomingMessage.attachmentIds mutableCopy];
     for (TSAttachmentPointer *pointer in attachmentPointers) {
         [pointer anyInsertWithTransaction:transaction];
-        [incomingMessage.attachmentIds addObject:pointer.uniqueId];
+        [attachmentIds addObject:pointer.uniqueId];
     }
+    incomingMessage.attachmentIds = [attachmentIds copy];
 
     if (!incomingMessage.hasRenderableContent) {
         OWSLogWarn(@"Ignoring empty: %@", messageDescription);

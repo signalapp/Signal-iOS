@@ -486,7 +486,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(message);
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
     }];
 }
 

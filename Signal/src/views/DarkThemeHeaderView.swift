@@ -18,13 +18,18 @@ public class DarkThemeHeaderView: UIView {
 
     override public class var layerClass: AnyClass {
         get {
-            // HACK: scrollbar incorrectly appears *behind* section headers
-            // in collection view on iOS11 =(
-            if #available(iOS 11, *) {
-                return AlwaysOnTopLayer.self
-            } else {
-                return super.layerClass
+            guard #available(iOS 11.4, *) else {
+                // HACK: scrollbar incorrectly appears *behind* section headers
+                // in collection view on early iOS11.
+                // Appears fine on iOS11.4+
+                if #available(iOS 11, *) {
+                    return AlwaysOnTopLayer.self
+                } else {
+                    return super.layerClass
+                }
             }
+
+            return super.layerClass
         }
     }
 

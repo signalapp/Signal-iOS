@@ -53,7 +53,7 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
     }
 }
 
-// GRDB TODO: Revisit after GRDB migration.
+// POST GRDB TODO: Revisit after GRDB migration.
 NSArray<NSString *> *MiscCollectionsToBackup(void)
 {
     return @[
@@ -78,8 +78,6 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 // TODO: Observe Reachability.
 @interface OWSBackup () <OWSBackupJobDelegate>
 
-@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
-
 // This property should only be accessed on the main thread.
 @property (nonatomic, nullable) OWSBackupExportJob *backupExportJob;
 
@@ -101,8 +99,6 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 
 @implementation OWSBackup
 
-@synthesize dbConnection = _dbConnection;
-
 - (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
@@ -113,7 +109,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     static SDSKeyValueStore *keyValueStore = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:@"OWSPrimaryStorage_OWSBackupCollection"];
+        keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:@"OWSBackupCollection"];
     });
     return keyValueStore;
 }
@@ -183,24 +179,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     });
 }
 
-- (YapDatabaseConnection *)dbConnection
-{
-    @synchronized(self) {
-        if (!_dbConnection) {
-            _dbConnection = self.primaryStorage.newDatabaseConnection;
-        }
-        return _dbConnection;
-    }
-}
-
 #pragma mark - Dependencies
-
-- (OWSPrimaryStorage *)primaryStorage
-{
-    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
-
-    return SSKEnvironment.shared.primaryStorage;
-}
 
 - (TSAccountManager *)tsAccountManager
 {
@@ -746,32 +725,24 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 - (NSArray<NSString *> *)attachmentRecordNamesForLazyRestore
 {
     NSMutableArray<NSString *> *recordNames = [NSMutableArray new];
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        id ext = [transaction ext:TSLazyRestoreAttachmentsDatabaseViewExtensionName];
-        if (!ext) {
-            OWSFailDebug(@"Could not load database view.");
-            return;
-        }
-
-        [ext enumerateKeysAndObjectsInGroup:TSLazyRestoreAttachmentsGroup
-                                 usingBlock:^(
-                                     NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
-                                     if (![object isKindOfClass:[TSAttachmentPointer class]]) {
-                                         OWSFailDebug(
-                                             @"Unexpected object: %@ in collection:%@", [object class], collection);
-                                         return;
-                                     }
-                                     TSAttachmentPointer *attachmentPointer = object;
-
-                                     OWSBackupFragment *_Nullable lazyRestoreFragment =
-                                         [attachmentPointer lazyRestoreFragmentWithTransaction:transaction.asAnyRead];
-                                     if (lazyRestoreFragment == nil) {
-                                         OWSFailDebug(
-                                             @"Invalid object: %@ in collection:%@", [object class], collection);
-                                         return;
-                                     }
-                                     [recordNames addObject:lazyRestoreFragment.recordName];
-                                 }];
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [AttachmentFinder
+            enumerateAttachmentPointersWithLazyRestoreFragmentsWithTransaction:transaction
+                                                                         block:^(TSAttachmentPointer *attachmentPointer,
+                                                                             BOOL *stop) {
+                                                                             OWSBackupFragment
+                                                                                 *_Nullable lazyRestoreFragment
+                                                                                 = [attachmentPointer
+                                                                                     lazyRestoreFragmentWithTransaction:
+                                                                                         transaction];
+                                                                             if (lazyRestoreFragment == nil) {
+                                                                                 OWSFailDebug(
+                                                                                     @"Missing lazyRestoreFragment.");
+                                                                                 return;
+                                                                             }
+                                                                             [recordNames addObject:lazyRestoreFragment
+                                                                                                        .recordName];
+                                                                         }];
     }];
     return recordNames;
 }
@@ -779,17 +750,15 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 - (NSArray<NSString *> *)attachmentIdsForLazyRestore
 {
     NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        id ext = [transaction ext:TSLazyRestoreAttachmentsDatabaseViewExtensionName];
-        if (!ext) {
-            OWSFailDebug(@"Could not load database view.");
-            return;
-        }
-        
-        [ext enumerateKeysInGroup:TSLazyRestoreAttachmentsGroup
-                       usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
-                           [attachmentIds addObject:key];
-                       }];
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        // TODO: We could just enumerate the ids and not deserialize the attachments.
+        [AttachmentFinder
+            enumerateAttachmentPointersWithLazyRestoreFragmentsWithTransaction:transaction
+                                                                         block:^(TSAttachmentPointer *attachmentPointer,
+                                                                             BOOL *stop) {
+                                                                             [attachmentIds
+                                                                                 addObject:attachmentPointer.uniqueId];
+                                                                         }];
     }];
     return attachmentIds;
 }

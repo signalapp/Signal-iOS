@@ -218,26 +218,19 @@ public class OWSLinkPreview: MTLModel {
         }
         let contentType = imageMimeType
 
-        let filePath = OWSFileSystem.temporaryFilePath(withFileExtension: fileExtension)
+        let fileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: fileExtension)
         do {
-            try imageData.write(to: NSURL.fileURL(withPath: filePath))
-        } catch let error as NSError {
-            owsFailDebug("file write failed: \(filePath), \(error)")
-            return nil
-        }
+            try imageData.write(to: fileUrl)
+            let dataSource = try DataSourcePath.dataSource(with: fileUrl, shouldDeleteOnDeallocation: true)
+            let attachment = TSAttachmentStream(contentType: contentType, byteCount: UInt32(fileSize), sourceFilename: nil, caption: nil, albumMessageId: nil, shouldAlwaysPad: false)
+            try attachment.writeConsumingDataSource(dataSource)
+            attachment.anyInsert(transaction: transaction)
 
-        guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath, shouldDeleteOnDeallocation: true) else {
-            owsFailDebug("Could not create data source for path: \(filePath)")
+            return attachment.uniqueId
+        } catch {
+            owsFailDebug("Could not write data source for: \(fileUrl), error: \(error)")
             return nil
         }
-        let attachment = TSAttachmentStream(contentType: contentType, byteCount: UInt32(fileSize), sourceFilename: nil, caption: nil, albumMessageId: nil, shouldAlwaysPad: false)
-        guard attachment.write(dataSource) else {
-            owsFailDebug("Could not write data source for path: \(filePath)")
-            return nil
-        }
-        attachment.anyInsert(transaction: transaction)
-
-        return attachment.uniqueId
     }
 
     private func isValid() -> Bool {

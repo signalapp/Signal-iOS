@@ -5,7 +5,7 @@
 import Foundation
 import PromiseKit
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 @objc
 public class OWSMockSyncManager: NSObject, OWSSyncManagerProtocol {

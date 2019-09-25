@@ -1,10 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ThreadViewHelper.h"
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/SSKEnvironment.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSThread.h>
 #import <YapDatabase/YapDatabase.h>
@@ -24,6 +26,20 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation ThreadViewHelper
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+- (nullable OWSPrimaryStorage *)primaryStorage
+{
+    return SSKEnvironment.shared.primaryStorage;
+}
+
+#pragma mark -
 
 - (instancetype)init
 {
@@ -52,8 +68,10 @@ NS_ASSUME_NONNULL_BEGIN
         [[YapDatabaseViewMappings alloc] initWithGroups:@[ grouping ] view:TSThreadDatabaseViewExtensionName];
     [self.threadMappings setIsReversed:YES forGroup:grouping];
 
-    self.uiDatabaseConnection = [OWSPrimaryStorage.sharedManager newDatabaseConnection];
-    [self.uiDatabaseConnection beginLongLivedReadTransaction];
+    if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+        self.uiDatabaseConnection = [self.primaryStorage newDatabaseConnection];
+        [self.uiDatabaseConnection beginLongLivedReadTransaction];
+    }
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
@@ -93,6 +111,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     _shouldObserveDBModifications = shouldObserveDBModifications;
 
+    if (SSKFeatureFlags.storageMode != StorageModeYdb) {
+        return;
+    }
+
     if (shouldObserveDBModifications) {
         [self.uiDatabaseConnection beginLongLivedReadTransaction];
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -104,7 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(yapDatabaseModified:)
                                                      name:YapDatabaseModifiedNotification
-                                                   object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
+                                                   object:self.primaryStorage.dbNotificationObject];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(yapDatabaseModifiedExternally:)
                                                      name:YapDatabaseModifiedExternallyNotification
@@ -112,7 +134,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         [[NSNotificationCenter defaultCenter] removeObserver:self
                                                         name:YapDatabaseModifiedNotification
-                                                      object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
+                                                      object:self.primaryStorage.dbNotificationObject];
         [[NSNotificationCenter defaultCenter] removeObserver:self
                                                         name:YapDatabaseModifiedExternallyNotification
                                                       object:nil];

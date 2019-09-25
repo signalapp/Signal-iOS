@@ -219,7 +219,7 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
         }
 
         AnyPromise *sendPromise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-            [self.messageSender sendMessage:message
+            [self.messageSender sendMessage:message.asPreparer
                 success:^{
                     OWSLogInfo(
                         @"Successfully sent %lu %@ receipts to sender.", (unsigned long)timestamps.count, receiptName);

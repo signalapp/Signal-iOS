@@ -46,10 +46,6 @@ public class GRDBDatabaseQueue: NSObject, SDSDatabaseQueue {
             }
         }
     }
-
-    func asAnyQueue(crossProcess: SDSCrossProcess) -> SDSAnyDatabaseQueue {
-        return SDSAnyDatabaseQueue(grdbDatabaseQueue: self, crossProcess: crossProcess)
-    }
 }
 
 // MARK: -
@@ -72,54 +68,64 @@ class YAPDBDatabaseQueue: SDSDatabaseQueue {
     func write(block: @escaping (YapDatabaseReadWriteTransaction) -> Void) {
         databaseConnection.readWrite(block)
     }
-
-    func asAnyQueue(crossProcess: SDSCrossProcess) -> SDSAnyDatabaseQueue {
-        return SDSAnyDatabaseQueue(yapDatabaseQueue: self, crossProcess: crossProcess)
-    }
 }
 
 // MARK: -
 
 @objc
 public class SDSAnyDatabaseQueue: SDSTransactable, SDSDatabaseQueue {
-    enum SomeDatabaseQueue {
-        case yap(_ yapQueue: YAPDBDatabaseQueue)
-        case grdb(_ grdbQueue: GRDBDatabaseQueue)
+
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
     }
 
-    private let someDatabaseQueue: SomeDatabaseQueue
+    // MARK: -
+
+    private let yapDatabaseQueue: YAPDBDatabaseQueue?
+    private let grdbDatabaseQueue: GRDBDatabaseQueue?
 
     private let crossProcess: SDSCrossProcess
 
-    init(yapDatabaseQueue: YAPDBDatabaseQueue, crossProcess: SDSCrossProcess) {
-        someDatabaseQueue = .yap(yapDatabaseQueue)
+    init(yapDatabaseQueue: YAPDBDatabaseQueue?,
+         grdbDatabaseQueue: GRDBDatabaseQueue?,
+         crossProcess: SDSCrossProcess) {
 
-        self.crossProcess = crossProcess
-    }
-
-    init(grdbDatabaseQueue: GRDBDatabaseQueue, crossProcess: SDSCrossProcess) {
-        someDatabaseQueue = .grdb(grdbDatabaseQueue)
-
+        self.yapDatabaseQueue = yapDatabaseQueue
+        self.grdbDatabaseQueue = grdbDatabaseQueue
         self.crossProcess = crossProcess
     }
 
     @objc
     public override func read(block: @escaping (SDSAnyReadTransaction) -> Void) {
-        switch someDatabaseQueue {
-        case .yap(let yapDatabaseQueue):
-            yapDatabaseQueue.read { block($0.asAnyRead) }
-        case .grdb(let grdbDatabaseQueue):
+        switch databaseStorage.dataStoreForReads {
+        case .grdb:
+            guard let grdbDatabaseQueue = grdbDatabaseQueue else {
+                owsFail("Missing grdbDatabaseQueue.")
+            }
             grdbDatabaseQueue.read { block($0.asAnyRead) }
+        case .ydb:
+            guard let yapDatabaseQueue = yapDatabaseQueue else {
+                owsFail("Missing grdbDatabaseQueue.")
+            }
+            yapDatabaseQueue.read { block($0.asAnyRead) }
         }
     }
 
     @objc
     public override func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
-        switch someDatabaseQueue {
-        case .yap(let yapDatabaseQueue):
-            yapDatabaseQueue.write { block($0.asAnyWrite) }
-        case .grdb(let grdbDatabaseQueue):
+        switch databaseStorage.dataStoreForWrites {
+        case .grdb:
+            guard let grdbDatabaseQueue = grdbDatabaseQueue else {
+                owsFail("Missing grdbDatabaseQueue.")
+            }
             grdbDatabaseQueue.write { block($0.asAnyWrite) }
+        case .ydb:
+            guard let yapDatabaseQueue = yapDatabaseQueue else {
+                owsFail("Missing grdbDatabaseQueue.")
+            }
+            yapDatabaseQueue.write { block($0.asAnyWrite) }
         }
 
         crossProcess.notifyChangedAsync()

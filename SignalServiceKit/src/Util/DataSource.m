@@ -5,6 +5,7 @@
 #import "DataSource.h"
 #import "MIMETypeUtil.h"
 #import "NSData+Image.h"
+#import "OWSError.h"
 #import "OWSFileSystem.h"
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/iOSVersions.h>
@@ -12,99 +13,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface DataSource ()
-
-@property (nonatomic) BOOL shouldDeleteOnDeallocation;
-
-// The file path for the data, if it already exists on disk.
-//
-// This method is safe to call as it will not do any expensive reads or writes.
-//
-// May return nil if the data does not (yet) reside on disk.
-//
-// Use dataUrl instead if you need to access the data; it will
-// ensure the data is on disk and return a URL, barring an error.
-- (nullable NSString *)dataPathIfOnDisk;
-
-@end
-
-#pragma mark -
-
-@implementation DataSource
-
-- (NSData *)data
-{
-    OWSAbstractMethod();
-    return nil;
-}
-
-- (nullable NSURL *)dataUrl
-{
-    OWSAbstractMethod();
-    return nil;
-}
-
-- (nullable NSString *)dataPathIfOnDisk
-{
-    OWSAbstractMethod();
-    return nil;
-}
-
-- (NSUInteger)dataLength
-{
-    OWSAbstractMethod();
-    return 0;
-}
-
-- (BOOL)writeToPath:(NSString *)dstFilePath
-{
-    OWSAbstractMethod();
-    return NO;
-}
-
-- (BOOL)isValidImage
-{
-    NSString *_Nullable dataPath = [self dataPathIfOnDisk];
-    if (dataPath) {
-        // if ows_isValidImage is given a file path, it will
-        // avoid loading most of the data into memory, which
-        // is considerably more performant, so try to do that.
-        return [NSData ows_isValidImageAtPath:dataPath mimeType:self.mimeType];
-    }
-    NSData *data = [self data];
-    return [data ows_isValidImage];
-}
-
-- (BOOL)isValidVideo
-{
-    return [OWSMediaUtils isValidVideoWithPath:self.dataUrl.path];
-}
-
-- (void)setSourceFilename:(nullable NSString *)sourceFilename
-{
-    _sourceFilename = sourceFilename.filterFilename;
-}
-
-// Returns the MIME type, if known.
-- (nullable NSString *)mimeType
-{
-    OWSAbstractMethod();
-
-    return nil;
-}
-
-@end
-
 #pragma mark -
 
 @interface DataSourceValue ()
 
-@property (nonatomic) NSData *dataValue;
-
+@property (nonatomic) NSData *data;
 @property (nonatomic) NSString *fileExtension;
+@property (atomic) BOOL isConsumed;
 
-// This property is lazy-populated.
-@property (nonatomic, nullable) NSString *cachedFilePath;
+// This property is lazily-populated
+@property (nonatomic, nullable) NSURL *cachedFileUrl;
 
 @end
 
@@ -114,120 +32,125 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)dealloc
 {
-    if (self.shouldDeleteOnDeallocation) {
-        NSString *_Nullable filePath = self.cachedFilePath;
-        if (filePath) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSError *error;
-                BOOL success = [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
-                if (!success || error) {
-                    OWSCFailDebug(@"DataSourceValue could not delete file: %@, %@", filePath, error);
-                }
-            });
-        }
+    NSURL *_Nullable fileUrl = self.cachedFileUrl;
+    if (fileUrl != nil) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSError *error;
+            BOOL success = [[NSFileManager defaultManager] removeItemAtURL:fileUrl error:&error];
+            if (!success || error != nil) {
+                OWSCFailDebug(@"DataSourceValue could not delete file: %@, %@", fileUrl, error);
+            }
+        });
     }
 }
 
-+ (nullable DataSource *)dataSourceWithData:(NSData *)data
-                              fileExtension:(NSString *)fileExtension
+- (instancetype)initWithData:(NSData *)data
+               fileExtension:(NSString *)fileExtension
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+    _data = data;
+    _fileExtension = fileExtension;
+    _isConsumed = NO;
+
+    return self;
+}
+
++ (_Nullable id<DataSource>)dataSourceWithData:(NSData *)data
+                                 fileExtension:(NSString *)fileExtension
 {
     OWSAssertDebug(data);
 
     if (!data) {
+        OWSFailDebug(@"data was unexpectedly nil");
         return nil;
     }
 
-    DataSourceValue *instance = [DataSourceValue new];
-    instance.dataValue = data;
-    instance.fileExtension = fileExtension;
-    instance.shouldDeleteOnDeallocation = YES;
-    return instance;
+    return [[self alloc] initWithData:data fileExtension:fileExtension];
 }
 
-+ (nullable DataSource *)dataSourceWithData:(NSData *)data
-                                    utiType:(NSString *)utiType
++ (_Nullable id<DataSource>)dataSourceWithData:(NSData *)data utiType:(NSString *)utiType
 {
     NSString *fileExtension = [MIMETypeUtil fileExtensionForUTIType:utiType];
-    return [self dataSourceWithData:data fileExtension:fileExtension];
+    return [[self alloc] initWithData:data fileExtension:fileExtension];
 }
 
-+ (nullable DataSource *)dataSourceWithOversizeText:(NSString *_Nullable)text
++ (_Nullable id<DataSource>)dataSourceWithOversizeText:(NSString *_Nullable)text
 {
     if (!text) {
         return nil;
     }
 
     NSData *data = [text.filterStringForDisplay dataUsingEncoding:NSUTF8StringEncoding];
-    return [self dataSourceWithData:data fileExtension:kOversizeTextAttachmentFileExtension];
+    return [[self alloc] initWithData:data fileExtension:kOversizeTextAttachmentFileExtension];
 }
 
-+ (DataSource *)dataSourceWithSyncMessageData:(NSData *)data
++ (id<DataSource>)emptyDataSource
 {
-    return [self dataSourceWithData:data fileExtension:kSyncMessageFileExtension];
+    return [[self alloc] initWithData:[NSData new] fileExtension:@"bin"];
 }
 
-+ (DataSource *)emptyDataSource
-{
-    return [self dataSourceWithData:[NSData new] fileExtension:@"bin"];
-}
+#pragma mark - DataSource
 
-- (NSData *)data
-{
-    OWSAssertDebug(self.dataValue);
+@synthesize sourceFilename = _sourceFilename;
 
-    return self.dataValue;
+- (void)setSourceFilename:(nullable NSString *)sourceFilename
+{
+    OWSAssertDebug(!self.isConsumed);
+    _sourceFilename = sourceFilename.filterFilename;
 }
 
 - (nullable NSURL *)dataUrl
 {
-    NSString *_Nullable path = [self dataPath];
-    return (path ? [NSURL fileURLWithPath:path] : nil);
-}
-
-- (nullable NSString *)dataPath
-{
-    OWSAssertDebug(self.dataValue);
+    OWSAssertDebug(self.data);
+    OWSAssertDebug(!self.isConsumed);
 
     @synchronized(self)
     {
-        if (!self.cachedFilePath) {
-            NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:self.fileExtension];
-            if ([self writeToPath:filePath]) {
-                self.cachedFilePath = filePath;
+        if (!self.cachedFileUrl) {
+            NSURL *fileUrl = [OWSFileSystem temporaryFileURLWithFileExtension:self.fileExtension];
+            if ([self writeToUrl:fileUrl error:nil]) {
+                self.cachedFileUrl = fileUrl;
             } else {
                 OWSLogDebug(@"Could not write data to disk: %@", self.fileExtension);
                 OWSFailDebug(@"Could not write data to disk.");
             }
         }
 
-        return self.cachedFilePath;
+        return self.cachedFileUrl;
     }
-}
-
-- (nullable NSString *)dataPathIfOnDisk
-{
-    return self.cachedFilePath;
 }
 
 - (NSUInteger)dataLength
 {
-    OWSAssertDebug(self.dataValue);
-
-    return self.dataValue.length;
+    OWSAssertDebug(self.data);
+    OWSAssertDebug(!self.isConsumed);
+    return self.data.length;
 }
 
-- (BOOL)writeToPath:(NSString *)dstFilePath
+- (BOOL)writeToUrl:(NSURL *)dstUrl error:(NSError **)error
 {
-    OWSAssertDebug(self.dataValue);
+    OWSAssertDebug(self.data);
+    OWSAssertDebug(!self.isConsumed);
 
     // There's an odd bug wherein instances of NSData/Data created in Swift
     // code reliably crash on iOS 9 when calling [NSData writeToFile:...].
     // We can avoid these crashes by simply copying the Data.
-    NSData *dataCopy = (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0) ? self.dataValue : [self.dataValue copy]);
+    NSData *dataCopy = (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0) ? self.data : [self.data copy]);
 
-    BOOL success = [dataCopy writeToFile:dstFilePath atomically:YES];
+    __block BOOL success;
+    NSString *benchTitle = [NSString stringWithFormat:@"DataSourceValue writeData of size: %llu", (unsigned long long)dataCopy.length];
+    [BenchManager benchWithTitle:benchTitle block:^{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wblock-capture-autoreleasing"
+        success = [dataCopy writeToURL:dstUrl options:NSDataWritingAtomic error:error];
+#pragma clang diagnostic pop
+    }];
     if (!success) {
-        OWSLogDebug(@"Could not write data to disk: %@", dstFilePath);
+        OWSAssertDebug(error == nil || *error != nil);
+        OWSLogDebug(@"Could not write data to disk: %@", dstUrl);
         OWSFailDebug(@"Could not write data to disk.");
         return NO;
     } else {
@@ -235,9 +158,69 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (BOOL)moveToUrlAndConsume:(NSURL *)dstUrl error:(NSError **)error;
+{
+    OWSAssertDebug(!self.isConsumed);
+
+    __block BOOL success;
+
+    unsigned long long fileSize = self.dataLength;
+    NSString *benchTitle = [NSString stringWithFormat:@"DataSourceValue moveItem with fileSize: %llu", fileSize];
+    [BenchManager benchWithTitle:benchTitle
+                           block:^{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wblock-capture-autoreleasing"
+                               @synchronized(self) {
+                                   if (SSKFeatureFlags.complainAboutSlowDBWrites) {
+                                       OWSAssertDebug(!NSThread.isMainThread);
+                                       // This method is meant to be fast. If _cachedFileUrl is nil,
+                                       // we'll still lazily generate it and this method will work,
+                                       // but it will be slower than expected.
+                                       OWSAssertDebug(self->_cachedFileUrl != nil);
+                                   }
+
+                                   NSURL *srcUrl = self.dataUrl;
+                                   self.isConsumed = YES;
+                                   success = [NSFileManager.defaultManager moveItemAtURL:srcUrl
+                                                                                   toURL:dstUrl
+                                                                                   error:error];
+
+                                   self->_cachedFileUrl = nil;
+                               }
+#pragma clang diagnostic pop
+                           }];
+
+    if (!success || *error != nil) {
+        OWSLogDebug(@"Could not write data value to: %@, %@", dstUrl, *error);
+        OWSFailDebug(@"Could not write data with error: %@", *error);
+        return NO;
+    } else {
+        return YES;
+    }
+}
+
+- (BOOL)isValidImage
+{
+    OWSAssertDebug(!self.isConsumed);
+    return [self.data ows_isValidImage];
+}
+
+- (BOOL)isValidVideo
+{
+    OWSAssertDebug(!self.isConsumed);
+    OWSFailDebug(@"Are we calling this anywhere? It seems quite inefficient.");
+    return [OWSMediaUtils isValidVideoWithPath:self.dataUrl.path];
+}
+
 - (nullable NSString *)mimeType
 {
-    return (self.fileExtension ? [MIMETypeUtil mimeTypeForFileExtension:self.fileExtension] : nil);
+    OWSAssertDebug(!self.isConsumed);
+    if (self.fileExtension == nil) {
+        OWSFailDebug(@"failure: fileExtension was unexpectedly nil");
+        return nil;
+    }
+
+    return [MIMETypeUtil mimeTypeForFileExtension:self.fileExtension];
 }
 
 @end
@@ -246,11 +229,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DataSourcePath ()
 
-@property (nonatomic) NSString *filePath;
+@property (nonatomic) NSURL *fileUrl;
+@property (nonatomic, readonly) BOOL shouldDeleteOnDeallocation;
+@property (atomic) BOOL isConsumed;
 
-// These properties are lazy-populated.
+// This property is lazily-populated
 @property (nonatomic) NSData *cachedData;
-@property (nonatomic) NSNumber *cachedDataLength;
 
 @end
 
@@ -260,73 +244,113 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)dealloc
 {
-    if (self.shouldDeleteOnDeallocation) {
-        NSString *filePath = self.filePath;
-        if (filePath) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSError *error;
-                BOOL success = [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
-                if (!success || error) {
-                    OWSCFailDebug(@"DataSourcePath could not delete file: %@, %@", filePath, error);
-                }
-            });
+    if (self.shouldDeleteOnDeallocation && !self.isConsumed) {
+        NSURL *fileUrl = self.fileUrl;
+        if (!fileUrl) {
+            OWSFailDebug(@"fileUrl was unexpectedly nil");
+            return;
         }
+
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSError *error;
+            BOOL success = [[NSFileManager defaultManager] removeItemAtURL:fileUrl error:&error];
+            if (!success || error) {
+                OWSCFailDebug(@"DataSourcePath could not delete file: %@, %@", fileUrl, error);
+            }
+        });
     }
 }
 
-+ (nullable DataSource *)dataSourceWithURL:(NSURL *)fileUrl shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
+- (nullable instancetype)initWithFileUrl:(NSURL *)fileUrl
+              shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
+                                   error:(NSError **)error
 {
-    OWSAssertDebug(fileUrl);
-
     if (!fileUrl || ![fileUrl isFileURL]) {
+        NSString *errorMsg = [NSString stringWithFormat:@"unexpected fileUrl: %@", fileUrl];
+        *error = OWSErrorMakeAssertionError(errorMsg);
         return nil;
     }
-    DataSourcePath *instance = [DataSourcePath new];
-    instance.filePath = fileUrl.path;
-    instance.shouldDeleteOnDeallocation = shouldDeleteOnDeallocation;
-    return instance;
+
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _fileUrl = fileUrl;
+    _shouldDeleteOnDeallocation = shouldDeleteOnDeallocation;
+    _isConsumed = NO;
+
+    return self;
 }
 
-+ (nullable DataSource *)dataSourceWithFilePath:(NSString *)filePath
-                     shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
++ (_Nullable id<DataSource>)dataSourceWithURL:(NSURL *)fileUrl
+                   shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
+                                        error:(NSError **)error
+{
+    return [[self alloc] initWithFileUrl:fileUrl
+              shouldDeleteOnDeallocation:shouldDeleteOnDeallocation
+                                   error:error];
+}
+
++ (_Nullable id<DataSource>)dataSourceWithFilePath:(NSString *)filePath
+                        shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
+                                             error:(NSError **)error
 {
     OWSAssertDebug(filePath);
 
     if (!filePath) {
+        NSString *errorMsg = [NSString stringWithFormat:@"unexpected filePath: %@", filePath];
+        *error = OWSErrorMakeAssertionError(errorMsg);
         return nil;
     }
 
-    DataSourcePath *instance = [DataSourcePath new];
-    instance.filePath = filePath;
-    instance.shouldDeleteOnDeallocation = shouldDeleteOnDeallocation;
-    return instance;
+    NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
+    return [[self alloc] initWithFileUrl:fileUrl
+              shouldDeleteOnDeallocation:shouldDeleteOnDeallocation
+                                   error:error];
 }
 
-- (void)setFilePath:(NSString *)filePath
++ (_Nullable id<DataSource>)dataSourceWritingTempFileData:(NSData *)data
+                                            fileExtension:(NSString *)fileExtension
+                                                    error:(NSError **)error
 {
-    OWSAssertDebug(filePath.length > 0);
+    NSURL *fileUrl = [OWSFileSystem temporaryFileURLWithFileExtension:fileExtension];
+    [data writeToURL:fileUrl options:NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication error:error];
 
-#ifdef DEBUG
-    BOOL isDirectory;
-    BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:filePath isDirectory:&isDirectory];
-    OWSAssertDebug(exists);
-    OWSAssertDebug(!isDirectory);
-#endif
+    if (*error != nil) {
+        return nil;
+    }
 
-    _filePath = filePath;
+    return [[self alloc] initWithFileUrl:fileUrl shouldDeleteOnDeallocation:YES error:error];
+}
+
++ (_Nullable id<DataSource>)dataSourceWritingSyncMessageData:(NSData *)data error:(NSError **)error
+{
+    return [self dataSourceWritingTempFileData:data fileExtension:kSyncMessageFileExtension error:error];
+}
+
+#pragma mark - DataSource
+
+@synthesize sourceFilename = _sourceFilename;
+
+- (void)setSourceFilename:(nullable NSString *)sourceFilename
+{
+    OWSAssertDebug(!self.isConsumed);
+    _sourceFilename = sourceFilename.filterFilename;
 }
 
 - (NSData *)data
 {
-    OWSAssertDebug(self.filePath);
+    OWSAssertDebug(!self.isConsumed);
+    OWSAssertDebug(self.fileUrl);
 
     @synchronized(self)
     {
         if (!self.cachedData) {
-            self.cachedData = [NSData dataWithContentsOfFile:self.filePath];
+            self.cachedData = [NSData dataWithContentsOfFile:self.fileUrl.path];
         }
         if (!self.cachedData) {
-            OWSLogDebug(@"Could not read data from disk: %@", self.filePath);
+            OWSLogDebug(@"Could not read data from disk: %@", self.fileUrl);
             OWSFailDebug(@"Could not read data from disk.");
             self.cachedData = [NSData new];
         }
@@ -334,59 +358,98 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (nullable NSURL *)dataUrl
-{
-    OWSAssertDebug(self.filePath);
-
-    return [NSURL fileURLWithPath:self.filePath];
-}
-
-- (nullable NSString *)dataPath
-{
-    OWSAssertDebug(self.filePath);
-
-    return self.filePath;
-}
-
-- (nullable NSString *)dataPathIfOnDisk
-{
-    OWSAssertDebug(self.filePath);
-
-    return self.filePath;
-}
-
 - (NSUInteger)dataLength
 {
-    OWSAssertDebug(self.filePath);
+    OWSAssertDebug(!self.isConsumed);
+    OWSAssertDebug(self.fileUrl);
 
-    @synchronized(self)
-    {
-        if (!self.cachedDataLength) {
-            NSError *error;
-            NSDictionary<NSFileAttributeKey, id> *_Nullable attributes =
-                [[NSFileManager defaultManager] attributesOfItemAtPath:self.filePath error:&error];
-            if (!attributes || error) {
-                OWSLogDebug(@"Could not read data length from disk: %@, %@", self.filePath, error);
-                OWSFailDebug(@"Could not read data length from disk with error: %@", error);
-                self.cachedDataLength = @(0);
-            } else {
-                uint64_t fileSize = [attributes fileSize];
-                self.cachedDataLength = @(fileSize);
-            }
-        }
-        return [self.cachedDataLength unsignedIntegerValue];
+    NSNumber *fileSizeValue;
+    NSError *error;
+    [self.fileUrl getResourceValue:&fileSizeValue
+                            forKey:NSURLFileSizeKey
+                             error:&error];
+    if (error != nil) {
+        OWSLogDebug(@"Could not read data length from disk: %@, %@", self.fileUrl, error);
+        OWSFailDebug(@"Could not read data length from disk with error: %@", error);
+        return 0;
+    }
+
+    return fileSizeValue.unsignedIntegerValue;
+}
+
+- (nullable NSURL *)dataUrl
+{
+    OWSAssertDebug(!self.isConsumed);
+    return self.fileUrl;
+}
+
+- (BOOL)isValidImage
+{
+    OWSAssertDebug(!self.isConsumed);
+    return [NSData ows_isValidImageAtUrl:self.fileUrl mimeType:self.mimeType];
+}
+
+- (BOOL)isValidVideo
+{
+    OWSAssertDebug(!self.isConsumed);
+    return [OWSMediaUtils isValidVideoWithPath:self.dataUrl.path];
+}
+
+- (BOOL)writeToUrl:(NSURL *)dstUrl error:(NSError **)error
+{
+    OWSAssertDebug(!self.isConsumed);
+    OWSAssertDebug(self.fileUrl);
+
+    __block BOOL success;
+
+    unsigned long long fileSize = self.dataLength;
+    NSString *benchTitle = [NSString stringWithFormat:@"DataSourcePath copyItem with fileSize: %llu", fileSize];
+    [BenchManager benchWithTitle:benchTitle block:^{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wblock-capture-autoreleasing"
+        success = [NSFileManager.defaultManager copyItemAtURL:self.fileUrl toURL:dstUrl error:error];
+#pragma clang diagnostic pop
+    }];
+
+    if (!success || *error != nil) {
+        OWSLogDebug(@"Could not write data from: %@, to: %@, %@", self.fileUrl, dstUrl, *error);
+        OWSFailDebug(@"Could not write data with error: %@", *error);
+        return NO;
+    } else {
+        return YES;
     }
 }
 
-- (BOOL)writeToPath:(NSString *)dstFilePath
+- (BOOL)moveToUrlAndConsume:(NSURL *)dstUrl error:(NSError **)error;
 {
-    OWSAssertDebug(self.filePath);
+    OWSAssertDebug(!self.isConsumed);
+    OWSAssertDebug(self.fileUrl);
 
-    NSError *error;
-    BOOL success = [[NSFileManager defaultManager] copyItemAtPath:self.filePath toPath:dstFilePath error:&error];
-    if (!success || error) {
-        OWSLogDebug(@"Could not write data from path: %@, to path: %@, %@", self.filePath, dstFilePath, error);
-        OWSFailDebug(@"Could not write data with error: %@", error);
+    __block BOOL success;
+
+    unsigned long long fileSize = self.dataLength;
+    NSString *benchTitle = [NSString stringWithFormat:@"DataSourcePath moveItem with fileSize: %llu", fileSize];
+    [BenchManager benchWithTitle:benchTitle
+                           block:^{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wblock-capture-autoreleasing"
+                               self.isConsumed = YES;
+                               if ([[NSFileManager defaultManager] isWritableFileAtPath:self.fileUrl.path]) {
+                                   success = [NSFileManager.defaultManager moveItemAtURL:self.fileUrl
+                                                                                   toURL:dstUrl
+                                                                                   error:error];
+                               } else {
+                                   OWSLogError(@"File was not writeable. Copying instead of moving.");
+                                   success = [NSFileManager.defaultManager copyItemAtURL:self.fileUrl
+                                                                                   toURL:dstUrl
+                                                                                   error:error];
+                               }
+#pragma clang diagnostic pop
+                           }];
+
+    if (!success || *error != nil) {
+        OWSLogDebug(@"Could not write data from: %@, to: %@, %@", self.fileUrl, dstUrl, *error);
+        OWSFailDebug(@"Could not write data with error: %@", *error);
         return NO;
     } else {
         return YES;
@@ -395,7 +458,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSString *)mimeType
 {
-    NSString *_Nullable fileExtension = self.filePath.pathExtension;
+    OWSAssertDebug(!self.isConsumed);
+    NSString *_Nullable fileExtension = self.fileUrl.pathExtension;
     return (fileExtension ? [MIMETypeUtil mimeTypeForFileExtension:fileExtension] : nil);
 }
 

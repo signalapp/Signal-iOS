@@ -49,6 +49,11 @@ NS_ASSUME_NONNULL_BEGIN
     return SDSDatabaseStorage.shared;
 }
 
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
 #pragma mark -
 
 - (void)setup {
@@ -175,10 +180,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)resetAppData
 {
     // This _should_ be wiped out below.
-    OWSLogError(@"");
+    OWSLogInfo(@"");
     [DDLog flushLog];
 
-    [OWSStorage resetAllStorage];
+    [self.databaseStorage resetAllStorage];
     [OWSUserProfile resetProfileStorage];
     [Environment.shared.preferences removeAllValues];
     [AppEnvironment.shared.notificationPresenter clearAllNotifications];

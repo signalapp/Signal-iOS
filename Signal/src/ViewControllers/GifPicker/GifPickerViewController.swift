@@ -33,7 +33,7 @@ public class GifPickerNavigationViewController: OWSNavigationController {
 
 extension GifPickerNavigationViewController: GifPickerViewControllerDelegate {
     func gifPickerDidSelect(attachment: SignalAttachment) {
-        let attachmentApprovalItem = AttachmentApprovalItem(attachment: attachment)
+        let attachmentApprovalItem = AttachmentApprovalItem(attachment: attachment, canSave: false)
         let attachmentApproval = AttachmentApprovalViewController(options: [],
                                                                   sendButtonImageName: "send-solid-24",
                                                                   attachmentApprovalItems: [attachmentApprovalItem])
@@ -493,11 +493,9 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             }
 
             let filePath = asset.filePath
-            guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath,
-                shouldDeleteOnDeallocation: false) else {
-                owsFailDebug("couldn't load asset.")
-                return
-            }
+            let dataSource = try DataSourcePath.dataSource(withFilePath: filePath,
+                                                           shouldDeleteOnDeallocation: false)
+
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: rendition.utiType, imageQuality: .original)
 
             self.delegate?.gifPickerDidSelect(attachment: attachment)

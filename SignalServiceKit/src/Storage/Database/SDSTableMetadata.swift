@@ -54,6 +54,9 @@ public class SDSColumnMetadata: NSObject {
 public class SDSTableMetadata: NSObject {
 
     @objc
+    public let collection: String
+
+    @objc
     public let tableName: String
 
     @objc
@@ -64,7 +67,8 @@ public class SDSTableMetadata: NSObject {
     public let selectColumnNames: [String]
 
     @objc
-    public init(tableName: String, columns: [SDSColumnMetadata]) {
+    public init(collection: String, tableName: String, columns: [SDSColumnMetadata]) {
+        self.collection = collection
         self.tableName = tableName
         self.columns = columns
 
@@ -83,8 +87,16 @@ public class SDSTableMetadata: NSObject {
 
     // MARK: - Table Creation
 
+    public var hasValidTableName: Bool {
+        // Only allow a-z, 0-9, and underscore
+        let regex = try! NSRegularExpression(pattern: "^[a-zA-Z0-9_]+$", options: [])
+        return regex.hasMatch(input: tableName)
+    }
+
     public func createTable(database: Database) throws {
-        // GRDB TODO: Assert that table name is valid.
+        if !hasValidTableName {
+            owsFail("Invalid table name: \(tableName)")
+        }
 
         try database.create(table: tableName) { (table) in
             for columnMetadata in self.columns {

@@ -445,7 +445,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     __block unsigned long long copiedEntities = 0;
     __block BOOL aborted = NO;
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-    // GRDB TODO: We need to totally rework this, post GRDB.
+    // POST GRDB TODO: We need to totally rework this, post GRDB.
 
 #ifdef GRDB_BACKUP
         // Order matters here.

@@ -15,9 +15,7 @@
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSContactOffersInteraction.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
-#import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSThread.h>
@@ -41,8 +39,6 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation ConversationProfileState
 
 @end
-
-#pragma mark -
 
 @implementation ConversationViewState
 
@@ -240,14 +236,12 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
 #pragma mark - Dependencies
 
-- (OWSPrimaryStorage *)primaryStorage
+- (nullable OWSPrimaryStorage *)primaryStorage
 {
-    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
-
     return SSKEnvironment.shared.primaryStorage;
 }
 
-- (YapDatabaseConnection *)uiDatabaseConnection
+- (nullable YapDatabaseConnection *)uiDatabaseConnection
 {
     return self.primaryStorage.uiDatabaseConnection;
 }
@@ -353,7 +347,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     self.typingIndicatorsSender = [self.typingIndicators typingAddressForThread:self.thread];
     self.collapseCutoffDate = [NSDate new];
 
-    [self.primaryStorage updateUIDatabaseConnectionToLatest];
+    if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+        [self.primaryStorage updateUIDatabaseConnectionToLatest];
+    }
 
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         [self ensureDynamicInteractionsAndUpdateIfNecessary:NO transaction:transaction];
@@ -363,7 +359,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         }
     }];
 
-    if (SSKFeatureFlags.useGRDB) {
+    if (SSKFeatureFlags.storageMode != StorageModeYdb) {
         [self.databaseStorage.grdbStorage.conversationViewDatabaseObserver appendSnapshotDelegate:self];
     } else {
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -394,8 +390,10 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
 - (void)touchDbAsync
 {
-    // See comments in primaryStorage.touchDbAsync.
-    [self.primaryStorage touchDbAsync];
+    if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+        // See comments in primaryStorage.touchDbAsync.
+        [self.primaryStorage touchDbAsync];
+    }
 }
 
 - (void)dealloc
@@ -447,7 +445,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             // loadNMoreMessages calls resetMapping which calls ensureDynamicInteractions,
             // which may move the unread indicator, and for scrollToUnreadIndicatorAnimated
             // to work properly, the view items need to be updated to reflect that change.
-            [self.primaryStorage updateUIDatabaseConnectionToLatest];
+            if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+                [self.primaryStorage updateUIDatabaseConnectionToLatest];
+            }
 
             [self.delegate conversationViewModelDidLoadPrevPage];
         });
@@ -612,9 +612,10 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     // If we have a thread details item, insert it into the updated items. We assume
     // it always needs to update, because it's rarely actually loaded and can be changed
     // by a large number of thread updates.
-    if (self.hasThreadDetailsViewItem) {
-        updatedInteractionIds = [updatedInteractionIds setByAddingObject:self.threadDetailsUniqueId];
+    if (self.messageMapping.shouldShowThreadDetails) {
+        updatedInteractionIds = [updatedInteractionIds setByAddingObject:OWSThreadDetailsInteraction.ThreadDetailsId];
     }
+
 
     if (dbError || updateError || !updatedInteractionIds) {
         OWSFailDebug(@"failure: %@, %@", dbError, updateError);
@@ -655,7 +656,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         [self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName];
     OWSAssertDebug([messageDatabaseView isKindOfClass:[YapDatabaseAutoViewConnection class]]);
     if (![messageDatabaseView hasChangesForGroup:self.thread.uniqueId inNotifications:notifications]
-        && !self.hasThreadDetailsViewItem) {
+        && !self.messageMapping.shouldShowThreadDetails) {
         [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.minorUpdate];
         return;
     }
@@ -665,8 +666,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     // If we have a thread details item, insert it into the updated items. We assume
     // it always needs to update, because it's rarely actually loaded and can be changed
     // by a large number of thread updates.
-    if (self.hasThreadDetailsViewItem) {
-        updatedInteractionIds = [updatedInteractionIds setByAddingObject:self.threadDetailsUniqueId];
+    if (self.messageMapping.shouldShowThreadDetails) {
+        updatedInteractionIds = [updatedInteractionIds setByAddingObject:OWSThreadDetailsInteraction.ThreadDetailsId];
     }
 
     [self anyDBDidUpdateWithUpdatedInteractionIds:updatedInteractionIds];
@@ -692,13 +693,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     NSMutableSet<NSString *> *diffAddedItemIds = [diff.addedItemIds mutableCopy];
     NSMutableSet<NSString *> *diffRemovedItemIds = [diff.removedItemIds mutableCopy];
     NSMutableSet<NSString *> *diffUpdatedItemIds = [diff.updatedItemIds mutableCopy];
-
-    // If we have a thread details item, insert it into the updated items. We assume
-    // it always needs to update, because it's rarely actually loaded and can be changed
-    // by a large number of thread updates.
-    if (self.hasThreadDetailsViewItem) {
-        [diffUpdatedItemIds addObject:self.threadDetailsUniqueId];
-    }
 
     if (diffAddedItemIds.count < 1 && diffRemovedItemIds.count < 1 && diffUpdatedItemIds.count < 1) {
         // This probably isn't an error; presumably the modifications
@@ -804,7 +798,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     // External database modifications (e.g. changes from another process such as the SAE)
     // are "flushed" using touchDbAsync when the app re-enters the foreground.
-    // GRDB TODO - remove touchDbAsync
+    // POST GRDB TODO - remove touchDbAsync
 }
 
 #pragma mark -
@@ -1074,9 +1068,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         OWSFailDebug(@"uniqueId unexpectedly empty for thread: %@", self.thread);
     }
 
-    self.messageMapping = [[ConversationMessageMapping alloc] initWithThreadUniqueId:self.thread.uniqueId
-                                                                       desiredLength:self.initialMessageMappingLength
-                                                                        isNoteToSelf:self.thread.isNoteToSelf];
+    self.messageMapping = [[ConversationMessageMapping alloc] initWithThread:self.thread
+                                                               desiredLength:self.initialMessageMappingLength
+                                                                isNoteToSelf:self.thread.isNoteToSelf];
 
     NSError *error;
     [self.messageMapping updateWithTransaction:transaction error:&error];
@@ -1146,8 +1140,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                                                                           transaction:transaction];
     BOOL hasUnwhitelistedMember = NO;
     for (SignalServiceAddress *address in self.thread.recipientAddresses) {
-        if (![self.profileManager isUserInProfileWhitelist:address
-                                               transaction:transaction]) {
+        if (![self.profileManager isUserInProfileWhitelist:address transaction:transaction]) {
             hasUnwhitelistedMember = YES;
             break;
         }
@@ -1321,11 +1314,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     NSMutableArray<id<ConversationViewItem>> *viewItems = [NSMutableArray new];
     NSMutableDictionary<NSString *, id<ConversationViewItem>> *viewItemCache = [NSMutableDictionary new];
 
-    NSArray<NSString *> *loadedUniqueIds = [self.messageMapping loadedUniqueIds];
-    BOOL isGroupThread = self.thread.isGroupThread;
-    ConversationStyle *conversationStyle = self.delegate.conversationStyle;
-
     [self ensureConversationProfileStateWithTransaction:transaction];
+
+    ConversationStyle *conversationStyle = self.delegate.conversationStyle;
 
     __block BOOL hasError = NO;
     _Nullable id<ConversationViewItem> (^tryToAddViewItem)(TSInteraction *)
@@ -1335,7 +1326,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
               id<ConversationViewItem> _Nullable viewItem = self.viewItemCache[interaction.uniqueId];
               if (!viewItem) {
                   viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:interaction
-                                                                            isGroupThread:isGroupThread
+                                                                                   thread:self.thread
                                                                               transaction:transaction
                                                                         conversationStyle:conversationStyle];
               }
@@ -1356,20 +1347,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     BOOL canLoadMoreItems = self.messageMapping.canLoadMore;
     NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
 
-    for (NSString *uniqueId in loadedUniqueIds) {
-        TSInteraction *_Nullable interaction;
-        if ([uniqueId isEqualToString:OWSThreadDetailsInteraction.ThreadDetailsId]) {
-            interaction = [self buildThreadDetailsInteractionWithTransaction:transaction];
-        } else {
-            interaction = [InteractionFinder fetchSwallowingErrorsWithUniqueId:uniqueId transaction:transaction];
-        }
-
-        if (!interaction) {
-            OWSFailDebug(@"missing interaction in message mapping: %@.", uniqueId);
-            // TODO: Add analytics.
-            hasError = YES;
-            continue;
-        }
+    for (TSInteraction *interaction in self.messageMapping.loadedInteractions) {
         if (!interaction.uniqueId) {
             OWSFailDebug(@"invalid interaction in message mapping: %@.", interaction);
             // TODO: Add analytics.
@@ -1408,7 +1386,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         tryToAddViewItem(interaction);
     }
 
-    // GRDB TODO seems like this redundant sorting can go away with GRDB
+    // POST GRDB TODO seems like this redundant sorting can go away with GRDB
     // This will usually be redundant, but this will resolve one of the symptoms
     // of the "corrupt YDB view" issue caused by multi-process writes.
     [viewItems sortUsingComparator:^NSComparisonResult(id<ConversationViewItem> left, id<ConversationViewItem> right) {
@@ -1438,7 +1416,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     // Flag to ensure that we only increment once per launch.
     if (hasError) {
         OWSLogWarn(@"incrementing version of: %@", TSMessageDatabaseViewExtensionName);
-        [OWSPrimaryStorage incrementVersionOfDatabaseExtension:TSMessageDatabaseViewExtensionName];
+        if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+            [OWSPrimaryStorage incrementVersionOfDatabaseExtension:TSMessageDatabaseViewExtensionName];
+        }
     }
 
     // Update the "break" properties (shouldShowDate and unreadIndicator) of the view items.
@@ -1586,7 +1566,12 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             SignalServiceAddress *incomingSenderAddress = incomingMessage.authorAddress;
             OWSAssertDebug(incomingSenderAddress.isValid);
             BOOL isDisappearingMessage = incomingMessage.hasPerConversationExpiration;
-            accessibilityAuthorName = [self.contactsManager displayNameForAddress:incomingSenderAddress];
+            accessibilityAuthorName = [self.contactsManager displayNameForAddress:incomingSenderAddress
+                                                                      transaction:transaction];
+            if (viewItem.interaction.interactionType == OWSInteractionType_ThreadDetails) {
+                viewItem.senderUsername = [self.profileManager usernameForAddress:incomingSenderAddress
+                                                                      transaction:transaction];
+            }
 
             SignalServiceAddress *_Nullable nextIncomingSenderAddress = nil;
             if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
@@ -1713,8 +1698,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     TSInteraction *_Nullable interaction;
     if ([viewItem.interaction isKindOfClass:OWSThreadDetailsInteraction.class]) {
-        // Thread details is not a persisted interaction, so we need to rebuild it here to update it.
-        interaction = [self buildThreadDetailsInteractionWithTransaction:transaction];
+        // Thread details is not a persisted interaction.
+        // It carries no mutable state, so there's no reason to reload it here.
+        interaction = viewItem.interaction;
     } else {
         interaction = [TSInteraction anyFetchWithUniqueId:viewItem.interaction.uniqueId transaction:transaction];
     }
@@ -1738,13 +1724,10 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         return nil;
     }
 
-    TSInteraction *_Nullable quotedInteraction;
-    if (transaction.transitional_yapReadTransaction != nil) {
-        quotedInteraction = [ThreadUtil findInteractionInThreadByTimestamp:quotedReply.timestamp
-                                                             authorAddress:quotedReply.authorAddress
-                                                            threadUniqueId:self.thread.uniqueId
-                                                               transaction:transaction.transitional_yapReadTransaction];
-    }
+    TSInteraction *quotedInteraction = [ThreadUtil findInteractionInThreadByTimestamp:quotedReply.timestamp
+                                                                        authorAddress:quotedReply.authorAddress
+                                                                       threadUniqueId:self.thread.uniqueId
+                                                                          transaction:transaction];
 
     if (!quotedInteraction) {
         return nil;
@@ -1867,33 +1850,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     }
 }
 
-#pragma mark - Thread Details
-
-- (BOOL)hasThreadDetailsViewItem
-{
-    return self.viewItemCache[self.threadDetailsUniqueId] != nil;
-}
-
-- (NSString *)threadDetailsUniqueId
-{
-    return OWSThreadDetailsInteraction.ThreadDetailsId;
-}
-
-- (OWSThreadDetailsInteraction *)buildThreadDetailsInteractionWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    TSInteraction *_Nullable firstCallOrMessage =
-        [self firstCallOrMessageForLoadedInteractionsWithTransaction:transaction];
-
-    uint64_t threadDetailsTimestamp;
-    if (firstCallOrMessage) {
-        threadDetailsTimestamp = firstCallOrMessage.timestamp - 1;
-    } else {
-        threadDetailsTimestamp = 1;
-    }
-
-    return [[OWSThreadDetailsInteraction alloc] initWithThread:self.thread timestamp:threadDetailsTimestamp];
-}
-
 - (nullable TSInteraction *)firstCallOrMessageForLoadedInteractionsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     for (NSString *uniqueId in self.messageMapping.loadedUniqueIds) {
@@ -1920,6 +1876,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 break;
             case OWSInteractionType_ThreadDetails:
             case OWSInteractionType_TypingIndicator:
+                break;
             case OWSInteractionType_Offer:
                 break;
         }

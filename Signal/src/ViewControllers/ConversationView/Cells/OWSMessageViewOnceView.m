@@ -705,6 +705,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Gestures
 
+- (BOOL)willHandleTapGesture:(UITapGestureRecognizer *)sender
+{
+    return YES;
+}
+
 - (void)handleTapGesture:(UITapGestureRecognizer *)sender
 {
     OWSAssertDebug(self.delegate);

@@ -9,6 +9,8 @@ protocol AttachmentFinderAdapter {
     associatedtype ReadTransaction
 
     static func unfailedAttachmentPointerIds(transaction: ReadTransaction) -> [String]
+
+    static func enumerateAttachmentPointersWithLazyRestoreFragments(transaction: ReadTransaction, block: @escaping (TSAttachmentPointer, UnsafeMutablePointer<ObjCBool>) -> Void)
 }
 
 // MARK: -
@@ -36,6 +38,16 @@ public class AttachmentFinder: NSObject, AttachmentFinderAdapter {
             return GRDBAttachmentFinderAdapter.unfailedAttachmentPointerIds(transaction: grdbRead)
         }
     }
+
+    @objc
+    public class func enumerateAttachmentPointersWithLazyRestoreFragments(transaction: SDSAnyReadTransaction, block: @escaping (TSAttachmentPointer, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return YAPDBAttachmentFinderAdapter.enumerateAttachmentPointersWithLazyRestoreFragments(transaction: yapRead, block: block)
+        case .grdbRead(let grdbRead):
+            return GRDBAttachmentFinderAdapter.enumerateAttachmentPointersWithLazyRestoreFragments(transaction: grdbRead, block: block)
+        }
+    }
 }
 
 // MARK: -
@@ -53,6 +65,22 @@ struct YAPDBAttachmentFinderAdapter: AttachmentFinderAdapter {
 
     static func unfailedAttachmentPointerIds(transaction: YapDatabaseReadTransaction) -> [String] {
         return OWSFailedAttachmentDownloadsJob.unfailedAttachmentPointerIds(with: transaction)
+    }
+
+    static func enumerateAttachmentPointersWithLazyRestoreFragments(transaction: YapDatabaseReadTransaction, block: @escaping (TSAttachmentPointer, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        guard let view = transaction.safeViewTransaction(TSLazyRestoreAttachmentsDatabaseViewExtensionName) else {
+            owsFailDebug("Could not load view transaction.")
+            return
+        }
+
+        view.safe_enumerateKeysAndObjects(inGroup: TSLazyRestoreAttachmentsGroup,
+                                          extensionName: TSLazyRestoreAttachmentsDatabaseViewExtensionName) { (_, _, object, _, stopPtr) in
+                                            guard let job = object as? TSAttachmentPointer else {
+                                                owsFailDebug("unexpected job: \(type(of: object))")
+                                                return
+                                            }
+                                            block(job, stopPtr)
+        }
     }
 }
 
@@ -75,7 +103,7 @@ struct GRDBAttachmentFinderAdapter: AttachmentFinderAdapter {
         SELECT \(attachmentColumn: .uniqueId)
         FROM \(AttachmentRecord.databaseTableName)
         WHERE \(attachmentColumn: .recordType) = \(SDSRecordType.attachmentPointer.rawValue)
-        AND \(attachmentColumn: .state) = ?
+        AND \(attachmentColumn: .state) != ?
         """
         var result = [String]()
         do {
@@ -89,6 +117,31 @@ struct GRDBAttachmentFinderAdapter: AttachmentFinderAdapter {
             owsFailDebug("error: \(error)")
         }
         return result
+    }
+
+    static func enumerateAttachmentPointersWithLazyRestoreFragments(transaction: GRDBReadTransaction, block: @escaping (TSAttachmentPointer, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        let sql: String = """
+        SELECT *
+        FROM \(AttachmentRecord.databaseTableName)
+        WHERE \(attachmentColumn: .recordType) = \(SDSRecordType.attachmentPointer.rawValue)
+        AND \(attachmentColumn: .lazyRestoreFragmentId) IS NOT NULL
+        """
+        let cursor = TSAttachment.grdbFetchCursor(sql: sql, transaction: transaction)
+        do {
+            while let attachment = try cursor.next() {
+                guard let attachmentPointer = attachment as? TSAttachmentPointer else {
+                    owsFailDebug("Unexpected object: \(type(of: attachment))")
+                    return
+                }
+                var stop: ObjCBool = false
+                block(attachmentPointer, &stop)
+                if stop.boolValue {
+                    return
+                }
+            }
+        } catch {
+            owsFailDebug("error: \(error)")
+        }
     }
 }
 

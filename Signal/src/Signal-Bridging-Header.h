@@ -25,6 +25,7 @@
 #import "HomeViewCell.h"
 #import "HomeViewController.h"
 #import "MediaDetailViewController.h"
+#import "NewGroupViewController.h"
 #import "NotificationSettingsViewController.h"
 #import "OWSAddToContactViewController.h"
 #import "OWSAnyTouchGestureRecognizer.h"
@@ -50,9 +51,9 @@
 #import "PinEntryView.h"
 #import "PrivacySettingsTableViewController.h"
 #import "ProfileViewController.h"
+#import "RecipientPickerViewController.h"
 #import "RemoteVideoView.h"
 #import "SignalApp.h"
-#import "UIViewController+Permissions.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <PureLayout/PureLayout.h>

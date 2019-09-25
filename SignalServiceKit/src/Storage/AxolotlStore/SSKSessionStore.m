@@ -331,25 +331,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)printAllSessionsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    NSString *tag = @"[OWSPrimaryStorage (SessionStore)]";
-    OWSLogDebug(@"%@ All Sessions:", tag);
+    OWSLogDebug(@"All Sessions.");
     [self.keyValueStore
         enumerateKeysAndObjectsWithTransaction:transaction
                                          block:^(NSString *key, id value, BOOL *stop) {
                                              if (![value isKindOfClass:[NSDictionary class]]) {
-                                                 OWSFailDebug(
-                                                     @"%@ Unexpected type: %@ in collection.", tag, [value class]);
+                                                 OWSFailDebug(@"Unexpected type: %@ in collection.", [value class]);
                                                  return;
                                              }
                                              NSDictionary *deviceSessions = (NSDictionary *)value;
 
-                                             OWSLogDebug(@"%@     Sessions for recipient: %@", tag, key);
+                                             OWSLogDebug(@"     Sessions for recipient: %@", key);
                                              [deviceSessions enumerateKeysAndObjectsUsingBlock:^(id _Nonnull key,
                                                  id _Nonnull sessionRecordObject,
                                                  BOOL *_Nonnull stop) {
                                                  if (![sessionRecordObject isKindOfClass:[SessionRecord class]]) {
-                                                     OWSFailDebug(@"%@ Unexpected type: %@ in collection.",
-                                                         tag,
+                                                     OWSFailDebug(@"Unexpected type: %@ in collection.",
                                                          [sessionRecordObject class]);
                                                      return;
                                                  }
@@ -358,9 +355,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                  NSArray<SessionState *> *previousStates =
                                                      [sessionRecord previousSessionStates];
                                                  OWSLogDebug(
-                                                     @"%@         Device: %@ SessionRecord: %@ activeSessionState: "
+                                                     @"         Device: %@ SessionRecord: %@ activeSessionState: "
                                                      @"%@ previousSessionStates: %@",
-                                                     tag,
                                                      key,
                                                      sessionRecord,
                                                      activeState,

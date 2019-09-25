@@ -36,10 +36,12 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 #pragma mark - Specific Preferences
 
 + (BOOL)isReadyForAppExtensions;
-+ (void)setIsReadyForAppExtensions;
 
-- (BOOL)hasSentAMessage;
-- (void)setHasSentAMessage:(BOOL)value;
++ (BOOL)isYdbReadyForAppExtensions;
++ (void)setIsYdbReadyForAppExtensions;
+
++ (BOOL)isGrdbReadyForAppExtensions;
++ (void)setIsGrdbReadyForAppExtensions;
 
 + (BOOL)isLoggingEnabled;
 + (void)setIsLoggingEnabled:(BOOL)value;

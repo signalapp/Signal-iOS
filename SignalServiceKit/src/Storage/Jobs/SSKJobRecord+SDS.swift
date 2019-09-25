@@ -31,6 +31,7 @@ public struct JobRecordRecord: SDSRecord {
     public let status: SSKJobRecordStatus
 
     // Subclass properties
+    public let attachmentIdMap: Data?
     public let contactThreadId: String?
     public let envelopeData: Data?
     public let invisibleMessage: Data?
@@ -45,6 +46,7 @@ public struct JobRecordRecord: SDSRecord {
         case failureCount
         case label
         case status
+        case attachmentIdMap
         case contactThreadId
         case envelopeData
         case invisibleMessage
@@ -55,6 +57,30 @@ public struct JobRecordRecord: SDSRecord {
 
     public static func columnName(_ column: JobRecordRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+}
+
+// MARK: - Row Initializer
+
+public extension JobRecordRecord {
+    static var databaseSelection: [SQLSelectable] {
+        return CodingKeys.allCases
+    }
+
+    init(row: Row) {
+        id = row[0]
+        recordType = row[1]
+        uniqueId = row[2]
+        failureCount = row[3]
+        label = row[4]
+        status = row[5]
+        attachmentIdMap = row[6]
+        contactThreadId = row[7]
+        envelopeData = row[8]
+        invisibleMessage = row[9]
+        messageId = row[10]
+        removeMessageAfterSending = row[11]
+        threadId = row[12]
     }
 }
 
@@ -83,6 +109,23 @@ extension SSKJobRecord {
         }
 
         switch record.recordType {
+        case .broadcastMediaMessageJobRecord:
+
+            let uniqueId: String = record.uniqueId
+            let failureCount: UInt = record.failureCount
+            let label: String = record.label
+            let sortId: UInt64 = UInt64(recordId)
+            let status: SSKJobRecordStatus = record.status
+            let attachmentIdMapSerialized: Data? = record.attachmentIdMap
+            let attachmentIdMap: [String: [String]] = try SDSDeserialization.unarchive(attachmentIdMapSerialized, name: "attachmentIdMap")
+
+            return OWSBroadcastMediaMessageJobRecord(uniqueId: uniqueId,
+                                                     failureCount: failureCount,
+                                                     label: label,
+                                                     sortId: sortId,
+                                                     status: status,
+                                                     attachmentIdMap: attachmentIdMap)
+
         case .sessionResetJobRecord:
 
             let uniqueId: String = record.uniqueId
@@ -176,6 +219,9 @@ extension SSKJobRecord: SDSModel {
         case let model as OWSSessionResetJobRecord:
             assert(type(of: model) == OWSSessionResetJobRecord.self)
             return OWSSessionResetJobRecordSerializer(model: model)
+        case let model as OWSBroadcastMediaMessageJobRecord:
+            assert(type(of: model) == OWSBroadcastMediaMessageJobRecord.self)
+            return OWSBroadcastMediaMessageJobRecordSerializer(model: model)
         default:
             return SSKJobRecordSerializer(model: self)
         }
@@ -188,6 +234,10 @@ extension SSKJobRecord: SDSModel {
     public var sdsTableName: String {
         return JobRecordRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return SSKJobRecordSerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -196,30 +246,34 @@ extension SSKJobRecordSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
     static let failureCountColumn = SDSColumnMetadata(columnName: "failureCount", columnType: .int64, columnIndex: 3)
     static let labelColumn = SDSColumnMetadata(columnName: "label", columnType: .unicodeString, columnIndex: 4)
     static let statusColumn = SDSColumnMetadata(columnName: "status", columnType: .int, columnIndex: 5)
     // Subclass properties
-    static let contactThreadIdColumn = SDSColumnMetadata(columnName: "contactThreadId", columnType: .unicodeString, isOptional: true, columnIndex: 6)
-    static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob, isOptional: true, columnIndex: 7)
-    static let invisibleMessageColumn = SDSColumnMetadata(columnName: "invisibleMessage", columnType: .blob, isOptional: true, columnIndex: 8)
-    static let messageIdColumn = SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true, columnIndex: 9)
-    static let removeMessageAfterSendingColumn = SDSColumnMetadata(columnName: "removeMessageAfterSending", columnType: .int, isOptional: true, columnIndex: 10)
-    static let threadIdColumn = SDSColumnMetadata(columnName: "threadId", columnType: .unicodeString, isOptional: true, columnIndex: 11)
+    static let attachmentIdMapColumn = SDSColumnMetadata(columnName: "attachmentIdMap", columnType: .blob, isOptional: true, columnIndex: 6)
+    static let contactThreadIdColumn = SDSColumnMetadata(columnName: "contactThreadId", columnType: .unicodeString, isOptional: true, columnIndex: 7)
+    static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob, isOptional: true, columnIndex: 8)
+    static let invisibleMessageColumn = SDSColumnMetadata(columnName: "invisibleMessage", columnType: .blob, isOptional: true, columnIndex: 9)
+    static let messageIdColumn = SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true, columnIndex: 10)
+    static let removeMessageAfterSendingColumn = SDSColumnMetadata(columnName: "removeMessageAfterSending", columnType: .int, isOptional: true, columnIndex: 11)
+    static let threadIdColumn = SDSColumnMetadata(columnName: "threadId", columnType: .unicodeString, isOptional: true, columnIndex: 12)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_SSKJobRecord", columns: [
-        recordTypeColumn,
+    public static let table = SDSTableMetadata(collection: SSKJobRecord.collection(),
+                                               tableName: "model_SSKJobRecord",
+                                               columns: [
         idColumn,
+        recordTypeColumn,
         uniqueIdColumn,
         failureCountColumn,
         labelColumn,
         statusColumn,
+        attachmentIdMapColumn,
         contactThreadIdColumn,
         envelopeDataColumn,
         invisibleMessageColumn,
@@ -517,20 +571,11 @@ public extension SSKJobRecord {
 
 public extension SSKJobRecord {
     class func grdbFetchCursor(sql: String,
-                               arguments: [DatabaseValueConvertible]?,
+                               arguments: StatementArguments = StatementArguments(),
                                transaction: GRDBReadTransaction) -> SSKJobRecordCursor {
-        var statementArguments: StatementArguments?
-        if let arguments = arguments {
-            guard let statementArgs = StatementArguments(arguments) else {
-                owsFailDebug("Could not convert arguments.")
-                return SSKJobRecordCursor(cursor: nil)
-            }
-            statementArguments = statementArgs
-        }
-        let database = transaction.database
         do {
-            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
-            let cursor = try JobRecordRecord.fetchCursor(statement, arguments: statementArguments)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
+            let cursor = try JobRecordRecord.fetchCursor(transaction.database, sqlRequest)
             return SSKJobRecordCursor(cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
@@ -540,13 +585,12 @@ public extension SSKJobRecord {
     }
 
     class func grdbFetchOne(sql: String,
-                            arguments: StatementArguments,
+                            arguments: StatementArguments = StatementArguments(),
                             transaction: GRDBReadTransaction) -> SSKJobRecord? {
         assert(sql.count > 0)
 
         do {
-            // There are significant perf benefits to using a cached statement.
-            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             guard let record = try JobRecordRecord.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }
@@ -584,6 +628,7 @@ class SSKJobRecordSerializer: SDSSerializer {
         let status: SSKJobRecordStatus = model.status
 
         // Subclass properties
+        let attachmentIdMap: Data? = nil
         let contactThreadId: String? = nil
         let envelopeData: Data? = nil
         let invisibleMessage: Data? = nil
@@ -591,6 +636,6 @@ class SSKJobRecordSerializer: SDSSerializer {
         let removeMessageAfterSending: Bool? = nil
         let threadId: String? = nil
 
-        return JobRecordRecord(id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId)
+        return JobRecordRecord(id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId)
     }
 }

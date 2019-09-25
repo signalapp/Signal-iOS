@@ -22,6 +22,26 @@ typedef void (^OWSThumbnailFailure)(void);
 
 - (instancetype)init NS_UNAVAILABLE;
 
+- (instancetype)initWithServerId:(UInt64)serverId
+                   encryptionKey:(NSData *)encryptionKey
+                       byteCount:(UInt32)byteCount
+                     contentType:(NSString *)contentType
+                  sourceFilename:(nullable NSString *)sourceFilename
+                         caption:(nullable NSString *)caption
+                  albumMessageId:(nullable NSString *)albumMessageId NS_UNAVAILABLE;
+
+- (instancetype)initForRestoreWithUniqueId:(NSString *)uniqueId
+                               contentType:(NSString *)contentType
+                            sourceFilename:(nullable NSString *)sourceFilename
+                                   caption:(nullable NSString *)caption
+                            albumMessageId:(nullable NSString *)albumMessageId NS_UNAVAILABLE;
+
+- (instancetype)initAttachmentWithContentType:(NSString *)contentType
+                                    byteCount:(UInt32)byteCount
+                               sourceFilename:(nullable NSString *)sourceFilename
+                                      caption:(nullable NSString *)caption
+                               albumMessageId:(nullable NSString *)albumMessageId NS_UNAVAILABLE;
+
 - (instancetype)initWithContentType:(NSString *)contentType
                           byteCount:(UInt32)byteCount
                      sourceFilename:(nullable NSString *)sourceFilename
@@ -90,7 +110,16 @@ NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentTyp
 
 - (nullable NSData *)readDataFromFileWithError:(NSError **)error;
 - (BOOL)writeData:(NSData *)data error:(NSError **)error;
-- (BOOL)writeDataSource:(DataSource *)dataSource;
+
+/// Copies the contents of the DataSource into the attachment stream's backing file.
+- (BOOL)writeCopyingDataSource:(id<DataSource>)dataSource
+                         error:(NSError **)error NS_SWIFT_NAME(writeCopyingDataSource(_:));
+
+/// This method *moves* the file backing `dataSource`, rather than copying it's content. As such it's faster than
+/// `writeCopyingDataSource`, but it must not be used if the DataSource is backed by a file which must exist *after*
+/// this write.
+- (BOOL)writeConsumingDataSource:(id<DataSource>)dataSource
+                           error:(NSError **)error NS_SWIFT_NAME(writeConsumingDataSource(_:));
 
 + (void)deleteAttachments;
 
@@ -138,7 +167,7 @@ NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentTyp
 - (void)updateAsUploadedWithEncryptionKey:(NSData *)encryptionKey
                                    digest:(NSData *)digest
                                  serverId:(UInt64)serverId
-                               completion:(dispatch_block_t)completion;
+                              transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (nullable TSAttachmentStream *)cloneAsThumbnail;
 

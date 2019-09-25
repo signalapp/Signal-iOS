@@ -9,11 +9,9 @@
 #import "OWSOutgoingReceiptManager.h"
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
 #import "OWSReceiptsForSenderMessage.h"
-#import "OWSStorage.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSContactThread.h"
-#import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/Threading.h>
@@ -293,7 +291,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                     [[OWSReadReceiptsForLinkedDevicesMessage alloc] initWithThread:thread
                                                                       readReceipts:readReceiptsForLinkedDevices];
 
-                [self.messageSenderJobQueue addMessage:message transaction:transaction];
+                [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
             }];
         }
 
@@ -325,12 +323,20 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSAssertDebug(thread);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        uint64_t readTimestamp = [NSDate ows_millisecondTimeStamp];
+        __block NSArray<id<OWSReadTracking>> *unreadMessages;
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            unreadMessages = [self unreadMessagesBeforeSortId:sortId
+                                                       thread:thread
+                                                readTimestamp:readTimestamp
+                                                  transaction:transaction];
+        }];
+        if (unreadMessages.count < 1) {
+            // Avoid unnecessary writes.
+            return;
+        }
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            [self markAsReadBeforeSortId:sortId
-                                  thread:thread
-                           readTimestamp:[NSDate ows_millisecondTimeStamp]
-                                wasLocal:YES
-                             transaction:transaction];
+            [self markMessagesAsRead:unreadMessages readTimestamp:readTimestamp wasLocal:YES transaction:transaction];
         }];
     });
 }
@@ -557,51 +563,75 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSAssertDebug(thread);
     OWSAssertDebug(transaction);
 
-    if (!transaction.transitional_yapWriteTransaction) {
+    NSArray<id<OWSReadTracking>> *unreadMessages =
+        [self unreadMessagesBeforeSortId:sortId thread:thread readTimestamp:readTimestamp transaction:transaction];
+    if (unreadMessages.count < 1) {
+        // Avoid unnecessary writes.
         return;
     }
+    [self markMessagesAsRead:unreadMessages readTimestamp:readTimestamp wasLocal:wasLocal transaction:transaction];
+}
 
-    NSMutableArray<id<OWSReadTracking>> *newlyReadList = [NSMutableArray new];
+- (void)markMessagesAsRead:(NSArray<id<OWSReadTracking>> *)unreadMessages
+             readTimestamp:(uint64_t)readTimestamp
+                  wasLocal:(BOOL)wasLocal
+               transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(unreadMessages.count > 0);
+    OWSAssertDebug(transaction);
 
-    [[TSDatabaseView unseenDatabaseViewExtension:transaction.transitional_yapReadTransaction]
-        enumerateKeysAndObjectsInGroup:thread.uniqueId
-                            usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
-                                if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-                                    OWSFailDebug(
-                                        @"Expected to conform to OWSReadTracking: object with class: %@ collection: %@ "
-                                        @"key: %@",
-                                        [object class],
-                                        collection,
-                                        key);
-                                    return;
-                                }
-                                id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
-                                if (possiblyRead.sortId > sortId) {
-                                    *stop = YES;
-                                    return;
-                                }
-
-                                OWSAssertDebug(!possiblyRead.read);
-                                OWSAssertDebug(possiblyRead.expireStartedAt == 0);
-                                if (!possiblyRead.read) {
-                                    [newlyReadList addObject:possiblyRead];
-                                }
-                            }];
-
-    if (newlyReadList.count < 1) {
-        return;
-    }
-    
     if (wasLocal) {
-        OWSLogError(@"Marking %lu messages as read locally.", (unsigned long)newlyReadList.count);
+        OWSLogError(@"Marking %lu messages as read locally.", (unsigned long)unreadMessages.count);
     } else {
-        OWSLogError(@"Marking %lu messages as read by linked device.", (unsigned long)newlyReadList.count);
+        OWSLogError(@"Marking %lu messages as read by linked device.", (unsigned long)unreadMessages.count);
     }
-    for (id<OWSReadTracking> readItem in newlyReadList) {
-        if (transaction.transitional_yapWriteTransaction) {
-            [readItem markAsReadAtTimestamp:readTimestamp sendReadReceipt:wasLocal transaction:transaction];
-        }
+    for (id<OWSReadTracking> readItem in unreadMessages) {
+        [readItem markAsReadAtTimestamp:readTimestamp sendReadReceipt:wasLocal transaction:transaction];
     }
+}
+
+- (NSArray<id<OWSReadTracking>> *)unreadMessagesBeforeSortId:(uint64_t)sortId
+                                                      thread:(TSThread *)thread
+                                               readTimestamp:(uint64_t)readTimestamp
+                                                 transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(sortId > 0);
+    OWSAssertDebug(thread);
+    OWSAssertDebug(transaction);
+
+    // POST GRDB TODO: We could pass readTimestamp and sortId through to the GRDB query.
+    NSMutableArray<id<OWSReadTracking>> *newlyReadList = [NSMutableArray new];
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
+    NSError *error;
+    [interactionFinder
+        enumerateUnseenInteractionsWithTransaction:transaction
+                                             error:&error
+                                             block:^(TSInteraction *interaction, BOOL *stop) {
+                                                 if (![interaction conformsToProtocol:@protocol(OWSReadTracking)]) {
+                                                     OWSFailDebug(@"Expected to conform to OWSReadTracking: object "
+                                                                  @"with class: %@ collection: %@ "
+                                                                  @"key: %@",
+                                                         [interaction class],
+                                                         TSInteraction.collection,
+                                                         interaction.uniqueId);
+                                                     return;
+                                                 }
+                                                 id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)interaction;
+                                                 if (possiblyRead.sortId > sortId) {
+                                                     *stop = YES;
+                                                     return;
+                                                 }
+
+                                                 OWSAssertDebug(!possiblyRead.read);
+                                                 OWSAssertDebug(possiblyRead.expireStartedAt == 0);
+                                                 if (!possiblyRead.read) {
+                                                     [newlyReadList addObject:possiblyRead];
+                                                 }
+                                             }];
+    if (error != nil) {
+        OWSFailDebug(@"Error during enumeration: %@", error);
+    }
+    return [newlyReadList copy];
 }
 
 #pragma mark - Settings

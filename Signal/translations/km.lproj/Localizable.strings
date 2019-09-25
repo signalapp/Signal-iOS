@@ -41,18 +41,6 @@
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "ការហៅវីដេអូ";
 
-/* A label for the 'add by phone number' button in the 'add group member' view */
-"ADD_GROUP_MEMBER_VIEW_BUTTON" = "បន្ថែម";
-
-/* Title for the 'add contact' section of the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "បន្ថែមលេខទំនាក់ទំនង";
-
-/* Title for the 'add by phone number' section of the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "បន្ថែមដោយលេខទូរសព្ទ";
-
-/* Title for the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_TITLE" = "បន្ថែមសមាជិក";
-
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "តើអ្នកចង់ចែករំលែកប្រវត្តិរូបអ្នកជាមួយក្រុមនេះឬទេ?";
 
@@ -119,11 +107,17 @@
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "ចំណងជើង";
 
+/* alert text when Signal was unable to save a copy of the attachment to the system photo library */
+"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "បរាជ័យក្នុងការរក្សាទុក";
+
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "ប្រភេទឯកសារ៖ %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "ទំហំ៖ %@";
+
+/* toast alert shown after user taps the 'save' button */
+"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "បានរក្សាទុក";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "ផ្ញើ";
@@ -165,7 +159,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "ឯកសារភ្ជាប់គឺទទេរ។";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "ជ្រើសរើស ឬថតរូបភាព ហើយផ្ញើវា";
+"ATTACHMENT_HINT" = "Choose Media to Send";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "កាមេរ៉ា";
@@ -202,6 +196,9 @@
 
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "សារសំឡេង";
+
+/* A string indicating that an audio message is playing. */
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "សារសំឡេង";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "បំពងសំឡេង";
@@ -485,8 +482,11 @@
 /* Table section header for group listing when composing a new message */
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "ក្រុម";
 
-/* Table section header for invite listing when composing a new message */
-"COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "អញ្ជើញ";
+/* Table section header for phone number search when composing a new message */
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "ស្វែងរកលេខទូរស័ព្ទ";
+
+/* Table section header for username search when composing a new message */
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "ស្វែងរកឈ្មោះអ្នកប្រើប្រាស់";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "អ្នកអាចបើកការចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនង ក្នុងការកំណត់ iOS ដើម្បីមើលថា អ្នកទំនាក់ទំនងមួយណាជាអ្នកប្រើប្រាស់ Signal។";
@@ -737,9 +737,6 @@
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "ជ្រើសរើសកូដប្រទេស";
 
-/* Accessibility label for the create group new group button */
-"CREATE_NEW_GROUP" = "បង្កើតក្រុមថ្មី";
-
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "ផ្លាស់ទីនិងកំណត់ខ្នាត";
 
@@ -858,12 +855,6 @@
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "កែប្រែក្រុម";
 
-/* Label for the cell that lets you add a new member to a group. */
-"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "បន្ថែម...";
-
-/* a title for the members section of the 'new/update group' view. */
-"EDIT_GROUP_MEMBERS_SECTION_TITLE" = "សមាជិក";
-
 /* An indicator that a user is a new member of the group. */
 "EDIT_GROUP_NEW_MEMBER_LABEL" = "បានបន្ថែម";
 
@@ -939,6 +930,9 @@
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "ការហៅបានបរាជ័យ។";
 
+/* Label indicating that this OS version is no longer supported. */
+"END_OF_LIFE_OS_WARNING" = "The latest Signal features won’t work on this version of iOS. Please upgrade this device to receive future Signal updates.";
+
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "មិនអាចចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនង។";
 
@@ -950,9 +944,6 @@
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "បរាជ័យក្នុងការផ្ញើសារទៅអ្នកប្រើប្រាស់ ព្រោះអ្នកបានបិទពួកគេ។";
-
-/* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "បរាជ័យក្នុងការសរសេរ និងបញ្ជូនឯកសារភ្ជាប់។";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal មិនអាចតភ្ជាប់ទៅកាន់អ៊ីនធើណេត។ សូមសាកល្បងម្តងទៀត។";
@@ -1218,6 +1209,12 @@
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ នៅលើ Signal!";
 
+/* accessibility label for the button which shows the sticker picker */
+"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "ស្ទីកគ័រ";
+
+/* accessibility label for the button which records voice memos */
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "សារជាសំឡេង";
+
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "ឯកសារសំឡេងមិនត្រឹមត្រូវ។";
 
@@ -1353,7 +1350,7 @@
 /* Label for the recipient name in the 'message approval' dialog. */
 "MESSAGE_APPROVAL_RECIPIENT_LABEL" = "ទៅកាន់៖";
 
-/* No comment provided by engineer. */
+/* Title for the compose view. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "សារថ្មី";
 
 /* Label for file size of attachments in the 'message metadata' view. */
@@ -1553,9 +1550,6 @@
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "ស្វែងរកតាមរយៈលេខទូរសព្ទ";
 
-/* A label for the cell that lets you add a new non-contact member to a group. */
-"NEW_GROUP_ADD_NON_CONTACT" = "បន្ថែមដោយលេខទូរសព្ទ";
-
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "កំណត់រូបថតក្រុម";
 
@@ -1574,7 +1568,7 @@
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "ដាក់ឈ្មោះក្រុមសន្ទនានេះ";
 
-/* a title for the non-contacts section of the 'new group' view. */
+/* a title for the selected section of the 'recipient picker' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "អ្នកប្រើប្រាស់ផ្សេងទៀត";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
@@ -1594,6 +1588,12 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "ស្វែងរកបញ្ជីទំនាក់ទំនងតាមលេខទូរសព្ទ";
+
+/* A string prompting the user to send a new mesaage to a user */
+"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "សារថ្មីទៅកាន់៖";
+
+/* A string asking the user if they'd like to invite a number to signal via SMS. */
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "រកមិនឃើញអ្នកប្រើប្រាស់។ អញ្ជើញតាមសារ SMS?";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "កំណត់ចំណាំ";
@@ -1684,15 +1684,6 @@
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_TITLE" = "បញ្ចូលលេខ PIN របស់អ្នក";
-
-/* Explanation in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_EXPLANATION" = "ប្រវត្តិរូប Signal ត្រូវបានអ៊ិនគ្រីបទាំងសងខាង និងសេវាកម្ម Signal មិនអាចចូលប្រើប្រាស់ព័ត៌មាននេះបានទេ។ ";
-
-/* Placeholder text for the profile name in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "ឈ្មោះរបស់អ្នក";
-
-/* Title of the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_TITLE" = "បង្កើតប្រវត្តិរូបរបស់អ្នក";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "លក្ខខណ្ឌនិងគោលការណ៍ឯកជន";
@@ -1946,6 +1937,9 @@
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "លុបរូបតំណាង";
 
+/* A string indicating that the user can create a username on the profile view. */
+"PROFILE_VIEW_CREATE_USERNAME" = "បង្កើតឈ្មោះអ្នកប្រើប្រាស់";
+
 /* Error message shown when user tries to update profile with a profile name that is too long. */
 "PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "ឈ្មោះប្រវត្តិរូបអ្នកវែងពេក។";
 
@@ -1954,9 +1948,6 @@
 
 /* Default text for the profile name field of the profile view. */
 "PROFILE_VIEW_NAME_DEFAULT_TEXT" = "បញ្ចូលឈ្មោះរបស់អ្នក";
-
-/* Label for the profile avatar field of the profile view. */
-"PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "រូបតំណាង";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "ប្រវត្តិរូបSignalរបស់អ្នកនឹងបង្ហាញទៅបញ្ជីទំនាក់ទំនងរបស់អ្នក នៅពេលចាប់ផ្តើមសន្ទនាថ្មី និងពេលអ្នកចែករំលែកវាជាមួយអ្នកប្រើប្រាស់និងក្រុមផ្សេង។";
@@ -1972,6 +1963,9 @@
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "ប្រវត្តិរូប";
+
+/* Label for the username field of the profile view. */
+"PROFILE_VIEW_USERNAME_FIELD" = "ឈ្មោះអ្នកប្រើប្រាស់";
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "កំណត់ ថាបានអាន";
@@ -2189,7 +2183,10 @@
 /* Label for button on lock screen that lets users unlock Signal. */
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "ដោះសោរSignal";
 
-/* No comment provided by engineer. */
+/* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "ឈ្មោះ ឈ្មោះអ្នកប្រើប្រាស់ ឬលេខ?";
+
+/* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "ស្វែងរកតាមឈ្មោះ ឬលេខទូរស័ព្ទ";
 
 /* placeholder text in an empty search field */
@@ -2228,9 +2225,6 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "អ្នកបានអញ្ជើញមិត្តភក្តិរបស់អ្នកប្រើប្រាស់ Signal!";
 
-/* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "អញ្ជើញតាមសារ SMS៖ %@";
-
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
 "SEND_MEDIA_ABANDON_TITLE" = "បោះបង់មេឌៀ?";
 
@@ -2251,12 +2245,6 @@
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "អំពី";
-
-/* Title for the 'block contact' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "ហាមឃាត់លេខទំនាក់ទំនង";
-
-/* Title for the 'block phone number' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "ហាមឃាត់លេខទូរស័ព្ទ";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "ហាមឃាត់";
@@ -2293,6 +2281,9 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "កម្រិតខ្ពស់";
+
+/* table cell label */
+"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "បង្ហាញកំណត់ត្រាបញ្ហា";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (លំនាំដើម)";
@@ -2812,6 +2803,42 @@
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "ធ្វើបច្ចុប្បន្នភាព iOS";
+
+/* An explanation of how usernames work on the username view. */
+"USERNAME_DESCRIPTION" = "ឈ្មោះអ្នកប្រើប្រាស់លើ Signal ជាជម្រើស។ បើអ្នកជ្រើសរើសបង្កើតឈ្មោះអ្នកប្រើប្រាស់មួយ អ្នកប្រើប្រាស់ Signal ផ្សេងទៀតនឹងអាចស្វែងរកអ្នកតាមរយៈឈ្មោះអ្នកប្រើប្រាស់នេះ និងទាក់ទងអ្នក ដោយមិនចាំបាច់ដឹងពីលេខទូរស័ព្ទរបស់អ្នកឡើយ។";
+
+/* Label for the username field in the username view. */
+"USERNAME_FIELD" = "ឈ្មោះអ្នកប្រើប្រាស់";
+
+/* An error indicating that the supplied username contains disallowed characters. */
+"USERNAME_INVALID_CHARACTERS_ERROR" = "ឈ្មោះអ្នកប្រើប្រាស់ អាចមានតែអក្សរ a-z 0-9 និង _";
+
+/* A message indicating that username lookup failed. */
+"USERNAME_LOOKUP_ERROR" = "មានបញ្ហាមួយកើតឡើងនៅពេលស្វែងរកឈ្មោះអ្នកប្រើប្រាស់។ សូមព្យាយាមសាកល្បងម្តងទៀតពេលក្រោយ។";
+
+/* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
+"USERNAME_NOT_FOUND_FORMAT" = "%@ មិនមែនជាអ្នកប្រើប្រាស់ Signal ទេ។ សូមប្រាកដថា អ្នកបានបញ្ចូលឈ្មោះអ្នកប្រើប្រាស់ពេញលេញ។";
+
+/* A message indicating that the given username was not registered with signal. */
+"USERNAME_NOT_FOUND_TITLE" = "រកមិនឃើញអ្នកប្រើប្រាស់";
+
+/* The placeholder for the username text entry in the username view. */
+"USERNAME_PLACEHOLDER" = "បញ្ចូល អ្នកប្រើប្រាស់ មួយ";
+
+/* A prefix appeneded to all usernames when displayed */
+"USERNAME_PREFIX" = "@";
+
+/* The title for the username view. */
+"USERNAME_TITLE" = "ឈ្មោះអ្នកប្រើប្រាស់";
+
+/* An error indicating that the supplied username is too short. */
+"USERNAME_TOO_SHORT_ERROR" = "ឈ្មោះអ្នកប្រើប្រាស់ត្រូវមានយ៉ាងហោចណាស់ 4 តួអក្សរ។";
+
+/* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
+"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ ត្រូវបានគេយកហើយ។";
+
+/* Error moessage shown when a username update fails. */
+"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "ឈ្មោះអ្នកប្រើប្រាស់ ធ្វើបច្ចុប្បន្នភាពបរាជ័យ។";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "អ្នកបានដាក់ ​%@ មិនបានផ្ទៀងផ្ទាត់។";

@@ -10,6 +10,7 @@
 #import "OWSFileSystem.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSStorage+Subclass.h"
+#import "SSKEnvironment.h"
 #import "TSAttachmentStream.h"
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/Randomness.h>
@@ -42,6 +43,58 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 #pragma mark -
 
+// This macro is only intended to be used within OWSDatabaseConnection.
+#define OWSAssertCanReadYDB()                                                                                          \
+    do {                                                                                                               \
+        /* There's no convenient way to enforce until SSKEnvironment is configured. */                                 \
+        if (!SSKEnvironment.hasShared) {                                                                               \
+            return;                                                                                                    \
+        }                                                                                                              \
+        if (!self.databaseStorage.canReadFromYdb) {                                                                    \
+            OWSLogError(@"storageMode: %@.", SSKFeatureFlags.storageModeDescription);                                  \
+            OWSLogError(                                                                                               \
+                @"StorageCoordinatorState: %@.", NSStringFromStorageCoordinatorState(self.storageCoordinator.state));  \
+            switch (SSKFeatureFlags.storageModeStrictness) {                                                           \
+                case StorageModeStrictnessFail:                                                                        \
+                    OWSFail(@"Unexpected YDB read.");                                                                  \
+                    break;                                                                                             \
+                case StorageModeStrictnessFailDebug:                                                                   \
+                    OWSFailDebug(@"Unexpected YDB read.");                                                             \
+                    break;                                                                                             \
+                case StorageModeStrictnessLog:                                                                         \
+                    OWSLogError(@"Unexpected YDB read.");                                                              \
+                    break;                                                                                             \
+            }                                                                                                          \
+        }                                                                                                              \
+    } while (NO)
+
+// This macro is only intended to be used within OWSDatabaseConnection.
+#define OWSAssertCanWriteYDB()                                                                                         \
+    do {                                                                                                               \
+        /* There's no convenient way to enforce until SSKEnvironment is configured. */                                 \
+        if (!SSKEnvironment.hasShared) {                                                                               \
+            return;                                                                                                    \
+        }                                                                                                              \
+        if (!self.databaseStorage.canWriteToYdb) {                                                                     \
+            OWSLogError(@"storageMode: %@.", SSKFeatureFlags.storageModeDescription);                                  \
+            OWSLogError(                                                                                               \
+                @"StorageCoordinatorState: %@.", NSStringFromStorageCoordinatorState(self.storageCoordinator.state));  \
+            switch (SSKFeatureFlags.storageModeStrictness) {                                                           \
+                case StorageModeStrictnessFail:                                                                        \
+                    OWSFail(@"Unexpected YDB write.");                                                                 \
+                    break;                                                                                             \
+                case StorageModeStrictnessFailDebug:                                                                   \
+                    OWSFailDebug(@"Unexpected YDB write.");                                                            \
+                    break;                                                                                             \
+                case StorageModeStrictnessLog:                                                                         \
+                    OWSLogError(@"Unexpected YDB write.");                                                             \
+                    break;                                                                                             \
+            }                                                                                                          \
+        }                                                                                                              \
+    } while (NO)
+
+#pragma mark -
+
 @interface YapDatabaseConnection ()
 
 - (id)initWithDatabase:(YapDatabase *)database;
@@ -51,6 +104,20 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 #pragma mark -
 
 @implementation OWSDatabaseConnection
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+- (StorageCoordinator *)storageCoordinator
+{
+    return SSKEnvironment.shared.storageCoordinator;
+}
+
+#pragma mark -
 
 - (id)initWithDatabase:(YapDatabase *)database delegate:(id<OWSDatabaseConnectionDelegate>)delegate
 {
@@ -67,6 +134,37 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     return self;
 }
 
+- (void)readWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
+{
+    OWSAssertCanReadYDB();
+
+    [super readWithBlock:block];
+}
+
+- (void)asyncReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
+{
+    OWSAssertCanReadYDB();
+
+    [super asyncReadWithBlock:block];
+}
+
+- (void)asyncReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
+           completionBlock:(nullable dispatch_block_t)completionBlock
+{
+    OWSAssertCanReadYDB();
+
+    [super asyncReadWithBlock:block completionBlock:completionBlock];
+}
+
+- (void)asyncReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
+           completionQueue:(nullable dispatch_queue_t)completionQueue
+           completionBlock:(nullable dispatch_block_t)completionBlock
+{
+    OWSAssertCanReadYDB();
+
+    [super asyncReadWithBlock:block completionQueue:completionQueue completionBlock:completionBlock];
+}
+
 // Assert that the database is in a ready state (specifically that any sync database
 // view registrations have completed and any async registrations have been started)
 // before creating write transactions.
@@ -76,6 +174,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 // Specifically, it causes YDB's "view version" checks to fail.
 - (void)readWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
 {
+    OWSAssertCanWriteYDB();
+    OWSAssertDebug(self.databaseStorage.canWriteToYdb);
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
     OWSAssertDebug(delegate);
     OWSAssertDebug(delegate.areAllRegistrationsComplete);
@@ -103,6 +203,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
                 completionQueue:(nullable dispatch_queue_t)completionQueue
                 completionBlock:(nullable dispatch_block_t)completionBlock
 {
+    OWSAssertCanWriteYDB();
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
     OWSAssertDebug(delegate);
     OWSAssertDebug(delegate.areAllRegistrationsComplete);
@@ -217,14 +318,14 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     return self;
 }
 
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSFailDebug(@"Tried to save unknown object");
 
     // No-op.
 }
 
-- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)ydb_removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSFailDebug(@"Tried to remove unknown object");
 
@@ -272,7 +373,21 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 @implementation OWSStorage
 
-- (instancetype)initStorage
+#pragma mark - Dependencies
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SSKEnvironment.shared.databaseStorage;
+}
+
++ (nullable OWSPrimaryStorage *)primaryStorage
+{
+    return SSKEnvironment.shared.primaryStorage;
+}
+
+#pragma mark -
+
+- (instancetype)init
 {
     self = [super init];
 
@@ -361,14 +476,15 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 + (void)registerExtensionsWithMigrationBlock:(OWSStorageMigrationBlock)migrationBlock
 {
+    OWSAssertDebug(self.databaseStorage.canLoadYdb);
     OWSAssertDebug(migrationBlock);
 
     __block OWSBackgroundTask *_Nullable backgroundTask =
         [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
-    [OWSPrimaryStorage.sharedManager runSyncRegistrations];
+    [self.primaryStorage runSyncRegistrations];
 
-    [OWSPrimaryStorage.sharedManager runAsyncRegistrationsWithCompletion:^{
+    [self.primaryStorage runAsyncRegistrationsWithCompletion:^{
         OWSAssertDebug(self.isStorageReady);
 
         [self postRegistrationCompleteNotification];
@@ -401,7 +517,10 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 + (BOOL)isStorageReady
 {
-    return OWSPrimaryStorage.sharedManager.areAllRegistrationsComplete;
+    if (self.databaseStorage.canLoadYdb && !self.primaryStorage.areAllRegistrationsComplete) {
+        return NO;
+    }
+    return YES;
 }
 
 + (YapDatabaseOptions *)defaultDatabaseOptions

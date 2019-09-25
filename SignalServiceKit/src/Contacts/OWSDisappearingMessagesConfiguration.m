@@ -11,35 +11,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSDisappearingMessagesConfiguration ()
 
-// Transient record lifecycle attributes.
-//
-// GRDB TODO: Ensure this is working with GRDB. Add tests?
-@property (atomic) NSDictionary *originalDictionaryValue;
-@property (atomic, getter=isNewRecord) BOOL newRecord;
+@property (nonatomic, getter=isEnabled) BOOL enabled;
+@property (nonatomic) uint32_t durationSeconds;
 
 @end
 
-@implementation OWSDisappearingMessagesConfiguration
+#pragma mark -
 
-- (instancetype)initDefaultWithThreadId:(NSString *)threadId
-{
-    return [self initWithThreadId:threadId
-                          enabled:NO
-                  durationSeconds:OWSDisappearingMessagesConfigurationDefaultExpirationDuration];
-}
+@implementation OWSDisappearingMessagesConfiguration
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
-
-    _originalDictionaryValue = [self dictionaryValue];
-    _newRecord = NO;
 
     return self;
 }
 
 - (instancetype)initWithThreadId:(NSString *)threadId enabled:(BOOL)isEnabled durationSeconds:(uint32_t)seconds
 {
+    OWSAssertDebug(threadId.length > 0);
+
+    // Thread id == configuration id.
     self = [super initWithUniqueId:threadId];
     if (!self) {
         return self;
@@ -47,8 +39,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     _enabled = isEnabled;
     _durationSeconds = seconds;
-    _newRecord = YES;
-    _originalDictionaryValue = self.dictionaryValue;
 
     return self;
 }
@@ -73,8 +63,6 @@ NS_ASSUME_NONNULL_BEGIN
     _durationSeconds = durationSeconds;
     _enabled = enabled;
 
-    [self sdsFinalizeDisappearingMessagesConfiguration];
-
     return self;
 }
 
@@ -82,21 +70,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 // --- CODE GENERATION MARKER
 
-- (void)sdsFinalizeDisappearingMessagesConfiguration
++ (nullable instancetype)fetchWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
-    _originalDictionaryValue = [self dictionaryValue];
-    _newRecord = NO;
+    return [self fetchWithThreadId:thread.uniqueId transaction:transaction];
+}
+
++ (instancetype)fetchOrBuildDefaultWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self fetchOrBuildDefaultWithThreadId:thread.uniqueId transaction:transaction];
+}
+
++ (nullable instancetype)fetchWithThreadId:(NSString *)threadId transaction:(SDSAnyReadTransaction *)transaction
+{
+    // Thread id == configuration id.
+    return [self anyFetchWithUniqueId:threadId transaction:transaction];
 }
 
 + (instancetype)fetchOrBuildDefaultWithThreadId:(NSString *)threadId transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSDisappearingMessagesConfiguration *savedConfiguration =
-        [self anyFetchWithUniqueId:threadId transaction:transaction];
-    if (savedConfiguration) {
-        return savedConfiguration;
-    } else {
-        return [[self alloc] initDefaultWithThreadId:threadId];
+    OWSDisappearingMessagesConfiguration *_Nullable configuration = [self fetchWithThreadId:threadId
+                                                                                transaction:transaction];
+    if (configuration != nil) {
+        return configuration;
     }
+
+    return [[self alloc] initWithThreadId:threadId
+                                  enabled:NO
+                          durationSeconds:OWSDisappearingMessagesConfigurationDefaultExpirationDuration];
 }
 
 + (NSArray<NSNumber *> *)validDurationsSeconds
@@ -140,46 +140,37 @@ NS_ASSUME_NONNULL_BEGIN
     return [NSString formatDurationSeconds:self.durationSeconds useShortFormat:NO];
 }
 
-#pragma mark - Dirty Tracking
-
-+ (MTLPropertyStorage)storageBehaviorForPropertyWithKey:(NSString *)propertyKey
+- (BOOL)hasChangedWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    // Don't persist transient properties
-    if ([propertyKey isEqualToString:@"originalDictionaryValue"]
-        ||[propertyKey isEqualToString:@"newRecord"]) {
-        return MTLPropertyStorageNone;
-    } else {
-        return [super storageBehaviorForPropertyWithKey:propertyKey];
-    }
+    OWSAssertDebug(transaction != nil);
+
+    // Thread id == configuration id.
+    OWSDisappearingMessagesConfiguration *oldConfiguration =
+        [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:self.uniqueId transaction:transaction];
+
+    return (self.isEnabled != oldConfiguration.isEnabled || self.durationSeconds != oldConfiguration.durationSeconds);
 }
 
-- (BOOL)dictionaryValueDidChange
+- (instancetype)copyWithIsEnabled:(BOOL)isEnabled
 {
-    return ![self.originalDictionaryValue isEqual:[self dictionaryValue]];
+    OWSDisappearingMessagesConfiguration *newInstance = [self copy];
+    newInstance.enabled = isEnabled;
+    return newInstance;
 }
 
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (instancetype)copyWithDurationSeconds:(uint32_t)durationSeconds
 {
-    [super saveWithTransaction:transaction];
-
-    self.originalDictionaryValue = [self dictionaryValue];
-    self.newRecord = NO;
+    OWSDisappearingMessagesConfiguration *newInstance = [self copy];
+    newInstance.durationSeconds = durationSeconds;
+    return newInstance;
 }
 
-- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (instancetype)copyAsEnabledWithDurationSeconds:(uint32_t)durationSeconds
 {
-    [super anyDidInsertWithTransaction:transaction];
-
-    self.originalDictionaryValue = [self dictionaryValue];
-    self.newRecord = NO;
-}
-
-- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [super anyDidUpdateWithTransaction:transaction];
-
-    self.originalDictionaryValue = [self dictionaryValue];
-    self.newRecord = NO;
+    OWSDisappearingMessagesConfiguration *newInstance = [self copy];
+    newInstance.enabled = YES;
+    newInstance.durationSeconds = durationSeconds;
+    return newInstance;
 }
 
 @end

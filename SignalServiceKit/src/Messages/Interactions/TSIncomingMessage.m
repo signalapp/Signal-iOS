@@ -117,6 +117,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
                authorPhoneNumber:(nullable NSString *)authorPhoneNumber
                       authorUUID:(nullable NSString *)authorUUID
     incomingMessageSchemaVersion:(NSUInteger)incomingMessageSchemaVersion
@@ -141,7 +142,8 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                        linkPreview:linkPreview
                     messageSticker:messageSticker
                      quotedMessage:quotedMessage
-                     schemaVersion:schemaVersion];
+                     schemaVersion:schemaVersion
+      storedShouldStartExpireTimer:storedShouldStartExpireTimer];
 
     if (!self) {
         return self;

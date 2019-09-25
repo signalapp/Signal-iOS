@@ -85,7 +85,6 @@ struct ProvisioningProtos_ProvisionMessage {
   /// Clears the value of `identityKeyPrivate`. Subsequent reads from it will return its default value.
   mutating func clearIdentityKeyPrivate() {self._identityKeyPrivate = nil}
 
-  /// @required
   var number: String {
     get {return _number ?? String()}
     set {_number = newValue}
@@ -94,6 +93,15 @@ struct ProvisioningProtos_ProvisionMessage {
   var hasNumber: Bool {return self._number != nil}
   /// Clears the value of `number`. Subsequent reads from it will return its default value.
   mutating func clearNumber() {self._number = nil}
+
+  var uuid: String {
+    get {return _uuid ?? String()}
+    set {_uuid = newValue}
+  }
+  /// Returns true if `uuid` has been explicitly set.
+  var hasUuid: Bool {return self._uuid != nil}
+  /// Clears the value of `uuid`. Subsequent reads from it will return its default value.
+  mutating func clearUuid() {self._uuid = nil}
 
   /// @required
   var provisioningCode: String {
@@ -142,6 +150,7 @@ struct ProvisioningProtos_ProvisionMessage {
   fileprivate var _identityKeyPublic: Data? = nil
   fileprivate var _identityKeyPrivate: Data? = nil
   fileprivate var _number: String? = nil
+  fileprivate var _uuid: String? = nil
   fileprivate var _provisioningCode: String? = nil
   fileprivate var _userAgent: String? = nil
   fileprivate var _profileKey: Data? = nil
@@ -193,6 +202,7 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     1: .same(proto: "identityKeyPublic"),
     2: .same(proto: "identityKeyPrivate"),
     3: .same(proto: "number"),
+    8: .same(proto: "uuid"),
     4: .same(proto: "provisioningCode"),
     5: .same(proto: "userAgent"),
     6: .same(proto: "profileKey"),
@@ -209,6 +219,7 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
       case 5: try decoder.decodeSingularStringField(value: &self._userAgent)
       case 6: try decoder.decodeSingularBytesField(value: &self._profileKey)
       case 7: try decoder.decodeSingularBoolField(value: &self._readReceipts)
+      case 8: try decoder.decodeSingularStringField(value: &self._uuid)
       default: break
       }
     }
@@ -236,6 +247,9 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     if let v = self._readReceipts {
       try visitor.visitSingularBoolField(value: v, fieldNumber: 7)
     }
+    if let v = self._uuid {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 8)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -243,6 +257,7 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     if lhs._identityKeyPublic != rhs._identityKeyPublic {return false}
     if lhs._identityKeyPrivate != rhs._identityKeyPrivate {return false}
     if lhs._number != rhs._number {return false}
+    if lhs._uuid != rhs._uuid {return false}
     if lhs._provisioningCode != rhs._provisioningCode {return false}
     if lhs._userAgent != rhs._userAgent {return false}
     if lhs._profileKey != rhs._profileKey {return false}

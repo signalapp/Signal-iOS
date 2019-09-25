@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SSKSignedPreKeyStore;
 @class SignalServiceAddressCache;
 @class StickerManager;
+@class StorageCoordinator;
 @class TSAccountManager;
 @class TSNetworkManager;
 @class TSSocketManager;
@@ -47,12 +48,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SSKEnvironment : NSObject
 
+- (instancetype)init NS_UNAVAILABLE;
+
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
                      linkPreviewManager:(OWSLinkPreviewManager *)linkPreviewManager
                           messageSender:(OWSMessageSender *)messageSender
                   messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
                          profileManager:(id<ProfileManagerProtocol>)profileManager
-                         primaryStorage:(OWSPrimaryStorage *)primaryStorage
+                         primaryStorage:(nullable OWSPrimaryStorage *)primaryStorage
                         contactsUpdater:(ContactsUpdater *)contactsUpdater
                          networkManager:(TSNetworkManager *)networkManager
                          messageManager:(OWSMessageManager *)messageManager
@@ -81,9 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
               signalServiceAddressCache:(SignalServiceAddressCache *)signalServiceAddressCache
                    accountServiceClient:(AccountServiceClient *)accountServiceClient
                   storageServiceManager:(id<StorageServiceManagerProtocol>)storageServiceManager
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
+                     storageCoordinator:(StorageCoordinator *)storageCoordinator NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
@@ -94,12 +95,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)clearSharedForTests;
 #endif
 
++ (BOOL)hasShared;
+
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
 @property (nonatomic, readonly) OWSLinkPreviewManager *linkPreviewManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) MessageSenderJobQueue *messageSenderJobQueue;
 @property (nonatomic, readonly) id<ProfileManagerProtocol> profileManager;
-@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) OWSMessageManager *messageManager;
@@ -129,17 +131,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) StickerManager *stickerManager;
 @property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
+@property (nonatomic, readonly) StorageCoordinator *storageCoordinator;
+
+@property (nonatomic, readonly, nullable) OWSPrimaryStorage *primaryStorage;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandler;
 // This property is configured after Environment is created.
 @property (atomic) id<NotificationsProtocol> notificationsManager;
 
-@property (atomic, readonly) YapDatabaseConnection *objectReadWriteConnection;
 @property (atomic, readonly) YapDatabaseConnection *migrationDBConnection;
-@property (atomic, readonly) YapDatabaseConnection *analyticsDBConnection;
 
 - (BOOL)isComplete;
+
+- (void)warmCaches;
 
 @end
 

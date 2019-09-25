@@ -203,7 +203,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                            showTypingIndicators:showTypingIndicators
                                                sendLinkPreviews:sendLinkPreviews];
 
-        [self.messageSenderJobQueue addMessage:syncConfigurationMessage transaction:transaction];
+        [self.messageSenderJobQueue addMessage:syncConfigurationMessage.asPreparer transaction:transaction];
     }];
 }
 
@@ -222,14 +222,18 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         OWSFailDebug(@"Failed to serialize groups sync message.");
         return;
     }
-    DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:syncData];
-    [self.messageSenderJobQueue addMediaMessage:syncGroupsMessage
-                                     dataSource:dataSource
-                                    contentType:OWSMimeTypeApplicationOctetStream
-                                 sourceFilename:nil
-                                        caption:nil
-                                 albumMessageId:nil
-                          isTemporaryAttachment:YES];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSError *error;
+        id<DataSource> dataSource = [DataSourcePath dataSourceWritingSyncMessageData:syncData error:&error];
+        OWSAssertDebug(error == nil);
+        [self.messageSenderJobQueue addMediaMessage:syncGroupsMessage
+                                         dataSource:dataSource
+                                        contentType:OWSMimeTypeApplicationOctetStream
+                                     sourceFilename:nil
+                                            caption:nil
+                                     albumMessageId:nil
+                              isTemporaryAttachment:YES];
+    });
 }
 
 #pragma mark - Local Sync
@@ -327,10 +331,17 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                 if (debounce) {
                     self.isRequestInFlight = YES;
                 }
-                
+
                 // DURABLE CLEANUP - we could replace the custom durability logic in this class
                 // with a durable JobQueue.
-                DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:messageData];
+                NSError *writeError;
+                id<DataSource> dataSource = [DataSourcePath dataSourceWritingSyncMessageData:messageData
+                                                                                       error:&writeError];
+                if (writeError != nil) {
+                    resolve(writeError);
+                    return;
+                }
+
                 [self.messageSender sendTemporaryAttachment:dataSource
                                                 contentType:OWSMimeTypeApplicationOctetStream
                                                   inMessage:syncContactsMessage

@@ -15,6 +15,7 @@
 #import "SignalApp.h"
 #import "SignalsNavigationController.h"
 #import "ViewControllerUtils.h"
+#import "YDBLegacyMigration.h"
 #import <Intents/Intents.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/iOSVersions.h>
@@ -28,7 +29,6 @@
 #import <SignalMessaging/VersionMigrations.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/CallKitIdStore.h>
-#import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
@@ -42,13 +42,10 @@
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
 #import <UserNotifications/UserNotifications.h>
 #import <WebRTC/WebRTC.h>
-#import <YapDatabase/YapDatabaseCryptoUtils.h>
-#import <sys/utsname.h>
 
 NSString *const AppDelegateStoryboardMain = @"Main";
 
@@ -92,10 +89,8 @@ static NSTimeInterval launchStartedAt;
     return SSKEnvironment.shared.udManager;
 }
 
-- (OWSPrimaryStorage *)primaryStorage
+- (nullable OWSPrimaryStorage *)primaryStorage
 {
-    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
-
     return SSKEnvironment.shared.primaryStorage;
 }
 
@@ -171,6 +166,11 @@ static NSTimeInterval launchStartedAt;
     return SSKEnvironment.shared.syncManager;
 }
 
+- (StorageCoordinator *)storageCoordinator
+{
+    return SSKEnvironment.shared.storageCoordinator;
+}
+
 #pragma mark -
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
@@ -216,25 +216,24 @@ static NSTimeInterval launchStartedAt;
     if (isLoggingEnabled) {
         [DebugLogger.sharedLogger enableFileLogging];
     }
+    if (SSKFeatureFlags.audibleErrorLogging) {
+        [DebugLogger.sharedLogger enableErrorReporting];
+    }
 
     OWSLogWarn(@"application: didFinishLaunchingWithOptions.");
     [Cryptography seedRandom];
 
-    // XXX - careful when moving this. It must happen before we initialize OWSPrimaryStorage.
+    // XXX - careful when moving this. It must happen before we load YDB and/or GRDB.
     [self verifyDBKeysAvailableBeforeBackgroundLaunch];
-
-#if RELEASE
-    // ensureIsReadyForAppExtensions may have changed the state of the logging
-    // preference (due to [NSUserDefaults migrateToSharedUserDefaults]), so honor
-    // that change if necessary.
-    if (isLoggingEnabled && !OWSPreferences.isLoggingEnabled) {
-        [DebugLogger.sharedLogger disableFileLogging];
-    }
-#endif
 
     // We need to do this _after_ we set up logging, when the keychain is unlocked,
     // but before we access YapDatabase, files on disk, or NSUserDefaults
-    if (![self ensureIsReadyForAppExtensions]) {
+    NSError *error;
+    if (![YDBLegacyMigration ensureIsYDBReadyForAppExtensions:&error]) {
+        if (error != nil) {
+            [self showLaunchFailureUI:error];
+        }
+
         // If this method has failed; do nothing.
         //
         // ensureIsReadyForAppExtensions will show a failure mode UI that
@@ -243,6 +242,15 @@ static NSTimeInterval launchStartedAt;
 
         return YES;
     }
+
+#if RELEASE
+    // ensureIsYDBReadyForAppExtensions may change the state of the logging
+    // preference (due to [NSUserDefaults migrateToSharedUserDefaults]), so honor
+    // that change if necessary.
+    if (isLoggingEnabled && !OWSPreferences.isLoggingEnabled) {
+        [DebugLogger.sharedLogger disableFileLogging];
+    }
+#endif
 
     [AppVersion sharedInstance];
 
@@ -327,92 +335,41 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    if (![OWSPrimaryStorage isDatabasePasswordAccessible]) {
-        OWSLogInfo(@"exiting because we are in the background and the database password is not accessible.");
-
-        UILocalNotification *notification = [UILocalNotification new];
-        NSString *messageFormat = NSLocalizedString(@"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT",
-            @"Lock screen notification text presented after user powers on their device without unlocking. Embeds "
-            @"{{device model}} (either 'iPad' or 'iPhone')");
-        notification.alertBody = [NSString stringWithFormat:messageFormat, UIDevice.currentDevice.localizedModel];
-
-        // Make sure we clear any existing notifications so that they don't start stacking up
-        // if the user receives multiple pushes.
-        [UIApplication.sharedApplication cancelAllLocalNotifications];
-        [UIApplication.sharedApplication setApplicationIconBadgeNumber:0];
-
-        [[UIApplication sharedApplication] scheduleLocalNotification:notification];
-        [UIApplication.sharedApplication setApplicationIconBadgeNumber:1];
-
-        [DDLog flushLog];
-        exit(0);
-    }
-}
-
-- (BOOL)ensureIsReadyForAppExtensions
-{
-    // Given how sensitive this migration is, we verbosely
-    // log the contents of all involved paths before and after.
-    //
-    // TODO: Remove this logging once we have high confidence
-    // in our migration logic.
-    NSArray<NSString *> *paths = @[
-        OWSPrimaryStorage.legacyDatabaseFilePath,
-        OWSPrimaryStorage.legacyDatabaseFilePath_SHM,
-        OWSPrimaryStorage.legacyDatabaseFilePath_WAL,
-        OWSPrimaryStorage.sharedDataDatabaseFilePath,
-        OWSPrimaryStorage.sharedDataDatabaseFilePath_SHM,
-        OWSPrimaryStorage.sharedDataDatabaseFilePath_WAL,
-    ];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    for (NSString *path in paths) {
-        if ([fileManager fileExistsAtPath:path]) {
-            OWSLogInfo(@"storage file: %@, %@", path, [OWSFileSystem fileSizeOfPath:path]);
-        }
+    // someone currently using yap
+    if (StorageCoordinator.hasYdbFile && !SSKPreferences.isYdbMigrated
+        && OWSPrimaryStorage.isDatabasePasswordAccessible) {
+        return;
     }
 
-    if ([OWSPreferences isReadyForAppExtensions]) {
-        return YES;
+    // someone who migrated from yap to grdb needs the GRDB spec
+    if (SSKPreferences.isYdbMigrated && GRDBDatabaseStorageAdapter.isKeyAccessible) {
+        return;
     }
 
-    OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
-    SUPPRESS_DEADSTORE_WARNING(backgroundTask);
-
-    if ([NSFileManager.defaultManager fileExistsAtPath:OWSPrimaryStorage.legacyDatabaseFilePath]) {
-        OWSLogInfo(
-            @"Legacy Database file size: %@", [OWSFileSystem fileSizeOfPath:OWSPrimaryStorage.legacyDatabaseFilePath]);
-        OWSLogInfo(@"\t Legacy SHM file size: %@",
-            [OWSFileSystem fileSizeOfPath:OWSPrimaryStorage.legacyDatabaseFilePath_SHM]);
-        OWSLogInfo(@"\t Legacy WAL file size: %@",
-            [OWSFileSystem fileSizeOfPath:OWSPrimaryStorage.legacyDatabaseFilePath_WAL]);
+    // someone who never used yap needs the GRDB spec
+    if (!StorageCoordinator.hasYdbFile && StorageCoordinator.hasGrdbFile
+        && GRDBDatabaseStorageAdapter.isKeyAccessible) {
+        return;
     }
 
-    NSError *_Nullable error = [self convertDatabaseIfNecessary];
+    OWSLogInfo(@"exiting because we are in the background and the database password is not accessible.");
 
-    if (!error) {
-        [NSUserDefaults migrateToSharedUserDefaults];
-    }
+    UILocalNotification *notification = [UILocalNotification new];
+    NSString *messageFormat = NSLocalizedString(@"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT",
+        @"Lock screen notification text presented after user powers on their device without unlocking. Embeds "
+        @"{{device model}} (either 'iPad' or 'iPhone')");
+    notification.alertBody = [NSString stringWithFormat:messageFormat, UIDevice.currentDevice.localizedModel];
 
-    if (!error) {
-        error = [OWSPrimaryStorage migrateToSharedData];
-    }
-    if (!error) {
-        error = [OWSUserProfile migrateToSharedData];
-    }
-    if (!error) {
-        error = [TSAttachmentStream migrateToSharedData];
-    }
+    // Make sure we clear any existing notifications so that they don't start stacking up
+    // if the user receives multiple pushes.
+    [UIApplication.sharedApplication cancelAllLocalNotifications];
+    [UIApplication.sharedApplication setApplicationIconBadgeNumber:0];
 
-    if (error) {
-        OWSFailDebug(@"database conversion failed: %@", error);
-        [self showLaunchFailureUI:error];
-        return NO;
-    }
+    [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+    [UIApplication.sharedApplication setApplicationIconBadgeNumber:1];
 
-    OWSAssertDebug(backgroundTask);
-    backgroundTask = nil;
-
-    return YES;
+    [DDLog flushLog];
+    exit(0);
 }
 
 - (void)showLaunchFailureUI:(NSError *)error
@@ -450,56 +407,11 @@ static NSTimeInterval launchStartedAt;
     [fromViewController presentAlert:alert];
 }
 
-- (nullable NSError *)convertDatabaseIfNecessary
-{
-    OWSLogInfo(@"");
-
-    NSString *databaseFilePath = [OWSPrimaryStorage legacyDatabaseFilePath];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]) {
-        OWSLogVerbose(@"no legacy database file found");
-        return nil;
-    }
-
-    NSError *_Nullable error;
-    NSData *_Nullable databasePassword = [OWSStorage tryToLoadDatabaseLegacyPassphrase:&error];
-    if (!databasePassword || error) {
-        return (error
-                ?: OWSErrorWithCodeDescription(
-                       OWSErrorCodeDatabaseConversionFatalError, @"Failed to load database password"));
-    }
-
-    YapRecordDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
-        OWSLogVerbose(@"saltData: %@", saltData.hexadecimalString);
-
-        // Derive and store the raw cipher key spec, to avoid the ongoing tax of future KDF
-        NSData *_Nullable keySpecData =
-            [YapDatabaseCryptoUtils deriveDatabaseKeySpecForPassword:databasePassword saltData:saltData];
-
-        if (!keySpecData) {
-            OWSLogError(@"Failed to derive key spec.");
-            return NO;
-        }
-
-        [OWSStorage storeDatabaseCipherKeySpec:keySpecData];
-
-        return YES;
-    };
-
-    YapDatabaseOptions *dbOptions = [OWSStorage defaultDatabaseOptions];
-    error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
-                                              databasePassword:databasePassword
-                                                       options:dbOptions
-                                               recordSaltBlock:recordSaltBlock];
-    if (!error) {
-        [OWSStorage removeLegacyPassphrase];
-    }
-
-    return error;
-}
-
 - (void)startupLogging
 {
-    OWSLogInfo(@"iOS Version: %@", [UIDevice currentDevice].systemVersion);
+    OWSLogInfo(@"iOS Version: %@ (%@)",
+        [UIDevice currentDevice].systemVersion,
+        [NSString stringFromSysctlKey:@"kern.osversion"]);
 
     NSString *localeIdentifier = [NSLocale.currentLocale objectForKey:NSLocaleIdentifier];
     if (localeIdentifier.length > 0) {
@@ -514,12 +426,7 @@ static NSTimeInterval launchStartedAt;
         OWSLogInfo(@"Language Code: %@", languageCode);
     }
 
-    struct utsname systemInfo;
-    uname(&systemInfo);
-
-    OWSLogInfo(@"Device Model: %@ (%@)",
-        UIDevice.currentDevice.model,
-        [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding]);
+    OWSLogInfo(@"Device Model: %@ (%@)", UIDevice.currentDevice.model, [NSString stringFromSysctlKey:@"hw.machine"]);
 
     NSDictionary<NSString *, NSString *> *buildDetails =
         [[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildDetails"];
@@ -1391,17 +1298,15 @@ static NSTimeInterval launchStartedAt;
     [self.profileManager fetchLocalUsersProfile];
     [self.readReceiptManager prepareCachedValues];
 
-    // Disable the SAE until the main app has successfully completed launch process
-    // at least once in the post-SAE world.
-    [OWSPreferences setIsReadyForAppExtensions];
-
     [self ensureRootViewController];
 
     [self.messageManager startObserving];
 
     [self.udManager setup];
 
-    [self.primaryStorage touchDbAsync];
+    if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+        [self.primaryStorage touchDbAsync];
+    }
 
     // Every time the user upgrades to a new version:
     //

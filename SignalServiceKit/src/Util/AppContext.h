@@ -98,7 +98,7 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 - (nullable UIViewController *)frontmostViewController;
 
 // Returns nil if isMainApp is NO
-@property (nullable, nonatomic, readonly) UIAlertAction *openSystemSettingsAction;
+- (nullable UIAlertAction *)openSystemSettingsActionWithCompletion:(void (^_Nullable)(void))completion;
 
 // Should be a NOOP if isMainApp is NO.
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value;
@@ -113,6 +113,8 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 - (NSString *)appSharedDataDirectoryPath;
 
+- (NSString *)appDatabaseBaseDirectoryPath;
+
 - (NSUserDefaults *)appUserDefaults;
 
 @end
@@ -122,7 +124,7 @@ void SetCurrentAppContext(id<AppContext> appContext);
 
 void ExitShareExtension(void);
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 void ClearCurrentAppContextForTests(void);
 #endif
 

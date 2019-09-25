@@ -103,8 +103,14 @@ private class IntroducingStickersExperienceUpgradeViewController: ExperienceUpgr
 
 private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeViewController {
 
+    var ows2FAManager: OWS2FAManager {
+        return .shared()
+    }
+
     var hasPinAlready: Bool {
-        return OWS2FAManager.shared().is2FAEnabled()
+        // Treat users with legacy pins as not having a pin at all, so we
+        // can migrate them off of their old, possibly truncated pins.
+        return ows2FAManager.is2FAEnabled() && !ows2FAManager.needsLegacyPinMigration()
     }
 
     override var canDismissWithGesture: Bool {

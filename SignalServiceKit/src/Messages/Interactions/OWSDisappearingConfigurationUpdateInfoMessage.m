@@ -66,6 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
                    customMessage:(nullable NSString *)customMessage
         infoMessageSchemaVersion:(NSUInteger)infoMessageSchemaVersion
                      messageType:(TSInfoMessageType)messageType
@@ -93,6 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
                     messageSticker:messageSticker
                      quotedMessage:quotedMessage
                      schemaVersion:schemaVersion
+      storedShouldStartExpireTimer:storedShouldStartExpireTimer
                      customMessage:customMessage
           infoMessageSchemaVersion:infoMessageSchemaVersion
                        messageType:messageType

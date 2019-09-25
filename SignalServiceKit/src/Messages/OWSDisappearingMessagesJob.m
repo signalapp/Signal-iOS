@@ -225,13 +225,13 @@ void AssertIsOnDisappearingMessagesQueue()
         [thread disappearingMessagesConfigurationWithTransaction:transaction];
 
     if (duration == 0) {
-        disappearingMessagesConfiguration.enabled = NO;
+        disappearingMessagesConfiguration = [disappearingMessagesConfiguration copyWithIsEnabled:NO];
     } else {
-        disappearingMessagesConfiguration.enabled = YES;
-        disappearingMessagesConfiguration.durationSeconds = duration;
+        disappearingMessagesConfiguration =
+            [disappearingMessagesConfiguration copyAsEnabledWithDurationSeconds:duration];
     }
 
-    if (!disappearingMessagesConfiguration.dictionaryValueDidChange) {
+    if (![disappearingMessagesConfiguration hasChangedWithTransaction:transaction]) {
         return;
     }
 
@@ -395,15 +395,26 @@ void AssertIsOnDisappearingMessagesQueue()
 
 - (void)cleanupMessagesWhichFailedToStartExpiringWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
+    NSMutableArray<NSString *> *messageIds = [NSMutableArray new];
     [self.disappearingMessagesFinder
-        enumerateMessagesWhichFailedToStartExpiringWithBlock:^(TSMessage *_Nonnull message) {
+        enumerateMessagesWhichFailedToStartExpiringWithBlock:^(TSMessage *message, BOOL *stop) {
             OWSFailDebug(@"starting old timer for message timestamp: %lu", (unsigned long)message.timestamp);
 
-            // We don't know when it was actually read, so assume it was read as soon as it was received.
-            uint64_t readTimeBestGuess = message.receivedAtTimestamp;
-            [self startAnyExpirationForMessage:message expirationStartedAt:readTimeBestGuess transaction:transaction];
+            [messageIds addObject:message.uniqueId];
         }
                                                  transaction:transaction];
+
+    for (NSString *messageId in messageIds) {
+        TSMessage *_Nullable message = [TSMessage anyFetchMessageWithUniqueId:messageId transaction:transaction];
+        if (message == nil) {
+            OWSFailDebug(@"Missing message.");
+            continue;
+        }
+
+        // We don't know when it was actually read, so assume it was read as soon as it was received.
+        uint64_t readTimeBestGuess = message.receivedAtTimestamp;
+        [self startAnyExpirationForMessage:message expirationStartedAt:readTimeBestGuess transaction:transaction];
+    }
 }
 
 #pragma mark - Notifications

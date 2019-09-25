@@ -15,6 +15,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 @class OWSAES256Key;
 @class OWSMessageSender;
 @class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
 @class SDSDatabaseStorage;
 @class SDSKeyValueStore;
 @class SignalServiceAddress;
@@ -43,6 +44,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 // hasLocalProfile is true if there is a local profile with a name or avatar.
 - (BOOL)hasLocalProfile;
 - (nullable NSString *)localProfileName;
+- (nullable NSString *)localUsername;
 - (nullable UIImage *)localProfileAvatarImage;
 - (nullable NSData *)localProfileAvatarData;
 
@@ -56,9 +58,16 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
                        success:(void (^)(void))successBlock
                        failure:(void (^)(void))failureBlock;
 
+- (void)updateLocalUsername:(nullable NSString *)username transaction:(SDSAnyWriteTransaction *)transaction;
+
 - (BOOL)isProfileNameTooLong:(nullable NSString *)profileName;
 
 - (void)fetchLocalUsersProfile;
+
+- (void)fetchProfileForUsername:(NSString *)username
+                        success:(void (^)(SignalServiceAddress *))successHandler
+                       notFound:(void (^)(void))notFoundHandler
+                        failure:(void (^)(NSError *))failureHandler;
 
 #pragma mark - Profile Whitelist
 
@@ -87,8 +96,12 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 - (nullable NSData *)profileAvatarDataForAddress:(SignalServiceAddress *)address
                                      transaction:(SDSAnyReadTransaction *)transaction;
 
+- (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address
+                              transaction:(SDSAnyReadTransaction *)transaction;
+
 - (void)updateProfileForAddress:(SignalServiceAddress *)address
            profileNameEncrypted:(nullable NSData *)profileNameEncrypted
+                       username:(nullable NSString *)username
                   avatarUrlPath:(nullable NSString *)avatarUrlPath;
 
 #pragma mark - Clean Up

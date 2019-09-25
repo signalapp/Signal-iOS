@@ -305,7 +305,7 @@ CHECKOUT OPTIONS:
     :commit: b72c2d1e6132501db906de2cffa8ded7803c54f4
     :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
-    :commit: 994c3870e7996bbdcb064649704543aa308a6a1e
+    :commit: 4330f7d0ef0f06628b3bb1e961d947638cfd098f
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
     :commit: f7c0c7bd979cbac06223cd2d41da542c6c33f62b
@@ -342,6 +342,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: 0108eaea01d12d2e9d6531403bfca96aa3ec58e2
+PODFILE CHECKSUM: d376fb2f68d531f1ae2531c5051eb8f03043151e
 
 COCOAPODS: 1.7.5

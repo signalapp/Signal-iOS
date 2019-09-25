@@ -6,7 +6,6 @@
 #import "AppDelegate.h"
 #import "AppSettingsViewController.h"
 #import "HomeViewCell.h"
-#import "NewContactThreadViewController.h"
 #import "OWSNavigationController.h"
 #import "OWSPrimaryStorage.h"
 #import "ProfileViewController.h"
@@ -14,7 +13,6 @@
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import "TSAccountManager.h"
-#import "TSDatabaseView.h"
 #import "TSGroupThread.h"
 #import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
@@ -32,7 +30,6 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <StoreKit/StoreKit.h>
-#import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
 
@@ -92,6 +89,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 @property (nonatomic, readonly) UIStackView *reminderStackView;
 @property (nonatomic, readonly) UITableViewCell *reminderViewCell;
 @property (nonatomic, readonly) ExpirationNagView *expiredView;
+@property (nonatomic, readonly) UIView *endOfLifeOSView;
 @property (nonatomic, readonly) UIView *deregisteredView;
 @property (nonatomic, readonly) UIView *outageView;
 @property (nonatomic, readonly) UIView *archiveReminderView;
@@ -159,6 +157,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     return SDSDatabaseStorage.shared;
 }
 
+- (nullable OWSPrimaryStorage *)primaryStorage
+{
+    return SSKEnvironment.shared.primaryStorage;
+}
+
 #pragma mark -
 
 - (void)observeNotifications
@@ -179,21 +182,21 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                              selector:@selector(applicationWillResignActive:)
                                                  name:OWSApplicationWillResignActiveNotification
                                                object:nil];
-    if (SSKFeatureFlags.useGRDB) {
+    if (SSKFeatureFlags.storageMode != StorageModeYdb) {
         [self.databaseStorage.grdbStorage.homeViewDatabaseObserver appendSnapshotDelegate:self];
     } else {
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(uiDatabaseDidUpdateExternally:)
                                                      name:OWSUIDatabaseConnectionDidUpdateExternallyNotification
-                                                   object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
+                                                   object:self.primaryStorage.dbNotificationObject];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(uiDatabaseWillUpdate:)
                                                      name:OWSUIDatabaseConnectionWillUpdateNotification
-                                                   object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
+                                                   object:self.primaryStorage.dbNotificationObject];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(uiDatabaseDidUpdate:)
                                                      name:OWSUIDatabaseConnectionDidUpdateNotification
-                                                   object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
+                                                   object:self.primaryStorage.dbNotificationObject];
     }
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange:)
@@ -310,6 +313,14 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     _deregisteredView = deregisteredView;
     [reminderStackView addArrangedSubview:deregisteredView];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, deregisteredView);
+
+    ReminderView *endOfLifeOSView =
+        [ReminderView nagWithText:NSLocalizedString(@"END_OF_LIFE_OS_WARNING",
+                                      @"Label indicating that this OS version is no longer supported.")
+                        tapAction:nil];
+    _endOfLifeOSView = endOfLifeOSView;
+    [reminderStackView addArrangedSubview:endOfLifeOSView];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, endOfLifeOSView);
 
     ExpirationNagView *expiredView = [ExpirationNagView new];
     _expiredView = expiredView;
@@ -591,12 +602,14 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     self.missingContactsPermissionView.hidden = !self.contactsManager.isSystemContactsDenied;
     self.deregisteredView.hidden = !TSAccountManager.sharedInstance.isDeregistered;
     self.outageView.hidden = !OutageDetection.sharedManager.hasOutage;
+    self.endOfLifeOSView.hidden = !SSKAppExpiry.isEndOfLifeOSVersion;
 
     self.expiredView.hidden = !SSKAppExpiry.isExpiringSoon;
     [self.expiredView updateText];
 
     self.hasVisibleReminders = !self.archiveReminderView.isHidden || !self.missingContactsPermissionView.isHidden
-        || !self.deregisteredView.isHidden || !self.outageView.isHidden || !self.expiredView.isHidden;
+        || !self.deregisteredView.isHidden || !self.outageView.isHidden || !self.expiredView.isHidden
+        || !self.endOfLifeOSView.isHidden;
 }
 
 - (void)setHasVisibleReminders:(BOOL)hasVisibleReminders
@@ -827,7 +840,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     OWSLogInfo(@"");
 
-    NewContactThreadViewController *viewController = [NewContactThreadViewController new];
+    ComposeViewController *viewController = [ComposeViewController new];
 
     [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
         if (error) {
@@ -1506,7 +1519,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)homeViewDatabaseSnapshotDidUpdateWithUpdatedThreadIds:(NSSet<NSString *> *)updatedThreadIds
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(SSKFeatureFlags.useGRDB);
+    OWSAssertDebug(SSKFeatureFlags.storageMode != StorageModeYdb);
 
     if (!self.shouldObserveDBModifications) {
         return;
@@ -1542,14 +1555,14 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)uiDatabaseDidUpdate:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(!SSKFeatureFlags.useGRDB);
+    OWSAssertDebug(SSKFeatureFlags.storageMode == StorageModeYdb);
 
     if (!self.shouldObserveDBModifications) {
         return;
     }
 
     NSArray *notifications = notification.userInfo[OWSUIDatabaseConnectionNotificationsKey];
-    YapDatabaseConnection *uiDatabaseConnection = OWSPrimaryStorage.sharedManager.uiDatabaseConnection;
+    YapDatabaseConnection *uiDatabaseConnection = self.primaryStorage.uiDatabaseConnection;
     if (![[uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] hasChangesForGroup:self.currentGrouping
                                                                           inNotifications:notifications]) {
 
@@ -1700,10 +1713,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 // We want to delay asking for a review until an opportune time.
 // If the user has *just* launched Signal they intend to do something, we don't want to interrupt them.
-// If the user hasn't sent a message, we don't want to ask them for a review yet.
 - (void)requestReviewIfAppropriate
 {
-    if (self.hasEverAppeared && Environment.shared.preferences.hasSentAMessage) {
+    static NSUInteger callCount = 0;
+    callCount++;
+    if (self.hasEverAppeared && callCount > 25) {
         OWSLogDebug(@"requesting review");
         if (@available(iOS 10, *)) {
             // In Debug this pops up *every* time, which is helpful, but annoying.

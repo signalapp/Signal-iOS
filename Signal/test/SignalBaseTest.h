@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SignalBaseTest : XCTestCase
 
+@property (nonatomic, readonly, nullable) OWSPrimaryStorage *primaryStorage;
+
 - (void)readWithBlock:(void (^)(SDSAnyReadTransaction *transaction))block;
 - (void)writeWithBlock:(void (^)(SDSAnyWriteTransaction *transaction))block;
 

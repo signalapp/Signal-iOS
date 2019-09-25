@@ -4,7 +4,6 @@
 
 #import "ShareAppExtensionContext.h"
 #import <SignalMessaging/UIViewController+OWS.h>
-#import <SignalServiceKit/OWSStorage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSConstants.h>
 
@@ -189,7 +188,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.rootViewController findFrontmostViewController:YES];
 }
 
-- (nullable UIAlertAction *)openSystemSettingsAction
+- (nullable UIAlertAction *)openSystemSettingsActionWithCompletion:(void (^_Nullable)(void))completion
 {
     return nil;
 }
@@ -252,6 +251,11 @@ NS_ASSUME_NONNULL_BEGIN
     NSURL *groupContainerDirectoryURL =
         [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:SignalApplicationGroup];
     return [groupContainerDirectoryURL path];
+}
+
+- (NSString *)appDatabaseBaseDirectoryPath
+{
+    return self.appSharedDataDirectoryPath;
 }
 
 - (NSUserDefaults *)appUserDefaults

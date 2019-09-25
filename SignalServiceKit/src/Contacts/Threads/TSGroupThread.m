@@ -248,7 +248,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 
 - (void)leaveGroupWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    SignalServiceAddress *_Nullable localAddress = TSAccountManager.localAddress;
+    SignalServiceAddress *_Nullable localAddress = [TSAccountManager localAddressWithTransaction:transaction];
     OWSAssertDebug(localAddress);
 
     [self anyUpdateGroupThreadWithTransaction:transaction

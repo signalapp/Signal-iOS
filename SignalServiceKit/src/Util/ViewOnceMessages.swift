@@ -144,7 +144,7 @@ public class ViewOnceMessages: NSObject {
                                                             senderAddress: senderAddress,
                                                                  messageIdTimestamp: messageIdTimestamp,
                                                                  readTimestamp: readTimestamp)
-        messageSenderJobQueue.add(message: syncMessage, transaction: transaction)
+        messageSenderJobQueue.add(message: syncMessage.asPreparer, transaction: transaction)
     }
 
     @objc
@@ -344,7 +344,6 @@ class GRDBViewOnceMessageFinder: ViewOnceMessageFinder {
         """
 
         let cursor = TSInteraction.grdbFetchCursor(sql: sql,
-                                                   arguments: [],
                                                    transaction: transaction)
         var stop: ObjCBool = false
         // GRDB TODO make cursor.next fail hard to remove this `try!`

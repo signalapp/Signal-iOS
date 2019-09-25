@@ -10,7 +10,6 @@
 #import "SSKEnvironment.h"
 #import "SSKSessionStore.h"
 #import "TSContactThread.h"
-#import "TSDatabaseView.h"
 #import "TSErrorMessage_privateConstructor.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <AxolotlKit/PreKeyWhisperMessage.h>
@@ -95,6 +94,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
@@ -119,6 +119,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                     messageSticker:messageSticker
                      quotedMessage:quotedMessage
                      schemaVersion:schemaVersion
+      storedShouldStartExpireTimer:storedShouldStartExpireTimer
          errorMessageSchemaVersion:errorMessageSchemaVersion
                          errorType:errorType
                               read:read

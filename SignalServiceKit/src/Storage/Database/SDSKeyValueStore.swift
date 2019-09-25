@@ -14,6 +14,15 @@ import SignalCoreKit
 @objc
 public class SDSKeyValueStore: NSObject {
 
+    // Key-value stores use "collections" to group related keys.
+    //
+    // * In YDB, we store each model type and k-v store in a separate YDB collection.
+    // * In GRDB, we store each model in a separate table but
+    //   all k-v stores are in a single table.
+    //   GRDB maintains a mapping between tables and collections.
+    //   For the purposes of this mapping only we use dataStoreCollection.
+    static let dataStoreCollection = "keyvalue"
+
     // By default, all reads/writes use this collection.
     @objc
     public let collection: String
@@ -22,7 +31,9 @@ public class SDSKeyValueStore: NSObject {
     static let keyColumn = SDSColumnMetadata(columnName: "key", columnType: .unicodeString, isOptional: false)
     static let valueColumn = SDSColumnMetadata(columnName: "value", columnType: .blob, isOptional: false)
     // TODO: For now, store all key-value in a single table.
-    public static let table = SDSTableMetadata(tableName: "keyvalue", columns: [
+    public static let table = SDSTableMetadata(collection: SDSKeyValueStore.dataStoreCollection,
+        tableName: "keyvalue",
+        columns: [
         collectionColumn,
         keyColumn,
         valueColumn

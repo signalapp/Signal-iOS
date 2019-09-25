@@ -14,6 +14,7 @@ protocol SendMediaNavDelegate: AnyObject {
     func sendMediaNavInitialMessageText(_ sendMediaNavigationController: SendMediaNavigationController) -> String?
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageText newMessageText: String?)
     var sendMediaNavApprovalButtonImageName: String { get }
+    var sendMediaNavCanSaveAttachments: Bool { get }
 }
 
 @objc
@@ -129,7 +130,7 @@ class SendMediaNavigationController: OWSNavigationController {
         let navController = SendMediaNavigationController()
         navController.sendMediaNavDelegate = delegate
 
-        let approvalItem = AttachmentApprovalItem(attachment: attachment)
+        let approvalItem = AttachmentApprovalItem(attachment: attachment, canSave: false)
         let libraryMedia = MediaLibraryAttachment(asset: asset,
                                                   attachmentApprovalItemPromise: .value(approvalItem))
         navController.attachmentDraftCollection.append(.picker(attachment: libraryMedia))
@@ -448,7 +449,8 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
 extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
 
     func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, didFinishProcessingAttachment attachment: SignalAttachment) {
-        let cameraCaptureAttachment = CameraCaptureAttachment(signalAttachment: attachment)
+        guard let sendMediaNavDelegate = self.sendMediaNavDelegate else { return }
+        let cameraCaptureAttachment = CameraCaptureAttachment(signalAttachment: attachment, canSave: sendMediaNavDelegate.sendMediaNavCanSaveAttachments)
         attachmentDraftCollection.append(.camera(attachment: cameraCaptureAttachment))
         if isInBatchSelectMode {
             updateViewState(topViewController: photoCaptureViewController)
@@ -516,10 +518,17 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
     }
 
     func imagePicker(_ imagePicker: ImagePickerGridController, didSelectAsset asset: PHAsset, attachmentPromise: Promise<SignalAttachment>) {
+        guard let sendMediaNavDelegate = sendMediaNavDelegate else { return }
+
         guard !attachmentDraftCollection.hasPickerAttachment(forAsset: asset) else {
             return
         }
-        let attachmentApprovalItemPromise = attachmentPromise.map { AttachmentApprovalItem(attachment: $0) }
+
+        let attachmentApprovalItemPromise = attachmentPromise.map { attachment in
+            AttachmentApprovalItem(attachment: attachment,
+                                   canSave: sendMediaNavDelegate.sendMediaNavCanSaveAttachments)
+        }
+
         let libraryMedia = MediaLibraryAttachment(asset: asset, attachmentApprovalItemPromise: attachmentApprovalItemPromise)
         attachmentDraftCollection.append(.picker(attachment: libraryMedia))
 
@@ -679,9 +688,9 @@ private struct CameraCaptureAttachment: Hashable, Equatable {
     let attachmentApprovalItem: AttachmentApprovalItem
     let attachmentApprovalItemPromise: Promise<AttachmentApprovalItem>
 
-    init(signalAttachment: SignalAttachment) {
+    init(signalAttachment: SignalAttachment, canSave: Bool) {
         self.signalAttachment = signalAttachment
-        self.attachmentApprovalItem = AttachmentApprovalItem(attachment: signalAttachment)
+        self.attachmentApprovalItem = AttachmentApprovalItem(attachment: signalAttachment, canSave: canSave)
         self.attachmentApprovalItemPromise = Promise.value(attachmentApprovalItem)
     }
 

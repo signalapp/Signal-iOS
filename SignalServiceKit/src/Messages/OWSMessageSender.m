@@ -33,7 +33,6 @@
 #import "TSGroupThread.h"
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
-#import "TSInvalidIdentityKeySendingErrorMessage.h"
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
 #import "TSPreKeyManager.h"
@@ -84,7 +83,7 @@ void AssertIsOnSendingQueue()
 
 @implementation OWSOutgoingAttachmentInfo
 
-- (instancetype)initWithDataSource:(DataSource *)dataSource
+- (instancetype)initWithDataSource:(id<DataSource>)dataSource
                        contentType:(NSString *)contentType
                     sourceFilename:(nullable NSString *)sourceFilename
                            caption:(nullable NSString *)caption
@@ -104,6 +103,28 @@ void AssertIsOnSendingQueue()
     return self;
 }
 
+- (nullable TSAttachmentStream *)asStreamConsumingDataSourceWithIsVoiceMessage:(BOOL)isVoiceMessage
+                                                                         error:(NSError **)error
+{
+    TSAttachmentStream *attachmentStream =
+        [[TSAttachmentStream alloc] initWithContentType:self.contentType
+                                              byteCount:(UInt32)self.dataSource.dataLength
+                                         sourceFilename:self.sourceFilename
+                                                caption:self.caption
+                                         albumMessageId:self.albumMessageId
+                                        shouldAlwaysPad:NO];
+
+    if (isVoiceMessage) {
+        attachmentStream.attachmentType = TSAttachmentTypeVoiceMessage;
+    }
+
+    [attachmentStream writeConsumingDataSource:self.dataSource error:error];
+    if (*error != nil) {
+        return nil;
+    }
+
+    return attachmentStream;
+}
 @end
 
 #pragma mark -
@@ -385,18 +406,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 }
 
-- (void)sendMessage:(TSOutgoingMessage *)message
+- (void)sendMessage:(OutgoingMessagePreparer *)outgoingMessagePreparer
             success:(void (^)(void))successHandler
             failure:(void (^)(NSError *error))failureHandler
 {
-    OWSAssertDebug(message);
-    if (message.body.length > 0) {
-        OWSAssertDebug([message.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold);
-    }
+    OWSAssertDebug([outgoingMessagePreparer isKindOfClass:[OutgoingMessagePreparer class]]);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSMutableArray<NSString *> *allAttachmentIds = [NSMutableArray new];
-
         // This method will use a read/write transaction. This transaction
         // will block until any open read/write transactions are complete.
         //
@@ -409,10 +425,27 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         //
         // So we're using YDB behavior to ensure this invariant, which is a bit
         // unorthodox.
+        __block NSError *error;
+        __block TSOutgoingMessage *message;
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            [allAttachmentIds
-                addObjectsFromArray:[OutgoingMessagePreparer prepareMessageForSending:message transaction:transaction]];
+            message = [outgoingMessagePreparer prepareMessageWithTransaction:transaction error:&error];
+            if (error != nil) {
+                return;
+            }
+
+            OWSAssertDebug(message);
+            if (message.body.length > 0) {
+                OWSAssertDebug([message.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding]
+                    <= kOversizeTextMessageSizeThreshold);
+            }
         }];
+
+        if (error != nil) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                failureHandler(error);
+            });
+            return;
+        }
 
         NSOperationQueue *sendingQueue = [self sendingQueueForMessage:message];
         OWSSendMessageOperation *sendMessageOperation =
@@ -421,19 +454,19 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                      success:successHandler
                                                      failure:failureHandler];
 
-        for (NSString *attachmentId in allAttachmentIds) {
+        OWSAssertDebug(outgoingMessagePreparer.savedAttachmentIds != nil);
+        for (NSString *attachmentId in outgoingMessagePreparer.savedAttachmentIds) {
             OWSUploadOperation *uploadAttachmentOperation =
                 [[OWSUploadOperation alloc] initWithAttachmentId:attachmentId];
-            // TODO: put attachment uploads on a (low priority) concurrent queue
             [sendMessageOperation addDependency:uploadAttachmentOperation];
-            [sendingQueue addOperation:uploadAttachmentOperation];
+            [OWSUploadOperation.uploadQueue addOperation:uploadAttachmentOperation];
         }
 
         [sendingQueue addOperation:sendMessageOperation];
     });
 }
 
-- (void)sendTemporaryAttachment:(DataSource *)dataSource
+- (void)sendTemporaryAttachment:(id<DataSource>)dataSource
                     contentType:(NSString *)contentType
                       inMessage:(TSOutgoingMessage *)message
                         success:(void (^)(void))successHandler
@@ -470,7 +503,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                  failure:failureWithDeleteHandler];
 }
 
-- (void)sendAttachment:(DataSource *)dataSource
+- (void)sendAttachment:(id<DataSource>)dataSource
            contentType:(NSString *)contentType
         sourceFilename:(nullable NSString *)sourceFilename
         albumMessageId:(nullable NSString *)albumMessageId
@@ -485,30 +518,23 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                                        sourceFilename:sourceFilename
                                                                                               caption:nil
                                                                                        albumMessageId:albumMessageId];
-    [self sendAttachments:@[
+    [self sendUnpreparedAttachments:@[
         attachmentInfo,
     ]
-                inMessage:message
-                  success:success
-                  failure:failure];
+                          inMessage:message
+                            success:success
+                            failure:failure];
 }
 
-- (void)sendAttachments:(NSArray<OWSOutgoingAttachmentInfo *> *)attachmentInfos
-              inMessage:(TSOutgoingMessage *)message
-                success:(void (^)(void))success
-                failure:(void (^)(NSError *error))failure
+- (void)sendUnpreparedAttachments:(NSArray<OWSOutgoingAttachmentInfo *> *)attachmentInfos
+                        inMessage:(TSOutgoingMessage *)message
+                          success:(void (^)(void))success
+                          failure:(void (^)(NSError *error))failure
 {
     OWSAssertDebug(attachmentInfos.count > 0);
-
-    [OutgoingMessagePreparer prepareAttachments:attachmentInfos
-                                      inMessage:message
-                              completionHandler:^(NSError *_Nullable error) {
-                                  if (error) {
-                                      failure(error);
-                                      return;
-                                  }
-                                  [self sendMessage:message success:success failure:failure];
-                              }];
+    OutgoingMessagePreparer *outgoingMessagePreparer = [[OutgoingMessagePreparer alloc] init:message
+                                                                      unsavedAttachmentInfos:attachmentInfos];
+    [self sendMessage:outgoingMessagePreparer success:success failure:failure];
 }
 
 - (void)sendMessageToService:(TSOutgoingMessage *)message
@@ -1945,14 +1971,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 @end
 
-@implementation OutgoingMessagePreparer
-
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
+@implementation OutgoingMessagePreparerHelper
 
 #pragma mark -
 
@@ -2029,65 +2048,46 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return attachmentIds;
 }
 
-+ (void)prepareAttachments:(NSArray<OWSOutgoingAttachmentInfo *> *)attachmentInfos
-                 inMessage:(TSOutgoingMessage *)outgoingMessage
-         completionHandler:(void (^)(NSError *_Nullable error))completionHandler
++ (BOOL)insertAttachments:(NSArray<OWSOutgoingAttachmentInfo *> *)attachmentInfos
+               forMessage:(TSOutgoingMessage *)outgoingMessage
+              transaction:(SDSAnyWriteTransaction *)transaction
+                    error:(NSError **)error
 {
     OWSAssertDebug(attachmentInfos.count > 0);
     OWSAssertDebug(outgoingMessage);
 
-    dispatch_async([OWSDispatch attachmentsQueue], ^{
-        // Eventually we'll pad all outgoing attachments, but currently just stickers.
-        // Currently this method is only used to process "body" attachments, which
-        // cannot be sent along with stickers.
-        OWSAssertDebug(outgoingMessage.messageSticker == nil);
+    // Eventually we'll pad all outgoing attachments, but currently just stickers.
+    // Currently this method is only used to process "body" attachments, which
+    // cannot be sent along with stickers.
+    OWSAssertDebug(outgoingMessage.messageSticker == nil);
 
-        NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray new];
-        for (OWSOutgoingAttachmentInfo *attachmentInfo in attachmentInfos) {
-            TSAttachmentStream *attachmentStream =
-                [[TSAttachmentStream alloc] initWithContentType:attachmentInfo.contentType
-                                                      byteCount:(UInt32)attachmentInfo.dataSource.dataLength
-                                                 sourceFilename:attachmentInfo.sourceFilename
-                                                        caption:attachmentInfo.caption
-                                                 albumMessageId:attachmentInfo.albumMessageId
-                                              shouldAlwaysPad:NO];
-            if (outgoingMessage.isVoiceMessage) {
-                attachmentStream.attachmentType = TSAttachmentTypeVoiceMessage;
-            }
-
-            if (![attachmentStream writeDataSource:attachmentInfo.dataSource]) {
-                OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotWriteAttachment]);
-                NSError *error = OWSErrorMakeWriteAttachmentDataError();
-                completionHandler(error);
-                return;
-            }
-
-            [attachmentStreams addObject:attachmentStream];
+    NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray new];
+    for (OWSOutgoingAttachmentInfo *attachmentInfo in attachmentInfos) {
+        TSAttachmentStream *attachmentStream =
+            [attachmentInfo asStreamConsumingDataSourceWithIsVoiceMessage:outgoingMessage.isVoiceMessage error:error];
+        if (*error != nil) {
+            return NO;
         }
+        OWSAssert(attachmentStream != nil);
+        [attachmentStreams addObject:attachmentStream];
+    }
 
-        [OWSMessageSender.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            [outgoingMessage
-                anyUpdateOutgoingMessageWithTransaction:transaction
-                                                  block:^(TSOutgoingMessage *outgoingMessage) {
-                                                      for (TSAttachmentStream *attachmentStream in attachmentStreams) {
-                                                          [outgoingMessage.attachmentIds
-                                                              addObject:attachmentStream.uniqueId];
+    [outgoingMessage
+        anyUpdateOutgoingMessageWithTransaction:transaction
+                                          block:^(TSOutgoingMessage *outgoingMessage) {
+                                              NSMutableArray<NSString *> *attachmentIds =
+                                                  [outgoingMessage.attachmentIds mutableCopy];
+                                              for (TSAttachmentStream *attachmentStream in attachmentStreams) {
+                                                  [attachmentIds addObject:attachmentStream.uniqueId];
+                                              }
+                                              outgoingMessage.attachmentIds = [attachmentIds copy];
+                                          }];
 
-                                                          if (attachmentStream.sourceFilename) {
-                                                              outgoingMessage
-                                                                  .attachmentFilenameMap[attachmentStream.uniqueId]
-                                                                  = attachmentStream.sourceFilename;
-                                                          }
-                                                      }
-                                                  }];
+    for (TSAttachmentStream *attachmentStream in attachmentStreams) {
+        [attachmentStream anyInsertWithTransaction:transaction];
+    }
 
-            for (TSAttachmentStream *attachmentStream in attachmentStreams) {
-                [attachmentStream anyInsertWithTransaction:transaction];
-            }
-        }];
-
-        completionHandler(nil);
-    });
+    return YES;
 }
 
 @end

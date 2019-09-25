@@ -7,6 +7,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSStorage;
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
 @class SSKProtoEnvelope;
 
 @interface OWSMessageDecryptJob : BaseModel
@@ -15,9 +17,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSData *envelopeData;
 @property (nonatomic, readonly, nullable) SSKProtoEnvelope *envelopeProto;
 
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+
 - (instancetype)initWithEnvelopeData:(NSData *)envelopeData NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
 // --- CODE GENERATION MARKER
 
@@ -42,6 +46,11 @@ NS_SWIFT_NAME(init(uniqueId:createdAt:envelopeData:));
 
 - (NSString *)databaseExtensionName;
 - (NSString *)databaseExtensionGroup;
+
+#ifdef DEBUG
+- (NSUInteger)queuedJobCountWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (void)addJobForEnvelopeData:(NSData *)envelopeData transaction:(SDSAnyWriteTransaction *)transaction;
+#endif
 
 @end
 

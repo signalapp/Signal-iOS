@@ -7,6 +7,7 @@
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TestAppContext.h>
+#import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,6 +20,15 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation SignalBaseTest
+
+#pragma mark - Dependencies
+
+- (nullable OWSPrimaryStorage *)primaryStorage
+{
+    return SSKEnvironment.shared.primaryStorage;
+}
+
+#pragma mark -
 
 - (void)setUp
 {

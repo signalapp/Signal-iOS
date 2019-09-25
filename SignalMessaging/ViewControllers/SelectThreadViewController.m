@@ -7,7 +7,6 @@
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
 #import "Environment.h"
-#import "NewNonContactConversationViewController.h"
 #import "OWSContactsManager.h"
 #import "OWSSearchBar.h"
 #import "OWSTableViewController.h"
@@ -19,10 +18,10 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalAccount.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSThread.h>
-#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -30,12 +29,12 @@ NS_ASSUME_NONNULL_BEGIN
     ThreadViewHelperDelegate,
     ContactsViewHelperDelegate,
     UISearchBarDelegate,
-    NewNonContactConversationViewControllerDelegate>
+    FindByPhoneNumberDelegate,
+    SDSDatabaseStorageObserver>
 
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 @property (nonatomic, readonly) FullTextSearcher *fullTextSearcher;
 @property (nonatomic, readonly) ThreadViewHelper *threadViewHelper;
-@property (nonatomic, readonly) YapDatabaseConnection *uiDatabaseConnection;
 
 @property (nonatomic, readonly) OWSTableViewController *tableViewController;
 
@@ -72,19 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
     _threadViewHelper = [ThreadViewHelper new];
     _threadViewHelper.delegate = self;
 
-    _uiDatabaseConnection = [[OWSPrimaryStorage sharedManager] newDatabaseConnection];
-#ifdef DEBUG
-    _uiDatabaseConnection.permittedTransactions = YDB_AnyReadTransaction;
-#endif
-    [_uiDatabaseConnection beginLongLivedReadTransaction];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModified:)
-                                                 name:YapDatabaseModifiedNotification
-                                               object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModifiedExternally:)
-                                                 name:YapDatabaseModifiedExternallyNotification
-                                               object:nil];
+    [self.databaseStorage addDatabaseStorageObserver:self];
 
     [self createViews];
 
@@ -124,21 +111,29 @@ NS_ASSUME_NONNULL_BEGIN
     self.tableViewController.tableView.estimatedRowHeight = 60;
 }
 
-- (void)yapDatabaseModifiedExternally:(NSNotification *)notification
+#pragma mark - SDSDatabaseStorageObserver
+
+- (void)databaseStorageDidUpdateWithChange:(SDSDatabaseStorageChange *)change
 {
     OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
 
-    OWSLogVerbose(@"");
-
-    [self.uiDatabaseConnection beginLongLivedReadTransaction];
     [self updateTableContents];
 }
 
-- (void)yapDatabaseModified:(NSNotification *)notification
+- (void)databaseStorageDidUpdateExternally
 {
     OWSAssertIsOnMainThread();
-    
-    [self.uiDatabaseConnection beginLongLivedReadTransaction];
+    OWSAssertDebug(AppReadiness.isAppReady);
+
+    [self updateTableContents];
+}
+
+- (void)databaseStorageDidReset
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+
     [self updateTableContents];
 }
 
@@ -183,10 +178,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                          @"A label the cell that lets you add a new member to a group.")
                                      customRowHeight:UITableViewAutomaticDimension
                                          actionBlock:^{
-                                             NewNonContactConversationViewController *viewController =
-                                                 [NewNonContactConversationViewController new];
-                                             viewController.nonContactConversationDelegate = weakSelf;
-                                             viewController.isPresentedInNavigationController = YES;
+                                             FindByPhoneNumberViewController *viewController =
+                                                 [[FindByPhoneNumberViewController alloc] initWithDelegate:weakSelf
+                                                                                                buttonText:nil
+                                                                                  requiresRegisteredNumber:YES];
                                              [weakSelf.navigationController pushViewController:viewController
                                                                                       animated:YES];
                                          }]];
@@ -221,8 +216,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     __block OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
 
                                     disappearingMessagesConfiguration =
-                                        [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId
-                                                                                       transaction:transaction];
+                                        [thread disappearingMessagesConfigurationWithTransaction:transaction];
 
                                     if (disappearingMessagesConfiguration
                                         && disappearingMessagesConfiguration.isEnabled) {
@@ -410,12 +404,12 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-#pragma mark - NewNonContactConversationViewControllerDelegate
+#pragma mark - FindByPhoneNumberDelegate
 
-- (void)recipientAddressWasSelected:(SignalServiceAddress *)address
+- (void)findByPhoneNumber:(FindByPhoneNumberViewController *)findByPhoneNumber
+         didSelectAddress:(SignalServiceAddress *)address
 {
-    SignalAccount *signalAccount =
-        [self.contactsViewHelper fetchOrBuildSignalAccountForAddress:address];
+    SignalAccount *signalAccount = [self.contactsViewHelper fetchOrBuildSignalAccountForAddress:address];
     [self signalAccountWasSelected:signalAccount];
 }
 

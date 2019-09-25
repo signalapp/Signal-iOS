@@ -1,6 +1,6 @@
 {
 	"nsnumber_types": {
-		"TSThread.archivedAsOfMessageSortId": "Bool",
+		"TSThread.archivedAsOfMessageSortId": "UInt64",
 		"TSIncomingMessage.serverTimestamp": "UInt64",
 		"TSOutgoingMessageRecipientState.deliveryTimestamp": "UInt64",
 		"TSOutgoingMessageRecipientState.readTimestamp": "UInt64",

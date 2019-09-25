@@ -8,7 +8,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 
 @interface TestAppContext ()
 
@@ -109,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
-- (nullable UIAlertAction *)openSystemSettingsAction
+- (nullable UIAlertAction *)openSystemSettingsActionWithCompletion:(void (^_Nullable)(void))completion
 {
     return nil;
 }
@@ -160,6 +160,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)appSharedDataDirectoryPath
 {
     return self.mockAppSharedDataDirectoryPath;
+}
+
+- (NSString *)appDatabaseBaseDirectoryPath
+{
+    return self.appSharedDataDirectoryPath;
 }
 
 @end

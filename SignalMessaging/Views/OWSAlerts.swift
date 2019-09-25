@@ -17,7 +17,7 @@ import Foundation
         dismissAction.accessibilityIdentifier = "OWSAlerts.\("dismiss")"
         alert.addAction(dismissAction)
 
-        if let settingsAction = CurrentAppContext().openSystemSettingsAction {
+        if let settingsAction = CurrentAppContext().openSystemSettingsAction(completion: nil) {
             settingsAction.accessibilityIdentifier = "OWSAlerts.\("settings")"
             alert.addAction(settingsAction)
         }
@@ -105,11 +105,36 @@ import Foundation
     }
 
     @objc
+    public class func showPendingChangesAlert(discardAction: @escaping () -> Void) {
+        let alert = UIAlertController(
+            title: NSLocalizedString("NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
+                                     comment: "The alert title if user tries to exit the new group view without saving changes."),
+            message: NSLocalizedString("NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
+                                       comment: "The alert message if user tries to exit the new group view without saving changes."),
+            preferredStyle: .alert
+        )
+
+        let discardAction = UIAlertAction(
+            title: NSLocalizedString("ALERT_DISCARD_BUTTON",
+                                     comment: "The label for the 'discard' button in alerts and action sheets."),
+            style: .destructive
+        ) { _ in discardAction() }
+        alert.addAction(discardAction)
+        alert.addAction(OWSAlerts.cancelAction)
+
+        OWSAlerts.showAlert(alert)
+    }
+
+    @objc
     public class func showIOSUpgradeNagIfNecessary() {
         // Our min SDK is iOS9, so this will only show for iOS9 users
-        if #available(iOS 10.0, *) {
-            return
-        }
+        // TODO: Start nagging iOS 10 users now that we're bumping up
+        // our min SDK to iOS 10.
+        if #available(iOS 10.0, *) { return }
+
+        // Don't nag legacy users if this is an end of life build
+        // (the last build their OS version supports)
+        guard !AppExpiry.isEndOfLifeOSVersion else { return }
 
         // Don't show the nag to users who have just launched
         // the app for the first time.

@@ -195,7 +195,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
         OWSAssertDebug(contactThread.contactAddress != nil);
         isLocalThread = contactThread.contactAddress.isLocalAddress;
     }
-    if (!isLocalThread) {
+    if (!isLocalThread && ![SSKPreferences hasSavedThreadWithTransaction:transaction]) {
         [SSKPreferences setHasSavedThread:YES transaction:transaction];
     }
 }
@@ -217,11 +217,11 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     NSMutableArray<NSString *> *interactionIds = [NSMutableArray new];
     NSError *error;
     InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId];
-    [interactionFinder enumerateInteractionIdsObjcWithTransaction:transaction
-                                                            error:&error
-                                                            block:^(NSString *key, BOOL *stop) {
-                                                                [interactionIds addObject:key];
-                                                            }];
+    [interactionFinder enumerateInteractionIdsWithTransaction:transaction
+                                                        error:&error
+                                                        block:^(NSString *key, BOOL *stop) {
+                                                            [interactionIds addObject:key];
+                                                        }];
     if (error != nil) {
         OWSFailDebug(@"Error during enumeration: %@", error);
     }
@@ -462,7 +462,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 - (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationWithTransaction:
     (SDSAnyReadTransaction *)transaction
 {
-    return [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:self.uniqueId transaction:transaction];
+    return [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:self transaction:transaction];
 }
 
 - (uint32_t)disappearingMessagesDurationWithTransaction:(SDSAnyReadTransaction *)transaction

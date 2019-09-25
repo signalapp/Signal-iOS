@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 
 @interface OWSFakeProfileManager ()
 
@@ -64,14 +64,12 @@ NS_ASSUME_NONNULL_BEGIN
     return self.profileKeys[address].keyData;
 }
 
-- (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address
-                     transaction:(SDSAnyReadTransaction *)transaction
+- (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
 {
     return [self.recipientWhitelist containsObject:address];
 }
 
-- (BOOL)isThreadInProfileWhitelist:(TSThread *)thread
-                       transaction:(SDSAnyReadTransaction *)transaction
+- (BOOL)isThreadInProfileWhitelist:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
     return [self.threadWhitelist containsObject:thread.uniqueId];
 }

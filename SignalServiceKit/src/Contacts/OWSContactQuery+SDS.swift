@@ -42,6 +42,22 @@ public struct ContactQueryRecord: SDSRecord {
     }
 }
 
+// MARK: - Row Initializer
+
+public extension ContactQueryRecord {
+    static var databaseSelection: [SQLSelectable] {
+        return CodingKeys.allCases
+    }
+
+    init(row: Row) {
+        id = row[0]
+        recordType = row[1]
+        uniqueId = row[2]
+        lastQueried = row[3]
+        nonce = row[4]
+    }
+}
+
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
@@ -104,6 +120,10 @@ extension OWSContactQuery: SDSModel {
     public var sdsTableName: String {
         return ContactQueryRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return OWSContactQuerySerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -112,8 +132,8 @@ extension OWSContactQuerySerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
     static let lastQueriedColumn = SDSColumnMetadata(columnName: "lastQueried", columnType: .int64, columnIndex: 3)
@@ -121,9 +141,11 @@ extension OWSContactQuerySerializer {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_OWSContactQuery", columns: [
-        recordTypeColumn,
+    public static let table = SDSTableMetadata(collection: OWSContactQuery.collection(),
+                                               tableName: "model_OWSContactQuery",
+                                               columns: [
         idColumn,
+        recordTypeColumn,
         uniqueIdColumn,
         lastQueriedColumn,
         nonceColumn
@@ -418,20 +440,11 @@ public extension OWSContactQuery {
 
 public extension OWSContactQuery {
     class func grdbFetchCursor(sql: String,
-                               arguments: [DatabaseValueConvertible]?,
+                               arguments: StatementArguments = StatementArguments(),
                                transaction: GRDBReadTransaction) -> OWSContactQueryCursor {
-        var statementArguments: StatementArguments?
-        if let arguments = arguments {
-            guard let statementArgs = StatementArguments(arguments) else {
-                owsFailDebug("Could not convert arguments.")
-                return OWSContactQueryCursor(cursor: nil)
-            }
-            statementArguments = statementArgs
-        }
-        let database = transaction.database
         do {
-            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
-            let cursor = try ContactQueryRecord.fetchCursor(statement, arguments: statementArguments)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
+            let cursor = try ContactQueryRecord.fetchCursor(transaction.database, sqlRequest)
             return OWSContactQueryCursor(cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
@@ -441,13 +454,12 @@ public extension OWSContactQuery {
     }
 
     class func grdbFetchOne(sql: String,
-                            arguments: StatementArguments,
+                            arguments: StatementArguments = StatementArguments(),
                             transaction: GRDBReadTransaction) -> OWSContactQuery? {
         assert(sql.count > 0)
 
         do {
-            // There are significant perf benefits to using a cached statement.
-            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             guard let record = try ContactQueryRecord.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }

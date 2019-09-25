@@ -8,6 +8,7 @@
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/AppVersion.h>
+#import <SignalServiceKit/OWSBroadcastMediaMessageJobRecord.h>
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSUserProfile.h>
@@ -120,7 +121,12 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     NSError *error;
     NSArray<NSString *> *fileNames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirPath error:&error];
     if (error) {
-        OWSFailDebug(@"contentsOfDirectoryAtPath error: %@", error);
+        if ([error.domain isEqualToString:NSPOSIXErrorDomain] && error.code == ENOENT) {
+            // Races may cause files to be removed while we crawl the directory contents.
+            OWSLogWarn(@"Error: %@", error);
+        } else {
+            OWSFailDebug(@"Error: %@", error);
+        }
         return [NSSet new];
     }
     for (NSString *fileName in fileNames) {
@@ -393,6 +399,18 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                                                            addObjectsFromArray:message.allAttachmentIds];
                                                    }];
 
+        [SSKJobRecord
+            anyEnumerateWithTransaction:transaction
+                                  block:^(SSKJobRecord *jobRecord, BOOL *stopPtr) {
+                                      if (![jobRecord isKindOfClass:OWSBroadcastMediaMessageJobRecord.class]) {
+                                          return;
+                                      }
+                                      OWSBroadcastMediaMessageJobRecord *broadcastJobRecord
+                                          = (OWSBroadcastMediaMessageJobRecord *)jobRecord;
+                                      [allMessageAttachmentIds
+                                          addObjectsFromArray:broadcastJobRecord.attachmentIdMap.allKeys];
+                                  }];
+
         if (shouldAbort) {
             return;
         }
@@ -527,6 +545,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         OWSLogVerbose(@"Ignoring audit orphan data in tests.");
         return;
     }
+    OWSLogInfo(@"");
 
     // Orphan cleanup has two risks:
     //

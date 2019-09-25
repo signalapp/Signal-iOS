@@ -8,7 +8,6 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/UIUtil.h>
-#import <SignalServiceKit/TSDatabaseView.h>
 
 @import SafariServices;
 

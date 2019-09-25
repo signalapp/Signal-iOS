@@ -268,7 +268,8 @@ NS_ASSUME_NONNULL_BEGIN
                       initWithThread:thread
                              groupId:[Randomness generateRandomBytes:kGroupIdLength]];
                   [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
-                      [self.messageSenderJobQueue addMessage:syncGroupsRequestMessage transaction:transaction];
+                      [self.messageSenderJobQueue addMessage:syncGroupsRequestMessage.asPreparer
+                                                 transaction:transaction];
                   }];
               }],
         [OWSTableItem itemWithTitle:@"Message with stalled timer"
@@ -400,7 +401,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     linkPreviewDraft:nil
                                          transaction:transaction];
     }];
-    OWSLogError(@"sendTextMessageInThread timestamp: %llu.", message.timestamp);
+    OWSLogInfo(@"sendTextMessageInThread timestamp: %llu.", message.timestamp);
 }
 
 + (void)sendNTextMessagesInThread:(TSThread *)thread
@@ -437,7 +438,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *filename = [filePath lastPathComponent];
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:filename.pathExtension];
-    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:NO];
+    NSError *error;
+    _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:filePath
+                                                      shouldDeleteOnDeallocation:NO
+                                                                           error:&error];
+    if (dataSource == nil) {
+        OWSFailDebug(@"error while creating data source: %@", error);
+        failure();
+        return;
+    }
+
     [dataSource setSourceFilename:filename];
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType imageQuality:TSImageQualityOriginal];
@@ -1753,7 +1763,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *filename = [filePath lastPathComponent];
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:filename.pathExtension];
-    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:NO];
+    NSError *error;
+    _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:filePath
+                                                      shouldDeleteOnDeallocation:NO
+                                                                           error:&error];
+    OWSAssertDebug(dataSource != nil);
     [dataSource setSourceFilename:filename];
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType imageQuality:TSImageQualityOriginal];
@@ -2044,7 +2058,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [DDLog flushLog];
                 id<ConversationViewItem> viewItem =
                     [[ConversationInteractionViewItem alloc] initWithInteraction:messageToQuote
-                                                                   isGroupThread:thread.isGroupThread
+                                                                          thread:thread
                                                                      transaction:transaction
                                                                conversationStyle:conversationStyle];
                 quotedMessage = [
@@ -2066,7 +2080,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                 id<ConversationViewItem> viewItem =
                     [[ConversationInteractionViewItem alloc] initWithInteraction:messageToQuote
-                                                                   isGroupThread:thread.isGroupThread
+                                                                          thread:thread
                                                                      transaction:transaction
                                                                conversationStyle:conversationStyle];
                 quotedMessage = [
@@ -3414,7 +3428,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
 + (void)sendRandomAttachment:(TSThread *)thread uti:(NSString *)uti length:(NSUInteger)length
 {
-    DataSource *_Nullable dataSource =
+    _Nullable id<DataSource> dataSource =
         [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:length] utiType:uti];
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:uti imageQuality:TSImageQualityOriginal];
@@ -3498,9 +3512,10 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         {
             NSNumber *durationSeconds = [OWSDisappearingMessagesConfiguration validDurationsSeconds][0];
             OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
-                [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:thread.uniqueId
-                                                                       enabled:YES
-                                                               durationSeconds:(uint32_t)[durationSeconds intValue]];
+                [thread disappearingMessagesConfigurationWithTransaction:transaction];
+            disappearingMessagesConfiguration = [disappearingMessagesConfiguration
+                copyAsEnabledWithDurationSeconds:(uint32_t)[durationSeconds intValue]];
+
             // MJK - should be safe to remove this senderTimestamp
             [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
                                        initWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -3513,9 +3528,10 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         {
             NSNumber *durationSeconds = [OWSDisappearingMessagesConfiguration validDurationsSeconds][0];
             OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
-                [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:thread.uniqueId
-                                                                       enabled:YES
-                                                               durationSeconds:(uint32_t)[durationSeconds intValue]];
+                [thread disappearingMessagesConfigurationWithTransaction:transaction];
+            disappearingMessagesConfiguration = [disappearingMessagesConfiguration
+                copyAsEnabledWithDurationSeconds:(uint32_t)[durationSeconds intValue]];
+
             // MJK - should be safe to remove this senderTimestamp
             [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
                                        initWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -3528,9 +3544,10 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         {
             NSNumber *durationSeconds = [[OWSDisappearingMessagesConfiguration validDurationsSeconds] lastObject];
             OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
-                [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:thread.uniqueId
-                                                                       enabled:YES
-                                                               durationSeconds:(uint32_t)[durationSeconds intValue]];
+                [thread disappearingMessagesConfigurationWithTransaction:transaction];
+            disappearingMessagesConfiguration = [disappearingMessagesConfiguration
+                copyAsEnabledWithDurationSeconds:(uint32_t)[durationSeconds intValue]];
+
             // MJK TODO - remove senderTimestamp
             [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
                                        initWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -3541,9 +3558,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         }
         {
             OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
-                [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:thread.uniqueId
-                                                                       enabled:NO
-                                                               durationSeconds:0];
+                [thread disappearingMessagesConfigurationWithTransaction:transaction];
+            disappearingMessagesConfiguration = [disappearingMessagesConfiguration copyWithIsEnabled:NO];
+
             // MJK TODO - remove senderTimestamp
             [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
                                        initWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -3741,7 +3758,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                   [self sendFakeMessages:messageCount thread:contactThread];
                   [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
                       NSUInteger interactionCount = [contactThread numberOfInteractionsWithTransaction:transaction];
-                      OWSLogError(@"Create fake thread: %@, interactions: %lu",
+                      OWSLogInfo(@"Create fake thread: %@, interactions: %lu",
                           phoneNumber.toE164,
                           (unsigned long)interactionCount);
                   }];
@@ -3947,7 +3964,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                expiresInSeconds:0];
         [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil) transaction:transaction];
 
-        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
     }];
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
@@ -4106,28 +4123,27 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 {
     OWSLogInfo(@"deleteLastMessages");
 
-    if (!transaction.transitional_yapWriteTransaction) {
-        OWSFailDebug(@"failure: not yet implemented for GRDB");
-        return;
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
+    NSMutableArray<NSString *> *interactionIds = [NSMutableArray new];
+    NSError *error;
+    [interactionFinder enumerateInteractionIdsWithTransaction:transaction
+                                                        error:&error
+                                                        block:^(NSString *interactionId, BOOL *stop) {
+                                                            [interactionIds addObject:interactionId];
+                                                            if (interactionIds.count >= count) {
+                                                                *stop = YES;
+                                                            }
+                                                        }];
+    if (error != nil) {
+        OWSFailDebug(@"error: %@", error);
     }
-
-    YapDatabaseViewTransaction *interactionsByThread =
-        [transaction.transitional_yapWriteTransaction ext:TSMessageDatabaseViewExtensionName];
-    NSUInteger messageCount = (NSUInteger)[interactionsByThread numberOfItemsInGroup:thread.uniqueId];
-
-    NSMutableArray<NSNumber *> *messageIndices = [NSMutableArray new];
-    for (NSUInteger i = 0; i < count && i < messageCount; i++) {
-        NSUInteger messageIdx = messageCount - (1 + i);
-        [messageIndices addObject:@(messageIdx)];
-    }
-    NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
-    for (NSNumber *messageIdx in messageIndices) {
+    for (NSString *interactionId in interactionIds) {
         TSInteraction *_Nullable interaction =
-            [interactionsByThread objectAtIndex:messageIdx.unsignedIntegerValue inGroup:thread.uniqueId];
-        OWSAssertDebug(interaction);
-        [interactions addObject:interaction];
-    }
-    for (TSInteraction *interaction in interactions) {
+            [TSInteraction anyFetchWithUniqueId:interactionId transaction:transaction];
+        if (interaction == nil) {
+            OWSFailDebug(@"Couldn't load interaction.");
+            continue;
+        }
         [interaction anyRemoveWithTransaction:transaction];
     }
 }
@@ -4138,36 +4154,33 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 {
     OWSLogInfo(@"deleteRandomRecentMessages: %zd", count);
 
-
-    if (!transaction.transitional_yapWriteTransaction) {
-        OWSFailDebug(@"failure: not yet implemented for GRDB");
-        return;
-    }
-
-    YapDatabaseViewTransaction *interactionsByThread =
-        [transaction.transitional_yapWriteTransaction ext:TSMessageDatabaseViewExtensionName];
-    NSInteger messageCount = (NSInteger)[interactionsByThread numberOfItemsInGroup:thread.uniqueId];
-
-    NSMutableArray<NSNumber *> *messageIndices = [NSMutableArray new];
     const NSInteger kRecentMessageCount = 10;
-    for (NSInteger i = 0; i < kRecentMessageCount; i++) {
-        NSInteger messageIdx = messageCount - (1 + i);
-        if (messageIdx >= 0) {
-            [messageIndices addObject:@(messageIdx)];
-        }
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
+    NSMutableArray<NSString *> *interactionIds = [NSMutableArray new];
+    NSError *error;
+    [interactionFinder enumerateInteractionIdsWithTransaction:transaction
+                                                        error:&error
+                                                        block:^(NSString *interactionId, BOOL *stop) {
+                                                            [interactionIds addObject:interactionId];
+                                                            if (interactionIds.count >= kRecentMessageCount) {
+                                                                *stop = YES;
+                                                            }
+                                                        }];
+    if (error != nil) {
+        OWSFailDebug(@"error: %@", error);
     }
-    NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
-    for (NSUInteger i = 0; i < count && messageIndices.count > 0; i++) {
-        NSUInteger idx = (NSUInteger)arc4random_uniform((uint32_t)messageIndices.count);
-        NSNumber *messageIdx = messageIndices[idx];
-        [messageIndices removeObjectAtIndex:idx];
+
+    for (NSUInteger i = 0; i < count && interactionIds.count > 0; i++) {
+        NSUInteger idx = (NSUInteger)arc4random_uniform((uint32_t)interactionIds.count);
+        NSString *interactionId = interactionIds[idx];
+        [interactionIds removeObjectAtIndex:idx];
 
         TSInteraction *_Nullable interaction =
-            [interactionsByThread objectAtIndex:messageIdx.unsignedIntegerValue inGroup:thread.uniqueId];
-        OWSAssertDebug(interaction);
-        [interactions addObject:interaction];
-    }
-    for (TSInteraction *interaction in interactions) {
+            [TSInteraction anyFetchWithUniqueId:interactionId transaction:transaction];
+        if (interaction == nil) {
+            OWSFailDebug(@"Couldn't load interaction.");
+            continue;
+        }
         [interaction anyRemoveWithTransaction:transaction];
     }
 }
@@ -4182,14 +4195,14 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     for (NSUInteger i =0; i < count; i++) {
         NSString *text = [self randomText];
         OWSDisappearingMessagesConfiguration *configuration =
-            [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId transaction:transaction];
+            [thread disappearingMessagesConfigurationWithTransaction:transaction];
 
         uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
         TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
                                                                     messageBody:text
                                                                    attachmentId:nil
                                                                expiresInSeconds:expiresInSeconds];
-        OWSLogError(@"insertAndDeleteNewOutgoingMessages timestamp: %llu.", message.timestamp);
+        OWSLogInfo(@"insertAndDeleteNewOutgoingMessages timestamp: %llu.", message.timestamp);
         [messages addObject:message];
     }
 
@@ -4211,14 +4224,14 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     for (NSUInteger i =0; i < count; i++) {
         NSString *text = [self randomText];
         OWSDisappearingMessagesConfiguration *configuration =
-            [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId transaction:initialTransaction];
+            [thread disappearingMessagesConfigurationWithTransaction:initialTransaction];
 
         uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
         TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
                                                                     messageBody:text
                                                                    attachmentId:nil
                                                                expiresInSeconds:expiresInSeconds];
-        OWSLogError(@"resurrectNewOutgoingMessages1 timestamp: %llu.", message.timestamp);
+        OWSLogInfo(@"resurrectNewOutgoingMessages1 timestamp: %llu.", message.timestamp);
         [messages addObject:message];
     }
 
@@ -4249,7 +4262,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     for (NSUInteger i =0; i < count; i++) {
         NSString *text = [self randomText];
         OWSDisappearingMessagesConfiguration *configuration =
-            [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId transaction:initialTransaction];
+            [thread disappearingMessagesConfigurationWithTransaction:initialTransaction];
 
         // MJK TODO - remove senderTimestamp
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc]
@@ -4266,7 +4279,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                  linkPreview:nil
                               messageSticker:nil
                            isViewOnceMessage:NO];
-        OWSLogError(@"resurrectNewOutgoingMessages2 timestamp: %llu.", message.timestamp);
+        OWSLogInfo(@"resurrectNewOutgoingMessages2 timestamp: %llu.", message.timestamp);
         [messages addObject:message];
     }
 
@@ -4546,7 +4559,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         [filenames removeLastObject];
         NSString *utiType = (NSString *)kUTTypeData;
         const NSUInteger kDataLength = 32;
-        DataSource *_Nullable dataSource =
+        _Nullable id<DataSource> dataSource =
             [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:kDataLength] utiType:utiType];
         [dataSource setSourceFilename:filename];
         SignalAttachment *attachment =
@@ -4683,10 +4696,6 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                      messageSticker:messageSticker
                                                   isViewOnceMessage:NO];
 
-    if (attachmentId.length > 0 && filename.length > 0) {
-        message.attachmentFilenameMap[attachmentId] = filename;
-    }
-
     [message anyInsertWithTransaction:transaction];
     [message updateWithFakeMessageState:messageState transaction:transaction];
     if (isDelivered) {
@@ -4790,8 +4799,12 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     OWSAssertDebug(transaction);
 
     if (isAttachmentDownloaded) {
-        DataSource *dataSource =
-            [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath shouldDeleteOnDeallocation:NO];
+        NSError *error;
+        id<DataSource>dataSource =
+            [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath
+                        shouldDeleteOnDeallocation:NO
+                                             error:&error];
+        OWSAssertDebug(error == nil);
         NSString *filename = dataSource.sourceFilename;
         // To support "fake missing" attachments, we sometimes lie about the
         // length of the data.
@@ -4802,9 +4815,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                                        caption:nil
                                                                                 albumMessageId:nil
                                                                              shouldAlwaysPad:NO];
-        NSError *error;
         BOOL success = [attachmentStream writeData:dataSource.data error:&error];
-        OWSAssertDebug(success && !error);
+        OWSAssertDebug(success && error == nil);
         [attachmentStream anyInsertWithTransaction:transaction];
         return attachmentStream;
     } else {
@@ -4869,8 +4881,12 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         DebugUIMessagesAssetLoader *fakeAssetLoader
             = fakeAssetLoaders[arc4random_uniform((uint32_t)fakeAssetLoaders.count)];
         OWSAssertDebug([NSFileManager.defaultManager fileExistsAtPath:fakeAssetLoader.filePath]);
-        DataSource *dataSource =
-            [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath shouldDeleteOnDeallocation:NO];
+        NSError *error;
+        id<DataSource>dataSource =
+            [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath
+                        shouldDeleteOnDeallocation:NO
+                                             error:&error];
+        OWSAssertDebug(error == nil);
         SignalAttachment *attachment =
             [SignalAttachment attachmentWithDataSource:dataSource
                                                dataUTI:[MIMETypeUtil utiTypeForMIMEType:fakeAssetLoader.mimeType]

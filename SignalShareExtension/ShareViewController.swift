@@ -363,7 +363,12 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     func startupLogging() {
-        Logger.info("iOS Version: \(UIDevice.current.systemVersion)}")
+
+        if let osBuild = String(sysctlKey: "kern.osversion") {
+            Logger.info("iOS Version: \(UIDevice.current.systemVersion) (\(osBuild))")
+        } else {
+            Logger.info("iOS Version: \(UIDevice.current.systemVersion)")
+        }
 
         let locale = NSLocale.current as NSLocale
         if let localeIdentifier = locale.object(forKey: NSLocale.Key.identifier) as? String,
@@ -650,11 +655,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             //
             // NOTE: SharingThreadPickerViewController will try to unpack them
             //       and send them as normal text messages if possible.
-            return DataSourcePath.dataSource(with: url,
-                                             shouldDeleteOnDeallocation: false)
+            return try? DataSourcePath.dataSource(with: url,
+                                                  shouldDeleteOnDeallocation: false)
         } else {
-            guard let dataSource = DataSourcePath.dataSource(with: url,
-                                                             shouldDeleteOnDeallocation: false) else {
+            guard let dataSource = try? DataSourcePath.dataSource(with: url,
+                                                                  shouldDeleteOnDeallocation: false) else {
                 return nil
             }
 

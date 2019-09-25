@@ -16,6 +16,7 @@
 #import "TSQuotedMessage.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
+#import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
@@ -144,7 +145,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
-           attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
                    customMessage:(nullable NSString *)customMessage
                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
            hasLegacyMessageState:(BOOL)hasLegacyMessageState
@@ -174,13 +175,13 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                        linkPreview:linkPreview
                     messageSticker:messageSticker
                      quotedMessage:quotedMessage
-                     schemaVersion:schemaVersion];
+                     schemaVersion:schemaVersion
+      storedShouldStartExpireTimer:storedShouldStartExpireTimer];
 
     if (!self) {
         return self;
     }
 
-    _attachmentFilenameMap = attachmentFilenameMap ? [attachmentFilenameMap mutableCopy] : [NSMutableDictionary new];
     _customMessage = customMessage;
     _groupMetaMessage = groupMetaMessage;
     _hasLegacyMessageState = hasLegacyMessageState;
@@ -206,10 +207,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     self = [super initWithCoder:coder];
 
     if (self) {
-        if (!_attachmentFilenameMap) {
-            _attachmentFilenameMap = [NSMutableDictionary new];
-        }
-
         if (self.outgoingMessageSchemaVersion < 1) {
             OWSAssertDebug(_recipientAddressStates == nil);
 
@@ -238,6 +235,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
 - (NSDictionary<NSString *, TSOutgoingMessageRecipientState *> *)createLegacyRecipientStateMapWithCoder:(NSCoder *)coder
 {
+    OWSAssertDebug(SSKEnvironment.shared.databaseStorage.canReadFromYdb);
     OWSAssertDebug(coder);
 
     // Determine the "overall message state."
@@ -477,8 +475,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     _isVoiceMessage = isVoiceMessage;
 
-    _attachmentFilenameMap = [NSMutableDictionary new];
-
     // New outgoing messages should immediately determine their
     // recipient list from current thread state.
     NSArray<SignalServiceAddress *> *recipientAddresses;
@@ -515,6 +511,11 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 {
     if (self.shouldBeSaved) {
         // Message is not transient; no need to clean up attachments.
+        return;
+    }
+    if (!AppReadiness.isAppReady) {
+        // We don't want or need to do this clean up while registering extensions,
+        // migrating, etc.
         return;
     }
     NSArray<NSString *> *_Nullable attachmentIds = self.attachmentIds;
@@ -603,26 +604,30 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return NO;
 }
 
-// GRDB TODO: Remove this override.
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+// POST GRDB TODO: Remove this override.
+- (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     _storedMessageState = self.messageState;
 
-    [super saveWithTransaction:transaction];
+    [super ydb_saveWithTransaction:transaction];
 }
 
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyWillInsertWithTransaction:transaction];
 
-    _storedMessageState = self.messageState;
+    if (transaction.transitional_yapWriteTransaction == nil) {
+        _storedMessageState = self.messageState;
+    }
 }
 
 - (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyWillUpdateWithTransaction:transaction];
 
-    _storedMessageState = self.messageState;
+    if (transaction.transitional_yapWriteTransaction == nil) {
+        _storedMessageState = self.messageState;
+    }
 }
 
 - (BOOL)shouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -1365,15 +1370,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     }
     [result appendString:@"]"];
     return [result copy];
-}
-
-- (void)removeAllAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    [super removeAllAttachmentsWithTransaction:transaction];
-
-    _attachmentFilenameMap = [NSMutableDictionary new];
 }
 
 @end

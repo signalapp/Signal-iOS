@@ -78,8 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
                            actionBlock:^{
                                [DebugUIMisc.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                                    OWSDisappearingMessagesConfiguration *_Nullable config =
-                                       [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId
-                                                                                      transaction:transaction];
+                                       [thread disappearingMessagesConfigurationWithTransaction:transaction];
                                    if (config) {
                                        [config anyRemoveWithTransaction:transaction];
                                    }
@@ -151,14 +150,15 @@ NS_ASSUME_NONNULL_BEGIN
                                                [DebugUIMisc sharePDFs:2];
                                            }]];
 
-    [items
-        addObject:[OWSTableItem
-                      itemWithTitle:@"Increment Database Extension Versions"
-                        actionBlock:^() {
-                            for (NSString *extensionName in OWSPrimaryStorage.sharedManager.registeredExtensionNames) {
-                                [OWSStorage incrementVersionOfDatabaseExtension:extensionName];
-                            }
-                        }]];
+    [items addObject:[OWSTableItem
+                         itemWithTitle:@"Increment Database Extension Versions"
+                           actionBlock:^() {
+                               if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+                                   for (NSString *extensionName in OWSPrimaryStorage.shared.registeredExtensionNames) {
+                                       [OWSStorage incrementVersionOfDatabaseExtension:extensionName];
+                                   }
+                               }
+                           }]];
 
     [items addObject:[OWSTableItem itemWithTitle:@"Fetch system contacts"
                                      actionBlock:^() {
@@ -219,28 +219,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)clearHasDismissedOffers
 {
-    [OWSPrimaryStorage.dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            NSMutableArray<TSContactThread *> *contactThreads = [NSMutableArray new];
-            [transaction
-                enumerateKeysAndObjectsInCollection:[TSThread collection]
-                                         usingBlock:^(NSString *_Nonnull key, id _Nonnull object, BOOL *_Nonnull stop) {
-                                             TSThread *thread = object;
-                                             if (thread.isGroupThread) {
-                                                 return;
-                                             }
-                                             TSContactThread *contactThread = object;
-                                             [contactThreads addObject:contactThread];
-                                         }];
-            for (TSContactThread *contactThread in contactThreads) {
-                if (contactThread.hasDismissedOffers) {
-                    [contactThread anyUpdateContactThreadWithTransaction:transaction.asAnyWrite
-                                                                   block:^(TSContactThread *thread) {
-                                                                       thread.hasDismissedOffers = NO;
-                                                                   }];
-                }
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        NSMutableArray<TSContactThread *> *contactThreads = [NSMutableArray new];
+        [TSThread anyEnumerateWithTransaction:transaction
+                                        block:^(TSThread *thread, BOOL *stop) {
+                                            if (thread.isGroupThread) {
+                                                return;
+                                            }
+                                            TSContactThread *contactThread = (TSContactThread *)thread;
+                                            [contactThreads addObject:contactThread];
+                                        }];
+
+        for (TSContactThread *contactThread in contactThreads) {
+            if (contactThread.hasDismissedOffers) {
+                [contactThread anyUpdateContactThreadWithTransaction:transaction
+                                                               block:^(TSContactThread *thread) {
+                                                                   thread.hasDismissedOffers = NO;
+                                                               }];
             }
-        }];
+        }
+    }];
 }
 
 + (void)sendEncryptedDatabase:(TSThread *)thread
@@ -266,10 +264,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:fileName.pathExtension];
-    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:YES];
+    NSError *error;
+    _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:filePath
+                                                      shouldDeleteOnDeallocation:YES
+                                                                           error:&error];
+    OWSAssertDebug(dataSource != nil);
     [dataSource setSourceFilename:fileName];
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
-    NSData *databasePassword = [OWSPrimaryStorage.sharedManager databasePassword];
+    NSData *databasePassword = [OWSPrimaryStorage.shared databasePassword];
     attachment.captionText = [databasePassword hexadecimalString];
     [self sendAttachment:attachment thread:thread];
 }
@@ -295,14 +297,21 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:@"sqlite"];
     NSString *fileName = filePath.lastPathComponent;
 
-    NSError *error = [OWSPrimaryStorage.sharedManager.newDatabaseConnection backupToPath:filePath];
-    if (error) {
+    NSError *error = [OWSPrimaryStorage.shared.newDatabaseConnection backupToPath:filePath];
+    if (error != nil) {
         OWSFailDebug(@"Could not copy database file: %@.", error);
         return;
     }
 
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:fileName.pathExtension];
-    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:YES];
+    _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:filePath
+                                                      shouldDeleteOnDeallocation:YES
+                                                                           error:&error];
+    if (dataSource == nil) {
+        OWSFailDebug(@"Could not create dataSource: %@.", error);
+        return;
+    }
+
     [dataSource setSourceFilename:fileName];
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
     [self sendAttachment:attachment thread:thread];

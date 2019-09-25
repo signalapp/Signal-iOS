@@ -3,7 +3,7 @@
 //
 
 #import "OWSFailedMessagesJob.h"
-#import "OWSPrimaryStorage.h"
+#import "OWSStorage.h"
 #import "TSMessage.h"
 #import "TSOutgoingMessage.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

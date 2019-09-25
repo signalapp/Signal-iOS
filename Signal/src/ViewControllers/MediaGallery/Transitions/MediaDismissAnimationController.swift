@@ -29,6 +29,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
 
         guard let fromVC = transitionContext.viewController(forKey: .from) else {
             owsFailDebug("fromVC was unexpectedly nil")
+            transitionContext.completeTransition(false)
             return
         }
 
@@ -39,22 +40,26 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
         case let navController as UINavigationController:
             guard let contextProvider = navController.topViewController as? MediaPresentationContextProvider else {
                 owsFailDebug("unexpected context: \(String(describing: navController.topViewController))")
+                transitionContext.completeTransition(false)
                 return
             }
             fromContextProvider = contextProvider
         default:
             owsFailDebug("unexpected fromVC: \(fromVC)")
+            transitionContext.completeTransition(false)
             return
         }
 
         guard let fromMediaContext = fromContextProvider.mediaPresentationContext(galleryItem: galleryItem, in: containerView) else {
             owsFailDebug("fromPresentationContext was unexpectedly nil")
+            transitionContext.completeTransition(false)
             return
         }
         self.fromMediaFrame = fromMediaContext.presentationFrame
 
         guard let toVC = transitionContext.viewController(forKey: .to) else {
             owsFailDebug("toVC was unexpectedly nil")
+            transitionContext.completeTransition(false)
             return
         }
 
@@ -66,6 +71,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
 
         guard let fromView = transitionContext.view(forKey: .from) else {
             owsFailDebug("fromView was unexpectedly nil")
+            transitionContext.completeTransition(false)
             return
         }
 
@@ -81,6 +87,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
             toContextProvider = contextProvider
         default:
             owsFailDebug("unexpected toVC: \(toVC)")
+            transitionContext.completeTransition(false)
             return
         }
 
@@ -88,6 +95,18 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
 
         guard let presentationImage = galleryItem.attachmentStream.originalImage else {
             owsFailDebug("presentationImage was unexpectedly nil")
+            // Complete transition immediately.
+            fromContextProvider.mediaWillPresent(fromContext: fromMediaContext)
+            if let toMediaContext = toMediaContext {
+                toContextProvider.mediaWillPresent(toContext: toMediaContext)
+            }
+            DispatchQueue.main.async {
+                fromContextProvider.mediaDidPresent(fromContext: fromMediaContext)
+                if let toMediaContext = toMediaContext {
+                    toContextProvider.mediaDidPresent(toContext: toMediaContext)
+                }
+                transitionContext.completeTransition(true)
+            }
             return
         }
 

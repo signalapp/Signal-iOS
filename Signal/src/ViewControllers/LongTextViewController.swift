@@ -17,8 +17,8 @@ public class LongTextViewController: OWSViewController {
 
     // MARK: - Dependencies
 
-    var uiDatabaseConnection: YapDatabaseConnection {
-        return OWSPrimaryStorage.shared().uiDatabaseConnection
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
     }
 
     // MARK: - Properties
@@ -63,37 +63,23 @@ public class LongTextViewController: OWSViewController {
 
         self.messageTextView.contentOffset = CGPoint(x: 0, y: self.messageTextView.contentInset.top)
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(uiDatabaseDidUpdate),
-                                               name: .OWSUIDatabaseConnectionDidUpdate,
-                                               object: OWSPrimaryStorage.shared().dbNotificationObject)
+        databaseStorage.add(databaseStorageObserver: self)
     }
 
     override public var canBecomeFirstResponder: Bool {
         return true
     }
 
-    // MARK: - DB
+    // MARK: -
 
-    @objc internal func uiDatabaseDidUpdate(notification: NSNotification) {
+    private func refreshContent() {
         AssertIsOnMainThread()
 
-        guard let notifications = notification.userInfo?[OWSUIDatabaseConnectionNotificationsKey] as? [Notification] else {
-            owsFailDebug("notifications was unexpectedly nil")
-            return
-        }
-
         let uniqueId = self.viewItem.interaction.uniqueId
-        guard self.uiDatabaseConnection.hasChange(forKey: uniqueId,
-                                                  inCollection: TSInteraction.collection(),
-                                                  in: notifications) else {
-                                                    Logger.debug("No relevant changes.")
-                                                    return
-        }
 
         do {
-            try uiDatabaseConnection.read { transaction in
-                guard TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction.asAnyRead) != nil else {
+            try databaseStorage.uiReadThrows { transaction in
+                guard TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil else {
                     Logger.error("Message was deleted")
                     throw LongTextViewError.messageWasDeleted
                 }
@@ -104,7 +90,6 @@ public class LongTextViewController: OWSViewController {
             }
         } catch {
             owsFailDebug("unexpected error: \(error)")
-
         }
     }
 
@@ -168,5 +153,33 @@ public class LongTextViewController: OWSViewController {
 
     @objc func shareButtonPressed() {
         AttachmentSharing.showShareUI(forText: fullText)
+    }
+}
+
+// MARK: -
+
+extension LongTextViewController: SDSDatabaseStorageObserver {
+    public func databaseStorageDidUpdate(change: SDSDatabaseStorageChange) {
+        AssertIsOnMainThread()
+
+        let uniqueId = self.viewItem.interaction.uniqueId
+        guard change.didUpdate(interactionId: uniqueId) else {
+            return
+        }
+        assert(change.didUpdateInteractions)
+
+        refreshContent()
+    }
+
+    public func databaseStorageDidUpdateExternally() {
+        AssertIsOnMainThread()
+
+        refreshContent()
+    }
+
+    public func databaseStorageDidReset() {
+        AssertIsOnMainThread()
+
+        refreshContent()
     }
 }

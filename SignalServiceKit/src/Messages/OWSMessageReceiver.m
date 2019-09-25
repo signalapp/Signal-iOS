@@ -14,15 +14,10 @@
 #import "OWSStorage.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
-#import "TSDatabaseView.h"
 #import "TSErrorMessage.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabaseAutoView.h>
-#import <YapDatabase/YapDatabaseConnection.h>
-#import <YapDatabase/YapDatabaseTransaction.h>
-#import <YapDatabase/YapDatabaseViewTypes.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -111,8 +106,6 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 - (instancetype)init
 {
-    OWSSingletonAssert();
-
     self = [super init];
     if (!self) {
         return self;
@@ -135,8 +128,8 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 - (OWSMessageDecryptJob *_Nullable)nextJob
 {
-    // GRDB TODO: Remove this queue & finder entirely.
-    if (SSKFeatureFlags.useGRDB) {
+    // POST GRDB TODO: Remove this queue & finder entirely.
+    if (SSKFeatureFlags.storageMode != StorageModeYdb) {
         OWSLogWarn(@"Not processing queue; obsolete.");
         return nil;
     }
@@ -151,9 +144,14 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 - (void)addJobForEnvelopeData:(NSData *)envelopeData
 {
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        OWSMessageDecryptJob *job = [[OWSMessageDecryptJob alloc] initWithEnvelopeData:envelopeData];
-        [job anyInsertWithTransaction:transaction];
+        [self addJobForEnvelopeData:envelopeData transaction:transaction];
     }];
+}
+
+- (void)addJobForEnvelopeData:(NSData *)envelopeData transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSMessageDecryptJob *job = [[OWSMessageDecryptJob alloc] initWithEnvelopeData:envelopeData];
+    [job anyInsertWithTransaction:transaction];
 }
 
 - (void)removeJobWithId:(NSString *)uniqueId
@@ -171,9 +169,14 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 {
     __block NSUInteger result;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result = [OWSMessageDecryptJob anyCountWithTransaction:transaction];
+        result = [self queuedJobCountWithTransaction:transaction];
     }];
     return result;
+}
+
+- (NSUInteger)queuedJobCountWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [OWSMessageDecryptJob anyCountWithTransaction:transaction];
 }
 
 + (YapDatabaseView *)databaseExtension
@@ -539,7 +542,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         OWSFailDebug(@"Unexpectedly large message.");
     }
 
-    if (SSKFeatureFlags.useGRDB) {
+    if (SSKFeatureFlags.storageMode != StorageModeYdb) {
         // We *could* use this processing Queue for Yap *and* GRDB
         [self.messageDecryptJobQueue enqueueEnvelopeData:envelopeData];
     } else {

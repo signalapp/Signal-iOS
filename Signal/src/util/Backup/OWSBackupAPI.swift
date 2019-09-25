@@ -613,6 +613,8 @@ import PromiseKit
             case .available:
                 Logger.verbose("CloudKit access okay.")
                 resolver.fulfill(())
+            @unknown default:
+                resolver.reject(OWSAssertionError("unknown CloudKit account status"))
             }
         }
         return promise

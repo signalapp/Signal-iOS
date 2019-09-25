@@ -140,10 +140,12 @@ NS_ASSUME_NONNULL_BEGIN
     NSArray<TSAttachmentPointer *> *attachmentPointers =
         [TSAttachmentPointer attachmentPointersFromProtos:transcript.attachmentPointerProtos
                                              albumMessage:outgoingMessage];
+    NSMutableArray<NSString *> *attachmentIds = [outgoingMessage.attachmentIds mutableCopy];
     for (TSAttachmentPointer *pointer in attachmentPointers) {
         [pointer anyInsertWithTransaction:transaction];
-        [outgoingMessage.attachmentIds addObject:pointer.uniqueId];
+        [attachmentIds addObject:pointer.uniqueId];
     }
+    outgoingMessage.attachmentIds = [attachmentIds copy];
 
     TSQuotedMessage *_Nullable quotedMessage = transcript.quotedMessage;
     if (quotedMessage && quotedMessage.thumbnailAttachmentPointerId) {

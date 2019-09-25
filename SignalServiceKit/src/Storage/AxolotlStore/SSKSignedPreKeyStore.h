@@ -2,7 +2,6 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSPrimaryStorage.h"
 #import <AxolotlKit/SignedPreKeyStore.h>
 
 NS_ASSUME_NONNULL_BEGIN

@@ -16,7 +16,7 @@ public protocol SDSModel: TSYapDatabaseObject {
 
     func anyRemove(transaction: SDSAnyWriteTransaction)
 
-    static var shouldBeIndexedForFTS: Bool { get }
+    static var table: SDSTableMetadata { get }
 }
 
 // MARK: -

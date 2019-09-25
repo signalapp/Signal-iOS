@@ -44,6 +44,23 @@ public struct RecipientReadReceiptRecord: SDSRecord {
     }
 }
 
+// MARK: - Row Initializer
+
+public extension RecipientReadReceiptRecord {
+    static var databaseSelection: [SQLSelectable] {
+        return CodingKeys.allCases
+    }
+
+    init(row: Row) {
+        id = row[0]
+        recordType = row[1]
+        uniqueId = row[2]
+        recipientMap = row[3]
+        recipientReadReceiptSchemaVersion = row[4]
+        sentTimestamp = row[5]
+    }
+}
+
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
@@ -109,6 +126,10 @@ extension TSRecipientReadReceipt: SDSModel {
     public var sdsTableName: String {
         return RecipientReadReceiptRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return TSRecipientReadReceiptSerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -117,8 +138,8 @@ extension TSRecipientReadReceiptSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
     static let recipientMapColumn = SDSColumnMetadata(columnName: "recipientMap", columnType: .blob, columnIndex: 3)
@@ -127,9 +148,11 @@ extension TSRecipientReadReceiptSerializer {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_TSRecipientReadReceipt", columns: [
-        recordTypeColumn,
+    public static let table = SDSTableMetadata(collection: TSRecipientReadReceipt.collection(),
+                                               tableName: "model_TSRecipientReadReceipt",
+                                               columns: [
         idColumn,
+        recordTypeColumn,
         uniqueIdColumn,
         recipientMapColumn,
         recipientReadReceiptSchemaVersionColumn,
@@ -425,20 +448,11 @@ public extension TSRecipientReadReceipt {
 
 public extension TSRecipientReadReceipt {
     class func grdbFetchCursor(sql: String,
-                               arguments: [DatabaseValueConvertible]?,
+                               arguments: StatementArguments = StatementArguments(),
                                transaction: GRDBReadTransaction) -> TSRecipientReadReceiptCursor {
-        var statementArguments: StatementArguments?
-        if let arguments = arguments {
-            guard let statementArgs = StatementArguments(arguments) else {
-                owsFailDebug("Could not convert arguments.")
-                return TSRecipientReadReceiptCursor(cursor: nil)
-            }
-            statementArguments = statementArgs
-        }
-        let database = transaction.database
         do {
-            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
-            let cursor = try RecipientReadReceiptRecord.fetchCursor(statement, arguments: statementArguments)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
+            let cursor = try RecipientReadReceiptRecord.fetchCursor(transaction.database, sqlRequest)
             return TSRecipientReadReceiptCursor(cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
@@ -448,13 +462,12 @@ public extension TSRecipientReadReceipt {
     }
 
     class func grdbFetchOne(sql: String,
-                            arguments: StatementArguments,
+                            arguments: StatementArguments = StatementArguments(),
                             transaction: GRDBReadTransaction) -> TSRecipientReadReceipt? {
         assert(sql.count > 0)
 
         do {
-            // There are significant perf benefits to using a cached statement.
-            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             guard let record = try RecipientReadReceiptRecord.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }

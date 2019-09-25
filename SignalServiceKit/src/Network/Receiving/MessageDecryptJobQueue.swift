@@ -16,21 +16,24 @@ public class SSKMessageDecryptJobQueue: NSObject, JobQueue {
     public override init() {
         super.init()
 
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
             self.setup()
         }
     }
-
-    // MARK: Dependencies
 
     // MARK: 
 
     @objc(enqueueEnvelopeData:)
     public func add(envelopeData: Data) {
-        let jobRecord = SSKMessageDecryptJobRecord(envelopeData: envelopeData, label: jobRecordLabel)
         databaseStorage.write { transaction in
-            self.add(jobRecord: jobRecord, transaction: transaction)
+            self.add(envelopeData: envelopeData, transaction: transaction)
         }
+    }
+
+    @objc(enqueueEnvelopeData:transaction:)
+    public func add(envelopeData: Data, transaction: SDSAnyWriteTransaction) {
+        let jobRecord = SSKMessageDecryptJobRecord(envelopeData: envelopeData, label: jobRecordLabel)
+        self.add(jobRecord: jobRecord, transaction: transaction)
     }
 
     // MARK: JobQueue

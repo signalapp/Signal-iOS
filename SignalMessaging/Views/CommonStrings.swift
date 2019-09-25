@@ -35,6 +35,16 @@ import Foundation
 }
 
 @objc
+public class CommonFormats: NSObject {
+    @objc
+    static public func formatUsername(_ username: String) -> String? {
+        guard let username = username.filterForDisplay else { return nil }
+        return NSLocalizedString("USERNAME_PREFIX",
+                                 comment: "A prefix appeneded to all usernames when displayed") + username
+    }
+}
+
+@objc
 public class MessageStrings: NSObject {
 
     @objc

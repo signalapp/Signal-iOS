@@ -124,6 +124,7 @@ public class ConversationViewDatabaseTransactionChanges: NSObject {
 
         let commaSeparatedRowIds = updatedRowIds.map { String($0) }.joined(separator: ", ")
         let rowIdsSQL = "(\(commaSeparatedRowIds))"
+        // GRDB TODO: I don't think we need to filter by threadUniqueId here.
         let sql = """
         SELECT \(interactionColumn: .uniqueId)
         FROM \(InteractionRecord.databaseTableName)

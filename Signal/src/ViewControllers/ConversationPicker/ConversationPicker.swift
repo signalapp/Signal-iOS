@@ -26,6 +26,14 @@ class ConversationPickerViewController: OWSViewController {
         return SSKEnvironment.shared.databaseStorage
     }
 
+    var contactsManager: OWSContactsManager {
+        return Environment.shared.contactsManager
+    }
+
+    var profileManager: OWSProfileManager {
+        return OWSProfileManager.shared()
+    }
+
     // MARK: -
 
     weak var delegate: ConversationPickerDelegate?
@@ -145,9 +153,17 @@ class ConversationPickerViewController: OWSViewController {
         let isBlocked = self.blockListCache.isBlocked(address: address)
         let dmConfig = TSContactThread.getWithContactAddress(address, transaction: transaction)?.disappearingMessagesConfiguration(with: transaction)
 
+        let contactName = contactsManager.displayName(for: address,
+                                                      transaction: transaction)
+
+        let comparableName = contactsManager.comparableName(for: address,
+                                                            transaction: transaction)
+
         return ContactConversationItem(address: address,
                                        isBlocked: isBlocked,
-                                       disappearingMessagesConfig: dmConfig)
+                                       disappearingMessagesConfig: dmConfig,
+                                       contactName: contactName,
+                                       comparableName: comparableName)
     }
 
     func buildConversationCollection() -> ConversationCollection {
@@ -155,13 +171,14 @@ class ConversationPickerViewController: OWSViewController {
             var recentItems: [RecentConversationItem] = []
             var contactItems: [ContactConversationItem] = []
             var groupItems: [GroupConversationItem] = []
-
+            var seenAddresses: Set<SignalServiceAddress> = Set()
             let maxRecentCount = 25
 
             let addThread = { (thread: TSThread) -> Void in
                 switch thread {
                 case let contactThread as TSContactThread:
                     let item = self.buildContactItem(contactThread.contactAddress, transaction: transaction)
+                    seenAddresses.insert(contactThread.contactAddress)
                     if recentItems.count < maxRecentCount {
                         let recentItem = RecentConversationItem(backingItem: .contact(item))
                         recentItems.append(recentItem)
@@ -188,6 +205,18 @@ class ConversationPickerViewController: OWSViewController {
             try! AnyThreadFinder().enumerateVisibleThreads(isArchived: true, transaction: transaction) { thread in
                 addThread(thread)
             }
+
+            SignalAccount.anyEnumerate(transaction: transaction) { signalAccount, _ in
+                let address = signalAccount.recipientAddress
+                guard !seenAddresses.contains(address) else {
+                    return
+                }
+                seenAddresses.insert(address)
+
+                let contactItem = self.buildContactItem(address, transaction: transaction)
+                contactItems.append(contactItem)
+            }
+            contactItems.sort()
 
             return ConversationCollection(contactConversations: contactItems,
                                           recentConversations: recentItems,
@@ -617,6 +646,7 @@ private class ConversationPickerFooterView: UIView {
         translatesAutoresizingMaskIntoConstraints = false
 
         backgroundColor = Theme.keyboardBackgroundColor
+        layoutMargins = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16)
 
         let topStrokeView = UIView()
         topStrokeView.backgroundColor = Theme.hairlineColor
@@ -633,6 +663,10 @@ private class ConversationPickerFooterView: UIView {
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override var intrinsicContentSize: CGSize {
+        return CGSize.zero
     }
 
     // MARK: public

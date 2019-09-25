@@ -30,7 +30,7 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
 
 NSString *NSStringForOutgoingMessageState(TSOutgoingMessageState value);
 
-typedef NS_ENUM(NSInteger, OWSOutgoingMessageRecipientState) {
+typedef NS_CLOSED_ENUM(NSInteger, OWSOutgoingMessageRecipientState) {
     // Message could not be sent to recipient.
     OWSOutgoingMessageRecipientStateFailed = 0,
     // Message is being sent to the recipient (enqueued, uploading or sending).
@@ -88,7 +88,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                             contactShare:(nullable OWSContact *)contactShare
                              linkPreview:(nullable OWSLinkPreview *)linkPreview
-                          messageSticker:(nullable MessageSticker *)messageSticker NS_UNAVAILABLE;
+                          messageSticker:(nullable MessageSticker *)messageSticker
+                       isViewOnceMessage:(BOOL)isViewOnceMessage NS_UNAVAILABLE;
 
 // MJK TODO - Can we remove the sender timestamp param?
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
@@ -128,7 +129,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
-           attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
                    customMessage:(nullable NSString *)customMessage
                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
            hasLegacyMessageState:(BOOL)hasLegacyMessageState
@@ -141,7 +142,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
     outgoingMessageSchemaVersion:(NSUInteger)outgoingMessageSchemaVersion
           recipientAddressStates:(nullable NSDictionary<SignalServiceAddress *,TSOutgoingMessageRecipientState *> *)recipientAddressStates
               storedMessageState:(TSOutgoingMessageState)storedMessageState
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:outgoingMessageSchemaVersion:recipientAddressStates:storedMessageState:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:outgoingMessageSchemaVersion:recipientAddressStates:storedMessageState:));
 
 // clang-format on
 
@@ -178,8 +179,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 @property (atomic, readonly) BOOL hasSyncedTranscript;
 @property (atomic, readonly, nullable) NSString *customMessage;
 @property (atomic, readonly, nullable) NSString *mostRecentFailureText;
-// A map of attachment id-to-"source" filename.
-@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSString *> *attachmentFilenameMap;
 
 @property (atomic, readonly) TSGroupMetaMessage groupMetaMessage;
 

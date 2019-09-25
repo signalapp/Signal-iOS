@@ -582,7 +582,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     BOOL shouldBeEnabled = sender.isOn;
 
     if (shouldBeEnabled == OWSScreenLock.sharedManager.isScreenLockEnabled) {
-        OWSLogError(@"ignoring redundant screen lock.");
+        OWSLogInfo(@"ignoring redundant screen lock.");
         return;
     }
 

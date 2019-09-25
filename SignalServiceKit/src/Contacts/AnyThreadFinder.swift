@@ -5,12 +5,12 @@
 import Foundation
 
 @objc
-class AnyContactThreadFinder: NSObject {
+public class AnyContactThreadFinder: NSObject {
     let grdbAdapter = GRDBContactThreadFinder()
     let yapdbAdapter = YAPDBSignalServiceAddressIndex()
 }
 
-extension AnyContactThreadFinder {
+public extension AnyContactThreadFinder {
     @objc(contactThreadForAddress:transaction:)
     func contactThread(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> TSContactThread? {
         switch transaction.readTransaction {

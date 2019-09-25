@@ -478,6 +478,11 @@ NS_ASSUME_NONNULL_BEGIN
     [tap requireGestureRecognizerToFail:pan];
 }
 
+- (BOOL)willHandleTapGesture:(UITapGestureRecognizer *)sender
+{
+    return YES;
+}
+
 - (void)handleTapGesture:(UITapGestureRecognizer *)sender
 {
     if (sender.state != UIGestureRecognizerStateRecognized) {

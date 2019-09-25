@@ -25,8 +25,8 @@ message ProvisionMessage {
   optional bytes  identityKeyPublic  = 1;
   // @required
   optional bytes  identityKeyPrivate = 2;
-  // @required
   optional string number             = 3;
+  optional string uuid               = 8;
   // @required
   optional string provisioningCode   = 4;
   // @required

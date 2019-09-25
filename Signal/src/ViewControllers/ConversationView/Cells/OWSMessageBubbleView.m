@@ -1446,6 +1446,38 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Gestures
 
+- (BOOL)willHandleTapGesture:(UITapGestureRecognizer *)sender
+{
+    // Allow tapping on failed messages.
+    if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
+        if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
+            return YES;
+        }
+    }
+
+    if (self.contactShareButtonsView) {
+        return YES;
+    }
+
+    CGPoint locationInMessageBubble = [sender locationInView:self];
+    switch ([self gestureLocationForLocation:locationInMessageBubble]) {
+        case OWSMessageGestureLocation_Default:
+            return NO;
+        case OWSMessageGestureLocation_OversizeText:
+            return YES;
+        case OWSMessageGestureLocation_Media:
+            return YES;
+        case OWSMessageGestureLocation_QuotedReply:
+            return YES;
+        case OWSMessageGestureLocation_LinkPreview:
+            return YES;
+        case OWSMessageGestureLocation_Sticker:
+            OWSFailDebug(@"Unexpected value.");
+            return NO;
+    }
+}
+
 - (void)handleTapGesture:(UITapGestureRecognizer *)sender
 {
     OWSAssertDebug(self.delegate);

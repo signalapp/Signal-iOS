@@ -20,8 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
                forAddress:(SignalServiceAddress *)address
               transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address
-                     transaction:(SDSAnyReadTransaction *)transaction;
+- (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
 - (BOOL)isThreadInProfileWhitelist:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
 

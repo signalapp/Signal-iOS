@@ -23,8 +23,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 @interface TSMessage ()
 
-@property (nonatomic) NSMutableArray<NSString *> *attachmentIds;
-
 @property (nonatomic, nullable) NSString *body;
 @property (nonatomic) uint32_t expiresInSeconds;
 @property (nonatomic) uint64_t expireStartedAt;
@@ -55,6 +53,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 @property (nonatomic) BOOL isViewOnceMessage;
 @property (nonatomic) BOOL isViewOnceComplete;
+
+// This property is only intended to be used by GRDB queries.
+@property (nonatomic, readonly) BOOL storedShouldStartExpireTimer;
 
 @end
 
@@ -120,6 +121,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
 {
     self = [super initWithUniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
@@ -131,7 +133,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         return self;
     }
 
-    _attachmentIds = attachmentIds ? [attachmentIds mutableCopy] : [NSMutableArray new];
+    _attachmentIds = attachmentIds;
     _body = body;
     _contactShare = contactShare;
     _expireStartedAt = expireStartedAt;
@@ -143,6 +145,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _messageSticker = messageSticker;
     _quotedMessage = quotedMessage;
     _schemaVersion = schemaVersion;
+    _storedShouldStartExpireTimer = storedShouldStartExpireTimer;
 
     [self sdsFinalizeMessage];
 
@@ -354,7 +357,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     [self anyUpdateMessageWithTransaction:transaction
                                     block:^(TSMessage *message) {
-                                        [message.attachmentIds removeObject:attachment.uniqueId];
+                                        NSMutableArray<NSString *> *attachmentIds = [message.attachmentIds mutableCopy];
+                                        [attachmentIds removeObject:attachment.uniqueId];
+                                        message.attachmentIds = attachmentIds;
                                     }];
 }
 
@@ -484,57 +489,49 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 }
 
-// GRDB TODO: Convert to Any.
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
+    [super anyWillInsertWithTransaction:transaction];
+
     // StickerManager does reference counting of "known" sticker packs.
     if (self.messageSticker != nil) {
         BOOL willInsert = (self.uniqueId.length < 1
-            || nil == [TSMessage anyFetchWithUniqueId:self.uniqueId transaction:transaction.asAnyWrite]);
+            || nil == [TSMessage anyFetchWithUniqueId:self.uniqueId transaction:transaction]);
 
         if (willInsert) {
-            [StickerManager addKnownStickerInfo:self.messageSticker.info transaction:transaction.asAnyWrite];
+            [StickerManager addKnownStickerInfo:self.messageSticker.info transaction:transaction];
         }
     }
 
-    [super saveWithTransaction:transaction];
+    [self updateStoredShouldStartExpireTimerWithTransaction:transaction];
 }
 
-// GRDB TODO: Convert to Any.
-- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    // StickerManager does reference counting of "known" sticker packs.
-    if (self.messageSticker != nil) {
-        BOOL willDelete = (self.uniqueId.length > 0
-            && nil != [TSMessage anyFetchWithUniqueId:self.uniqueId transaction:transaction.asAnyWrite]);
+    [super anyWillUpdateWithTransaction:transaction];
 
-        // StickerManager does reference counting of "known" sticker packs.
-        if (willDelete) {
-            [StickerManager removeKnownStickerInfo:self.messageSticker.info transaction:transaction.asAnyWrite];
-        }
-    }
+    [self updateStoredShouldStartExpireTimerWithTransaction:transaction];
+}
 
-    [super removeWithTransaction:transaction];
+- (void)updateStoredShouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
 
-    [self removeAllAttachmentsWithTransaction:transaction.asAnyWrite];
+    _storedShouldStartExpireTimer = [self shouldStartExpireTimerWithTransaction:transaction];
 }
 
 - (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyWillRemoveWithTransaction:transaction];
 
-    // GRDB TODO: Remove this condition once we migrate interaction writes to use
-    //            any transactions.  We just don't want to do this work twice.
-    if (transaction.transitional_yapWriteTransaction == nil) {
-        // StickerManager does reference counting of "known" sticker packs.
-        if (self.messageSticker != nil) {
-            BOOL willDelete = (self.uniqueId.length > 0
-                && nil != [TSMessage anyFetchWithUniqueId:self.uniqueId transaction:transaction]);
+    // StickerManager does reference counting of "known" sticker packs.
+    if (self.messageSticker != nil) {
+        BOOL willDelete = (self.uniqueId.length > 0
+            && nil != [TSMessage anyFetchWithUniqueId:self.uniqueId transaction:transaction]);
 
-            // StickerManager does reference counting of "known" sticker packs.
-            if (willDelete) {
-                [StickerManager removeKnownStickerInfo:self.messageSticker.info transaction:transaction];
-            }
+        // StickerManager does reference counting of "known" sticker packs.
+        if (willDelete) {
+            [StickerManager removeKnownStickerInfo:self.messageSticker.info transaction:transaction];
         }
     }
 }
@@ -543,11 +540,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 {
     [super anyDidRemoveWithTransaction:transaction];
 
-    // GRDB TODO: Remove this condition once we migrate interaction writes to use
-    //            any transactions.  We just don't want to do this work twice.
-    if (transaction.transitional_yapWriteTransaction == nil) {
-        [self removeAllAttachmentsWithTransaction:transaction];
-    }
+    [self removeAllAttachmentsWithTransaction:transaction];
 }
 
 - (void)removeAllAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction

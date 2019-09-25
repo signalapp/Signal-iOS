@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import PromiseKit
 
 @objc
 public protocol CameraFirstCaptureDelegate: AnyObject {
@@ -20,8 +21,14 @@ public class CameraFirstCaptureSendFlow: NSObject {
 
     var selectedConversations: [ConversationItem] = []
 
+    // MARK: Dependencies
+
     var databaseStorage: SDSDatabaseStorage {
         return SSKEnvironment.shared.databaseStorage
+    }
+
+    var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue {
+        return AppEnvironment.shared.broadcastMediaMessageJobQueue
     }
 }
 
@@ -50,6 +57,10 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
     var sendMediaNavApprovalButtonImageName: String {
         return "arrow-right-24"
     }
+
+    var sendMediaNavCanSaveAttachments: Bool {
+        return true
+    }
 }
 
 extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
@@ -76,26 +87,65 @@ extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
             return
         }
 
-        // CAMERAFIRST TODO batch sends with a single attachment upload.
-        databaseStorage.write { transaction in
-            for conversation in self.selectedConversationsForConversationPicker {
-                let thread: TSThread
-                switch conversation.messageRecipient {
-                case .contact(let address):
-                    thread = TSContactThread.getOrCreateThread(withContactAddress: address,
-                                                               transaction: transaction)
-                case .group(let groupThread):
-                    thread = groupThread
+        let conversations = selectedConversationsForConversationPicker
+        DispatchQueue.global().async(.promise) {
+            // Duplicate attachments per conversation
+            let conversationAttachments: [(ConversationItem, [SignalAttachment])] =
+                try conversations.map { conversation in
+                    return (conversation, try approvedAttachments.map { try $0.cloneAttachment() })
                 }
-                ThreadUtil.enqueueMessage(withText: self.approvalMessageText,
-                                          mediaAttachments: approvedAttachments,
-                                          in: thread,
-                                          quotedReplyModel: nil,
-                                          linkPreviewDraft: nil,
-                                          transaction: transaction)
-            }
-        }
 
-        self.delegate?.cameraFirstCaptureSendFlowDidComplete(self)
+            // We only upload one set of attachments, and then copy the upload details into
+            // each conversation before sending.
+            let attachmentsToUpload: [OutgoingAttachmentInfo] = approvedAttachments.map { attachment in
+                return OutgoingAttachmentInfo(dataSource: attachment.dataSource,
+                                              contentType: attachment.mimeType,
+                                              sourceFilename: attachment.filenameOrDefault,
+                                              caption: attachment.captionText,
+                                              albumMessageId: nil)
+            }
+
+            self.databaseStorage.write { transaction in
+                var messages: [TSOutgoingMessage] = []
+
+                for (conversation, attachments) in conversationAttachments {
+                    let thread: TSThread
+                    switch conversation.messageRecipient {
+                    case .contact(let address):
+                        thread = TSContactThread.getOrCreateThread(withContactAddress: address,
+                                                                   transaction: transaction)
+                    case .group(let groupThread):
+                        thread = groupThread
+                    }
+
+                    let message = try! ThreadUtil.createUnsentMessage(withText: self.approvalMessageText,
+                                                                      mediaAttachments: attachments,
+                                                                      in: thread,
+                                                                      quotedReplyModel: nil,
+                                                                      linkPreviewDraft: nil,
+                                                                      transaction: transaction)
+                    messages.append(message)
+                }
+
+                // map of attachments we'll upload to their copies in each recipient thread
+                var attachmentIdMap: [String: [String]] = [:]
+                let correspondingAttachmentIds = transpose(messages.map { $0.attachmentIds })
+                for (index, attachmentInfo) in attachmentsToUpload.enumerated() {
+                    do {
+                        let attachmentToUpload = try attachmentInfo.asStreamConsumingDataSource(withIsVoiceMessage: false)
+                        attachmentToUpload.anyInsert(transaction: transaction)
+
+                        attachmentIdMap[attachmentToUpload.uniqueId] = correspondingAttachmentIds[index]
+                    } catch {
+                        owsFailDebug("error: \(error)")
+                    }
+                }
+
+                self.broadcastMediaMessageJobQueue.add(attachmentIdMap: attachmentIdMap,
+                                                       transaction: transaction)
+            }
+        }.done { _ in
+            self.delegate?.cameraFirstCaptureSendFlowDidComplete(self)
+        }.retainUntilComplete()
     }
 }

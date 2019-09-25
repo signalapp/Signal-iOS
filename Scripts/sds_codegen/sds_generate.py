@@ -35,7 +35,8 @@ CODE_GEN_SNIPPET_MARKER_OBJC = '// --- CODE GENERATION MARKER'
 # Either this is a bug in GRDB or we're using GRDB incorrectly.
 # Until we resolve this issue, we need to encode/decode 
 # non-primitives ourselves.
-ONLY_USE_CODABLE_FOR_PRIMITIVES = True
+USE_CODABLE_FOR_PRIMITIVES = False
+USE_CODABLE_FOR_NONPRIMITIVES = False
 
 def update_generated_snippet(file_path, marker, snippet):
     # file_path = sds_common.sds_from_relative_path(relative_path)
@@ -485,7 +486,12 @@ class ParsedProperty:
             split1 = dict_match.group(2).strip()
             split2 = dict_match.group(3).strip()
             return '[' + self.convert_objc_class_to_swift(split1, unpack_nsnumber=False) + ': ' + self.convert_objc_class_to_swift(split2, unpack_nsnumber=False) + ']'
-        
+       
+        ordered_set_match = re.search(r'^NSOrderedSet<(.+)> \*$', objc_type)
+        if ordered_set_match is not None:
+            # swift has no primitive for ordered set, so we lose the element type  
+            return 'NSOrderedSet'
+
         swift_type = objc_type[:-len(' *')]
         
         if '<' in swift_type or '{' in swift_type or '*' in swift_type:
@@ -517,13 +523,13 @@ class ParsedProperty:
         if objc_type in ('struct CGSize', 'struct CGRect', 'struct CGPoint', ):
             objc_type = objc_type[len('struct '):]
             swift_type = objc_type
-            return TypeInfo(swift_type, objc_type, should_use_blob=True, is_codable=True)
+            return TypeInfo(swift_type, objc_type, should_use_blob=True, is_codable=USE_CODABLE_FOR_PRIMITIVES)
         
         swift_type = self.convert_objc_class_to_swift(self.objc_type)
         if swift_type is not None:
             if self.is_objc_type_codable(objc_type):
                 # print '----- is_objc_type_codable true:', objc_type
-                return TypeInfo(swift_type, objc_type, should_use_blob=True, is_codable=True)
+                return TypeInfo(swift_type, objc_type, should_use_blob=True, is_codable=False)
             # print '----- is_objc_type_codable false:', objc_type
             return TypeInfo(swift_type, objc_type, should_use_blob=True, is_codable=False)
         
@@ -532,6 +538,9 @@ class ParsedProperty:
     
     # NOTE: This method recurses to unpack types like: NSArray<NSArray<SomeClassName *> *> *
     def is_objc_type_codable(self, objc_type):
+        if not USE_CODABLE_FOR_PRIMITIVES:
+            return False
+
         if objc_type in ('NSString *',):
             return True
         elif objc_type in ('struct CGSize', 'struct CGRect', 'struct CGPoint', ):
@@ -543,7 +552,7 @@ class ParsedProperty:
         elif objc_type.startswith('enum '):
             return True
         
-        if ONLY_USE_CODABLE_FOR_PRIMITIVES:
+        if not USE_CODABLE_FOR_NONPRIMITIVES:
             return False
         
         array_match = re.search(r'^NS(Mutable)?Array<(.+)> \*$', objc_type)
@@ -563,7 +572,7 @@ class ParsedProperty:
     def type_info(self):
         if self.swift_type is not None:
             should_use_blob = (self.swift_type.startswith('[') or self.swift_type.startswith('{') or is_swift_class_name(self.swift_type))
-            return TypeInfo(self.swift_type, objc_type, should_use_blob=should_use_blob, is_codable=should_use_blob)
+            return TypeInfo(self.swift_type, objc_type, should_use_blob=should_use_blob, is_codable=USE_CODABLE_FOR_PRIMITIVES)
         
         return self.try_to_convert_objc_type_to_type_info()
 
@@ -614,8 +623,18 @@ class ParsedProperty:
 
     def is_enum(self):
         return self.type_info().is_enum
+    
+    def swift_identifier(self):
+        return to_swift_identifier_name(self.name)
+
+    def column_name(self):
+        custom_column_name = custom_column_name_for_property(self)
+        if custom_column_name is not None:
+            return custom_column_name
+        else:
+            return self.swift_identifier()
         
- 
+
 def ows_getoutput(cmd):
     proc = subprocess.Popen(cmd,
         stdout = subprocess.PIPE,
@@ -706,7 +725,7 @@ public struct %s: SDSRecord {
 ''' % ( record_name, str(clazz.name), str(clazz.name), )
 
         def write_record_property(property, force_optional=False):
-            column_name = to_swift_identifier_name(property.name)
+            column_name = property.swift_identifier()
             
             # print 'property', property.swift_type_safe()
             record_field_type = property.record_field_type()
@@ -733,21 +752,25 @@ public struct %s: SDSRecord {
                 # print 'subclass_properties:', property.name
                 swift_body += write_record_property(property, force_optional=True)
 
+        sds_properties = [
+            ParsedProperty({"name": "id", "is_optional": False, "objc_type": "NSInteger", "class_name": clazz.name}),
+            ParsedProperty({"name": "recordType", "is_optional": False, "objc_type": "NSUInteger", "class_name": clazz.name}),
+            ParsedProperty({"name": "uniqueId", "is_optional": False, "objc_type": "NSString *", "class_name": clazz.name})
+        ]
+        persisted_properties = sds_properties + base_properties + subclass_properties
+
         swift_body += '''
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
-        case id
-        case recordType
-        case uniqueId
 '''
 
-        for property in (base_properties + subclass_properties):
+        for property in persisted_properties:
             custom_column_name = custom_column_name_for_property(property)
             if custom_column_name is not None:
                 swift_body += '''        case %s = "%s"
-''' % ( custom_column_name, to_swift_identifier_name(property.name), )
+''' % ( custom_column_name, property.swift_identifier(), )
             else:
                 swift_body += '''        case %s
-''' % ( to_swift_identifier_name(property.name), )
+''' % ( property.swift_identifier(), )
 
 
         swift_body += '''    }
@@ -756,10 +779,29 @@ public struct %s: SDSRecord {
     public static func columnName(_ column: %s.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
+}
 ''' % ( record_name, )
 
-        swift_body += '''}
+        swift_body += '''
+// MARK: - Row Initializer
 
+public extension %s {
+    static var databaseSelection: [SQLSelectable] {
+        return CodingKeys.allCases
+    }
+
+    init(row: Row) {''' % (record_name)
+
+        for index, property in enumerate(persisted_properties):
+            swift_body += '''
+        %s = row[%s]''' % (property.column_name(), index)
+            
+        swift_body += '''
+    }
+}
+'''
+
+        swift_body += '''
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
@@ -991,8 +1033,12 @@ extension %s: SDSModel {
     public var sdsTableName: String {
         return %s.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return %sSerializer.table
+    }
 }
-''' % ( str(clazz.name), record_name, )
+''' % ( str(clazz.name), record_name, str(clazz.name), )
 
     
     if not has_sds_superclass:
@@ -1003,22 +1049,15 @@ extension %sSerializer {
 
     // This defines all of the columns used in the table 
     // where this model (and any subclasses) are persisted.
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
 ''' % str(clazz.name)
 
         # Eventually we need a (persistent?) mechanism for guaranteeing
         # consistency of column ordering, that is robust to schema 
         # changes, class hierarchy changes, etc. 
         column_property_names = []
-        column_property_names.append('recordType')
-        column_property_names.append('id')
-        column_property_names.append('uniqueId')
-
         def write_column_metadata(property, force_optional=False):
             column_index = len(column_property_names)
-            column_name = to_swift_identifier_name(property.name)
+            column_name = property.swift_identifier()
             column_property_names.append(column_name)
             
             is_optional = property.is_optional or force_optional
@@ -1026,11 +1065,16 @@ extension %sSerializer {
             
             # print 'property', property.swift_type_safe()
             database_column_type = property.database_column_type()
+            if property.name == 'id':
+                database_column_type = '.primaryKey'
             
             # TODO: Use skipSelect.
             return '''    static let %sColumn = SDSColumnMetadata(columnName: "%s", columnType: %s%s, columnIndex: %s)
 ''' % ( str(column_name), str(column_name), database_column_type, optional_split, str(column_index) )
-        
+       
+        for property in sds_properties:
+            swift_body += write_column_metadata(property)
+ 
         # If a property has a custom column source, we don't redundantly create a column for that column 
         base_properties = [property for property in clazz.properties() if not property.has_custom_column_source()]
         if len(base_properties) > 0:
@@ -1049,8 +1093,10 @@ extension %sSerializer {
         swift_body += '''
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "%s", columns: [
-''' % database_table_name
+    public static let table = SDSTableMetadata(collection: %s.collection(),
+                                               tableName: "%s", 
+                                               columns: [
+''' % ( str(clazz.name), database_table_name, )
 
         for column_property_name in column_property_names:
             swift_body += '''        %sColumn,
@@ -1204,18 +1250,18 @@ public class %sCursor: NSObject {
 // TODO: I've defined flavors that take a read transaction.
 //       Or we might take a "connection" if we end up having that class.
 @objc
-public extension %s {
-    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> %sCursor {
+public extension %(class_name)s {
+    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> %(class_name)sCursor {
         let database = transaction.database
         do {
-            let cursor = try %s.fetchCursor(database)
-            return %sCursor(cursor: cursor)
+            let cursor = try %(record_name)s.fetchCursor(database)
+            return %(class_name)sCursor(cursor: cursor)
         } catch {
             owsFailDebug("Read failed: \(error)")
-            return %sCursor(cursor: nil)
+            return %(class_name)sCursor(cursor: nil)
         }
     }
-''' % ( str(clazz.name), str(clazz.name), record_name, str(clazz.name), str(clazz.name), )
+''' % { "class_name": str(clazz.name), "record_name": record_name }
 
         swift_body += '''
     // Fetches a single model by "unique id".
@@ -1378,43 +1424,32 @@ public extension %s {
         swift_body += '''
 // MARK: - Swift Fetch
 
-public extension %s {
+public extension %(class_name)s {
     class func grdbFetchCursor(sql: String,
-                               arguments: [DatabaseValueConvertible]?,
-                               transaction: GRDBReadTransaction) -> %sCursor {
-        var statementArguments: StatementArguments?
-        if let arguments = arguments {
-            guard let statementArgs = StatementArguments(arguments) else {
-                owsFailDebug("Could not convert arguments.")
-                return %sCursor(cursor: nil)
-            }
-            statementArguments = statementArgs
-        }
-        let database = transaction.database
+                               arguments: StatementArguments = StatementArguments(),
+                               transaction: GRDBReadTransaction) -> %(class_name)sCursor {
         do {
-            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
-            let cursor = try %s.fetchCursor(statement, arguments: statementArguments)
-            return %sCursor(cursor: cursor)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
+            let cursor = try %(record_name)s.fetchCursor(transaction.database, sqlRequest)
+            return %(class_name)sCursor(cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
-            return %sCursor(cursor: nil)
+            return %(class_name)sCursor(cursor: nil)
         }
     }
-
-''' % ( str(clazz.name), str(clazz.name), str(clazz.name), record_name, str(clazz.name), str(clazz.name), )
+''' % { "class_name": str(clazz.name), "record_name": record_name }
 
 
         string_interpolation_name = remove_prefix_from_class_name(clazz.name)
         swift_body += '''
     class func grdbFetchOne(sql: String,
-                            arguments: StatementArguments,
+                            arguments: StatementArguments = StatementArguments(),
                             transaction: GRDBReadTransaction) -> %s? {
         assert(sql.count > 0)
         
         do {
-            // There are significant perf benefits to using a cached statement.
-            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             guard let record = try %s.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }
@@ -1526,10 +1561,8 @@ class %sSerializer: SDSSerializer {
     # print 'initializer_value_names', initializer_value_names
 
     def write_record_property(property, force_optional=False):
-        column_name = to_swift_identifier_name(property.name)
-
         optional_value = ''
-        if column_name in initializer_value_names:
+        if property.swift_identifier() in initializer_value_names:
             did_force_optional = (property.name not in root_base_property_names) and (not property.is_optional)
             model_accessor = accessor_name_for_property(property)
             value_expr = property.serialize_record_invocation('model.%s' % ( model_accessor, ), did_force_optional)
@@ -1542,15 +1575,11 @@ class %sSerializer: SDSSerializer {
 
         is_optional = property.is_optional or force_optional
         optional_split = '?' if is_optional else ''
-
-        custom_column_name = custom_column_name_for_property(property)
-        if custom_column_name is not None:
-            column_name = custom_column_name
         
-        initializer_args.append(str(column_name))
+        initializer_args.append(property.column_name())
     
         return '''        let %s: %s%s%s
-''' % ( str(column_name), record_field_type, optional_split, optional_value, )
+''' % ( str(property.column_name()), record_field_type, optional_split, optional_value, )
 
     if len(root_base_properties) > 0:
         swift_body += '\n        // Base class properties \n'

@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient;
 
-- (instancetype)initWithSignalServiceAddress:(SignalServiceAddress *)address;
+- (instancetype)initWithSignalServiceAddress:(SignalServiceAddress *)address NS_SWIFT_NAME(init(address:));
 
 // --- CODE GENERATION MARKER
 

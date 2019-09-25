@@ -28,6 +28,7 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 @property (nonnull, readonly) ImageCache *avatarCache;
 
+
 @property (atomic, readonly) NSArray<Contact *> *allContacts;
 
 @property (atomic, readonly) NSDictionary<NSString *, Contact *> *allContactsMap;
@@ -51,6 +52,10 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 @property (nonatomic, readonly) BOOL supportsContactEditing;
 
 @property (atomic, readonly) BOOL isSetup;
+
+// Not set until a contact fetch has completed.
+// Set even if no contacts are found.
+@property (nonatomic, readonly) BOOL hasLoadedContacts;
 
 // Request systems contacts and start syncing changes. The user will see an alert
 // if they haven't previously.
@@ -77,11 +82,18 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
  * Used for sorting, respects system contacts name sort order preference.
  */
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount;
+- (NSString *)comparableNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable UIImage *)systemContactImageForAddress:(nullable SignalServiceAddress *)address;
 - (nullable UIImage *)profileImageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
 - (nullable NSData *)profileImageDataForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
+- (nullable UIImage *)imageForAddress:(nullable SignalServiceAddress *)address
+                          transaction:(SDSAnyReadTransaction *)transaction;
 - (nullable UIImage *)imageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
+
+- (void)clearColorNameCache;
+- (NSString *)conversationColorNameForAddress:(SignalServiceAddress *)address
+                                  transaction:(SDSAnyReadTransaction *)transaction;
 
 // Legacy display name helpers, once the `profileDisplayChanges` feature is enabled these can go away.
 - (NSString *)legacyDisplayNameForAddress:(SignalServiceAddress *)address;

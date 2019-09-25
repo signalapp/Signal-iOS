@@ -179,6 +179,10 @@ class PhotoCapture: NSObject {
             newPosition = .front
         case .unspecified:
             newPosition = .front
+        @unknown default:
+            owsFailDebug("Unexpected enum value.")
+            newPosition = .front
+            break
         }
         desiredPosition = newPosition
 
@@ -225,6 +229,9 @@ class PhotoCapture: NSObject {
                 self.captureOutput.flashMode = .off
             case .off:
                 Logger.debug("new flashMode: auto")
+                self.captureOutput.flashMode = .auto
+            @unknown default:
+                owsFailDebug("unknown flashMode: \(self.captureOutput.flashMode)")
                 self.captureOutput.flashMode = .auto
             }
         }
@@ -504,7 +511,7 @@ extension PhotoCapture: CaptureOutputDelegate {
             Logger.info("Ignoring error, since capture succeeded.")
         }
 
-        guard let dataSource = DataSourcePath.dataSource(with: outputFileURL, shouldDeleteOnDeallocation: true) else {
+        guard let dataSource = try? DataSourcePath.dataSource(with: outputFileURL, shouldDeleteOnDeallocation: true) else {
             delegate?.photoCapture(self, processingDidError: PhotoCaptureError.captureFailed)
             return
         }

@@ -287,8 +287,7 @@ const CGFloat kIconViewLength = 24;
 
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         self.disappearingMessagesConfiguration =
-            [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:self.thread.uniqueId
-                                                                      transaction:transaction];
+            [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:self.thread transaction:transaction];
     }];
 
 #ifdef SHOW_COLOR_PICKER
@@ -944,9 +943,20 @@ const CGFloat kIconViewLength = 24;
     [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
 
     if (self.isGroupThread && !self.hasSavedGroupIcon) {
-        UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
-        UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
+        UIImageView *cameraImageView = [UIImageView new];
+        [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryColor];
         [threadInfoView addSubview:cameraImageView];
+
+        [cameraImageView autoSetDimensionsToSize:CGSizeMake(32, 32)];
+        cameraImageView.contentMode = UIViewContentModeCenter;
+        cameraImageView.backgroundColor = Theme.backgroundColor;
+        cameraImageView.layer.cornerRadius = 16;
+        cameraImageView.layer.shadowColor =
+            [(Theme.isDarkThemeEnabled ? Theme.darkThemeOffBackgroundColor : Theme.primaryColor) CGColor];
+        cameraImageView.layer.shadowOffset = CGSizeMake(1, 1);
+        cameraImageView.layer.shadowOpacity = 0.5;
+        cameraImageView.layer.shadowRadius = 4;
+
         [cameraImageView autoPinTrailingToEdgeOfView:avatarView];
         [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
     }
@@ -983,16 +993,28 @@ const CGFloat kIconViewLength = 24;
 
     if ([self.thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)self.thread;
+        NSString *threadName = [self.contactsManager displayNameForThreadWithSneakyTransaction:contactThread];
 
         SignalServiceAddress *recipientAddress = contactThread.contactAddress;
         NSString *_Nullable phoneNumber = recipientAddress.phoneNumber;
-
         if (phoneNumber.length > 0) {
             NSString *formattedPhoneNumber =
                 [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber];
-            if (![[self.contactsManager displayNameForThreadWithSneakyTransaction:contactThread]
-                    isEqualToString:formattedPhoneNumber]) {
-                addSubtitle([[NSAttributedString alloc] initWithString:formattedPhoneNumber]);
+
+            if (![threadName isEqualToString:formattedPhoneNumber]) {
+                NSAttributedString *subtitle = [[NSAttributedString alloc] initWithString:formattedPhoneNumber];
+                addSubtitle(subtitle);
+            }
+        }
+
+        __block NSString *_Nullable username;
+        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+            username = [self.profileManager usernameForAddress:recipientAddress transaction:transaction];
+        }];
+        if (username.length > 0) {
+            NSString *formattedUsername = [CommonFormats formatUsername:username];
+            if (![threadName isEqualToString:formattedUsername]) {
+                addSubtitle([[NSAttributedString alloc] initWithString:formattedUsername]);
             }
         }
 
@@ -1105,35 +1127,42 @@ const CGFloat kIconViewLength = 24;
 {
     [super viewWillDisappear:animated];
 
-    if (self.disappearingMessagesConfiguration.isNewRecord && !self.disappearingMessagesConfiguration.isEnabled) {
-        // don't save defaults, else we'll unintentionally save the configuration and notify the contact.
+    __block BOOL shouldSave;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        shouldSave = [self.disappearingMessagesConfiguration hasChangedWithTransaction:transaction];
+    }];
+    if (!shouldSave) {
+        // Every time we change the configuration we notify the contact and
+        // create an update interaction.
+        //
+        // We don't want to do either if these are unmodified defaults
+        // of if nothing has changed.
         return;
     }
 
-    if (self.disappearingMessagesConfiguration.dictionaryValueDidChange) {
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            [self.disappearingMessagesConfiguration anyUpsertWithTransaction:transaction];
+        [self.disappearingMessagesConfiguration anyUpsertWithTransaction:transaction];
 #pragma clang diagnostic pop
 
-            // MJK TODO - should be safe to remove this senderTimestamp
-            OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
-                [[OWSDisappearingConfigurationUpdateInfoMessage alloc]
-                         initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                    thread:self.thread
-                             configuration:self.disappearingMessagesConfiguration
-                       createdByRemoteName:nil
-                    createdInExistingGroup:NO];
-            [infoMessage anyInsertWithTransaction:transaction];
+        // MJK TODO - should be safe to remove this senderTimestamp
+        OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
+            [[OWSDisappearingConfigurationUpdateInfoMessage alloc]
+                     initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                thread:self.thread
+                         configuration:self.disappearingMessagesConfiguration
+                   createdByRemoteName:nil
+                createdInExistingGroup:NO];
+        [infoMessage anyInsertWithTransaction:transaction];
 
-            OWSDisappearingMessagesConfigurationMessage *message = [[OWSDisappearingMessagesConfigurationMessage alloc]
-                initWithConfiguration:self.disappearingMessagesConfiguration
-                               thread:self.thread];
+        OWSDisappearingMessagesConfigurationMessage *message = [[OWSDisappearingMessagesConfigurationMessage alloc]
+            initWithConfiguration:self.disappearingMessagesConfiguration
+                           thread:self.thread];
 
-            [self.messageSenderJobQueue addMessage:message transaction:transaction];
-        }];
-    }
+        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
+    }];
 }
 
 - (BOOL)canBecomeFirstResponder
@@ -1257,7 +1286,7 @@ const CGFloat kIconViewLength = 24;
         [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
 
         [gThread leaveGroupWithTransaction:transaction];
     }];
@@ -1321,7 +1350,7 @@ const CGFloat kIconViewLength = 24;
 
 - (void)toggleDisappearingMessages:(BOOL)flag
 {
-    self.disappearingMessagesConfiguration.enabled = flag;
+    self.disappearingMessagesConfiguration = [self.disappearingMessagesConfiguration copyWithIsEnabled:flag];
 
     [self updateTableContents];
 }
@@ -1332,7 +1361,9 @@ const CGFloat kIconViewLength = 24;
     NSUInteger index = (NSUInteger)(slider.value + 0.5);
     [slider setValue:index animated:YES];
     NSNumber *numberOfSeconds = self.disappearingMessagesDurations[index];
-    self.disappearingMessagesConfiguration.durationSeconds = [numberOfSeconds unsignedIntValue];
+    uint32_t durationSeconds = [numberOfSeconds unsignedIntValue];
+    self.disappearingMessagesConfiguration =
+        [self.disappearingMessagesConfiguration copyAsEnabledWithDurationSeconds:durationSeconds];
 
     [self updateDisappearingMessagesDurationLabel];
 }
@@ -1551,6 +1582,7 @@ const CGFloat kIconViewLength = 24;
     }];
 
     [self.contactsManager.avatarCache removeAllImages];
+    [self.contactsManager clearColorNameCache];
     [self updateTableContents];
     [self.conversationSettingsViewDelegate conversationColorWasUpdated];
 

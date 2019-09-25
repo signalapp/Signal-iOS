@@ -9,16 +9,19 @@
 #import <SignalServiceKit/ExperienceUpgrade.h>
 #import <SignalServiceKit/InstalledSticker.h>
 #import <SignalServiceKit/KnownStickerPack.h>
+#import <SignalServiceKit/MockSSKEnvironment.h>
 #import <SignalServiceKit/NotificationsProtocol.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
 #import <SignalServiceKit/OWSBackupFragment.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
+#import <SignalServiceKit/OWSBroadcastMediaMessageJobRecord.h>
 #import <SignalServiceKit/OWSContactOffersInteraction.h>
 #import <SignalServiceKit/OWSContactQuery.h>
 #import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalServiceKit/OWSDisappearingMessagesFinder.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSLinkedDeviceReadReceipt.h>
 #import <SignalServiceKit/OWSMessageReceiver.h>
@@ -38,6 +41,7 @@
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/StickerPack.h>
+#import <SignalServiceKit/StorageCoordinator.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSAttachment.h>
 #import <SignalServiceKit/TSAttachmentPointer.h>

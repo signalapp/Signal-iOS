@@ -83,13 +83,13 @@ NSErrorDomain const SSKJobRecordErrorDomain = @"SignalServiceKit.JobRecord";
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-implementations"
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     // This is *only* for Yap. For GRDB we get the sortId from the DB autoincrement column
     if (self.sortId == 0) {
         self.sortId = [SSKIncrementingIdFinder nextIdWithKey:self.class.collection transaction:transaction];
     }
-    [super saveWithTransaction:transaction];
+    [super ydb_saveWithTransaction:transaction];
 }
 #pragma clang diagnostic pop
 

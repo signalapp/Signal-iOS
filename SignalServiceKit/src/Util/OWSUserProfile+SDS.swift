@@ -33,6 +33,7 @@ public struct UserProfileRecord: SDSRecord {
     public let recipientPhoneNumber: String?
     public let recipientUUID: String?
     public let userProfileSchemaVersion: UInt
+    public let username: String?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -45,10 +46,33 @@ public struct UserProfileRecord: SDSRecord {
         case recipientPhoneNumber
         case recipientUUID
         case userProfileSchemaVersion
+        case username
     }
 
     public static func columnName(_ column: UserProfileRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+}
+
+// MARK: - Row Initializer
+
+public extension UserProfileRecord {
+    static var databaseSelection: [SQLSelectable] {
+        return CodingKeys.allCases
+    }
+
+    init(row: Row) {
+        id = row[0]
+        recordType = row[1]
+        uniqueId = row[2]
+        avatarFileName = row[3]
+        avatarUrlPath = row[4]
+        profileKey = row[5]
+        profileName = row[6]
+        recipientPhoneNumber = row[7]
+        recipientUUID = row[8]
+        userProfileSchemaVersion = row[9]
+        username = row[10]
     }
 }
 
@@ -88,6 +112,7 @@ extension OWSUserProfile {
             let recipientPhoneNumber: String? = record.recipientPhoneNumber
             let recipientUUID: String? = record.recipientUUID
             let userProfileSchemaVersion: UInt = record.userProfileSchemaVersion
+            let username: String? = record.username
 
             return OWSUserProfile(uniqueId: uniqueId,
                                   avatarFileName: avatarFileName,
@@ -96,7 +121,8 @@ extension OWSUserProfile {
                                   profileName: profileName,
                                   recipientPhoneNumber: recipientPhoneNumber,
                                   recipientUUID: recipientUUID,
-                                  userProfileSchemaVersion: userProfileSchemaVersion)
+                                  userProfileSchemaVersion: userProfileSchemaVersion,
+                                  username: username)
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -125,6 +151,10 @@ extension OWSUserProfile: SDSModel {
     public var sdsTableName: String {
         return UserProfileRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return OWSUserProfileSerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -133,8 +163,8 @@ extension OWSUserProfileSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
     static let avatarFileNameColumn = SDSColumnMetadata(columnName: "avatarFileName", columnType: .unicodeString, isOptional: true, columnIndex: 3)
@@ -144,12 +174,15 @@ extension OWSUserProfileSerializer {
     static let recipientPhoneNumberColumn = SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 7)
     static let recipientUUIDColumn = SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true, columnIndex: 8)
     static let userProfileSchemaVersionColumn = SDSColumnMetadata(columnName: "userProfileSchemaVersion", columnType: .int64, columnIndex: 9)
+    static let usernameColumn = SDSColumnMetadata(columnName: "username", columnType: .unicodeString, isOptional: true, columnIndex: 10)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_OWSUserProfile", columns: [
-        recordTypeColumn,
+    public static let table = SDSTableMetadata(collection: OWSUserProfile.collection(),
+                                               tableName: "model_OWSUserProfile",
+                                               columns: [
         idColumn,
+        recordTypeColumn,
         uniqueIdColumn,
         avatarFileNameColumn,
         avatarUrlPathColumn,
@@ -157,7 +190,8 @@ extension OWSUserProfileSerializer {
         profileNameColumn,
         recipientPhoneNumberColumn,
         recipientUUIDColumn,
-        userProfileSchemaVersionColumn
+        userProfileSchemaVersionColumn,
+        usernameColumn
         ])
 }
 
@@ -449,20 +483,11 @@ public extension OWSUserProfile {
 
 public extension OWSUserProfile {
     class func grdbFetchCursor(sql: String,
-                               arguments: [DatabaseValueConvertible]?,
+                               arguments: StatementArguments = StatementArguments(),
                                transaction: GRDBReadTransaction) -> OWSUserProfileCursor {
-        var statementArguments: StatementArguments?
-        if let arguments = arguments {
-            guard let statementArgs = StatementArguments(arguments) else {
-                owsFailDebug("Could not convert arguments.")
-                return OWSUserProfileCursor(cursor: nil)
-            }
-            statementArguments = statementArgs
-        }
-        let database = transaction.database
         do {
-            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
-            let cursor = try UserProfileRecord.fetchCursor(statement, arguments: statementArguments)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
+            let cursor = try UserProfileRecord.fetchCursor(transaction.database, sqlRequest)
             return OWSUserProfileCursor(cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
@@ -472,13 +497,12 @@ public extension OWSUserProfile {
     }
 
     class func grdbFetchOne(sql: String,
-                            arguments: StatementArguments,
+                            arguments: StatementArguments = StatementArguments(),
                             transaction: GRDBReadTransaction) -> OWSUserProfile? {
         assert(sql.count > 0)
 
         do {
-            // There are significant perf benefits to using a cached statement.
-            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             guard let record = try UserProfileRecord.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }
@@ -518,7 +542,8 @@ class OWSUserProfileSerializer: SDSSerializer {
         let recipientPhoneNumber: String? = model.recipientPhoneNumber
         let recipientUUID: String? = model.recipientUUID
         let userProfileSchemaVersion: UInt = model.userProfileSchemaVersion
+        let username: String? = model.username
 
-        return UserProfileRecord(id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, userProfileSchemaVersion: userProfileSchemaVersion)
+        return UserProfileRecord(id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, userProfileSchemaVersion: userProfileSchemaVersion, username: username)
     }
 }

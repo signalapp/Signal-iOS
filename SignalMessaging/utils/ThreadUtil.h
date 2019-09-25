@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSQuotedReplyModel;
 @class OWSUnreadIndicator;
 @class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
 @class SignalAttachment;
 @class SignalServiceAddress;
 @class StickerInfo;
@@ -58,6 +59,14 @@ NS_ASSUME_NONNULL_BEGIN
                              linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
                                   transaction:(SDSAnyReadTransaction *)transaction;
 
++ (nullable TSOutgoingMessage *)createUnsentMessageWithText:(nullable NSString *)fullMessageText
+                                           mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
+                                                   inThread:(TSThread *)thread
+                                           quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                           linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
+                                                transaction:(SDSAnyWriteTransaction *)transaction
+                                                      error:(NSError **)error;
+
 + (TSOutgoingMessage *)enqueueMessageWithContactShare:(OWSContact *)contactShare inThread:(TSThread *)thread;
 + (void)enqueueLeaveGroupMessageInThread:(TSGroupThread *)thread;
 + (TSOutgoingMessage *)enqueueMessageWithSticker:(StickerInfo *)stickerInfo inThread:(TSThread *)thread;
@@ -86,7 +95,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                     inThread:(TSThread *)thread
                                                messageSender:(OWSMessageSender *)messageSender
                                                   completion:(void (^)(NSError *_Nullable error))completion;
-
 
 #pragma mark - dynamic interactions
 
@@ -133,7 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable TSInteraction *)findInteractionInThreadByTimestamp:(uint64_t)timestamp
                                                  authorAddress:(SignalServiceAddress *)authorAddress
                                                 threadUniqueId:(NSString *)threadUniqueId
-                                                   transaction:(YapDatabaseReadTransaction *)transaction;
+                                                   transaction:(SDSAnyReadTransaction *)transaction;
 
 #pragma mark - Message Request
 

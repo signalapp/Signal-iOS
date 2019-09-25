@@ -8,7 +8,6 @@ import GRDBCipher
 @objc
 public extension OWSMessageDecryptJobFinder {
 
-    @objc
     func nextJob(transaction: SDSAnyReadTransaction) -> OWSMessageDecryptJob? {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
@@ -42,7 +41,56 @@ public extension OWSMessageDecryptJobFinder {
         ORDER BY \(messageDecryptJobColumn: .createdAt)
         LIMIT 1
         """
-        let arguments: StatementArguments = []
-        return OWSMessageDecryptJob.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
+        return OWSMessageDecryptJob.grdbFetchOne(sql: sql, transaction: transaction)
+    }
+
+    func enumerateJobs(transaction: SDSAnyReadTransaction, block: @escaping (OWSMessageDecryptJob, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return try enumerateJobs(ydbTransaction: yapRead, block: block)
+        case .grdbRead(let grdbRead):
+            return try enumerateJobs(grdbTransaction: grdbRead, block: block)
+        }
+    }
+
+    private func enumerateJobs(ydbTransaction transaction: YapDatabaseReadTransaction, block: @escaping (OWSMessageDecryptJob, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
+        guard let view = transaction.safeViewTransaction(databaseExtensionName()) else {
+            owsFailDebug("Could not load view transaction.")
+            return
+        }
+        view.safe_enumerateKeysAndObjects(inGroup: databaseExtensionGroup(),
+                                          extensionName: databaseExtensionName()) { (_, _, object, _, stopPtr) in
+                                            guard let job = object as? OWSMessageDecryptJob else {
+                                                owsFailDebug("unexpected job: \(type(of: object))")
+                                                return
+                                            }
+                                            block(job, stopPtr)
+        }
+    }
+
+    private func enumerateJobs(grdbTransaction transaction: GRDBReadTransaction, block: @escaping (OWSMessageDecryptJob, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
+        owsFailDebug("We should be using SSKMessageDecryptJobQueue instead of this method.")
+
+        let sql = """
+        SELECT *
+        FROM \(MessageDecryptJobRecord.databaseTableName)
+        ORDER BY \(messageDecryptJobColumn: .createdAt)
+        """
+        let cursor = try String.fetchCursor(transaction.database,
+                                            sql: sql,
+                                            arguments: [])
+        while let jobId = try cursor.next() {
+            guard let job = OWSMessageDecryptJob.anyFetch(uniqueId: jobId,
+                                                          transaction: transaction.asAnyRead) else {
+                                                            owsFailDebug("Missing job")
+                                                            continue
+            }
+
+            var stop: ObjCBool = false
+            block(job, &stop)
+            if stop.boolValue {
+                return
+            }
+        }
     }
 }

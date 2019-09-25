@@ -25,6 +25,7 @@ extern NSString *const kNSNotificationKey_ProfileGroupId;
 @property (atomic, readonly) SignalServiceAddress *address;
 @property (atomic, readonly, nullable) OWSAES256Key *profileKey;
 @property (atomic, readonly, nullable) NSString *profileName;
+@property (atomic, readonly, nullable) NSString *username;
 @property (atomic, readonly, nullable) NSString *avatarUrlPath;
 // This filename is relative to OWSProfileManager.profileAvatarsDirPath.
 @property (atomic, readonly, nullable) NSString *avatarFileName;
@@ -46,7 +47,8 @@ extern NSString *const kNSNotificationKey_ProfileGroupId;
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
         userProfileSchemaVersion:(NSUInteger)userProfileSchemaVersion
-NS_SWIFT_NAME(init(uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:recipientPhoneNumber:recipientUUID:userProfileSchemaVersion:));
+                        username:(nullable NSString *)username
+NS_SWIFT_NAME(init(uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:recipientPhoneNumber:recipientUUID:userProfileSchemaVersion:username:));
 
 // clang-format on
 
@@ -54,11 +56,14 @@ NS_SWIFT_NAME(init(uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:
 
 + (SignalServiceAddress *)localProfileAddress;
 
-+ (OWSUserProfile *)getUserProfileForAddress:(SignalServiceAddress *)address
-                                 transaction:(SDSAnyReadTransaction *)transaction;
++ (nullable OWSUserProfile *)getUserProfileForAddress:(SignalServiceAddress *)address
+                                          transaction:(SDSAnyReadTransaction *)transaction;
 
 + (OWSUserProfile *)getOrBuildUserProfileForAddress:(SignalServiceAddress *)recipientId
                                         transaction:(SDSAnyWriteTransaction *)transaction;
+
++ (nullable OWSUserProfile *)userProfileForUsername:(NSString *)username
+                                        transaction:(SDSAnyReadTransaction *)transaction;
 
 + (BOOL)localUserProfileExistsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
@@ -71,6 +76,7 @@ NS_SWIFT_NAME(init(uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:
                    completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
+                     username:(nullable NSString *)username
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
                   transaction:(SDSAnyWriteTransaction *)transaction
                    completion:(nullable OWSUserProfileCompletion)completion;
@@ -91,6 +97,8 @@ NS_SWIFT_NAME(init(uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:
 - (void)clearWithProfileKey:(OWSAES256Key *)profileKey
                 transaction:(SDSAnyWriteTransaction *)transaction
                  completion:(nullable OWSUserProfileCompletion)completion;
+
+- (void)updateWithUsername:(nullable NSString *)username transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Profile Avatars Directory
 

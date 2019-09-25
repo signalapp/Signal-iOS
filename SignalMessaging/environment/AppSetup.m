@@ -49,9 +49,12 @@ NS_ASSUME_NONNULL_BEGIN
         // initializers injected.
         [[OWSBackgroundTaskManager sharedManager] observeNotifications];
 
-        SDSDatabaseStorage *databaseStorage = [SDSDatabaseStorage new];
-        OWSPrimaryStorage *primaryStorage = databaseStorage.yapPrimaryStorage;
-        [OWSPrimaryStorage protectFiles];
+        StorageCoordinator *storageCoordinator = [StorageCoordinator new];
+        SDSDatabaseStorage *databaseStorage = storageCoordinator.databaseStorage;
+        OWSPrimaryStorage *_Nullable primaryStorage;
+        if (databaseStorage.canLoadYdb) {
+            primaryStorage = databaseStorage.yapPrimaryStorage;
+        }
 
         // AFNetworking (via CFNetworking) spools it's attachments to NSTemporaryDirectory().
         // If you receive a media message while the device is locked, the download will fail if the temporary directory
@@ -141,7 +144,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   databaseStorage:databaseStorage
                                                         signalServiceAddressCache:signalServiceAddressCache
                                                              accountServiceClient:accountServiceClient
-                                                            storageServiceManager:storageServiceManager]];
+                                                            storageServiceManager:storageServiceManager
+                                                               storageCoordinator:storageCoordinator]];
 
         appSpecificSingletonBlock();
 
@@ -150,29 +154,32 @@ NS_ASSUME_NONNULL_BEGIN
         // Register renamed classes.
         [NSKeyedUnarchiver setClass:[OWSUserProfile class] forClassName:[OWSUserProfile collection]];
         [NSKeyedUnarchiver setClass:[OWSDatabaseMigration class] forClassName:[OWSDatabaseMigration collection]];
+        [NSKeyedUnarchiver setClass:[ExperienceUpgrade class] forClassName:[ExperienceUpgrade collection]];
+        [NSKeyedUnarchiver setClass:[ExperienceUpgrade class] forClassName:@"Signal.ExperienceUpgrade"];
 
-        [OWSStorage registerExtensionsWithMigrationBlock:^() {
-            // Pre-heat caches to avoid sneaky transactions during the migrations.
-            // We need to warm these caches _before_ the migrations run.
-            //
-            // We need to do as few writes as possible here, to avoid conflicts
-            // with the migrations which haven't run yet.
-            [blockingManager warmCaches];
-            [profileManager warmCaches];
-            [tsAccountManager warmCaches];
+        dispatch_block_t warmCachesRunMigrationsAndComplete = ^{
+            [SSKEnvironment.shared warmCaches];
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 // Don't start database migrations until storage is ready.
                 [VersionMigrations performUpdateCheckWithCompletion:^() {
                     OWSAssertIsOnMainThread();
-
+                    
                     migrationCompletion();
-
+                    
                     OWSAssertDebug(backgroundTask);
                     backgroundTask = nil;
                 }];
             });
-        }];
+        };
+
+        if (databaseStorage.canLoadYdb) {
+            [OWSStorage registerExtensionsWithMigrationBlock:^() {
+                warmCachesRunMigrationsAndComplete();
+            }];
+        } else {
+            warmCachesRunMigrationsAndComplete();
+        }
     });
 }
 

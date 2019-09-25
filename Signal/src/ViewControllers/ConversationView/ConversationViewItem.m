@@ -149,15 +149,16 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 @synthesize didCellMediaFailToLoad = _didCellMediaFailToLoad;
 @synthesize interaction = _interaction;
 @synthesize isFirstInCluster = _isFirstInCluster;
-@synthesize isGroupThread = _isGroupThread;
+@synthesize thread = _thread;
 @synthesize isLastInCluster = _isLastInCluster;
 @synthesize lastAudioMessageView = _lastAudioMessageView;
 @synthesize senderName = _senderName;
+@synthesize senderUsername = _senderUsername;
 @synthesize accessibilityAuthorName = _accessibilityAuthorName;
 @synthesize shouldHideFooter = _shouldHideFooter;
 
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
-                      isGroupThread:(BOOL)isGroupThread
+                             thread:(TSThread *)thread
                         transaction:(SDSAnyReadTransaction *)transaction
                   conversationStyle:(ConversationStyle *)conversationStyle
 {
@@ -172,7 +173,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     }
 
     _interaction = interaction;
-    _isGroupThread = isGroupThread;
+    _thread = thread;
     _conversationStyle = conversationStyle;
 
     [self setAuthorConversationColorNameWithTransaction:transaction];
@@ -188,6 +189,11 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 - (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
+}
+
+- (OWSContactsManager *)contactsManager
+{
+    return Environment.shared.contactsManager;
 }
 
 #pragma mark -
@@ -216,6 +222,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     self.linkPreview = nil;
     self.linkPreviewAttachment = nil;
     self.senderName = nil;
+    self.senderUsername = nil;
     self.accessibilityAuthorName = nil;
 
     [self setAuthorConversationColorNameWithTransaction:transaction];
@@ -230,36 +237,34 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 {
     OWSAssertDebug(transaction);
 
+    SignalServiceAddress *address;
     switch (self.interaction.interactionType) {
         case OWSInteractionType_ThreadDetails: {
-            OWSThreadDetailsInteraction *threadDetails = (OWSThreadDetailsInteraction *)self.interaction;
-            if ([threadDetails.thread isKindOfClass:[TSContactThread class]]) {
-                TSContactThread *contactThread = (TSContactThread *)threadDetails.thread;
-                _authorConversationColorName =
-                    [TSContactThread conversationColorNameForContactAddress:contactThread.contactAddress
-                                                                transaction:transaction];
+            if ([self.thread isKindOfClass:[TSContactThread class]]) {
+                address = ((TSContactThread *)self.thread).contactAddress;
             } else {
-                _authorConversationColorName = nil;
+                address = nil;
             }
             break;
         }
         case OWSInteractionType_TypingIndicator: {
             OWSTypingIndicatorInteraction *typingIndicator = (OWSTypingIndicatorInteraction *)self.interaction;
-            _authorConversationColorName =
-                [TSContactThread conversationColorNameForContactAddress:typingIndicator.address
-                                                            transaction:transaction];
+            address = typingIndicator.address;
             break;
         }
         case OWSInteractionType_IncomingMessage: {
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
-            _authorConversationColorName =
-                [TSContactThread conversationColorNameForContactAddress:incomingMessage.authorAddress
-                                                            transaction:transaction];
+            address = incomingMessage.authorAddress;
             break;
         }
         default:
-            _authorConversationColorName = nil;
+            address = nil;
             break;
+    }
+
+    if (address != nil) {
+        self.authorConversationColorName = [self.contactsManager conversationColorNameForAddress:address
+                                                                                     transaction:transaction];
     }
 }
 
@@ -273,9 +278,8 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         return;
     }
 
-    OWSThreadDetailsInteraction *threadDetails = (OWSThreadDetailsInteraction *)self.interaction;
-    if ([threadDetails.thread isKindOfClass:[TSContactThread class]]) {
-        TSContactThread *contactThread = (TSContactThread *)threadDetails.thread;
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        TSContactThread *contactThread = (TSContactThread *)self.thread;
         _mutualGroupNames = [[TSGroupThread groupThreadsWithAddress:contactThread.contactAddress
                                                         transaction:transaction] map:^(TSGroupThread *thread) {
             return thread.groupNameOrDefault;
@@ -286,6 +290,11 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 - (NSString *)itemId
 {
     return self.interaction.uniqueId;
+}
+
+- (BOOL)isGroupThread
+{
+    return self.thread.isGroupThread;
 }
 
 - (BOOL)hasBodyText
@@ -1066,7 +1075,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
                     = (OWSVerificationStateChangeMessage *)infoMessage;
                 BOOL isVerified = verificationMessage.verificationState == OWSVerificationStateVerified;
                 NSString *displayName =
-                    [Environment.shared.contactsManager displayNameForAddress:verificationMessage.recipientAddress];
+                    [self.contactsManager displayNameForAddress:verificationMessage.recipientAddress];
                 NSString *titleFormat = (isVerified
                         ? (verificationMessage.isLocalChange
                                   ? NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL",
@@ -1249,7 +1258,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         OWSFailDebug(@"Unknown MIME type: %@", attachment.contentType);
         utiType = (NSString *)kUTTypeGIF;
     }
-    NSData *data = [NSData dataWithContentsOfURL:[attachment originalMediaURL]];
+    NSData *_Nullable data = [NSData dataWithContentsOfURL:[attachment originalMediaURL]];
     if (!data) {
         OWSFailDebug(@"Could not load attachment data");
         return;

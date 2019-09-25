@@ -253,7 +253,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 - (BOOL)isAddressBlocked:(SignalServiceAddress *)address
 {
     OWSAssertDebug(self.isInitialized);
-    
+
     return [self.blockedPhoneNumbers containsObject:address.phoneNumber] ||
         [self.blockedUUIDs containsObject:address.uuidString];
 }
@@ -279,7 +279,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 - (BOOL)isGroupIdBlocked:(NSData *)groupId
 {
     OWSAssertDebug(self.isInitialized);
-    
+
     return self.blockedGroupMap[groupId] != nil;
 }
 
@@ -422,8 +422,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 // This method should only be called from within a synchronized block.
 - (BOOL)isInitialized
 {
-    @synchronized(self)
-    {
+    @synchronized(self) {
         return _blockedPhoneNumberSet != nil;
     }
 }
@@ -431,16 +430,15 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 // This method should only be called from within a synchronized block.
 - (void)ensureLazyInitialization
 {
-    OWSLogVerbose(@"");
-    
     if (_blockedPhoneNumberSet != nil) {
         OWSAssertDebug(_blockedGroupMap);
         OWSAssertDebug(_blockedUUIDSet);
-        
+
         // already loaded
         return;
     }
 
+    OWSLogVerbose(@"");
     __block NSArray<NSString *> *_Nullable blockedPhoneNumbers;
     __block NSArray<NSString *> *blockedUUIDs;
     __block NSDictionary<NSData *, TSGroupModel *> *storedBlockedGroupMap;
@@ -538,7 +536,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
                                                                                              uuids:blockedUUIDs
                                                                                           groupIds:blockedGroupIds];
 
-    [self.messageSender sendMessage:message
+    [self.messageSender sendMessage:message.asPreparer
         success:^{
             OWSLogInfo(@"Successfully sent blocked phone numbers sync message");
 

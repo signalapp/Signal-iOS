@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSMutableArray<SignalAccount *> *signalAccounts = [self.signalAccounts mutableCopy];
 
-    SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
+    SignalServiceAddress *_Nullable localAddress = [TSAccountManager localAddressWithTransaction:transaction];
     OWSAssertDebug(localAddress.isValid);
     if (localAddress) {
         BOOL hasLocalAddress = NO;

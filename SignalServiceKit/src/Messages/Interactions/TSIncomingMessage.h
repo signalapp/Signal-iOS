@@ -27,7 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                             contactShare:(nullable OWSContact *)contactShare
                              linkPreview:(nullable OWSLinkPreview *)linkPreview
-                          messageSticker:(nullable MessageSticker *)messageSticker NS_UNAVAILABLE;
+                          messageSticker:(nullable MessageSticker *)messageSticker
+                       isViewOnceMessage:(BOOL)isViewOnceMessage NS_UNAVAILABLE;
 
 /**
  *  Inits an incoming group message that expires.
@@ -89,6 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
                authorPhoneNumber:(nullable NSString *)authorPhoneNumber
                       authorUUID:(nullable NSString *)authorUUID
     incomingMessageSchemaVersion:(NSUInteger)incomingMessageSchemaVersion
@@ -96,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                   sourceDeviceId:(unsigned int)sourceDeviceId
                  wasReceivedByUD:(BOOL)wasReceivedByUD
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:authorPhoneNumber:authorUUID:incomingMessageSchemaVersion:read:serverTimestamp:sourceDeviceId:wasReceivedByUD:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:authorPhoneNumber:authorUUID:incomingMessageSchemaVersion:read:serverTimestamp:sourceDeviceId:wasReceivedByUD:));
 
 // clang-format on
 

@@ -27,7 +27,7 @@ public struct ThreadRecord: SDSRecord {
 
     // Base class properties
     public let archivalDate: Date?
-    public let archivedAsOfMessageSortId: Bool?
+    public let archivedAsOfMessageSortId: UInt64?
     public let conversationColorName: String
     public let creationDate: Date?
     public let isArchivedByLegacyTimestampForSorting: Bool
@@ -65,6 +65,34 @@ public struct ThreadRecord: SDSRecord {
 
     public static func columnName(_ column: ThreadRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+}
+
+// MARK: - Row Initializer
+
+public extension ThreadRecord {
+    static var databaseSelection: [SQLSelectable] {
+        return CodingKeys.allCases
+    }
+
+    init(row: Row) {
+        id = row[0]
+        recordType = row[1]
+        uniqueId = row[2]
+        archivalDate = row[3]
+        archivedAsOfMessageSortId = row[4]
+        conversationColorName = row[5]
+        creationDate = row[6]
+        isArchivedByLegacyTimestampForSorting = row[7]
+        lastMessageDate = row[8]
+        messageDraft = row[9]
+        mutedUntilDate = row[10]
+        shouldThreadBeVisible = row[11]
+        contactPhoneNumber = row[12]
+        contactThreadSchemaVersion = row[13]
+        contactUUID = row[14]
+        groupModel = row[15]
+        hasDismissedOffers = row[16]
     }
 }
 
@@ -215,6 +243,10 @@ extension TSThread: SDSModel {
     public var sdsTableName: String {
         return ThreadRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return TSThreadSerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -223,12 +255,12 @@ extension TSThreadSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
     static let archivalDateColumn = SDSColumnMetadata(columnName: "archivalDate", columnType: .int64, isOptional: true, columnIndex: 3)
-    static let archivedAsOfMessageSortIdColumn = SDSColumnMetadata(columnName: "archivedAsOfMessageSortId", columnType: .int, isOptional: true, columnIndex: 4)
+    static let archivedAsOfMessageSortIdColumn = SDSColumnMetadata(columnName: "archivedAsOfMessageSortId", columnType: .int64, isOptional: true, columnIndex: 4)
     static let conversationColorNameColumn = SDSColumnMetadata(columnName: "conversationColorName", columnType: .unicodeString, columnIndex: 5)
     static let creationDateColumn = SDSColumnMetadata(columnName: "creationDate", columnType: .int64, isOptional: true, columnIndex: 6)
     static let isArchivedByLegacyTimestampForSortingColumn = SDSColumnMetadata(columnName: "isArchivedByLegacyTimestampForSorting", columnType: .int, columnIndex: 7)
@@ -245,9 +277,11 @@ extension TSThreadSerializer {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_TSThread", columns: [
-        recordTypeColumn,
+    public static let table = SDSTableMetadata(collection: TSThread.collection(),
+                                               tableName: "model_TSThread",
+                                               columns: [
         idColumn,
+        recordTypeColumn,
         uniqueIdColumn,
         archivalDateColumn,
         archivedAsOfMessageSortIdColumn,
@@ -554,20 +588,11 @@ public extension TSThread {
 
 public extension TSThread {
     class func grdbFetchCursor(sql: String,
-                               arguments: [DatabaseValueConvertible]?,
+                               arguments: StatementArguments = StatementArguments(),
                                transaction: GRDBReadTransaction) -> TSThreadCursor {
-        var statementArguments: StatementArguments?
-        if let arguments = arguments {
-            guard let statementArgs = StatementArguments(arguments) else {
-                owsFailDebug("Could not convert arguments.")
-                return TSThreadCursor(cursor: nil)
-            }
-            statementArguments = statementArgs
-        }
-        let database = transaction.database
         do {
-            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
-            let cursor = try ThreadRecord.fetchCursor(statement, arguments: statementArguments)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
+            let cursor = try ThreadRecord.fetchCursor(transaction.database, sqlRequest)
             return TSThreadCursor(cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
@@ -577,13 +602,12 @@ public extension TSThread {
     }
 
     class func grdbFetchOne(sql: String,
-                            arguments: StatementArguments,
+                            arguments: StatementArguments = StatementArguments(),
                             transaction: GRDBReadTransaction) -> TSThread? {
         assert(sql.count > 0)
 
         do {
-            // There are significant perf benefits to using a cached statement.
-            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             guard let record = try ThreadRecord.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }
@@ -617,7 +641,7 @@ class TSThreadSerializer: SDSSerializer {
 
         // Base class properties
         let archivalDate: Date? = model.archivalDate
-        let archivedAsOfMessageSortId: Bool? = archiveOptionalNSNumber(model.archivedAsOfMessageSortId, conversion: { $0.boolValue })
+        let archivedAsOfMessageSortId: UInt64? = archiveOptionalNSNumber(model.archivedAsOfMessageSortId, conversion: { $0.uint64Value })
         let conversationColorName: String = model.conversationColorName.rawValue
         let creationDate: Date? = model.creationDate
         let isArchivedByLegacyTimestampForSorting: Bool = model.isArchivedByLegacyTimestampForSorting

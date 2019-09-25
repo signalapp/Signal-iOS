@@ -18,7 +18,66 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = .production
+let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .production
+
+// MARK: -
+
+@objc
+public enum StorageMode: Int {
+    // Only use YDB.  This should be used in production until we ship
+    // the YDB-to-GRDB migration.
+    case ydb
+    // Use GRDB, migrating if possible on every launch.
+    // If no YDB database exists, a throwaway db is not used.
+    //
+    // Supercedes grdbMigratesFreshDBEveryLaunch.
+    case grdbThrowawayIfMigrating
+    // Use GRDB, migrating once if necessary.
+    case grdb
+    // These modes can be used while running tests.
+    // They are more permissive than the release modes.
+    //
+    // The build shepherd should be running the test
+    // suites in .ydbTests and .grdbTests modes before each release.
+    case ydbTests
+    case grdbTests
+}
+
+// MARK: -
+
+extension StorageMode: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .ydb:
+            return ".ydb"
+        case .grdbThrowawayIfMigrating:
+            return ".grdbThrowawayIfMigrating"
+        case .grdb:
+            return ".grdb"
+        case .ydbTests:
+            return ".ydbTests"
+        case .grdbTests:
+            return ".grdbTests"
+        default:
+            owsFailDebug("unexpected StorageMode: \(self)")
+            return ".unknown"
+        }
+    }
+}
+
+// MARK: -
+
+@objc
+public enum StorageModeStrictness: Int {
+    // For DEBUG, QA and beta builds only.
+    case fail
+    // For production
+    case failDebug
+    // Temporary value to be used until existing issues are resolved.
+    case log
+}
+
+// MARK: -
 
 /// By centralizing feature flags here and documenting their rollout plan, it's easier to review
 /// which feature flags are in play.
@@ -29,15 +88,31 @@ public class FeatureFlags: NSObject {
     public static let conversationSearch = false
 
     @objc
-    public static var useGRDB = false
+    public static var storageMode: StorageMode {
+        if CurrentAppContext().isRunningTests {
+            return .ydbTests
+        } else {
+            return .ydb
+        }
+    }
+
+    // Don't enable this flag in production.
+    // At least, not yet.
+    @objc
+    public static var storageModeStrictness: StorageModeStrictness {
+        return build.includes(.beta) ? .fail : .failDebug
+    }
+
+    @objc
+    public static var audibleErrorLogging = build.includes(.internalPreview)
+
+    @objc
+    public static var storageModeDescription: String {
+        return "\(storageMode)"
+    }
 
     @objc
     public static let shouldPadAllOutgoingAttachments = false
-
-    // Temporary flag helpful for development, where blowing away GRDB and re-running
-    // the migration every launch is helpful.
-    @objc
-    public static let grdbMigratesFreshDBEveryLaunch = true
 
     @objc
     public static let stickerReceive = true
@@ -103,7 +178,13 @@ public class FeatureFlags: NSObject {
     public static let socialGraphOnServer = registrationLockV2 && !IsUsingProductionService() && build.includes(.dev)
 
     @objc
-    public static let cameraFirstCaptureFlow = build.includes(.qa)
+    public static let cameraFirstCaptureFlow = true
+
+    @objc
+    public static let complainAboutSlowDBWrites = true
+
+    @objc
+    public static let usernames = !IsUsingProductionService() && build.includes(.dev)
 
     @objc
     public static let messageRequest = build.includes(.qa)

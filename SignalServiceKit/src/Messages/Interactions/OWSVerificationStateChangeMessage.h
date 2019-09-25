@@ -45,6 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
                    customMessage:(nullable NSString *)customMessage
         infoMessageSchemaVersion:(NSUInteger)infoMessageSchemaVersion
                      messageType:(TSInfoMessageType)messageType
@@ -53,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
                    isLocalChange:(BOOL)isLocalChange
                 recipientAddress:(SignalServiceAddress *)recipientAddress
                verificationState:(OWSVerificationState)verificationState
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredAddress:isLocalChange:recipientAddress:verificationState:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredAddress:isLocalChange:recipientAddress:verificationState:));
 
 // clang-format on
 

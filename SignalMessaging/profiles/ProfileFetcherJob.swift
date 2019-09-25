@@ -10,8 +10,9 @@ import SignalMetadataKit
 @objc
 public class ProfileFetcherJob: NSObject {
 
-    // This property is only accessed on the main queue.
+    // This property is only accessed on the serial queue.
     static var fetchDateMap = [SignalServiceAddress: Date]()
+    static let serialQueue = DispatchQueue(label: "org.signal.profileFetcherJob")
 
     let ignoreThrottling: Bool
 
@@ -33,6 +34,15 @@ public class ProfileFetcherJob: NSObject {
         }
 
         ProfileFetcherJob(ignoreThrottling: ignoreThrottling).run(addresses: [address])
+    }
+
+    @objc
+    public class func run(username: String, completion: @escaping (_ address: SignalServiceAddress?, _ notFound: Bool, _ error: Error?) -> Void) {
+        guard CurrentAppContext().isMainApp else {
+            return
+        }
+
+        ProfileFetcherJob(ignoreThrottling: true).run(username: username, completion: completion)
     }
 
     public init(ignoreThrottling: Bool = false) {
@@ -83,6 +93,33 @@ public class ProfileFetcherJob: NSObject {
     public func run(addresses: [SignalServiceAddress]) {
         AssertIsOnMainThread()
 
+        run {
+            for address in addresses {
+                self.getAndUpdateProfile(address: address)
+            }
+        }
+    }
+
+    public func run(username: String, completion: @escaping (_ address: SignalServiceAddress?, _ notFound: Bool, _ error: Error?) -> Void) {
+        run {
+            let request = OWSRequestFactory.getProfileRequest(withUsername: username)
+            self.networkManager.makePromise(request: request)
+                .map(on: DispatchQueue.global()) { try SignalServiceProfile(address: nil, responseObject: $1) }
+                .done(on: DispatchQueue.global()) { serviceProfile in
+                    self.updateProfile(signalServiceProfile: serviceProfile)
+                    completion(serviceProfile.address, false, nil)
+                }.catch(on: DispatchQueue.global()) { error in
+                    if case .taskError(let task, _)? = error as? NetworkManagerError, task.statusCode() == 404 {
+                        completion(nil, true, nil)
+                        return
+                    }
+
+                    completion(nil, false, error)
+                }.retainUntilComplete()
+        }
+    }
+
+    public func run(runBlock: @escaping () -> Void) {
         guard CurrentAppContext().isMainApp else {
             // Only refresh profiles in the MainApp to decrease the chance of missed SN notifications
             // in the AppExtension for our users who choose not to verify contacts.
@@ -102,11 +139,7 @@ public class ProfileFetcherJob: NSObject {
             Logger.error("background task time ran out before profile fetch completed.")
         })
 
-        DispatchQueue.global().async {
-            for address in addresses {
-                self.getAndUpdateProfile(address: address)
-            }
-        }
+        DispatchQueue.global().async(execute: runBlock)
     }
 
     enum ProfileFetcherJobError: Error {
@@ -127,7 +160,7 @@ public class ProfileFetcherJob: NSObject {
                 if remainingRetries > 0 {
                     self.getAndUpdateProfile(address: address, remainingRetries: remainingRetries - 1)
                 } else {
-                    Logger.error("failed to get profile with error: \(error)")
+                    Logger.warn("failed to get profile with error: \(error)")
                 }
             }
         }.retainUntilComplete()
@@ -135,7 +168,7 @@ public class ProfileFetcherJob: NSObject {
 
     public func getProfile(address: SignalServiceAddress) -> Promise<SignalServiceProfile> {
         if !ignoreThrottling {
-            if let lastDate = ProfileFetcherJob.fetchDateMap[address] {
+            if let lastDate = lastFetchDate(for: address) {
                 let lastTimeInterval = fabs(lastDate.timeIntervalSinceNow)
                 // Don't check a profile more often than every N seconds.
                 //
@@ -147,9 +180,10 @@ public class ProfileFetcherJob: NSObject {
                 }
             }
         }
-        ProfileFetcherJob.fetchDateMap[address] = Date()
 
-        Logger.error("getProfile: \(address)")
+        recordLastFetchDate(for: address)
+
+        Logger.info("getProfile: \(address)")
 
         // Don't use UD for "self" profile fetches.
         var udAccess: OWSUDAccess?
@@ -188,6 +222,7 @@ public class ProfileFetcherJob: NSObject {
 
         profileManager.updateProfile(for: address,
                                      profileNameEncrypted: signalServiceProfile.profileNameEncrypted,
+                                     username: signalServiceProfile.username,
                                      avatarUrlPath: signalServiceProfile.avatarUrlPath)
 
         updateUnidentifiedAccess(address: address,
@@ -237,6 +272,18 @@ public class ProfileFetcherJob: NSObject {
             } else {
                 // no change in identity.
             }
+        }
+    }
+
+    private func lastFetchDate(for address: SignalServiceAddress) -> Date? {
+        return ProfileFetcherJob.serialQueue.sync {
+            return ProfileFetcherJob.fetchDateMap[address]
+        }
+    }
+
+    private func recordLastFetchDate(for address: SignalServiceAddress) {
+        ProfileFetcherJob.serialQueue.sync {
+            ProfileFetcherJob.fetchDateMap[address] = Date()
         }
     }
 }

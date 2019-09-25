@@ -25,10 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSUploadOperation (Testing)
 
-- (instancetype)initWithAttachmentId:(NSString *)attachmentId
-                        dbConnection:(YapDatabaseConnection *)dbConnection
-                      networkManager:(TSNetworkManager *)networkManager;
-
 @end
 
 #pragma mark -
@@ -37,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) OWSUploadOperation *uploadingService;
 
-- (void)sendMessageToService:(TSOutgoingMessage *)message
+- (void)sendMessageToService:(OutgoingMessagePreparer *)message
                      success:(void (^)(void))successHandler
                      failure:(RetryableFailureHandler)failureHandler;
 
@@ -78,21 +74,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation OWSFakeUploadingService
-
-- (instancetype)initWithAttachmentId:(NSString *)attachmentId
-                        dbConnection:(YapDatabaseConnection *)dbConnection
-                       shouldSucceed:(BOOL)shouldSucceed
-{
-    self =
-        [super initWithAttachmentId:attachmentId dbConnection:dbConnection networkManager:[OWSFakeNetworkManager new]];
-    if (!self) {
-        return self;
-    }
-
-    _shouldSucceed = shouldSucceed;
-
-    return self;
-}
 
 - (void)uploadAttachmentStream:(TSAttachmentStream *)attachmentStream
                        message:(TSOutgoingMessage *)outgoingMessage
@@ -261,8 +242,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testExpiringMessageTimerStartsOnSuccessWhenDisappearingMessagesEnabled
 {
-    [[[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:self.thread.uniqueId enabled:YES durationSeconds:10]
-        save];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        OWSDisappearingMessagesConfiguration *configuration =
+            [self.thread disappearingMessagesDurationWithTransaction:transaction];
+        configuration = [configuration copyAsEnabledWithDurationSeconds:10];
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [configuration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+    }];
 
     OWSMessageSender *messageSender = self.successfulMessageSender;
 
@@ -292,8 +281,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testExpiringMessageTimerDoesNotStartsWhenDisabled
 {
-    [[[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:self.thread.uniqueId enabled:NO durationSeconds:10]
-        save];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        OWSDisappearingMessagesConfiguration *configuration =
+            [self.thread disappearingMessagesDurationWithTransaction:transaction];
+        configuration = [configuration copyAsEnabledWithDurationSeconds:10];
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [configuration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+    }];
 
     OWSMessageSender *messageSender = self.successfulMessageSender;
 

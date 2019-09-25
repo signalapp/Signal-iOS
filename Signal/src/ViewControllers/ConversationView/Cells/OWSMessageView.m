@@ -91,6 +91,12 @@ NS_ASSUME_NONNULL_BEGIN
     [tap requireGestureRecognizerToFail:pan];
 }
 
+- (BOOL)willHandleTapGesture:(UITapGestureRecognizer *)sender
+{
+    OWSAbstractMethod();
+    return NO;
+}
+
 - (void)handleTapGesture:(UITapGestureRecognizer *)sender
 {
     OWSAbstractMethod();

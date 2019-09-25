@@ -41,18 +41,6 @@
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Видеозвонок";
 
-/* A label for the 'add by phone number' button in the 'add group member' view */
-"ADD_GROUP_MEMBER_VIEW_BUTTON" = "Добавить";
-
-/* Title for the 'add contact' section of the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "Добавить контакт";
-
-/* Title for the 'add by phone number' section of the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "Добавить по номеру телефона";
-
-/* Title for the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_TITLE" = "Добавить участника";
-
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Вы хотите открыть свой профиль этой группе?";
 
@@ -119,11 +107,17 @@
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Подпись";
 
+/* alert text when Signal was unable to save a copy of the attachment to the system photo library */
+"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Не удалось сохранить";
+
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Тип файла: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Размер: %@";
+
+/* toast alert shown after user taps the 'save' button */
+"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Сохранено";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Отпр.";
@@ -132,7 +126,7 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "Вложение";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Не удалось скачать. Нажмите, чтобы повторить.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Не удалось скачать. Повторить?";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Ошибка отправки вложения";
@@ -165,7 +159,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Вложение пустое.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Выбрать или сделать фотографию и затем отправить её";
+"ATTACHMENT_HINT" = "Выберите медиа для отправки";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "Камера";
@@ -202,6 +196,9 @@
 
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Голосовое сообщение";
+
+/* A string indicating that an audio message is playing. */
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Аудио-сообщение";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Динамик";
@@ -485,8 +482,11 @@
 /* Table section header for group listing when composing a new message */
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Группы";
 
-/* Table section header for invite listing when composing a new message */
-"COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Пригласить";
+/* Table section header for phone number search when composing a new message */
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Поиск по номеру телефона";
+
+/* Table section header for username search when composing a new message */
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Поиск по имени пользователя";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Вы можете разрешить доступ к контактам в приложении «Настройки», чтобы видеть, какие из ваших контактов являются пользователями Signal.";
@@ -690,7 +690,7 @@
 "CONVERSATION_SETTINGS_SEARCH" = "Искать в разговоре";
 
 /* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Нажмите, чтобы изменить";
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Изменить…";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Включить звуки";
@@ -736,9 +736,6 @@
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Выберите код страны";
-
-/* Accessibility label for the create group new group button */
-"CREATE_NEW_GROUP" = "Создать новую группу";
 
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Переместить и масштабировать";
@@ -858,12 +855,6 @@
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Редактировать группу";
 
-/* Label for the cell that lets you add a new member to a group. */
-"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Добавить…";
-
-/* a title for the members section of the 'new/update group' view. */
-"EDIT_GROUP_MEMBERS_SECTION_TITLE" = "Участники";
-
 /* An indicator that a user is a new member of the group. */
 "EDIT_GROUP_NEW_MEMBER_LABEL" = "Добавлен";
 
@@ -939,6 +930,9 @@
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Звонок не удался.";
 
+/* Label indicating that this OS version is no longer supported. */
+"END_OF_LIFE_OS_WARNING" = "The latest Signal features won’t work on this version of iOS. Please upgrade this device to receive future Signal updates.";
+
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Не удалось получить доступ к контактам.";
 
@@ -950,9 +944,6 @@
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Не удалось отправить сообщение пользователю, так как вы заблокировали его.";
-
-/* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Не удалось записать и отправить вложение.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal не смог подключиться к интернету. Пожалуйста, попробуйте позже.";
@@ -1027,13 +1018,13 @@
 "EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Поехали";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Ваша версия Signal устарела! Сообщения больше не будут отправляться успешно. Нажмите, чтобы обновиться до последней версии.";
+"EXPIRATION_ERROR" = "Ваша версия Signal устарела! Сообщения более не будут отправляться. Обновиться до последней версии…";
 
 /* Label warning the user that the app will expire soon. */
-"EXPIRATION_WARNING_SOON" = "Ваша версия Signal перестанет работать через %d дней. Нажмите, чтобы обновиться до последней версии.";
+"EXPIRATION_WARNING_SOON" = "Ваша версия Signal перестанет работать через %d дней. Обновиться до последней версии?";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "Ваша версия Signal перестанет работать сегодня. Нажмите, чтобы обновиться до последней версии.";
+"EXPIRATION_WARNING_TODAY" = "Ваша версия Signal перестанет работать сегодня. Обновиться до последней версии?";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Слишком много ошибок с этим контактом. Пожалуйста, попробуйте позже.";
@@ -1081,7 +1072,7 @@
 "GIF_PICKER_VIEW_TITLE" = "Поиск GIF";
 
 /* Indicates that an error occurred while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Ошибка. Нажмите, чтобы повторить попытку.";
+"GIF_VIEW_SEARCH_ERROR" = "Ошибка. Повторить попытку?";
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "Нет результатов.";
@@ -1096,7 +1087,7 @@
 "GROUP_CREATED" = "Группа создана.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "Не всех участников удалось добавить в группу. Нажмите, чтобы повторить попытку.";
+"GROUP_CREATION_FAILED" = "Не всех участников удалось добавить в группу. Повторить попытку?";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Управление группой";
@@ -1217,6 +1208,12 @@
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ теперь в Signal!";
+
+/* accessibility label for the button which shows the sticker picker */
+"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Стикеры";
+
+/* accessibility label for the button which records voice memos */
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Голосовое сообщение";
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Некорректный аудиофайл.";
@@ -1353,7 +1350,7 @@
 /* Label for the recipient name in the 'message approval' dialog. */
 "MESSAGE_APPROVAL_RECIPIENT_LABEL" = "Кому:";
 
-/* No comment provided by engineer. */
+/* Title for the compose view. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Новое сообщение";
 
 /* Label for file size of attachments in the 'message metadata' view. */
@@ -1462,13 +1459,13 @@
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Новое сообщение";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ больше не отмечен как подтверждённый. Нажмите для показа опций.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ больше не отмечен как подтверждённый. Показать опции…";
 
 /* Indicates that this 1:1 conversation has been blocked. */
 "MESSAGES_VIEW_CONTACT_BLOCKED" = "Вы заблокировали этого пользователя";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ больше не отмечен как подтверждённый. Нажмите для показа опций.";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ больше не отмечен как подтверждённый. Показать опции…";
 
 /* Indicates that a single member of this group has been blocked. */
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Вы заблокировали 1 участника этой группы";
@@ -1480,10 +1477,10 @@
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Вы заблокировали %@ участников этой группы";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Более одного участника этой группы больше не отмечены как подтверждённые. Нажмите для показа опций.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Более одного участника этой группы больше не отмечены как подтверждённые. Показать опции…";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Нажмите здесь для настроек";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Показать настройки…";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Новые сообщения";
@@ -1553,9 +1550,6 @@
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Найти по номеру телефона";
 
-/* A label for the cell that lets you add a new non-contact member to a group. */
-"NEW_GROUP_ADD_NON_CONTACT" = "Добавить по номеру телефона";
-
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Установить фотографию группы";
 
@@ -1574,7 +1568,7 @@
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Дайте имя этой группе";
 
-/* a title for the non-contacts section of the 'new group' view. */
+/* a title for the selected section of the 'recipient picker' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Прочие пользователи";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
@@ -1594,6 +1588,12 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Поиск контактов по номеру телефона";
+
+/* A string prompting the user to send a new mesaage to a user */
+"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Новое сообщение для:";
+
+/* A string asking the user if they'd like to invite a number to signal via SMS. */
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Пользователь не найден. Пригласить через SMS?";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Заметка для себя";
@@ -1684,15 +1684,6 @@
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_TITLE" = "Введите свой PIN-код";
-
-/* Explanation in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_EXPLANATION" = "Профили Signal защищены сквозным шифрованием, и сервис Signal никогда не имеет доступа к этой информации.";
-
-/* Placeholder text for the profile name in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Ваше имя";
-
-/* Title of the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_TITLE" = "Создайте свой профиль";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Условия и Политика конфиденциальности";
@@ -1946,6 +1937,9 @@
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "Удалить аватар";
 
+/* A string indicating that the user can create a username on the profile view. */
+"PROFILE_VIEW_CREATE_USERNAME" = "Создать имя пользователя";
+
 /* Error message shown when user tries to update profile with a profile name that is too long. */
 "PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Ваше имя профиля слишком длинное.";
 
@@ -1954,9 +1948,6 @@
 
 /* Default text for the profile name field of the profile view. */
 "PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Введите ваше имя";
-
-/* Label for the profile avatar field of the profile view. */
-"PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Аватар";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Ваш профиль Signal станет виден вашим контактам, когда вы начинаете новые разговоры и когда вы открываете его другим пользователям и группам.";
@@ -1972,6 +1963,9 @@
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Профиль";
+
+/* Label for the username field of the profile view. */
+"PROFILE_VIEW_USERNAME_FIELD" = "Имя пользователя";
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Прочитано";
@@ -2189,7 +2183,10 @@
 /* Label for button on lock screen that lets users unlock Signal. */
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Разблокировать Signal";
 
-/* No comment provided by engineer. */
+/* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Имя, имя пользователя или номер";
+
+/* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Поиск по имени или номеру";
 
 /* placeholder text in an empty search field */
@@ -2228,9 +2225,6 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Вы пригласили своего друга в Signal!";
 
-/* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Пригласить по SMS: %@";
-
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
 "SEND_MEDIA_ABANDON_TITLE" = "Не отправлять медиа?";
 
@@ -2251,12 +2245,6 @@
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "О программе";
-
-/* Title for the 'block contact' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "Заблокировать контакт";
-
-/* Title for the 'block phone number' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "Заблокировать номер телефона";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Заблокировать";
@@ -2293,6 +2281,9 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Расширенные";
+
+/* table cell label */
+"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Просмотреть журналы ошибок";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (по умолчанию)";
@@ -2813,6 +2804,42 @@
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Обновите iOS";
 
+/* An explanation of how usernames work on the username view. */
+"USERNAME_DESCRIPTION" = "Имена пользователей в Signal необязательны. Если вы решите создать имя пользователя, другие пользователи Signal смогут найти вас по этому имени пользователя и связаться с вами, не зная ваш номер телефона.";
+
+/* Label for the username field in the username view. */
+"USERNAME_FIELD" = "Имя пользователя";
+
+/* An error indicating that the supplied username contains disallowed characters. */
+"USERNAME_INVALID_CHARACTERS_ERROR" = "Имена пользователей могут содержать только a-z, 0-9 и _";
+
+/* A message indicating that username lookup failed. */
+"USERNAME_LOOKUP_ERROR" = "Произошла ошибка при поиске имени пользователя. Пожалуйста, попробуйте ещё раз позже.";
+
+/* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
+"USERNAME_NOT_FOUND_FORMAT" = "%@ — не пользователь Signal. Убедитесь, что вы ввели полное имя пользователя.";
+
+/* A message indicating that the given username was not registered with signal. */
+"USERNAME_NOT_FOUND_TITLE" = "Пользователь не найден";
+
+/* The placeholder for the username text entry in the username view. */
+"USERNAME_PLACEHOLDER" = "Введите имя пользователя";
+
+/* A prefix appeneded to all usernames when displayed */
+"USERNAME_PREFIX" = "@";
+
+/* The title for the username view. */
+"USERNAME_TITLE" = "Имя пользователя";
+
+/* An error indicating that the supplied username is too short. */
+"USERNAME_TOO_SHORT_ERROR" = "Имя пользователя должно содержать как минимум 4 символа.";
+
+/* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
+"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ занято.";
+
+/* Error moessage shown when a username update fails. */
+"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Не удалось изменить имя пользователя.";
+
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Вы отметили %@ как неподтверждённый.";
 
@@ -2841,7 +2868,7 @@
 "VOICE_MESSAGE_FILE_NAME" = "Голосовое сообщение";
 
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Нажмите и удерживайте, чтобы записать голосовое сообщение.";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Удерживайте, чтобы записать голосовое сообщение.";
 
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Голосовое сообщение";

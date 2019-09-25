@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration =
-        [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:groupThread.uniqueId transaction:transaction];
+        [groupThread disappearingMessagesConfigurationWithTransaction:transaction];
 
     if (disappearingMessagesConfiguration && disappearingMessagesConfiguration.isEnabled) {
         [groupBuilder setExpireTimer:disappearingMessagesConfiguration.durationSeconds];

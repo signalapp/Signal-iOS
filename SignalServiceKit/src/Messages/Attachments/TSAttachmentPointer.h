@@ -42,6 +42,28 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
 // Non-nil for attachments which need "lazy backup restore."
 - (nullable OWSBackupFragment *)lazyRestoreFragmentWithTransaction:(SDSAnyReadTransaction *)transaction;
 
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithServerId:(UInt64)serverId
+                   encryptionKey:(NSData *)encryptionKey
+                       byteCount:(UInt32)byteCount
+                     contentType:(NSString *)contentType
+                  sourceFilename:(nullable NSString *)sourceFilename
+                         caption:(nullable NSString *)caption
+                  albumMessageId:(nullable NSString *)albumMessageId NS_UNAVAILABLE;
+
+- (instancetype)initForRestoreWithUniqueId:(NSString *)uniqueId
+                               contentType:(NSString *)contentType
+                            sourceFilename:(nullable NSString *)sourceFilename
+                                   caption:(nullable NSString *)caption
+                            albumMessageId:(nullable NSString *)albumMessageId NS_UNAVAILABLE;
+
+- (instancetype)initAttachmentWithContentType:(NSString *)contentType
+                                    byteCount:(UInt32)byteCount
+                               sourceFilename:(nullable NSString *)sourceFilename
+                                      caption:(nullable NSString *)caption
+                               albumMessageId:(nullable NSString *)albumMessageId NS_UNAVAILABLE;
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithServerId:(UInt64)serverId

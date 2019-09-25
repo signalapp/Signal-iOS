@@ -191,7 +191,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(identityKeyPair);
     NSData *myPublicKey = identityKeyPair.publicKey;
     NSData *myPrivateKey = identityKeyPair.privateKey;
-    NSString *accountIdentifier = [TSAccountManager localNumber];
+    SignalServiceAddress *accountAddress = [TSAccountManager localAddress];
     NSData *myProfileKeyData = self.profileManager.localProfileKey.keyData;
     BOOL areReadReceiptsEnabled = self.readReceiptManager.areReadReceiptsEnabled;
 
@@ -199,7 +199,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                              myPrivateKey:myPrivateKey
                                                                            theirPublicKey:parser.publicKey
                                                                    theirEphemeralDeviceId:parser.ephemeralDeviceId
-                                                                        accountIdentifier:accountIdentifier
+                                                                           accountAddress:accountAddress
                                                                                profileKey:myProfileKeyData
                                                                       readReceiptsEnabled:areReadReceiptsEnabled];
 

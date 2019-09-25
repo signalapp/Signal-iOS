@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDeviceProvisioner.h"
@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSData *myPublicKey;
 @property (nonatomic, readonly) NSData *myPrivateKey;
 @property (nonatomic, readonly) NSData *theirPublicKey;
-@property (nonatomic, readonly) NSString *accountIdentifier;
+@property (nonatomic, readonly) SignalServiceAddress *accountAddress;
 @property (nonatomic, readonly) NSData *profileKey;
 @property (nonatomic, nullable) NSString *ephemeralDeviceId;
 @property (nonatomic, readonly) BOOL areReadReceiptsEnabled;
@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
                        myPrivateKey:(NSData *)myPrivateKey
                      theirPublicKey:(NSData *)theirPublicKey
              theirEphemeralDeviceId:(NSString *)ephemeralDeviceId
-                  accountIdentifier:(NSString *)accountIdentifier
+                     accountAddress:(SignalServiceAddress *)accountAddress
                          profileKey:(NSData *)profileKey
                 readReceiptsEnabled:(BOOL)areReadReceiptsEnabled
             provisioningCodeService:(OWSDeviceProvisioningCodeService *)provisioningCodeService
@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
     _myPublicKey = myPublicKey;
     _myPrivateKey = myPrivateKey;
     _theirPublicKey = theirPublicKey;
-    _accountIdentifier = accountIdentifier;
+    _accountAddress = accountAddress;
     _profileKey = profileKey;
     _ephemeralDeviceId = ephemeralDeviceId;
     _areReadReceiptsEnabled = areReadReceiptsEnabled;
@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
                        myPrivateKey:(NSData *)myPrivateKey
                      theirPublicKey:(NSData *)theirPublicKey
              theirEphemeralDeviceId:(NSString *)ephemeralDeviceId
-                  accountIdentifier:(NSString *)accountIdentifier
+                     accountAddress:(SignalServiceAddress *)accountAddress
                          profileKey:(NSData *)profileKey
                 readReceiptsEnabled:(BOOL)areReadReceiptsEnabled
 {
@@ -66,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
                         myPrivateKey:myPrivateKey
                       theirPublicKey:theirPublicKey
               theirEphemeralDeviceId:ephemeralDeviceId
-                   accountIdentifier:accountIdentifier
+                      accountAddress:accountAddress
                           profileKey:profileKey
                  readReceiptsEnabled:areReadReceiptsEnabled
              provisioningCodeService:[OWSDeviceProvisioningCodeService new]
@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSProvisioningMessage *message = [[OWSProvisioningMessage alloc] initWithMyPublicKey:self.myPublicKey
                                                                              myPrivateKey:self.myPrivateKey
                                                                            theirPublicKey:self.theirPublicKey
-                                                                        accountIdentifier:self.accountIdentifier
+                                                                        accountAddress:self.accountAddress
                                                                                profileKey:self.profileKey
                                                                       readReceiptsEnabled:self.areReadReceiptsEnabled
                                                                          provisioningCode:provisioningCode];

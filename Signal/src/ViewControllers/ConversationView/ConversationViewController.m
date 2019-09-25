@@ -33,7 +33,6 @@
 #import "TSAttachmentPointer.h"
 #import "TSCall.h"
 #import "TSContactThread.h"
-#import "TSDatabaseView.h"
 #import "TSErrorMessage.h"
 #import "TSGroupThread.h"
 #import "TSIncomingMessage.h"
@@ -206,8 +205,11 @@ typedef enum : NSUInteger {
 @property (nonatomic, nullable) MenuActionsViewController *menuActionsViewController;
 @property (nonatomic) CGFloat extraContentInsetPadding;
 @property (nonatomic) CGFloat contentInsetBottom;
+@property (nonatomic) CGFloat contentOffsetAdjustment;
 
 @property (nonatomic, nullable) MessageRequestView *messageRequestView;
+
+@property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
 
 @end
 
@@ -624,6 +626,9 @@ typedef enum : NSUInteger {
 
     [self.collectionView applyScrollViewInsetsFix];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _collectionView);
+
+    self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyBoard)];
+    [self.collectionView addGestureRecognizer:self.tapGestureRecognizer];
 
     _inputToolbar = [[ConversationInputToolbar alloc] initWithConversationStyle:self.conversationStyle];
     self.inputToolbar.inputToolbarDelegate = self;
@@ -1824,8 +1829,7 @@ typedef enum : NSUInteger {
 
 - (void)updateDisappearingMessagesConfigurationWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    self.disappearingMessagesConfiguration =
-        [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:self.thread.uniqueId transaction:transaction];
+    self.disappearingMessagesConfiguration = [self.thread disappearingMessagesConfigurationWithTransaction:transaction];
 }
 
 - (void)setDisappearingMessagesConfiguration:
@@ -1876,15 +1880,15 @@ typedef enum : NSUInteger {
                                }];
     [actionSheet addAction:deleteMessageAction];
 
-    UIAlertAction *resendMessageAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
-               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_again")
-                                 style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *action) {
-                                   [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                                       [self.messageSenderJobQueue addMessage:message transaction:transaction];
-                                   }];
-                               }];
+    UIAlertAction *resendMessageAction = [UIAlertAction
+                actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
+        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_again")
+                          style:UIAlertActionStyleDefault
+                        handler:^(UIAlertAction *action) {
+                            [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
+                            }];
+                        }];
 
     [actionSheet addAction:resendMessageAction];
 
@@ -2125,11 +2129,16 @@ typedef enum : NSUInteger {
         return;
     }
 
+    CGPoint contentOffset = self.collectionView.contentOffset;
+    contentOffset.y -= self.contentOffsetAdjustment;
+    self.collectionView.contentOffset = contentOffset;
+
     UIEdgeInsets contentInset = self.collectionView.contentInset;
     contentInset.top -= self.extraContentInsetPadding;
     contentInset.bottom -= self.extraContentInsetPadding;
     self.collectionView.contentInset = contentInset;
 
+    self.contentOffsetAdjustment = 0;
     self.menuActionsViewController = nil;
     self.extraContentInsetPadding = 0;
 }
@@ -2150,6 +2159,7 @@ typedef enum : NSUInteger {
         OWSFailDebug(@"Missing contentOffset.");
         return;
     }
+    self.contentOffsetAdjustment += contentOffset.CGPointValue.y - self.collectionView.contentOffset.y;
     [self.collectionView setContentOffset:contentOffset.CGPointValue animated:animated];
 }
 
@@ -2448,8 +2458,6 @@ typedef enum : NSUInteger {
 - (void)didTapAudioViewItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream
 {
     [self prepareAudioPlayerForViewItem:viewItem attachmentStream:attachmentStream];
-
-    [self dismissKeyBoard];
 
     // Resume from where we left off
     [self.audioAttachmentPlayer setCurrentTime:viewItem.audioProgressSeconds];
@@ -2885,9 +2893,6 @@ typedef enum : NSUInteger {
     [self.conversationViewModel clearUnreadMessagesIndicator];
     self.inputToolbar.quotedReply = nil;
 
-    if (!Environment.shared.preferences.hasSentAMessage) {
-        [Environment.shared.preferences setHasSentAMessage:YES];
-    }
     if ([Environment.shared.preferences soundInForeground]) {
         SystemSoundID soundId = [OWSSounds systemSoundIDForSound:OWSSound_MessageSent quiet:YES];
         AudioServicesPlaySystemSound(soundId);
@@ -2952,9 +2957,12 @@ typedef enum : NSUInteger {
 
     OWSAssertDebug(type);
     OWSAssertDebug(filename);
-    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithURL:url shouldDeleteOnDeallocation:NO];
-    if (!dataSource) {
-        OWSFailDebug(@"attachment data was unexpectedly empty for picked document");
+    NSError *error;
+    _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithURL:url
+                                                 shouldDeleteOnDeallocation:NO
+                                                                      error:&error];
+    if (dataSource == nil) {
+        OWSFailDebug(@"error: %@", error);
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [OWSAlerts showAlertWithTitle:NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE",
@@ -3083,6 +3091,11 @@ typedef enum : NSUInteger {
     return @"send-solid-24";
 }
 
+- (BOOL)sendMediaNavCanSaveAttachments
+{
+    return YES;
+}
+
 #pragma mark -
 
 - (void)sendContactShare:(ContactShareViewModel *)contactShare
@@ -3122,8 +3135,16 @@ typedef enum : NSUInteger {
         presentFromViewController:self
                         canCancel:YES
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      DataSource *dataSource =
-                          [DataSourcePath dataSourceWithURL:movieURL shouldDeleteOnDeallocation:NO];
+                      NSError *error;
+                      id<DataSource>dataSource =
+                          [DataSourcePath dataSourceWithURL:movieURL
+                                 shouldDeleteOnDeallocation:NO
+                                                      error:&error];
+                      if (error != nil) {
+                          [self showErrorAlertForAttachment:nil];
+                          return;
+                      }
+
                       dataSource.sourceFilename = filename;
                       VideoCompressionResult *compressionResult =
                           [SignalAttachment compressVideoAsMp4WithDataSource:dataSource
@@ -3272,12 +3293,15 @@ typedef enum : NSUInteger {
         return;
     }
 
-    DataSource *_Nullable dataSource =
-        [DataSourcePath dataSourceWithURL:self.audioRecorder.url shouldDeleteOnDeallocation:YES];
+    NSError *error;
+    _Nullable id<DataSource> dataSource =
+        [DataSourcePath dataSourceWithURL:self.audioRecorder.url
+               shouldDeleteOnDeallocation:YES
+                                    error:&error];
     self.audioRecorder = nil;
 
-    if (!dataSource) {
-        OWSFailDebug(@"Couldn't load audioRecorder data");
+    if (error != nil) {
+        OWSFailDebug(@"Couldn't load audioRecorder data: %@", error);
         self.audioRecorder = nil;
         return;
     }
@@ -3425,10 +3449,6 @@ typedef enum : NSUInteger {
 
 - (void)updateLastVisibleSortIdWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    if (!transaction.transitional_yapReadTransaction) {
-        return;
-    }
-
     NSIndexPath *_Nullable lastVisibleIndexPath = [self lastVisibleIndexPath];
     id<ConversationViewItem> _Nullable lastVisibleViewItem;
     if (lastVisibleIndexPath) {
@@ -3448,10 +3468,10 @@ typedef enum : NSUInteger {
 
     [self ensureScrollDownButton];
 
-    __block NSUInteger numberOfUnreadMessages;
-    numberOfUnreadMessages = [[transaction.transitional_yapReadTransaction ext:TSUnreadDatabaseViewExtensionName]
-        numberOfItemsInGroup:self.thread.uniqueId];
-    [self setHasUnreadMessages:numberOfUnreadMessages > 0 transaction:transaction];
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.thread.uniqueId];
+    NSUInteger unreadCount = [interactionFinder unreadCountWithTransaction:transaction];
+
+    [self setHasUnreadMessages:unreadCount > 0 transaction:transaction];
 }
 
 - (void)markVisibleMessagesAsRead
@@ -3483,7 +3503,7 @@ typedef enum : NSUInteger {
     [OWSReadReceiptManager.sharedManager markAsReadLocallyBeforeSortId:self.lastVisibleSortId thread:self.thread];
 }
 
-// GRBD TODO: Revisit this method.
+// GRDB TODO: Revisit this method.
 - (void)updateGroupModelTo:(TSGroupModel *)newGroupModel successCompletion:(void (^_Nullable)(void))successCompletion
 {
     __block TSGroupThread *groupThread;
@@ -3511,7 +3531,7 @@ typedef enum : NSUInteger {
 
     if (newGroupModel.groupImage) {
         NSData *data = UIImagePNGRepresentation(newGroupModel.groupImage);
-        DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
+        _Nullable id<DataSource> dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
         // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
         // which causes this code to be called. Once we're more aggressive about durable sending retry,
         // we could get rid of this "retryable tappable error message".
@@ -3531,7 +3551,7 @@ typedef enum : NSUInteger {
         // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
         // which causes this code to be called. Once we're more aggressive about durable sending retry,
         // we could get rid of this "retryable tappable error message".
-        [self.messageSender sendMessage:message
+        [self.messageSender sendMessage:message.asPreparer
             success:^{
                 OWSLogDebug(@"Successfully sent group update");
                 if (successCompletion) {
@@ -3822,6 +3842,10 @@ typedef enum : NSUInteger {
     BOOL wasScrolledToBottom = [self isScrolledToBottom];
 
     void (^adjustInsets)(void) = ^(void) {
+        // Changing the contentInset can change the contentOffset, so make sure we
+        // stash the current value before making any changes.
+        CGFloat oldYOffset = self.collectionView.contentOffset.y;
+
         if (!UIEdgeInsetsEqualToEdgeInsets(self.collectionView.contentInset, newInsets)) {
             self.collectionView.contentInset = newInsets;
         }
@@ -3847,13 +3871,16 @@ typedef enum : NSUInteger {
             // If we were scrolled away from the bottom, shift the content in lockstep with the
             // keyboard, up to the limits of the content bounds.
             CGFloat insetChange = newInsets.bottom - oldInsets.bottom;
-            CGFloat oldYOffset = self.collectionView.contentOffset.y;
-            CGFloat newYOffset = CGFloatClamp(oldYOffset + insetChange, 0, self.safeContentHeight);
-            CGPoint newOffset = CGPointMake(0, newYOffset);
 
-            // If the user is dismissing the keyboard via interactive scrolling, any additional conset offset feels
-            // redundant, so we only adjust content offset when *presenting* the keyboard (i.e. when insetChange > 0).
-            if (insetChange > 0 && newYOffset > keyboardEndFrame.origin.y) {
+            // Only update the content offset if the inset has changed.
+            if (insetChange != 0) {
+                // The content offset can go negative, up to the size of the top layout guide.
+                // This accounts for the extended layout under the navigation bar.
+                CGFloat minYOffset = -self.topLayoutGuide.length;
+
+                CGFloat newYOffset = CGFloatClamp(oldYOffset + insetChange, minYOffset, self.safeContentHeight);
+                CGPoint newOffset = CGPointMake(0, newYOffset);
+
                 [self.collectionView setContentOffset:newOffset animated:NO];
             }
         }
@@ -4558,6 +4585,13 @@ typedef enum : NSUInteger {
 
     [cell loadForDisplay];
 
+    // This must happen after load for display, since the tap
+    // gesture doesn't get added to a view until this point.
+    if ([cell isKindOfClass:[OWSMessageCell class]]) {
+        OWSMessageCell *messageCell = (OWSMessageCell *)cell;
+        [self.tapGestureRecognizer requireGestureRecognizerToFail:messageCell.tapGestureRecognizer];
+    }
+
 #ifdef DEBUG
     // TODO: Confirm with nancy if this will work.
     NSString *cellName = [NSString stringWithFormat:@"interaction.%@", NSUUID.UUID.UUIDString];
@@ -5259,7 +5293,7 @@ typedef enum : NSUInteger {
                                                                        groupMetaMessage:TSGroupMetaMessageQuit
                                                                        expiresInSeconds:0];
 
-                [self.messageSenderJobQueue addMessage:message transaction:transaction];
+                [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
                 [groupThread leaveGroupWithTransaction:transaction];
             }
         }

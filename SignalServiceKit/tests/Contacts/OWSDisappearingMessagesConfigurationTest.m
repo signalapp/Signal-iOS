@@ -4,64 +4,270 @@
 
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "SSKBaseTestObjC.h"
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSContactThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface OWSDisappearingMessagesConfiguration (Tests)
+
++ (nullable instancetype)fetchWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
+
+@end
+
+#pragma mark -
 
 @interface OWSDisappearingMessagesConfigurationTest : SSKBaseTestObjC
 
 @end
 
+#pragma mark -
+
 @implementation OWSDisappearingMessagesConfigurationTest
 
-- (void)testDictionaryValueDidChange
+- (void)testUpsert
 {
-    OWSDisappearingMessagesConfiguration *configuration =
-        [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:@"fake-thread-id"
-                                                               enabled:YES
-                                                       durationSeconds:10];
-    XCTAssertFalse(configuration.dictionaryValueDidChange);
-
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [configuration anyInsertWithTransaction:transaction];
+        SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
+        TSContactThread *thread = [[TSContactThread alloc] initWithContactAddress:address];
+        [thread anyInsertWithTransaction:transaction];
+
+        XCTAssertNil([OWSDisappearingMessagesConfiguration fetchWithThread:thread transaction:transaction]);
+        XCTAssertNotNil([OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread
+                                                                                transaction:transaction]);
+
+        OWSDisappearingMessagesConfiguration *configuration =
+            [thread disappearingMessagesConfigurationWithTransaction:transaction];
+        configuration = [configuration copyAsEnabledWithDurationSeconds:10];
+
+        XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [configuration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+
+        XCTAssertNotNil([OWSDisappearingMessagesConfiguration fetchWithThread:thread transaction:transaction]);
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
     }];
-    XCTAssertFalse(configuration.dictionaryValueDidChange);
-
-    configuration.enabled = NO;
-    XCTAssertTrue(configuration.dictionaryValueDidChange);
-
-    configuration.enabled = YES;
-    XCTAssertFalse(configuration.dictionaryValueDidChange);
-
-    __block OWSDisappearingMessagesConfiguration *reloadedConfiguration;
-    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        reloadedConfiguration =
-            [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:@"fake-thread-id" transaction:transaction];
-    }];
-    XCTAssertNotNil(reloadedConfiguration); // Sanity Check.
-    XCTAssertFalse(reloadedConfiguration.dictionaryValueDidChange);
-
-    reloadedConfiguration.durationSeconds = 30;
-    XCTAssertTrue(reloadedConfiguration.dictionaryValueDidChange);
-
-    reloadedConfiguration.durationSeconds = 10;
-    XCTAssertFalse(reloadedConfiguration.dictionaryValueDidChange);
 }
 
-- (void)testDontStoreEphemeralProperties
+- (void)testDefaultVsEnabledIsChanged
 {
-    OWSDisappearingMessagesConfiguration *configuration =
-        [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:@"fake-thread-id"
-                                                               enabled:YES
-                                                       durationSeconds:10];
+    SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
+    TSContactThread *thread = [[TSContactThread alloc] initWithContactAddress:address];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [thread anyInsertWithTransaction:transaction];
 
+        XCTAssertNil([OWSDisappearingMessagesConfiguration fetchWithThread:thread transaction:transaction]);
+        XCTAssertNotNil([OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread
+                                                                                transaction:transaction]);
 
-    // Unfortunately this test will break every time you add, remove, or rename a property, but on the
-    // plus side it has a chance of catching when you indadvertently remove our ephemeral properties
-    // from our Mantle storage blacklist.
-    NSArray<NSString *> *expected = @[ @"enabled", @"durationSeconds", @"uniqueId" ];
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread transaction:transaction];
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+        configuration = [configuration copyWithIsEnabled:YES];
+        XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
 
-    XCTAssertEqualObjects(expected, [configuration.dictionaryValue allKeys]);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [configuration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+
+        XCTAssertNotNil([OWSDisappearingMessagesConfiguration fetchWithThread:thread transaction:transaction]);
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+    }];
+}
+
+- (void)testDefaultVsNonDefaultDurationIsChanged
+{
+    SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
+    TSContactThread *thread = [[TSContactThread alloc] initWithContactAddress:address];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [thread anyInsertWithTransaction:transaction];
+
+        XCTAssertNil([OWSDisappearingMessagesConfiguration fetchWithThread:thread transaction:transaction]);
+        XCTAssertNotNil([OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread
+                                                                                transaction:transaction]);
+
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread transaction:transaction];
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+        configuration = [configuration copyWithDurationSeconds:kWeekInterval];
+        XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [configuration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+
+        XCTAssertNotNil([OWSDisappearingMessagesConfiguration fetchWithThread:thread transaction:transaction]);
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+    }];
+}
+
+- (void)testDefaultVsAllNonDefaultsIsChanged
+{
+    SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
+    TSContactThread *thread = [[TSContactThread alloc] initWithContactAddress:address];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [thread anyInsertWithTransaction:transaction];
+
+        XCTAssertNil([OWSDisappearingMessagesConfiguration fetchWithThread:thread transaction:transaction]);
+        XCTAssertNotNil([OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread
+                                                                                transaction:transaction]);
+
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread transaction:transaction];
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+        configuration = [configuration copyAsEnabledWithDurationSeconds:kWeekInterval];
+        XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [configuration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+
+        XCTAssertNotNil([OWSDisappearingMessagesConfiguration fetchWithThread:thread transaction:transaction]);
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+    }];
+}
+
+- (void)testDefaultVsNotEnabledIsNotChanged
+{
+    SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
+    TSContactThread *thread = [[TSContactThread alloc] initWithContactAddress:address];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [thread anyInsertWithTransaction:transaction];
+
+        XCTAssertNil([OWSDisappearingMessagesConfiguration fetchWithThread:thread transaction:transaction]);
+        XCTAssertNotNil([OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread
+                                                                                transaction:transaction]);
+
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread transaction:transaction];
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+        configuration = [configuration copyWithIsEnabled:NO];
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [configuration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+
+        XCTAssertNotNil([OWSDisappearingMessagesConfiguration fetchWithThread:thread transaction:transaction]);
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+    }];
+}
+
+- (void)testDefaultVsDefaultDurationIsNotChanged
+{
+    SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
+    TSContactThread *thread = [[TSContactThread alloc] initWithContactAddress:address];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [thread anyInsertWithTransaction:transaction];
+
+        XCTAssertNil([OWSDisappearingMessagesConfiguration fetchWithThread:thread transaction:transaction]);
+        XCTAssertNotNil([OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread
+                                                                                transaction:transaction]);
+
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread transaction:transaction];
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+        configuration =
+            [configuration copyWithDurationSeconds:OWSDisappearingMessagesConfigurationDefaultExpirationDuration];
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [configuration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+
+        XCTAssertNotNil([OWSDisappearingMessagesConfiguration fetchWithThread:thread transaction:transaction]);
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+    }];
+}
+
+- (void)testMultipleWrites
+{
+    SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
+    TSContactThread *thread = [[TSContactThread alloc] initWithContactAddress:address];
+
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [thread anyInsertWithTransaction:transaction];
+
+        XCTAssertNil([OWSDisappearingMessagesConfiguration fetchWithThread:thread transaction:transaction]);
+        XCTAssertNotNil([OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread
+                                                                                transaction:transaction]);
+
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread transaction:transaction];
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [configuration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+
+        configuration = [configuration copyWithIsEnabled:YES];
+
+        XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [configuration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+
+        configuration = [configuration copyWithDurationSeconds:kWeekInterval];
+
+        XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [configuration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+    }];
+
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread transaction:transaction];
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+
+        configuration = [configuration copyWithDurationSeconds:kDayInterval];
+
+        XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [configuration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+    }];
+
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread transaction:transaction];
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+
+        configuration = [configuration copyWithIsEnabled:NO];
+
+        XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [configuration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+
+        XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
+    }];
 }
 
 @end

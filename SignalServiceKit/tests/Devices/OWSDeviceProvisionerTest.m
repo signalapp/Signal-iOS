@@ -8,6 +8,7 @@
 #import "OWSFakeNetworkManager.h"
 #import "SSKBaseTestObjC.h"
 #import "TSNetworkManager.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @interface OWSFakeDeviceProvisioningService : OWSDeviceProvisioningService
 
@@ -56,7 +57,6 @@
 
 - (void)testProvisioning
 {
-
     XCTestExpectation *expectation = [self expectationWithDescription:@"Provisioning Success"];
 
     NSData *nullKey = [[NSMutableData dataWithLength:32] copy];
@@ -64,7 +64,7 @@
     NSData *myPrivateKey = [nullKey copy];
     NSData *theirPublicKey = [nullKey copy];
     NSData *profileKey = [nullKey copy];
-    NSString *accountIdentifier;
+    SignalServiceAddress *accountAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"13213214321"];
     NSString *theirEphemeralDeviceId;
 
     OWSFakeNetworkManager *networkManager = [OWSFakeNetworkManager new];
@@ -74,15 +74,16 @@
                    myPrivateKey:myPrivateKey
                  theirPublicKey:theirPublicKey
          theirEphemeralDeviceId:theirEphemeralDeviceId
-              accountIdentifier:accountIdentifier
+                 accountAddress:accountAddress
                      profileKey:profileKey
             readReceiptsEnabled:YES
         provisioningCodeService:[[OWSFakeDeviceProvisioningCodeService alloc] initWithNetworkManager:networkManager]
             provisioningService:[[OWSFakeDeviceProvisioningService alloc] initWithNetworkManager:networkManager]];
 
-    [provisioner provisionWithSuccess:^{
-        [expectation fulfill];
-    }
+    [provisioner
+        provisionWithSuccess:^{
+            [expectation fulfill];
+        }
         failure:^(NSError *_Nonnull error) {
             XCTAssert(NO, @"Failed to provision with error: %@", error);
         }];

@@ -40,9 +40,10 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
                         expiresInSeconds:(uint32_t)expiresInSeconds
                          expireStartedAt:(uint64_t)expireStartedAt
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                            contactShare:(nullable OWSContact *)contact
+                            contactShare:(nullable OWSContact *)contactShare
                              linkPreview:(nullable OWSLinkPreview *)linkPreview
-                          messageSticker:(nullable MessageSticker *)messageSticker NS_UNAVAILABLE;
+                          messageSticker:(nullable MessageSticker *)messageSticker
+                       isViewOnceMessage:(BOOL)isViewOnceMessage NS_UNAVAILABLE;
 
 // --- CODE GENERATION MARKER
 
@@ -67,12 +68,13 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
                    customMessage:(nullable NSString *)customMessage
         infoMessageSchemaVersion:(NSUInteger)infoMessageSchemaVersion
                      messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredAddress:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredAddress:));
 
 // clang-format on
 

@@ -145,11 +145,11 @@ public struct LocalSignalClient: SignalClient {
     }
 
     public var e164Identifier: SignalE164Identifier? {
-        return TSAccountManager.localNumber()
+        return TSAccountManager.localNumber
     }
 
     public var uuid: UUID {
-        return TSAccountManager.sharedInstance().uuid!
+        return TSAccountManager.sharedInstance().localUuid!
     }
 
     public let deviceId: UInt32 = 1

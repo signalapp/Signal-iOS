@@ -14,20 +14,20 @@ extern NSString *const OWSUIDatabaseConnectionNotificationsKey;
 
 @interface OWSPrimaryStorage : OWSStorage
 
-- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initStorage;
+@property (class, nonatomic, readonly, nullable) OWSPrimaryStorage *shared;
 
-+ (instancetype)sharedManager NS_SWIFT_NAME(shared());
-
+// POST GRDB TODO: Remove this property.
 @property (nonatomic, readonly) YapDatabaseConnection *uiDatabaseConnection;
+
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
+@property (class, nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
+@property (class, nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
 
+// POST GRDB TODO: Remove this method.
 - (void)updateUIDatabaseConnectionToLatest;
-
-+ (YapDatabaseConnection *)dbReadConnection;
-+ (YapDatabaseConnection *)dbReadWriteConnection;
 
 + (nullable NSError *)migrateToSharedData;
 
@@ -40,10 +40,9 @@ extern NSString *const OWSUIDatabaseConnectionNotificationsKey;
 + (NSString *)sharedDataDatabaseFilePath_SHM;
 + (NSString *)sharedDataDatabaseFilePath_WAL;
 
-+ (void)protectFiles;
-
 #pragma mark - Misc.
 
+// POST GRDB TODO: Remove this method.
 - (void)touchDbAsync;
 
 @end

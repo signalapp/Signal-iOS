@@ -50,6 +50,9 @@ import SignalMessaging
     public var sessionResetJobQueue: SessionResetJobQueue
 
     @objc
+    public var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue
+
+    @objc
     public var backup: OWSBackup
 
     private var _legacyNotificationActionHandler: LegacyNotificationActionHandler
@@ -88,6 +91,7 @@ import SignalMessaging
         self.notificationPresenter = NotificationPresenter()
         self.pushRegistrationManager = PushRegistrationManager()
         self.sessionResetJobQueue = SessionResetJobQueue()
+        self.broadcastMediaMessageJobQueue = BroadcastMediaMessageJobQueue()
         self.backup = OWSBackup()
         self.backupLazyRestore = BackupLazyRestore()
         if #available(iOS 10.0, *) {

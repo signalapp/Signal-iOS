@@ -66,6 +66,7 @@ class SSKMessageDecryptJobRecordSerializer: SDSSerializer {
         let status: SSKJobRecordStatus = model.status
 
         // Subclass properties
+        let attachmentIdMap: Data? = nil
         let contactThreadId: String? = nil
         let envelopeData: Data? = model.envelopeData
         let invisibleMessage: Data? = nil
@@ -73,6 +74,6 @@ class SSKMessageDecryptJobRecordSerializer: SDSSerializer {
         let removeMessageAfterSending: Bool? = nil
         let threadId: String? = nil
 
-        return JobRecordRecord(id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId)
+        return JobRecordRecord(id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId)
     }
 }

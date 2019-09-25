@@ -7,7 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 // This should only be used in the tests.
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 
 @interface SSKEnvironment (MockSSKEnvironment)
 
@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) id<ContactsManagerProtocol> contactsManager;
 @property (nonatomic) OWSMessageSender *messageSender;
 @property (nonatomic) id<ProfileManagerProtocol> profileManager;
-@property (nonatomic) OWSPrimaryStorage *primaryStorage;
+@property (nonatomic, nullable) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic) ContactsUpdater *contactsUpdater;
 @property (nonatomic) TSNetworkManager *networkManager;
 @property (nonatomic) OWSMessageManager *messageManager;

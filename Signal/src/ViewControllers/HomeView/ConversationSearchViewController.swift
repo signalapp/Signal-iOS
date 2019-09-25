@@ -76,10 +76,8 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         tableView.register(HomeViewCell.self, forCellReuseIdentifier: HomeViewCell.cellReuseIdentifier())
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier())
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(uiDatabaseModified),
-                                               name: .OWSUIDatabaseConnectionDidUpdate,
-                                               object: OWSPrimaryStorage.shared().dbNotificationObject)
+        databaseStorage.add(databaseStorageObserver: self)
+
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(themeDidChange),
                                                name: NSNotification.Name.ThemeDidChange,
@@ -105,13 +103,8 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         NotificationCenter.default.removeObserver(self)
     }
 
-    @objc internal func uiDatabaseModified(notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        refreshSearchResults()
-    }
-
-    @objc internal func themeDidChange(notification: NSNotification) {
+    @objc
+    internal func themeDidChange(notification: NSNotification) {
         AssertIsOnMainThread()
 
         applyTheme()
@@ -468,5 +461,27 @@ class EmptySearchResultCell: UITableViewCell {
 
         messageLabel.textColor = Theme.primaryColor
         messageLabel.font = UIFont.ows_dynamicTypeBody
+    }
+}
+
+// MARK: -
+
+extension ConversationSearchViewController: SDSDatabaseStorageObserver {
+    func databaseStorageDidUpdate(change: SDSDatabaseStorageChange) {
+        AssertIsOnMainThread()
+
+        refreshSearchResults()
+    }
+
+    func databaseStorageDidUpdateExternally() {
+        AssertIsOnMainThread()
+
+        refreshSearchResults()
+    }
+
+    func databaseStorageDidReset() {
+        AssertIsOnMainThread()
+
+        refreshSearchResults()
     }
 }

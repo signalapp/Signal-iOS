@@ -588,7 +588,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             let thread = message.thread(transaction: transaction)
             let conversationStyle = ConversationStyle(thread: thread)
             fetchedItem = ConversationInteractionViewItem(interaction: message,
-                                                          isGroupThread: thread.isGroupThread(),
+                                                          thread: thread,
                                                           transaction: transaction,
                                                           conversationStyle: conversationStyle)
         }

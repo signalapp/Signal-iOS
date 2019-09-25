@@ -6,6 +6,12 @@ import Foundation
 import GRDBCipher
 import SignalServiceKit
 
+extension StorageCoordinatorState: CustomStringConvertible {
+    public var description: String {
+        return NSStringFromStorageCoordinatorState(self)
+    }
+}
+
 @objc
 public class OWS1XXGRDBMigration: YDBDatabaseMigration {
 
@@ -19,17 +25,35 @@ public class OWS1XXGRDBMigration: YDBDatabaseMigration {
         Logger.debug("")
 
         DispatchQueue.global().async {
-            if FeatureFlags.useGRDB {
+            if self.storageCoordinator.state != .beforeYDBToGRDBMigration {
+                owsFail("unexpected storage coordinator state: \(self.storageCoordinator.state)")
+            } else {
+                self.storageCoordinator.migrationYDBToGRDBWillBegin()
+                assert(self.storageCoordinator.state == .duringYDBToGRDBMigration)
+
                 Bench(title: "\(self.logTag)") {
                     try! YDBToGRDBMigration().run()
                 }
+
+                self.storageCoordinator.migrationYDBToGRDBDidComplete()
+                assert(self.storageCoordinator.state == .GRDB)
             }
+
+            self.databaseStorage.write { transaction in
+                switch transaction.writeTransaction {
+                case .grdbWrite:
+                    self.markAsComplete(with: transaction)
+                case .yapWrite:
+                    owsFail("wrong transaction type")
+                }
+            }
+
             completion()
         }
     }
 
     public override var shouldBeSaved: Bool {
-        if FeatureFlags.grdbMigratesFreshDBEveryLaunch {
+        if SDSDatabaseStorage.shouldUseDisposableGrdb {
             // Do nothing so as to re-run every launch.
             // Useful while actively developing the migration.
             return false

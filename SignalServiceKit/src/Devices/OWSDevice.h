@@ -7,8 +7,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const NSNotificationName_OWSDeviceDidChange;
-
 extern uint32_t const OWSDevicePrimaryDeviceId;
 
 @class SDSAnyReadTransaction;

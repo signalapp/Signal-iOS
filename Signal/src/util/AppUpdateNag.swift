@@ -46,7 +46,7 @@ class AppUpdateNag: NSObject {
             Logger.info("new version available: \(appStoreRecord)")
             self.showUpdateNagIfEnoughTimeHasPassed(appStoreRecord: appStoreRecord)
         }.catch { error in
-            Logger.error("failed with error: \(error)")
+            Logger.warn("failed with error: \(error)")
         }.retainUntilComplete()
     }
 

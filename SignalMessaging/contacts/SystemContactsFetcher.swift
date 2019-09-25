@@ -100,7 +100,12 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
                 systemContacts.append(contact)
             }
         } catch let error as NSError {
-            owsFailDebug("Failed to fetch contacts with error:\(error)")
+            if error.domain == CNErrorDomain, error.code == CNError.Code.communicationError.rawValue {
+                // this seems occur intermittently, but not uncommonly.
+                Logger.warn("communication error: \(error)")
+            } else {
+                owsFailDebug("Failed to fetch contacts with error:\(error)")
+            }
             return .error(error)
         }
 

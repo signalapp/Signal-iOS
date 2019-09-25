@@ -33,8 +33,6 @@ class MessageDetailViewController: OWSViewController {
 
     // MARK: Properties
 
-    let uiDatabaseConnection: YapDatabaseConnection
-
     var bubbleView: UIView?
 
     let mode: MessageMetadataViewMode
@@ -85,7 +83,6 @@ class MessageDetailViewController: OWSViewController {
         self.viewItem = viewItem
         self.message = message
         self.mode = mode
-        self.uiDatabaseConnection = OWSPrimaryStorage.shared().uiDatabaseConnection
         self.conversationStyle = ConversationStyle(thread: thread)
 
         super.init(nibName: nil, bundle: nil)
@@ -115,10 +112,7 @@ class MessageDetailViewController: OWSViewController {
 
         self.view.layoutIfNeeded()
 
-        NotificationCenter.default.addObserver(self,
-            selector: #selector(uiDatabaseDidUpdate),
-            name: .OWSUIDatabaseConnectionDidUpdate,
-            object: OWSPrimaryStorage.shared().dbNotificationObject)
+        databaseStorage.add(databaseStorageObserver: self)
     }
 
     override public func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -211,8 +205,8 @@ class MessageDetailViewController: OWSViewController {
 
     lazy var thread: TSThread = {
         var thread: TSThread?
-        self.uiDatabaseConnection.read { transaction in
-            thread = self.message.thread(transaction: transaction.asAnyRead)
+        databaseStorage.uiRead { transaction in
+            thread = self.message.thread(transaction: transaction)
         }
         return thread!
     }()
@@ -443,7 +437,7 @@ class MessageDetailViewController: OWSViewController {
 
     private func fetchAttachment(transaction: SDSAnyReadTransaction) -> TSAttachment? {
         // TODO: Support multi-image messages.
-        guard let attachmentId = message.attachmentIds.firstObject as? String else {
+        guard let attachmentId = message.attachmentIds.first else {
             return nil
         }
 
@@ -589,40 +583,6 @@ class MessageDetailViewController: OWSViewController {
             self.attachment = self.fetchAttachment(transaction: transaction)
             self.attachmentStream = self.attachment as? TSAttachmentStream
         }
-    }
-
-    @objc internal func uiDatabaseDidUpdate(notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        guard !wasDeleted else {
-            // Item was deleted in the tile view gallery.
-            // Don't bother re-rendering, it will fail and we'll soon be dismissed.
-            return
-        }
-
-        guard let notifications = notification.userInfo?[OWSUIDatabaseConnectionNotificationsKey] as? [Notification] else {
-            owsFailDebug("notifications was unexpectedly nil")
-            return
-        }
-        let uniqueId = self.message.uniqueId
-        guard self.uiDatabaseConnection.hasChange(forKey: uniqueId,
-                                                 inCollection: TSInteraction.collection(),
-                                                 in: notifications) else {
-                                                    Logger.debug("No relevant changes.")
-                                                    return
-        }
-
-        do {
-            try updateMessageToLatest()
-        } catch DetailViewError.messageWasDeleted {
-            DispatchQueue.main.async {
-                self.delegate?.detailViewMessageWasDeleted(self)
-            }
-            return
-        } catch {
-            owsFailDebug("unexpected error: \(error)")
-        }
-        updateContent()
     }
 
     private func string(for messageReceiptStatus: MessageReceiptStatus) -> String {
@@ -939,5 +899,54 @@ private extension MediaPresentationContext {
         }
 
         return messageBubbleView
+    }
+}
+
+// MARK: -
+
+extension MessageDetailViewController: SDSDatabaseStorageObserver {
+    func databaseStorageDidUpdate(change: SDSDatabaseStorageChange) {
+        AssertIsOnMainThread()
+
+        let uniqueId = self.message.uniqueId
+        guard change.didUpdate(interactionId: uniqueId) else {
+            return
+        }
+
+        refreshContent()
+    }
+
+    func databaseStorageDidUpdateExternally() {
+        AssertIsOnMainThread()
+
+        refreshContent()
+    }
+
+    func databaseStorageDidReset() {
+        AssertIsOnMainThread()
+
+        refreshContent()
+    }
+
+    private func refreshContent() {
+        AssertIsOnMainThread()
+
+        guard !wasDeleted else {
+            // Item was deleted in the tile view gallery.
+            // Don't bother re-rendering, it will fail and we'll soon be dismissed.
+            return
+        }
+
+        do {
+            try updateMessageToLatest()
+        } catch DetailViewError.messageWasDeleted {
+            DispatchQueue.main.async {
+                self.delegate?.detailViewMessageWasDeleted(self)
+            }
+            return
+        } catch {
+            owsFailDebug("unexpected error: \(error)")
+        }
+        updateContent()
     }
 }

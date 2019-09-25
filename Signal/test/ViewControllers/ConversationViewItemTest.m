@@ -56,9 +56,10 @@
     __block ConversationInteractionViewItem *viewItem = nil;
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         TSOutgoingMessage *message = [self.messageFactory createWithTransaction:transaction];
+        TSThread *thread = [message threadWithTransaction:transaction];
 
         viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:message
-                                                                  isGroupThread:NO
+                                                                         thread:thread
                                                                     transaction:transaction
                                                               conversationStyle:self.conversationStyle];
     }];
@@ -75,7 +76,11 @@
 
     OWSAssertDebug([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
 
-    DataSource *dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:NO];
+    NSError *error;
+    id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:filePath
+                                            shouldDeleteOnDeallocation:NO
+                                                                 error:&error];
+    OWSAssertDebug(error == nil);
     dataSource.sourceFilename = filename;
 
     __block ConversationInteractionViewItem *viewItem = nil;
@@ -87,9 +92,10 @@
         };
 
         TSOutgoingMessage *message = [self.messageFactory createWithTransaction:transaction];
+        TSThread *thread = [message threadWithTransaction:transaction];
 
         viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:message
-                                                                  isGroupThread:NO
+                                                                         thread:thread
                                                                     transaction:transaction
                                                               conversationStyle:self.conversationStyle];
     }];
@@ -146,11 +152,8 @@
     XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
     [viewItem deleteAction];
     XCTAssertNil([self fetchMessageWithUniqueId:viewItem.interaction.uniqueId]);
-    // GRDB TODO
-    if (!SSKFeatureFlags.useGRDB) {
-        XCTAssertNil([self fetchAttachmentWithUniqueId:attachmentId]);
-        XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
-    }
+    XCTAssertNil([self fetchAttachmentWithUniqueId:attachmentId]);
+    XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
 }
 
 - (void)testPerformDeleteEditingActionWithAnimatedMessage
@@ -171,11 +174,8 @@
     XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
     [viewItem deleteAction];
     XCTAssertNil([self fetchMessageWithUniqueId:viewItem.interaction.uniqueId]);
-    // GRDB TODO
-    if (!SSKFeatureFlags.useGRDB) {
-        XCTAssertNil([self fetchAttachmentWithUniqueId:attachmentId]);
-        XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
-    }
+    XCTAssertNil([self fetchAttachmentWithUniqueId:attachmentId]);
+    XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
 }
 
 - (void)testPerformDeleteEditingActionWithVideoMessage
@@ -196,11 +196,8 @@
     XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
     [viewItem deleteAction];
     XCTAssertNil([self fetchMessageWithUniqueId:viewItem.interaction.uniqueId]);
-    // GRDB TODO
-    if (!SSKFeatureFlags.useGRDB) {
-        XCTAssertNil([self fetchAttachmentWithUniqueId:attachmentId]);
-        XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
-    }
+    XCTAssertNil([self fetchAttachmentWithUniqueId:attachmentId]);
+    XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
 }
 
 - (void)testPerformDeleteEditingActionWithAudioMessage
@@ -221,11 +218,8 @@
     XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
     [viewItem deleteAction];
     XCTAssertNil([self fetchMessageWithUniqueId:viewItem.interaction.uniqueId]);
-    // GRDB TODO
-    if (!SSKFeatureFlags.useGRDB) {
-        XCTAssertNil([self fetchAttachmentWithUniqueId:attachmentId]);
-        XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
-    }
+    XCTAssertNil([self fetchAttachmentWithUniqueId:attachmentId]);
+    XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
 }
 
 // Test Copy
