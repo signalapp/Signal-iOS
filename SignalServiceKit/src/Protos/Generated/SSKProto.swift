@@ -964,30 +964,6 @@ extension SSKProtoLokiAddressMessage.SSKProtoLokiAddressMessageBuilder {
 
 @objc public class SSKProtoLokiDeviceLinkMessage: NSObject {
 
-    // MARK: - SSKProtoLokiDeviceLinkMessageType
-
-    @objc public enum SSKProtoLokiDeviceLinkMessageType: Int32 {
-        case request = 1
-        case authorization = 2
-        case revocation = 3
-    }
-
-    private class func SSKProtoLokiDeviceLinkMessageTypeWrap(_ value: SignalServiceProtos_LokiDeviceLinkMessage.TypeEnum) -> SSKProtoLokiDeviceLinkMessageType {
-        switch value {
-        case .request: return .request
-        case .authorization: return .authorization
-        case .revocation: return .revocation
-        }
-    }
-
-    private class func SSKProtoLokiDeviceLinkMessageTypeUnwrap(_ value: SSKProtoLokiDeviceLinkMessageType) -> SignalServiceProtos_LokiDeviceLinkMessage.TypeEnum {
-        switch value {
-        case .request: return .request
-        case .authorization: return .authorization
-        case .revocation: return .revocation
-        }
-    }
-
     // MARK: - SSKProtoLokiDeviceLinkMessageBuilder
 
     @objc public class func builder() -> SSKProtoLokiDeviceLinkMessageBuilder {
@@ -1008,9 +984,6 @@ extension SSKProtoLokiAddressMessage.SSKProtoLokiAddressMessageBuilder {
         }
         if let _value = slaveSignature {
             builder.setSlaveSignature(_value)
-        }
-        if hasType {
-            builder.setType(type)
         }
         return builder
     }
@@ -1035,10 +1008,6 @@ extension SSKProtoLokiAddressMessage.SSKProtoLokiAddressMessageBuilder {
 
         @objc public func setSlaveSignature(_ valueParam: Data) {
             proto.slaveSignature = valueParam
-        }
-
-        @objc public func setType(_ valueParam: SSKProtoLokiDeviceLinkMessageType) {
-            proto.type = SSKProtoLokiDeviceLinkMessageTypeUnwrap(valueParam)
         }
 
         @objc public func build() throws -> SSKProtoLokiDeviceLinkMessage {
@@ -1090,13 +1059,6 @@ extension SSKProtoLokiAddressMessage.SSKProtoLokiAddressMessageBuilder {
     }
     @objc public var hasSlaveSignature: Bool {
         return proto.hasSlaveSignature
-    }
-
-    @objc public var type: SSKProtoLokiDeviceLinkMessageType {
-        return SSKProtoLokiDeviceLinkMessage.SSKProtoLokiDeviceLinkMessageTypeWrap(proto.type)
-    }
-    @objc public var hasType: Bool {
-        return proto.hasType
     }
 
     private init(proto: SignalServiceProtos_LokiDeviceLinkMessage) {

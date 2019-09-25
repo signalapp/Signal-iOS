@@ -31,7 +31,7 @@ public final class DeviceLinkingSession : NSObject {
     }
     
     @objc public func processLinkingRequest(from slaveHexEncodedPublicKey: String, to masterHexEncodedPublicKey: String, with slaveSignature: Data) {
-        guard isListeningForLinkingRequests, !isProcessingLinkingRequest, masterHexEncodedPublicKey.removing05PrefixIfNeeded() == OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey.removing05PrefixIfNeeded() else { return }
+        guard isListeningForLinkingRequests, !isProcessingLinkingRequest, masterHexEncodedPublicKey == OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey else { return }
         let master = DeviceLink.Device(hexEncodedPublicKey: masterHexEncodedPublicKey)
         let slave = DeviceLink.Device(hexEncodedPublicKey: slaveHexEncodedPublicKey, signature: slaveSignature)
         let deviceLink = DeviceLink(between: master, and: slave)
@@ -43,7 +43,7 @@ public final class DeviceLinkingSession : NSObject {
     }
     
     @objc public func processLinkingAuthorization(from masterHexEncodedPublicKey: String, for slaveHexEncodedPublicKey: String, masterSignature: Data, slaveSignature: Data) {
-        guard isListeningForLinkingAuthorization, slaveHexEncodedPublicKey.removing05PrefixIfNeeded() == OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey.removing05PrefixIfNeeded() else { return }
+        guard isListeningForLinkingAuthorization, slaveHexEncodedPublicKey == OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey else { return }
         let master = DeviceLink.Device(hexEncodedPublicKey: masterHexEncodedPublicKey, signature: masterSignature)
         let slave = DeviceLink.Device(hexEncodedPublicKey: slaveHexEncodedPublicKey, signature: slaveSignature)
         let deviceLink = DeviceLink(between: master, and: slave)
@@ -75,14 +75,16 @@ public final class DeviceLinkingSession : NSObject {
     private func hasValidSlaveSignature(_ deviceLink: DeviceLink) -> Bool {
         guard let slaveSignature = deviceLink.slave.signature else { return false }
         let slavePublicKey = Data(hex: deviceLink.slave.hexEncodedPublicKey.removing05PrefixIfNeeded())
-        let masterPublicKey = Data(hex: deviceLink.master.hexEncodedPublicKey.removing05PrefixIfNeeded())
-        return (try? Ed25519.verifySignature(slaveSignature, publicKey: slavePublicKey, data: masterPublicKey)) ?? false
+        var kind = LKDeviceLinkMessageKind.request
+        let data = Data(hex: deviceLink.master.hexEncodedPublicKey) + Data(bytes: &kind, count: MemoryLayout.size(ofValue: kind))
+        return (try? Ed25519.verifySignature(slaveSignature, publicKey: slavePublicKey, data: data)) ?? false
     }
     
     private func hasValidMasterSignature(_ deviceLink: DeviceLink) -> Bool {
         guard let masterSignature = deviceLink.master.signature else { return false }
-        let slavePublicKey = Data(hex: deviceLink.slave.hexEncodedPublicKey.removing05PrefixIfNeeded())
         let masterPublicKey = Data(hex: deviceLink.master.hexEncodedPublicKey.removing05PrefixIfNeeded())
-        return (try? Ed25519.verifySignature(masterSignature, publicKey: masterPublicKey, data: slavePublicKey)) ?? false
+        var kind = LKDeviceLinkMessageKind.authorization
+        let data = Data(hex: deviceLink.slave.hexEncodedPublicKey) + Data(bytes: &kind, count: MemoryLayout.size(ofValue: kind))
+        return (try? Ed25519.verifySignature(masterSignature, publicKey: masterPublicKey, data: data)) ?? false
     }
 }

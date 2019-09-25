@@ -87,16 +87,10 @@ message LokiAddressMessage { // Loki
 }
 
 message LokiDeviceLinkMessage { // Loki
-  enum Type {
-    REQUEST = 1;
-    AUTHORIZATION = 2;
-    REVOCATION = 3;
-  }
   optional string masterHexEncodedPublicKey = 1;
   optional string slaveHexEncodedPublicKey  = 2;
   optional bytes  masterSignature           = 3;
   optional bytes  slaveSignature            = 4;
-  optional Type   type                      = 5;
 }
 
 message CallMessage {

@@ -528,45 +528,7 @@ struct SignalServiceProtos_LokiDeviceLinkMessage {
   /// Clears the value of `slaveSignature`. Subsequent reads from it will return its default value.
   mutating func clearSlaveSignature() {self._slaveSignature = nil}
 
-  var type: SignalServiceProtos_LokiDeviceLinkMessage.TypeEnum {
-    get {return _type ?? .request}
-    set {_type = newValue}
-  }
-  /// Returns true if `type` has been explicitly set.
-  var hasType: Bool {return self._type != nil}
-  /// Clears the value of `type`. Subsequent reads from it will return its default value.
-  mutating func clearType() {self._type = nil}
-
   var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  enum TypeEnum: SwiftProtobuf.Enum {
-    typealias RawValue = Int
-    case request // = 1
-    case authorization // = 2
-    case revocation // = 3
-
-    init() {
-      self = .request
-    }
-
-    init?(rawValue: Int) {
-      switch rawValue {
-      case 1: self = .request
-      case 2: self = .authorization
-      case 3: self = .revocation
-      default: return nil
-      }
-    }
-
-    var rawValue: Int {
-      switch self {
-      case .request: return 1
-      case .authorization: return 2
-      case .revocation: return 3
-      }
-    }
-
-  }
 
   init() {}
 
@@ -574,16 +536,7 @@ struct SignalServiceProtos_LokiDeviceLinkMessage {
   fileprivate var _slaveHexEncodedPublicKey: String? = nil
   fileprivate var _masterSignature: Data? = nil
   fileprivate var _slaveSignature: Data? = nil
-  fileprivate var _type: SignalServiceProtos_LokiDeviceLinkMessage.TypeEnum? = nil
 }
-
-#if swift(>=4.2)
-
-extension SignalServiceProtos_LokiDeviceLinkMessage.TypeEnum: CaseIterable {
-  // Support synthesized by the compiler.
-}
-
-#endif  // swift(>=4.2)
 
 struct SignalServiceProtos_CallMessage {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -3032,7 +2985,6 @@ extension SignalServiceProtos_LokiDeviceLinkMessage: SwiftProtobuf.Message, Swif
     2: .same(proto: "slaveHexEncodedPublicKey"),
     3: .same(proto: "masterSignature"),
     4: .same(proto: "slaveSignature"),
-    5: .same(proto: "type"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -3042,7 +2994,6 @@ extension SignalServiceProtos_LokiDeviceLinkMessage: SwiftProtobuf.Message, Swif
       case 2: try decoder.decodeSingularStringField(value: &self._slaveHexEncodedPublicKey)
       case 3: try decoder.decodeSingularBytesField(value: &self._masterSignature)
       case 4: try decoder.decodeSingularBytesField(value: &self._slaveSignature)
-      case 5: try decoder.decodeSingularEnumField(value: &self._type)
       default: break
       }
     }
@@ -3061,9 +3012,6 @@ extension SignalServiceProtos_LokiDeviceLinkMessage: SwiftProtobuf.Message, Swif
     if let v = self._slaveSignature {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
     }
-    if let v = self._type {
-      try visitor.visitSingularEnumField(value: v, fieldNumber: 5)
-    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -3072,18 +3020,9 @@ extension SignalServiceProtos_LokiDeviceLinkMessage: SwiftProtobuf.Message, Swif
     if lhs._slaveHexEncodedPublicKey != rhs._slaveHexEncodedPublicKey {return false}
     if lhs._masterSignature != rhs._masterSignature {return false}
     if lhs._slaveSignature != rhs._slaveSignature {return false}
-    if lhs._type != rhs._type {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
-}
-
-extension SignalServiceProtos_LokiDeviceLinkMessage.TypeEnum: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "REQUEST"),
-    2: .same(proto: "AUTHORIZATION"),
-    3: .same(proto: "REVOCATION"),
-  ]
 }
 
 extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {

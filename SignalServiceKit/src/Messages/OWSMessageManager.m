@@ -432,23 +432,14 @@ NS_ASSUME_NONNULL_BEGIN
         if (contentProto.lokiDeviceLinkMessage != nil) {
             NSString *masterHexEncodedPublicKey = contentProto.lokiDeviceLinkMessage.masterHexEncodedPublicKey;
             NSString *slaveHexEncodedPublicKey = contentProto.lokiDeviceLinkMessage.slaveHexEncodedPublicKey;
+            NSData *masterSignature = contentProto.lokiDeviceLinkMessage.masterSignature;
             NSData *slaveSignature = contentProto.lokiDeviceLinkMessage.slaveSignature;
-            switch (contentProto.lokiDeviceLinkMessage.type) {
-                case SSKProtoLokiDeviceLinkMessageTypeRequest: {
-                    OWSLogInfo(@"[Loki] Received a device linking request from: %@", envelope.source); // Not slaveHexEncodedPublicKey
-                    if (slaveSignature == nil) { OWSFailDebug(@"Received a device linking request from: %@ without a slave signature.", envelope.source); }
-                    [LKDeviceLinkingSession.current processLinkingRequestFrom:slaveHexEncodedPublicKey to:masterHexEncodedPublicKey with:slaveSignature];
-                    break;
-                }
-                case SSKProtoLokiDeviceLinkMessageTypeAuthorization: {
-                    OWSLogInfo(@"[Loki] Received a device linking authorization from: %@", envelope.source); // Not slaveHexEncodedPublicKey
-                    NSData *masterSignature = contentProto.lokiDeviceLinkMessage.masterSignature;
-                    if (masterSignature == nil) { OWSFailDebug(@"Received a device linking authorization from: %@ without a master signature.", envelope.source); }
-                    if (slaveSignature == nil) { OWSFailDebug(@"Received a device linking authorization from: %@ without a slave signature.", envelope.source); }
-                    [LKDeviceLinkingSession.current processLinkingAuthorizationFrom:masterHexEncodedPublicKey for:slaveHexEncodedPublicKey masterSignature:masterSignature slaveSignature:slaveSignature];
-                    break;
-                }
-                default: break;
+            if (masterSignature != nil) { // Authorization
+                OWSLogInfo(@"[Loki] Received a device linking authorization from: %@", envelope.source); // Not masterHexEncodedPublicKey
+                [LKDeviceLinkingSession.current processLinkingAuthorizationFrom:masterHexEncodedPublicKey for:slaveHexEncodedPublicKey masterSignature:masterSignature slaveSignature:slaveSignature];
+            } else if (slaveSignature != nil) { // Request
+                OWSLogInfo(@"[Loki] Received a device linking request from: %@", envelope.source); // Not slaveHexEncodedPublicKey }
+                [LKDeviceLinkingSession.current processLinkingRequestFrom:slaveHexEncodedPublicKey to:masterHexEncodedPublicKey with:slaveSignature];
             }
         }
         

@@ -7,8 +7,15 @@
 
 @implementation LKDeviceLinkMessage
 
-- (instancetype)initInThread:(TSThread *)thread masterHexEncodedPublicKey:(NSString *)masterHexEncodedPublicKey slaveHexEncodedPublicKey:(NSString *)slaveHexEncodedPublicKey
-    masterSignature:(NSData *)masterSignature slaveSignature:(NSData *)slaveSignature kind:(LKDeviceLinkMessageKind)kind {
+- (LKDeviceLinkMessageKind)kind {
+    if (self.masterSignature != nil) {
+        return LKDeviceLinkMessageKindAuthorization;
+    } else {
+        return LKDeviceLinkMessageKindRequest;
+    }
+}
+
+- (instancetype)initInThread:(TSThread *)thread masterHexEncodedPublicKey:(NSString *)masterHexEncodedPublicKey slaveHexEncodedPublicKey:(NSString *)slaveHexEncodedPublicKey masterSignature:(NSData *)masterSignature slaveSignature:(NSData *)slaveSignature {
     self = [self initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:@"" attachmentIds:[NSMutableArray<NSString *> new]
         expiresInSeconds:0 expireStartedAt:0 isVoiceMessage:NO groupMetaMessage:TSGroupMetaMessageUnspecified quotedMessage:nil contactShare:nil linkPreview:nil];
     if (self) {
@@ -16,7 +23,6 @@
         _slaveHexEncodedPublicKey = slaveHexEncodedPublicKey;
         _masterSignature = masterSignature;
         _slaveSignature = slaveSignature;
-        _kind = kind;
     }
     return self;
 }
@@ -27,17 +33,6 @@
     [deviceLinkMessageBuilder setSlaveHexEncodedPublicKey:self.slaveHexEncodedPublicKey];
     if (self.masterSignature != nil) { [deviceLinkMessageBuilder setMasterSignature:self.masterSignature]; }
     [deviceLinkMessageBuilder setSlaveSignature:self.slaveSignature];
-    switch (self.kind) {
-        case LKDeviceLinkMessageKindRequest:
-            [deviceLinkMessageBuilder setType:SSKProtoLokiDeviceLinkMessageTypeRequest];
-            break;
-        case LKDeviceLinkMessageKindAuthorization:
-            [deviceLinkMessageBuilder setType:SSKProtoLokiDeviceLinkMessageTypeAuthorization];
-            break;
-        case LKDeviceLinkMessageKindRevocation:
-            [deviceLinkMessageBuilder setType:SSKProtoLokiDeviceLinkMessageTypeRevocation];
-            break;
-    }
     NSError *error;
     SSKProtoLokiDeviceLinkMessage *deviceLinkMessage = [deviceLinkMessageBuilder buildAndReturnError:&error];
     if (error || deviceLinkMessage == nil) {

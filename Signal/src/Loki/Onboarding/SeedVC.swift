@@ -345,7 +345,7 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
             present(deviceLinkingModal, animated: true, completion: nil)
             let masterHexEncodedPublicKey = masterHexEncodedPublicKeyTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces)
             let linkingRequestMessage = DeviceLinkingUtilities.getLinkingRequestMessage(for: masterHexEncodedPublicKey)
-            (0..<8).forEach { _ in ThreadUtil.enqueue(linkingRequestMessage) }
+            (0..<4).forEach { _ in ThreadUtil.enqueue(linkingRequestMessage) }
         } else {
             onboardingController.pushDisplayNameVC(from: self)
         }
