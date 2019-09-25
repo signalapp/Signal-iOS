@@ -23,6 +23,17 @@ public enum ThemeIcon: UInt {
     case settingsShowGroup
     case settingsViewSafetyNumber
     case settingsUserInContacts
+
+    case stickerButton
+    case cameraButton
+    case micButton
+
+    case attachmentButtonSelected
+    case attachmentCamera
+    case attachmentContact
+    case attachmentFile
+    case attachmentGif
+    case attachmentLocation
 }
 
 @objc
@@ -78,7 +89,27 @@ public extension Theme {
         case .settingsSearch:
             return "search-24"
         case .settingsUserInContacts:
-            return isDarkThemeEnabled ? "profile-circle-solid-24":  "profile-circle-outline-24"
+            return isDarkThemeEnabled ? "profile-circle-solid-24" :  "profile-circle-outline-24"
+
+        // Input Toolbar
+        case .stickerButton:
+            return isDarkThemeEnabled ? "sticker-smiley-solid-24" :  "sticker-smiley-outline-24"
+        case .cameraButton:
+            return isDarkThemeEnabled ? "camera-solid-24" :  "camera-outline-24"
+        case .micButton:
+            return isDarkThemeEnabled ? "mic-solid-24" :  "mic-outline-24"
+        case .attachmentButtonSelected:
+            return isDarkThemeEnabled ? "x-box-filled-28-dark" : "x-box-filled-28-light"
+        case .attachmentCamera:
+            return isDarkThemeEnabled ? "camera-outline-32" :  "camera-outline-32-with-background"
+        case .attachmentContact:
+            return isDarkThemeEnabled ? "contact-outline-32" :  "contact-outline-32-with-background"
+        case .attachmentFile:
+            return isDarkThemeEnabled ? "file-outline-32" :  "file-outline-32-with-background"
+        case .attachmentGif:
+            return isDarkThemeEnabled ? "gif-outline-32" :  "gif-outline-32-with-background"
+        case .attachmentLocation:
+            return isDarkThemeEnabled ? "location-outline-32" :  "location-outline-32-with-background"
         }
     }
 }

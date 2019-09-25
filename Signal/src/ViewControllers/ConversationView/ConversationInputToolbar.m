@@ -200,7 +200,8 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.cameraButton addTarget:self
                           action:@selector(cameraButtonPressed)
                 forControlEvents:UIControlEventTouchUpInside];
-    [self.cameraButton setTemplateImageName:@"camera-outline-24" tintColor:Theme.primaryIconColor];
+    UIImage *cameraIcon = [Theme iconImage:ThemeIconCameraButton];
+    [self.cameraButton setTemplateImage:cameraIcon tintColor:Theme.primaryIconColor];
     [self.cameraButton autoSetDimensionsToSize:CGSizeMake(40, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _cameraButton);
 
@@ -213,8 +214,8 @@ const CGFloat kMaxTextViewHeight = 98;
                               action:@selector(attachmentButtonPressed)
                     forControlEvents:UIControlEventTouchUpInside];
     [self.attachmentButton setTemplateImageName:@"plus-24" tintColor:Theme.primaryIconColor];
-    NSString *imageName = Theme.isDarkThemeEnabled ? @"x-box-filled-28-dark" : @"x-box-filled-28-light";
-    [self.attachmentButton setImage:[UIImage imageNamed:imageName] forState:UIControlStateSelected];
+    NSString *selectedImageName = [Theme iconName:ThemeIconAttachmentButtonSelected];
+    [self.attachmentButton setImage:[UIImage imageNamed:selectedImageName] forState:UIControlStateSelected];
     [self.attachmentButton autoSetDimensionsToSize:CGSizeMake(55, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _attachmentButton);
 
@@ -228,14 +229,16 @@ const CGFloat kMaxTextViewHeight = 98;
     _voiceMemoButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.voiceMemoButton.accessibilityLabel = NSLocalizedString(@"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL",
         @"accessibility label for the button which records voice memos");
-    [self.voiceMemoButton setTemplateImageName:@"mic-outline-24" tintColor:Theme.primaryIconColor];
+    UIImage *micIcon = [Theme iconImage:ThemeIconMicButton];
+    [self.voiceMemoButton setTemplateImage:micIcon tintColor:Theme.primaryIconColor];
     [self.voiceMemoButton autoSetDimensionsToSize:CGSizeMake(40, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _voiceMemoButton);
 
     _stickerButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.stickerButton.accessibilityLabel = NSLocalizedString(@"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL",
         @"accessibility label for the button which shows the sticker picker");
-    [self.stickerButton setTemplateImageName:@"sticker-smiley-outline-24" tintColor:Theme.primaryIconColor];
+    UIImage *stickerIcon = [Theme iconImage:ThemeIconStickerButton];
+    [self.stickerButton setTemplateImage:stickerIcon tintColor:Theme.primaryIconColor];
     [self.stickerButton addTarget:self
                            action:@selector(stickerButtonPressed)
                  forControlEvents:UIControlEventTouchUpInside];

@@ -61,7 +61,8 @@ private class IntroducingStickersExperienceUpgradeViewController: ExperienceUpgr
 
         // Icon
         let iconImageView = UIImageView()
-        iconImageView.setTemplateImageName("sticker-smiley-outline-24", tintColor: Theme.secondaryTextAndIconColor)
+        let stickerIcon = Theme.iconImage(.stickerButton)
+        iconImageView.setTemplateImage(stickerIcon, tintColor: Theme.secondaryTextAndIconColor)
         iconImageView.layer.minificationFilter = .trilinear
         iconImageView.layer.magnificationFilter = .trilinear
         view.addSubview(iconImageView)
