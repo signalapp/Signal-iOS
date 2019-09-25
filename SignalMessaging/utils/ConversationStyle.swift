@@ -197,8 +197,18 @@ public class ConversationStyle: NSObject {
     }
 
     @objc
+    public static var bubbleSecondaryTextColorIncoming: UIColor {
+        return Theme.isDarkThemeEnabled ? .ows_gray25 : .ows_gray60
+    }
+
+    @objc
     public static var bubbleTextColorOutgoing: UIColor {
         return Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_white
+    }
+
+    @objc
+    public static var bubbleSecondaryTextColorOutgoing: UIColor {
+        return Theme.isDarkThemeEnabled ? .ows_whiteAlpha60 : .ows_whiteAlpha80
     }
 
     @objc
@@ -224,7 +234,11 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func bubbleSecondaryTextColor(isIncoming: Bool) -> UIColor {
-        return bubbleTextColor(isIncoming: isIncoming).withAlphaComponent(0.7)
+        if isIncoming {
+            return ConversationStyle.bubbleSecondaryTextColorIncoming
+        } else {
+            return ConversationStyle.bubbleSecondaryTextColorOutgoing
+        }
     }
 
     @objc
