@@ -191,6 +191,7 @@ extension YDBToGRDBMigration {
             owsFail("Missing primaryStorage.")
         }
         let ydbReadConnection = primaryStorage.newDatabaseConnection()
+        ydbReadConnection.ignoreQueues = true
         ydbReadConnection.beginLongLivedReadTransaction()
 
         for migratorGroup in migratorGroups {
@@ -206,16 +207,15 @@ extension YDBToGRDBMigration {
         // Logging queries is helpful for normal debugging, but expensive during a migration
         SDSDatabaseStorage.shouldLogDBQueries = false
 
-        try storage.write { grdbTransaction in
-            // Instantiate the migrators.
-            var migrators = [GRDBMigrator]()
-            ydbReadConnection.read { ydbTransaction in
-                migrators += migratorGroup.migrators(ydbTransaction: ydbTransaction)
-            }
-
+        try ydbReadConnection.read { ydbTransaction in
+            let migrators = migratorGroup.migrators(ydbTransaction: ydbTransaction)
             // Migrate migrators.
             for migrator in migrators {
-                try! migrator.migrate(grdbTransaction: grdbTransaction)
+                try autoreleasepool {
+                    try self.storage.write { grdbTransaction in
+                        try! migrator.migrate(grdbTransaction: grdbTransaction)
+                    }
+                }
             }
         }
 

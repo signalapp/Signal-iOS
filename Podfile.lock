@@ -241,7 +241,7 @@ DEPENDENCIES:
   - SQLCipher (>= 4.0.1)
   - SSZipArchive
   - "Starscream (from `git@github.com:signalapp/Starscream.git`, branch `signal-release`)"
-  - YapDatabase/SQLCipher (from `https://github.com/signalapp/YapDatabase.git`, branch `signal-release`)
+  - YapDatabase/SQLCipher (from `https://github.com/signalapp/YapDatabase.git`, branch `charlesmchen/ydbQueuesVsMigration`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -284,7 +284,7 @@ EXTERNAL SOURCES:
     :branch: signal-release
     :git: "git@github.com:signalapp/Starscream.git"
   YapDatabase:
-    :branch: signal-release
+    :branch: charlesmchen/ydbQueuesVsMigration
     :git: https://github.com/signalapp/YapDatabase.git
 
 CHECKOUT OPTIONS:
@@ -313,7 +313,7 @@ CHECKOUT OPTIONS:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
     :git: "git@github.com:signalapp/Starscream.git"
   YapDatabase:
-    :commit: 927a7c4157e8c31f2a206359346d9fd2b606a0ab
+    :commit: dc5734be4348b080e737fc6fd8cfd64033489ac1
     :git: https://github.com/signalapp/YapDatabase.git
 
 SPEC CHECKSUMS:
@@ -342,6 +342,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: 237d5a49f4b7cc6f72d107bd40b372f72f433475
+PODFILE CHECKSUM: 3453c4f33b01ecb810885c5bb895b1b22186b500
 
 COCOAPODS: 1.7.5
