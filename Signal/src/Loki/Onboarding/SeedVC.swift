@@ -124,7 +124,7 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
     }()
     
     private lazy var explanationLabel3: UILabel = {
-        let result = createExplanationLabel(text: NSLocalizedString("Link to an existing device by going into Loki Messenger's in-app settings and clicking \"Link Device\".", comment: ""))
+        let result = createExplanationLabel(text: NSLocalizedString("Link to an existing device by going into its in-app settings and clicking \"Link Device\".", comment: ""))
         result.accessibilityIdentifier = "onboarding.keyPairStep.explanationLabel3"
         result.textColor = Theme.primaryColor
         var fontTraits = result.font.fontDescriptor.symbolicTraits
@@ -154,7 +154,7 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
         result.textColor = Theme.primaryColor
         result.font = UIFont.ows_dynamicTypeBodyClamped
         result.textAlignment = .center
-        let placeholder = NSMutableAttributedString(string: NSLocalizedString("Enter Your Primary Account's Public Key", comment: ""))
+        let placeholder = NSMutableAttributedString(string: NSLocalizedString("Enter the Other Device's Public Key", comment: ""))
         placeholder.addAttribute(.foregroundColor, value: Theme.placeholderColor, range: NSRange(location: 0, length: placeholder.length))
         result.attributedPlaceholder = placeholder
         result.tintColor = UIColor.lokiGreen()
@@ -337,20 +337,28 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
         case .link: Analytics.shared.track("Device Linked")
         }
         if mode == .link {
+            TSAccountManager.sharedInstance().didRegister()
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            appDelegate.startLongPollerIfNeeded()
             let deviceLinkingModal = DeviceLinkingModal(mode: .slave, delegate: self)
             deviceLinkingModal.modalPresentationStyle = .overFullScreen
             present(deviceLinkingModal, animated: true, completion: nil)
             let masterHexEncodedPublicKey = masterHexEncodedPublicKeyTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces)
             let linkingRequestMessage = DeviceLinkingUtilities.getLinkingRequestMessage(for: masterHexEncodedPublicKey)
-            ThreadUtil.enqueue(linkingRequestMessage)
+            (0..<8).forEach { _ in ThreadUtil.enqueue(linkingRequestMessage) }
         } else {
             onboardingController.pushDisplayNameVC(from: self)
         }
     }
     
     func handleDeviceLinkAuthorized(_ deviceLink: DeviceLink) {
-        TSAccountManager.sharedInstance().didRegister()
         UserDefaults.standard.set(true, forKey: "didUpdateForMainnet")
         onboardingController.verificationDidComplete(fromView: self)
+    }
+    
+    func handleDeviceLinkingModalDismissed() {
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        appDelegate.stopLongPollerIfNeeded()
+        TSAccountManager.sharedInstance().resetForReregistration()
     }
 }

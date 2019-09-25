@@ -95,13 +95,13 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         }()
         subtitleLabel.text = {
             switch mode {
-            case .master: return NSLocalizedString("Click the \"Link Device\" button on your other device to start the linking process", comment: "")
-            case .slave: return NSLocalizedString("Please verify that the words below match the ones shown on your other device.", comment: "")
+            case .master: return NSLocalizedString("Create a new account on your other device and click \"Link Device\" when you're at the \"Create Your Loki Messenger Account\" step to start the linking process", comment: "")
+            case .slave: return NSLocalizedString("Please check that the words below match the ones shown on your other device", comment: "")
             }
         }()
         mnemonicLabel.isHidden = (mode == .master)
         if mode == .slave {
-            let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+            let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey.removing05PrefixIfNeeded()
             mnemonicLabel.text = Mnemonic.encode(hexEncodedString: hexEncodedPublicKey).split(separator: " ")[0..<3].joined(separator: " ")
         }
         let buttonHeight = cancelButton.button.titleLabel!.font.pointSize * 48 / 17
@@ -121,8 +121,9 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         spinner.stopAnimating()
         spinner.isHidden = true
         titleLabel.text = NSLocalizedString("Linking Request Received", comment: "")
-        subtitleLabel.text = NSLocalizedString("Please check that the words below match the words shown on the device being linked.", comment: "")
-        mnemonicLabel.text = Mnemonic.encode(hexEncodedString: deviceLink.slave.hexEncodedPublicKey).split(separator: " ")[0..<3].joined(separator: " ")
+        subtitleLabel.text = NSLocalizedString("Please check that the words below match the ones shown on your other device", comment: "")
+        let hexEncodedPublicKey = deviceLink.slave.hexEncodedPublicKey.removing05PrefixIfNeeded()
+        mnemonicLabel.text = Mnemonic.encode(hexEncodedString: hexEncodedPublicKey).split(separator: " ")[0..<3].joined(separator: " ")
         mnemonicLabel.isHidden = false
         authorizeButton.isHidden = false
     }
@@ -130,13 +131,25 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     @objc private func authorizeDeviceLink() {
         let deviceLink = self.deviceLink!
         let linkingAuthorizationMessage = DeviceLinkingUtilities.getLinkingAuthorizationMessage(for: deviceLink)
-        ThreadUtil.enqueue(linkingAuthorizationMessage)
+        (0..<8).forEach { _ in ThreadUtil.enqueue(linkingAuthorizationMessage) }
         let session = DeviceLinkingSession.current!
         session.stopListeningForLinkingRequests()
+        session.markLinkingRequestAsProcessed()
         dismiss(animated: true, completion: nil)
     }
     
     func handleDeviceLinkAuthorized(_ deviceLink: DeviceLink) {
+        let session = DeviceLinkingSession.current!
+        session.stopListeningForLinkingAuthorization()
         delegate?.handleDeviceLinkAuthorized(deviceLink)
+        dismiss(animated: true, completion: nil)
+    }
+    
+    @objc override func cancel() {
+        let session = DeviceLinkingSession.current!
+        session.stopListeningForLinkingRequests()
+        session.markLinkingRequestAsProcessed() // Only relevant in master mode
+        delegate?.handleDeviceLinkingModalDismissed() // Only relevant in slave mode
+        dismiss(animated: true, completion: nil)
     }
 }

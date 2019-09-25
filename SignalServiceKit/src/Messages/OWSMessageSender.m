@@ -44,6 +44,7 @@
 #import "TSSocketManager.h"
 #import "TSThread.h"
 #import "LKFriendRequestMessage.h"
+#import "LKDeviceLinkMessage.h"
 #import "LKAddressMessage.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/CipherMessage.h>
@@ -1553,10 +1554,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // This may involve blocking network requests, so we do it _before_
             // we open a transaction.
             
-            // A friend request means we don't have a session with the person
-            // There's no point to check for it
+            // Loki: Both for friend request messages and device link messages we don't require a session
             BOOL isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
-            if (!isFriendRequest) {
+            BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class];
+            if (!isFriendRequest && !isDeviceLinkMessage) {
                 [self throws_ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
             }
 
@@ -1743,7 +1744,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }) retainUntilComplete];
 }
 
-- (nullable NSDictionary *)throws_encryptedFriendMessageForMessageSend:(OWSMessageSend *)messageSend
+- (nullable NSDictionary *)throws_encryptedFriendRequestOrDeviceLinkMessageForMessageSend:(OWSMessageSend *)messageSend
                                                         deviceId:(NSNumber *)deviceId
                                                        plainText:(NSData *)plainText
 {
@@ -1802,10 +1803,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSString *recipientId = recipient.recipientId;
     OWSAssertDebug(recipientId.length > 0);
     
-    // Loki: Handle friend requests differently
+    // Loki: Both for friend request messages and device link messages we use fallback encryption as we don't necessarily have a session yet
     BOOL isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
-    if (isFriendRequest) {
-        return [self throws_encryptedFriendMessageForMessageSend:messageSend deviceId:deviceId plainText:plainText];
+    BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class];
+    if (isFriendRequest || isDeviceLinkMessage) {
+        return [self throws_encryptedFriendRequestOrDeviceLinkMessageForMessageSend:messageSend deviceId:deviceId plainText:plainText];
     }
 
     // This may throw an exception.

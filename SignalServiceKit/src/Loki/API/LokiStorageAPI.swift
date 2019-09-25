@@ -20,6 +20,6 @@ public final class LokiStorageAPI : NSObject {
     public static func getDeviceLinks(associatedWith hexEncodedPublicKey: String) -> Promise<Set<DeviceLink>> {
         // Gets the device links associated with the given hex encoded public key from the
         // server and stores and returns the valid ones
-        notImplemented()
+        return Promise.value(Set<DeviceLink>())
     }
 }

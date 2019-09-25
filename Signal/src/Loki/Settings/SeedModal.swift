@@ -23,14 +23,24 @@ final class SeedModal : Modal {
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
+        // Subtitle label
+        let subtitleLabel = UILabel()
+        subtitleLabel.textColor = Theme.primaryColor
+        subtitleLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
+        subtitleLabel.text = NSLocalizedString("This is your personal secret. It can be used to restore your account if you lose access, or to migrate to a new device.", comment: "")
+        subtitleLabel.numberOfLines = 0
+        subtitleLabel.lineBreakMode = .byWordWrapping
+        subtitleLabel.textAlignment = .center
         // Mnemonic label
         let mnemonicLabel = UILabel()
-        mnemonicLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
+        let font = UIFont.ows_dynamicTypeCaption1Clamped
+        mnemonicLabel.font = UIFont(descriptor: font.fontDescriptor.withSymbolicTraits(.traitItalic)!, size: font.pointSize)
         mnemonicLabel.text = mnemonic
         mnemonicLabel.numberOfLines = 0
         mnemonicLabel.textAlignment = .center
         mnemonicLabel.lineBreakMode = .byWordWrapping
         mnemonicLabel.textColor = UIColor.ows_white
+        mnemonicLabel.alpha = 0.8
         // Button stack view
         let copyButton = OWSFlatButton.button(title: NSLocalizedString("Copy", comment: ""), font: .ows_dynamicTypeBodyClamped, titleColor: .white, backgroundColor: .clear, target: self, selector: #selector(copySeed))
         copyButton.setBackgroundColors(upColor: .clear, downColor: .clear)
@@ -41,7 +51,7 @@ final class SeedModal : Modal {
         copyButton.set(.height, to: buttonHeight)
         cancelButton.set(.height, to: buttonHeight)
         // Stack view
-        let stackView = UIStackView(arrangedSubviews: [ UIView.spacer(withHeight: 2), titleLabel, mnemonicLabel, buttonStackView ])
+        let stackView = UIStackView(arrangedSubviews: [ UIView.spacer(withHeight: 2), titleLabel, subtitleLabel, mnemonicLabel, buttonStackView ])
         stackView.axis = .vertical
         stackView.spacing = 16
         contentView.addSubview(stackView)

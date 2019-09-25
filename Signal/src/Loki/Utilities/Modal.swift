@@ -51,7 +51,7 @@ internal class Modal : UIViewController {
         }
     }
     
-    @objc private func cancel() {
+    @objc func cancel() {
         dismiss(animated: true, completion: nil)
     }
 }

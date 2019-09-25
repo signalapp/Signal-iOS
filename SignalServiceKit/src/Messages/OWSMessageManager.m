@@ -1597,10 +1597,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)handleDeviceLinkMessageIfNeeded:(TSIncomingMessage *)message transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    
-}
-
 - (void)finalizeIncomingMessage:(TSIncomingMessage *)incomingMessage
                          thread:(TSThread *)thread
                        envelope:(SSKProtoEnvelope *)envelope

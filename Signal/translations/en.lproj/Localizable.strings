@@ -2624,8 +2624,11 @@
 "Link Device" = "Link Device";
 "Waiting for Device" = "Waiting for Device";
 "Waiting for Authorization" = "Waiting for Authorization";
-"Click the \"Link Device\" button on your other device to start the linking process" = "Click the \"Link Device\" button on your other device to start the linking process";
+"Create a new account on your other device and click \"Link Device\" when you're at the \"Create Your Loki Messenger Account\" step to start the linking process" = "Create a new account on your other device and click \"Link Device\" when you're at the \"Create Your Loki Messenger Account\" step to start the linking process";
 "Linking Request Received" = "Linking Request Received";
 "Invalid public key" = "Invalid public key";
-"Please verify that the words below match the ones shown on your other device." = "Please verify that the words below match the ones shown on your other device.";
-"Link to an existing device by going into Loki Messenger's in-app settings and clicking \"Link Device\"." = "Link to an existing device by going into Loki Messenger's in-app settings and clicking \"Link Device\".";
+"Please check that the words below match the ones shown on your other device" = "Please check that the words below match the ones shown on your other device";
+"Link to an existing device by going into its in-app settings and clicking \"Link Device\"." = "Link to an existing device by going into its in-app settings and clicking \"Link Device\".";
+"Authorize" = "Authorize";
+"Enter the Other Device's Public Key" = "Enter the Other Device's Public Key";
+"This is your personal secret. It can be used to restore your account if you lose access, or to migrate to a new device." = "This is your personal secret. It can be used to restore your account if you lose access, or to migrate to a new device.";
