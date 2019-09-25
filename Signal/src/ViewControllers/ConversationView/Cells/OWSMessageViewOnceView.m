@@ -412,7 +412,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.label);
 
     self.label.textColor = self.textColor;
-    self.label.font = UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
+    self.label.font = UIFont.ows_dynamicTypeSubheadlineFont.ows_semibold;
     self.label.numberOfLines = 1;
     self.label.lineBreakMode = NSLineBreakByTruncatingTail;
     [self.label setContentHuggingHorizontalLow];

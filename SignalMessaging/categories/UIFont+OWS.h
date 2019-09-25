@@ -14,9 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIFont *)ows_regularFontWithSize:(CGFloat)size;
 
-+ (UIFont *)ows_mediumFontWithSize:(CGFloat)size;
-
-+ (UIFont *)ows_boldFontWithSize:(CGFloat)size;
++ (UIFont *)ows_semiboldFontWithSize:(CGFloat)size;
 
 + (UIFont *)ows_monospacedDigitFontWithSize:(CGFloat)size;
 
@@ -33,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nonatomic) UIFont *ows_dynamicTypeTitle3Font;
 @property (class, readonly, nonatomic) UIFont *ows_dynamicTypeHeadlineFont;
 @property (class, readonly, nonatomic) UIFont *ows_dynamicTypeBodyFont;
+@property (class, readonly, nonatomic) UIFont *ows_dynamicTypeBody2Font;
 @property (class, readonly, nonatomic) UIFont *ows_dynamicTypeSubheadlineFont;
 @property (class, readonly, nonatomic) UIFont *ows_dynamicTypeFootnoteFont;
 @property (class, readonly, nonatomic) UIFont *ows_dynamicTypeCaption1Font;
@@ -54,9 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Styles
 
 - (UIFont *)ows_italic;
-- (UIFont *)ows_bold;
-- (UIFont *)ows_semiBold;
-- (UIFont *)ows_mediumWeight;
+- (UIFont *)ows_semibold;
 - (UIFont *)ows_monospaced;
 
 @end

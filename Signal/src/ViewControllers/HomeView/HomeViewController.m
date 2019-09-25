@@ -575,11 +575,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                 break;
             }
 
-            NSAttributedString *formattedName = [[NSAttributedString alloc]
-                initWithString:contactName
-                    attributes:@{
-                        NSFontAttributeName : self.firstConversationLabel.font.ows_mediumWeight,
-                    }];
+            NSAttributedString *formattedName =
+                [[NSAttributedString alloc] initWithString:contactName
+                                                attributes:@{
+                                                    NSFontAttributeName : self.firstConversationLabel.font.ows_semibold,
+                                                }];
             [attributedString replaceCharactersInRange:range withAttributedString:formattedName];
         }
     }

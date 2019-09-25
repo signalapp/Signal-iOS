@@ -249,7 +249,7 @@ NS_ASSUME_NONNULL_BEGIN
     UIColor *textColor = Theme.secondaryTextAndIconColor;
     if (hasUnreadMessages && overrideSnippet == nil) {
         textColor = Theme.primaryTextColor;
-        self.dateTimeLabel.font = self.dateTimeFont.ows_mediumWeight;
+        self.dateTimeLabel.font = self.dateTimeFont.ows_semibold;
     } else {
         self.dateTimeLabel.font = self.dateTimeFont;
     }
@@ -377,7 +377,7 @@ NS_ASSUME_NONNULL_BEGIN
                              initWithString:NSLocalizedString(@"HOME_VIEW_BLOCKED_CONVERSATION",
                                                 @"Table cell subtitle label for a conversation the user has blocked.")
                                  attributes:@{
-                                     NSFontAttributeName : self.snippetFont.ows_mediumWeight,
+                                     NSFontAttributeName : self.snippetFont.ows_semibold,
                                      NSForegroundColorAttributeName : Theme.primaryTextColor,
                                  }]];
     } else if (thread.hasPendingMessageRequest) {
@@ -388,7 +388,7 @@ NS_ASSUME_NONNULL_BEGIN
                     initWithString:NSLocalizedString(@"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION",
                                        @"Table cell subtitle label for a conversation the user has not accepted.")
                         attributes:@{
-                            NSFontAttributeName : self.snippetFont.ows_mediumWeight,
+                            NSFontAttributeName : self.snippetFont.ows_semibold,
                             NSForegroundColorAttributeName : Theme.primaryTextColor,
                         }]];
     } else {
@@ -408,7 +408,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     initWithString:displayableText
                                                         attributes:@{
                                                             NSFontAttributeName :
-                                                                (hasUnreadMessages ? self.snippetFont.ows_mediumWeight
+                                                                (hasUnreadMessages ? self.snippetFont.ows_semibold
                                                                                    : self.snippetFont),
                                                             NSForegroundColorAttributeName :
                                                                 (hasUnreadMessages ? Theme.primaryTextColor
@@ -424,7 +424,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)unreadFont
 {
-    return [UIFont ows_dynamicTypeCaption1Font].ows_mediumWeight;
+    return [UIFont ows_dynamicTypeCaption1Font].ows_semibold;
 }
 
 - (UIFont *)dateTimeFont
@@ -439,7 +439,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)nameFont
 {
-    return [UIFont ows_dynamicTypeBodyFont].ows_mediumWeight;
+    return [UIFont ows_dynamicTypeBodyFont].ows_semibold;
 }
 
 // Used for profile names.

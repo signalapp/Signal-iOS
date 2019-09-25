@@ -114,7 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.senderNameContainer = [UIView new];
     self.senderNameContainer.layoutMargins = UIEdgeInsetsMake(0, 0, self.senderNameBottomSpacing, 0);
     [self.senderNameContainer addSubview:self.senderNameLabel];
-    [self.senderNameLabel ows_autoPinToSuperviewMargins];
+    [self.senderNameLabel autoPinEdgesToSuperviewMargins];
 
     self.bodyTextView = [self newTextView];
     self.bodyTextView.hidden = YES;

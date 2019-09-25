@@ -193,7 +193,7 @@ typedef void (^SystemMessageActionBlock)(void);
 
     if (self.action) {
         [self.button setTitle:self.action.title forState:UIControlStateNormal];
-        UIFont *buttonFont = UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
+        UIFont *buttonFont = UIFont.ows_dynamicTypeSubheadlineFont.ows_semibold;
         self.button.titleLabel.font = buttonFont;
         self.button.hidden = NO;
         self.button.accessibilityIdentifier = self.action.accessibilityIdentifier;

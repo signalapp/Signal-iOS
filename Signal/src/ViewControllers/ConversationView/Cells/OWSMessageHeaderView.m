@@ -130,7 +130,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
 
     // Update cell to reflect changes in dynamic text.
     if (viewItem.unreadIndicator) {
-        self.titleLabel.font = UIFont.ows_dynamicTypeCaption1Font.ows_mediumWeight;
+        self.titleLabel.font = UIFont.ows_dynamicTypeBody2Font.ows_semibold;
 
         NSString *title = NSLocalizedString(
             @"MESSAGES_VIEW_UNREAD_INDICATOR", @"Indicator that separates read from unread messages.");
@@ -151,7 +151,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
                           @"changes."));
         }
     } else {
-        self.titleLabel.font = UIFont.ows_dynamicTypeCaption1Font;
+        self.titleLabel.font = UIFont.ows_dynamicTypeBody2Font;
         self.titleLabel.text = dateString;
         self.subtitleLabel.text = nil;
     }

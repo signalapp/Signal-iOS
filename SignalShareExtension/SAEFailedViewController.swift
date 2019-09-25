@@ -52,7 +52,7 @@ class SAEFailedViewController: UIViewController {
 
         let titleLabel = UILabel()
         titleLabel.textColor = UIColor.white
-        titleLabel.font = UIFont.ows_mediumFont(withSize: 18)
+        titleLabel.font = UIFont.ows_semiboldFont(withSize: 18)
         titleLabel.text = failureTitle
         titleLabel.textAlignment = .center
         titleLabel.numberOfLines = 0

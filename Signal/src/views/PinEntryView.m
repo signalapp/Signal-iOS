@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)boldLabelFont
 {
-    return [UIFont ows_boldFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
+    return [UIFont ows_semiboldFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
 }
 
 - (UILabel *)createLabelWithText:(nullable NSString *)text
@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     self.pinTextfield.textColor = Theme.primaryTextColor;
-    self.pinTextfield.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(30.f, 36.f)];
+    self.pinTextfield.font = [UIFont ows_semiboldFontWithSize:ScaleFromIPhone5To7Plus(30.f, 36.f)];
     self.pinTextfield.textAlignment = NSTextAlignmentCenter;
     self.pinTextfield.keyboardType = UIKeyboardTypeNumberPad;
     self.pinTextfield.delegate = self;

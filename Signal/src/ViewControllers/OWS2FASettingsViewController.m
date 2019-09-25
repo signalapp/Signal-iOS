@@ -133,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self.pinTextfield = [OWSTextField new];
     self.pinTextfield.textColor = Theme.primaryTextColor;
-    self.pinTextfield.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(30.f, 36.f)];
+    self.pinTextfield.font = [UIFont ows_semiboldFontWithSize:ScaleFromIPhone5To7Plus(30.f, 36.f)];
     self.pinTextfield.textAlignment = NSTextAlignmentCenter;
     self.pinTextfield.keyboardType = UIKeyboardTypeNumberPad;
     self.pinTextfield.delegate = self;

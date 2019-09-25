@@ -37,7 +37,7 @@ private class IntroducingStickersExperienceUpgradeViewController: ExperienceUpgr
         let titleLabel = UILabel()
         titleLabel.text = title
         titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_mediumWeight()
+        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_semibold()
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.minimumScaleFactor = 0.5
         titleLabel.adjustsFontSizeToFitWidth = true
@@ -74,7 +74,7 @@ private class IntroducingStickersExperienceUpgradeViewController: ExperienceUpgr
 
         // Dismiss button
         let dismissButton = OWSFlatButton.button(title: dismissButtonTitle(),
-                                                 font: UIFont.ows_dynamicTypeBody.ows_mediumWeight(),
+                                                 font: UIFont.ows_dynamicTypeBody.ows_semibold(),
                                                  titleColor: UIColor.white,
                                                  backgroundColor: UIColor.ows_signalBlue,
                                                  target: self,
@@ -165,7 +165,7 @@ private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeV
         let titleLabel = UILabel()
         titleLabel.text = title
         titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_semiBold()
+        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_semibold()
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.minimumScaleFactor = 0.5
         titleLabel.adjustsFontSizeToFitWidth = true
@@ -191,7 +191,7 @@ private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeV
 
         // Primary button
         let primaryButton = OWSFlatButton.button(title: primaryButtonTitle(),
-                                                 font: UIFont.ows_dynamicTypeBody.ows_semiBold(),
+                                                 font: UIFont.ows_dynamicTypeBody.ows_semibold(),
                                                  titleColor: .white,
                                                  backgroundColor: .ows_signalBlue,
                                                  target: self,

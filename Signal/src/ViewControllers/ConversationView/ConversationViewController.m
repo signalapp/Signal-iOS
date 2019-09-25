@@ -640,7 +640,7 @@ typedef enum : NSUInteger {
         @"Indicates that the app is loading more messages in this conversation.");
     self.loadMoreHeader.textColor = UIColor.ows_signalBlueColor;
     self.loadMoreHeader.textAlignment = NSTextAlignmentCenter;
-    self.loadMoreHeader.font = [UIFont ows_mediumFontWithSize:16.f];
+    self.loadMoreHeader.font = [UIFont ows_semiboldFontWithSize:16.f];
     [self.collectionView addSubview:self.loadMoreHeader];
     [self.loadMoreHeader autoPinWidthToWidthOfView:self.view];
     [self.loadMoreHeader autoPinEdgeToSuperviewEdge:ALEdgeTop];
@@ -1008,7 +1008,7 @@ typedef enum : NSUInteger {
     bannerView.layer.shadowOpacity = 0.35f;
 
     UILabel *label = [UILabel new];
-    label.font = [UIFont ows_mediumFontWithSize:14.f];
+    label.font = [UIFont ows_semiboldFontWithSize:14.f];
     label.text = title;
     label.textColor = [UIColor whiteColor];
     label.numberOfLines = 0;

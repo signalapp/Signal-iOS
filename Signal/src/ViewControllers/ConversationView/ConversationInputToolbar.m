@@ -817,7 +817,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
     self.recordingLabel = [UILabel new];
     self.recordingLabel.textColor = UIColor.ows_accentRedColor;
-    self.recordingLabel.font = [UIFont ows_mediumFontWithSize:14.f];
+    self.recordingLabel.font = [UIFont ows_semiboldFontWithSize:14.f];
     [self.voiceMemoContentView addSubview:self.recordingLabel];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _recordingLabel);
 
@@ -863,7 +863,7 @@ const CGFloat kMaxTextViewHeight = 98;
                                    initWithString:NSLocalizedString(@"VOICE_MESSAGE_CANCEL_INSTRUCTIONS",
                                                       @"Indicates how to cancel a voice message.")
                                        attributes:@{
-                                           NSFontAttributeName : [UIFont ows_mediumFontWithSize:cancelFontSize],
+                                           NSFontAttributeName : [UIFont ows_semiboldFontWithSize:cancelFontSize],
                                            NSForegroundColorAttributeName : UIColor.ows_accentRedColor,
                                        }]];
     [cancelString

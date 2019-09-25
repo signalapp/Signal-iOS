@@ -288,7 +288,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UILabel *label = [UILabel new];
     label.text = NSLocalizedString(@"STICKERS_FAILED_DOWNLOAD", @"Label for a sticker that failed to download.");
-    label.font = UIFont.ows_dynamicTypeCaption1Font.ows_mediumWeight;
+    label.font = UIFont.ows_dynamicTypeCaption1Font.ows_semibold;
     label.textColor = UIColor.ows_gray45Color;
 
     UIStackView *stackView = [[UIStackView alloc] initWithArrangedSubviews:@[

@@ -79,7 +79,7 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
 {
     // Adapt the font size to reflect the diameter.
     CGFloat fontSize = 20.f * diameter / kStandardAvatarSize;
-    return [UIFont ows_mediumFontWithSize:fontSize];
+    return [UIFont ows_semiboldFontWithSize:fontSize];
 }
 
 + (nullable UIImage *)avatarImageWithInitials:(NSString *)initials

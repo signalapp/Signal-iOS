@@ -98,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIFont *)buttonFont
 {
-    return [UIFont ows_dynamicTypeBodyFont].ows_mediumWeight;
+    return [UIFont ows_dynamicTypeBodyFont].ows_semibold;
 }
 
 + (CGFloat)buttonVMargin

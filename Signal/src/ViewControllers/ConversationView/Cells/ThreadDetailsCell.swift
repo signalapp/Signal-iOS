@@ -49,7 +49,7 @@ public class ThreadDetailsCell: ConversationViewCell {
 
         avatarContainer.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: avatarBottomInset, trailing: 0)
 
-        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_bold()
+        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_semibold()
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
@@ -250,7 +250,7 @@ public class ThreadDetailsCell: ConversationViewCell {
                 return owsFailDebug("Unexpectedly tried to insert too many group names")
             }
 
-            let boldGroupName = NSAttributedString(string: groupName, attributes: [.font: UIFont.ows_dynamicTypeSubheadline.ows_semiBold()])
+            let boldGroupName = NSAttributedString(string: groupName, attributes: [.font: UIFont.ows_dynamicTypeSubheadline.ows_semibold()])
             mutableAttributedString.replaceCharacters(in: nextInsertionPoint, with: boldGroupName)
         }
 

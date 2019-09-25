@@ -140,7 +140,7 @@ public class PinSetupViewController: OWSViewController {
 
             let label = UILabel()
             label.textColor = Theme.primaryTextColor
-            label.font = UIFont.ows_dynamicTypeTitle1Clamped.ows_semiBold()
+            label.font = UIFont.ows_dynamicTypeTitle1Clamped.ows_semibold()
             label.numberOfLines = 0
             label.lineBreakMode = .byWordWrapping
             label.textAlignment = .center
@@ -185,7 +185,7 @@ public class PinSetupViewController: OWSViewController {
             let explanationBoldText = NSLocalizedString("PIN_CREATION_BOLD_EXPLANATION",
                                                         comment: "The bold portion of the explanation in the 'pin creation' view.")
 
-            let attributedExplanation = NSAttributedString(string: explanationText) + " " + NSAttributedString(string: explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semiBold()])
+            let attributedExplanation = NSAttributedString(string: explanationText) + " " + NSAttributedString(string: explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold()])
 
             explanationLabel.attributedText = attributedExplanation
 
@@ -197,7 +197,7 @@ public class PinSetupViewController: OWSViewController {
             let explanationBoldText = NSLocalizedString("PIN_CREATION_RECREATION_BOLD_EXPLANATION",
                                                         comment: "The bold portion of the re-creation explanation in the 'pin creation' view.")
 
-            let attributedExplanation = NSAttributedString(string: explanationText) + " " + NSAttributedString(string: explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semiBold()])
+            let attributedExplanation = NSAttributedString(string: explanationText) + " " + NSAttributedString(string: explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold()])
 
             explanationLabel.attributedText = attributedExplanation
 
@@ -248,7 +248,7 @@ public class PinSetupViewController: OWSViewController {
         pinStack.autoSetDimension(.width, toSize: 227)
         pinStackRow.setContentHuggingVerticalHigh()
 
-        let font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
+        let font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
         let buttonHeight = OWSFlatButton.heightForFont(font)
         let nextButton = OWSFlatButton.button(
             title: NSLocalizedString("BUTTON_NEXT",

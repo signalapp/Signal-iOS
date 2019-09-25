@@ -343,7 +343,7 @@ public class ManageStickersViewController: OWSTableViewController {
         }
         let titleLabel = UILabel()
         titleLabel.text = title
-        titleLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
+        titleLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold()
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.lineBreakMode = .byTruncatingTail
 
@@ -373,7 +373,7 @@ public class ManageStickersViewController: OWSTableViewController {
             authorName.count > 0 {
             let authorLabel = UILabel()
             authorLabel.text = authorName
-            authorLabel.font = isDefaultStickerPack ? UIFont.ows_dynamicTypeCaption1.ows_mediumWeight() : UIFont.ows_dynamicTypeCaption1
+            authorLabel.font = isDefaultStickerPack ? UIFont.ows_dynamicTypeCaption1.ows_semibold() : UIFont.ows_dynamicTypeCaption1
             authorLabel.textColor = isDefaultStickerPack ? UIColor.ows_signalBlue : Theme.secondaryTextAndIconColor
             authorLabel.lineBreakMode = .byTruncatingTail
             authorViews.append(authorLabel)

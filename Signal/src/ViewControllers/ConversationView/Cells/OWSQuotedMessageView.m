@@ -629,7 +629,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (UIFont *)quotedAuthorFont
 {
-    return UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
+    return UIFont.ows_dynamicTypeSubheadlineFont.ows_semibold;
 }
 
 - (UIColor *)quotedAuthorColor
