@@ -105,7 +105,7 @@ NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentTyp
 @property (nonatomic, readonly, nullable) NSString *originalFilePath;
 @property (nonatomic, readonly, nullable) NSURL *originalMediaURL;
 
-- (NSArray<NSString *> *)allThumbnailPaths;
+- (NSArray<NSString *> *)allSecondaryFilePaths;
 
 + (BOOL)hasThumbnailForMimeType:(NSString *)contentType;
 

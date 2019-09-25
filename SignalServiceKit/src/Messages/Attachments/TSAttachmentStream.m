@@ -994,7 +994,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return data;
 }
 
-- (NSArray<NSString *> *)allThumbnailPaths
+- (NSArray<NSString *> *)allSecondaryFilePaths
 {
     NSMutableArray<NSString *> *result = [NSMutableArray new];
 
@@ -1014,8 +1014,13 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     }
 
     NSString *_Nullable legacyThumbnailPath = self.legacyThumbnailPath;
-    if (legacyThumbnailPath && [[NSFileManager defaultManager] fileExistsAtPath:legacyThumbnailPath]) {
+    if (legacyThumbnailPath != nil && [[NSFileManager defaultManager] fileExistsAtPath:legacyThumbnailPath]) {
         [result addObject:legacyThumbnailPath];
+    }
+
+    NSString *_Nullable audioWaveformPath = self.audioWaveformPath;
+    if (audioWaveformPath != nil && [[NSFileManager defaultManager] fileExistsAtPath:audioWaveformPath]) {
+        [result addObject:audioWaveformPath];
     }
 
     return result;
