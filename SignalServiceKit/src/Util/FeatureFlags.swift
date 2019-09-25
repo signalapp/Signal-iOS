@@ -89,21 +89,14 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static var storageMode: StorageMode {
-        if CurrentAppContext().isRunningTests {
-            // We should be running the tests using both .ydbTests or .grdbTests.
-            return .grdbTests
-        } else if build.includes(.dev) {
-            return .grdbThrowawayIfMigrating
-        } else {
-            return .ydb
-        }
+        return .grdbThrowawayIfMigrating
     }
 
     // Don't enable this flag in production.
     // At least, not yet.
     @objc
     public static var storageModeStrictness: StorageModeStrictness {
-        return build.includes(.beta) ? .fail : .failDebug
+        return .fail
     }
 
     @objc
@@ -130,7 +123,7 @@ public class FeatureFlags: NSObject {
     // StickerManager.isStickerSendEnabled.  Sticker sending is
     // auto-enabled once the user receives any sticker content.
     @objc
-    public static let stickerSend = build.includes(.qa)
+    public static let stickerSend = false
 
     @objc
     public static let stickerSharing = true
@@ -151,7 +144,7 @@ public class FeatureFlags: NSObject {
     // This shouldn't be enabled in production until the receive side has been
     // in production for "long enough".
     @objc
-    public static let viewOnceSending = build.includes(.qa)
+    public static let viewOnceSending = false
 
     // Don't enable this flag in production.
     @objc
@@ -162,7 +155,7 @@ public class FeatureFlags: NSObject {
     public static let onlyModernNotificationClearance = build.includes(.beta)
 
     @objc
-    public static let registrationLockV2 = !IsUsingProductionService() && build.includes(.dev)
+    public static let registrationLockV2 = !IsUsingProductionService() && false
 
     @objc
     public static var allowUUIDOnlyContacts: Bool {
@@ -175,16 +168,16 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
-    public static var pinsForEveryone = build.includes(.dev)
+    public static var pinsForEveryone = false
 
     @objc
-    public static let useOnlyModernContactDiscovery = !IsUsingProductionService() && build.includes(.dev)
+    public static let useOnlyModernContactDiscovery = !IsUsingProductionService() && false
 
     @objc
     public static let phoneNumberPrivacy = false
 
     @objc
-    public static let socialGraphOnServer = registrationLockV2 && !IsUsingProductionService() && build.includes(.dev)
+    public static let socialGraphOnServer = registrationLockV2 && !IsUsingProductionService() && false
 
     @objc
     public static let cameraFirstCaptureFlow = true
@@ -193,13 +186,13 @@ public class FeatureFlags: NSObject {
     public static let complainAboutSlowDBWrites = true
 
     @objc
-    public static let usernames = !IsUsingProductionService() && build.includes(.dev)
+    public static let usernames = !IsUsingProductionService() && false
 
     @objc
-    public static let messageRequest = build.includes(.qa)
+    public static let messageRequest = false
 
     @objc
-    public static let profileDisplayChanges = build.includes(.qa)
+    public static let profileDisplayChanges = false
 
     // This can be used to shut down various background operations.
     @objc
