@@ -155,7 +155,9 @@ public class SDSDatabaseStorage: SDSTransactable {
 
         // crash if we can't read the DB.
         do {
-            return try GRDBDatabaseStorageAdapter(baseDir: type(of: self).baseDir())
+            return try Bench(title: "Creating GRDB storage") {
+                return try GRDBDatabaseStorageAdapter(baseDir: type(of: self).baseDir())
+            }
         } catch {
             owsFail("\(error)")
         }
@@ -188,8 +190,9 @@ public class SDSDatabaseStorage: SDSTransactable {
             }
         }
 
-        let yapPrimaryStorage = OWSPrimaryStorage()
-        return YAPDBStorageAdapter(storage: yapPrimaryStorage)
+        return Bench(title: "Creating YDB storage") {
+            return YAPDBStorageAdapter(storage: yapPrimaryStorage)
+        }
     }
 
     // MARK: -
