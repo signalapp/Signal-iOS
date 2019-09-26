@@ -101,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         OWSAssertDebug(SSKFeatureFlags.viewOnceSending);
         [dataBuilder setIsViewOnce:YES];
-        [dataBuilder setRequiredProtocolVersion:(uint32_t)SSKProtos.viewOnceMessagesProtocolVersion];
+        [dataBuilder setRequiredProtocolVersion:(uint32_t)SSKProtoDataMessageProtocolVersionViewOnceVideo];
 
         NSError *error;
         dataMessage = [dataBuilder buildAndReturnError:&error];

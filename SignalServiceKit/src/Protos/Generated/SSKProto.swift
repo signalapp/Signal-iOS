@@ -3573,6 +3573,7 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         case initial = 0
         case messageTimers = 1
         case viewOnce = 2
+        case viewOnceVideo = 3
     }
 
     private class func SSKProtoDataMessageProtocolVersionWrap(_ value: SignalServiceProtos_DataMessage.ProtocolVersion) -> SSKProtoDataMessageProtocolVersion {
@@ -3580,6 +3581,7 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         case .initial: return .initial
         case .messageTimers: return .messageTimers
         case .viewOnce: return .viewOnce
+        case .viewOnceVideo: return .viewOnceVideo
         }
     }
 
@@ -3588,6 +3590,7 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         case .initial: return .initial
         case .messageTimers: return .messageTimers
         case .viewOnce: return .viewOnce
+        case .viewOnceVideo: return .viewOnceVideo
         }
     }
 

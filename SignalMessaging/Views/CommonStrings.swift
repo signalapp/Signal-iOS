@@ -64,6 +64,12 @@ public class MessageStrings: NSObject {
 
     @objc
     static public let noteToSelf = NSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
+
+    @objc
+    static public let viewOnceViewPhoto = NSLocalizedString("PER_MESSAGE_EXPIRATION_VIEW_PHOTO", comment: "Label for view-once messages indicating that user can tap to view the message's contents.")
+
+    @objc
+    static public let viewOnceViewVideo = NSLocalizedString("PER_MESSAGE_EXPIRATION_VIEW_VIDEO", comment: "Label for view-once messages indicating that user can tap to view the message's contents.")
 }
 
 @objc

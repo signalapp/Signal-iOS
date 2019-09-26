@@ -990,7 +990,8 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         return;
     } else if ([mediaAttachment isKindOfClass:[TSAttachmentStream class]]) {
         TSAttachmentStream *attachmentStream = (TSAttachmentStream *)mediaAttachment;
-        if (attachmentStream.isValidVisualMedia && (attachmentStream.isImage || attachmentStream.isAnimated)) {
+        if (attachmentStream.isValidVisualMedia
+            && (attachmentStream.isImage || attachmentStream.isAnimated || attachmentStream.isVideo)) {
             self.messageCellType = OWSMessageCellType_ViewOnce;
             self.viewOnceMessageState = ViewOnceMessageState_IncomingAvailable;
             self.attachmentStream = attachmentStream;
