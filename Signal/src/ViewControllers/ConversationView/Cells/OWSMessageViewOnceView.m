@@ -422,7 +422,7 @@ typedef NS_ENUM(NSUInteger, ViewOnceMessageType) {
         // For incoming messages viewed messages, it doesn't matter
         // because we show generic "View" text, regardless of the
         // content type
-        return ViewOnceMessageType_Unknown
+        return ViewOnceMessageType_Unknown;
     }
 
     if (self.viewItem.attachmentStream.isVideo) {
