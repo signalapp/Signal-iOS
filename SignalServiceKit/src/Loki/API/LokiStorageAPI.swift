@@ -4,11 +4,11 @@ import PromiseKit
 public final class LokiStorageAPI : LokiDotNetAPI {
 
     // MARK: Settings
-    #if DEBUG
-    private static let server = "http://file-dev.lokinet.org"
-    #else
+//    #if DEBUG
+//    private static let server = "http://file-dev.lokinet.org"
+//    #else
     private static let server = "https://file.lokinet.org"
-    #endif
+//    #endif
     private static let deviceLinkType = "network.loki.messenger.devicemapping"
 
     // MARK: Database
@@ -53,7 +53,12 @@ public final class LokiStorageAPI : LokiDotNetAPI {
             let request = TSRequest(url: url)
             return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse -> Set<DeviceLink> in
                 guard let json = rawResponse as? JSON, let data = json["data"] as? JSON,
-                    let annotations = data["annotations"] as? [JSON], let annotation = annotations.first(where: { $0["type"] as? String == deviceLinkType }),
+                    let annotations = data["annotations"] as? [JSON] else {
+                    print("[Loki] Couldn't parse device links for user: \(hexEncodedPublicKey) from: \(rawResponse).")
+                    throw Error.parsingFailed
+                }
+                guard !annotations.isEmpty else { return [] }
+                guard let annotation = annotations.first(where: { $0["type"] as? String == deviceLinkType }),
                     let rawDeviceLinks = annotation["authorisations"] as? [JSON] else {
                     print("[Loki] Couldn't parse device links for user: \(hexEncodedPublicKey) from: \(rawResponse).")
                     throw Error.parsingFailed
@@ -113,7 +118,10 @@ public final class LokiStorageAPI : LokiDotNetAPI {
             let url = URL(string: "\(server)/users/me")!
             let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-            return TSNetworkManager.shared().makePromise(request: request).map { _ in }
+            return TSNetworkManager.shared().makePromise(request: request).map { _ in }.recover { error in
+                print("Couldn't update device links due to error: \(error).")
+                throw error
+            }
         }
 
     }
