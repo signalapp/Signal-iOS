@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)buildSavedImage
 {
-    return self.thread.groupModel.groupImage;
+    return self.thread.groupModel.groupAvatarImage;
 }
 
 - (nullable UIImage *)buildDefaultImage

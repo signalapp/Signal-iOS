@@ -26,7 +26,18 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
 #if TARGET_OS_IOS
 - (instancetype)initWithTitle:(nullable NSString *)title
                       members:(NSArray<SignalServiceAddress *> *)members
-                        image:(nullable UIImage *)image
+             groupAvatarImage:(nullable UIImage *)groupAvatarImage
+                      groupId:(NSData *)groupId
+{
+    return [self initWithTitle:title
+                       members:members
+               groupAvatarData:[TSGroupModel dataForGroupAvatar:groupAvatarImage]
+                       groupId:groupId];
+}
+
+- (instancetype)initWithTitle:(nullable NSString *)title
+                      members:(NSArray<SignalServiceAddress *> *)members
+              groupAvatarData:(nullable NSData *)groupAvatarData
                       groupId:(NSData *)groupId
 {
     OWSAssertDebug(members);
@@ -39,7 +50,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
 
     _groupName = title;
     _groupMembers = [members copy];
-    _groupImage = image; // image is stored in DB
+    _groupAvatarData = groupAvatarData;
     _groupId = groupId;
     _groupModelSchemaVersion = TSGroupModelSchemaVersion;
 
@@ -90,7 +101,46 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
 
     _groupModelSchemaVersion = TSGroupModelSchemaVersion;
 
+    if (self.groupAvatarData == nil) {
+        UIImage *_Nullable groupImage = [coder decodeObjectForKey:@"groupImage"];
+        if ([groupImage isKindOfClass:[UIImage class]]) {
+            self.groupAvatarData = [TSGroupModel dataForGroupAvatar:groupImage];
+        }
+    }
+
     return self;
+}
+
++ (nullable NSData *)dataForGroupAvatar:(nullable UIImage *)image
+{
+    if (image == nil) {
+        return nil;
+    }
+    NSData *_Nullable data = UIImagePNGRepresentation(image);
+    if (data.length < 1) {
+        OWSFailDebug(@"Could not convert group avatar to PNG.");
+        return nil;
+    }
+    const NSUInteger kMaxLength = 100 * 1000;
+    const NSUInteger kWarnLength = 10 * 1000;
+    if (data.length > kWarnLength) {
+        OWSLogVerbose(@"Group avatar data length: %lu", (unsigned long)data.length);
+        OWSFailDebug(@"Group avatar data has invalid length.");
+    }
+    if (data.length > kMaxLength) {
+        return nil;
+    }
+    return data;
+}
+
+- (void)setGroupAvatarDataWithImage:(nullable UIImage *)image
+{
+    self.groupAvatarData = [TSGroupModel dataForGroupAvatar:image];
+}
+
+- (nullable UIImage *)groupAvatarImage
+{
+    return [UIImage imageWithData:self.groupAvatarData];
 }
 
 - (BOOL)isEqual:(id)other {
@@ -112,8 +162,13 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     if (![_groupName isEqual:other.groupName]) {
         return NO;
     }
-    if (!(_groupImage != nil && other.groupImage != nil &&
-          [UIImagePNGRepresentation(_groupImage) isEqualToData:UIImagePNGRepresentation(other.groupImage)])) {
+    if (self.groupAvatarData != nil && other.groupAvatarData != nil) {
+        // Both have avatar data.
+        if (![self.groupAvatarData isEqualToData:other.groupAvatarData]) {
+            return NO;
+        }
+    } else if (self.groupAvatarData != nil || other.groupAvatarData != nil) {
+        // One model has avatar data but the other doesn't.
         return NO;
     }
     NSSet<SignalServiceAddress *> *myGroupMembersSet = [NSSet setWithArray:_groupMembers];
@@ -126,13 +181,20 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     if (self == newModel) {
         return NSLocalizedString(@"GROUP_UPDATED", @"");
     }
+    // TODO: This is false if _groupName is nil.
     if (![_groupName isEqual:newModel.groupName]) {
         updatedGroupInfoString = [updatedGroupInfoString
             stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_TITLE_CHANGED", @""),
                                                                newModel.groupName]];
     }
-    if (_groupImage != nil && newModel.groupImage != nil &&
-        !([UIImagePNGRepresentation(_groupImage) isEqualToData:UIImagePNGRepresentation(newModel.groupImage)])) {
+    if (self.groupAvatarData != nil && newModel.groupAvatarData != nil) {
+        if (![self.groupAvatarData isEqualToData:newModel.groupAvatarData]) {
+            // Group avatar changed.
+            updatedGroupInfoString =
+                [updatedGroupInfoString stringByAppendingString:NSLocalizedString(@"GROUP_AVATAR_CHANGED", @"")];
+        }
+    } else if (self.groupAvatarData != nil || newModel.groupAvatarData != nil) {
+        // Group avatar added or removed.
         updatedGroupInfoString =
             [updatedGroupInfoString stringByAppendingString:NSLocalizedString(@"GROUP_AVATAR_CHANGED", @"")];
     }

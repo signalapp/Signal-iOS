@@ -308,10 +308,13 @@ NS_ASSUME_NONNULL_BEGIN
                       [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
 
                       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                          if (model.groupImage) {
-                              NSData *data = UIImagePNGRepresentation(model.groupImage);
-                              _Nullable id<DataSource> dataSource =
-                                  [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
+                          _Nullable id<DataSource> dataSource;
+                          if (model.groupAvatarData.length > 0) {
+                              dataSource = [DataSourceValue dataSourceWithData:model.groupAvatarData
+                                                                 fileExtension:@"png"];
+                              OWSAssertDebug(dataSource != nil);
+                          }
+                          if (dataSource != nil) {
                               // CLEANUP DURABLE - Replace with a durable operation e.g. `GroupCreateJob`, which creates
                               // an error in the thread if group creation fails
                               [self.messageSender sendTemporaryAttachment:dataSource
@@ -341,7 +344,7 @@ NS_ASSUME_NONNULL_BEGIN
     [recipientAddressess addObject:[self.recipientPicker.contactsViewHelper localAddress]];
     return [[TSGroupModel alloc] initWithTitle:groupName
                                        members:recipientAddressess
-                                         image:self.groupAvatar
+                              groupAvatarImage:self.groupAvatar
                                        groupId:self.groupId];
 }
 

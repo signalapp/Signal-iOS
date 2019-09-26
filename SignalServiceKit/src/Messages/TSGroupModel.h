@@ -18,11 +18,22 @@ extern const int32_t kGroupIdLength;
 @property (readonly, nonatomic) NSData *groupId;
 
 #if TARGET_OS_IOS
-@property (nullable, nonatomic, strong) UIImage *groupImage;
+@property (nullable, nonatomic, readonly) UIImage *groupAvatarImage;
+// This data should always be in PNG format.
+@property (nullable, nonatomic) NSData *groupAvatarData;
+
+- (void)setGroupAvatarDataWithImage:(nullable UIImage *)image;
+
++ (nullable NSData *)dataForGroupAvatar:(nullable UIImage *)image;
 
 - (instancetype)initWithTitle:(nullable NSString *)title
                       members:(NSArray<SignalServiceAddress *> *)members
-                        image:(nullable UIImage *)image
+             groupAvatarImage:(nullable UIImage *)groupAvatarImage
+                      groupId:(NSData *)groupId;
+
+- (instancetype)initWithTitle:(nullable NSString *)title
+                      members:(NSArray<SignalServiceAddress *> *)members
+              groupAvatarData:(nullable NSData *)groupAvatarData
                       groupId:(NSData *)groupId;
 
 - (instancetype)initWithGroupId:(NSData *)groupId

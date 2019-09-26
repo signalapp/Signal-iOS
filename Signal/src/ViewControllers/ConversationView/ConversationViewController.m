@@ -3530,9 +3530,8 @@ typedef enum : NSUInteger {
     [groupThread fireAvatarChangedNotification];
 
     NSData *_Nullable groupAvatarData;
-    if (newGroupModel.groupImage) {
-        groupAvatarData = UIImagePNGRepresentation(newGroupModel.groupImage);
-        OWSAssertDebug(groupAvatarData.length > 0);
+    if (newGroupModel.groupAvatarData.length > 0) {
+        groupAvatarData = newGroupModel.groupAvatarData;
     }
     _Nullable id<DataSource> groupAvatarDataSource;
     if (groupAvatarData.length > 0) {

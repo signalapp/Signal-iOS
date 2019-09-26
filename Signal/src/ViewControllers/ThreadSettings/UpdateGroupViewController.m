@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) UIImageView *cameraImageView;
 @property (nonatomic, readonly) UITextField *groupNameTextField;
 
-@property (nonatomic, nullable) UIImage *groupAvatar;
+@property (nonatomic, nullable) NSData *groupAvatarData;
 @property (nonatomic, nullable) NSSet<PickedRecipient *> *previousMemberRecipients;
 @property (nonatomic) NSMutableSet<PickedRecipient *> *memberRecipients;
 
@@ -190,7 +190,7 @@ NS_ASSUME_NONNULL_BEGIN
     [avatarView autoPinLeadingToSuperviewMargin];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
-    _groupAvatar = self.thread.groupModel.groupImage;
+    _groupAvatarData = self.thread.groupModel.groupAvatarData;
 
     UIImageView *cameraImageView = [UIImageView new];
     [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryColor];
@@ -284,7 +284,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *groupName = [self.groupNameTextField.text ows_stripped];
     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
                                                            members:newMembersList
-                                                             image:self.groupAvatar
+                                                   groupAvatarData:self.groupAvatarData
                                                            groupId:self.thread.groupModel.groupId];
     [self.conversationSettingsViewDelegate groupWasUpdated:groupModel];
 }
@@ -298,11 +298,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self.avatarViewHelper showChangeAvatarUI];
 }
 
-- (void)setGroupAvatar:(nullable UIImage *)groupAvatar
+- (void)setGroupAvatarData:(nullable NSData *)groupAvatarData
 {
     OWSAssertIsOnMainThread();
 
-    _groupAvatar = groupAvatar;
+    _groupAvatarData = groupAvatarData;
 
     self.hasUnsavedChanges = YES;
 
@@ -311,7 +311,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateAvatarView
 {
-    UIImage *_Nullable groupAvatar = self.groupAvatar;
+    UIImage *_Nullable groupAvatar;
+    if (self.groupAvatarData.length > 0) {
+        groupAvatar = [UIImage imageWithData:self.groupAvatarData];
+    }
     self.cameraImageView.hidden = groupAvatar != nil;
 
     if (!groupAvatar) {
@@ -397,7 +400,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(image);
 
-    self.groupAvatar = image;
+    self.groupAvatarData = [TSGroupModel dataForGroupAvatar:image];
 }
 
 - (UIViewController *)fromViewController
