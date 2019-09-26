@@ -43,12 +43,21 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         result.textAlignment = .center
         return result
     }()
+
+    private lazy var buttonStackView: UIStackView = {
+        let result = UIStackView(arrangedSubviews: [ authorizeButton, cancelButton ])
+        result.axis = .horizontal
+        result.distribution = .fillEqually
+        return result
+    }()
     
     private lazy var authorizeButton: OWSFlatButton = {
         let result = OWSFlatButton.button(title: NSLocalizedString("Authorize", comment: ""), font: .ows_dynamicTypeBodyClamped, titleColor: .white, backgroundColor: .clear, target: self, selector: #selector(authorizeDeviceLink))
         result.setBackgroundColors(upColor: .clear, downColor: .clear)
         return result
     }()
+
+    private lazy var bottomSpacer = UIView.spacer(withHeight: 8)
     
     // MARK: Lifecycle
     init(mode: Mode, delegate: DeviceLinkingModalDelegate?) {
@@ -78,13 +87,10 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     }
     
     override func populateContentView() {
-        let buttonStackView = UIStackView(arrangedSubviews: [ authorizeButton, cancelButton ])
-        let stackView = UIStackView(arrangedSubviews: [ topSpacer, spinner, UIView.spacer(withHeight: 8), titleLabel, subtitleLabel, mnemonicLabel, buttonStackView ])
+        let stackView = UIStackView(arrangedSubviews: [ topSpacer, spinner, UIView.spacer(withHeight: 8), titleLabel, subtitleLabel, mnemonicLabel, buttonStackView, bottomSpacer ])
         contentView.addSubview(stackView)
         stackView.spacing = 16
         stackView.axis = .vertical
-        buttonStackView.axis = .horizontal
-        buttonStackView.distribution = .fillEqually
         spinner.set(.height, to: 64)
         spinner.startAnimating()
         titleLabel.text = {
@@ -108,6 +114,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         authorizeButton.set(.height, to: buttonHeight)
         cancelButton.set(.height, to: buttonHeight)
         authorizeButton.isHidden = true
+        bottomSpacer.isHidden = true
         stackView.pin(.leading, to: .leading, of: contentView, withInset: 16)
         stackView.pin(.top, to: .top, of: contentView, withInset: 16)
         contentView.pin(.trailing, to: .trailing, of: stackView, withInset: 16)
@@ -141,8 +148,18 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     func handleDeviceLinkAuthorized(_ deviceLink: DeviceLink) {
         let session = DeviceLinkingSession.current!
         session.stopListeningForLinkingAuthorization()
-        delegate?.handleDeviceLinkAuthorized(deviceLink)
-        dismiss(animated: true, completion: nil)
+        topSpacer.isHidden = true
+        spinner.stopAnimating()
+        spinner.isHidden = true
+        titleLabel.text = NSLocalizedString("Device Link Authorized", comment: "")
+        subtitleLabel.text = NSLocalizedString("Your device has been linked successfully", comment: "")
+        mnemonicLabel.isHidden = true
+        buttonStackView.isHidden = true
+        bottomSpacer.isHidden = false
+        Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
+            self.delegate?.handleDeviceLinkAuthorized(deviceLink)
+            self.dismiss(animated: true, completion: nil)
+        }
     }
     
     @objc override func cancel() {
