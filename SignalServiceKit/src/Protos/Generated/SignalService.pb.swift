@@ -710,7 +710,8 @@ struct SignalServiceProtos_DataMessage {
     case initial // = 0
     case messageTimers // = 1
     case viewOnce // = 2
-    static let current = viewOnce
+    case viewOnceVideo // = 3
+    static let current = viewOnceVideo
 
     init() {
       self = .initial
@@ -721,6 +722,7 @@ struct SignalServiceProtos_DataMessage {
       case 0: self = .initial
       case 1: self = .messageTimers
       case 2: self = .viewOnce
+      case 3: self = .viewOnceVideo
       default: return nil
       }
     }
@@ -730,6 +732,7 @@ struct SignalServiceProtos_DataMessage {
       case .initial: return 0
       case .messageTimers: return 1
       case .viewOnce: return 2
+      case .viewOnceVideo: return 3
       }
     }
 
@@ -3452,7 +3455,8 @@ extension SignalServiceProtos_DataMessage.ProtocolVersion: SwiftProtobuf._ProtoN
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "INITIAL"),
     1: .same(proto: "MESSAGE_TIMERS"),
-    2: .aliased(proto: "VIEW_ONCE", aliases: ["CURRENT"]),
+    2: .same(proto: "VIEW_ONCE"),
+    3: .aliased(proto: "VIEW_ONCE_VIDEO", aliases: ["CURRENT"]),
   ]
 }
 
