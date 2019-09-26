@@ -1223,19 +1223,20 @@ NS_ASSUME_NONNULL_BEGIN
     // Only send this group update to the requester.
     [message updateWithSendingToSingleGroupRecipient:envelope.sourceAddress transaction:transaction];
 
+    NSData *_Nullable groupAvatarData;
     if (gThread.groupModel.groupImage) {
-        NSData *_Nullable data = UIImagePNGRepresentation(gThread.groupModel.groupImage);
-        OWSAssertDebug(data);
-        if (data) {
-            _Nullable id<DataSource> dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
-            [self.messageSenderJobQueue addMediaMessage:message
-                                             dataSource:dataSource
-                                            contentType:OWSMimeTypeImagePng
-                                         sourceFilename:nil
-                                                caption:nil
-                                         albumMessageId:nil
-                                  isTemporaryAttachment:YES];
-        }
+        groupAvatarData = UIImagePNGRepresentation(gThread.groupModel.groupImage);
+        OWSAssertDebug(groupAvatarData.length > 0);
+    }
+    if (groupAvatarData.length > 0) {
+        _Nullable id<DataSource> dataSource = [DataSourceValue dataSourceWithData:groupAvatarData fileExtension:@"png"];
+        [self.messageSenderJobQueue addMediaMessage:message
+                                         dataSource:dataSource
+                                        contentType:OWSMimeTypeImagePng
+                                     sourceFilename:nil
+                                            caption:nil
+                                     albumMessageId:nil
+                              isTemporaryAttachment:YES];
     } else {
         [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
     }

@@ -179,7 +179,12 @@ NS_ASSUME_NONNULL_BEGIN
                                        OWSAssertDebug(self->_cachedFileUrl != nil);
                                    }
 
-                                   NSURL *srcUrl = self.dataUrl;
+                                   NSURL *_Nullable srcUrl = self.dataUrl;
+                                   if (srcUrl == nil) {
+                                       *error = OWSErrorMakeAssertionError(@"Missing data URL.");
+                                       success = NO;
+                                       return;
+                                   }
                                    self.isConsumed = YES;
                                    success = [NSFileManager.defaultManager moveItemAtURL:srcUrl
                                                                                    toURL:dstUrl
