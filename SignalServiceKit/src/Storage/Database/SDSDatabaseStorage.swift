@@ -155,11 +155,9 @@ public class SDSDatabaseStorage: SDSTransactable {
 
         // crash if we can't read the DB.
         do {
-            let startDate = Date()
-            Logger.verbose("Creating GRDB storage.")
-            let result = try GRDBDatabaseStorageAdapter(baseDir: type(of: self).baseDir())
-            Logger.verbose("Elapsed: \(abs(startDate.timeIntervalSinceNow)).")
-            return result
+            return try Bench(title: "Creating GRDB storage") {
+                return try GRDBDatabaseStorageAdapter(baseDir: type(of: self).baseDir())
+            }
         } catch {
             owsFail("\(error)")
         }
@@ -192,12 +190,9 @@ public class SDSDatabaseStorage: SDSTransactable {
             }
         }
 
-        let startDate = Date()
-        Logger.verbose("Creating YDB storage.")
-        let yapPrimaryStorage = OWSPrimaryStorage()
-        let result = YAPDBStorageAdapter(storage: yapPrimaryStorage)
-        Logger.verbose("Elapsed: \(abs(startDate.timeIntervalSinceNow)).")
-        return result
+        return Bench(title: "Creating YDB storage") {
+            return YAPDBStorageAdapter(storage: yapPrimaryStorage)
+        }
     }
 
     // MARK: -
