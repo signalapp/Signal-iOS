@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) OWSMessageTimerView *messageTimerView;
 @property (nonatomic) UIView *leadingSpacer;
 @property (nonatomic) UIView *trailingSpacer;
+@property (nonatomic) UIStackView *contentStack;
 
 @end
 
@@ -37,24 +38,24 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // Ensure only called once.
     OWSAssertDebug(!self.timestampLabel);
-    self.axis = UILayoutConstraintAxisHorizontal;
-    self.alignment = UIStackViewAlignmentCenter;
-    self.spacing = self.hSpacing;
-
-    self.leadingSpacer = [UIView hStretchingSpacer];
-    [self addArrangedSubview:self.leadingSpacer];
 
     self.timestampLabel = [OWSLabel new];
     self.timestampLabel.textAlignment = self.textAlignmentUnnatural;
-    [self addArrangedSubview:self.timestampLabel];
-
     self.messageTimerView = [OWSMessageTimerView new];
-    [self addArrangedSubview:self.messageTimerView];
-
     self.statusIndicatorImageView = [UIImageView new];
-    [self addArrangedSubview:self.statusIndicatorImageView];
 
+    UIStackView *contentStack = [[UIStackView alloc]
+        initWithArrangedSubviews:@[ self.timestampLabel, self.messageTimerView, self.statusIndicatorImageView ]];
+    self.contentStack = contentStack;
+    contentStack.axis = UILayoutConstraintAxisHorizontal;
+    contentStack.alignment = UIStackViewAlignmentCenter;
+    contentStack.spacing = self.hSpacing;
+
+    self.leadingSpacer = [UIView hStretchingSpacer];
     self.trailingSpacer = [UIView hStretchingSpacer];
+
+    [self addArrangedSubview:self.leadingSpacer];
+    [self addArrangedSubview:self.contentStack];
     [self addArrangedSubview:self.trailingSpacer];
 
     self.userInteractionEnabled = NO;
@@ -238,7 +239,7 @@ NS_ASSUME_NONNULL_BEGIN
         result.width += [OWSMessageTimerView measureSize].width;
     }
 
-    result.width += MAX(0, (self.arrangedSubviews.count - 2) * self.spacing);
+    result.width += MAX(0, (self.contentStack.arrangedSubviews.count - 1) * self.contentStack.spacing);
 
     return CGSizeCeil(result);
 }
