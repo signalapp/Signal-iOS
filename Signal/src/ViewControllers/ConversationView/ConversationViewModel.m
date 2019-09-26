@@ -236,6 +236,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
 #pragma mark - Dependencies
 
+// POST GRDB TODO - Remove
 - (nullable OWSPrimaryStorage *)primaryStorage
 {
     return SSKEnvironment.shared.primaryStorage;

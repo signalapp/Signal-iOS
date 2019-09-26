@@ -95,6 +95,7 @@ class YDBFullTextSearcherTest: SignalBaseTest {
     override func setUp() {
         super.setUp()
 
+        // POST GRDB TODO - Remove
         guard let primaryStorage = primaryStorage else {
             XCTFail("Missing primaryStorage.")
             return

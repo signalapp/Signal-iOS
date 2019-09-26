@@ -157,6 +157,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     return SDSDatabaseStorage.shared;
 }
 
+// POST GRDB TODO - Remove
 - (nullable OWSPrimaryStorage *)primaryStorage
 {
     return SSKEnvironment.shared.primaryStorage;

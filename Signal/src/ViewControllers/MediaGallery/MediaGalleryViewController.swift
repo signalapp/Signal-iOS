@@ -628,6 +628,7 @@ class MediaGallery: MediaGalleryDataSource {
 
     // MARK: - Dependencies
 
+    // POST GRDB TODO - Remove
     private var primaryStorage: OWSPrimaryStorage? {
         return SSKEnvironment.shared.primaryStorage
     }
