@@ -4,7 +4,11 @@ import PromiseKit
 public final class LokiStorageAPI : LokiDotNetAPI {
 
     // MARK: Settings
-    private static let server = ""
+    #if DEBUG
+    private static let server = "http://file-dev.lokinet.org"
+    #else
+    private static let server = "https://file.lokinet.org"
+    #endif
     private static let deviceLinkType = "network.loki.messenger.devicemapping"
 
     // MARK: Database
@@ -18,7 +22,11 @@ public final class LokiStorageAPI : LokiDotNetAPI {
             deviceLinks = storage.getDeviceLinks(for: userHexEncodedPublicKey, in: transaction)
         }
         deviceLinks.insert(deviceLink)
-        return setDeviceLinks(deviceLinks)
+        return setDeviceLinks(deviceLinks).map {
+            storage.dbReadWriteConnection.readWrite { transaction in
+                storage.addDeviceLink(deviceLink, in: transaction)
+            }
+        }
     }
 
     /// Removes the given device link from the user's device mapping on the server.
@@ -28,7 +36,11 @@ public final class LokiStorageAPI : LokiDotNetAPI {
             deviceLinks = storage.getDeviceLinks(for: userHexEncodedPublicKey, in: transaction)
         }
         deviceLinks.remove(deviceLink)
-        return setDeviceLinks(deviceLinks)
+        return setDeviceLinks(deviceLinks).map {
+            storage.dbReadWriteConnection.readWrite { transaction in
+                storage.removeDeviceLink(deviceLink, in: transaction)
+            }
+        }
     }
 
     /// Gets the device links associated with the given hex encoded public key from the
@@ -39,7 +51,7 @@ public final class LokiStorageAPI : LokiDotNetAPI {
             let queryParameters = "include_user_annotations=1"
             let url = URL(string: "\(server)/users/@\(hexEncodedPublicKey)?\(queryParameters)")!
             let request = TSRequest(url: url)
-            return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
+            return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse -> Set<DeviceLink> in
                 guard let json = rawResponse as? JSON, let data = json["data"] as? JSON,
                     let annotations = data["annotations"] as? [JSON], let annotation = annotations.first(where: { $0["type"] as? String == deviceLinkType }),
                     let rawDeviceLinks = annotation["authorisations"] as? [JSON] else {
@@ -74,8 +86,19 @@ public final class LokiStorageAPI : LokiDotNetAPI {
                     }
                     return deviceLink
                 })
+            }.map { deviceLinks -> Set<DeviceLink> in
+                storage.dbReadWriteConnection.readWrite { transaction in
+                    storage.setDeviceLinks(deviceLinks, in: transaction)
+                }
+                return deviceLinks
             }
         }
+    }
+
+    // MARK: Public API (Obj-C)
+    @objc(getDeviceLinksAssociatedWith:)
+    public static func objc_getDeviceLinks(associatedWith hexEncodedPublicKey: String) -> AnyPromise {
+        return AnyPromise.from(getDeviceLinks(associatedWith: hexEncodedPublicKey))
     }
 
     // MARK: Private API

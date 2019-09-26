@@ -83,6 +83,13 @@
 				<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
 				<false/>
 			</dict>
+			<key>file-dev.lokinet.org</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
 			<key>imaginary.stream</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>

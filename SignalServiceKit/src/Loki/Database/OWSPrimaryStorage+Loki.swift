@@ -4,10 +4,27 @@ extension OWSPrimaryStorage {
     private func getCollection(for primaryDevice: String) -> String {
         return "LokiDeviceLinkCollection-\(primaryDevice)"
     }
-    
-    public func storeDeviceLink(_ deviceLink: DeviceLink, in transaction: YapDatabaseReadWriteTransaction) {
+
+    public func setDeviceLinks(_ deviceLinks: Set<DeviceLink>, in transaction: YapDatabaseReadWriteTransaction) {
+        let masterHexEncodedPublicKeys = deviceLinks.map { $0.master.hexEncodedPublicKey }
+        guard masterHexEncodedPublicKeys.count == 1 else {
+            print("[Loki] Found inconsistent set of device links.")
+            return
+        }
+        let masterHexEncodedPublicKey = masterHexEncodedPublicKeys.first!
+        let collection = getCollection(for: masterHexEncodedPublicKey)
+        transaction.removeAllObjects(inCollection: collection)
+        deviceLinks.forEach { addDeviceLink($0, in: transaction) } // TODO: Check the performance impact of this
+    }
+
+    public func addDeviceLink(_ deviceLink: DeviceLink, in transaction: YapDatabaseReadWriteTransaction) {
         let collection = getCollection(for: deviceLink.master.hexEncodedPublicKey)
         transaction.setObject(deviceLink, forKey: deviceLink.slave.hexEncodedPublicKey, inCollection: collection)
+    }
+
+    public func removeDeviceLink(_ deviceLink: DeviceLink, in transaction: YapDatabaseReadWriteTransaction) {
+        let collection = getCollection(for: deviceLink.master.hexEncodedPublicKey)
+        transaction.removeObject(forKey: deviceLink.slave.hexEncodedPublicKey, inCollection: collection)
     }
     
     public func getDeviceLinks(for masterHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> Set<DeviceLink> {

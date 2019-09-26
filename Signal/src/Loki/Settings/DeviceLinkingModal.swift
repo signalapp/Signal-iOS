@@ -143,7 +143,9 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         session.stopListeningForLinkingRequests()
         session.markLinkingRequestAsProcessed()
         dismiss(animated: true, completion: nil)
-        let _ = LokiStorageAPI.addDeviceLink(deviceLink) // TODO: Handle error
+        LokiStorageAPI.addDeviceLink(deviceLink).catch { error in
+            print("[Loki] Failed to add device link due to error: \(error).")
+        }
     }
     
     func handleDeviceLinkAuthorized(_ deviceLink: DeviceLink) {
@@ -157,7 +159,9 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         mnemonicLabel.isHidden = true
         buttonStackView.isHidden = true
         bottomSpacer.isHidden = false
-        let _ = LokiStorageAPI.addDeviceLink(deviceLink) // TODO: Handle error
+        LokiStorageAPI.addDeviceLink(deviceLink).catch { error in
+            print("[Loki] Failed to add device link due to error: \(error).")
+        }
         Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
             self.delegate?.handleDeviceLinkAuthorized(deviceLink)
             self.dismiss(animated: true, completion: nil)
