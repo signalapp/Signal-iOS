@@ -191,6 +191,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
 
         return Bench(title: "Creating YDB storage") {
+            let yapPrimaryStorage = OWSPrimaryStorage()
             return YAPDBStorageAdapter(storage: yapPrimaryStorage)
         }
     }
