@@ -1069,7 +1069,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     SSKProtoDataMessageBuilder *builder = [SSKProtoDataMessage builder];
     [builder setTimestamp:self.timestamp];
-    
+
     NSUInteger requiredProtocolVersion = SSKProtoDataMessageProtocolVersionInitial;
 
     if (self.isViewOnceMessage) {
