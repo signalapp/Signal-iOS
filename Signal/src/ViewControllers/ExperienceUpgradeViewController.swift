@@ -61,7 +61,8 @@ private class IntroducingStickersExperienceUpgradeViewController: ExperienceUpgr
 
         // Icon
         let iconImageView = UIImageView()
-        iconImageView.setTemplateImageName("sticker-smiley-outline-24", tintColor: Theme.secondaryTextAndIconColor)
+        let stickerIcon = Theme.iconImage(.stickerButton)
+        iconImageView.setTemplateImage(stickerIcon, tintColor: Theme.secondaryTextAndIconColor)
         iconImageView.layer.minificationFilter = .trilinear
         iconImageView.layer.magnificationFilter = .trilinear
         view.addSubview(iconImageView)
@@ -135,7 +136,7 @@ private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeV
         self.view.backgroundColor = Theme.backgroundColor
 
         let heroImageView = UIImageView()
-        heroImageView.setImage(imageName: "introducing-pins-\(Theme.isDarkThemeEnabled ? "dark" : "light")")
+        heroImageView.setImage(imageName: Theme.isDarkThemeEnabled ? "introducing-pins-dark" : "introducing-pins-light")
         if let heroImage = heroImageView.image {
             heroImageView.autoPinToAspectRatio(with: heroImage.size)
         } else {

@@ -200,26 +200,26 @@ class AttachmentFormatCell: UICollectionViewCell {
         switch type {
         case .camera:
             text = NSLocalizedString("ATTACHMENT_KEYBOARD_CAMERA", comment: "A button to open the camera from the Attachment Keyboard")
-            imageName = "camera-outline-32"
+            imageName = Theme.iconName(.attachmentCamera)
         case .contact:
             text = NSLocalizedString("ATTACHMENT_KEYBOARD_CONTACT", comment: "A button to select a contact from the Attachment Keyboard")
-            imageName = "contact-outline-32"
+            imageName = Theme.iconName(.attachmentContact)
         case .file:
             text = NSLocalizedString("ATTACHMENT_KEYBOARD_FILE", comment: "A button to select a file from the Attachment Keyboard")
-            imageName = "file-outline-32"
+            imageName = Theme.iconName(.attachmentFile)
         case .gif:
             text = NSLocalizedString("ATTACHMENT_KEYBOARD_GIF", comment: "A button to select a GIF from the Attachment Keyboard")
-            imageName = "gif-outline-32"
+            imageName = Theme.iconName(.attachmentGif)
         case .location:
             text = NSLocalizedString("ATTACHMENT_KEYBOARD_LOCATION", comment: "A button to select a location from the Attachment Keyboard")
-            imageName = "location-outline-32"
+            imageName = Theme.iconName(.attachmentLocation)
         }
 
         // The light theme images come with a background baked in, so we don't tint them.
         if Theme.isDarkThemeEnabled {
             imageView.setTemplateImageName(imageName, tintColor: Theme.attachmentKeyboardItemImageColor)
         } else {
-            imageView.setImage(imageName: imageName + "-with-background")
+            imageView.setImage(imageName: imageName)
         }
 
         label.text = text
