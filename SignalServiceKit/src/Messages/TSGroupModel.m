@@ -4,6 +4,7 @@
 
 #import "TSGroupModel.h"
 #import "FunctionalUtil.h"
+#import "UIImage+OWS.h"
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -22,6 +23,8 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
 #pragma mark -
 
 @implementation TSGroupModel
+
+@synthesize groupAvatarData = _groupAvatarData;
 
 #if TARGET_OS_IOS
 - (instancetype)initWithTitle:(nullable NSString *)title
@@ -116,18 +119,32 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     if (image == nil) {
         return nil;
     }
+    const CGFloat kMaxDimension = 800;
+    if (image.pixelWidth > kMaxDimension ||
+        image.pixelHeight > kMaxDimension) {
+        CGFloat thumbnailSizePixels = MIN(kMaxDimension, MIN(image.pixelWidth, image.pixelHeight));
+        image = [image resizedImageToFillPixelSize:CGSizeMake(thumbnailSizePixels, thumbnailSizePixels)];
+
+        if (image == nil ||
+            image.pixelWidth > kMaxDimension ||
+            image.pixelHeight > kMaxDimension) {
+            OWSLogVerbose(@"Could not resize group avatar: %@",
+                          NSStringFromCGSize(image.pixelSize));
+            OWSFailDebug(@"Could not resize group avatar.");
+            return nil;
+        }
+    }
     NSData *_Nullable data = UIImagePNGRepresentation(image);
     if (data.length < 1) {
         OWSFailDebug(@"Could not convert group avatar to PNG.");
         return nil;
     }
-    const NSUInteger kMaxLength = 100 * 1000;
-    const NSUInteger kWarnLength = 10 * 1000;
-    if (data.length > kWarnLength) {
-        OWSLogVerbose(@"Group avatar data length: %lu", (unsigned long)data.length);
-        OWSFailDebug(@"Group avatar data has invalid length.");
-    }
+    const NSUInteger kMaxLength = 200 * 1000;
     if (data.length > kMaxLength) {
+        OWSLogVerbose(@"Group avatar data length: %lu (%@)",
+                      (unsigned long)data.length,
+                      NSStringFromCGSize(image.pixelSize));
+        OWSFailDebug(@"Group avatar data has invalid length.");
         return nil;
     }
     return data;
@@ -141,6 +158,18 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
 - (nullable UIImage *)groupAvatarImage
 {
     return [UIImage imageWithData:self.groupAvatarData];
+}
+
+- (nullable NSData *)groupAvatarData
+{
+    return _groupAvatarData;
+}
+
+- (void)setGroupAvatarData:(nullable NSData *)groupAvatarData {
+    if (_groupAvatarData.length > 0 && groupAvatarData.length < 1) {
+        OWSFailDebug(@"We should never remove an avatar from a group with an avatar.");
+    }
+    _groupAvatarData = groupAvatarData;
 }
 
 - (BOOL)isEqual:(id)other {
