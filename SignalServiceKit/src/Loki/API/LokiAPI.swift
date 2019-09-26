@@ -3,12 +3,10 @@ import PromiseKit
 @objc(LKAPI)
 public final class LokiAPI : NSObject {
     private static var lastDeviceLinkUpdate: [String:Date] = [:] // Hex encoded public key to date
-    internal static let storage = OWSPrimaryStorage.shared()
     
     // MARK: Convenience
-    internal static var userHexEncodedPublicKey: String {
-        return OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
-    }
+    internal static let storage = OWSPrimaryStorage.shared()
+    internal static let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
     
     // MARK: Settings
     private static let version = "v1"

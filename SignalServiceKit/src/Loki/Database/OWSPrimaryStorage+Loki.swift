@@ -10,12 +10,12 @@ extension OWSPrimaryStorage {
         transaction.setObject(deviceLink, forKey: deviceLink.slave.hexEncodedPublicKey, inCollection: collection)
     }
     
-    public func getDeviceLinks(for masterHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> [DeviceLink] {
+    public func getDeviceLinks(for masterHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> Set<DeviceLink> {
         let collection = getCollection(for: masterHexEncodedPublicKey)
-        var result: [DeviceLink] = []
+        var result: Set<DeviceLink> = []
         transaction.enumerateRows(inCollection: collection) { _, object, _, _ in
             guard let deviceLink = object as? DeviceLink else { return }
-            result.append(deviceLink)
+            result.insert(deviceLink)
         }
         return result
     }

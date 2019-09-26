@@ -563,7 +563,7 @@
 		B8162F0522892C5F00D46544 /* FriendRequestViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */; };
 		B821F2F82272CED3002C88C0 /* DisplayNameVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F72272CED3002C88C0 /* DisplayNameVC.swift */; };
 		B821F2FA2272CEEE002C88C0 /* SeedVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F92272CEEE002C88C0 /* SeedVC.swift */; };
-		B8258493230FA5E9001B41CB /* ScanQRCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B8258492230FA5E9001B41CB /* ScanQRCodeViewController.m */; };
+		B8258493230FA5E9001B41CB /* ScanQRCodeVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B8258492230FA5E9001B41CB /* ScanQRCodeVC.m */; };
 		B82584A02315024B001B41CB /* RSSFeedPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825849F2315024B001B41CB /* RSSFeedPoller.swift */; };
 		B845B4D4230CD09100D759F0 /* GroupChatPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B845B4D3230CD09000D759F0 /* GroupChatPoller.swift */; };
 		B846365B22B7418B00AF1514 /* Identicon+ObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */; };
@@ -1371,8 +1371,8 @@
 		B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendRequestViewDelegate.swift; sourceTree = "<group>"; };
 		B821F2F72272CED3002C88C0 /* DisplayNameVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayNameVC.swift; sourceTree = "<group>"; };
 		B821F2F92272CEEE002C88C0 /* SeedVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedVC.swift; sourceTree = "<group>"; };
-		B8258491230FA5DA001B41CB /* ScanQRCodeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScanQRCodeViewController.h; sourceTree = "<group>"; };
-		B8258492230FA5E9001B41CB /* ScanQRCodeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScanQRCodeViewController.m; sourceTree = "<group>"; };
+		B8258491230FA5DA001B41CB /* ScanQRCodeVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScanQRCodeVC.h; sourceTree = "<group>"; };
+		B8258492230FA5E9001B41CB /* ScanQRCodeVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScanQRCodeVC.m; sourceTree = "<group>"; };
 		B825849F2315024B001B41CB /* RSSFeedPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSSFeedPoller.swift; sourceTree = "<group>"; };
 		B845B4D3230CD09000D759F0 /* GroupChatPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupChatPoller.swift; sourceTree = "<group>"; };
 		B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Identicon+ObjC.swift"; sourceTree = "<group>"; };
@@ -2649,8 +2649,8 @@
 				B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */,
 				24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */,
 				B89841E222B7579F00B1BDC6 /* NewConversationVC.swift */,
-				B8258491230FA5DA001B41CB /* ScanQRCodeViewController.h */,
-				B8258492230FA5E9001B41CB /* ScanQRCodeViewController.m */,
+				B8258491230FA5DA001B41CB /* ScanQRCodeVC.h */,
+				B8258492230FA5E9001B41CB /* ScanQRCodeVC.m */,
 			);
 			path = Loki;
 			sourceTree = "<group>";
@@ -3922,7 +3922,7 @@
 				B86BD08423399ACF000F5AE3 /* Modal.swift in Sources */,
 				34D1F0861F8678AA0066283D /* ConversationViewController.m in Sources */,
 				3427C64320F500E000EEC730 /* OWSMessageTimerView.m in Sources */,
-				B8258493230FA5E9001B41CB /* ScanQRCodeViewController.m in Sources */,
+				B8258493230FA5E9001B41CB /* ScanQRCodeVC.m in Sources */,
 				B90418E6183E9DD40038554A /* DateUtil.m in Sources */,
 				3448E15E221333F5004B052E /* OnboardingController.swift in Sources */,
 				340FC8BD204DAC8D007AEB0F /* ShowGroupMembersViewController.m in Sources */,

@@ -1,15 +1,15 @@
-#import "ScanQRCodeViewController.h"
+#import "ScanQRCodeVC.h"
 #import "Session-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ScanQRCodeViewController ()
+@interface ScanQRCodeVC ()
 
 @property (nonatomic) OWSQRCodeScanningViewController *qrCodeScanningVC;
 
 @end
 
-@implementation ScanQRCodeViewController
+@implementation ScanQRCodeVC
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations { return UIInterfaceOrientationMaskPortrait; }
 

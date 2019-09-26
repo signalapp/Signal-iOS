@@ -58,6 +58,14 @@ public final class DeviceLink : NSObject, NSCoding {
         coder.encode(master, forKey: "master")
         coder.encode(slave, forKey: "slave")
     }
+
+    // MARK: JSON
+    public func toJSON() -> JSON {
+        var result = [ "primaryDevicePubKey" : master.hexEncodedPublicKey, "secondaryDevicePubKey" : slave.hexEncodedPublicKey ]
+        if let masterSignature = master.signature { result["grantSignature"] = masterSignature.base64EncodedString() }
+        if let slaveSignature = slave.signature { result["requestSignature"] = slaveSignature.base64EncodedString() }
+        return result
+    }
     
     // MARK: Equality
     @objc override public func isEqual(_ other: Any?) -> Bool {
