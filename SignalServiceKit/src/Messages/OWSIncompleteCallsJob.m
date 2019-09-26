@@ -75,7 +75,7 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
     }
 }
 
-- (void)run
+- (void)runSync
 {
     __block uint count = 0;
 

@@ -4,6 +4,7 @@
 
 #import <SignalServiceKit/SSKEnvironment.h>
 
+@class LaunchJobs;
 @class OWSAudioSession;
 @class OWSContactsManager;
 @class OWSPreferences;
@@ -28,7 +29,8 @@
                          preferences:(OWSPreferences *)preferences
           proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
                               sounds:(OWSSounds *)sounds
-                       windowManager:(OWSWindowManager *)windowManager;
+                       windowManager:(OWSWindowManager *)windowManager
+                       launchJobs:(LaunchJobs *)launchJobs;
 
 @property (nonatomic, readonly) OWSAudioSession *audioSession;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
@@ -36,6 +38,7 @@
 @property (nonatomic, readonly) OWSPreferences *preferences;
 @property (nonatomic, readonly) OWSSounds *sounds;
 @property (nonatomic, readonly) OWSWindowManager *windowManager;
+@property (nonatomic, readonly) LaunchJobs *launchJobs;
 
 @property (class, nonatomic) Environment *shared;
 
