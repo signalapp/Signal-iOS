@@ -9,7 +9,7 @@
 		<key>OSXVersion</key>
 		<string>10.14.6</string>
 		<key>WebRTCCommit</key>
-		<string>7b0f20fdba38d3416412a3d34402d822654cdfec M77</string>
+		<string>3cd37936061c51d2fcbec4bf8d84d8574e7e8031 Add RingRTC artifacts for beta</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
