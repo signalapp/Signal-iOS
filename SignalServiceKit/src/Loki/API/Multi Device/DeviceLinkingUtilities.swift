@@ -25,4 +25,20 @@ public enum DeviceLinkingUtilities {
         let thread = TSContactThread.getOrCreateThread(contactId: slaveHexEncodedPublicKey)
         return DeviceLinkMessage(in: thread, masterHexEncodedPublicKey: masterHexEncodedPublicKey, slaveHexEncodedPublicKey: slaveHexEncodedPublicKey, masterSignature: masterSignature, slaveSignature: slaveSignature)
     }
+
+    public static func hasValidSlaveSignature(_ deviceLink: DeviceLink) -> Bool {
+        guard let slaveSignature = deviceLink.slave.signature else { return false }
+        let slavePublicKey = Data(hex: deviceLink.slave.hexEncodedPublicKey.removing05PrefixIfNeeded())
+        var kind = LKDeviceLinkMessageKind.request
+        let data = Data(hex: deviceLink.master.hexEncodedPublicKey) + Data(bytes: &kind, count: MemoryLayout.size(ofValue: kind))
+        return (try? Ed25519.verifySignature(slaveSignature, publicKey: slavePublicKey, data: data)) ?? false
+    }
+
+    public static func hasValidMasterSignature(_ deviceLink: DeviceLink) -> Bool {
+        guard let masterSignature = deviceLink.master.signature else { return false }
+        let masterPublicKey = Data(hex: deviceLink.master.hexEncodedPublicKey.removing05PrefixIfNeeded())
+        var kind = LKDeviceLinkMessageKind.authorization
+        let data = Data(hex: deviceLink.slave.hexEncodedPublicKey) + Data(bytes: &kind, count: MemoryLayout.size(ofValue: kind))
+        return (try? Ed25519.verifySignature(masterSignature, publicKey: masterPublicKey, data: data)) ?? false
+    }
 }

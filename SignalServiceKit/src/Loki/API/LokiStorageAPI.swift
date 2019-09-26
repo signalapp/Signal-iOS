@@ -5,6 +5,7 @@ public final class LokiStorageAPI : LokiDotNetAPI {
 
     // MARK: Settings
     private static let server = ""
+    private static let deviceLinkType = "network.loki.messenger.devicemapping"
 
     // MARK: Database
     override internal class var authTokenCollection: String { return "LokiStorageAuthTokenCollection" }
@@ -33,16 +34,58 @@ public final class LokiStorageAPI : LokiDotNetAPI {
     /// Gets the device links associated with the given hex encoded public key from the
     /// server and stores and returns the valid ones.
     public static func getDeviceLinks(associatedWith hexEncodedPublicKey: String) -> Promise<Set<DeviceLink>> {
-        return Promise.value(Set<DeviceLink>()) // TODO: Implement
+        print("[Loki] Getting device links for: \(hexEncodedPublicKey).")
+        return getAuthToken(for: server).then { token -> Promise<Set<DeviceLink>> in
+            let queryParameters = "include_user_annotations=1"
+            let url = URL(string: "\(server)/users/@\(hexEncodedPublicKey)?\(queryParameters)")!
+            let request = TSRequest(url: url)
+            return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
+                guard let json = rawResponse as? JSON, let data = json["data"] as? JSON,
+                    let annotations = data["annotations"] as? [JSON], let annotation = annotations.first(where: { $0["type"] as? String == deviceLinkType }),
+                    let rawDeviceLinks = annotation["authorisations"] as? [JSON] else {
+                    print("[Loki] Couldn't parse device links for user: \(hexEncodedPublicKey) from: \(rawResponse).")
+                    throw Error.parsingFailed
+                }
+                return Set(rawDeviceLinks.flatMap { rawDeviceLink in
+                    guard let masterHexEncodedPublicKey = rawDeviceLink["primaryDevicePubKey"] as? String, let slaveHexEncodedPublicKey = rawDeviceLink["secondaryDevicePubKey"] as? String,
+                        let base64EncodedSlaveSignature = rawDeviceLink["requestSignature"] as? String else {
+                        print("[Loki] Couldn't parse device link for user: \(hexEncodedPublicKey) from: \(rawResponse).")
+                        return nil
+                    }
+                    let masterSignature: Data?
+                    if let base64EncodedMasterSignature = rawDeviceLink["grantSignature"] as? String {
+                        masterSignature = Data(base64Encoded: base64EncodedMasterSignature)
+                    } else {
+                        masterSignature = nil
+                    }
+                    let slaveSignature = Data(base64Encoded: base64EncodedSlaveSignature)
+                    let master = DeviceLink.Device(hexEncodedPublicKey: masterHexEncodedPublicKey, signature: masterSignature)
+                    let slave = DeviceLink.Device(hexEncodedPublicKey: slaveHexEncodedPublicKey, signature: slaveSignature)
+                    let deviceLink = DeviceLink(between: master, and: slave)
+                    if let masterSignature = masterSignature {
+                        guard DeviceLinkingUtilities.hasValidMasterSignature(deviceLink) else {
+                            print("[Loki] Received a device link with an invalid master signature.")
+                            return nil
+                        }
+                    }
+                    guard DeviceLinkingUtilities.hasValidSlaveSignature(deviceLink) else {
+                        print("[Loki] Received a device link with an invalid slave signature.")
+                        return nil
+                    }
+                    return deviceLink
+                })
+            }
+        }
     }
 
     // MARK: Private API
     public static func setDeviceLinks(_ deviceLinks: Set<DeviceLink>) -> Promise<Void> {
+        print("[Loki] Updating device links.")
         return getAuthToken(for: server).then { token -> Promise<Void> in
             let isMaster = deviceLinks.contains { $0.master.hexEncodedPublicKey == userHexEncodedPublicKey }
             let deviceLinksAsJSON = deviceLinks.map { $0.toJSON() }
             let value = !deviceLinksAsJSON.isEmpty ? [ "isPrimary" : isMaster ? 1 : 0, "authorisations" : deviceLinksAsJSON ] : nil
-            let annotation: JSON = [ "type" : "network.loki.messenger.devicemapping", "value" : value ]
+            let annotation: JSON = [ "type" : deviceLinkType, "value" : value ]
             let parameters: JSON = [ "annotations" : [ annotation ] ]
             let url = URL(string: "\(server)/users/me")!
             let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
