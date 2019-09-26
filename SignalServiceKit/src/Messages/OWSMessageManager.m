@@ -1228,10 +1228,13 @@ NS_ASSUME_NONNULL_BEGIN
         groupAvatarData = UIImagePNGRepresentation(gThread.groupModel.groupImage);
         OWSAssertDebug(groupAvatarData.length > 0);
     }
+    _Nullable id<DataSource> groupAvatarDataSource;
     if (groupAvatarData.length > 0) {
-        _Nullable id<DataSource> dataSource = [DataSourceValue dataSourceWithData:groupAvatarData fileExtension:@"png"];
+        groupAvatarDataSource = [DataSourceValue dataSourceWithData:groupAvatarData fileExtension:@"png"];
+    }
+    if (groupAvatarDataSource != nil) {
         [self.messageSenderJobQueue addMediaMessage:message
-                                         dataSource:dataSource
+                                         dataSource:groupAvatarDataSource
                                         contentType:OWSMimeTypeImagePng
                                      sourceFilename:nil
                                             caption:nil
