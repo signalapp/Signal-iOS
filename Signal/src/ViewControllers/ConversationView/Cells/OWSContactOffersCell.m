@@ -87,7 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self.titleLabel.font = UIFont.ows_dynamicTypeSubheadlineFont;
 
-    UIFont *buttonFont = UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
+    UIFont *buttonFont = UIFont.ows_dynamicTypeSubheadlineFont.ows_semibold;
     self.addToContactsButton.titleLabel.font = buttonFont;
     self.addToProfileWhitelistButton.titleLabel.font = buttonFont;
     self.blockButton.titleLabel.font = buttonFont;

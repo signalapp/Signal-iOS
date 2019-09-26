@@ -42,7 +42,7 @@ public class NonContactTableViewCell: UITableViewCell {
         headerLabel.textColor = Theme.primaryTextColor
         labelStack.addArrangedSubview(headerLabel)
 
-        identifierLabel.font = UIFont.ows_dynamicTypeBody.ows_semiBold()
+        identifierLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold()
         identifierLabel.textColor = Theme.primaryTextColor
         labelStack.addArrangedSubview(identifierLabel)
 
@@ -50,7 +50,7 @@ public class NonContactTableViewCell: UITableViewCell {
         labelStack.addArrangedSubview(bottomSpacer)
         bottomSpacer.autoMatch(.height, to: .height, of: topSpacer)
 
-        accessoryLabel.font = .ows_mediumFont(withSize: 13)
+        accessoryLabel.font = .ows_semiboldFont(withSize: 13)
         accessoryLabel.textColor = Theme.middleGrayColor
         accessoryLabel.textAlignment = .right
         accessoryLabel.isHidden = true

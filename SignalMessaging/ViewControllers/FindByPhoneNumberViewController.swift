@@ -58,14 +58,14 @@ public class FindByPhoneNumberViewController: OWSViewController {
         stackView.addArrangedSubview(countryRow)
 
         countryRowTitleLabel.text = NSLocalizedString("REGISTRATION_DEFAULT_COUNTRY_NAME", comment: "Label for the country code field")
-        countryRowTitleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
+        countryRowTitleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
 
         countryRow.addSubview(countryRowTitleLabel)
         countryRowTitleLabel.autoPinLeadingToSuperviewMargin()
         countryRowTitleLabel.autoPinHeightToSuperviewMargins()
 
         countryCodeLabel.textColor = .ows_signalBlue
-        countryCodeLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
+        countryCodeLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
         countryCodeLabel.textAlignment = .right
 
         countryRow.addSubview(countryCodeLabel)
@@ -80,7 +80,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
 
         phoneNumberRowTitleLabel.text = NSLocalizedString("REGISTRATION_PHONENUMBER_BUTTON",
                                                           comment: "Label for the phone number textfield")
-        phoneNumberRowTitleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
+        phoneNumberRowTitleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
 
         phoneNumberRow.addSubview(phoneNumberRowTitleLabel)
         phoneNumberRowTitleLabel.autoPinLeadingToSuperviewMargin()

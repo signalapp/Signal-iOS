@@ -125,7 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
     fileTypeLabel.text = fileExtension.localizedUppercaseString;
     fileTypeLabel.textColor = [UIColor ows_gray90Color];
     fileTypeLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    fileTypeLabel.font = [UIFont ows_dynamicTypeCaption1Font].ows_mediumWeight;
+    fileTypeLabel.font = [UIFont ows_dynamicTypeCaption1Font].ows_semibold;
     fileTypeLabel.adjustsFontSizeToFitWidth = YES;
     fileTypeLabel.textAlignment = NSTextAlignmentCenter;
     // Center on icon.

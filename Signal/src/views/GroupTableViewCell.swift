@@ -49,7 +49,7 @@ import SignalServiceKit
         columns.autoPinEdgesToSuperviewMargins()
 
         // Accessory Label
-        accessoryLabel.font = .ows_mediumFont(withSize: 13)
+        accessoryLabel.font = .ows_semiboldFont(withSize: 13)
         accessoryLabel.textColor = Theme.middleGrayColor
         accessoryLabel.textAlignment = .right
         accessoryLabel.isHidden = true

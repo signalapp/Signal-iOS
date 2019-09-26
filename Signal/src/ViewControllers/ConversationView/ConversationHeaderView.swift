@@ -57,7 +57,7 @@ public class ConversationHeaderView: UIStackView {
     }
 
     @objc
-    public let titlePrimaryFont: UIFont =  UIFont.ows_boldFont(withSize: 17)
+    public let titlePrimaryFont: UIFont =  UIFont.ows_semiboldFont(withSize: 17)
     @objc
     public let titleSecondaryFont: UIFont =  UIFont.ows_regularFont(withSize: 9)
     @objc

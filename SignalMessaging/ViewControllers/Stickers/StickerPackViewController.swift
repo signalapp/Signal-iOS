@@ -89,7 +89,7 @@ public class StickerPackViewController: OWSViewController {
         coverView.setContentHuggingHigh()
 
         titleLabel.textColor = Theme.darkThemePrimaryColor
-        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_mediumWeight()
+        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_semibold()
 
         authorLabel.textColor = Theme.darkThemePrimaryColor
         authorLabel.font = UIFont.ows_dynamicTypeBody
@@ -137,7 +137,7 @@ public class StickerPackViewController: OWSViewController {
         stickerCollectionView.autoPinEdge(.top, to: .bottom, of: headerStack)
 
         let installButton = OWSFlatButton.button(title: NSLocalizedString("STICKERS_INSTALL_BUTTON", comment: "Label for the 'install sticker pack' button."),
-                                             font: UIFont.ows_dynamicTypeBody.ows_mediumWeight(),
+                                             font: UIFont.ows_dynamicTypeBody.ows_semibold(),
                                              titleColor: UIColor.ows_signalBlue,
                                              backgroundColor: UIColor.white,
                                              target: self,
@@ -145,7 +145,7 @@ public class StickerPackViewController: OWSViewController {
         self.installButton = installButton
         installButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "installButton")
         let uninstallButton = OWSFlatButton.button(title: NSLocalizedString("STICKERS_UNINSTALL_BUTTON", comment: "Label for the 'uninstall sticker pack' button."),
-                                             font: UIFont.ows_dynamicTypeBody.ows_mediumWeight(),
+                                             font: UIFont.ows_dynamicTypeBody.ows_semibold(),
                                              titleColor: UIColor.ows_signalBlue,
                                              backgroundColor: UIColor.white,
                                              target: self,

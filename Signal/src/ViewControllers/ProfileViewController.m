@@ -196,7 +196,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     profileNameLabel.text = NSLocalizedString(
         @"PROFILE_VIEW_PROFILE_NAME_FIELD", @"Label for the profile name field of the profile view.");
     profileNameLabel.textColor = Theme.primaryTextColor;
-    profileNameLabel.font = [[UIFont ows_dynamicTypeBodyClampedFont] ows_mediumWeight];
+    profileNameLabel.font = [[UIFont ows_dynamicTypeBodyClampedFont] ows_semibold];
     [profileNameRow addArrangedSubview:profileNameLabel];
 
     UITextField *profileNameTextField = [OWSTextField new];
@@ -234,7 +234,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         usernameTitleLabel.text
             = NSLocalizedString(@"PROFILE_VIEW_USERNAME_FIELD", @"Label for the username field of the profile view.");
         usernameTitleLabel.textColor = Theme.primaryTextColor;
-        usernameTitleLabel.font = [[UIFont ows_dynamicTypeBodyClampedFont] ows_mediumWeight];
+        usernameTitleLabel.font = [[UIFont ows_dynamicTypeBodyClampedFont] ows_semibold];
         [usernameRow addArrangedSubview:usernameTitleLabel];
 
         UILabel *usernameLabel = [UILabel new];

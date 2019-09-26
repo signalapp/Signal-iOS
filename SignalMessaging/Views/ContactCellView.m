@@ -116,7 +116,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.nameLabel.font = [UIFont ows_dynamicTypeBodyFont];
     self.profileNameLabel.font = [UIFont ows_regularFontWithSize:11.f];
     self.subtitleLabel.font = [UIFont ows_regularFontWithSize:11.f];
-    self.accessoryLabel.font = [UIFont ows_mediumFontWithSize:13.f];
+    self.accessoryLabel.font = [UIFont ows_semiboldFontWithSize:13.f];
 
     self.nameLabel.textColor = Theme.primaryTextColor;
     self.profileNameLabel.textColor = Theme.secondaryTextAndIconColor;

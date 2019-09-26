@@ -290,7 +290,7 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         errorLabel.text = NSLocalizedString("ONBOARDING_VERIFICATION_INVALID_CODE",
                                             comment: "Label indicating that the verification code is incorrect in the 'onboarding verification' view.")
         errorLabel.textColor = .ows_accentRed
-        errorLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
+        errorLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
         errorLabel.textAlignment = .center
         errorLabel.autoSetDimension(.height, toSize: errorLabel.font.lineHeight)
         errorLabel.accessibilityIdentifier = "onboarding.verification." + "errorLabel"

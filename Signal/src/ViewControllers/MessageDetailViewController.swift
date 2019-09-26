@@ -503,7 +503,7 @@ class MessageDetailViewController: OWSViewController {
         label.textColor = Theme.secondaryTextAndIconColor
         label.text = text
         label.textAlignment = .right
-        label.font = UIFont.ows_mediumFont(withSize: 13)
+        label.font = UIFont.ows_semiboldFont(withSize: 13)
 
         let image = #imageLiteral(resourceName: "ic_secret_sender_indicator").withRenderingMode(.alwaysTemplate)
         let imageView = UIImageView(image: image)
@@ -519,7 +519,7 @@ class MessageDetailViewController: OWSViewController {
     private func nameLabel(text: String) -> UILabel {
         let label = UILabel()
         label.textColor = Theme.primaryTextColor
-        label.font = UIFont.ows_mediumFont(withSize: 14)
+        label.font = UIFont.ows_semiboldFont(withSize: 14)
         label.text = text
         label.setContentHuggingHorizontalHigh()
         return label
