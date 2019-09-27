@@ -32,10 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)dealloc
 {
-    NSURL *_Nullable fileUrl;
-    @synchronized(self) {
-        fileUrl = self.cachedFileUrl;
-    }
+    NSURL *_Nullable fileUrl = self.cachedFileUrl;
     if (fileUrl != nil) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [OWSFileSystem deleteFileIfExists:fileUrl.path];
