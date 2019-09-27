@@ -604,7 +604,9 @@ const CGFloat kMaxTextViewHeight = 98;
         }
     };
 
-    BOOL hasTextInput = self.inputTextView.trimmedText.length > 0;
+    // NOTE: We use untrimmedText, so that the sticker button disappears
+    //       even if the user just enters whitespace.
+    BOOL hasTextInput = self.inputTextView.untrimmedText.length > 0;
     ensureViewHiddenState(self.attachmentButton, NO);
     if (hasTextInput) {
         ensureViewHiddenState(self.cameraButton, YES);
