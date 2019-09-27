@@ -202,7 +202,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^() {
                                          [DebugUIMisc saveOneOfEachModel];
                                      }]];
-    [items addObject:[OWSTableItem itemWithTitle:@"Delete all threads without leaving or removing interactions"
+    [items addObject:[OWSTableItem itemWithTitle:@"Delete all threads without leaving groups or removing interactions"
                                      actionBlock:^{
                                          [DebugUIMisc.databaseStorage
                                              writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
