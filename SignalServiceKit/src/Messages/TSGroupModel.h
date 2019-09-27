@@ -47,6 +47,8 @@ extern const int32_t kGroupIdLength;
 
 @property (nonatomic, readonly) NSString *groupNameOrDefault;
 
++ (NSData *)generateRandomGroupId;
+
 @end
 
 NS_ASSUME_NONNULL_END

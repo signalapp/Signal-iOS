@@ -18,18 +18,26 @@
 
 @end
 
+#pragma mark -
+
 @implementation TSMessageStorageTests
 
-#ifdef BROKEN_TESTS
+- (SignalServiceAddress *)localAddress
+{
+    return [[SignalServiceAddress alloc] initWithPhoneNumber:@"+1333444555"];
+}
+
+- (SignalServiceAddress *)otherAddress
+{
+    return [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
+}
 
 - (void)setUp
 {
     [super setUp];
 
-    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        self.thread = [TSContactThread getOrCreateThreadWithContactId:@"aStupidId" transaction:transaction];
-
-        [self.thread saveWithTransaction:transaction];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        self.thread = [TSContactThread getOrCreateThreadWithContactAddress:self.otherAddress transaction:transaction];
     }];
 }
 
@@ -49,30 +57,34 @@
           @"have a private moment to themselves an unrecorded, unanalyzed thought. And that’s a problem because "
           @"privacy matters; privacy is what allows us to determine who we are and who we want to be.";
 
-    TSIncomingMessage *newMessage =
-        [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
-                                                           inThread:self.thread
-                                                      authorAddress:self.thread.contactAddress
-                                                     sourceDeviceId:1
-                                                        messageBody:body
-                                                      attachmentIds:@[]
-                                                   expiresInSeconds:0
-                                                      quotedMessage:nil
-                                                       contactShare:nil
-                                                        linkPreview:nil];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
+                                                                                           inThread:self.thread
+                                                                                      authorAddress:self.otherAddress
+                                                                                     sourceDeviceId:1
+                                                                                        messageBody:body
+                                                                                      attachmentIds:@[]
+                                                                                   expiresInSeconds:0
+                                                                                      quotedMessage:nil
+                                                                                       contactShare:nil
+                                                                                        linkPreview:nil
+                                                                                     messageSticker:nil
+                                                                                    serverTimestamp:nil
+                                                                                    wasReceivedByUD:NO
+                                                                                  isViewOnceMessage:NO];
 
-    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [newMessage saveWithTransaction:transaction];
+        [newMessage anyInsertWithTransaction:transaction];
         messageId = newMessage.uniqueId;
+
+        TSIncomingMessage *_Nullable fetchedMessage =
+            [TSIncomingMessage anyFetchIncomingMessageWithUniqueId:messageId transaction:transaction];
+
+        XCTAssertEqualObjects(body, fetchedMessage.body);
+        XCTAssertFalse(fetchedMessage.hasAttachments);
+        XCTAssertEqual(timestamp, fetchedMessage.timestamp);
+        XCTAssertFalse(fetchedMessage.wasRead);
+        XCTAssertEqualObjects(self.thread.uniqueId, fetchedMessage.uniqueThreadId);
     }];
-
-    TSIncomingMessage *fetchedMessage = [TSIncomingMessage fetchObjectWithUniqueID:messageId];
-
-    XCTAssertEqualObjects(body, fetchedMessage.body);
-    XCTAssertFalse(fetchedMessage.hasAttachments);
-    XCTAssertEqual(timestamp, fetchedMessage.timestamp);
-    XCTAssertFalse(fetchedMessage.wasRead);
-    XCTAssertEqualObjects(self.thread.uniqueId, fetchedMessage.uniqueThreadId);
 }
 
 - (void)testMessagesDeletedOnThreadDeletion
@@ -82,43 +94,50 @@
           @"have a private moment to themselves an unrecorded, unanalyzed thought. And that’s a problem because "
           @"privacy matters; privacy is what allows us to determine who we are and who we want to be.";
 
-    NSMutableArray<TSIncomingMessage *> *messages = [NSMutableArray new];
-    for (int i = 0; i < 10; i++) {
-        TSIncomingMessage *newMessage =
-            [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:i
-                                                               inThread:self.thread
-                                                          authorAddress:self.thread.contactAddress
-                                                         sourceDeviceId:1
-                                                            messageBody:body
-                                                          attachmentIds:@[]
-                                                       expiresInSeconds:0
-                                                          quotedMessage:nil
-                                                           contactShare:nil
-                                                            linkPreview:nil];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        NSMutableArray<TSIncomingMessage *> *messages = [NSMutableArray new];
+        for (int i = 0; i < 10; i++) {
+            TSIncomingMessage *newMessage =
+                [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:i + 1
+                                                                   inThread:self.thread
+                                                              authorAddress:self.otherAddress
+                                                             sourceDeviceId:1
+                                                                messageBody:body
+                                                              attachmentIds:@[]
+                                                           expiresInSeconds:0
+                                                              quotedMessage:nil
+                                                               contactShare:nil
+                                                                linkPreview:nil
+                                                             messageSticker:nil
+                                                            serverTimestamp:nil
+                                                            wasReceivedByUD:NO
+                                                          isViewOnceMessage:NO];
 
-        [messages addObject:newMessage];
-        [newMessage save];
-    }
+            [messages addObject:newMessage];
+            [newMessage anyInsertWithTransaction:transaction];
+        }
 
-    for (TSIncomingMessage *message in messages) {
-        TSIncomingMessage *fetchedMessage = [TSIncomingMessage fetchObjectWithUniqueID:message.uniqueId];
+        for (TSIncomingMessage *message in messages) {
+            TSIncomingMessage *_Nullable fetchedMessage =
+                [TSIncomingMessage anyFetchIncomingMessageWithUniqueId:message.uniqueId transaction:transaction];
 
-        XCTAssertEqualObjects(fetchedMessage.body, body, @"Body of incoming message recovered");
-        XCTAssertEqual(0, fetchedMessage.attachmentIds.count, @"attachments are nil");
-        XCTAssertEqualObjects(fetchedMessage.uniqueId, message.uniqueId, @"Unique identifier is accurate");
-        XCTAssertFalse(fetchedMessage.wasRead, @"Message should originally be unread");
-        XCTAssertEqualObjects(
-            fetchedMessage.uniqueThreadId, self.thread.uniqueId, @"Isn't stored in the right thread!");
-    }
+            XCTAssertEqualObjects(fetchedMessage.body, body, @"Body of incoming message recovered");
+            XCTAssertEqual(0, fetchedMessage.attachmentIds.count, @"attachments are nil");
+            XCTAssertEqualObjects(fetchedMessage.uniqueId, message.uniqueId, @"Unique identifier is accurate");
+            XCTAssertFalse(fetchedMessage.wasRead, @"Message should originally be unread");
+            XCTAssertEqualObjects(
+                fetchedMessage.uniqueThreadId, self.thread.uniqueId, @"Isn't stored in the right thread!");
+        }
 
-    [self.thread remove];
+        [self.thread anyRemoveWithTransaction:transaction];
 
-    for (TSIncomingMessage *message in messages) {
-        TSIncomingMessage *fetchedMessage = [TSIncomingMessage fetchObjectWithUniqueID:message.uniqueId];
-        XCTAssertNil(fetchedMessage, @"Message should be deleted!");
-    }
+        for (TSIncomingMessage *message in messages) {
+            TSIncomingMessage *_Nullable fetchedMessage =
+                [TSIncomingMessage anyFetchIncomingMessageWithUniqueId:message.uniqueId transaction:transaction];
+            XCTAssertNil(fetchedMessage, @"Message should be deleted!");
+        }
+    }];
 }
-
 
 - (void)testGroupMessagesDeletedOnThreadDeletion
 {
@@ -127,52 +146,60 @@
           @"have a private moment to themselves an unrecorded, unanalyzed thought. And that’s a problem because "
           @"privacy matters; privacy is what allows us to determine who we are and who we want to be.";
 
-    __block TSGroupThread *thread;
-    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        NSData *groupId = [TSGroupModel generateRandomGroupId];
+        TSGroupThread *thread;
         thread = [TSGroupThread getOrCreateThreadWithGroupModel:[[TSGroupModel alloc] initWithTitle:@"fdsfsd"
-                                                                                          memberIds:[@[] mutableCopy]
+                                                                                            members:@[
+                                                                                                self.localAddress,
+                                                                                                self.otherAddress,
+                                                                                            ]
                                                                                     groupAvatarData:nil
-                                                                                            groupId:[NSData data]]
+                                                                                            groupId:groupId]
                                                     transaction:transaction];
 
-        [thread saveWithTransaction:transaction];
+        [thread anyInsertWithTransaction:transaction];
+
+        NSMutableArray<TSIncomingMessage *> *messages = [NSMutableArray new];
+        for (uint64_t i = 0; i < 10; i++) {
+            SignalServiceAddress *authorAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+fakephone"];
+            TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:i + 1
+                                                                                               inThread:thread
+                                                                                          authorAddress:authorAddress
+                                                                                         sourceDeviceId:1
+                                                                                            messageBody:body
+                                                                                          attachmentIds:@[]
+                                                                                       expiresInSeconds:0
+                                                                                          quotedMessage:nil
+                                                                                           contactShare:nil
+                                                                                            linkPreview:nil
+                                                                                         messageSticker:nil
+                                                                                        serverTimestamp:nil
+                                                                                        wasReceivedByUD:NO
+                                                                                      isViewOnceMessage:NO];
+            [newMessage anyInsertWithTransaction:transaction];
+            [messages addObject:newMessage];
+        }
+
+        for (TSIncomingMessage *message in messages) {
+            TSIncomingMessage *_Nullable fetchedMessage =
+                [TSIncomingMessage anyFetchIncomingMessageWithUniqueId:message.uniqueId transaction:transaction];
+            XCTAssertNotNil(fetchedMessage);
+            XCTAssertEqualObjects(fetchedMessage.body, body, @"Body of incoming message recovered");
+            XCTAssertEqual(0, fetchedMessage.attachmentIds.count, @"attachments are empty");
+            XCTAssertEqualObjects(fetchedMessage.uniqueId, message.uniqueId, @"Unique identifier is accurate");
+            XCTAssertFalse(fetchedMessage.wasRead, @"Message should originally be unread");
+            XCTAssertEqualObjects(fetchedMessage.uniqueThreadId, thread.uniqueId, @"Isn't stored in the right thread!");
+        }
+
+        [thread anyRemoveWithTransaction:transaction];
+
+        for (TSIncomingMessage *message in messages) {
+            TSIncomingMessage *_Nullable fetchedMessage =
+                [TSIncomingMessage anyFetchIncomingMessageWithUniqueId:message.uniqueId transaction:transaction];
+            XCTAssertNil(fetchedMessage, @"Message should be deleted!");
+        }
     }];
-
-    NSMutableArray<TSIncomingMessage *> *messages = [NSMutableArray new];
-    for (uint64_t i = 0; i < 10; i++) {
-        SignalServiceAddress *authorAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+fakephone"];
-        TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:i
-                                                                                           inThread:thread
-                                                                                      authorAddress:authorAddress
-                                                                                     sourceDeviceId:1
-                                                                                        messageBody:body
-                                                                                      attachmentIds:@[]
-                                                                                   expiresInSeconds:0
-                                                                                      quotedMessage:nil
-                                                                                       contactShare:nil
-                                                                                        linkPreview:nil];
-        [newMessage save];
-        [messages addObject:newMessage];
-    }
-
-    for (TSIncomingMessage *message in messages) {
-        TSIncomingMessage *fetchedMessage = [TSIncomingMessage fetchObjectWithUniqueID:message.uniqueId];
-        XCTAssertNotNil(fetchedMessage);
-        XCTAssertEqualObjects(fetchedMessage.body, body, @"Body of incoming message recovered");
-        XCTAssertEqual(0, fetchedMessage.attachmentIds.count, @"attachments are empty");
-        XCTAssertEqualObjects(fetchedMessage.uniqueId, message.uniqueId, @"Unique identifier is accurate");
-        XCTAssertFalse(fetchedMessage.wasRead, @"Message should originally be unread");
-        XCTAssertEqualObjects(fetchedMessage.uniqueThreadId, thread.uniqueId, @"Isn't stored in the right thread!");
-    }
-
-    [thread remove];
-
-    for (TSIncomingMessage *message in messages) {
-        TSIncomingMessage *fetchedMessage = [TSIncomingMessage fetchObjectWithUniqueID:message.uniqueId];
-        XCTAssertNil(fetchedMessage, @"Message should be deleted!");
-    }
 }
-
-#endif
 
 @end

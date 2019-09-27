@@ -268,9 +268,9 @@ NS_ASSUME_NONNULL_BEGIN
             itemWithTitle:@"Request Bogus group info"
               actionBlock:^{
                   OWSLogInfo(@"Requesting bogus group info for thread: %@", thread);
-                  OWSSyncGroupsRequestMessage *syncGroupsRequestMessage = [[OWSSyncGroupsRequestMessage alloc]
-                      initWithThread:thread
-                             groupId:[Randomness generateRandomBytes:kGroupIdLength]];
+                  OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
+                      [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread
+                                                                  groupId:[TSGroupModel generateRandomGroupId]];
                   [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
                       [self.messageSenderJobQueue addMessage:syncGroupsRequestMessage.asPreparer
                                                  transaction:transaction];
@@ -3957,7 +3957,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         recipientAddress,
         TSAccountManager.localAddress,
     ] mutableCopy];
-    NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
+    NSData *groupId = [TSGroupModel generateRandomGroupId];
     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
                                                            members:recipientAddresses
                                                   groupAvatarImage:nil
@@ -4456,7 +4456,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                     recipientAddress,
                     TSAccountManager.localAddress,
                 ] mutableCopy];
-                NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
+                NSData *groupId = [TSGroupModel generateRandomGroupId];
                 TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
                                                                        members:recipientAddresses
                                                               groupAvatarImage:nil
@@ -4498,7 +4498,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                     recipientAddress,
                     TSAccountManager.localAddress,
                 ] mutableCopy];
-                NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
+                NSData *groupId = [TSGroupModel generateRandomGroupId];
                 TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
                                                                        members:recipientAddresses
                                                               groupAvatarImage:nil
@@ -4539,7 +4539,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                         recipientAddress,
                         TSAccountManager.localAddress,
                     ] mutableCopy];
-                    NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
+                    NSData *groupId = [TSGroupModel generateRandomGroupId];
                     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
                                                                            members:recipientAddresses
                                                                   groupAvatarImage:nil

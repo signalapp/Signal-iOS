@@ -523,7 +523,7 @@ NS_ASSUME_NONNULL_BEGIN
             [[TSGroupModel alloc] initWithTitle:[groupThread.groupModel.groupName stringByAppendingString:@" Copy"]
                                         members:groupThread.groupModel.groupMembers
                                 groupAvatarData:groupThread.groupModel.groupAvatarData
-                                        groupId:[Randomness generateRandomBytes:kGroupIdLength]];
+                                        groupId:[TSGroupModel generateRandomGroupId]];
         thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
     }];
     OWSAssertDebug(thread);
@@ -557,7 +557,7 @@ NS_ASSUME_NONNULL_BEGIN
         TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:NSUUID.UUID.UUIDString
                                                                members:recipientAddresses
                                                        groupAvatarData:nil
-                                                               groupId:[Randomness generateRandomBytes:kGroupIdLength]];
+                                                               groupId:[TSGroupModel generateRandomGroupId]];
         thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
     }];
     OWSAssertDebug(thread);

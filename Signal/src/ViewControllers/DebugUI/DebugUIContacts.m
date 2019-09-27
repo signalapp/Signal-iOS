@@ -122,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
         validRecipient,
         TSAccountManager.localAddress,
     ] mutableCopy];
-    NSData *groupId = [Randomness generateRandomBytes:16];
+    NSData *groupId = [TSGroupModel generateRandomGroupId];
     TSGroupModel *model = [[TSGroupModel alloc] initWithTitle:groupName
                                                       members:recipientAddresses
                                               groupAvatarData:nil
