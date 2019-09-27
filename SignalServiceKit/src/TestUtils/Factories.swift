@@ -397,7 +397,7 @@ public class GroupThreadFactory: NSObject, Factory {
     public var groupModelBuilder: (GroupThreadFactory) -> TSGroupModel = { groupThreadFactory in
         return TSGroupModel(title: groupThreadFactory.titleBuilder(),
                             members: groupThreadFactory.memberAddressesBuilder(),
-                            image: groupThreadFactory.imageBuilder(),
+                            groupAvatarData: groupThreadFactory.groupAvatarDataBuilder(),
                             groupId: groupThreadFactory.groupIdBuilder())
     }
 
@@ -412,7 +412,7 @@ public class GroupThreadFactory: NSObject, Factory {
     }
 
     @objc
-    public var imageBuilder: () -> UIImage? = {
+    public var groupAvatarDataBuilder: () -> Data? = {
         return nil
     }
 

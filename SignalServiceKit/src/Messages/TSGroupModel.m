@@ -4,6 +4,7 @@
 
 #import "TSGroupModel.h"
 #import "FunctionalUtil.h"
+#import "UIImage+OWS.h"
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -26,7 +27,18 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
 #if TARGET_OS_IOS
 - (instancetype)initWithTitle:(nullable NSString *)title
                       members:(NSArray<SignalServiceAddress *> *)members
-                        image:(nullable UIImage *)image
+             groupAvatarImage:(nullable UIImage *)groupAvatarImage
+                      groupId:(NSData *)groupId
+{
+    return [self initWithTitle:title
+                       members:members
+               groupAvatarData:[TSGroupModel dataForGroupAvatar:groupAvatarImage]
+                       groupId:groupId];
+}
+
+- (instancetype)initWithTitle:(nullable NSString *)title
+                      members:(NSArray<SignalServiceAddress *> *)members
+              groupAvatarData:(nullable NSData *)groupAvatarData
                       groupId:(NSData *)groupId
 {
     OWSAssertDebug(members);
@@ -39,7 +51,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
 
     _groupName = title;
     _groupMembers = [members copy];
-    _groupImage = image; // image is stored in DB
+    _groupAvatarData = groupAvatarData;
     _groupId = groupId;
     _groupModelSchemaVersion = TSGroupModelSchemaVersion;
 
@@ -90,7 +102,69 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
 
     _groupModelSchemaVersion = TSGroupModelSchemaVersion;
 
+    if (self.groupAvatarData == nil) {
+        UIImage *_Nullable groupImage = [coder decodeObjectForKey:@"groupImage"];
+        if ([groupImage isKindOfClass:[UIImage class]]) {
+            self.groupAvatarData = [TSGroupModel dataForGroupAvatar:groupImage];
+        }
+    }
+
     return self;
+}
+
++ (nullable NSData *)dataForGroupAvatar:(nullable UIImage *)image
+{
+    if (image == nil) {
+        return nil;
+    }
+    const CGFloat kMaxDimension = 800;
+    if (image.pixelWidth > kMaxDimension ||
+        image.pixelHeight > kMaxDimension) {
+        CGFloat thumbnailSizePixels = MIN(kMaxDimension, MIN(image.pixelWidth, image.pixelHeight));
+        image = [image resizedImageToFillPixelSize:CGSizeMake(thumbnailSizePixels, thumbnailSizePixels)];
+
+        if (image == nil ||
+            image.pixelWidth > kMaxDimension ||
+            image.pixelHeight > kMaxDimension) {
+            OWSLogVerbose(@"Could not resize group avatar: %@",
+                          NSStringFromCGSize(image.pixelSize));
+            OWSFailDebug(@"Could not resize group avatar.");
+            return nil;
+        }
+    }
+    NSData *_Nullable data = UIImagePNGRepresentation(image);
+    if (data.length < 1) {
+        OWSFailDebug(@"Could not convert group avatar to PNG.");
+        return nil;
+    }
+    // We should never hit this limit, given the max dimension above.
+    const NSUInteger kMaxLength = 500 * 1000;
+    if (data.length > kMaxLength) {
+        OWSLogVerbose(@"Group avatar data length: %lu (%@)",
+                      (unsigned long)data.length,
+                      NSStringFromCGSize(image.pixelSize));
+        OWSFailDebug(@"Group avatar data has invalid length.");
+        return nil;
+    }
+    return data;
+}
+
+- (void)setGroupAvatarDataWithImage:(nullable UIImage *)image
+{
+    self.groupAvatarData = [TSGroupModel dataForGroupAvatar:image];
+}
+
+- (nullable UIImage *)groupAvatarImage
+{
+    return [UIImage imageWithData:self.groupAvatarData];
+}
+
+- (void)setGroupAvatarData:(nullable NSData *)groupAvatarData {
+    if (_groupAvatarData.length > 0 && groupAvatarData.length < 1) {
+        OWSFailDebug(@"We should never remove an avatar from a group with an avatar.");
+        return;
+    }
+    _groupAvatarData = groupAvatarData;
 }
 
 - (BOOL)isEqual:(id)other {
@@ -112,8 +186,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     if (![_groupName isEqual:other.groupName]) {
         return NO;
     }
-    if (!(_groupImage != nil && other.groupImage != nil &&
-          [UIImagePNGRepresentation(_groupImage) isEqualToData:UIImagePNGRepresentation(other.groupImage)])) {
+    if (![NSObject isNullableObject:self.groupAvatarData equalTo:other.groupAvatarData]) {
         return NO;
     }
     NSSet<SignalServiceAddress *> *myGroupMembersSet = [NSSet setWithArray:_groupMembers];
@@ -126,13 +199,14 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     if (self == newModel) {
         return NSLocalizedString(@"GROUP_UPDATED", @"");
     }
+    // TODO: This is false if _groupName is nil.
     if (![_groupName isEqual:newModel.groupName]) {
         updatedGroupInfoString = [updatedGroupInfoString
             stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_TITLE_CHANGED", @""),
                                                                newModel.groupName]];
     }
-    if (_groupImage != nil && newModel.groupImage != nil &&
-        !([UIImagePNGRepresentation(_groupImage) isEqualToData:UIImagePNGRepresentation(newModel.groupImage)])) {
+    if (![NSObject isNullableObject:self.groupAvatarData equalTo:newModel.groupAvatarData]) {
+        // Group avatar changed.
         updatedGroupInfoString =
             [updatedGroupInfoString stringByAppendingString:NSLocalizedString(@"GROUP_AVATAR_CHANGED", @"")];
     }

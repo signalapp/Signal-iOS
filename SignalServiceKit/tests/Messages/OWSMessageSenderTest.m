@@ -485,7 +485,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSGroupModel *groupModel =
         [[TSGroupModel alloc] initWithTitle:@"group title"
                                     members:[@[ successfulRecipient.address, successfulRecipient2.address ] mutableCopy]
-                                      image:nil
+                            groupAvatarData:nil
                                     groupId:groupIdData];
     TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel];
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:1

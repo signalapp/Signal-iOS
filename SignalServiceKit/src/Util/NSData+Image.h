@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)stillForWebpData;
 
+- (BOOL)ows_isValidGroupAvatarPng;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -135,7 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
             @"BLOCK_LIST_BLOCKED_GROUPS_SECTION", @"Section header for groups that have been blocked");
 
         for (TSGroupModel *blockedGroup in blockedGroups) {
-            UIImage *_Nullable image = blockedGroup.groupImage;
+            UIImage *_Nullable image = blockedGroup.groupAvatarImage;
             if (!image) {
                 NSString *conversationColorName =
                     [TSGroupThread defaultConversationColorNameForGroupId:blockedGroup.groupId];
