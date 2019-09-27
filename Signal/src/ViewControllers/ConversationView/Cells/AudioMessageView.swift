@@ -63,8 +63,12 @@ class AudioMessageView: UIStackView {
             addArrangedSubview(topLabel)
         }
 
-        // TODO: Adjust the animation speed once we get the final animation
-        playPauseAnimation.animationSpeed = 2
+        // TODO: There is a bug with Lottie where animations lag when there are a lot
+        // of other things happening on screen. Since this animation generally plays
+        // when the progress bar / waveform is rendering we speed up the playback to
+        // address some of the lag issues. Once this is fixed we should update lottie
+        // and remove this check. https://github.com/airbnb/lottie-ios/issues/1034
+        playPauseAnimation.animationSpeed = 3
         playPauseAnimation.backgroundBehavior = .forceFinish
         playPauseAnimation.contentMode = .scaleAspectFit
         playPauseAnimation.autoSetDimensions(to: CGSize(square: animationSize))
@@ -150,7 +154,7 @@ class AudioMessageView: UIStackView {
     private static var labelFont: UIFont = .ows_dynamicTypeCaption2
     private static var waveformHeight: CGFloat = 35
     private static var vMargin: CGFloat = 4
-    private var animationSize: CGFloat = 30
+    private var animationSize: CGFloat = 28
     private var iconSize: CGFloat = 24
     private var hMargin: CGFloat = 0
     private var hSpacing: CGFloat = 12

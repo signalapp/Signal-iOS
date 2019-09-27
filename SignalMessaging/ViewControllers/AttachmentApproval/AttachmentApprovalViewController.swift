@@ -69,11 +69,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     private var options: AttachmentApprovalViewControllerOptions {
         var options = receivedOptions
 
-        // For now, only still images can be sent as view-once messages.
         if FeatureFlags.viewOnceSending,
             attachmentApprovalItemCollection.attachmentApprovalItems.count == 1,
             let firstItem = attachmentApprovalItemCollection.attachmentApprovalItems.first,
-            firstItem.attachment.isValidImage {
+            firstItem.attachment.isValidImage || firstItem.attachment.isValidVideo {
             options.insert(.canToggleViewOnce)
         }
 

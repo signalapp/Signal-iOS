@@ -333,6 +333,10 @@ NS_ASSUME_NONNULL_BEGIN
                                          actionBlock:^{
                                              [DebugUIMessages sendMessages:1 toAllMembersOfGroup:groupThread];
                                          }]];
+        [items addObject:[OWSTableItem itemWithTitle:@"Send Group Info Request"
+                                         actionBlock:^{
+                                             [DebugUIMessages requestGroupInfoForGroupThread:groupThread];
+                                         }]];
     }
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
@@ -4936,6 +4940,19 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         failure:^{
             OWSLogError(@"Could not prepare fake asset loaders.");
         }];
+}
+
++ (void)requestGroupInfoForGroupThread:(TSGroupThread *)groupThread
+{
+    [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
+        for (SignalServiceAddress *address in groupThread.groupModel.groupMembers) {
+            TSThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:address transaction:transaction];
+            OWSLogInfo(@"Requesting group info for group thread from: %@", address);
+            OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
+                [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread groupId:groupThread.groupModel.groupId];
+            [self.messageSenderJobQueue addMessage:syncGroupsRequestMessage.asPreparer transaction:transaction];
+        }
+    }];
 }
 
 @end

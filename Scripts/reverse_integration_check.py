@@ -81,7 +81,9 @@ def main():
         # Looks like this tag was erroneously applied before rebasing. 
         # After rebasing, HEAD was retagged with 2.41.0.2
         '2.41.0.1',
-        # 
+        # internal builds, not marked as such
+        '2.44.0.0',
+        '2.44.0.3'
     ]
     tags_of_concern = [tag for tag in tags_of_concern if tag not in tags_to_ignore]
 

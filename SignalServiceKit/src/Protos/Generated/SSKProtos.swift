@@ -10,22 +10,9 @@ public class SSKProtos: NSObject {
     private override init() {}
 
     @objc
-    public class var initialProtocolVersion: Int {
-        return SignalServiceProtos_DataMessage.ProtocolVersion.initial.rawValue
-    }
-
-    @objc
-    public class var perMessageExpirationProtocolVersion: Int {
-        return SignalServiceProtos_DataMessage.ProtocolVersion.messageTimers.rawValue
-    }
-
-    @objc
-    public class var viewOnceMessagesProtocolVersion: Int {
-        return SignalServiceProtos_DataMessage.ProtocolVersion.viewOnce.rawValue
-    }
-
-    @objc
     public class var currentProtocolVersion: Int {
+        // Our proto wrappers don't handle enum aliases, so we have one non-generated
+        // wrapper for the "current" protocol version.
         return SignalServiceProtos_DataMessage.ProtocolVersion.current.rawValue
     }
 }

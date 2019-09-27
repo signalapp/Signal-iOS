@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoSyncMessageBlockedBuilder *blockedBuilder = [SSKProtoSyncMessageBlocked builder];
     [blockedBuilder setNumbers:_phoneNumbers];

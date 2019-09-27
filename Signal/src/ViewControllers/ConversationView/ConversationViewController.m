@@ -3529,13 +3529,20 @@ typedef enum : NSUInteger {
 
     [groupThread fireAvatarChangedNotification];
 
+    NSData *_Nullable groupAvatarData;
     if (newGroupModel.groupImage) {
-        NSData *data = UIImagePNGRepresentation(newGroupModel.groupImage);
-        _Nullable id<DataSource> dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
+        groupAvatarData = UIImagePNGRepresentation(newGroupModel.groupImage);
+        OWSAssertDebug(groupAvatarData.length > 0);
+    }
+    _Nullable id<DataSource> groupAvatarDataSource;
+    if (groupAvatarData.length > 0) {
+        groupAvatarDataSource = [DataSourceValue dataSourceWithData:groupAvatarData fileExtension:@"png"];
+    }
+    if (groupAvatarDataSource != nil) {
         // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
         // which causes this code to be called. Once we're more aggressive about durable sending retry,
         // we could get rid of this "retryable tappable error message".
-        [self.messageSender sendTemporaryAttachment:dataSource
+        [self.messageSender sendTemporaryAttachment:groupAvatarDataSource
             contentType:OWSMimeTypeImagePng
             inMessage:message
             success:^{
