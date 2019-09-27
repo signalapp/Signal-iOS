@@ -6,7 +6,7 @@ extension OWSPrimaryStorage {
     }
 
     public func setDeviceLinks(_ deviceLinks: Set<DeviceLink>, in transaction: YapDatabaseReadWriteTransaction) {
-        let masterHexEncodedPublicKeys = deviceLinks.map { $0.master.hexEncodedPublicKey }
+        let masterHexEncodedPublicKeys = Set(deviceLinks.map { $0.master.hexEncodedPublicKey })
         guard masterHexEncodedPublicKeys.count == 1 else {
             print("[Loki] Found inconsistent set of device links.")
             return

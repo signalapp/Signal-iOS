@@ -5,7 +5,8 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
     private var mode: Mode = .register { didSet { if mode != oldValue { handleModeChanged() } } }
     private var seed: Data! { didSet { updateMnemonic() } }
     private var mnemonic: String! { didSet { handleMnemonicChanged() } }
-    
+    private var timer: Timer?
+
     // MARK: Components
     private lazy var registerStackView: UIStackView = {
         let result = UIStackView(arrangedSubviews: [ explanationLabel1, UIView.spacer(withHeight: 32), mnemonicLabel, UIView.spacer(withHeight: 24), copyButton, UIView.spacer(withHeight: 8), restoreButton1, linkButton1 ])
@@ -345,22 +346,30 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
             present(deviceLinkingModal, animated: true, completion: nil)
             let masterHexEncodedPublicKey = masterHexEncodedPublicKeyTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces)
             let linkingRequestMessage = DeviceLinkingUtilities.getLinkingRequestMessage(for: masterHexEncodedPublicKey)
-            (0..<4).forEach { _ in ThreadUtil.enqueue(linkingRequestMessage) }
+            timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
+                self?.sendLinkingRequestMessage(linkingRequestMessage)
+            }
+            sendLinkingRequestMessage(linkingRequestMessage)
 
-            // TODO: Timer
             // TODO: Sending bug
 
         } else {
             onboardingController.pushDisplayNameVC(from: self)
         }
     }
+
+    private func sendLinkingRequestMessage(_ linkingRequestMessage: DeviceLinkMessage) {
+        ThreadUtil.enqueue(linkingRequestMessage)
+    }
     
     func handleDeviceLinkAuthorized(_ deviceLink: DeviceLink) {
+        timer?.invalidate()
         UserDefaults.standard.set(true, forKey: "didUpdateForMainnet")
         onboardingController.verificationDidComplete(fromView: self)
     }
     
     func handleDeviceLinkingModalDismissed() {
+        timer?.invalidate()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.stopLongPollerIfNeeded()
         TSAccountManager.sharedInstance().resetForReregistration()
