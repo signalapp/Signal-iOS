@@ -458,13 +458,6 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 
     id _Nullable result = [transaction ext:TSUnseenDatabaseViewExtensionName];
     OWSAssertDebug(result);
-
-    // TODO: I believe we can now safely remove this?
-    if (!result) {
-        result = [transaction ext:TSUnreadDatabaseViewExtensionName];
-        OWSAssertDebug(result);
-    }
-
     return result;
 }
 
