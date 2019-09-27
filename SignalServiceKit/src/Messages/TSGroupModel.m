@@ -24,8 +24,6 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
 
 @implementation TSGroupModel
 
-@synthesize groupAvatarData = _groupAvatarData;
-
 #if TARGET_OS_IOS
 - (instancetype)initWithTitle:(nullable NSString *)title
                       members:(NSArray<SignalServiceAddress *> *)members
@@ -139,7 +137,8 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
         OWSFailDebug(@"Could not convert group avatar to PNG.");
         return nil;
     }
-    const NSUInteger kMaxLength = 200 * 1000;
+    // We should never hit this limit, given the max dimension above.
+    const NSUInteger kMaxLength = 500 * 1000;
     if (data.length > kMaxLength) {
         OWSLogVerbose(@"Group avatar data length: %lu (%@)",
                       (unsigned long)data.length,
@@ -160,14 +159,10 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     return [UIImage imageWithData:self.groupAvatarData];
 }
 
-- (nullable NSData *)groupAvatarData
-{
-    return _groupAvatarData;
-}
-
 - (void)setGroupAvatarData:(nullable NSData *)groupAvatarData {
     if (_groupAvatarData.length > 0 && groupAvatarData.length < 1) {
         OWSFailDebug(@"We should never remove an avatar from a group with an avatar.");
+        return;
     }
     _groupAvatarData = groupAvatarData;
 }
@@ -191,13 +186,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     if (![_groupName isEqual:other.groupName]) {
         return NO;
     }
-    if (self.groupAvatarData != nil && other.groupAvatarData != nil) {
-        // Both have avatar data.
-        if (![self.groupAvatarData isEqualToData:other.groupAvatarData]) {
-            return NO;
-        }
-    } else if (self.groupAvatarData != nil || other.groupAvatarData != nil) {
-        // One model has avatar data but the other doesn't.
+    if (![NSObject isNullableObject:self.groupAvatarData equalTo:other.groupAvatarData]) {
         return NO;
     }
     NSSet<SignalServiceAddress *> *myGroupMembersSet = [NSSet setWithArray:_groupMembers];
@@ -216,14 +205,8 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
             stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_TITLE_CHANGED", @""),
                                                                newModel.groupName]];
     }
-    if (self.groupAvatarData != nil && newModel.groupAvatarData != nil) {
-        if (![self.groupAvatarData isEqualToData:newModel.groupAvatarData]) {
-            // Group avatar changed.
-            updatedGroupInfoString =
-                [updatedGroupInfoString stringByAppendingString:NSLocalizedString(@"GROUP_AVATAR_CHANGED", @"")];
-        }
-    } else if (self.groupAvatarData != nil || newModel.groupAvatarData != nil) {
-        // Group avatar added or removed.
+    if (![NSObject isNullableObject:self.groupAvatarData equalTo:newModel.groupAvatarData]) {
+        // Group avatar changed.
         updatedGroupInfoString =
             [updatedGroupInfoString stringByAppendingString:NSLocalizedString(@"GROUP_AVATAR_CHANGED", @"")];
     }
