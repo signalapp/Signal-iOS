@@ -7,18 +7,12 @@
 #import "OWSDisappearingMessagesFinder.h"
 #import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
+#import "TSIncomingMessage.h"
 #import "TSMessage.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-#ifdef BROKEN_TESTS
-
-@interface OWSDisappearingMessagesJob (Testing)
-
-- (NSUInteger)runLoop;
-
-@end
 
 @interface OWSDisappearingMessagesJobTest : SSKBaseTestObjC
 
@@ -28,13 +22,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDisappearingMessagesJobTest
 
+- (SignalServiceAddress *)localAddress
+{
+    return [[SignalServiceAddress alloc] initWithPhoneNumber:@"+1333444555"];
+}
+
+- (SignalServiceAddress *)otherAddress
+{
+    return [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
+}
+
 - (void)setUp
 {
     [super setUp];
 
-    // NOTE: Certain parts of the codebase assert that contact ids are valid e164
-    // phone numbers.
-    self.thread = [TSContactThread getOrCreateThreadWithContactId:@"+19999999999"];
+    self.thread = [TSContactThread getOrCreateThreadWithContactAddress:self.localAddress];
 }
 
 - (TSMessage *)messageWithBody:(NSString *)body
@@ -49,96 +51,108 @@ NS_ASSUME_NONNULL_BEGIN
                                        expireStartedAt:expireStartedAt
                                          quotedMessage:nil
                                           contactShare:nil
-                                           linkPreview:nil];
+                                           linkPreview:nil
+                                        messageSticker:nil
+                                     isViewOnceMessage:NO];
 }
-
-#ifdef BROKEN_TESTS
 
 - (void)testRemoveAnyExpiredMessage
 {
     uint64_t now = [NSDate ows_millisecondTimeStamp];
     TSMessage *expiredMessage1 =
         [self messageWithBody:@"expiredMessage1" expiresInSeconds:1 expireStartedAt:now - 20000];
-    [expiredMessage1 save];
 
     TSMessage *expiredMessage2 =
         [self messageWithBody:@"expiredMessage2" expiresInSeconds:2 expireStartedAt:now - 2001];
-    [expiredMessage2 save];
 
     TSMessage *notYetExpiredMessage =
         [self messageWithBody:@"notYetExpiredMessage" expiresInSeconds:20 expireStartedAt:now - 10000];
-    [notYetExpiredMessage save];
 
     TSMessage *unExpiringMessage = [self messageWithBody:@"unexpiringMessage" expiresInSeconds:0 expireStartedAt:0];
-    [unExpiringMessage save];
 
-    
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [expiredMessage1 anyInsertWithTransaction:transaction];
+        [expiredMessage2 anyInsertWithTransaction:transaction];
+        [notYetExpiredMessage anyInsertWithTransaction:transaction];
+        [unExpiringMessage anyInsertWithTransaction:transaction];
+    }];
+
     OWSDisappearingMessagesJob *job = [OWSDisappearingMessagesJob sharedJob];
 
     // Sanity Check.
-    XCTAssertEqual(4, [TSMessage numberOfKeysInCollection]);
-    [job runLoop];
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        XCTAssertEqual(4, [TSMessage anyCountWithTransaction:transaction]);
+    }];
+    [job schedulePassForTests];
 
     //FIXME remove sleep hack in favor of expiringMessage completion handler
     sleep(4);
-    XCTAssertEqual(2, [TSMessage numberOfKeysInCollection]);
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        XCTAssertEqual(2, [TSMessage anyCountWithTransaction:transaction]);
+    }];
 }
-
-#endif
 
 - (void)testBecomeConsistentWithMessageConfiguration
 {
     OWSDisappearingMessagesJob *job = [OWSDisappearingMessagesJob sharedJob];
 
-    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         OWSDisappearingMessagesConfiguration *configuration;
-        configuration = [self.thread disappearingMessagesConfigurationWithTransaction:transaction.asAnyRead];
-        [configuration anyRemoveWithTransaction:transaction.asAnyWrite];
+        configuration = [self.thread disappearingMessagesConfigurationWithTransaction:transaction];
+        [configuration anyRemoveWithTransaction:transaction];
     }];
 
     TSMessage *expiringMessage = [self messageWithBody:@"notYetExpiredMessage" expiresInSeconds:20 expireStartedAt:0];
-    [expiringMessage save];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [expiringMessage anyInsertWithTransaction:transaction];
+    }];
 
-    [self
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [job becomeConsistentWithConfigurationForMessage:expiringMessage
-                                             contactsManager:[OWSFakeContactsManager new]
-                                                 transaction:transaction];
 
-            OWSDisappearingMessagesConfiguration *configuration;
-            configuration = [self.thread disappearingMessagesConfigurationWithTransaction:transaction.asAnyRead];
-            XCTAssertNotNil(configuration);
-        }];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [job becomeConsistentWithDisappearingDuration:expiringMessage.expiresInSeconds
+                                               thread:self.thread
+                             createdByRemoteRecipient:nil
+                               createdInExistingGroup:NO
+                                          transaction:transaction];
 
-    XCTAssert(configuration.isEnabled);
-    XCTAssertEqual(20, configuration.durationSeconds);
+        OWSDisappearingMessagesConfiguration *configuration;
+        configuration = [self.thread disappearingMessagesConfigurationWithTransaction:transaction];
+        XCTAssertNotNil(configuration);
+        XCTAssert(configuration.isEnabled);
+        XCTAssertEqual(20, configuration.durationSeconds);
+    }];
 }
 
 - (void)testBecomeConsistentWithUnexpiringMessageConfiguration
 {
     OWSDisappearingMessagesJob *job = [OWSDisappearingMessagesJob sharedJob];
 
-    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         OWSDisappearingMessagesConfiguration *configuration;
-        configuration = [self.thread disappearingMessagesConfigurationWithTransaction:transaction.asAnyRead];
-        [configuration anyRemoveWithTransaction:transaction.asAnyWrite];
+        configuration = [self.thread disappearingMessagesConfigurationWithTransaction:transaction];
+        [configuration anyRemoveWithTransaction:transaction];
     }];
 
     TSMessage *unExpiringMessage = [self messageWithBody:@"unexpiringMessage" expiresInSeconds:0 expireStartedAt:0];
-    [unExpiringMessage save];
-    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [job becomeConsistentWithConfigurationForMessage:unExpiringMessage
-                                         contactsManager:[OWSFakeContactsManager new]
-                                             transaction:transaction];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [unExpiringMessage anyInsertWithTransaction:transaction];
+    }];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [job becomeConsistentWithDisappearingDuration:unExpiringMessage.expiresInSeconds
+                                               thread:self.thread
+                             createdByRemoteRecipient:nil
+                               createdInExistingGroup:NO
+                                          transaction:transaction];
     }];
 
-    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        XCTAssertNil([self.thread disappearingMessagesConfigurationWithTransaction:transaction.asAnyRead]);
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        OWSDisappearingMessagesConfiguration *configuration;
+        configuration = [self.thread disappearingMessagesConfigurationWithTransaction:transaction];
+        XCTAssertNotNil(configuration);
+        XCTAssertFalse(configuration.isEnabled);
     }];
 }
 
 @end
-
-#endif
 
 NS_ASSUME_NONNULL_END

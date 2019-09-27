@@ -285,6 +285,15 @@ void AssertIsOnDisappearingMessagesQueue()
     });
 }
 
+#ifdef DEBUG
+- (void)schedulePassForTests
+{
+    dispatch_sync(OWSDisappearingMessagesJob.serialQueue, ^{
+        [self runLoop];
+    });
+}
+#endif
+
 - (NSDateFormatter *)dateFormatter
 {
     static NSDateFormatter *dateFormatter;
