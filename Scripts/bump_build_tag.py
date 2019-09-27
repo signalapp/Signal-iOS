@@ -138,8 +138,11 @@ def get_versions(plist_file_path):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Precommit cleanup script.')
     parser.add_argument('--version', help='used for starting a new version.')
+    parser.add_argument('--internal', action='store_true', help='used to indicate throwaway builds.')
 
     args = parser.parse_args()
+
+    is_internal = args.internal
     
     project_root_path = find_project_root()
     # print 'project_root_path', project_root_path
@@ -200,7 +203,10 @@ if __name__ == '__main__':
     execute_command(command)
     command = ['git', 'commit', '-m', '"Bump build to %s."' % new_build_version]
     execute_command(command)
-    command = ['git', 'tag', new_build_version]
+    tag_name = new_build_version
+    if is_internal:
+        tag_name += "-internal"
+    command = ['git', 'tag', tag_name]
     execute_command(command)
     
         
