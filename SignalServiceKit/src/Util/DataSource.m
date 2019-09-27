@@ -55,9 +55,9 @@ NS_ASSUME_NONNULL_BEGIN
     _isConsumed = NO;
 
     // Ensure that value is backed by file on disk.
-    DataSourceValue *value = self;
+    __weak DataSourceValue *weakValue = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [value dataUrl];
+        [weakValue dataUrl];
     });
 
     return self;
