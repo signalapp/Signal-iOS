@@ -93,7 +93,7 @@ public class FeatureFlags: NSObject {
 //            // We should be running the tests using both .ydbTests or .grdbTests.
 //            return .grdbTests
 //        } else if false {
-//            return .grdbThrowawayIfMigrating
+            return .grdbThrowawayIfMigrating
 //        } else {
             return .ydb
 //        }
@@ -103,7 +103,8 @@ public class FeatureFlags: NSObject {
     // At least, not yet.
     @objc
     public static var storageModeStrictness: StorageModeStrictness {
-        return build.includes(.beta) ? .fail : .failDebug
+        return .fail
+//        return build.includes(.beta) ? .fail : .failDebug
     }
 
     @objc
