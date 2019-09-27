@@ -631,7 +631,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                                                      return;
                                                  }
 
-                                                 OWSAssertDebug(!possiblyRead.read);
+//                                                 OWSAssertDebug(!possiblyRead.read);
                                                  OWSAssertDebug(possiblyRead.expireStartedAt == 0);
                                                  if (!possiblyRead.read) {
                                                      [newlyReadList addObject:possiblyRead];
