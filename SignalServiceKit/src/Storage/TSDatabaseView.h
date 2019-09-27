@@ -7,6 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// POST GRDB TODO - Some of these views can be removed.
 extern NSString *const TSInboxGroup;
 extern NSString *const TSArchiveGroup;
 extern NSString *const TSUnreadIncomingMessagesGroup;

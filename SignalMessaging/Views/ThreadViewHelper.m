@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
     return SDSDatabaseStorage.shared;
 }
 
+// POST GRDB TODO - Remove
 - (nullable OWSPrimaryStorage *)primaryStorage
 {
     return SSKEnvironment.shared.primaryStorage;
