@@ -201,8 +201,14 @@ if __name__ == '__main__':
     # ---------------
     command = ['git', 'add', '.']
     execute_command(command)
-    command = ['git', 'commit', '-m', '"Bump build to %s."' % new_build_version]
+
+    if is_internal:
+        commit_message = '"Bump build to %s." (Internal)' % new_build_version
+    else:
+        commit_message = '"Bump build to %s."' % new_build_version
+    command = ['git', 'commit', '-m', commit_message]
     execute_command(command)
+
     tag_name = new_build_version
     if is_internal:
         tag_name += "-internal"
