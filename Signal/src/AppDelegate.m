@@ -32,9 +32,6 @@
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
-#import <SignalServiceKit/OWSFailedAttachmentDownloadsJob.h>
-#import <SignalServiceKit/OWSFailedMessagesJob.h>
-#import <SignalServiceKit/OWSIncompleteCallsJob.h>
 #import <SignalServiceKit/OWSMath.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
@@ -169,6 +166,11 @@ static NSTimeInterval launchStartedAt;
 - (StorageCoordinator *)storageCoordinator
 {
     return SSKEnvironment.shared.storageCoordinator;
+}
+
+- (LaunchJobs *)launchJobs
+{
+    return Environment.shared.launchJobs;
 }
 
 #pragma mark -
@@ -649,13 +651,6 @@ static NSTimeInterval launchStartedAt;
 
                 [self enableBackgroundRefreshIfNecessary];
 
-                // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
-                // sent before the app exited should be marked as failures.
-                [[OWSFailedMessagesJob new] run];
-                // Mark all "incomplete" calls as missed, e.g. any incoming or outgoing calls that were not
-                // connected, failed or hung up before the app existed should be marked as missed.
-                [[OWSIncompleteCallsJob new] run];
-                [[OWSFailedAttachmentDownloadsJob new] run];
             });
         } else {
             OWSLogInfo(@"running post launch block for unregistered user.");
@@ -1236,6 +1231,15 @@ static NSTimeInterval launchStartedAt;
     }
     if ([AppReadiness isAppReady]) {
         // Only mark the app as ready once.
+        return;
+    }
+    BOOL launchJobsAreComplete = [self.launchJobs ensureLaunchJobsWithCompletion:^{
+        // If launch jobs need to run, return and
+        // call checkIfAppIsReady again when they're complete.
+        [self checkIfAppIsReady];
+    }];
+    if (!launchJobsAreComplete) {
+        // Wait for launch jobs to complete.
         return;
     }
 

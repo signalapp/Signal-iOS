@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSIncompleteCallsJob : NSObject
 
-- (void)run;
+- (void)runSync;
 
 + (NSArray<NSString *> *)ydb_incompleteCallIdsWithTransaction:(YapDatabaseReadTransaction *)transaction;
 

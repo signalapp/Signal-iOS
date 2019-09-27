@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSFailedAttachmentDownloadsJob : NSObject
 
-- (void)run;
+- (void)runSync;
 
 + (NSArray<NSString *> *)unfailedAttachmentPointerIdsWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
