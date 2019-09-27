@@ -222,10 +222,6 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                                                                  object:self];
     }];
 
-    [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:self
-                                                     expirationStartedAt:readTimestamp
-                                                             transaction:transaction];
-
     if (sendReadReceipt) {
         [OWSReadReceiptManager.sharedManager messageWasReadLocally:self];
     }

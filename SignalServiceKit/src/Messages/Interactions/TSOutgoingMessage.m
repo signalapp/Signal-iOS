@@ -17,7 +17,6 @@
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
@@ -640,24 +639,26 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     //
     // TODO: Revisit this decision.
 
-    if (!self.hasPerConversationExpiration) {
-        return NO;
-    } else if (self.messageState == TSOutgoingMessageStateSent) {
-        return YES;
-    } else {
-        if (self.expireStartedAt > 0) {
-            // Our initial migration to populate the recipient state map was incomplete. It's since been
-            // addressed, but it's possible there are edge cases where a previously sent message would
-            // no longer be considered sent.
-            // So here we take extra care not to stop any expiration that had previously started.
-            // This can also happen under normal cirumstances with an outgoing group message.
-            OWSFailDebug(@"expiration previously started");
-
-            return YES;
-        }
-        
+    if (!super.shouldStartExpireTimer) {
         return NO;
     }
+
+    if (self.messageState == TSOutgoingMessageStateSent) {
+        return YES;
+    }
+
+    if (self.expireStartedAt > 0) {
+        // Our initial migration to populate the recipient state map was incomplete. It's since been
+        // addressed, but it's possible there are edge cases where a previously sent message would
+        // no longer be considered sent.
+        // So here we take extra care not to stop any expiration that had previously started.
+        // This can also happen under normal cirumstances with an outgoing group message.
+        OWSFailDebug(@"expiration previously started");
+
+        return YES;
+    }
+
+    return NO;
 }
 
 - (BOOL)isSilent
@@ -764,8 +765,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                               }
                                               [message setMostRecentFailureText:error.localizedDescription];
                                           }];
-
-    [self ensurePerConversationExpirationWithTransaction:transaction];
 }
 
 - (void)updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:(SDSAnyWriteTransaction *)transaction
@@ -783,8 +782,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                   }
                                               }
                                           }];
-
-    [self ensurePerConversationExpirationWithTransaction:transaction];
 }
 
 - (void)updateAllUnsentRecipientsAsSendingWithTransaction:(SDSAnyWriteTransaction *)transaction;
@@ -802,8 +799,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                   }
                                               }
                                           }];
-
-    [self ensurePerConversationExpirationWithTransaction:transaction];
 }
 
 - (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript transaction:(SDSAnyWriteTransaction *)transaction
@@ -851,23 +846,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                 recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                                 recipientState.wasSentByUD = wasSentByUD;
                                             }];
-
-    [self ensurePerConversationExpirationWithTransaction:transaction];
-}
-
-- (void)ensurePerConversationExpirationWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    if (![self shouldStartExpireTimer]) {
-        return;
-    }
-    if (self.expireStartedAt > 0) {
-        // Expiration already started.
-        return;
-    }
-    uint64_t nowMs = [NSDate ows_millisecondTimeStamp];
-    [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:self
-                                                     expirationStartedAt:nowMs
-                                                             transaction:transaction];
 }
 
 - (void)updateWithSkippedRecipient:(SignalServiceAddress *)recipientAddress
@@ -887,8 +865,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                 }
                                                 recipientState.state = OWSOutgoingMessageRecipientStateSkipped;
                                             }];
-
-    [self ensurePerConversationExpirationWithTransaction:transaction];
 }
 
 - (void)updateWithDeliveredRecipient:(SignalServiceAddress *)recipientAddress
@@ -918,8 +894,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                 recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                                 recipientState.deliveryTimestamp = deliveryTimestamp;
                                             }];
-
-    [self ensurePerConversationExpirationWithTransaction:transaction];
 }
 
 - (void)updateWithReadRecipient:(SignalServiceAddress *)recipientAddress
@@ -944,8 +918,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                 recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                                 recipientState.readTimestamp = @(readTimestamp);
                                             }];
-
-    [self ensurePerConversationExpirationWithTransaction:transaction];
 }
 
 - (void)updateWithWasSentFromLinkedDeviceWithUDRecipientAddresses:
@@ -1029,8 +1001,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                   [message setIsFromLinkedDevice:YES];
                                               }
                                           }];
-
-    [self ensurePerConversationExpirationWithTransaction:transaction];
 }
 
 - (void)updateWithSendingToSingleGroupRecipient:(SignalServiceAddress *)singleGroupRecipient
@@ -1048,8 +1018,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                     singleGroupRecipient : recipientState,
                                                 }];
                                             }];
-
-    [self ensurePerConversationExpirationWithTransaction:transaction];
 }
 
 - (nullable NSNumber *)firstRecipientReadTimestamp

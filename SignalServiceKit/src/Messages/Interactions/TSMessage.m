@@ -13,6 +13,7 @@
 #import "TSThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
+#import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -506,11 +507,40 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self updateStoredShouldStartExpireTimer];
 }
 
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidInsertWithTransaction:transaction];
+
+    [self ensurePerConversationExpirationWithTransaction:transaction];
+}
+
 - (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyWillUpdateWithTransaction:transaction];
 
     [self updateStoredShouldStartExpireTimer];
+}
+
+- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidUpdateWithTransaction:transaction];
+
+    [self ensurePerConversationExpirationWithTransaction:transaction];
+}
+
+- (void)ensurePerConversationExpirationWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (self.expireStartedAt > 0) {
+        // Expiration already started.
+        return;
+    }
+    if (![self shouldStartExpireTimer]) {
+        return;
+    }
+    uint64_t nowMs = [NSDate ows_millisecondTimeStamp];
+    [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:self
+                                                     expirationStartedAt:nowMs
+                                                             transaction:transaction];
 }
 
 - (void)updateStoredShouldStartExpireTimer

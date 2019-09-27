@@ -1521,10 +1521,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             return;
         }
         TSOutgoingMessage *latestMessage = (TSOutgoingMessage *)latestCopy;
-        [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:latestMessage
-                                                         expirationStartedAt:[NSDate ows_millisecondTimeStamp]
-                                                                 transaction:transaction];
-
         [ViewOnceMessages completeIfNecessaryWithMessage:latestMessage transaction:transaction];
     }];
 
