@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)schedulePass;
 
 #ifdef DEBUG
-- (void)schedulePassForTests;
+- (void)syncPassForTests;
 #endif
 
 @end

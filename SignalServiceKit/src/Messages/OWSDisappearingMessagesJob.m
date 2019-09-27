@@ -286,7 +286,7 @@ void AssertIsOnDisappearingMessagesQueue()
 }
 
 #ifdef DEBUG
-- (void)schedulePassForTests
+- (void)syncPassForTests
 {
     dispatch_sync(OWSDisappearingMessagesJob.serialQueue, ^{
         [self runLoop];

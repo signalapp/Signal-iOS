@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
         XCTAssertEqual(4, [TSMessage anyCountWithTransaction:transaction]);
     }];
-    [job schedulePassForTests];
+    [job syncPassForTests];
 
     //FIXME remove sleep hack in favor of expiringMessage completion handler
     sleep(4);
