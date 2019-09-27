@@ -1233,9 +1233,12 @@ static NSTimeInterval launchStartedAt;
         // Only mark the app as ready once.
         return;
     }
-    if (![self.launchJobs ensureLaunchJobsWithCompletion: ^{
+    BOOL launchJobsAreComplete = [self.launchJobs ensureLaunchJobsWithCompletion:^{
+        // If launch jobs need to run, return and
+        // call checkIfAppIsReady again when they're complete.
         [self checkIfAppIsReady];
-    }]) {
+    }];
+    if (!launchJobsAreComplete) {
         // Wait for launch jobs to complete.
         return;
     }
