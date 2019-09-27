@@ -202,6 +202,13 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^() {
                                          [DebugUIMisc saveOneOfEachModel];
                                      }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Delete all threads without leaving or removing interactions"
+                                     actionBlock:^{
+                                         [DebugUIMisc.databaseStorage
+                                             writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                                 [TSThread anyRemoveAllWithoutInstantationWithTransaction:transaction];
+                                             }];
+                                     }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }

@@ -315,7 +315,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
             }
         }
 
-        OWSAssertDebug(thread.shouldThreadBeVisible);
+        //        OWSAssertDebug(thread.shouldThreadBeVisible);
         return [thread isArchivedWithTransaction:transaction.asAnyRead] ? TSArchiveGroup : TSInboxGroup;
     }];
 
