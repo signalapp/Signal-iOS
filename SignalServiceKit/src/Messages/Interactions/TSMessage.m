@@ -255,15 +255,22 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self updateExpiresAt];
 }
 
+// This method will be called after every insert and update, so it needs
+// to be cheap.
 - (BOOL)shouldStartExpireTimer
 {
+    if (self.isPerConversationExpirationStarted) {
+        // Expiration already started.
+        return YES;
+    }
+
     return self.hasPerConversationExpiration;
 }
 
 // TODO a downloaded media doesn't start counting until download is complete.
 - (void)updateExpiresAt
 {
-    if (_expiresInSeconds > 0 && _expireStartedAt > 0) {
+    if (self.isPerConversationExpirationStarted) {
         _expiresAt = _expireStartedAt + _expiresInSeconds * 1000;
     } else {
         _expiresAt = 0;
@@ -530,7 +537,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (void)ensurePerConversationExpirationWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    if (self.expireStartedAt > 0) {
+    if (self.isPerConversationExpirationStarted) {
         // Expiration already started.
         return;
     }
@@ -593,6 +600,11 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (BOOL)hasPerConversationExpiration
 {
     return self.expiresInSeconds > 0;
+}
+
+- (BOOL)isPerConversationExpirationStarted
+{
+    return self.expireStartedAt > 0;
 }
 
 - (uint64_t)timestampForLegacySorting

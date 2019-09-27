@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) uint64_t expireStartedAt;
 @property (nonatomic, readonly) uint64_t expiresAt;
 @property (nonatomic, readonly) BOOL hasPerConversationExpiration;
+@property (nonatomic, readonly) BOOL isPerConversationExpirationStarted;
 
 @property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
 @property (nonatomic, readonly, nullable) OWSContact *contactShare;

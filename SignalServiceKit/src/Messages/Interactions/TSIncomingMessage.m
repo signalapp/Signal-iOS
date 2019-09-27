@@ -171,16 +171,17 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
 
 #pragma mark - OWSReadTracking
 
+// This method will be called after every insert and update, so it needs
+// to be cheap.
 - (BOOL)shouldStartExpireTimer
 {
-    // Don't start expiration for unread messages.
-    if (self.wasRead && [super shouldStartExpireTimer]) {
+    if (self.isPerConversationExpirationStarted) {
+        // Expiration already started.
         return YES;
-    } else if (self.hasPerConversationExpiration && self.expireStartedAt > 0) {
-        OWSFailDebug(@"expiration previously started");
-        return YES;
-    } else {
+    } else if (!self.hasPerConversationExpiration) {
         return NO;
+    } else {
+        return self.wasRead && [super shouldStartExpireTimer];
     }
 }
 
