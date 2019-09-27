@@ -58,13 +58,13 @@ NS_ASSUME_NONNULL_BEGIN
         [groupBuilder setBlocked:YES];
     }
 
-    NSData *avatarPng;
-    if (group.groupImage) {
+    NSData *groupAvatarData;
+    if (group.groupAvatarData.length > 0) {
         SSKProtoGroupDetailsAvatarBuilder *avatarBuilder = [SSKProtoGroupDetailsAvatar builder];
 
         [avatarBuilder setContentType:OWSMimeTypeImagePng];
-        avatarPng = UIImagePNGRepresentation(group.groupImage);
-        [avatarBuilder setLength:(uint32_t)avatarPng.length];
+        groupAvatarData = group.groupAvatarData;
+        [avatarBuilder setLength:(uint32_t)groupAvatarData.length];
 
         NSError *error;
         SSKProtoGroupDetailsAvatar *_Nullable avatarProto = [avatarBuilder buildAndReturnError:&error];
@@ -99,8 +99,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self writeVariableLengthUInt32:groupDataLength];
     [self writeData:groupData];
 
-    if (avatarPng) {
-        [self writeData:avatarPng];
+    if (groupAvatarData) {
+        [self writeData:groupAvatarData];
     }
 }
 

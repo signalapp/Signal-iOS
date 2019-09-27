@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSFailedMessagesJob : NSObject
 
-- (void)run;
+- (void)runSync;
 
 + (NSArray<NSString *> *)attemptingOutMessageIdsWithTransaction:(YapDatabaseReadTransaction *)transaction;
 

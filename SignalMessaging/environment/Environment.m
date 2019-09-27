@@ -17,6 +17,7 @@ static Environment *sharedEnvironment = nil;
 @property (nonatomic) id<OWSProximityMonitoringManager> proximityMonitoringManager;
 @property (nonatomic) OWSSounds *sounds;
 @property (nonatomic) OWSWindowManager *windowManager;
+@property (nonatomic) LaunchJobs *launchJobs;
 
 @end
 
@@ -53,6 +54,7 @@ static Environment *sharedEnvironment = nil;
           proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
                               sounds:(OWSSounds *)sounds
                        windowManager:(OWSWindowManager *)windowManager
+                          launchJobs:(LaunchJobs *)launchJobs
 {
     self = [super init];
     if (!self) {
@@ -64,12 +66,14 @@ static Environment *sharedEnvironment = nil;
     OWSAssertDebug(proximityMonitoringManager);
     OWSAssertDebug(sounds);
     OWSAssertDebug(windowManager);
+    OWSAssertDebug(launchJobs);
 
     _audioSession = audioSession;
     _preferences = preferences;
     _proximityMonitoringManager = proximityMonitoringManager;
     _sounds = sounds;
     _windowManager = windowManager;
+    _launchJobs = launchJobs;
 
     OWSSingletonAssert();
 

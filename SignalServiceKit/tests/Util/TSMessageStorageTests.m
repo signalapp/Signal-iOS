@@ -131,7 +131,7 @@
     [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         thread = [TSGroupThread getOrCreateThreadWithGroupModel:[[TSGroupModel alloc] initWithTitle:@"fdsfsd"
                                                                                           memberIds:[@[] mutableCopy]
-                                                                                              image:nil
+                                                                                    groupAvatarData:nil
                                                                                             groupId:[NSData data]]
                                                     transaction:transaction];
 

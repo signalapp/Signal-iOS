@@ -237,6 +237,18 @@ NS_ASSUME_NONNULL_BEGIN
     return image;
 }
 
+- (size_t)pixelWidth {
+    return CGImageGetWidth(self.CGImage);
+}
+
+- (size_t)pixelHeight {
+    return CGImageGetHeight(self.CGImage);
+}
+
+- (CGSize)pixelSize {
+    return CGSizeMake(self.pixelWidth, self.pixelHeight);
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

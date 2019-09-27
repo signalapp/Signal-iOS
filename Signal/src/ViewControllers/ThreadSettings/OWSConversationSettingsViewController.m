@@ -193,7 +193,7 @@ const CGFloat kIconViewLength = 24;
     }
 
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-    return groupThread.groupModel.groupImage != nil;
+    return groupThread.groupModel.groupAvatarData.length > 0;
 }
 
 - (void)configureWithThread:(TSThread *)thread

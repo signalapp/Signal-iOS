@@ -3960,7 +3960,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
                                                            members:recipientAddresses
-                                                             image:nil
+                                                  groupAvatarImage:nil
                                                            groupId:groupId];
 
     __block TSGroupThread *thread;
@@ -4459,7 +4459,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
                 TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
                                                                        members:recipientAddresses
-                                                                         image:nil
+                                                              groupAvatarImage:nil
                                                                        groupId:groupId];
                 TSGroupThread *groupThread =
                     [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
@@ -4501,7 +4501,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
                 TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
                                                                        members:recipientAddresses
-                                                                         image:nil
+                                                              groupAvatarImage:nil
                                                                        groupId:groupId];
                 TSGroupThread *groupThread =
                     [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
@@ -4542,7 +4542,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                     NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
                     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
                                                                            members:recipientAddresses
-                                                                             image:nil
+                                                                  groupAvatarImage:nil
                                                                            groupId:groupId];
                     TSGroupThread *groupThread =
                         [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];

@@ -125,7 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *groupId = [Randomness generateRandomBytes:16];
     TSGroupModel *model = [[TSGroupModel alloc] initWithTitle:groupName
                                                       members:recipientAddresses
-                                                        image:nil
+                                              groupAvatarData:nil
                                                       groupId:groupId];
     TSGroupThread *thread = [TSGroupThread getOrCreateThreadWithGroupModel:model];
 

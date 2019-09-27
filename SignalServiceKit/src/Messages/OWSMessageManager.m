@@ -1257,8 +1257,8 @@ NS_ASSUME_NONNULL_BEGIN
     [message updateWithSendingToSingleGroupRecipient:envelope.sourceAddress transaction:transaction];
 
     NSData *_Nullable groupAvatarData;
-    if (gThread.groupModel.groupImage) {
-        groupAvatarData = UIImagePNGRepresentation(gThread.groupModel.groupImage);
+    if (gThread.groupModel.groupAvatarData) {
+        groupAvatarData = gThread.groupModel.groupAvatarData;
         OWSAssertDebug(groupAvatarData.length > 0);
     }
     _Nullable id<DataSource> groupAvatarDataSource;
@@ -1348,10 +1348,11 @@ NS_ASSUME_NONNULL_BEGIN
                 TSGroupThread *newGroupThread =
                     [TSGroupThread getOrCreateThreadWithGroupId:groupId transaction:transaction];
 
-                TSGroupModel *newGroupModel = [[TSGroupModel alloc] initWithTitle:dataMessage.group.name
-                                                                          members:newMembers.allObjects
-                                                                            image:oldGroupThread.groupModel.groupImage
-                                                                          groupId:dataMessage.group.id];
+                TSGroupModel *newGroupModel =
+                    [[TSGroupModel alloc] initWithTitle:dataMessage.group.name
+                                                members:newMembers.allObjects
+                                        groupAvatarData:oldGroupThread.groupModel.groupAvatarData
+                                                groupId:dataMessage.group.id];
                 NSString *updateGroupInfo = [newGroupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel
                                                                                   contactsManager:self.contactsManager];
                 [newGroupThread anyUpdateGroupThreadWithTransaction:transaction

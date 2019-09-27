@@ -203,6 +203,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.text ows_stripped];
 }
 
+- (NSString *)untrimmedText
+{
+    return self.text;
+}
+
 #pragma mark - UITextViewDelegate
 
 - (void)textViewDidChange:(UITextView *)textView

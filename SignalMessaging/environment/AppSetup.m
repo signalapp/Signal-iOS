@@ -102,12 +102,14 @@ NS_ASSUME_NONNULL_BEGIN
         OWSSounds *sounds = [OWSSounds new];
         id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
         OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
+        LaunchJobs *launchJobs = [LaunchJobs new];
 
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
                                                              preferences:preferences
                                               proximityMonitoringManager:proximityMonitoringManager
                                                                   sounds:sounds
-                                                           windowManager:windowManager]];
+                                                           windowManager:windowManager
+                                                              launchJobs:launchJobs]];
 
         [SMKEnvironment setShared:[[SMKEnvironment alloc] initWithAccountIdFinder:[OWSAccountIdFinder new]]];
 

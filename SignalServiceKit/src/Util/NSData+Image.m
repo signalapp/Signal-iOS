@@ -555,6 +555,15 @@ NSString *NSStringForImageFormat(ImageFormat value)
     return uiImage;
 }
 
+- (BOOL)ows_isValidGroupAvatarPng
+{
+    ImageFormat imageFormat = [self ows_guessImageFormat];
+    if (imageFormat != ImageFormat_Png) {
+        return NO;
+    }
+    return [self ows_isValidImageWithPath:nil mimeType:nil];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

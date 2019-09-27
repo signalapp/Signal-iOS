@@ -85,7 +85,7 @@ public extension DebugUIMessages {
         let groupModel = TSGroupModel(
             title: groupName,
             members: members,
-            image: nil,
+            groupAvatarData: nil,
             groupId: groupId
         )
 

@@ -90,7 +90,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 
     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:nil
                                                            members:@[ localAddress ]
-                                                             image:nil
+                                                   groupAvatarData:nil
                                                            groupId:groupId];
 
     self = [self initWithGroupModel:groupModel];
@@ -278,7 +278,18 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 
     [self anyUpdateGroupThreadWithTransaction:transaction
                                         block:^(TSGroupThread *thread) {
-                                            thread.groupModel.groupImage = [attachmentStream thumbnailImageSmallSync];
+                                            NSData *_Nullable attachmentData =
+                                                [NSData dataWithContentsOfFile:attachmentStream.originalFilePath];
+                                            if (attachmentData.length < 1) {
+                                                return;
+                                            }
+                                            if (thread.groupModel.groupAvatarData.length > 0 &&
+                                                [thread.groupModel.groupAvatarData isEqualToData:attachmentData]) {
+                                                // Avatar did not change.
+                                                return;
+                                            }
+                                            UIImage *_Nullable avatarImage = [attachmentStream thumbnailImageSmallSync];
+                                            [thread.groupModel setGroupAvatarDataWithImage:avatarImage];
                                         }];
 
     [transaction addCompletionWithBlock:^{

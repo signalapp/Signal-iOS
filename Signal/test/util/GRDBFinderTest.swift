@@ -46,7 +46,7 @@ class GRDBFinderTest: SignalBaseTest {
             let groupId = Randomness.generateRandomBytes(Int32(kGroupIdLength))
             let groupModel = TSGroupModel(title: "Test Group",
                                           members: [address1],
-                                          image: nil,
+                                          groupAvatarData: nil,
                                           groupId: groupId)
             let groupThread = TSGroupThread(groupModel: groupModel)
             return groupThread

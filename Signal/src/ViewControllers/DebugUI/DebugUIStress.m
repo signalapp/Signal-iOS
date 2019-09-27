@@ -518,15 +518,14 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)hallucinateTwinGroup:(TSGroupThread *)groupThread
 {
     __block TSGroupThread *thread;
-    [self.databaseStorage
-        writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            TSGroupModel *groupModel =
-                [[TSGroupModel alloc] initWithTitle:[groupThread.groupModel.groupName stringByAppendingString:@" Copy"]
-                                            members:groupThread.groupModel.groupMembers
-                                              image:groupThread.groupModel.groupImage
-                                            groupId:[Randomness generateRandomBytes:kGroupIdLength]];
-            thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
-        }];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        TSGroupModel *groupModel =
+            [[TSGroupModel alloc] initWithTitle:[groupThread.groupModel.groupName stringByAppendingString:@" Copy"]
+                                        members:groupThread.groupModel.groupMembers
+                                groupAvatarData:groupThread.groupModel.groupAvatarData
+                                        groupId:[Randomness generateRandomBytes:kGroupIdLength]];
+        thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+    }];
     OWSAssertDebug(thread);
 
     [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
@@ -557,7 +556,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:NSUUID.UUID.UUIDString
                                                                members:recipientAddresses
-                                                                 image:nil
+                                                       groupAvatarData:nil
                                                                groupId:[Randomness generateRandomBytes:kGroupIdLength]];
         thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
     }];

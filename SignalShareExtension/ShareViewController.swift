@@ -197,18 +197,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // We don't need to use RTCInitializeSSL() in the SAE.
 
         if tsAccountManager.isRegistered {
-            // At this point, potentially lengthy DB locking migrations could be running.
-            // Avoid blocking app launch by putting all further possible DB access in async block
-            DispatchQueue.global().async { [weak self] in
-                guard let _ = self else { return }
-                Logger.info("running post launch block for registered user: \(String(describing: TSAccountManager.localAddress))")
-
-                // We don't need to use OWSDisappearingMessagesJob in the SAE.
-
-                // We don't need to use OWSFailedMessagesJob in the SAE.
-
-                // We don't need to use OWSFailedAttachmentDownloadsJob in the SAE.
-            }
+            Logger.info("running post launch block for registered user: \(String(describing: TSAccountManager.localAddress))")
         } else {
             Logger.info("running post launch block for unregistered user.")
 
@@ -268,6 +257,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // Only mark the app as ready once.
             return
         }
+
+        // We don't need to use LaunchJobs in the SAE.
 
         Logger.debug("")
 
