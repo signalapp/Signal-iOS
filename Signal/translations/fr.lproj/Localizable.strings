@@ -931,7 +931,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Échec d’appel";
 
 /* Label indicating that this OS version is no longer supported. */
-"END_OF_LIFE_OS_WARNING" = "The latest Signal features won’t work on this version of iOS. Please upgrade this device to receive future Signal updates.";
+"END_OF_LIFE_OS_WARNING" = "Les dernières fonctionnalités de Signal ne sont pas compatibles avec cette version d’iOS. Veuillez mettre à niveau cet appareil afin de recevoir les mises à jour ultérieures de Signal.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Impossible d’accéder aux contacts";
