@@ -14,7 +14,7 @@
 "ACCESSIBILITY_LABEL_CONTACT" = "Contacte";
 
 /* Accessibility label for media. */
-"ACCESSIBILITY_LABEL_MEDIA" = "Elements multimèdia";
+"ACCESSIBILITY_LABEL_MEDIA" = "Contingut";
 
 /* Accessibility label for message. */
 "ACCESSIBILITY_LABEL_MESSAGE" = "Missatge";
@@ -159,7 +159,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "El fitxer adjunt està buit.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose Media to Send";
+"ATTACHMENT_HINT" = "Trieu contingut per enviar";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "Càmera";
@@ -931,7 +931,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Ha fallat.";
 
 /* Label indicating that this OS version is no longer supported. */
-"END_OF_LIFE_OS_WARNING" = "The latest Signal features won’t work on this version of iOS. Please upgrade this device to receive future Signal updates.";
+"END_OF_LIFE_OS_WARNING" = "Les darreres novetats del Signal no funcionaran en aquesta versió d'iOS. Si us plau, actualitzeu el dispositiu per rebre les futures actualitzacions del Signal.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "No s'ha pogut accedir als contactes.";
@@ -1045,13 +1045,13 @@
 "FINISH_GROUP_CREATION_LABEL" = "Acaba de crear el grup";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "No tens arxius en aquesta conversa";
+"GALLERY_TILES_EMPTY_GALLERY" = "No teniu contingut en aquesta conversa.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Carregant nous arxius...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Carregant contingut nou...";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Carregant arxius antics...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Carregant contingut antic...";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Fitxer adjunt";

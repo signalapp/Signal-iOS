@@ -159,7 +159,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "添付ファイルの中身が空です";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose Media to Send";
+"ATTACHMENT_HINT" = "添付メディアの選択";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "カメラ";
@@ -931,7 +931,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "通話に失敗しました";
 
 /* Label indicating that this OS version is no longer supported. */
-"END_OF_LIFE_OS_WARNING" = "The latest Signal features won’t work on this version of iOS. Please upgrade this device to receive future Signal updates.";
+"END_OF_LIFE_OS_WARNING" = "Signalの最新機能は、このバージョンのiOSでは対応しません。OSのアップデートをしてください。";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "連絡先リストのアクセスに失敗しました";

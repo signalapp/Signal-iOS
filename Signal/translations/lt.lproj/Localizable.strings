@@ -159,7 +159,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Priedas yra tuščias.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose Media to Send";
+"ATTACHMENT_HINT" = "Pasirinkti norimą siųsti mediją";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "Kamera";
@@ -483,10 +483,10 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Grupės";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Phone number search";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Ieškoti telefono numerio";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Username search";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Ieškoti naudotojo vardo";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Norėdami matyti, kurie iš jūsų adresatų yra Signal naudotojai, iOS nustatymų programėlėje galite įjungti prieigą prie adresatų.";
@@ -931,7 +931,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Skambutis nepavyko.";
 
 /* Label indicating that this OS version is no longer supported. */
-"END_OF_LIFE_OS_WARNING" = "The latest Signal features won’t work on this version of iOS. Please upgrade this device to receive future Signal updates.";
+"END_OF_LIFE_OS_WARNING" = "Naujausios Signal ypatybės neveiks šioje iOS versijoje. Atnaujinkite šį įrenginį, norėdami ateityje gauti Signal atnaujinimus.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Nepavyko gauti prieigos prie adresatų.";
@@ -1153,7 +1153,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Pradėkite savo pirmąjį pokalbį čia.";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Message Request";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Žinutės užklausa";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Užklausai \"%@\" nerasta jokių rezultatų";
@@ -1417,10 +1417,10 @@
 "MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Sužinoti daugiau";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Ar norite leisti naudotojui %@ rašyti jums žinutes? Šis naudotojas nežinos, kad jūs matėte jo žinutes tol, kol nesutiksite.";
 
 /* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Do you want to join the group %@? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Ar norite prisijungti prie grupės %@? Kiti asmenys nežinos, kad jūs matėte jų žinutes tol, kol nesutiksite.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Bendrinti profilį";
@@ -1590,10 +1590,10 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Rasti adresatus pagal telefono numerį";
 
 /* A string prompting the user to send a new mesaage to a user */
-"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "New message to:";
+"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Nauja žinutė, skirta:";
 
 /* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "No user found. Invite via SMS?";
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Nerasta jokio naudotojo. Pakviesti per SMS žinutę?";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Pastabos sau";
@@ -1833,7 +1833,7 @@
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Pakartokite naująjį PIN kodą.";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Your PIN adds and extra layer of security and backs up your account.";
+"PIN_CREATION_EXPLANATION" = "PIN kodas prideda papildomą saugumą ir padaro jūsų paskyros atsarginę kopiją.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN kodai nesutampa. Bandykite dar kartą.";
@@ -2184,7 +2184,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Atrakinti Signal";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Name, username, or number";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Vardas, naudotojo vardas ar numeris";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Ieškokite vardo ar numerio";
@@ -2283,7 +2283,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Išplėstiniai";
 
 /* table cell label */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "View Error Logs";
+"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Rodyti klaidų žurnalus";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (numatytasis)";
@@ -2421,7 +2421,7 @@
 "SETTINGS_NOTIFICATIONS" = "Pranešimai";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security and backs up your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+"SETTINGS_PINS_FOOTER" = "Jūsų PIN kodas prideda papildomą saugumą ir padaro jūsų paskyros atsarginę kopiją. Jūsų bus prašoma jį įvesti, kai registruosite savo telefono numerį su Signal. Jei pamiršite PIN kodą, būsite 7 dienoms užblokuoti nuo savo paskyros.";
 
 /* Label for the 'pins' item of the privacy settings. */
 "SETTINGS_PINS_ITEM" = "Keisti PIN kodą";
@@ -2805,25 +2805,25 @@
 "UPGRADE_IOS_ALERT_TITLE" = "Atnaujinkite iOS";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Usernames on Signal are optional. If you choose to create a username other Signal users will be able to find you by this username and contact you without knowing your phone number.";
+"USERNAME_DESCRIPTION" = "Naudotojo vardai Signal programėlėje yra nebūtini. Jei pasirinksite susikurti naudotojo vardą, kiti Signal naudotojai galės jus rasti pagal tą naudotojo vardą ir su jumis susisiekti, nežinant jūsų telefono numerio.";
 
 /* Label for the username field in the username view. */
 "USERNAME_FIELD" = "Naudotojo vardas";
 
 /* An error indicating that the supplied username contains disallowed characters. */
-"USERNAME_INVALID_CHARACTERS_ERROR" = "Usernames may only contain a-z, 0-9, and _";
+"USERNAME_INVALID_CHARACTERS_ERROR" = "Naudotojo varduose gali būti simboliai a-z, 0-9, ir _";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "An error occured while looking up the username. Please try again later.";
+"USERNAME_LOOKUP_ERROR" = "Ieškant naudotojo vardo, įvyko klaida. Vėliau bandykite dar kartą.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@ is not a Signal user. Make sure you’ve entered the complete username.";
+"USERNAME_NOT_FOUND_FORMAT" = "%@ nėra Signal naudotojas. Įsitikinkite, kad įvedėte pilną naudotojo vardą.";
 
 /* A message indicating that the given username was not registered with signal. */
-"USERNAME_NOT_FOUND_TITLE" = "User Not Found";
+"USERNAME_NOT_FOUND_TITLE" = "Naudotojas nerastas";
 
 /* The placeholder for the username text entry in the username view. */
-"USERNAME_PLACEHOLDER" = "Enter a username";
+"USERNAME_PLACEHOLDER" = "Įveskite naudotojo vardą";
 
 /* A prefix appeneded to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
@@ -2832,13 +2832,13 @@
 "USERNAME_TITLE" = "Naudotojo vardas";
 
 /* An error indicating that the supplied username is too short. */
-"USERNAME_TOO_SHORT_ERROR" = "Usernames must have at least 4 characters.";
+"USERNAME_TOO_SHORT_ERROR" = "Naudotojo varduose privalo būti bent 4 simboliai.";
 
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
-"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ is taken.";
+"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "Naudotojo vardas %@ yra užimtas.";
 
 /* Error moessage shown when a username update fails. */
-"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Username update failed.";
+"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Naudotojo vardo atnaujinimas nepavyko.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Jūs pažymėjote %@ kaip nepatvirtintą.";
