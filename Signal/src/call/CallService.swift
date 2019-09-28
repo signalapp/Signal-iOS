@@ -1457,39 +1457,81 @@ private class SignalCallData: NSObject {
         let call = callData.call
 
         if let connected = message.connected {
-            Logger.debug("remote participant sent Connected via data channel: \(call.identifiersForLogs).")
-
-            guard connected.id == call.signalingId else {
-                // This should never happen; return to a known good state.
-                owsFailDebug("received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)")
-                OWSProdError(OWSAnalyticsEvents.callServiceCallIdMismatch(), file: #file, function: #function, line: #line)
-                handleFailedCurrentCall(error: CallError.assertionError(description: "received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)"))
-                return
-            }
-
-            self.callUIAdapter.recipientAcceptedCall(call)
-            handleConnectedCall(callData)
-
+            handleIncomingConnected(call: call,
+                                    callData: callData,
+                                    connected: connected)
         } else if let hangup = message.hangup {
-            Logger.debug("remote participant sent Hangup via data channel: \(call.identifiersForLogs).")
-
-            guard hangup.id == call.signalingId else {
-                // This should never happen; return to a known good state.
-                owsFailDebug("received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)")
-                OWSProdError(OWSAnalyticsEvents.callServiceCallIdMismatch(), file: #file, function: #function, line: #line)
-                handleFailedCurrentCall(error: CallError.assertionError(description: "received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)"))
-                return
-            }
-
-            handleRemoteHangup(thread: call.thread, callId: hangup.id)
+            handleIncomingHangup(call: call,
+                                 callData: callData,
+                                 hangup: hangup)
         } else if let videoStreamingStatus = message.videoStreamingStatus {
-            Logger.debug("remote participant sent VideoStreamingStatus via data channel: \(call.identifiersForLogs).")
-
-            callData.isRemoteVideoEnabled = videoStreamingStatus.enabled
-            self.fireDidUpdateVideoTracks()
+            handleIncomingVideoStreamingStatus(call: call,
+                                               callData: callData,
+                                               videoStreamingStatus: videoStreamingStatus)
         } else {
             Logger.info("received unknown or empty DataChannelMessage: \(call.identifiersForLogs).")
         }
+    }
+
+    private func handleIncomingConnected(call: SignalCall,
+                                         callData: SignalCallData,
+                                         connected: WebRTCProtoConnected) {
+        AssertIsOnMainThread()
+
+        Logger.debug("remote participant sent Connected via data channel: \(call.identifiersForLogs).")
+
+        guard call.direction == .outgoing else {
+            owsFailDebug("Received connected message.")
+            handleFailedCurrentCall(error: CallError.assertionError(description: "Received connected message."))
+            return
+        }
+        guard call.state == .remoteRinging else {
+            owsFailDebug("Not remote ringing.")
+            return
+        }
+
+        guard connected.id == call.signalingId else {
+            // This should never happen; return to a known good state.
+            owsFailDebug("received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)")
+            OWSProdError(OWSAnalyticsEvents.callServiceCallIdMismatch(), file: #file, function: #function, line: #line)
+            handleFailedCurrentCall(error: CallError.assertionError(description: "received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)"))
+            return
+        }
+
+        self.callUIAdapter.recipientAcceptedCall(call)
+        handleConnectedCall(callData)
+    }
+
+    private func handleIncomingHangup(call: SignalCall,
+                                      callData: SignalCallData,
+                                      hangup: WebRTCProtoHangup) {
+        AssertIsOnMainThread()
+
+        Logger.debug("remote participant sent Hangup via data channel: \(call.identifiersForLogs).")
+
+        guard hangup.id == call.signalingId else {
+            // This should never happen; return to a known good state.
+            owsFailDebug("received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)")
+            OWSProdError(OWSAnalyticsEvents.callServiceCallIdMismatch(), file: #file, function: #function, line: #line)
+            handleFailedCurrentCall(error: CallError.assertionError(description: "received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)"))
+            return
+        }
+
+        handleRemoteHangup(thread: call.thread, callId: hangup.id)
+    }
+
+    private func handleIncomingVideoStreamingStatus(call: SignalCall,
+                                                    callData: SignalCallData,
+                                                    videoStreamingStatus: WebRTCProtoVideoStreamingStatus) {
+        Logger.debug("remote participant sent VideoStreamingStatus via data channel: \(call.identifiersForLogs).")
+
+        guard callData.isRemoteVideoEnabled != videoStreamingStatus.enabled else {
+            Logger.warn("Redundant video streaming status.")
+            return
+        }
+
+        callData.isRemoteVideoEnabled = videoStreamingStatus.enabled
+        self.fireDidUpdateVideoTracks()
     }
 
     // MARK: - PeerConnectionClientDelegate
