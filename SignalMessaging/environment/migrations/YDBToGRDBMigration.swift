@@ -194,9 +194,17 @@ extension YDBToGRDBMigration {
         ydbReadConnection.ignoreQueues = true
         ydbReadConnection.beginLongLivedReadTransaction()
 
+        UIDatabaseObserver.serializedSync {
+            UIDatabaseObserver.skipTouchObservations = true
+        }
+
         for migratorGroup in migratorGroups {
             try migrate(migratorGroup: migratorGroup,
                         ydbReadConnection: ydbReadConnection)
+        }
+
+        UIDatabaseObserver.serializedSync {
+            UIDatabaseObserver.skipTouchObservations = false
         }
     }
 

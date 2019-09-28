@@ -236,6 +236,10 @@ public class SDSDatabaseStorage: SDSTransactable {
             yap.touchObject(forKey: uniqueId, inCollection: TSInteraction.collection())
         case .grdbWrite(let grdb):
             UIDatabaseObserver.serializedSync {
+                guard !UIDatabaseObserver.skipTouchObservations else {
+                    return
+                }
+
                 if let conversationViewDatabaseObserver = grdbStorage.conversationViewDatabaseObserver {
                     conversationViewDatabaseObserver.didTouch(interaction: interaction, transaction: grdb)
                 } else if AppReadiness.isAppReady() {
@@ -259,6 +263,10 @@ public class SDSDatabaseStorage: SDSTransactable {
             yap.touchObject(forKey: thread.uniqueId, inCollection: TSThread.collection())
         case .grdbWrite(let grdb):
             UIDatabaseObserver.serializedSync {
+                guard !UIDatabaseObserver.skipTouchObservations else {
+                    return
+                }
+
                 if let homeViewDatabaseObserver = grdbStorage.homeViewDatabaseObserver {
                     homeViewDatabaseObserver.didTouch(threadId: thread.uniqueId, transaction: grdb)
                 } else if AppReadiness.isAppReady() {

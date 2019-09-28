@@ -82,6 +82,11 @@ public class UIDatabaseObserver: NSObject {
         return _isOnUIDatabaseObserverSerialQueue.get()
     }
 
+    // Toggle to skip expensive observations resulting
+    // from a `touch`. Useful for large migrations.
+    // Should only be accessed within UIDatabaseObserver.serializedSync
+    public static var skipTouchObservations: Bool = false
+
     public class func serializedSync(block: () -> Void) {
         objc_sync_enter(self)
         assert(!_isOnUIDatabaseObserverSerialQueue.get())
