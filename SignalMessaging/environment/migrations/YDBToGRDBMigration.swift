@@ -626,7 +626,7 @@ public class GRDBDecryptJobMigrator: GRDBMigrator {
     private let finder: LegacyDecryptJobFinder
 
     init(ydbTransaction: YapDatabaseReadTransaction) {
-        self.label = "Migrate Interactions"
+        self.label = "Migrate Jobs"
         self.finder = LegacyDecryptJobFinder(transaction: ydbTransaction)
     }
 
