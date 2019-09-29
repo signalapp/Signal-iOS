@@ -397,6 +397,10 @@ NS_ASSUME_NONNULL_BEGIN
         accountAttributes[@"pin"] = pin;
     }
 
+    if (SSKFeatureFlags.uuidCapabilities) {
+        accountAttributes[@"capabilities"] = @{ @"uuid" : @(YES) };
+    }
+
     return [accountAttributes copy];
 }
 
