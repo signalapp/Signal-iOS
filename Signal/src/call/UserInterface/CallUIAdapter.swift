@@ -65,7 +65,7 @@ extension CallUIAdaptee {
     internal func startAndShowOutgoingCall(address: SignalServiceAddress, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
 
-        guard self.callService.call == nil else {
+        guard self.callService.currentCall == nil else {
             owsFailDebug("unexpectedly found an existing call when trying to start outgoing call: \(address)")
             return
         }
