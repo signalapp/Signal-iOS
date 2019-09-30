@@ -65,6 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *grouping = TSInboxGroup;
 
+    // GRDB TODO
     self.threadMappings =
         [[YapDatabaseViewMappings alloc] initWithGroups:@[ grouping ] view:TSThreadDatabaseViewExtensionName];
     [self.threadMappings setIsReversed:YES forGroup:grouping];
