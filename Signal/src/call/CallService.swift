@@ -1204,10 +1204,6 @@ private class SignalCallData: NSObject {
                     .done {
                         Logger.debug("sent hangup call message to \(call.thread.contactAddress)")
                     }.ensure {
-                        guard let currentCallData = self.callData, currentCallData === callData else {
-                            Logger.debug("Ignoring hangup send failure for obsolete call.")
-                            return
-                        }
                         self.terminate(callData: callData)
                     }.catch { error in
                         owsFailDebug("failed to send hangup call message to \(call.thread.contactAddress) with error: \(error)")
@@ -1721,11 +1717,6 @@ private class SignalCallData: NSObject {
                 .done {
                     Logger.debug("sent hangup call message to \(call.thread.contactAddress)")
                 }.ensure {
-                    guard self.callData === callData else {
-                        Logger.debug("Ignoring hangup send for obsolete call.")
-                        return
-                    }
-
                     self.terminate(callData: callData)
                 }.catch { error in
                     owsFailDebug("failed to send hangup call message to \(call.thread.contactAddress) with error: \(error)")
