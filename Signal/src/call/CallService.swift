@@ -300,6 +300,8 @@ private class SignalCallData: NSObject {
     }
 }
 
+// MARK: - CallService
+
 // This class' state should only be accessed on the main queue.
 @objc public class CallService: NSObject, CallObserver, CallConnectionDelegate, SignalCallDataDelegate {
 
@@ -319,86 +321,54 @@ private class SignalCallData: NSObject {
 
     fileprivate var deferredHangupList: [UInt64: SignalCallData] = [:]
 
+    private var _callData: SignalCallData?
     fileprivate var callData: SignalCallData? {
-        didSet {
+        set {
             AssertIsOnMainThread()
+
+            let oldValue = _callData
+            _callData = newValue
 
             oldValue?.delegate = nil
             oldValue?.call.removeObserver(self)
-            callData?.call.addObserverAndSyncState(observer: self)
+            newValue?.call.addObserverAndSyncState(observer: self)
 
             updateIsVideoEnabled()
 
             // Prevent device from sleeping while we have an active call.
-            if oldValue != callData {
+            if oldValue != newValue {
                 if let oldValue = oldValue {
                     DeviceSleepManager.sharedInstance.removeBlock(blockObject: oldValue)
                 }
-                if let callData = callData {
-                    DeviceSleepManager.sharedInstance.addBlock(blockObject: callData)
+                if let newValue = newValue {
+                    DeviceSleepManager.sharedInstance.addBlock(blockObject: newValue)
                     self.startCallTimer()
                 } else {
                     stopAnyCallTimer()
                 }
             }
 
-            Logger.debug(".callData setter: \(oldValue?.call.identifiersForLogs as Optional) -> \(callData?.call.identifiersForLogs as Optional)")
+            Logger.debug(".callData setter: \(oldValue?.call.identifiersForLogs as Optional) -> \(newValue?.call.identifiersForLogs as Optional)")
 
             for observer in observers {
-                observer.value?.didUpdateCall(call: callData?.call)
+                observer.value?.didUpdateCall(call: newValue?.call)
             }
+        }
+        get {
+            AssertIsOnMainThread()
+
+            return _callData
         }
     }
 
+    // NOTE: This accessor should only be used outside this class.
+    //       Within this class use callData to ensure coherency.
     @objc
-    var call: SignalCall? {
+    var currentCall: SignalCall? {
         get {
             AssertIsOnMainThread()
 
             return callData?.call
-        }
-    }
-
-    var callConnectionFactory: CallConnectionFactory? {
-        get {
-            AssertIsOnMainThread()
-
-            return callData?.callConnectionFactory
-        }
-    }
-
-    var callConnection: CallConnection? {
-        get {
-            AssertIsOnMainThread()
-
-            return callData?.callConnection
-        }
-    }
-
-    var localCaptureSession: AVCaptureSession? {
-        get {
-            AssertIsOnMainThread()
-
-            return callData?.localCaptureSession
-        }
-    }
-
-    var remoteVideoTrack: RTCVideoTrack? {
-        get {
-            AssertIsOnMainThread()
-
-            return callData?.remoteVideoTrack
-        }
-    }
-
-    var isRemoteVideoEnabled: Bool {
-        get {
-            AssertIsOnMainThread()
-
-            guard let callData = callData else {
-                return false
-            }
-            return callData.isRemoteVideoEnabled
         }
     }
 
@@ -462,10 +432,11 @@ private class SignalCallData: NSObject {
     @objc public func createCallUIAdapter() {
         AssertIsOnMainThread()
 
-        if self.call != nil {
+        if self.callData != nil {
             Logger.warn("ending current call in. Did user toggle callkit preference while in a call?")
             self.terminate(callData: self.callData)
         }
+
         self.callUIAdapter = CallUIAdapter(callService: self, contactsManager: self.contactsManager, notificationPresenter: self.notificationPresenter)
     }
 
@@ -481,7 +452,7 @@ private class SignalCallData: NSObject {
         let callId = call.signalingId
         BenchEventStart(title: "Outgoing Call Connection", eventId: "call-\(callId)")
 
-        guard self.call == nil else {
+        guard self.callData == nil else {
             let errorDescription = "call was unexpectedly already set."
             Logger.error(errorDescription)
             call.state = .localFailure
@@ -504,7 +475,7 @@ private class SignalCallData: NSObject {
                 return
             }
 
-            guard self.call == call else {
+            guard self.callData === callData else {
                 throw CallError.obsoleteCall(description: "obsolete call")
             }
 
@@ -514,12 +485,12 @@ private class SignalCallData: NSObject {
                 throw CallError.assertionError(description: errorDescription)
             }
 
-            Logger.debug("got ice servers:\(iceServers) for call: \(call.identifiersForLogs)")
+            Logger.debug("got ice servers: \(iceServers) for call: \(call.identifiersForLogs)")
 
             let useTurnOnly = Environment.shared.preferences.doCallsHideIPAddress()
 
             // Create a CallConnection to handle the call media.
-            let callConnection = try self.callConnectionFactory?.createCallConnection(delegate: self, iceServers: iceServers, callId: callId, isOutgoing: true, hideIp: useTurnOnly)
+            let callConnection = try callData.callConnectionFactory?.createCallConnection(delegate: self, iceServers: iceServers, callId: callId, isOutgoing: true, hideIp: useTurnOnly)
             Logger.debug("setting callConnection for call: \(call.identifiersForLogs)")
 
             callData.callConnection = callConnection
@@ -530,6 +501,11 @@ private class SignalCallData: NSObject {
 
         promise.catch { error in
             Logger.error("outgoing call \(call.identifiersForLogs) failed with error: \(error)")
+
+            guard self.callData === callData else {
+                Logger.debug("ignoring error for obsolete call")
+                return
+            }
 
             self.handleFailedCall(failedCall: call, error: error)
         }.retainUntilComplete()
@@ -545,7 +521,7 @@ private class SignalCallData: NSObject {
             self.handleFailedCall(failedCall: call, error: CallError.obsoleteCall(description: "obsolete call"))
             return
         }
-        guard callData.call == call else {
+        guard callData.call === call else {
             Logger.warn("ignoring \(#function) for call other than current call")
             return
         }
@@ -560,17 +536,18 @@ private class SignalCallData: NSObject {
         AssertIsOnMainThread()
         Logger.info("for call: \(callId) thread: \(thread.contactAddress)")
 
-        guard let call = self.call else {
+        guard let callData = self.callData else {
             Logger.warn("ignoring obsolete call: \(callId)")
             return
         }
+        let call = callData.call
 
         guard call.signalingId == callId else {
             Logger.warn("ignoring mismatched call: \(callId) currentCall: \(call.signalingId)")
             return
         }
 
-        guard let callConnection = self.callConnection else {
+        guard let callConnection = callData.callConnection else {
             handleFailedCall(failedCall: call, error: CallError.assertionError(description: "callConnection was unexpectedly nil"))
             return
         }
@@ -653,10 +630,11 @@ private class SignalCallData: NSObject {
         AssertIsOnMainThread()
         Logger.info("for thread: \(thread.contactAddress)")
 
-        guard let call = self.call else {
+        guard let callData = self.callData else {
             Logger.warn("ignoring obsolete call: \(callId)")
             return
         }
+        let call = callData.call
 
         guard call.signalingId == callId else {
             Logger.warn("ignoring mismatched call: \(callId) currentCall: \(call.signalingId)")
@@ -722,8 +700,8 @@ private class SignalCallData: NSObject {
             return
         }
 
-        guard self.call == nil else {
-            let existingCall = self.call!
+        if let existingCallData = self.callData {
+            let existingCall = existingCallData.call
 
             // TODO on iOS10+ we can use CallKit to swap calls rather than just returning busy immediately.
             Logger.info("receivedCallOffer: \(newCall.identifiersForLogs) but we're already in call: \(existingCall.identifiersForLogs)")
@@ -763,24 +741,20 @@ private class SignalCallData: NSObject {
         callData.shouldSendHangup = true
 
         Logger.debug("Enable backgroundTask")
-        let backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak self] status in
+        let backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)", completionBlock: { status in
             AssertIsOnMainThread()
 
             guard status == .expired else {
                 return
             }
 
-            guard let strongSelf = self else {
-                return
-            }
-
             let timeout = CallError.timeout(description: "background task time ran out before call connected.")
 
-            guard strongSelf.call == newCall else {
+            guard self.callData?.call === newCall else {
                 Logger.warn("ignoring obsolete call")
                 return
             }
-            strongSelf.handleFailedCall(failedCall: newCall, error: timeout)
+            self.handleFailedCall(failedCall: newCall, error: timeout)
         })
 
         callData.backgroundTask = backgroundTask
@@ -788,13 +762,13 @@ private class SignalCallData: NSObject {
         getIceServers().done { iceServers in
             // FIXME for first time call recipients I think we'll see mic/camera permission requests here,
             // even though, from the users perspective, no incoming call is yet visible.
-            Logger.debug("got ice servers:\(iceServers) for call: \(newCall.identifiersForLogs)")
+            Logger.debug("got ice servers: \(iceServers) for call: \(newCall.identifiersForLogs)")
 
-            guard self.call == newCall else {
+            guard let currentCallData = self.callData, currentCallData.call === newCall else {
                 throw CallError.obsoleteCall(description: "getIceServers() response for obsolete call")
             }
 
-            assert(self.callConnection == nil, "Unexpected CallConnection instance")
+            assert(currentCallData.callConnection == nil, "Unexpected CallConnection instance")
 
             // For contacts not stored in our system contacts, we assume they are an unknown caller, and we force
             // a TURN connection, so as not to reveal any connectivity information (IP/port) to the caller.
@@ -803,7 +777,7 @@ private class SignalCallData: NSObject {
             let useTurnOnly = isUnknownCaller || Environment.shared.preferences.doCallsHideIPAddress()
 
             // Create a CallConnection to handle the call media.
-            let callConnection = try self.callConnectionFactory?.createCallConnection(delegate: self, iceServers: iceServers, callId: callId, isOutgoing: false, hideIp: useTurnOnly)
+            let callConnection = try currentCallData.callConnectionFactory?.createCallConnection(delegate: self, iceServers: iceServers, callId: callId, isOutgoing: false, hideIp: useTurnOnly)
             Logger.debug("setting callConnection for call: \(newCall.identifiersForLogs)")
 
             callData.callConnection = callConnection
@@ -813,7 +787,7 @@ private class SignalCallData: NSObject {
         }.recover { error in
             Logger.error("incoming call \(newCall.identifiersForLogs) failed with error: \(error)")
 
-            guard self.call == newCall else {
+            guard self.callData?.call === newCall else {
                 Logger.debug("ignoring error for obsolete call")
                 return
             }
@@ -829,8 +803,9 @@ private class SignalCallData: NSObject {
         AssertIsOnMainThread()
         Logger.debug("for callId: \(callId)")
 
-        guard let callData = self.callData else {
-            Logger.info("ignoring remote ice update, since there is no current call.")
+        guard let callData = self.callData,
+         callData.call.signalingId == callId else {
+            Logger.warn("ignoring ICE candidate for obsolete call: \(callId)")
             return
         }
 
@@ -838,22 +813,18 @@ private class SignalCallData: NSObject {
             AssertIsOnMainThread()
             Logger.debug("handling callId: \(callId)")
 
-            guard let call = self.call else {
-                Logger.warn("ignoring remote ice update for thread: \(String(describing: thread.uniqueId)) since there is no current call. Call already ended?")
+            guard callData === self.callData else {
+                Logger.warn("ignoring ICE candidate for obsolete call: \(callId)")
                 return
             }
-
-            guard call.signalingId == callId else {
-                Logger.warn("ignoring mismatched call: \(callId) currentCall: \(call.signalingId)")
-                return
-            }
+            let call = callData.call
 
             guard thread.contactAddress == call.thread.contactAddress else {
                 Logger.warn("ignoring remote ice update for thread: \(String(describing: thread.uniqueId)) due to thread mismatch. Call already ended?")
                 return
             }
 
-            guard let callConnection = self.callConnection else {
+            guard let callConnection = callData.callConnection else {
                 Logger.warn("ignoring remote ice update for thread: \(String(describing: thread.uniqueId)) since there is no current callConnection. Call already ended?")
                 return
             }
@@ -873,15 +844,19 @@ private class SignalCallData: NSObject {
     private func handleLocalAddedIceCandidate(_ iceCandidate: RTCIceCandidate, callData: SignalCallData) {
         AssertIsOnMainThread()
 
-        let call = callData.call
+        guard self.callData === callData else {
+            Logger.warn("Receive local ICE candidate for obsolete call.")
+            return
+        }
 
         // Wait until we've sent the CallOffer before sending any ice updates for the call to ensure
         // intuitive message ordering for other clients.
         callData.readyToSendIceUpdatesPromise.done {
-            guard call == self.call else {
+            guard callData === self.callData else {
                 self.handleFailedCurrentCall(error: .obsoleteCall(description: "current call changed since we became ready to send ice updates"))
                 return
             }
+            let call = callData.call
 
             guard call.state != .idle else {
                 // This will only be called for the current callConnection, so
@@ -971,12 +946,13 @@ private class SignalCallData: NSObject {
     private func handleReconnecting() {
         AssertIsOnMainThread()
 
-        guard let call = self.call else {
+        guard let callData = self.callData else {
             // This will only be called for the current callConnection, so
             // fail the current call.
             handleFailedCurrentCall(error: CallError.assertionError(description: "ignoring \(#function) since there is no current call."))
             return
         }
+        let call = callData.call
 
         Logger.info("\(call.identifiersForLogs).")
 
@@ -997,11 +973,12 @@ private class SignalCallData: NSObject {
         AssertIsOnMainThread()
         Logger.info("")
 
-        guard let call = self.call else {
+        guard let callData = self.callData else {
             // This may happen if we hang up slightly before they hang up.
             handleFailedCurrentCall(error: .obsoleteCall(description:"call was unexpectedly nil"))
             return
         }
+        let call = callData.call
 
         guard call.signalingId == callId else {
             Logger.warn("ignoring mismatched call: \(callId) currentCall: \(call.signalingId)")
@@ -1041,17 +1018,18 @@ private class SignalCallData: NSObject {
     @objc public func handleAnswerCall(localId: UUID) {
         AssertIsOnMainThread()
 
-        guard let call = self.call else {
+        guard let callData = self.callData else {
             // This should never happen; return to a known good state.
             owsFailDebug("call was unexpectedly nil")
             handleFailedCurrentCall(error: CallError.assertionError(description: "call was unexpectedly nil"))
             return
         }
+            let call = callData.call
 
         guard call.localId == localId else {
             // This should never happen; return to a known good state.
-            owsFailDebug("callLocalId:\(localId) doesn't match current calls: \(call.localId)")
-            handleFailedCurrentCall(error: CallError.assertionError(description: "callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
+            owsFailDebug("callLocalId: \(localId) doesn't match current calls: \(call.localId)")
+            handleFailedCurrentCall(error: CallError.assertionError(description: "callLocalId: \(localId) doesn't match current calls: \(call.localId)"))
             return
         }
 
@@ -1065,19 +1043,19 @@ private class SignalCallData: NSObject {
         AssertIsOnMainThread()
         Logger.info("")
 
-        guard let currentCallData = self.callData else {
+        guard let callData = self.callData else {
             handleFailedCall(failedCall: call, error: CallError.assertionError(description: "callData unexpectedly nil"))
             return
         }
 
-        guard call == currentCallData.call else {
+        guard call == callData.call else {
             // This could conceivably happen if the other party of an old call was slow to send us their answer
             // and we've subsequently engaged in another call. Don't kill the current call, but just ignore it.
             Logger.warn("ignoring \(#function) for call other than current call")
             return
         }
 
-        guard let callConnection = self.callConnection else {
+        guard let callConnection = callData.callConnection else {
             handleFailedCall(failedCall: call, error: CallError.assertionError(description: "missing callConnection"))
             return
         }
@@ -1098,7 +1076,7 @@ private class SignalCallData: NSObject {
             return
         }
 
-        handleConnectedCall(currentCallData)
+        handleConnectedCall(callData)
     }
 
     /**
@@ -1109,6 +1087,11 @@ private class SignalCallData: NSObject {
         AssertIsOnMainThread()
         Logger.info("")
 
+        guard callData === self.callData else {
+            Logger.debug("Ignoring connected for obsolete call.")
+            return
+        }
+        let call = callData.call
         guard let callConnection = callData.callConnection else {
             handleFailedCall(failedCall: call, error: CallError.assertionError(description: "callConnection unexpectedly nil"))
             return
@@ -1145,16 +1128,7 @@ private class SignalCallData: NSObject {
             return
         }
 
-        guard let currentCall = self.call else {
-            Logger.info("no current call, other party hung up just before us")
-
-            // Ensure that the call is terminated and cleaned up.
-            terminate(callData: self.callData)
-
-            return
-        }
-
-        guard call == currentCall else {
+        guard callData.call === call else {
             handleFailedCall(failedCall: call, error: CallError.assertionError(description: "ignoring \(#function) for call other than current call"))
             return
         }
@@ -1181,7 +1155,7 @@ private class SignalCallData: NSObject {
         let originalState = call.state
         call.state = .localHangup
 
-        if let callConnection = self.callConnection {
+        if let callConnection = callData.callConnection {
             // Stop audio capture ASAP
             ensureAudioState(call: call, callConnection: callConnection)
 
@@ -1251,15 +1225,16 @@ private class SignalCallData: NSObject {
     func setIsMuted(call: SignalCall, isMuted: Bool) {
         AssertIsOnMainThread()
 
-        guard call == self.call else {
+        guard let callData = self.callData else {
             // This can happen after a call has ended. Reproducible on iOS11, when the other party ends the call.
             Logger.info("ignoring mute request for obsolete call")
             return
         }
+        let call = callData.call
 
         call.isMuted = isMuted
 
-        guard let callConnection = self.callConnection else {
+        guard let callConnection = callData.callConnection else {
             // The callConnection might not be created yet.
             return
         }
@@ -1274,14 +1249,14 @@ private class SignalCallData: NSObject {
     func setIsOnHold(call: SignalCall, isOnHold: Bool) {
         AssertIsOnMainThread()
 
-        guard call == self.call else {
-            Logger.info("ignoring held request for obsolete call")
+        guard let callData = self.callData, call == callData.call else {
+            Logger.info("ignoring hold request for obsolete call")
             return
         }
 
         call.isOnHold = isOnHold
 
-        guard let callConnection = self.callConnection else {
+        guard let callConnection = callData.callConnection else {
             // The callConnection might not be created yet.
             return
         }
@@ -1334,15 +1309,20 @@ private class SignalCallData: NSObject {
             owsFailDebug("could not identify frontmostViewController")
             return
         }
+        guard let callData = self.callData else {
+            owsFailDebug("Missing callData")
+            return
+        }
 
-        frontmostViewController.ows_askForCameraPermissions { [weak self] granted in
-            guard let strongSelf = self else {
+        frontmostViewController.ows_askForCameraPermissions { granted in
+            guard self.callData === callData else {
+                owsFailDebug("Ignoring camera permissions for obsolete call.")
                 return
             }
 
             if granted {
                 // Success callback; camera permissions are granted.
-                strongSelf.setHasLocalVideoWithCameraPermissions(hasLocalVideo: hasLocalVideo)
+                self.setHasLocalVideoWithCameraPermissions(hasLocalVideo: hasLocalVideo)
             } else {
                 // Failed callback; camera permissions are _NOT_ granted.
 
@@ -1358,16 +1338,17 @@ private class SignalCallData: NSObject {
     private func setHasLocalVideoWithCameraPermissions(hasLocalVideo: Bool) {
         AssertIsOnMainThread()
 
-        guard let call = self.call else {
+        guard let callData = self.callData else {
             // This can happen if you toggle local video right after
             // the other user ends the call.
-            Logger.debug("Ignoring event from obsolete call")
+            Logger.debug("Ignoring event from obsolete call.")
             return
         }
+        let call = callData.call
 
         call.hasLocalVideo = hasLocalVideo
 
-        guard let callConnection = self.callConnection else {
+        guard let callConnection = callData.callConnection else {
             // The callConnection might not be created yet.
             return
         }
@@ -1391,7 +1372,8 @@ private class SignalCallData: NSObject {
     func setCameraSource(call: SignalCall, isUsingFrontCamera: Bool) {
         AssertIsOnMainThread()
 
-        guard let callConnection = self.callConnection else {
+        guard let callData = self.callData,
+            let callConnection = callData.callConnection else {
             return
         }
 
@@ -1407,21 +1389,17 @@ private class SignalCallData: NSObject {
     public func callConnection(_ callConnectionParam: CallConnection, onCallEvent event: CallEvent, callId: UInt64) {
         AssertIsOnMainThread()
 
-        guard callConnectionParam == self.callConnection else {
-            Logger.debug("Ignoring event from obsolete client")
-            return
-        }
-
-        guard let callData = self.callData else {
-            Logger.debug("Ignoring event from obsolete call")
+        guard let callData = self.callData,
+            callConnectionParam == callData.callConnection else {
+            Logger.debug("Ignoring event from obsolete call.")
             return
         }
 
         let call = callData.call
 
         guard callId == call.signalingId else {
-            owsFailDebug("received call event for call with id:\(callId) but current call has id:\(call.signalingId)")
-            handleFailedCurrentCall(error: CallError.assertionError(description: "received call event for call with id:\(callId) but current call has id:\(call.signalingId)"))
+            owsFailDebug("received call event for call with id: \(callId) but current call has id: \(call.signalingId)")
+            handleFailedCurrentCall(error: CallError.assertionError(description: "received call event for call with id: \(callId) but current call has id: \(call.signalingId)"))
             return
         }
 
@@ -1485,21 +1463,17 @@ private class SignalCallData: NSObject {
         AssertIsOnMainThread()
         Logger.debug("Got an error from RingRTC: \(error)")
 
-        guard callConnectionParam == self.callConnection else {
-            Logger.debug("Ignoring event from obsolete client")
-            return
-        }
-
-        guard let callData = self.callData else {
-            Logger.debug("Ignoring event from obsolete call")
+        guard let callData = self.callData,
+            callConnectionParam == callData.callConnection else {
+                Logger.debug("Ignoring event from obsolete call.")
             return
         }
 
         let call = callData.call
 
         guard callId == call.signalingId else {
-            owsFailDebug("received call error for call with id:\(callId) but current call has id:\(call.signalingId)")
-            handleFailedCurrentCall(error: CallError.assertionError(description: "received call error for call with id:\(callId) but current call has id:\(call.signalingId)"))
+            owsFailDebug("received call error for call with id: \(callId) but current call has id: \(call.signalingId)")
+            handleFailedCurrentCall(error: CallError.assertionError(description: "received call error for call with id: \(callId) but current call has id: \(call.signalingId)"))
             return
         }
 
@@ -1512,10 +1486,21 @@ private class SignalCallData: NSObject {
                 .done {
                     Logger.debug("sent hangup call message to \(call.thread.contactAddress)")
 
+                    guard self.callData === callData else {
+                        Logger.debug("Ignoring hangup send success for obsolete call.")
+                        return
+                    }
+
                     // We fail the call rather than terminate it.
                     self.handleFailedCall(failedCall: call, error: CallError.assertionError(description: error))
                 }.catch { error in
                     Logger.error("failed to send hangup call message to \(call.thread.contactAddress) with error: \(error)")
+
+                    guard self.callData === callData else {
+                        Logger.debug("Ignoring hangup send failure for obsolete call.")
+                        return
+                    }
+
                     self.handleFailedCall(failedCall: call, error: CallError.assertionError(description: "failed to send hangup call message"))
             }
 
@@ -1528,21 +1513,17 @@ private class SignalCallData: NSObject {
     public func callConnection(_ callConnectionParam: CallConnection, onAddRemoteVideoTrack track: RTCVideoTrack, callId: UInt64) {
         AssertIsOnMainThread()
 
-        guard callConnectionParam == self.callConnection else {
-            Logger.debug("Ignoring event from obsolete client")
-            return
-        }
-
-        guard let callData = self.callData else {
-            Logger.debug("Ignoring event from obsolete call")
+        guard let callData = self.callData,
+            callConnectionParam == callData.callConnection else {
+                Logger.debug("Ignoring event from obsolete call.")
             return
         }
 
         let call = callData.call
 
         guard callId == call.signalingId else {
-            owsFailDebug("received remote video track for call with id:\(callId) but current call has id:\(call.signalingId)")
-            handleFailedCurrentCall(error: CallError.assertionError(description: "received remote video track for call with id:\(callId) but current call has id:\(call.signalingId)"))
+            owsFailDebug("received remote video track for call with id: \(callId) but current call has id: \(call.signalingId)")
+            handleFailedCurrentCall(error: CallError.assertionError(description: "received remote video track for call with id: \(callId) but current call has id: \(call.signalingId)"))
             return
         }
 
@@ -1553,21 +1534,17 @@ private class SignalCallData: NSObject {
     public func callConnection(_ callConnectionParam: CallConnection, onUpdateLocalVideoSession session: AVCaptureSession?, callId: UInt64) {
         AssertIsOnMainThread()
 
-        guard callConnectionParam == self.callConnection else {
-            Logger.debug("Ignoring event from obsolete client")
-            return
-        }
-
-        guard let callData = self.callData else {
-            Logger.debug("Ignoring event from obsolete call")
+        guard let callData = self.callData,
+            callConnectionParam == callData.callConnection else {
+                Logger.debug("Ignoring event from obsolete call.")
             return
         }
 
         let call = callData.call
 
         guard callId == call.signalingId else {
-            owsFailDebug("received local video session for call with id:\(callId) but current call has id:\(call.signalingId)")
-            handleFailedCurrentCall(error: CallError.assertionError(description: "received local video session for call with id:\(callId) but current call has id:\(call.signalingId)"))
+            owsFailDebug("received local video session for call with id: \(callId) but current call has id: \(call.signalingId)")
+            handleFailedCurrentCall(error: CallError.assertionError(description: "received local video session for call with id: \(callId) but current call has id: \(call.signalingId)"))
             return
         }
 
@@ -1579,13 +1556,9 @@ private class SignalCallData: NSObject {
         AssertIsOnMainThread()
         Logger.debug("Got onSendOffer")
 
-        guard callConnectionParam == self.callConnection else {
-            Logger.debug("Ignoring event from obsolete client")
-            return
-        }
-
-        guard let callData = self.callData else {
-            Logger.debug("Ignoring event from obsolete call")
+        guard let callData = self.callData,
+            callConnectionParam == callData.callConnection else {
+                Logger.debug("Ignoring event from obsolete call.")
             return
         }
 
@@ -1597,8 +1570,8 @@ private class SignalCallData: NSObject {
         }
 
         guard callId == call.signalingId else {
-            owsFailDebug("should send offer for call with id:\(callId) but current call has id:\(call.signalingId)")
-            handleFailedCurrentCall(error: CallError.assertionError(description: "should send offer for call with id:\(callId) but current call has id:\(call.signalingId)"))
+            owsFailDebug("should send offer for call with id: \(callId) but current call has id: \(call.signalingId)")
+            handleFailedCurrentCall(error: CallError.assertionError(description: "should send offer for call with id: \(callId) but current call has id: \(call.signalingId)"))
             return
         }
 
@@ -1611,6 +1584,11 @@ private class SignalCallData: NSObject {
                 .done {
                     Logger.debug("sent offer call message to \(call.thread.contactAddress)")
 
+                    guard self.callData === callData else {
+                        Logger.debug("Ignoring call offer send success for obsolete call.")
+                        return
+                    }
+
                     guard !call.isTerminated else {
                         Logger.debug("terminated call")
                         return
@@ -1621,6 +1599,12 @@ private class SignalCallData: NSObject {
                     self.readyToSendIceUpdates(call: call)
                 }.catch { error in
                     Logger.error("failed to send offer call message to \(call.thread.contactAddress) with error: \(error)")
+
+                    guard self.callData === callData else {
+                        Logger.debug("Ignoring call offer send failure for obsolete call.")
+                        return
+                    }
+
                     self.handleFailedCall(failedCall: call, error: CallError.assertionError(description: "failed to send offer call message"))
                 }
 
@@ -1634,21 +1618,16 @@ private class SignalCallData: NSObject {
         AssertIsOnMainThread()
         Logger.debug("Got onSendAnswer")
 
-        guard callConnectionParam == self.callConnection else {
-            Logger.debug("Ignoring event from obsolete client")
-            return
-        }
-
-        guard let callData = self.callData else {
-            Logger.debug("Ignoring event from obsolete call")
+        guard let callData = self.callData, callConnectionParam == callData.callConnection else {
+            Logger.debug("Ignoring event from obsolete call.")
             return
         }
 
         let call = callData.call
 
         guard callId == call.signalingId else {
-            owsFailDebug("should send answer for call with id:\(callId) but current call has id:\(call.signalingId)")
-            handleFailedCurrentCall(error: CallError.assertionError(description: "should send answer for call with id:\(callId) but current call has id:\(call.signalingId)"))
+            owsFailDebug("should send answer for call with id: \(callId) but current call has id: \(call.signalingId)")
+            handleFailedCurrentCall(error: CallError.assertionError(description: "should send answer for call with id: \(callId) but current call has id: \(call.signalingId)"))
             return
         }
 
@@ -1658,6 +1637,11 @@ private class SignalCallData: NSObject {
             let sendPromise = messageSender.sendMessage(.promise, callMessage.asPreparer)
                 .done {
                     Logger.debug("sent answer call message to \(call.thread.contactAddress)")
+
+                    guard self.callData === callData else {
+                        Logger.debug("Ignoring call answer send success for obsolete call.")
+                        return
+                    }
 
                     guard !call.isTerminated else {
                         Logger.debug("terminated call")
@@ -1669,6 +1653,12 @@ private class SignalCallData: NSObject {
                     self.readyToSendIceUpdates(call: call)
                 }.catch { error in
                     Logger.error("failed to send answer call message to \(call.thread.contactAddress) with error: \(error)")
+
+                    guard self.callData === callData else {
+                        Logger.debug("Ignoring call answer send failure for obsolete call.")
+                        return
+                    }
+
                     self.handleFailedCall(failedCall: call, error: CallError.assertionError(description: "failed to send answer call message"))
                 }
 
@@ -1681,21 +1671,16 @@ private class SignalCallData: NSObject {
     public func callConnection(_ callConnectionParam: CallConnection, shouldSendIceCandidates candidates: [RTCIceCandidate], callId: UInt64) {
         AssertIsOnMainThread()
 
-        guard callConnectionParam == self.callConnection else {
-            Logger.debug("Ignoring event from obsolete client")
-            return
-        }
-
-        guard let callData = self.callData else {
-            Logger.debug("Ignoring event from obsolete call")
+        guard let callData = self.callData, callConnectionParam == callData.callConnection else {
+            Logger.debug("Ignoring event from obsolete call.")
             return
         }
 
         let call = callData.call
 
         guard callId == call.signalingId else {
-            owsFailDebug("should send ice candidate for call with id:\(callId) but current call has id:\(call.signalingId)")
-            handleFailedCurrentCall(error: CallError.assertionError(description: "should send ice candidate for call with id:\(callId) but current call has id:\(call.signalingId)"))
+            owsFailDebug("should send ice candidate for call with id: \(callId) but current call has id: \(call.signalingId)")
+            handleFailedCurrentCall(error: CallError.assertionError(description: "should send ice candidate for call with id: \(callId) but current call has id: \(call.signalingId)"))
             return
         }
 
@@ -1782,7 +1767,7 @@ private class SignalCallData: NSObject {
         Logger.debug("")
 
         // Return to a known good state by ending the current call, if any.
-        handleFailedCall(failedCall: self.call, error: error)
+        handleFailedCall(failedCall: self.callData?.call, error: error)
     }
 
     // This method should be called when a fatal error occurred for a call.
@@ -1823,7 +1808,7 @@ private class SignalCallData: NSObject {
             self.callUIAdapter.failCall(failedCall, error: callError)
 
             // Only terminate the current call if the error pertains to the current call.
-            guard failedCall == self.call else {
+            guard failedCall === self.callData?.call else {
                 Logger.debug("ignoring obsolete call: \(failedCall.identifiersForLogs).")
                 return
             }
@@ -1848,7 +1833,7 @@ private class SignalCallData: NSObject {
 
         callUIAdapter.didTerminateCall(callData?.call)
 
-        if self.callData == callData {
+        if self.callData === callData {
             // Terminating the current call.
             fireDidUpdateVideoTracks()
 
@@ -1897,9 +1882,10 @@ private class SignalCallData: NSObject {
     private func shouldHaveLocalVideoTrack() -> Bool {
         AssertIsOnMainThread()
 
-        guard let call = self.call else {
+        guard let callData = self.callData else {
             return false
         }
+            let call = callData.call
 
         // The iOS simulator doesn't provide any sort of camera capture
         // support or emulation (http://goo.gl/rHAnC1) so don't bother
@@ -1914,7 +1900,7 @@ private class SignalCallData: NSObject {
     private func updateIsVideoEnabled() {
         AssertIsOnMainThread()
 
-        guard let callConnection = self.callConnection else {
+        guard let callConnection = self.callData?.callConnection else {
             return
         }
 
@@ -1939,10 +1925,7 @@ private class SignalCallData: NSObject {
         observers.append(Weak(value: observer))
 
         // Synchronize observer with current call state
-        let remoteVideoTrack = self.isRemoteVideoEnabled ? self.remoteVideoTrack : nil
-        observer.didUpdateVideoTracks(call: self.call,
-                                      localCaptureSession: self.localCaptureSession,
-                                      remoteVideoTrack: remoteVideoTrack)
+        fireDidUpdateVideoTracks(forObserver: observer)
     }
 
     // The observer-related methods should be invoked on the main thread.
@@ -1964,12 +1947,21 @@ private class SignalCallData: NSObject {
     private func fireDidUpdateVideoTracks() {
         AssertIsOnMainThread()
 
-        let remoteVideoTrack = self.isRemoteVideoEnabled ? self.remoteVideoTrack : nil
-        for observer in observers {
-            observer.value?.didUpdateVideoTracks(call: self.call,
-                                                 localCaptureSession: self.localCaptureSession,
-                                                 remoteVideoTrack: remoteVideoTrack)
+        for weakObserver in observers {
+            if let observer = weakObserver.value {
+                fireDidUpdateVideoTracks(forObserver: observer)
+            }
         }
+    }
+
+    private func fireDidUpdateVideoTracks(forObserver observer: CallServiceObserver) {
+        AssertIsOnMainThread()
+
+        let isRemoteVideoEnabled = callData?.isRemoteVideoEnabled ?? false
+        let remoteVideoTrack = isRemoteVideoEnabled ? callData?.remoteVideoTrack : nil
+        observer.didUpdateVideoTracks(call: callData?.call,
+                                             localCaptureSession: callData?.localCaptureSession,
+                                             remoteVideoTrack: remoteVideoTrack)
     }
 
     // MARK: CallViewController Timer
@@ -1981,27 +1973,25 @@ private class SignalCallData: NSObject {
         stopAnyCallTimer()
         assert(self.activeCallTimer == nil)
 
-        self.activeCallTimer = WeakTimer.scheduledTimer(timeInterval: 1, target: self, userInfo: nil, repeats: true) { [weak self] timer in
-            guard let strongSelf = self else {
-                return
-            }
+        guard let callData = self.callData else {
+            owsFailDebug("Missing callData.")
+            return
+        }
 
-            guard let call = strongSelf.call else {
+        self.activeCallTimer = WeakTimer.scheduledTimer(timeInterval: 1, target: self, userInfo: nil, repeats: true) { timer in
+            guard callData === self.callData else {
                 owsFailDebug("call has since ended. Timer should have been invalidated.")
                 timer.invalidate()
                 return
             }
+            let call = callData.call
 
-            strongSelf.ensureCallScreenPresented(call: call)
+            self.ensureCallScreenPresented(call: call)
         }
     }
 
     func ensureCallScreenPresented(call: SignalCall) {
-        guard let currentCall = self.call else {
-            owsFailDebug("obsolete call: \(call.identifiersForLogs)")
-            return
-        }
-        guard currentCall == call else {
+        guard self.callData?.call === call else {
             owsFailDebug("obsolete call: \(call.identifiersForLogs)")
             return
         }
@@ -2045,7 +2035,7 @@ private class SignalCallData: NSObject {
     func outgoingIceUpdateDidFail(call: SignalCall, error: Error) {
         AssertIsOnMainThread()
 
-        guard self.call == call else {
+        guard self.callData?.call === call else {
             Logger.warn("obsolete call")
             return
         }
