@@ -300,6 +300,8 @@ private class SignalCallData: NSObject {
     }
 }
 
+// MARK: - CallService
+
 // This class' state should only be accessed on the main queue.
 @objc public class CallService: NSObject, CallObserver, CallConnectionDelegate, SignalCallDataDelegate {
 
@@ -739,28 +741,20 @@ private class SignalCallData: NSObject {
         callData.shouldSendHangup = true
 
         Logger.debug("Enable backgroundTask")
-        let backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak self] status in
+        let backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)", completionBlock: { status in
             AssertIsOnMainThread()
 
             guard status == .expired else {
                 return
             }
 
-            guard let strongSelf = self else {
-                return
-            }
-
             let timeout = CallError.timeout(description: "background task time ran out before call connected.")
 
-            guard let currentCallData = strongSelf.callData else {
+            guard self.callData?.call === newCall else {
                 Logger.warn("ignoring obsolete call")
                 return
             }
-            guard currentCallData.call === newCall else {
-                Logger.warn("ignoring obsolete call")
-                return
-            }
-            strongSelf.handleFailedCall(failedCall: newCall, error: timeout)
+            self.handleFailedCall(failedCall: newCall, error: timeout)
         })
 
         callData.backgroundTask = backgroundTask
@@ -1343,19 +1337,15 @@ private class SignalCallData: NSObject {
             return
         }
 
-        frontmostViewController.ows_askForCameraPermissions { [weak self] granted in
-            guard let strongSelf = self else {
-                return
-            }
-
-            guard strongSelf.callData === callData else {
+        frontmostViewController.ows_askForCameraPermissions { granted in
+            guard self.callData === callData else {
                 owsFailDebug("callData has changed")
                 return
             }
 
             if granted {
                 // Success callback; camera permissions are granted.
-                strongSelf.setHasLocalVideoWithCameraPermissions(hasLocalVideo: hasLocalVideo)
+                self.setHasLocalVideoWithCameraPermissions(hasLocalVideo: hasLocalVideo)
             } else {
                 // Failed callback; camera permissions are _NOT_ granted.
 
@@ -2047,19 +2037,15 @@ private class SignalCallData: NSObject {
             return
         }
 
-        self.activeCallTimer = WeakTimer.scheduledTimer(timeInterval: 1, target: self, userInfo: nil, repeats: true) { [weak self] timer in
-            guard let strongSelf = self else {
-                return
-            }
-
-            guard callData === strongSelf.callData else {
+        self.activeCallTimer = WeakTimer.scheduledTimer(timeInterval: 1, target: self, userInfo: nil, repeats: true) { timer in
+            guard callData === self.callData else {
                 owsFailDebug("call has since ended. Timer should have been invalidated.")
                 timer.invalidate()
                 return
             }
             let call = callData.call
 
-            strongSelf.ensureCallScreenPresented(call: call)
+            self.ensureCallScreenPresented(call: call)
         }
     }
 
