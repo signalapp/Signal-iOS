@@ -502,7 +502,7 @@ private class SignalCallData: NSObject {
         promise.catch { error in
             Logger.error("outgoing call \(call.identifiersForLogs) failed with error: \(error)")
 
-            guard self.callData?.call === call else {
+            guard self.callData === callData else {
                 Logger.debug("ignoring error for obsolete call")
                 return
             }
