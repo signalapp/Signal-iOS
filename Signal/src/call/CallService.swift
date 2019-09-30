@@ -1722,7 +1722,7 @@ private class SignalCallData: NSObject {
                     Logger.debug("sent hangup call message to \(call.thread.contactAddress)")
                 }.ensure {
                     guard self.callData === callData else {
-                        Logger.debug("Ignoring hangup send failer for obsolete call.")
+                        Logger.debug("Ignoring hangup send for obsolete call.")
                         return
                     }
 
