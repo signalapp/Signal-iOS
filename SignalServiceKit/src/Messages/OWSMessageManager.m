@@ -20,6 +20,7 @@
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "LKEphemeralMessage.h"
+#import "LKDeviceLinkMessage.h"
 #import "OWSIdentityManager.h"
 #import "OWSIncomingMessageFinder.h"
 #import "OWSIncomingSentMessageTranscript.h"
@@ -417,7 +418,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Loki: Handle friend request acceptance if needed
     // TODO: We'll need to fix this up if we ever start using sync messages
     [self handleFriendRequestAcceptanceIfNeededWithEnvelope:envelope transaction:transaction];
-
+    
     if (envelope.content != nil) {
         NSError *error;
         SSKProtoContent *_Nullable contentProto = [SSKProtoContent parseData:plaintextData error:&error];
@@ -427,17 +428,32 @@ NS_ASSUME_NONNULL_BEGIN
         }
         OWSLogInfo(@"handling content: <Content: %@>", [self descriptionForContent:contentProto]);
         
+        // Loki: Handle device linking message
+        if (contentProto.lokiDeviceLinkMessage != nil) {
+            NSString *masterHexEncodedPublicKey = contentProto.lokiDeviceLinkMessage.masterHexEncodedPublicKey;
+            NSString *slaveHexEncodedPublicKey = contentProto.lokiDeviceLinkMessage.slaveHexEncodedPublicKey;
+            NSData *masterSignature = contentProto.lokiDeviceLinkMessage.masterSignature;
+            NSData *slaveSignature = contentProto.lokiDeviceLinkMessage.slaveSignature;
+            if (masterSignature != nil) { // Authorization
+                OWSLogInfo(@"[Loki] Received a device linking authorization from: %@", envelope.source); // Not masterHexEncodedPublicKey
+                [LKDeviceLinkingSession.current processLinkingAuthorizationFrom:masterHexEncodedPublicKey for:slaveHexEncodedPublicKey masterSignature:masterSignature slaveSignature:slaveSignature];
+            } else if (slaveSignature != nil) { // Request
+                OWSLogInfo(@"[Loki] Received a device linking request from: %@", envelope.source); // Not slaveHexEncodedPublicKey }
+                [LKDeviceLinkingSession.current processLinkingRequestFrom:slaveHexEncodedPublicKey to:masterHexEncodedPublicKey with:slaveSignature];
+            }
+        }
+        
         // Loki: Handle pre key bundle message
-        if (contentProto.prekeyBundleMessage) {
-            OWSLogInfo(@"Received a pre key bundle message from: %@.", envelope.source);
+        if (contentProto.prekeyBundleMessage != nil) {
+            OWSLogInfo(@"[Loki] Received a pre key bundle message from: %@.", envelope.source);
             PreKeyBundle *_Nullable bundle = [contentProto.prekeyBundleMessage createPreKeyBundleWithTransaction:transaction];
-            if (!bundle) {
-                OWSFailDebug(@"Failed to create PreKeyBundle from message.");
+            if (bundle == nil) {
+                OWSFailDebug(@"Failed to create a pre key bundle.");
             }
             [self.primaryStorage setPreKeyBundle:bundle forContact:envelope.source transaction:transaction];
         }
         
-        // Loki: Check if we got p2p address
+        // Loki: Check if we got a P2P address
         if (contentProto.lokiAddressMessage) {
             NSString *address = contentProto.lokiAddressMessage.ptpAddress;
             uint32_t port = contentProto.lokiAddressMessage.ptpPort;
@@ -1536,7 +1552,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (existingFriendRequestMessage != nil && existingFriendRequestMessage.isFriendRequest) {
             [existingFriendRequestMessage saveFriendRequestStatus:LKMessageFriendRequestStatusAccepted withTransaction:transaction];
         }
-        // The two lines below are equivalent to calling [ThreadUtil enqueueAcceptFriendRequestMessageInThread:thread]
+        // The two lines below are equivalent to calling [ThreadUtil enqueueFriendRequestAcceptanceMessageInThread:thread]
         LKEphemeralMessage *backgroundMessage = [[LKEphemeralMessage alloc] initInThread:thread];
         [self.messageSenderJobQueue addMessage:backgroundMessage transaction:transaction];
     } else if (!thread.isContactFriend) {

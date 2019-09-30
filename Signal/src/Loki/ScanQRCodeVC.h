@@ -3,7 +3,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ScanQRCodeViewController : OWSViewController
+@interface ScanQRCodeVC : OWSViewController
 
 @property (nonatomic, weak) UIViewController<OWSQRScannerDelegate> *delegate;
 

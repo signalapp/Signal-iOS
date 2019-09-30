@@ -241,6 +241,7 @@
 
     [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Share Public Key", @"") actionBlock:^{ [weakSelf sharePublicKey]; }]];
     [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Show QR Code", @"") actionBlock:^{ [weakSelf showQRCode]; }]];
+    [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Link Device", @"") actionBlock:^{ [weakSelf linkDevice]; }]];
     [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Show Seed", @"") actionBlock:^{ [weakSelf showSeed]; }]];
     [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Clear All Data", @"") actionBlock:^{ [weakSelf clearAllData]; }]];
     
@@ -507,43 +508,30 @@
 
 - (void)showQRCode
 {
-    QRCodeViewController *qrCodeVC = [QRCodeViewController new];
-    [self.navigationController pushViewController:qrCodeVC animated:YES];
+    LKQRCodeModal *qrCodeModal = [LKQRCodeModal new];
+    qrCodeModal.modalPresentationStyle = UIModalPresentationOverFullScreen;
+    [self presentViewController:qrCodeModal animated:YES completion:nil];
+}
+
+- (void)linkDevice
+{
+    LKDeviceLinkingModal *deviceLinkingModal = [[LKDeviceLinkingModal alloc] initWithMode:@"master" delegate:nil];
+    deviceLinkingModal.modalPresentationStyle = UIModalPresentationOverFullScreen;
+    [self presentViewController:deviceLinkingModal animated:YES completion:nil];
 }
 
 - (void)showSeed
 {
-    NSString *title = NSLocalizedString(@"Your Seed", @"");
-    OWSIdentityManager *identityManager = OWSIdentityManager.sharedManager;
-    YapDatabaseConnection *databaseConnection = (YapDatabaseConnection *)[identityManager valueForKey:@"dbConnection"];
-    NSString *hexEncodedSeed = [databaseConnection objectForKey:@"LKLokiSeed" inCollection:OWSPrimaryStorageIdentityKeyStoreCollection];
-    if (hexEncodedSeed == nil) { hexEncodedSeed = identityManager.identityKeyPair.hexEncodedPrivateKey; } // Legacy account
-    NSString *mnemonic = [LKMnemonic encodeHexEncodedString:hexEncodedSeed];
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:mnemonic preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { /* Do nothing */ }]];
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Copy", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { UIPasteboard.generalPasteboard.string = mnemonic; }]];
-    [self presentAlert:alert];
+    LKSeedModal *seedModal = [LKSeedModal new];
+    seedModal.modalPresentationStyle = UIModalPresentationOverFullScreen;
+    [self presentViewController:seedModal animated:YES completion:nil];
 }
 
 - (void)clearAllData
 {
-    NSString *title = NSLocalizedString(@"Clear All Data", @"");
-    NSString *message = NSLocalizedString(@"Are you sure you want to clear all your data? This will delete your entire account, including all conversations and your personal key pair.", @"");
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-        [ThreadUtil deleteAllContent];
-        [SSKEnvironment.shared.identityManager clearIdentityKey];
-        [LKAPI clearRandomSnodePool];
-        AppDelegate *appDelegate = (AppDelegate *)UIApplication.sharedApplication.delegate;
-        [appDelegate stopLongPollerIfNeeded];
-        [SSKEnvironment.shared.tsAccountManager resetForReregistration];
-        UIViewController *rootViewController = [[OnboardingController new] initialViewController];
-        OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:rootViewController];
-        navigationController.navigationBarHidden = YES;
-        UIApplication.sharedApplication.keyWindow.rootViewController = navigationController;
-    }]];
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { /* Do nothing */ }]];
-    [self presentAlert:alert];
+    LKNukeDataModal *nukeDataModal = [LKNukeDataModal new];
+    nukeDataModal.modalPresentationStyle = UIModalPresentationOverFullScreen;
+    [self presentViewController:nukeDataModal animated:YES completion:nil];
 }
 
 - (void)reregisterUser

@@ -835,8 +835,8 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
 - (void)showNewConversationView
 {
-    LKNewConversationViewController *viewController = [LKNewConversationViewController new];
-    OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:viewController];
+    LKNewConversationVC *newConversationVC = [LKNewConversationVC new];
+    OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:newConversationVC];
     [self.navigationController presentViewController:navigationController animated:YES completion:nil];
     
     /**

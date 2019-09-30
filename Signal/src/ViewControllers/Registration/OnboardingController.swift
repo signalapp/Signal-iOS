@@ -98,7 +98,7 @@ public class OnboardingController: NSObject {
     // MARK: - Transitions
 
     public func onboardingSplashDidComplete(viewController: UIViewController) {
-        pushSeedViewController(from: viewController)
+        pushSeedVC(from: viewController)
     }
 
     public func onboardingPermissionsWasSkipped(viewController: UIViewController) {
@@ -106,7 +106,7 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        pushSeedViewController(from: viewController)
+        pushSeedVC(from: viewController)
     }
 
     public func onboardingPermissionsDidComplete(viewController: UIViewController) {
@@ -114,19 +114,19 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        pushSeedViewController(from: viewController)
+        pushSeedVC(from: viewController)
     }
     
-    public func pushSeedViewController(from viewController: UIViewController) {
+    public func pushSeedVC(from viewController: UIViewController) {
         AssertIsOnMainThread()
-        let seedVC = SeedViewController(onboardingController: self)
+        let seedVC = SeedVC(onboardingController: self)
         viewController.navigationController?.pushViewController(seedVC, animated: true)
     }
     
-    public func pushAccountDetailsViewController(from viewController: UIViewController) {
+    public func pushDisplayNameVC(from viewController: UIViewController) {
         AssertIsOnMainThread()
-        let accountDetailsVC = AccountDetailsViewController(onboardingController: self)
-        viewController.navigationController?.pushViewController(accountDetailsVC, animated: true)
+        let displayNameVC = DisplayNameVC(onboardingController: self)
+        viewController.navigationController?.pushViewController(displayNameVC, animated: true)
     }
 
     public func onboardingRegistrationSucceeded(viewController: UIViewController) {
@@ -152,7 +152,7 @@ public class OnboardingController: NSObject {
         // from the "code verification" view.  The "Captcha" view should always appear
         // immediately after the "phone number" view.
         while navigationController.viewControllers.count > 1 &&
-            !(navigationController.topViewController is AccountDetailsViewController) {
+            !(navigationController.topViewController is DisplayNameVC) {
                 navigationController.popViewController(animated: false)
         }
 

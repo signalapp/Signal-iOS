@@ -6,6 +6,7 @@
 #import <UIKit/UIKit.h>
 
 // Separate iOS Frameworks from other imports.
+#import "AppDelegate.h"
 #import "AVAudioSession+OWS.h"
 #import "AppSettingsViewController.h"
 #import "AttachmentUploadView.h"
@@ -43,7 +44,7 @@
 #import "PrivacySettingsTableViewController.h"
 #import "ProfileViewController.h"
 #import "RemoteVideoView.h"
-#import "ScanQRCodeViewController.h"
+#import "ScanQRCodeVC.h"
 #import "SignalApp.h"
 #import "UIViewController+Permissions.h"
 #import "ViewControllerUtils.h"
@@ -91,6 +92,7 @@
 #import <SignalServiceKit/OWSDispatch.h>
 #import <SignalServiceKit/OWSEndSessionMessage.h>
 #import <SignalServiceKit/LKEphemeralMessage.h>
+#import <SignalServiceKit/LKDeviceLinkMessage.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/LKFriendRequestMessage.h>

@@ -2621,3 +2621,17 @@
 "Please enter the public key of the person you'd like to message." = "Please enter the public key of the person you'd like to message.";
 "Loki Messenger is currently in beta. For development purposes the beta version collects basic usage statistics and crash logs. In addition, the beta version doesn't provide full privacy and shouldn't be used to transmit sensitive information." = "Loki Messenger is currently in beta. For development purposes the beta version collects basic usage statistics and crash logs. In addition, the beta version doesn't provide full privacy and shouldn't be used to transmit sensitive information.";
 "Copy Public Key" = "Copy Public Key";
+"Link Device" = "Link Device";
+"Waiting for Device" = "Waiting for Device";
+"Waiting for Authorization" = "Waiting for Authorization";
+"Create a new account on your other device and click \"Link Device\" when you're at the \"Create Your Loki Messenger Account\" step to start the linking process" = "Create a new account on your other device and click \"Link Device\" when you're at the \"Create Your Loki Messenger Account\" step to start the linking process";
+"Linking Request Received" = "Linking Request Received";
+"Invalid public key" = "Invalid public key";
+"Please check that the words below match the ones shown on your other device" = "Please check that the words below match the ones shown on your other device";
+"Link to an existing device by going into its in-app settings and clicking \"Link Device\"." = "Link to an existing device by going into its in-app settings and clicking \"Link Device\".";
+"Authorize" = "Authorize";
+"Enter the Other Device's Public Key" = "Enter the Other Device's Public Key";
+"This is your personal secret. It can be used to restore your account if you lose access, or to migrate to a new device." = "This is your personal secret. It can be used to restore your account if you lose access, or to migrate to a new device.";
+"Device Link Authorized" = "Device Link Authorized";
+"Your device has been linked successfully" = "Your device has been linked successfully";
+"Link" = "Link";

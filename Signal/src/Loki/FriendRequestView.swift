@@ -39,7 +39,7 @@ final class FriendRequestView : UIView {
     private lazy var buttonFont = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
     private lazy var buttonHeight = buttonFont.pointSize * 48 / 17
     
-    // MARK: Initialization
+    // MARK: Lifecycle
     @objc init(message: TSMessage) {
         self.message = message
         super.init(frame: CGRect.zero)

@@ -779,12 +779,15 @@ static NSTimeInterval launchStartedAt;
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.socketManager requestSocketOpen];
             [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
-            
-            // Loki: Start long polling
-            [self startLongPollerIfNeeded];
-           
+
             // Loki: Tell our friends that we are online
             [LKP2PAPI broadcastOnlineStatus];
+
+            // Loki: Start long polling
+            [self startLongPollerIfNeeded];
+
+            // Loki: Get device links
+            [LKStorageAPI getDeviceLinksAssociatedWith:self.tsAccountManager.localNumber];
             
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
                 OWSLogInfo(@"Retrying to register for remote notifications since user hasn't registered yet.");
@@ -1372,15 +1375,18 @@ static NSTimeInterval launchStartedAt;
         // enables this feature
         [self.disappearingMessagesJob startIfNecessary];
         [self.profileManager ensureLocalProfileCached];
-        
-        // Start Loki friend request expire job
-        [self.lokiFriendRequestExpirationJob startIfNecessary];
 
         // For non-legacy users, read receipts are on by default.
         [self.readReceiptManager setAreReadReceiptsEnabled:YES];
+
+        // Loki: Start friend request expiration job
+        [self.lokiFriendRequestExpirationJob startIfNecessary];
         
         // Loki: Start long polling
         [self startLongPollerIfNeeded];
+
+        // Loki: Get device links
+        [LKStorageAPI getDeviceLinksAssociatedWith:self.tsAccountManager.localNumber];
     }
 }
 

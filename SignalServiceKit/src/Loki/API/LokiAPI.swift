@@ -2,18 +2,18 @@ import PromiseKit
 
 @objc(LKAPI)
 public final class LokiAPI : NSObject {
-    internal static let storage = OWSPrimaryStorage.shared()
+    private static var lastDeviceLinkUpdate: [String:Date] = [:] // Hex encoded public key to date
     
     // MARK: Convenience
-    internal static var userHexEncodedPublicKey: String {
-        return OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
-    }
+    internal static let storage = OWSPrimaryStorage.shared()
+    internal static let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
     
     // MARK: Settings
     private static let version = "v1"
     private static let maxRetryCount: UInt = 8
     private static let defaultTimeout: TimeInterval = 20
     private static let longPollingTimeout: TimeInterval = 40
+    private static let deviceLinkUpdateInterval: TimeInterval = 8 * 60
     public static let defaultMessageTTL: UInt64 = 24 * 60 * 60 * 1000
     internal static var powDifficulty: UInt = 40
     
@@ -30,6 +30,27 @@ public final class LokiAPI : NSObject {
             case .proofOfWorkCalculationFailed: return NSLocalizedString("Failed to calculate proof of work.", comment: "")
             case .messageConversionFailed: return "Failed to convert Signal message to Loki message."
             }
+        }
+    }
+    
+    @objc(LKDestination)
+    public final class Destination : NSObject {
+        @objc public let hexEncodedPublicKey: String
+        @objc(kind)
+        public let objc_kind: String
+        
+        public var kind: Kind { return Kind(rawValue: objc_kind)! }
+        
+        public enum Kind : String { case master, slave }
+        
+        public init(hexEncodedPublicKey: String, kind: Kind) {
+            self.hexEncodedPublicKey = hexEncodedPublicKey
+            self.objc_kind = kind.rawValue
+        }
+        
+        @objc public init(hexEncodedPublicKey: String, kind: String) {
+            self.hexEncodedPublicKey = hexEncodedPublicKey
+            self.objc_kind = kind
         }
     }
     
@@ -66,6 +87,38 @@ public final class LokiAPI : NSObject {
         return getTargetSnodes(for: userHexEncodedPublicKey).mapValues { targetSnode in
             return getRawMessages(from: targetSnode, usingLongPolling: false).map { parseRawMessagesResponse($0, from: targetSnode) }
         }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount)
+    }
+    
+    public static func getDestinations(for hexEncodedPublicKey: String) -> Promise<[Destination]> {
+        let (promise, seal) = Promise<[Destination]>.pending()
+        func getDestinations() {
+            storage.dbReadConnection.read { transaction in
+                var destinations: [Destination] = []
+                let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
+                let masterDestination = Destination(hexEncodedPublicKey: masterHexEncodedPublicKey, kind: .master)
+                destinations.append(masterDestination)
+                let deviceLinks = storage.getDeviceLinks(for: masterHexEncodedPublicKey, in: transaction)
+                let slaveDestinations = deviceLinks.map { Destination(hexEncodedPublicKey: $0.slave.hexEncodedPublicKey, kind: .slave) }
+                destinations.append(contentsOf: slaveDestinations)
+                destinations = destinations.filter { $0.hexEncodedPublicKey != userHexEncodedPublicKey }
+                seal.fulfill(destinations)
+            }
+        }
+        let timeSinceLastUpdate: TimeInterval
+        if let lastDeviceLinkUpdate = lastDeviceLinkUpdate[hexEncodedPublicKey] {
+            timeSinceLastUpdate = Date().timeIntervalSince(lastDeviceLinkUpdate)
+        } else {
+            timeSinceLastUpdate = .infinity
+        }
+        if timeSinceLastUpdate > deviceLinkUpdateInterval {
+            storage.dbReadConnection.read { transaction in
+                let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
+                LokiStorageAPI.getDeviceLinks(associatedWith: masterHexEncodedPublicKey).done { _ in getDestinations() }.catch { seal.reject($0) }
+            }
+        } else {
+            getDestinations()
+        }
+        return promise
     }
     
     public static func sendSignalMessage(_ signalMessage: SignalMessage, onP2PSuccess: @escaping () -> Void) -> Promise<Set<RawResponsePromise>> {
@@ -117,6 +170,12 @@ public final class LokiAPI : NSObject {
     }
     
     // MARK: Public API (Obj-C)
+    @objc(getDestinationsFor:)
+    public static func objc_getDestinations(for hexEncodedPublicKey: String) -> AnyPromise {
+        let promise = getDestinations(for: hexEncodedPublicKey)
+        return AnyPromise.from(promise)
+    }
+    
     @objc(sendSignalMessage:onP2PSuccess:)
     public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, onP2PSuccess: @escaping () -> Void) -> AnyPromise {
         let promise = sendSignalMessage(signalMessage, onP2PSuccess: onP2PSuccess).mapValues { AnyPromise.from($0) }.map { Set($0) }

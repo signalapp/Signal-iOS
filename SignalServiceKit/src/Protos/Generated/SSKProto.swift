@@ -472,6 +472,9 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
         if let _value = lokiAddressMessage {
             builder.setLokiAddressMessage(_value)
         }
+        if let _value = lokiDeviceLinkMessage {
+            builder.setLokiDeviceLinkMessage(_value)
+        }
         return builder
     }
 
@@ -513,6 +516,10 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
             proto.lokiAddressMessage = valueParam.proto
         }
 
+        @objc public func setLokiDeviceLinkMessage(_ valueParam: SSKProtoLokiDeviceLinkMessage) {
+            proto.lokiDeviceLinkMessage = valueParam.proto
+        }
+
         @objc public func build() throws -> SSKProtoContent {
             return try SSKProtoContent.parseProto(proto)
         }
@@ -540,6 +547,8 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
 
     @objc public let lokiAddressMessage: SSKProtoLokiAddressMessage?
 
+    @objc public let lokiDeviceLinkMessage: SSKProtoLokiDeviceLinkMessage?
+
     private init(proto: SignalServiceProtos_Content,
                  dataMessage: SSKProtoDataMessage?,
                  syncMessage: SSKProtoSyncMessage?,
@@ -548,7 +557,8 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
                  receiptMessage: SSKProtoReceiptMessage?,
                  typingMessage: SSKProtoTypingMessage?,
                  prekeyBundleMessage: SSKProtoPrekeyBundleMessage?,
-                 lokiAddressMessage: SSKProtoLokiAddressMessage?) {
+                 lokiAddressMessage: SSKProtoLokiAddressMessage?,
+                 lokiDeviceLinkMessage: SSKProtoLokiDeviceLinkMessage?) {
         self.proto = proto
         self.dataMessage = dataMessage
         self.syncMessage = syncMessage
@@ -558,6 +568,7 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
         self.typingMessage = typingMessage
         self.prekeyBundleMessage = prekeyBundleMessage
         self.lokiAddressMessage = lokiAddressMessage
+        self.lokiDeviceLinkMessage = lokiDeviceLinkMessage
     }
 
     @objc
@@ -611,6 +622,11 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
             lokiAddressMessage = try SSKProtoLokiAddressMessage.parseProto(proto.lokiAddressMessage)
         }
 
+        var lokiDeviceLinkMessage: SSKProtoLokiDeviceLinkMessage? = nil
+        if proto.hasLokiDeviceLinkMessage {
+            lokiDeviceLinkMessage = try SSKProtoLokiDeviceLinkMessage.parseProto(proto.lokiDeviceLinkMessage)
+        }
+
         // MARK: - Begin Validation Logic for SSKProtoContent -
 
         // MARK: - End Validation Logic for SSKProtoContent -
@@ -623,7 +639,8 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
                                      receiptMessage: receiptMessage,
                                      typingMessage: typingMessage,
                                      prekeyBundleMessage: prekeyBundleMessage,
-                                     lokiAddressMessage: lokiAddressMessage)
+                                     lokiAddressMessage: lokiAddressMessage,
+                                     lokiDeviceLinkMessage: lokiDeviceLinkMessage)
         return result
     }
 
@@ -937,6 +954,151 @@ extension SSKProtoLokiAddressMessage {
 
 extension SSKProtoLokiAddressMessage.SSKProtoLokiAddressMessageBuilder {
     @objc public func buildIgnoringErrors() -> SSKProtoLokiAddressMessage? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoLokiDeviceLinkMessage
+
+@objc public class SSKProtoLokiDeviceLinkMessage: NSObject {
+
+    // MARK: - SSKProtoLokiDeviceLinkMessageBuilder
+
+    @objc public class func builder() -> SSKProtoLokiDeviceLinkMessageBuilder {
+        return SSKProtoLokiDeviceLinkMessageBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoLokiDeviceLinkMessageBuilder {
+        let builder = SSKProtoLokiDeviceLinkMessageBuilder()
+        if let _value = masterHexEncodedPublicKey {
+            builder.setMasterHexEncodedPublicKey(_value)
+        }
+        if let _value = slaveHexEncodedPublicKey {
+            builder.setSlaveHexEncodedPublicKey(_value)
+        }
+        if let _value = masterSignature {
+            builder.setMasterSignature(_value)
+        }
+        if let _value = slaveSignature {
+            builder.setSlaveSignature(_value)
+        }
+        return builder
+    }
+
+    @objc public class SSKProtoLokiDeviceLinkMessageBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_LokiDeviceLinkMessage()
+
+        @objc fileprivate override init() {}
+
+        @objc public func setMasterHexEncodedPublicKey(_ valueParam: String) {
+            proto.masterHexEncodedPublicKey = valueParam
+        }
+
+        @objc public func setSlaveHexEncodedPublicKey(_ valueParam: String) {
+            proto.slaveHexEncodedPublicKey = valueParam
+        }
+
+        @objc public func setMasterSignature(_ valueParam: Data) {
+            proto.masterSignature = valueParam
+        }
+
+        @objc public func setSlaveSignature(_ valueParam: Data) {
+            proto.slaveSignature = valueParam
+        }
+
+        @objc public func build() throws -> SSKProtoLokiDeviceLinkMessage {
+            return try SSKProtoLokiDeviceLinkMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoLokiDeviceLinkMessage.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_LokiDeviceLinkMessage
+
+    @objc public var masterHexEncodedPublicKey: String? {
+        guard proto.hasMasterHexEncodedPublicKey else {
+            return nil
+        }
+        return proto.masterHexEncodedPublicKey
+    }
+    @objc public var hasMasterHexEncodedPublicKey: Bool {
+        return proto.hasMasterHexEncodedPublicKey
+    }
+
+    @objc public var slaveHexEncodedPublicKey: String? {
+        guard proto.hasSlaveHexEncodedPublicKey else {
+            return nil
+        }
+        return proto.slaveHexEncodedPublicKey
+    }
+    @objc public var hasSlaveHexEncodedPublicKey: Bool {
+        return proto.hasSlaveHexEncodedPublicKey
+    }
+
+    @objc public var masterSignature: Data? {
+        guard proto.hasMasterSignature else {
+            return nil
+        }
+        return proto.masterSignature
+    }
+    @objc public var hasMasterSignature: Bool {
+        return proto.hasMasterSignature
+    }
+
+    @objc public var slaveSignature: Data? {
+        guard proto.hasSlaveSignature else {
+            return nil
+        }
+        return proto.slaveSignature
+    }
+    @objc public var hasSlaveSignature: Bool {
+        return proto.hasSlaveSignature
+    }
+
+    private init(proto: SignalServiceProtos_LokiDeviceLinkMessage) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoLokiDeviceLinkMessage {
+        let proto = try SignalServiceProtos_LokiDeviceLinkMessage(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_LokiDeviceLinkMessage) throws -> SSKProtoLokiDeviceLinkMessage {
+        // MARK: - Begin Validation Logic for SSKProtoLokiDeviceLinkMessage -
+
+        // MARK: - End Validation Logic for SSKProtoLokiDeviceLinkMessage -
+
+        let result = SSKProtoLokiDeviceLinkMessage(proto: proto)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoLokiDeviceLinkMessage {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoLokiDeviceLinkMessage.SSKProtoLokiDeviceLinkMessageBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoLokiDeviceLinkMessage? {
         return try! self.build()
     }
 }
@@ -4238,6 +4400,9 @@ extension SSKProtoSyncMessageSent.SSKProtoSyncMessageSentBuilder {
         if hasIsComplete {
             builder.setIsComplete(isComplete)
         }
+        if let _value = data {
+            builder.setData(_value)
+        }
         return builder
     }
 
@@ -4261,6 +4426,10 @@ extension SSKProtoSyncMessageSent.SSKProtoSyncMessageSentBuilder {
             proto.isComplete = valueParam
         }
 
+        @objc public func setData(_ valueParam: Data) {
+            proto.data = valueParam
+        }
+
         @objc public func build() throws -> SSKProtoSyncMessageContacts {
             return try SSKProtoSyncMessageContacts.parseProto(proto)
         }
@@ -4279,6 +4448,16 @@ extension SSKProtoSyncMessageSent.SSKProtoSyncMessageSentBuilder {
     }
     @objc public var hasIsComplete: Bool {
         return proto.hasIsComplete
+    }
+
+    @objc public var data: Data? {
+        guard proto.hasData else {
+            return nil
+        }
+        return proto.data
+    }
+    @objc public var hasData: Bool {
+        return proto.hasData
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.Contacts,
@@ -5744,6 +5923,9 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
         if hasExpireTimer {
             builder.setExpireTimer(expireTimer)
         }
+        if let _value = nickname {
+            builder.setNickname(_value)
+        }
         return builder
     }
 
@@ -5789,6 +5971,10 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
 
         @objc public func setExpireTimer(_ valueParam: UInt32) {
             proto.expireTimer = valueParam
+        }
+
+        @objc public func setNickname(_ valueParam: String) {
+            proto.nickname = valueParam
         }
 
         @objc public func build() throws -> SSKProtoContactDetails {
@@ -5850,6 +6036,16 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
     }
     @objc public var hasExpireTimer: Bool {
         return proto.hasExpireTimer
+    }
+
+    @objc public var nickname: String? {
+        guard proto.hasNickname else {
+            return nil
+        }
+        return proto.nickname
+    }
+    @objc public var hasNickname: Bool {
+        return proto.hasNickname
     }
 
     private init(proto: SignalServiceProtos_ContactDetails,

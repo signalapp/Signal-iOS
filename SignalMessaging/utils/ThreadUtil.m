@@ -85,13 +85,20 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
 #pragma mark - Durable Message Enqueue
 
-+ (LKEphemeralMessage *)enqueueAcceptFriendRequestMessageInThread:(TSThread *)thread
++ (LKEphemeralMessage *)enqueueFriendRequestAcceptanceMessageInThread:(TSThread *)thread
 {
-    LKEphemeralMessage *emptyMessage = [[LKEphemeralMessage alloc] initInThread:thread];
+    LKEphemeralMessage *message = [[LKEphemeralMessage alloc] initInThread:thread];
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
+        [self.messageSenderJobQueue addMessage:message transaction:transaction];
     }];
-    return emptyMessage;
+    return message;
+}
+
++ (void)enqueueDeviceLinkMessage:(LKDeviceLinkMessage *)message
+{
+    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+    }];
 }
 
 + (TSOutgoingMessage *)enqueueMessageWithText:(NSString *)fullMessageText

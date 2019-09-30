@@ -12,6 +12,7 @@ static const NSUInteger ddLogLevel = DDLogLevelAll;
 static const NSUInteger ddLogLevel = DDLogLevelInfo;
 #endif
 #import "OWSAnalytics.h"
+#import "NSArray+Functional.h"
 #import "NSObject+Casting.h"
 #import "SSKAsserts.h"
 #import "TSConstants.h"

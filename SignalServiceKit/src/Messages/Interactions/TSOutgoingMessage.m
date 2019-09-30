@@ -694,7 +694,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                  TSOutgoingMessageRecipientState *_Nullable recipientState
                                      = message.recipientStateMap[recipientId];
                                  if (!recipientState) {
-                                     OWSFailDebug(@"Missing recipient state for recipient: %@", recipientId);
+                                     // OWSFailDebug(@"Missing recipient state for recipient: %@", recipientId);
                                      return;
                                  }
                                  recipientState.state = OWSOutgoingMessageRecipientStateSent;
@@ -713,7 +713,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                  TSOutgoingMessageRecipientState *_Nullable recipientState
                                      = message.recipientStateMap[recipientId];
                                  if (!recipientState) {
-                                     OWSFailDebug(@"Missing recipient state for recipient: %@", recipientId);
+                                     // OWSFailDebug(@"Missing recipient state for recipient: %@", recipientId);
                                      return;
                                  }
                                  recipientState.state = OWSOutgoingMessageRecipientStateSkipped;
@@ -1103,12 +1103,12 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
     [ProtoUtils addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId dataMessageBuilder:builder];
 
+    // Loki: Set display name if needed
     id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
     NSString *displayName = profileManager.localProfileName;
     if (displayName != nil) {
         SSKProtoDataMessageLokiProfileBuilder *profileBuilder = [SSKProtoDataMessageLokiProfile builder];
         [profileBuilder setDisplayName:displayName];
-        
         SSKProtoDataMessageLokiProfile *profile = [profileBuilder buildAndReturnError:nil];
         [builder setProfile:profile];
     }

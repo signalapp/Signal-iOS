@@ -1,4 +1,6 @@
 
+// TODO: Match Android design
+
 @objc(LKP2PAPI)
 public class LokiP2PAPI : NSObject {
     private static let storage = OWSPrimaryStorage.shared()

@@ -56,6 +56,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 @class SSKProtoAttachmentPointer;
 @class SSKProtoContentBuilder;
+@class SSKProtoDataMessage;
 @class SSKProtoDataMessageBuilder;
 @class SignalRecipient;
 
@@ -157,6 +158,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
  * Subclasses can augment if they want to manipulate the data message before building.
  */
 - (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder;
+
+- (nullable SSKProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId;
 
 /**
  * Intermediate protobuf representation

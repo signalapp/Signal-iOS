@@ -133,6 +133,11 @@ dispatch_queue_t NetworkManagerQueue()
                          parameters:request.parameters
                             success:success
                             failure:failure];
+    } else if ([request.HTTPMethod isEqualToString:@"PATCH"]) {
+        [self.sessionManager PATCH:request.URL.absoluteString
+                        parameters:request.parameters
+                           success:success
+                           failure:failure];
     } else {
         OWSLogError(@"Trying to perform HTTP operation with unknown verb: %@", request.HTTPMethod);
     }
