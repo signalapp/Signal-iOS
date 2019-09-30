@@ -1087,6 +1087,10 @@ private class SignalCallData: NSObject {
         AssertIsOnMainThread()
         Logger.info("")
 
+        guard callData === self.callData else {
+            Logger.debug("Ignoring connected for obsolete call.")
+            return
+        }
         let call = callData.call
         guard let callConnection = callData.callConnection else {
             handleFailedCall(failedCall: call, error: CallError.assertionError(description: "callConnection unexpectedly nil"))
