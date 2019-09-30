@@ -159,7 +159,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "הצרופה ריקה.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose Media to Send";
+"ATTACHMENT_HINT" = "בחר מדיה לשלוח";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "מצלמה";
@@ -931,7 +931,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "שיחה נכשלה.";
 
 /* Label indicating that this OS version is no longer supported. */
-"END_OF_LIFE_OS_WARNING" = "The latest Signal features won’t work on this version of iOS. Please upgrade this device to receive future Signal updates.";
+"END_OF_LIFE_OS_WARNING" = "המאפיינים האחרונים של Signal לא יעבדו על גרסה זו של iOS. אנא שדרג מכשיר זה כדי לקבל עדכונים עתידיים של Signal.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "לא היה ניתן להשיג גישה אל אנשי הקשר.";
