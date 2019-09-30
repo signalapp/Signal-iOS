@@ -867,7 +867,9 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                 AND \(interactionColumn: .messageType) IS NOT ?
                 ORDER BY \(interactionColumn: .id) DESC
                 """
-        let arguments: StatementArguments = [threadUniqueId, TSErrorMessageType.nonBlockingIdentityChange.rawValue, TSInfoMessageType.verificationStateChange.rawValue]
+        let arguments: StatementArguments = [threadUniqueId,
+                                             TSErrorMessageType.nonBlockingIdentityChange.rawValue,
+                                             TSInfoMessageType.verificationStateChange.rawValue]
         return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
     }
 
@@ -907,14 +909,21 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
 
     func unreadCount(transaction: GRDBReadTransaction) -> UInt {
         do {
-            guard let count = try UInt.fetchOne(transaction.database,
-                                                sql: """
+            let sql = """
                 SELECT COUNT(*)
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
+                AND \(interactionColumn: .errorType) IS NOT ?
+                AND \(interactionColumn: .messageType) IS NOT ?
                 AND \(interactionColumn: .read) IS 0
-                """,
-                arguments: [threadUniqueId]) else {
+            """
+            let arguments: StatementArguments = [threadUniqueId,
+                                                 TSErrorMessageType.nonBlockingIdentityChange.rawValue,
+                                                 TSInfoMessageType.verificationStateChange.rawValue]
+
+            guard let count = try UInt.fetchOne(transaction.database,
+                                                sql: sql,
+                                                arguments: arguments) else {
                     owsFailDebug("count was unexpectedly nil")
                     return 0
             }
