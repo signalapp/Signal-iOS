@@ -903,6 +903,37 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)sendMessageToRecipient:(OWSMessageSend *)messageSend
 {
+    if (messageSend.thread.isGroupThread) {
+        [self sendMessage:messageSend];
+    } else {
+        [[LKAPI getDestinationsFor:messageSend.recipient.recipientId]
+        .thenOn(OWSDispatch.sendingQueue, ^(NSArray<LKDestination *> *destinations) {
+            // Use a best attempt approach for multi device for now
+            NSArray *slaveDestinations = [destinations filtered:^BOOL(NSObject *object) {
+                LKDestination *destination = [object as:LKDestination.class];
+                return [destination.kind isEqual:@"slave"];
+            }];
+            for (LKDestination *slaveDestination in slaveDestinations) {
+                OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:slaveDestination];
+                [self sendMessage:messageSendCopy];
+            }
+            LKDestination *masterDestination = [destinations filtered:^BOOL(NSObject *object) {
+                LKDestination *destination = [object as:LKDestination.class];
+                return [destination.kind isEqual:@"master"];
+            }].firstObject;
+            if (masterDestination != nil) {
+                OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:masterDestination];
+                [self sendMessage:messageSendCopy];
+            }
+        })
+        .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
+            [self messageSendDidFail:messageSend deviceMessages:@{} statusCode:0 error:error responseData:nil];
+        }) retainUntilComplete];
+    }
+}
+
+- (void)sendMessage:(OWSMessageSend *)messageSend
+{
     OWSAssertDebug(messageSend);
     OWSAssertDebug(messageSend.thread || [messageSend.message isKindOfClass:[OWSOutgoingSyncMessage class]]);
 
@@ -968,6 +999,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return messageSend.failure(deviceMessagesError);
     }
 
+    /*
     if (messageSend.isLocalNumber) {
         OWSAssertDebug([message isKindOfClass:[OWSOutgoingSyncMessage class]]);
         // Messages sent to the "local number" should be sync messages.
@@ -1041,6 +1073,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             OWSLogWarn(@"Message send attempt with no device messages.");
         }
     }
+     */
 
     for (NSDictionary *deviceMessage in deviceMessages) {
         NSNumber *_Nullable messageType = deviceMessage[@"type"];
@@ -1523,7 +1556,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     NSMutableArray *messagesArray = [NSMutableArray arrayWithCapacity:recipient.devices.count];
 
-    NSData *_Nullable plainText = [messageSend.message buildPlainTextData:messageSend.recipient];
+    NSData *_Nullable plainText = [messageSend.message buildPlainTextData:recipient];
     if (!plainText) {
         OWSRaiseException(InvalidMessageException, @"Failed to build message proto");
     }

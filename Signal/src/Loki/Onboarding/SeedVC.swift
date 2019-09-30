@@ -5,11 +5,11 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
     private var mode: Mode = .register { didSet { if mode != oldValue { handleModeChanged() } } }
     private var seed: Data! { didSet { updateMnemonic() } }
     private var mnemonic: String! { didSet { handleMnemonicChanged() } }
-    private var timer: Timer?
+    private var linkingRequestMessageSendingTimer: Timer?
 
     // MARK: Components
     private lazy var registerStackView: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [ explanationLabel1, UIView.spacer(withHeight: 32), mnemonicLabel, UIView.spacer(withHeight: 24), copyButton, UIView.spacer(withHeight: 8), restoreButton1, linkButton1 ])
+        let result = UIStackView(arrangedSubviews: [ explanationLabel1, UIView.spacer(withHeight: 32), mnemonicLabel, UIView.spacer(withHeight: 24), copyButton, restoreButton1, linkButton1 ])
         result.accessibilityIdentifier = "onboarding.keyPairStep.registerStackView"
         result.axis = .vertical
         return result
@@ -346,7 +346,7 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
             present(deviceLinkingModal, animated: true, completion: nil)
             let masterHexEncodedPublicKey = masterHexEncodedPublicKeyTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces)
             let linkingRequestMessage = DeviceLinkingUtilities.getLinkingRequestMessage(for: masterHexEncodedPublicKey)
-            timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
+            linkingRequestMessageSendingTimer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
                 self?.sendLinkingRequestMessage(linkingRequestMessage)
             }
             sendLinkingRequestMessage(linkingRequestMessage)
@@ -363,13 +363,13 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
     }
     
     func handleDeviceLinkAuthorized(_ deviceLink: DeviceLink) {
-        timer?.invalidate()
+        linkingRequestMessageSendingTimer?.invalidate()
         UserDefaults.standard.set(true, forKey: "didUpdateForMainnet")
         onboardingController.verificationDidComplete(fromView: self)
     }
     
     func handleDeviceLinkingModalDismissed() {
-        timer?.invalidate()
+        linkingRequestMessageSendingTimer?.invalidate()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.stopLongPollerIfNeeded()
         TSAccountManager.sharedInstance().resetForReregistration()

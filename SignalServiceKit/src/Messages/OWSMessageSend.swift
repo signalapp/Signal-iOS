@@ -93,4 +93,15 @@ public class OWSMessageSend: NSObject {
         // We "fail over" to non-UD sends after auth errors sending via UD.
         disableUD()
     }
+    
+    @objc(copyWithDestination:)
+    public func copy(with destination: LokiAPI.Destination) -> OWSMessageSend {
+        var recipient: SignalRecipient!
+        OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
+            recipient = SignalRecipient.getOrBuildUnsavedRecipient(forRecipientId: destination.hexEncodedPublicKey, transaction: transaction)
+        }
+        let success = (destination.kind == .master) ? self.success : { }
+        let failure = (destination.kind == .master) ? self.failure : { _ in }
+        return OWSMessageSend(message: message, thread: thread, recipient: recipient, senderCertificate: senderCertificate, udAccess: udAccess, localNumber: localNumber, success: success, failure: failure)
+    }
 }

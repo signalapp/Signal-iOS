@@ -1,5 +1,5 @@
 
-public enum BuildConfiguration : CustomStringConvertible {
+public enum BuildConfiguration : String, CustomStringConvertible {
     case debug, production
     
     public static let current: BuildConfiguration = {
@@ -10,12 +10,7 @@ public enum BuildConfiguration : CustomStringConvertible {
         #endif
     }()
     
-    public var description: String {
-        switch self {
-        case .debug: return "debug"
-        case .production: return "production"
-        }
-    }
+    public var description: String { return rawValue }
 }
 
 @objc public final class LKBuildConfiguration : NSObject {

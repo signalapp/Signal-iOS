@@ -19,5 +19,6 @@
     #import <SignalCoreKit/OWSAsserts.h>
     #import <SignalServiceKit/SSKAsserts.h>
     #import <SignalServiceKit/OWSAnalytics.h>
+    #import <SignalServiceKit/NSArray+Functional.h>
     #import <SignalServiceKit/NSObject+Casting.h>
 #endif
