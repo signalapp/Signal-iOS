@@ -803,13 +803,9 @@ private class SignalCallData: NSObject {
         AssertIsOnMainThread()
         Logger.debug("for callId: \(callId)")
 
-        guard let callData = self.callData else {
-            Logger.info("ignoring remote ice update, since there is no current call.")
-            return
-        }
-        let call = callData.call
-        guard call.signalingId == callId else {
-            Logger.warn("ignoring mismatched call: \(callId) currentCall: \(call.signalingId)")
+        guard let callData = self.callData,
+         callData.call.signalingId == callId else {
+            Logger.warn("ignoring ICE candidate for obsolete call: \(callId)")
             return
         }
 
@@ -817,14 +813,11 @@ private class SignalCallData: NSObject {
             AssertIsOnMainThread()
             Logger.debug("handling callId: \(callId)")
 
-            guard let currentCallData = self.callData else {
-                Logger.warn("ignoring remote ice update for thread: \(String(describing: thread.uniqueId)) since there is no current call. Call already ended?")
+            guard callData === self.callData else {
+                Logger.warn("ignoring ICE candidate for obsolete call: \(callId)")
                 return
             }
-            guard callData === currentCallData else {
-                Logger.warn("ignoring mismatched call: \(callId) currentCall: \(call.signalingId)")
-                return
-            }
+            let call = callData.call
 
             guard thread.contactAddress == call.thread.contactAddress else {
                 Logger.warn("ignoring remote ice update for thread: \(String(describing: thread.uniqueId)) due to thread mismatch. Call already ended?")
@@ -1323,7 +1316,7 @@ private class SignalCallData: NSObject {
 
         frontmostViewController.ows_askForCameraPermissions { granted in
             guard self.callData === callData else {
-                owsFailDebug("callData has changed")
+                owsFailDebug("Ignoring camera permissions for obsolete call.")
                 return
             }
 
@@ -1348,7 +1341,7 @@ private class SignalCallData: NSObject {
         guard let callData = self.callData else {
             // This can happen if you toggle local video right after
             // the other user ends the call.
-            Logger.debug("Ignoring event from obsolete call")
+            Logger.debug("Ignoring event from obsolete call.")
             return
         }
         let call = callData.call
@@ -1396,13 +1389,9 @@ private class SignalCallData: NSObject {
     public func callConnection(_ callConnectionParam: CallConnection, onCallEvent event: CallEvent, callId: UInt64) {
         AssertIsOnMainThread()
 
-        guard let callData = self.callData else {
-            Logger.debug("Ignoring event from obsolete call")
-            return
-        }
-
-        guard callConnectionParam == callData.callConnection else {
-            Logger.debug("Ignoring event from obsolete client")
+        guard let callData = self.callData,
+            callConnectionParam == callData.callConnection else {
+            Logger.debug("Ignoring event from obsolete call.")
             return
         }
 
@@ -1474,13 +1463,9 @@ private class SignalCallData: NSObject {
         AssertIsOnMainThread()
         Logger.debug("Got an error from RingRTC: \(error)")
 
-        guard let callData = self.callData else {
-            Logger.debug("Ignoring event from obsolete call")
-            return
-        }
-
-        guard callConnectionParam == callData.callConnection else {
-            Logger.debug("Ignoring event from obsolete client")
+        guard let callData = self.callData,
+            callConnectionParam == callData.callConnection else {
+                Logger.debug("Ignoring event from obsolete call.")
             return
         }
 
@@ -1528,13 +1513,9 @@ private class SignalCallData: NSObject {
     public func callConnection(_ callConnectionParam: CallConnection, onAddRemoteVideoTrack track: RTCVideoTrack, callId: UInt64) {
         AssertIsOnMainThread()
 
-        guard let callData = self.callData else {
-            Logger.debug("Ignoring event from obsolete call")
-            return
-        }
-
-        guard callConnectionParam == callData.callConnection else {
-            Logger.debug("Ignoring event from obsolete client")
+        guard let callData = self.callData,
+            callConnectionParam == callData.callConnection else {
+                Logger.debug("Ignoring event from obsolete call.")
             return
         }
 
@@ -1553,13 +1534,9 @@ private class SignalCallData: NSObject {
     public func callConnection(_ callConnectionParam: CallConnection, onUpdateLocalVideoSession session: AVCaptureSession?, callId: UInt64) {
         AssertIsOnMainThread()
 
-        guard let callData = self.callData else {
-            Logger.debug("Ignoring event from obsolete call")
-            return
-        }
-
-        guard callConnectionParam == callData.callConnection else {
-            Logger.debug("Ignoring event from obsolete client")
+        guard let callData = self.callData,
+            callConnectionParam == callData.callConnection else {
+                Logger.debug("Ignoring event from obsolete call.")
             return
         }
 
@@ -1579,13 +1556,9 @@ private class SignalCallData: NSObject {
         AssertIsOnMainThread()
         Logger.debug("Got onSendOffer")
 
-        guard let callData = self.callData else {
-            Logger.debug("Ignoring event from obsolete call")
-            return
-        }
-
-        guard callConnectionParam == callData.callConnection else {
-            Logger.debug("Ignoring event from obsolete client")
+        guard let callData = self.callData,
+            callConnectionParam == callData.callConnection else {
+                Logger.debug("Ignoring event from obsolete call.")
             return
         }
 
