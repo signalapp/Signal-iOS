@@ -764,10 +764,7 @@ private class SignalCallData: NSObject {
             // even though, from the users perspective, no incoming call is yet visible.
             Logger.debug("got ice servers: \(iceServers) for call: \(newCall.identifiersForLogs)")
 
-            guard let currentCallData = self.callData else {
-                throw CallError.obsoleteCall(description: "getIceServers() response for obsolete call")
-            }
-            guard currentCallData.call === newCall else {
+            guard let currentCallData = self.callData, currentCallData.call === newCall else {
                 throw CallError.obsoleteCall(description: "getIceServers() response for obsolete call")
             }
 
@@ -854,11 +851,7 @@ private class SignalCallData: NSObject {
     private func handleLocalAddedIceCandidate(_ iceCandidate: RTCIceCandidate, callData: SignalCallData) {
         AssertIsOnMainThread()
 
-        guard let currentCallData = self.callData else {
-            Logger.warn("Receive local ICE candidate for obsolete call.")
-            return
-        }
-        guard callData === currentCallData else {
+        guard self.callData === callData else {
             Logger.warn("Receive local ICE candidate for obsolete call.")
             return
         }
@@ -866,11 +859,7 @@ private class SignalCallData: NSObject {
         // Wait until we've sent the CallOffer before sending any ice updates for the call to ensure
         // intuitive message ordering for other clients.
         callData.readyToSendIceUpdatesPromise.done {
-            guard let currentCallData = self.callData else {
-                self.handleFailedCurrentCall(error: .obsoleteCall(description: "current call changed since we became ready to send ice updates"))
-                return
-            }
-            guard callData === currentCallData else {
+            guard callData === self.callData else {
                 self.handleFailedCurrentCall(error: .obsoleteCall(description: "current call changed since we became ready to send ice updates"))
                 return
             }
@@ -1267,13 +1256,8 @@ private class SignalCallData: NSObject {
     func setIsOnHold(call: SignalCall, isOnHold: Bool) {
         AssertIsOnMainThread()
 
-        guard let callData = self.callData else {
-            Logger.info("ignoring held request for obsolete call")
-            return
-        }
-
-        guard call == callData.call else {
-            Logger.info("ignoring held request for obsolete call")
+        guard let callData = self.callData, call == callData.call else {
+            Logger.info("ignoring hold request for obsolete call")
             return
         }
 
@@ -1395,10 +1379,8 @@ private class SignalCallData: NSObject {
     func setCameraSource(call: SignalCall, isUsingFrontCamera: Bool) {
         AssertIsOnMainThread()
 
-        guard let callData = self.callData else {
-            return
-        }
-        guard let callConnection = callData.callConnection else {
+        guard let callData = self.callData,
+            let callConnection = callData.callConnection else {
             return
         }
 
@@ -1663,13 +1645,8 @@ private class SignalCallData: NSObject {
         AssertIsOnMainThread()
         Logger.debug("Got onSendAnswer")
 
-        guard let callData = self.callData else {
-            Logger.debug("Ignoring event from obsolete call")
-            return
-        }
-
-        guard callConnectionParam == callData.callConnection else {
-            Logger.debug("Ignoring event from obsolete client")
+        guard let callData = self.callData, callConnectionParam == callData.callConnection else {
+            Logger.debug("Ignoring event from obsolete call.")
             return
         }
 
@@ -1721,12 +1698,8 @@ private class SignalCallData: NSObject {
     public func callConnection(_ callConnectionParam: CallConnection, shouldSendIceCandidates candidates: [RTCIceCandidate], callId: UInt64) {
         AssertIsOnMainThread()
 
-        guard let callData = self.callData else {
-            Logger.debug("Ignoring event from obsolete call")
-            return
-        }
-        guard callConnectionParam == callData.callConnection else {
-            Logger.debug("Ignoring event from obsolete client")
+        guard let callData = self.callData, callConnectionParam == callData.callConnection else {
+            Logger.debug("Ignoring event from obsolete call.")
             return
         }
 
