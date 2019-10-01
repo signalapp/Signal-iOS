@@ -194,9 +194,17 @@ extension YDBToGRDBMigration {
         ydbReadConnection.ignoreQueues = true
         ydbReadConnection.beginLongLivedReadTransaction()
 
+        UIDatabaseObserver.serializedSync {
+            UIDatabaseObserver.skipTouchObservations = true
+        }
+
         for migratorGroup in migratorGroups {
             try migrate(migratorGroup: migratorGroup,
                         ydbReadConnection: ydbReadConnection)
+        }
+
+        UIDatabaseObserver.serializedSync {
+            UIDatabaseObserver.skipTouchObservations = false
         }
     }
 
@@ -618,7 +626,7 @@ public class GRDBDecryptJobMigrator: GRDBMigrator {
     private let finder: LegacyDecryptJobFinder
 
     init(ydbTransaction: YapDatabaseReadTransaction) {
-        self.label = "Migrate Interactions"
+        self.label = "Migrate Jobs"
         self.finder = LegacyDecryptJobFinder(transaction: ydbTransaction)
     }
 
