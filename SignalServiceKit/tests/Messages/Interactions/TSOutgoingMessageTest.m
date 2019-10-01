@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)testShouldNotStartExpireTimerWithMessageThatDoesNotExpire
 {
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        SignalServiceAddress *otherAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
+        SignalServiceAddress *otherAddress = [CommonGenerator address];
         TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:otherAddress
                                                                            transaction:transaction];
         TSOutgoingMessage *message =
