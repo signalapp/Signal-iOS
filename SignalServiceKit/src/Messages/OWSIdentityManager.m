@@ -271,7 +271,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                              identityKey:identityKey
                                          isFirstKnownKey:NO
                                                createdAt:[NSDate new]
-                                       verificationState:verificationState] anyInsertWithTransaction:transaction];
+                                       verificationState:verificationState] anyUpsertWithTransaction:transaction];
 
         [self.sessionStore archiveAllSessionsForAccountId:accountId transaction:transaction];
 
