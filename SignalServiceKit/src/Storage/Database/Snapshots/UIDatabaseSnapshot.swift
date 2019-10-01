@@ -269,9 +269,9 @@ extension UIDatabaseObserver: TransactionObserver {
         let maxWalFileSizeBytes = 2 * 1024 * 1024
         let pageSize = 4 * 1024
         let maxWalPages = maxWalFileSizeBytes / pageSize
-        needsTruncatingCheckpoint = walSizePages > maxWalPages
 
         checkPointQueue.sync {
+            needsTruncatingCheckpoint = walSizePages > maxWalPages
             isRunningCheckpoint = false
         }
     }
