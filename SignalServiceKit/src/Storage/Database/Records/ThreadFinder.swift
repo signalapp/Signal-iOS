@@ -114,7 +114,7 @@ struct GRDBThreadFinder: ThreadFinder {
     }
 
     func enumerateVisibleThreads(isArchived: Bool, transaction: Database, block: @escaping (TSThread) -> Void) throws {
-        try ThreadRecord.fetchCursor(transaction, sql: """
+        let sql = """
             SELECT *
             FROM (
                 SELECT
@@ -129,6 +129,8 @@ struct GRDBThreadFinder: ThreadFinder {
                         MAX(\(interactionColumn: .id)) as maxInteractionId,
                         \(interactionColumn: .threadUniqueId)
                     FROM \(InteractionRecord.databaseTableName)
+                    WHERE \(interactionColumn: .errorType) IS NOT ?
+                    AND \(interactionColumn: .messageType) IS NOT ?
                     GROUP BY \(interactionColumn: .threadUniqueId)
                 ) latestInteractions
                 ON latestInteractions.\(interactionColumn: .threadUniqueId) = \(threadColumn: .uniqueId)
@@ -136,9 +138,13 @@ struct GRDBThreadFinder: ThreadFinder {
             )
             WHERE isArchived = ?
             AND \( threadColumn: .shouldThreadBeVisible) = 1
-            """,
-            arguments: [isArchived]).forEach { threadRecord in
-                block(try TSThread.fromRecord(threadRecord))
+            """
+        let arguments: StatementArguments = [TSErrorMessageType.nonBlockingIdentityChange.rawValue,
+                                             TSInfoMessageType.verificationStateChange.rawValue,
+                                             isArchived]
+
+        try ThreadRecord.fetchCursor(transaction, sql: sql, arguments: arguments).forEach { threadRecord in
+            block(try TSThread.fromRecord(threadRecord))
         }
     }
 }
