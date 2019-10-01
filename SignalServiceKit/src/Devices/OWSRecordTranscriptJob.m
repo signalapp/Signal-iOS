@@ -209,6 +209,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                        nonUdRecipientAddresses:transcript.nonUdRecipientAddresses
                                                                   isSentUpdate:NO
                                                                    transaction:transaction];
+    // The insert and update methods above may start expiration for this message, but
+    // transcript.expirationStartedAt may be earlier, so we need to pass that to
+    // the OWSDisappearingMessagesJob in case it needs to back-date the expiration.
     [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:outgoingMessage
                                                      expirationStartedAt:transcript.expirationStartedAt
                                                              transaction:transaction];

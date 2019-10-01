@@ -153,16 +153,14 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
                                            return;
                                        }
                                        TSMessage *message = (TSMessage *)object;
-                                       if (![message shouldStartExpireTimerWithTransaction:transaction.asAnyRead]) {
+                                       if (![message shouldStartExpireTimer]) {
                                            OWSFailDebug(@"object: %@ shouldn't expire.", message);
                                            return;
                                        }
 
                                        if ([message isKindOfClass:[TSIncomingMessage class]]) {
                                            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
-                                           if (!incomingMessage.wasRead) {
-                                               return;
-                                           }
+                                           OWSAssertDebug(incomingMessage.wasRead);
                                        }
                                        block(message, stop);
                                    }];
@@ -285,7 +283,7 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
             }
             TSMessage *message = (TSMessage *)object;
 
-            if (![message shouldStartExpireTimerWithTransaction:transaction.asAnyRead]) {
+            if (![message shouldStartExpireTimer]) {
                 return;
             }
 
@@ -293,7 +291,7 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
             dict[OWSDisappearingMessageFinderThreadIdColumn] = message.uniqueThreadId;
         }];
 
-    return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler versionTag:@"3"];
+    return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler versionTag:@"4"];
 }
 
 + (NSString *)databaseExtensionName

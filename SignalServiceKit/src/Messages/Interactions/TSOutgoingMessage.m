@@ -630,33 +630,26 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     }
 }
 
-- (BOOL)shouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction
+// This method will be called after every insert and update, so it needs
+// to be cheap.
+- (BOOL)shouldStartExpireTimer
 {
+    if (self.isPerConversationExpirationStarted) {
+        // Expiration already started.
+        return YES;
+    } else if (!self.hasPerConversationExpiration) {
+        return NO;
+    } else if (!super.shouldStartExpireTimer) {
+        return NO;
+    }
+
     // It's not clear if we should wait until _all_ recipients have reached "sent or later"
     // (which could never occur if one group member is unregistered) or only wait until
     // the first recipient has reached "sent or later" (which could cause partially delivered
     // messages to expire).  For now, we'll do the latter.
     //
     // TODO: Revisit this decision.
-
-    if (!self.hasPerConversationExpiration) {
-        return NO;
-    } else if (self.messageState == TSOutgoingMessageStateSent) {
-        return YES;
-    } else {
-        if (self.expireStartedAt > 0) {
-            // Our initial migration to populate the recipient state map was incomplete. It's since been
-            // addressed, but it's possible there are edge cases where a previously sent message would
-            // no longer be considered sent.
-            // So here we take extra care not to stop any expiration that had previously started.
-            // This can also happen under normal cirumstances with an outgoing group message.
-            OWSLogWarn(@"expiration previously started");
-
-            return YES;
-        }
-        
-        return NO;
-    }
+    return self.messageState == TSOutgoingMessageStateSent;
 }
 
 - (BOOL)isSilent
@@ -1032,6 +1025,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return result;
 }
 
+#ifdef DEBUG
 - (void)updateWithFakeMessageState:(TSOutgoingMessageState)messageState
                        transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -1059,6 +1053,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                 }
                                             }];
 }
+#endif
 
 #pragma mark -
 

@@ -13,6 +13,7 @@
 #import "TSThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
+#import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -254,15 +255,21 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self updateExpiresAt];
 }
 
-- (BOOL)shouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction
+// This method will be called after every insert and update, so it needs
+// to be cheap.
+- (BOOL)shouldStartExpireTimer
 {
+    if (self.isPerConversationExpirationStarted) {
+        // Expiration already started.
+        return YES;
+    }
+
     return self.hasPerConversationExpiration;
 }
 
-// TODO a downloaded media doesn't start counting until download is complete.
 - (void)updateExpiresAt
 {
-    if (_expiresInSeconds > 0 && _expireStartedAt > 0) {
+    if (self.isPerConversationExpirationStarted) {
         _expiresAt = _expireStartedAt + _expiresInSeconds * 1000;
     } else {
         _expiresAt = 0;
@@ -503,21 +510,48 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
     }
 
-    [self updateStoredShouldStartExpireTimerWithTransaction:transaction];
+    [self updateStoredShouldStartExpireTimer];
+}
+
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidInsertWithTransaction:transaction];
+
+    [self ensurePerConversationExpirationWithTransaction:transaction];
 }
 
 - (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyWillUpdateWithTransaction:transaction];
 
-    [self updateStoredShouldStartExpireTimerWithTransaction:transaction];
+    [self updateStoredShouldStartExpireTimer];
 }
 
-- (void)updateStoredShouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction
+- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug(transaction);
+    [super anyDidUpdateWithTransaction:transaction];
 
-    _storedShouldStartExpireTimer = [self shouldStartExpireTimerWithTransaction:transaction];
+    [self ensurePerConversationExpirationWithTransaction:transaction];
+}
+
+- (void)ensurePerConversationExpirationWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (self.isPerConversationExpirationStarted) {
+        // Expiration already started.
+        return;
+    }
+    if (![self shouldStartExpireTimer]) {
+        return;
+    }
+    uint64_t nowMs = [NSDate ows_millisecondTimeStamp];
+    [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:self
+                                                     expirationStartedAt:nowMs
+                                                             transaction:transaction];
+}
+
+- (void)updateStoredShouldStartExpireTimer
+{
+    _storedShouldStartExpireTimer = [self shouldStartExpireTimer];
 }
 
 - (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -565,6 +599,11 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (BOOL)hasPerConversationExpiration
 {
     return self.expiresInSeconds > 0;
+}
+
+- (BOOL)isPerConversationExpirationStarted
+{
+    return self.expireStartedAt > 0;
 }
 
 - (uint64_t)timestampForLegacySorting

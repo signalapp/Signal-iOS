@@ -171,6 +171,20 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
 
 #pragma mark - OWSReadTracking
 
+// This method will be called after every insert and update, so it needs
+// to be cheap.
+- (BOOL)shouldStartExpireTimer
+{
+    if (self.isPerConversationExpirationStarted) {
+        // Expiration already started.
+        return YES;
+    } else if (!self.hasPerConversationExpiration) {
+        return NO;
+    } else {
+        return self.wasRead && [super shouldStartExpireTimer];
+    }
+}
+
 - (BOOL)shouldAffectUnreadCounts
 {
     return YES;
@@ -209,14 +223,22 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                                                                  object:self];
     }];
 
-    [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:self
-                                                     expirationStartedAt:readTimestamp
-                                                             transaction:transaction];
-
     if (sendReadReceipt) {
         [OWSReadReceiptManager.sharedManager messageWasReadLocally:self];
     }
 }
+
+#ifdef DEBUG
+- (void)markAsReadForTestsWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+
+    [self anyUpdateIncomingMessageWithTransaction:transaction
+                                            block:^(TSIncomingMessage *message) {
+                                                message.read = YES;
+                                            }];
+}
+#endif
 
 - (SignalServiceAddress *)authorAddress
 {
