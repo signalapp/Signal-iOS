@@ -361,7 +361,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable OWSAttachmentInfo *)firstAttachmentInfo
 {
-    OWSAssertDebug(self.quotedAttachments.count <= 1);
     return self.quotedAttachments.firstObject;
 }
 
