@@ -145,6 +145,8 @@ extension YDBToGRDBMigration {
 
         try self.migrate(migratorGroups: migratorGroups)
 
+        try! storage.syncTruncatingCheckpoint()
+
         removeYdb()
 
         let migrationDuration = abs(startDate.timeIntervalSinceNow)
