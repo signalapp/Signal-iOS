@@ -621,9 +621,6 @@ public class GRDBInteractionMigrator: GRDBMigrator {
             try finder.enumerateLegacyObjects { legacyInteraction in
                 legacyInteraction.anyInsert(transaction: grdbTransaction.asAnyWrite)
                 recordCount += 1
-                if (recordCount % 500 == 0) {
-                    Logger.debug("saved \(recordCount) interactions")
-                }
                 memorySampler.sample()
             }
             let timeElapsed = CACurrentMediaTime() - startTime
@@ -658,9 +655,6 @@ public class GRDBDecryptJobMigrator: GRDBMigrator {
                 let newJob = SSKMessageDecryptJobRecord(envelopeData: legacyJob.envelopeData, label: SSKMessageDecryptJobQueue.jobRecordLabel)
                 newJob.anyInsert(transaction: grdbTransaction.asAnyWrite)
                 recordCount += 1
-                if (recordCount % 500 == 0) {
-                    Logger.debug("saved \(recordCount) decrypt jobs")
-                }
                 memorySampler.sample()
             }
             let timeElapsed = CACurrentMediaTime() - startTime
