@@ -55,6 +55,10 @@ public class LoadingViewController: UIViewController {
                                                selector: #selector(didBecomeActive),
                                                name: NSNotification.Name.OWSApplicationDidBecomeActive,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(didEnterBackground),
+                                               name: NSNotification.Name.OWSApplicationDidEnterBackground,
+                                               object: nil)
     }
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -109,6 +113,12 @@ public class LoadingViewController: UIViewController {
 
         Logger.info("")
 
+        guard viewHasEnteredBackground else {
+            // If the app is returning from background, skip any
+            // animations and showi the top and bottom labels.
+            return
+        }
+
         topLabelTimer?.invalidate()
         topLabelTimer = nil
         bottomLabelTimer?.invalidate()
@@ -119,6 +129,16 @@ public class LoadingViewController: UIViewController {
 
         labelStack.layoutSubviews()
         view.layoutSubviews()
+    }
+
+    private var viewHasEnteredBackground = false
+
+    @objc func didEnterBackground() {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        viewHasEnteredBackground = true
     }
 
     // MARK: Orientation
