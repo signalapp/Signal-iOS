@@ -89,18 +89,22 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static var storageMode: StorageMode {
-        if CurrentAppContext().isRunningTests {
-            return .ydbTests
-        } else {
+//        if CurrentAppContext().isRunningTests {
+//            // We should be running the tests using both .ydbTests or .grdbTests.
+//            return .grdbTests
+//        } else if false {
+            return .grdbThrowawayIfMigrating
+//        } else {
             return .ydb
-        }
+//        }
     }
 
     // Don't enable this flag in production.
     // At least, not yet.
     @objc
     public static var storageModeStrictness: StorageModeStrictness {
-        return build.includes(.beta) ? .fail : .failDebug
+        return .fail
+//        return build.includes(.beta) ? .fail : .failDebug
     }
 
     @objc
