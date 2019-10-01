@@ -46,7 +46,7 @@ NSString *NSStringForImageFormat(ImageFormat value);
 // Returns the image size in pixels.
 //
 // Returns CGSizeZero on error.
-+ (CGSize)imageSizeForFilePath:(NSString *)filePath mimeType:(NSString *)mimeType;
++ (CGSize)imageSizeForFilePath:(NSString *)filePath mimeType:(nullable NSString *)mimeType;
 
 + (BOOL)hasAlphaForValidImageFilePath:(NSString *)filePath;
 

@@ -240,6 +240,28 @@ public class SignalAttachment: NSObject {
     }
 
     @objc
+    public override var debugDescription: String {
+        let fileSize = ByteCountFormatter.string(fromByteCount: Int64(dataLength), countStyle: .file)
+        let string = "[SignalAttachment] mimeType: \(mimeType), fileSize: \(fileSize)"
+
+        // Computing resolution from dataUrl could cause DataSourceValue to write to disk, which
+        // can be expensive. Only do it in debug.
+        #if DEBUG
+        if let dataUrl = dataUrl {
+            if isVideo {
+                let resolution = OWSMediaUtils.videoResolution(url: dataUrl)
+                return "\(string), resolution: \(resolution)"
+            } else if isImage {
+                let resolution = NSData.imageSize(forFilePath: dataUrl.path, mimeType: nil)
+                return "\(string), resolution: \(resolution)"
+            }
+        }
+        #endif
+
+        return string
+    }
+
+    @objc
     public class var missingDataErrorMessage: String {
         guard let errorDescription = SignalAttachmentError.missingData.errorDescription else {
             owsFailDebug("Missing error description")
@@ -704,7 +726,7 @@ public class SignalAttachment: NSObject {
                 Logger.verbose("Rewriting attachment with metadata removed \(attachment.mimeType)")
                 return removeImageMetadata(attachment: attachment)
             } else {
-                Logger.verbose("Compressing attachment as image/jpeg, \(dataSource.dataLength()) bytes")
+                Logger.verbose("Recompressing \(ByteCountFormatter.string(fromByteCount: Int64(dataSource.dataLength()), countStyle: .file)) attachment as image/jpeg.")
                 return compressImageAsJPEG(image: image, attachment: attachment, filename: dataSource.sourceFilename, imageQuality: imageQuality)
             }
         }
@@ -796,7 +818,7 @@ public class SignalAttachment: NSObject {
                 dataSource.dataLength() <= kMaxFileSizeImage {
                 let recompressedAttachment = SignalAttachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String)
                 recompressedAttachment.cachedImage = dstImage
-                Logger.verbose("Converted \(attachment.mimeType) to image/jpeg, \(jpgImageData.count) bytes")
+                Logger.verbose("Converted \(attachment.mimeType) to \(ByteCountFormatter.string(fromByteCount: Int64(jpgImageData.count), countStyle: .file)) image/jpeg")
                 return recompressedAttachment
             }
 
