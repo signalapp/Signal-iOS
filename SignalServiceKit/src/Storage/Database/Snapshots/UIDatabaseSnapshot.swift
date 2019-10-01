@@ -250,9 +250,6 @@ extension UIDatabaseObserver: TransactionObserver {
     }
 
     func checkpointWal(db: Database, mode: Database.CheckpointMode) throws {
-        var walSizePages: Int32 = 0
-        var pagesCheckpointed: Int32 = 0
-
         checkPointQueue.sync {
             guard !isRunningCheckpoint else {
                 return
@@ -260,18 +257,14 @@ extension UIDatabaseObserver: TransactionObserver {
             isRunningCheckpoint = true
         }
 
-        let code = sqlite3_wal_checkpoint_v2(db.sqliteConnection, nil, mode.rawValue, &walSizePages, &pagesCheckpointed)
-        // Logger.verbose("checkpoint mode: \(mode), walSizePages: \(walSizePages),  pagesCheckpointed:\(pagesCheckpointed)")
-        guard code == SQLITE_OK else {
-            throw OWSAssertionError("checkpoint sql error with code: \(code)")
-        }
+        let result = try GRDBDatabaseStorageAdapter.checkpointWal(db: db, mode: mode)
 
         let maxWalFileSizeBytes = 2 * 1024 * 1024
         let pageSize = 4 * 1024
         let maxWalPages = maxWalFileSizeBytes / pageSize
 
         checkPointQueue.sync {
-            needsTruncatingCheckpoint = walSizePages > maxWalPages
+            needsTruncatingCheckpoint = result.walSizePages > maxWalPages
             isRunningCheckpoint = false
         }
     }
