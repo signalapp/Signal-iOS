@@ -267,7 +267,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return self.hasPerConversationExpiration;
 }
 
-// TODO a downloaded media doesn't start counting until download is complete.
 - (void)updateExpiresAt
 {
     if (self.isPerConversationExpirationStarted) {

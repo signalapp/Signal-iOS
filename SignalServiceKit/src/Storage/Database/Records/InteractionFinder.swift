@@ -825,8 +825,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         WHERE \(interactionColumn: .storedShouldStartExpireTimer) IS TRUE
         AND \(interactionColumn: .expiresAt) IS 0
         """
-        let arguments: StatementArguments = [SDSRecordType.incomingMessage.rawValue]
-        let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
+        let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: [], transaction: transaction)
         do {
             while let interaction = try cursor.next() {
                 guard let message = interaction as? TSMessage else {
