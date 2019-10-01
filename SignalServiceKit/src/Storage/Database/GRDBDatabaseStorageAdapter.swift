@@ -724,3 +724,32 @@ extension GRDBDatabaseStorageAdapter {
         return fileSize.uint64Value
     }
 }
+
+// MARK: - Checkpoints
+
+public struct GrdbTruncationResult {
+    let walSizePages: Int32
+    let pagesCheckpointed: Int32
+}
+
+extension GRDBDatabaseStorageAdapter {
+    public func syncTruncatingCheckpoint()  throws {
+        Logger.info("running truncating checkpoint.")
+        try pool.writeWithoutTransaction { db in
+            let result = try GRDBDatabaseStorageAdapter.checkpointWal(db: db, mode: .truncate)
+            Logger.info("walSizePages: \(result.walSizePages), pagesCheckpointed: \(result.pagesCheckpointed)")
+        }
+    }
+
+    public static func checkpointWal(db: Database, mode: Database.CheckpointMode) throws -> GrdbTruncationResult {
+        var walSizePages: Int32 = 0
+        var pagesCheckpointed: Int32 = 0
+
+        let code = sqlite3_wal_checkpoint_v2(db.sqliteConnection, nil, mode.rawValue, &walSizePages, &pagesCheckpointed)
+        guard code == SQLITE_OK else {
+            throw OWSAssertionError("checkpoint sql error with code: \(code)")
+        }
+
+        return GrdbTruncationResult(walSizePages: walSizePages, pagesCheckpointed: pagesCheckpointed)
+    }
+}
