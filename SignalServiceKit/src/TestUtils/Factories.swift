@@ -515,8 +515,10 @@ extension Array {
     }
 }
 
-public struct CommonGenerator {
+@objc
+public class CommonGenerator: NSObject {
 
+    @objc
     static public func e164() -> String {
         let digits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
@@ -525,6 +527,7 @@ public struct CommonGenerator {
         return "+1".appending(randomDigits.joined())
     }
 
+    @objc
     static public func address(hasPhoneNumber: Bool = true) -> SignalServiceAddress {
         return SignalServiceAddress(uuid: UUID(), phoneNumber: hasPhoneNumber ? e164() : nil)
     }

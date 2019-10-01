@@ -261,9 +261,15 @@ NS_ASSUME_NONNULL_BEGIN
     XCTestExpectation *messageStartedExpiration = [self expectationWithDescription:@"messageStartedExpiration"];
     [messageSender sendMessage:self.expiringMessage
         success:^() {
-            //FIXME remove sleep hack in favor of expiringMessage completion handler
-            sleep(2);
-            if (self.expiringMessage.expiresAt > 0) {
+            __block TSMessage *_Nullable reloadedMessage;
+            [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                reloadedMessage = [TSMessage anyFetchMessageWithUniqueId:self.expiringMessage.uniqueId
+                                                             transaction:transaction];
+            }];
+            if (reloadedMessage == nil) {
+                XCTFail(@"Couldn't reload message.");
+                return;
+            } else if (reloadedMessage.hasPerConversationExpirationStarted) {
                 [messageStartedExpiration fulfill];
             } else {
                 XCTFail(@"Message expiration was supposed to start.");
