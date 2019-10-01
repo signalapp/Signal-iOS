@@ -84,9 +84,6 @@ NS_ASSUME_NONNULL_BEGIN
         XCTAssertEqual(4, [TSMessage anyCountWithTransaction:transaction]);
     }];
     [job syncPassForTests];
-
-    //FIXME remove sleep hack in favor of expiringMessage completion handler
-    sleep(4);
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
         XCTAssertEqual(2, [TSMessage anyCountWithTransaction:transaction]);
     }];

@@ -175,7 +175,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
 // to be cheap.
 - (BOOL)shouldStartExpireTimer
 {
-    if (self.isPerConversationExpirationStarted) {
+    if (self.hasPerConversationExpirationStarted) {
         // Expiration already started.
         return YES;
     } else if (!self.hasPerConversationExpiration) {

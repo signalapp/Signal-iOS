@@ -285,7 +285,7 @@ void AssertIsOnDisappearingMessagesQueue()
     });
 }
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 - (void)syncPassForTests
 {
     dispatch_sync(OWSDisappearingMessagesJob.serialQueue, ^{

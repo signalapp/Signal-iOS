@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)cleanupMessagesWhichFailedToStartExpiringWithTransaction:(SDSAnyWriteTransaction *)transaction;
 - (void)schedulePass;
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 - (void)syncPassForTests;
 #endif
 

@@ -259,7 +259,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 // to be cheap.
 - (BOOL)shouldStartExpireTimer
 {
-    if (self.isPerConversationExpirationStarted) {
+    if (self.hasPerConversationExpirationStarted) {
         // Expiration already started.
         return YES;
     }
@@ -269,7 +269,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (void)updateExpiresAt
 {
-    if (self.isPerConversationExpirationStarted) {
+    if (self.hasPerConversationExpirationStarted) {
         _expiresAt = _expireStartedAt + _expiresInSeconds * 1000;
     } else {
         _expiresAt = 0;
@@ -536,7 +536,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (void)ensurePerConversationExpirationWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    if (self.isPerConversationExpirationStarted) {
+    if (self.hasPerConversationExpirationStarted) {
         // Expiration already started.
         return;
     }
@@ -601,7 +601,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return self.expiresInSeconds > 0;
 }
 
-- (BOOL)isPerConversationExpirationStarted
+- (BOOL)hasPerConversationExpirationStarted
 {
     return self.expireStartedAt > 0;
 }
