@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)commonInit
 {
-    _groupId = [Randomness generateRandomBytes:kGroupIdLength];
+    _groupId = [TSGroupModel generateRandomGroupId];
 
     _messageSender = SSKEnvironment.shared.messageSender;
     _avatarViewHelper = [AvatarViewHelper new];

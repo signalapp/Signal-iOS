@@ -6,6 +6,7 @@
 #import "FunctionalUtil.h"
 #import "UIImage+OWS.h"
 #import <SignalCoreKit/NSString+OWS.h>
+#import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -256,6 +257,11 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
 {
     NSString *_Nullable groupName = self.groupName;
     return groupName.length > 0 ? groupName : TSGroupThread.defaultGroupName;
+}
+
++ (NSData *)generateRandomGroupId
+{
+    return [Randomness generateRandomBytes:kGroupIdLength];
 }
 
 @end

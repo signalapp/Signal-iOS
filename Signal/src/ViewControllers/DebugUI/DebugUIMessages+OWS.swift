@@ -81,7 +81,7 @@ public extension DebugUIMessages {
         let members = uuidMembers + [TSAccountManager.localAddress!]
 
         let groupName = "UUID Group"
-        let groupId = Randomness.generateRandomBytes(kGroupIdLength)
+        let groupId = TSGroupModel.generateRandomGroupId()
         let groupModel = TSGroupModel(
             title: groupName,
             members: members,

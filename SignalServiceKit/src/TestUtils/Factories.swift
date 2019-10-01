@@ -528,6 +528,11 @@ public class CommonGenerator: NSObject {
     }
 
     @objc
+    static public func address() -> SignalServiceAddress {
+        return address(hasPhoneNumber: true)
+    }
+
+    @objc
     static public func address(hasPhoneNumber: Bool = true) -> SignalServiceAddress {
         return SignalServiceAddress(uuid: UUID(), phoneNumber: hasPhoneNumber ? e164() : nil)
     }
