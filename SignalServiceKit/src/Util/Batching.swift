@@ -7,7 +7,7 @@ import Foundation
 @objc
 public class Batching: NSObject {
     @objc
-    public static let kDefaultBatchSize: UInt = 10 * 1000
+    public static let kDefaultBatchSize: UInt = 1000
 
     // Break loop cycles into batches, releasing stale objects
     // after each batch to avoid out of memory errors.
