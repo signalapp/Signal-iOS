@@ -104,6 +104,14 @@ public struct BidirectionalDictionary<ElementOne: Hashable, ElementTwo: Hashable
         assert(forwardDictionary.count == backwardDictionary.count)
         return forwardDictionary.count
     }
+
+    public var keys: [ElementOne] {
+        return Array(forwardDictionary.keys)
+    }
+
+    public var values: [ElementTwo] {
+        return Array(backwardDictionary.keys)
+    }
 }
 
 // MARK: - Collection

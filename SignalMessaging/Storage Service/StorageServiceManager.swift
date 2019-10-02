@@ -269,6 +269,7 @@ class StorageServiceOperation: OWSOperation {
         var version: UInt64 = 0
 
         var updatedRecords: [StorageServiceProtoContactRecord] = []
+        var deletedIdentifiers: [StorageService.ContactIdentifier] = []
 
         databaseStorage.read { transaction in
             pendingChanges = StorageServiceOperation.accountChangeMap(transaction: transaction)
@@ -279,22 +280,17 @@ class StorageServiceOperation: OWSOperation {
             updatedRecords =
                 pendingChanges.lazy.filter { $0.value == .updated }.compactMap { accountId, _ in
                     do {
-                        guard let contactIdentifier = identifierMap[accountId] else {
-                            // This is a new contact, we need to generate an ID
-                            let contactIdentifier = StorageService.ContactIdentifier.generate()
-                            identifierMap[accountId] = contactIdentifier
-
-                            let record = try StorageServiceProtoContactRecord.build(
-                                for: accountId,
-                                contactIdentifier: contactIdentifier,
-                                transaction: transaction
-                            )
-
-                            // Clear pending changes
-                            pendingChanges[accountId] = nil
-
-                            return record
+                        // If there is an existing identifier for this contact,
+                        // mark it for deletion. We generate a fresh identifer
+                        // every time a contact record changes so other devices
+                        // know which records have changes to fetch.
+                        if let contactIdentifier = identifierMap[accountId] {
+                            deletedIdentifiers.append(contactIdentifier)
                         }
+
+                        // Generate a fresh identifier
+                        let contactIdentifier = StorageService.ContactIdentifier.generate()
+                        identifierMap[accountId] = contactIdentifier
 
                         let record = try StorageServiceProtoContactRecord.build(
                             for: accountId,
@@ -315,7 +311,7 @@ class StorageServiceOperation: OWSOperation {
         }
 
         // Lookup the contact identifier for every pending deletion
-        let deletedIdentifiers: [StorageService.ContactIdentifier] =
+        deletedIdentifiers +=
             pendingChanges.lazy.filter { $0.value == .deleted }.compactMap { accountId, _ in
                 // Clear the pending change
                 pendingChanges[accountId] = nil
@@ -507,8 +503,15 @@ class StorageServiceOperation: OWSOperation {
             return reportError(OWSAssertionError("exceeded max consectuive conflicts, creating a new manifest"))
         }
 
+        // Calculate new or updated contacts by looking up the ids
+        // of any contacts we don't know about locally. Since a new
+        // id is always generated after a change, this should always
+        // reflect the only contacts we need to fetch from the service.
+        let allManifestContacts: Set<StorageService.ContactIdentifier> = Set(manifest.keys.map { .init(data: $0) })
+        let newOrUpdatedContacts = Array(allManifestContacts.subtracting(identifierMap.values))
+
         // Fetch all the contacts in the new manifest and resolve any conflicts appropriately.
-        StorageService.fetchContacts(for: manifest.keys.map { .init(data: $0) }).done(on: .global()) { contacts in
+        StorageService.fetchContacts(for: newOrUpdatedContacts).done(on: .global()) { contacts in
             self.databaseStorage.write { transaction in
                 for contact in contacts {
                     switch contact.mergeWithLocalContact(transaction: transaction) {
@@ -521,8 +524,11 @@ class StorageServiceOperation: OWSOperation {
                         // our local version was newer, flag this account as needing a sync
                         pendingChanges[accountId] = .updated
 
+                        // update the mapping
+                        identifierMap[accountId] = contact.contactIdentifier
+
                     case .resolved(let accountId):
-                        // update the mapping, this could be a new account
+                        // update the mapping
                         identifierMap[accountId] = contact.contactIdentifier
                     }
                 }
