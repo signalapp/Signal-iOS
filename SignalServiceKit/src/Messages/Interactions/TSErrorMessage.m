@@ -312,6 +312,16 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     return NO;
 }
 
+- (BOOL)shouldAppearInHomeView
+{
+    if (self.errorType == TSErrorMessageNonBlockingIdentityChange) {
+        // Otherwise all group threads with the recipient will percolate to the top of the inbox, even though
+        // there was no meaningful interaction.
+        return NO;
+    }
+    return [super shouldAppearInHomeView];
+}
+
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
               sendReadReceipt:(BOOL)sendReadReceipt
                   transaction:(SDSAnyWriteTransaction *)transaction

@@ -182,8 +182,6 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 
 - (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(SDSAnyWriteTransaction *)transaction;
 
-+ (BOOL)shouldInteractionAppearInInbox:(TSInteraction *)interaction;
-
 @end
 
 NS_ASSUME_NONNULL_END

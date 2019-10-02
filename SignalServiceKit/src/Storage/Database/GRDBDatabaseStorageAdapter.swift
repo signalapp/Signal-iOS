@@ -271,11 +271,12 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                             InteractionRecord.columnName(.sourceDeviceId),
                             InteractionRecord.columnName(.authorPhoneNumber)
                 ])
-            try db.create(index: "index_interactions_on_threadUniqueId_and_read",
+            try db.create(index: "index_interactions_on_threadUniqueId_and_read_and_storedShouldAffectUnreadCounts",
                           on: InteractionRecord.databaseTableName,
                           columns: [
-                            InteractionRecord.columnName(.threadUniqueId),
-                            InteractionRecord.columnName(.read)
+                            InteractionRecord.columnName(.read),
+                            InteractionRecord.columnName(.storedShouldAffectUnreadCounts),
+                            InteractionRecord.columnName(.threadUniqueId)
                 ])
 
             // Disappearing Messages

@@ -275,6 +275,14 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     }
 }
 
+- (BOOL)shouldAppearInHomeView
+{
+    if (self.messageType == TSInfoMessageVerificationStateChange) {
+        return NO;
+    }
+    return [super shouldAppearInHomeView];
+}
+
 - (uint64_t)expireStartedAt
 {
     return 0;
