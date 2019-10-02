@@ -90,7 +90,7 @@ public final class LokiGroupChatAPI : LokiDotNetAPI {
                 } else {
                     quote = nil
                 }
-                let signature = LokiGroupMessage.Signature(hexEncodedData: hexEncodedSignatureData, version: UInt64(signatureVersion))
+                let signature = LokiGroupMessage.Signature(data: Data(hex: hexEncodedSignatureData), version: UInt64(signatureVersion))
                 let result = LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, signature: signature)
                 guard result.hasValidSignature() else {
                     print("[Loki] Ignoring group chat message with invalid signature.")

@@ -27,7 +27,7 @@ public final class LokiGroupMessage : NSObject {
     }
     
     public struct Signature {
-        public let hexEncodedData: String
+        public let data: Data
         public let version: UInt64
     }
     
@@ -44,7 +44,7 @@ public final class LokiGroupMessage : NSObject {
         super.init()
     }
     
-    @objc public convenience init(hexEncodedPublicKey: String, displayName: String, body: String, type: String, timestamp: UInt64, quotedMessageTimestamp: UInt64, quoteeHexEncodedPublicKey: String?, quotedMessageBody: String?, quotedMessageServerID: UInt64, hexEncodedSignatureData: String?, signatureVersion: UInt64) {
+    @objc public convenience init(hexEncodedPublicKey: String, displayName: String, body: String, type: String, timestamp: UInt64, quotedMessageTimestamp: UInt64, quoteeHexEncodedPublicKey: String?, quotedMessageBody: String?, quotedMessageServerID: UInt64, signatureData: Data?, signatureVersion: UInt64) {
         let quote: Quote?
         if quotedMessageTimestamp != 0, let quoteeHexEncodedPublicKey = quoteeHexEncodedPublicKey, let quotedMessageBody = quotedMessageBody {
             let quotedMessageServerID = (quotedMessageServerID != 0) ? quotedMessageServerID : nil
@@ -53,8 +53,8 @@ public final class LokiGroupMessage : NSObject {
             quote = nil
         }
         let signature: Signature?
-        if let hexEncodedData = hexEncodedSignatureData, signatureVersion != 0 {
-            signature = Signature(hexEncodedData: hexEncodedData, version: signatureVersion)
+        if let signatureData = signatureData, signatureVersion != 0 {
+            signature = Signature(data: signatureData, version: signatureVersion)
         } else {
             signature = nil
         }
@@ -72,15 +72,14 @@ public final class LokiGroupMessage : NSObject {
             print("[Loki] Failed to sign group chat message.")
             return nil
         }
-        let hexEncodedSignatureData = signatureData.toHexString()
-        let signature = Signature(hexEncodedData: hexEncodedSignatureData, version: signatureVersion)
+        let signature = Signature(data: signatureData, version: signatureVersion)
         return LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: type, timestamp: timestamp, quote: quote, signature: signature)
     }
     
     internal func hasValidSignature() -> Bool {
         guard let signature = signature else { return false }
         guard let data = getValidationData() else { return false }
-        return (try? Ed25519.verifySignature(Data(hex: signature.hexEncodedData), publicKey: Data(hex: hexEncodedPublicKey), data: data)) ?? false
+        return (try? Ed25519.verifySignature(signature.data, publicKey: Data(hex: hexEncodedPublicKey), data: data)) ?? false
     }
     
     // MARK: JSON
@@ -90,7 +89,7 @@ public final class LokiGroupMessage : NSObject {
             value["quote"] = [ "id" : quote.quotedMessageTimestamp, "author" : quote.quoteeHexEncodedPublicKey, "text" : quote.quotedMessageBody ]
         }
         if let signature = signature {
-            value["sig"] = signature.hexEncodedData
+            value["sig"] = signature.data.toHexString()
             value["sigver"] = signature.version
         }
         let annotation: JSON = [ "type" : type, "value" : value ]
@@ -106,6 +105,9 @@ public final class LokiGroupMessage : NSObject {
         var string = "\(body.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines))\(timestamp)"
         if let quote = quote {
             string += "\(quote.quotedMessageTimestamp)\(quote.quoteeHexEncodedPublicKey)\(quote.quotedMessageBody.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines))"
+            if let quotedMessageServerID = quote.quotedMessageServerID {
+                string += "\(quotedMessageServerID)"
+            }
         }
         string += "\(signatureVersion)"
         return string.data(using: String.Encoding.utf8)
