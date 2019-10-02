@@ -11,7 +11,7 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>11.8</real>
+					<real>9.8856</real>
 					<key>baselineIntegrationDisplayName</key>
 					<string>Local Baseline</string>
 				</dict>
@@ -21,7 +21,7 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>11.9</real>
+					<real>9.9594</real>
 					<key>baselineIntegrationDisplayName</key>
 					<string>Local Baseline</string>
 				</dict>
@@ -34,7 +34,7 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>6.41</real>
+					<real>4.2868</real>
 					<key>baselineIntegrationDisplayName</key>
 					<string>Local Baseline</string>
 				</dict>
@@ -44,7 +44,7 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>11.7</real>
+					<real>5.6435</real>
 					<key>baselineIntegrationDisplayName</key>
 					<string>Local Baseline</string>
 				</dict>
@@ -54,7 +54,7 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>5.43</real>
+					<real>3.88</real>
 					<key>baselineIntegrationDisplayName</key>
 					<string>Local Baseline</string>
 				</dict>
@@ -64,7 +64,7 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>7.42</real>
+					<real>4.95</real>
 					<key>baselineIntegrationDisplayName</key>
 					<string>Local Baseline</string>
 				</dict>
@@ -72,24 +72,14 @@
 		</dict>
 		<key>SDSPerformanceTest</key>
 		<dict>
-			<key>testGRDBPerf_enumerateMessages()</key>
-			<dict>
-				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
-				<dict>
-					<key>baselineAverage</key>
-					<real>0.127</real>
-					<key>baselineIntegrationDisplayName</key>
-					<string>Local Baseline</string>
-				</dict>
-			</dict>
 			<key>testGRDBPerf_enumerateMessagesBatched()</key>
 			<dict>
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.12895</real>
+					<real>0.10914</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>Oct 2, 2019 at 11:01:03 AM</string>
+					<string>Local Baseline</string>
 				</dict>
 			</dict>
 			<key>testGRDBPerf_enumerateMessagesUnbatched()</key>
@@ -97,9 +87,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.13289</real>
+					<real>0.10563</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>Oct 2, 2019 at 11:01:03 AM</string>
+					<string>Local Baseline</string>
 				</dict>
 			</dict>
 			<key>testGRDBPerf_fetchMessages()</key>
@@ -107,9 +97,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.22559</real>
+					<real>0.2</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>Oct 2, 2019 at 11:01:03 AM</string>
+					<string>Local Baseline</string>
 				</dict>
 			</dict>
 			<key>testGRDBPerf_insertMessages()</key>
@@ -117,17 +107,7 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.16573</real>
-					<key>baselineIntegrationDisplayName</key>
-					<string>Oct 2, 2019 at 11:01:03 AM</string>
-				</dict>
-			</dict>
-			<key>testYDBPerf_enumerateMessages()</key>
-			<dict>
-				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
-				<dict>
-					<key>baselineAverage</key>
-					<real>0.0231</real>
+					<real>0.105</real>
 					<key>baselineIntegrationDisplayName</key>
 					<string>Local Baseline</string>
 				</dict>
@@ -137,9 +117,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.022899</real>
+					<real>0.017627</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>Oct 2, 2019 at 11:01:03 AM</string>
+					<string>Local Baseline</string>
 				</dict>
 			</dict>
 			<key>testYDBPerf_enumerateMessagesUnbatched()</key>
@@ -147,9 +127,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.02296</real>
+					<real>0.01791</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>Oct 2, 2019 at 11:01:03 AM</string>
+					<string>Local Baseline</string>
 				</dict>
 			</dict>
 			<key>testYDBPerf_fetchMessages()</key>
@@ -157,9 +137,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.12677</real>
+					<real>0.0708</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>Oct 2, 2019 at 11:01:03 AM</string>
+					<string>Local Baseline</string>
 				</dict>
 			</dict>
 			<key>testYDBPerf_insertMessages()</key>
@@ -167,9 +147,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.18498</real>
+					<real>0.13926</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>Oct 2, 2019 at 11:01:03 AM</string>
+					<string>Local Baseline</string>
 				</dict>
 			</dict>
 		</dict>
