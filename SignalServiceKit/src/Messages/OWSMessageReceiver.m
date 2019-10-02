@@ -129,7 +129,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 - (OWSMessageDecryptJob *_Nullable)nextJob
 {
     // POST GRDB TODO: Remove this queue & finder entirely.
-    if (SSKFeatureFlags.storageMode != StorageModeYdb) {
+    if (SSKFeatureFlags.storageMode != StorageModeYdb && SSKFeatureFlags.storageMode != StorageModeYdbTests) {
         OWSLogWarn(@"Not processing queue; obsolete.");
         return nil;
     }
