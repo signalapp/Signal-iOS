@@ -54,9 +54,9 @@ public class SSKPreferences: NSObject {
     }
 
     @objc
-    public static func setIsYdbMigrated() {
+    public static func setIsYdbMigrated(_ value: Bool) {
         let appUserDefaults = CurrentAppContext().appUserDefaults()
-        appUserDefaults.set(true, forKey: isYdbMigratedKey)
+        appUserDefaults.set(value, forKey: isYdbMigratedKey)
         appUserDefaults.synchronize()
     }
 }

@@ -102,6 +102,12 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
             break;
         case StorageModeGrdb:
         case StorageModeGrdbThrowawayIfMigrating:
+
+            if (SSKFeatureFlags.storageMode == StorageModeGrdbThrowawayIfMigrating) {
+                // Clear flag to force migration.
+                [SSKPreferences setIsYdbMigrated:NO];
+            }
+
             if (hasYdbFile && ![SSKPreferences isYdbMigrated]) {
                 self.state = StorageCoordinatorStateBeforeYDBToGRDBMigration;
 
@@ -147,7 +153,7 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
 
     // Don't set this flag for "throwaway" migrations.
     if (SSKFeatureFlags.storageMode == StorageModeGrdb) {
-        [SSKPreferences setIsYdbMigrated];
+        [SSKPreferences setIsYdbMigrated:YES];
     }
 }
 
