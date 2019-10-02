@@ -215,13 +215,12 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                     ThreadRecord.columnName(.shouldThreadBeVisible)
                 ]
             )
-            try db.create(index: "index_interactions_on_id_and_threadUniqueId_and_errorType_and_messageType",
+            try db.create(index: "index_interactions_for_inbox_thread_enumeration",
                           on: InteractionRecord.databaseTableName,
                           columns: [
-                            InteractionRecord.columnName(.errorType),
-                            InteractionRecord.columnName(.messageType),
                             InteractionRecord.columnName(.threadUniqueId),
-                            InteractionRecord.columnName(.id)
+                            InteractionRecord.columnName(.errorType),
+                            InteractionRecord.columnName(.messageType)
                 ])
 
             // User Profile
