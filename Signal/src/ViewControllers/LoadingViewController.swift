@@ -115,7 +115,7 @@ public class LoadingViewController: UIViewController {
 
         guard viewHasEnteredBackground else {
             // If the app is returning from background, skip any
-            // animations and showi the top and bottom labels.
+            // animations and show the top and bottom labels.
             return
         }
 
