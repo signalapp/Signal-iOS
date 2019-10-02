@@ -160,7 +160,7 @@ extension StorageServiceProtoContactRecord {
         // through a conflict resolution.
         if hasBlocked, blocked != blockingManager.isAddressBlocked(address) {
             if blocked {
-                blockingManager.addBlockedAddress(address)
+                blockingManager.addBlockedAddress(address, transaction: transaction)
             } else {
                 mergeState = .needsUpdate(recipient.accountId)
             }
