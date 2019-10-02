@@ -113,17 +113,17 @@ public enum KeyBackupProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: KeyBackupProtos_Request) throws -> KeyBackupProtoRequest {
-        var backup: KeyBackupProtoBackupRequest? = nil
+        var backup: KeyBackupProtoBackupRequest?
         if proto.hasBackup {
             backup = try KeyBackupProtoBackupRequest.parseProto(proto.backup)
         }
 
-        var restore: KeyBackupProtoRestoreRequest? = nil
+        var restore: KeyBackupProtoRestoreRequest?
         if proto.hasRestore {
             restore = try KeyBackupProtoRestoreRequest.parseProto(proto.restore)
         }
 
-        var delete: KeyBackupProtoDeleteRequest? = nil
+        var delete: KeyBackupProtoDeleteRequest?
         if proto.hasDelete {
             delete = try KeyBackupProtoDeleteRequest.parseProto(proto.delete)
         }
@@ -262,17 +262,17 @@ extension KeyBackupProtoRequest.KeyBackupProtoRequestBuilder {
     }
 
     fileprivate class func parseProto(_ proto: KeyBackupProtos_Response) throws -> KeyBackupProtoResponse {
-        var backup: KeyBackupProtoBackupResponse? = nil
+        var backup: KeyBackupProtoBackupResponse?
         if proto.hasBackup {
             backup = try KeyBackupProtoBackupResponse.parseProto(proto.backup)
         }
 
-        var restore: KeyBackupProtoRestoreResponse? = nil
+        var restore: KeyBackupProtoRestoreResponse?
         if proto.hasRestore {
             restore = try KeyBackupProtoRestoreResponse.parseProto(proto.restore)
         }
 
-        var delete: KeyBackupProtoDeleteResponse? = nil
+        var delete: KeyBackupProtoDeleteResponse?
         if proto.hasDelete {
             delete = try KeyBackupProtoDeleteResponse.parseProto(proto.delete)
         }
@@ -328,8 +328,8 @@ extension KeyBackupProtoResponse.KeyBackupProtoResponseBuilder {
         if let _value = backupID {
             builder.setBackupID(_value)
         }
-        if let _value = nonce {
-            builder.setNonce(_value)
+        if let _value = token {
+            builder.setToken(_value)
         }
         if hasValidFrom {
             builder.setValidFrom(validFrom)
@@ -376,13 +376,13 @@ extension KeyBackupProtoResponse.KeyBackupProtoResponseBuilder {
 
         @objc
         @available(swift, obsoleted: 1.0)
-        public func setNonce(_ valueParam: Data?) {
+        public func setToken(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
-            proto.nonce = valueParam
+            proto.token = valueParam
         }
 
-        public func setNonce(_ valueParam: Data) {
-            proto.nonce = valueParam
+        public func setToken(_ valueParam: Data) {
+            proto.token = valueParam
         }
 
         @objc
@@ -448,14 +448,14 @@ extension KeyBackupProtoResponse.KeyBackupProtoResponseBuilder {
         return proto.hasBackupID
     }
 
-    @objc public var nonce: Data? {
-        guard proto.hasNonce else {
+    @objc public var token: Data? {
+        guard proto.hasToken else {
             return nil
         }
-        return proto.nonce
+        return proto.token
     }
-    @objc public var hasNonce: Bool {
-        return proto.hasNonce
+    @objc public var hasToken: Bool {
+        return proto.hasToken
     }
 
     @objc public var validFrom: UInt64 {
@@ -544,14 +544,14 @@ extension KeyBackupProtoBackupRequest.KeyBackupProtoBackupRequestBuilder {
 
     @objc public enum KeyBackupProtoBackupResponseStatus: Int32 {
         case ok = 1
-        case nonceMismatch = 2
+        case alreadyExists = 2
         case notYetValid = 3
     }
 
     private class func KeyBackupProtoBackupResponseStatusWrap(_ value: KeyBackupProtos_BackupResponse.Status) -> KeyBackupProtoBackupResponseStatus {
         switch value {
         case .ok: return .ok
-        case .nonceMismatch: return .nonceMismatch
+        case .alreadyExists: return .alreadyExists
         case .notYetValid: return .notYetValid
         }
     }
@@ -559,7 +559,7 @@ extension KeyBackupProtoBackupRequest.KeyBackupProtoBackupRequestBuilder {
     private class func KeyBackupProtoBackupResponseStatusUnwrap(_ value: KeyBackupProtoBackupResponseStatus) -> KeyBackupProtos_BackupResponse.Status {
         switch value {
         case .ok: return .ok
-        case .nonceMismatch: return .nonceMismatch
+        case .alreadyExists: return .alreadyExists
         case .notYetValid: return .notYetValid
         }
     }
@@ -576,8 +576,8 @@ extension KeyBackupProtoBackupRequest.KeyBackupProtoBackupRequestBuilder {
         if let _value = status {
             builder.setStatus(_value)
         }
-        if let _value = nonce {
-            builder.setNonce(_value)
+        if let _value = token {
+            builder.setToken(_value)
         }
         return builder
     }
@@ -595,13 +595,13 @@ extension KeyBackupProtoBackupRequest.KeyBackupProtoBackupRequestBuilder {
 
         @objc
         @available(swift, obsoleted: 1.0)
-        public func setNonce(_ valueParam: Data?) {
+        public func setToken(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
-            proto.nonce = valueParam
+            proto.token = valueParam
         }
 
-        public func setNonce(_ valueParam: Data) {
-            proto.nonce = valueParam
+        public func setToken(_ valueParam: Data) {
+            proto.token = valueParam
         }
 
         @objc public func build() throws -> KeyBackupProtoBackupResponse {
@@ -633,14 +633,14 @@ extension KeyBackupProtoBackupRequest.KeyBackupProtoBackupRequestBuilder {
         return proto.hasStatus
     }
 
-    @objc public var nonce: Data? {
-        guard proto.hasNonce else {
+    @objc public var token: Data? {
+        guard proto.hasToken else {
             return nil
         }
-        return proto.nonce
+        return proto.token
     }
-    @objc public var hasNonce: Bool {
-        return proto.hasNonce
+    @objc public var hasToken: Bool {
+        return proto.hasToken
     }
 
     private init(proto: KeyBackupProtos_BackupResponse) {
@@ -706,8 +706,8 @@ extension KeyBackupProtoBackupResponse.KeyBackupProtoBackupResponseBuilder {
         if let _value = backupID {
             builder.setBackupID(_value)
         }
-        if let _value = nonce {
-            builder.setNonce(_value)
+        if let _value = token {
+            builder.setToken(_value)
         }
         if hasValidFrom {
             builder.setValidFrom(validFrom)
@@ -748,13 +748,13 @@ extension KeyBackupProtoBackupResponse.KeyBackupProtoBackupResponseBuilder {
 
         @objc
         @available(swift, obsoleted: 1.0)
-        public func setNonce(_ valueParam: Data?) {
+        public func setToken(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
-            proto.nonce = valueParam
+            proto.token = valueParam
         }
 
-        public func setNonce(_ valueParam: Data) {
-            proto.nonce = valueParam
+        public func setToken(_ valueParam: Data) {
+            proto.token = valueParam
         }
 
         @objc
@@ -804,14 +804,14 @@ extension KeyBackupProtoBackupResponse.KeyBackupProtoBackupResponseBuilder {
         return proto.hasBackupID
     }
 
-    @objc public var nonce: Data? {
-        guard proto.hasNonce else {
+    @objc public var token: Data? {
+        guard proto.hasToken else {
             return nil
         }
-        return proto.nonce
+        return proto.token
     }
-    @objc public var hasNonce: Bool {
-        return proto.hasNonce
+    @objc public var hasToken: Bool {
+        return proto.hasToken
     }
 
     @objc public var validFrom: UInt64 {
@@ -883,7 +883,7 @@ extension KeyBackupProtoRestoreRequest.KeyBackupProtoRestoreRequestBuilder {
 
     @objc public enum KeyBackupProtoRestoreResponseStatus: Int32 {
         case ok = 1
-        case nonceMismatch = 2
+        case tokenMismatch = 2
         case notYetValid = 3
         case missing = 4
         case pinMismatch = 5
@@ -892,7 +892,7 @@ extension KeyBackupProtoRestoreRequest.KeyBackupProtoRestoreRequestBuilder {
     private class func KeyBackupProtoRestoreResponseStatusWrap(_ value: KeyBackupProtos_RestoreResponse.Status) -> KeyBackupProtoRestoreResponseStatus {
         switch value {
         case .ok: return .ok
-        case .nonceMismatch: return .nonceMismatch
+        case .tokenMismatch: return .tokenMismatch
         case .notYetValid: return .notYetValid
         case .missing: return .missing
         case .pinMismatch: return .pinMismatch
@@ -902,7 +902,7 @@ extension KeyBackupProtoRestoreRequest.KeyBackupProtoRestoreRequestBuilder {
     private class func KeyBackupProtoRestoreResponseStatusUnwrap(_ value: KeyBackupProtoRestoreResponseStatus) -> KeyBackupProtos_RestoreResponse.Status {
         switch value {
         case .ok: return .ok
-        case .nonceMismatch: return .nonceMismatch
+        case .tokenMismatch: return .tokenMismatch
         case .notYetValid: return .notYetValid
         case .missing: return .missing
         case .pinMismatch: return .pinMismatch
@@ -921,8 +921,8 @@ extension KeyBackupProtoRestoreRequest.KeyBackupProtoRestoreRequestBuilder {
         if let _value = status {
             builder.setStatus(_value)
         }
-        if let _value = nonce {
-            builder.setNonce(_value)
+        if let _value = token {
+            builder.setToken(_value)
         }
         if let _value = data {
             builder.setData(_value)
@@ -946,13 +946,13 @@ extension KeyBackupProtoRestoreRequest.KeyBackupProtoRestoreRequestBuilder {
 
         @objc
         @available(swift, obsoleted: 1.0)
-        public func setNonce(_ valueParam: Data?) {
+        public func setToken(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
-            proto.nonce = valueParam
+            proto.token = valueParam
         }
 
-        public func setNonce(_ valueParam: Data) {
-            proto.nonce = valueParam
+        public func setToken(_ valueParam: Data) {
+            proto.token = valueParam
         }
 
         @objc
@@ -1000,14 +1000,14 @@ extension KeyBackupProtoRestoreRequest.KeyBackupProtoRestoreRequestBuilder {
         return proto.hasStatus
     }
 
-    @objc public var nonce: Data? {
-        guard proto.hasNonce else {
+    @objc public var token: Data? {
+        guard proto.hasToken else {
             return nil
         }
-        return proto.nonce
+        return proto.token
     }
-    @objc public var hasNonce: Bool {
-        return proto.hasNonce
+    @objc public var hasToken: Bool {
+        return proto.hasToken
     }
 
     @objc public var data: Data? {
