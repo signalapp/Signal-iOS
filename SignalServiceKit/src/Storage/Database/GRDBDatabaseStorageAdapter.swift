@@ -208,6 +208,22 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                 columns: [ThreadRecord.columnName(.contactUUID)]
             )
 
+            try db.create(
+                index: "index_thread_on_shouldThreadBeVisible",
+                on: ThreadRecord.databaseTableName,
+                columns: [
+                    ThreadRecord.columnName(.shouldThreadBeVisible)
+                ]
+            )
+            try db.create(index: "index_interactions_on_id_and_threadUniqueId_and_errorType_and_messageType",
+                          on: InteractionRecord.databaseTableName,
+                          columns: [
+                            InteractionRecord.columnName(.errorType),
+                            InteractionRecord.columnName(.messageType),
+                            InteractionRecord.columnName(.threadUniqueId),
+                            InteractionRecord.columnName(.id)
+                ])
+
             // User Profile
             try db.create(
                 index: "index_user_profiles_on_recipientPhoneNumber",
