@@ -34,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
+  storedShouldAffectUnreadCounts:(BOOL)storedShouldAffectUnreadCounts
+    storedShouldAppearInHomeView:(BOOL)storedShouldAppearInHomeView
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
                    attachmentIds:(NSArray<NSString *> *)attachmentIds
@@ -57,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
                  protocolVersion:(NSUInteger)protocolVersion
                           sender:(nullable SignalServiceAddress *)sender
 unknownProtocolVersionMessageSchemaVersion:(NSUInteger)unknownProtocolVersionMessageSchemaVersion
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredAddress:protocolVersion:sender:unknownProtocolVersionMessageSchemaVersion:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:storedShouldAffectUnreadCounts:storedShouldAppearInHomeView:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredAddress:protocolVersion:sender:unknownProtocolVersionMessageSchemaVersion:));
 
 // clang-format on
 

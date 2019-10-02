@@ -108,6 +108,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
+  storedShouldAffectUnreadCounts:(BOOL)storedShouldAffectUnreadCounts
+    storedShouldAppearInHomeView:(BOOL)storedShouldAppearInHomeView
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
                    attachmentIds:(NSArray<NSString *> *)attachmentIds
@@ -127,6 +129,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     self = [super initWithUniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
                             sortId:sortId
+    storedShouldAffectUnreadCounts:storedShouldAffectUnreadCounts
+      storedShouldAppearInHomeView:storedShouldAppearInHomeView
                          timestamp:timestamp
                     uniqueThreadId:uniqueThreadId];
 

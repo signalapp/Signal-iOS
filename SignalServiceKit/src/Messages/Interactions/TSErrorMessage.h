@@ -72,6 +72,8 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
+  storedShouldAffectUnreadCounts:(BOOL)storedShouldAffectUnreadCounts
+    storedShouldAppearInHomeView:(BOOL)storedShouldAppearInHomeView
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
                    attachmentIds:(NSArray<NSString *> *)attachmentIds
@@ -91,7 +93,7 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
                 recipientAddress:(nullable SignalServiceAddress *)recipientAddress
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:errorMessageSchemaVersion:errorType:read:recipientAddress:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:storedShouldAffectUnreadCounts:storedShouldAppearInHomeView:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:errorMessageSchemaVersion:errorType:read:recipientAddress:));
 
 // clang-format on
 
