@@ -126,7 +126,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 #pragma mark - KBS
 
-+ (TSRequest *)kbsEnclaveNonceRequestWithEnclaveName:(NSString *)enclaveName
++ (TSRequest *)kbsEnclaveTokenRequestWithEnclaveName:(NSString *)enclaveName
                                         authUsername:(NSString *)authUsername
                                         authPassword:(NSString *)authPassword
                                              cookies:(NSArray<NSHTTPCookie *> *)cookies;
