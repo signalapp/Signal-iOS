@@ -5,6 +5,51 @@
 import Foundation
 import GRDB
 
+// This queue is used to rate limit how often we update
+// our database snapshot, since this is expensive and is
+// done on the main thread.
+//
+// * It introduces no latency when db commits are sparse.
+// * When db commits are frequent, we process at a fixed rate,
+//   de-bouncing redundant updates.
+class DatabaseSnapshotUpdateQueue {
+    private let accessQueue = DispatchQueue(label: "org.signal.databaseSnapshotUpdateQueue.accessQueue")
+    private let processingQueue = DispatchQueue(label: "org.signal.databaseSnapshotUpdateQueue.processingQueue")
+
+    public typealias BlockType = () -> Void
+    private var queuedBlock: BlockType?
+
+    public func enqueue(_ block: @escaping BlockType) {
+        accessQueue.sync {
+            // This might overwrite another queued block.
+            // That's okay; we only want to execute the last queued block.
+            if self.queuedBlock != nil {
+                // We are discarding a queued block.
+            }
+            self.queuedBlock = block
+        }
+        processingQueue.async {
+            let nextBlock: BlockType? = self.accessQueue.sync {
+                // This might overwrite another queued block.
+                // That's okay; we only want to execute the last queued block.
+                guard let block = self.queuedBlock else {
+                    return nil
+                }
+                self.queuedBlock = nil
+                return block
+            }
+            guard let block = nextBlock else {
+                return
+            }
+            block()
+
+            // Sleep N milliseconds to rate limit processing.
+            let kMaxFrequencyMs = 150
+            usleep(useconds_t(kMaxFrequencyMs * 1000))
+        }
+    }
+}
+
 /// Anything 
 public protocol DatabaseSnapshotDelegate: AnyObject {
 
@@ -111,6 +156,8 @@ public class UIDatabaseObserver: NSObject {
     var needsTruncatingCheckpoint = false
     let checkPointQueue = DispatchQueue(label: "checkpointQueue")
 
+    private let snapshotUpdateQueue = DatabaseSnapshotUpdateQueue()
+
     internal var latestSnapshot: DatabaseSnapshot {
         didSet {
             AssertIsOnMainThread()
@@ -165,24 +212,34 @@ extension UIDatabaseObserver: TransactionObserver {
             }
         }
 
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            Logger.verbose("databaseSnapshotWillUpdate")
-            for delegate in self.snapshotDelegates {
-                delegate.databaseSnapshotWillUpdate()
-            }
-
-            self.latestSnapshot.read { db in
-                do {
-                    try self.fastForwardDatabaseSnapshot(db: db)
-                } catch {
-                    owsFailDebug("\(error)")
+        snapshotUpdateQueue.enqueue {
+            // We _could_ dispatch sync to the main thread here.
+            //
+            // The benefit would be that expensive snapshot
+            // updates would happen less frequently, protecting
+            // the main thread.
+            //
+            // The downside would be that the frequency of
+            // snapshot updates would be a little slower.
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                Logger.verbose("databaseSnapshotWillUpdate")
+                for delegate in self.snapshotDelegates {
+                    delegate.databaseSnapshotWillUpdate()
                 }
-            }
 
-            Logger.verbose("databaseSnapshotDidUpdate")
-            for delegate in self.snapshotDelegates {
-                delegate.databaseSnapshotDidUpdate()
+                self.latestSnapshot.read { db in
+                    do {
+                        try self.fastForwardDatabaseSnapshot(db: db)
+                    } catch {
+                        owsFailDebug("\(error)")
+                    }
+                }
+
+                Logger.verbose("databaseSnapshotDidUpdate")
+                for delegate in self.snapshotDelegates {
+                    delegate.databaseSnapshotDidUpdate()
+                }
             }
         }
     }
