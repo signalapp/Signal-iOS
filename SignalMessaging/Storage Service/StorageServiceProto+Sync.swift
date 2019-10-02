@@ -128,20 +128,21 @@ extension StorageServiceProtoContactRecord {
         var mergeState: MergeState = .resolved(recipient.accountId)
 
         // If we don't yet have a profile for this user, restore the profile information.
-        // Otherwise, assume ours is the defacto version and mark this user as pending update.
         if let profile = profile, profileManager.profileKey(for: address, transaction: transaction) == nil {
             if let key = profile.key {
                 profileManager.setProfileKeyData(key, for: address, transaction: transaction)
             }
 
             // TODO: Maybe restore the name and avatar? For now we'll refetch them once we set the key.
-        } else {
+
+        // Otherwise, if our local profile key is different, defer
+        // to the local value and flag this user as needing update.
+        } else if profileManager.profileKey(for: address, transaction: transaction)?.keyData != profile?.key {
             mergeState = .needsUpdate(recipient.accountId)
         }
 
         // If we don't yet have an identity key for this user, restore the identity information.
-        // Otherwise, assume ours is the defacto version and mark this user as pending update.
-        if let identity = identity, identityManager.identityKey(for: address) == nil {
+        if let identity = identity, identityManager.identityKey(for: address, transaction: transaction) == nil {
             if let state = identity.state?.verificationState, let key = identity.key {
                 identityManager.setVerificationState(
                     state,
@@ -151,7 +152,11 @@ extension StorageServiceProtoContactRecord {
                     transaction: transaction
                 )
             }
-        } else {
+
+        // Otherwise, if our local identity is different, defer to the
+        // local value and flag this user as needing update.
+        } else if (identityManager.identityKey(for: address, transaction: transaction) != identity?.key) ||
+            (identityManager.verificationState(for: address, transaction: transaction) != identity?.state?.verificationState) {
             mergeState = .needsUpdate(recipient.accountId)
         }
 
