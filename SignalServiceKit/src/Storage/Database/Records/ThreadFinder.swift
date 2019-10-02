@@ -129,8 +129,7 @@ struct GRDBThreadFinder: ThreadFinder {
                         MAX(\(interactionColumn: .id)) as maxInteractionId,
                         \(interactionColumn: .threadUniqueId)
                     FROM \(InteractionRecord.databaseTableName)
-                    WHERE \(interactionColumn: .errorType) IS NOT ?
-                    AND \(interactionColumn: .messageType) IS NOT ?
+                    WHERE \(interactionColumn: .storedShouldAppearInHomeView) == 1
                     GROUP BY \(interactionColumn: .threadUniqueId)
                 ) latestInteractions
                 ON latestInteractions.\(interactionColumn: .threadUniqueId) = \(threadColumn: .uniqueId)
@@ -139,9 +138,7 @@ struct GRDBThreadFinder: ThreadFinder {
             WHERE isArchived = ?
             AND \( threadColumn: .shouldThreadBeVisible) = 1
             """
-        let arguments: StatementArguments = [TSErrorMessageType.nonBlockingIdentityChange.rawValue,
-                                             TSInfoMessageType.verificationStateChange.rawValue,
-                                             isArchived]
+        let arguments: StatementArguments = [isArchived]
 
         try ThreadRecord.fetchCursor(transaction, sql: sql, arguments: arguments).forEach { threadRecord in
             block(try TSThread.fromRecord(threadRecord))

@@ -424,7 +424,7 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
                 owsFailDebug("unexpected interaction: \(type(of: object))")
                 return
             }
-            if TSThread.shouldInteractionAppear(inInbox: interaction) {
+            if interaction.shouldAppearInHomeView {
                 last = interaction
                 stopPtr.pointee = true
             }
@@ -755,6 +755,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                 SELECT COUNT(*)
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .read) IS 0
+                AND \(interactionColumn: .storedShouldAffectUnreadCounts) == 1
                 """,
                 arguments: []) else {
                     owsFailDebug("count was unexpectedly nil")
@@ -861,13 +862,10 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                 SELECT *
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
-                AND \(interactionColumn: .errorType) IS NOT ?
-                AND \(interactionColumn: .messageType) IS NOT ?
+                AND \(interactionColumn: .storedShouldAppearInHomeView) == 1
                 ORDER BY \(interactionColumn: .id) DESC
                 """
-        let arguments: StatementArguments = [threadUniqueId,
-                                             TSErrorMessageType.nonBlockingIdentityChange.rawValue,
-                                             TSInfoMessageType.verificationStateChange.rawValue]
+        let arguments: StatementArguments = [threadUniqueId]
         return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
     }
 
@@ -911,13 +909,10 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                 SELECT COUNT(*)
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
-                AND \(interactionColumn: .errorType) IS NOT ?
-                AND \(interactionColumn: .messageType) IS NOT ?
                 AND \(interactionColumn: .read) IS 0
+                AND \(interactionColumn: .storedShouldAffectUnreadCounts) == 1
             """
-            let arguments: StatementArguments = [threadUniqueId,
-                                                 TSErrorMessageType.nonBlockingIdentityChange.rawValue,
-                                                 TSInfoMessageType.verificationStateChange.rawValue]
+            let arguments: StatementArguments = [threadUniqueId]
 
             guard let count = try UInt.fetchOne(transaction.database,
                                                 sql: sql,
@@ -958,6 +953,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .threadUniqueId) = ?
         AND \(interactionColumn: .read) IS 0
+        AND \(interactionColumn: .storedShouldAffectUnreadCounts) == 1
         """
         let arguments: StatementArguments = [threadUniqueId]
         let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)

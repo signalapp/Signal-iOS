@@ -66,6 +66,8 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 // require special handling in the conversation view.
 @property (nonatomic, readonly) BOOL isSpecialMessage;
 
+@property (nonatomic, readonly) BOOL shouldAppearInHomeView;
+
 - (NSDate *)receivedAtDate;
 
 - (OWSInteractionType)interactionType;

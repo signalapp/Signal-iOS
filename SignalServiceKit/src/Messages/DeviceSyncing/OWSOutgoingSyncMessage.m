@@ -74,6 +74,11 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
+- (BOOL)shouldAppearInHomeView
+{
+    return NO;
+}
+
 // This method should not be overridden, since we want to add random padding to *every* sync message
 - (nullable SSKProtoSyncMessage *)buildSyncMessageWithTransaction:(SDSAnyReadTransaction *)transaction
 {

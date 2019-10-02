@@ -20,6 +20,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface TSInteraction (SDS)
+
+@property (nonatomic, readonly) BOOL storedShouldAffectUnreadCounts;
+@property (nonatomic, readonly) BOOL storedShouldAppearInHomeView;
+
+@end
+
+#pragma mark -
+
 @interface TSMessage (SDS)
 
 @property (nonatomic, readonly) NSUInteger schemaVersion;

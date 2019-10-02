@@ -387,47 +387,12 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     }
 }
 
-// Returns YES IFF the interaction should show up in the inbox as the last message.
-+ (BOOL)shouldInteractionAppearInInbox:(TSInteraction *)interaction
-{
-    OWSAssertDebug(interaction);
-
-    if (!interaction.shouldBeSaved) {
-        OWSFailDebug(@"Unexpected interaction type: %@", interaction.class);
-        return NO;
-    }
-    if (interaction.isDynamicInteraction) {
-        OWSFailDebug(@"Unexpected interaction type: %@", interaction.class);
-        return NO;
-    }
-    if ([interaction isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-        OWSFailDebug(@"Unexpected interaction type: %@", interaction.class);
-        return NO;
-    }
-
-    if ([interaction isKindOfClass:[TSErrorMessage class]]) {
-        TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
-        if (errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange) {
-            // Otherwise all group threads with the recipient will percolate to the top of the inbox, even though
-            // there was no meaningful interaction.
-            return NO;
-        }
-    } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
-        TSInfoMessage *infoMessage = (TSInfoMessage *)interaction;
-        if (infoMessage.messageType == TSInfoMessageVerificationStateChange) {
-            return NO;
-        }
-    }
-
-    return YES;
-}
-
 - (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(lastMessage);
     OWSAssertDebug(transaction);
 
-    if (![self.class shouldInteractionAppearInInbox:lastMessage]) {
+    if (!lastMessage.shouldAppearInHomeView) {
         return;
     }
 

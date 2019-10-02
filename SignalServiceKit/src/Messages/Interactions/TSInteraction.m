@@ -38,6 +38,9 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 @property (nonatomic) uint64_t sortId;
 
+@property (nonatomic) BOOL storedShouldAffectUnreadCounts;
+@property (nonatomic) BOOL storedShouldAppearInHomeView;
+
 @end
 
 @implementation TSInteraction
@@ -263,14 +266,40 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     return [self isDynamicInteraction];
 }
 
+- (BOOL)shouldAppearInHomeView
+{
+    if (!self.shouldBeSaved) {
+        return NO;
+    }
+    if (self.isDynamicInteraction) {
+        return NO;
+    }
+
+    return YES;
+}
+
 #pragma mark - Any Transaction Hooks
 
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyWillInsertWithTransaction:transaction];
 
+    [self ensureStoredProperties];
+
     if (transaction.transitional_yapWriteTransaction != nil) {
         [self ensureIdsWithTransaction:transaction.transitional_yapWriteTransaction];
+    }
+}
+
+- (void)ensureStoredProperties
+{
+    self.storedShouldAppearInHomeView = [self shouldAppearInHomeView];
+
+    if ([self conformsToProtocol:@protocol(OWSReadTracking)]) {
+        id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)self;
+        self.storedShouldAffectUnreadCounts = possiblyRead.shouldAffectUnreadCounts;
+    } else {
+        self.storedShouldAffectUnreadCounts = NO;
     }
 }
 
@@ -286,6 +315,13 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     if (self.sortId == 0) {
         self.sortId = [SSKIncrementingIdFinder nextIdWithKey:[TSInteraction collection] transaction:transaction];
     }
+}
+
+- (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyWillUpdateWithTransaction:transaction];
+
+    [self ensureStoredProperties];
 }
 
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
