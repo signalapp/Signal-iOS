@@ -1150,10 +1150,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         TSQuotedMessage *quote = message.quotedMessage;
         uint64_t quoteID = quote.timestamp;
         NSString *quoteeHexEncodedPublicKey = quote.authorId;
-        __block uint64_t quotedMessageServerID;
-        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            quotedMessageServerID = [LKDatabaseUtilities getServerIDForQuoteWithID:quoteID quoteeHexEncodedPublicKey:quoteeHexEncodedPublicKey threadID:messageSend.thread.uniqueId transaction:transaction];
-        }];
+        __block uint64_t quotedMessageServerID = 0;
+        if (quoteID != 0) {
+            [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                quotedMessageServerID = [LKDatabaseUtilities getServerIDForQuoteWithID:quoteID quoteeHexEncodedPublicKey:quoteeHexEncodedPublicKey threadID:messageSend.thread.uniqueId transaction:transaction];
+            }];
+        }
         LKGroupMessage *groupMessage = [[LKGroupMessage alloc] initWithHexEncodedPublicKey:userHexEncodedPublicKey displayName:displayName body:message.body type:LKGroupChatAPI.publicChatMessageType
          timestamp:message.timestamp quotedMessageTimestamp:quoteID quoteeHexEncodedPublicKey:quoteeHexEncodedPublicKey quotedMessageBody:quote.body quotedMessageServerID:quotedMessageServerID signatureData:nil signatureVersion:0];
         [[LKGroupChatAPI sendMessage:groupMessage toGroup:LKGroupChatAPI.publicChatServerID onServer:LKGroupChatAPI.publicChatServer]

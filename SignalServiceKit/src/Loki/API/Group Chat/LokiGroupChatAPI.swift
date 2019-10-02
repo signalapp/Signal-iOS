@@ -75,12 +75,13 @@ public final class LokiGroupChatAPI : LokiDotNetAPI {
                 let isDeleted = (message["is_deleted"] as? Int == 1)
                 guard !isDeleted else { return nil }
                 guard let annotations = message["annotations"] as? [JSON], let annotation = annotations.first, let value = annotation["value"] as? JSON,
-                    let serverID = message["id"] as? UInt64, let hexEncodedSignatureData = value["sig"] as? String, let signatureVersion = value["sigver"] as? Int,
-                    let body = message["text"] as? String, let hexEncodedPublicKey = value["source"] as? String, let displayName = value["from"] as? String,
+                    let serverID = message["id"] as? UInt64, let hexEncodedSignatureData = value["sig"] as? String, let signatureVersion = value["sigver"] as? UInt64,
+                    let body = message["text"] as? String, let user = message["user"] as? JSON, let hexEncodedPublicKey = user["username"] as? String,
                     let timestamp = value["timestamp"] as? UInt64 else {
                         print("[Loki] Couldn't parse message for group chat with ID: \(group) on server: \(server) from: \(message).")
                         return nil
                 }
+                let displayName = user["name"] as? String ?? NSLocalizedString("Anonymous", comment: "")
                 let lastMessageServerID = getLastMessageServerID(for: group, on: server)
                 if serverID > (lastMessageServerID ?? 0) { setLastMessageServerID(for: group, on: server, to: serverID) }
                 let quote: LokiGroupMessage.Quote?
@@ -90,7 +91,7 @@ public final class LokiGroupChatAPI : LokiDotNetAPI {
                 } else {
                     quote = nil
                 }
-                let signature = LokiGroupMessage.Signature(data: Data(hex: hexEncodedSignatureData), version: UInt64(signatureVersion))
+                let signature = LokiGroupMessage.Signature(data: Data(hex: hexEncodedSignatureData), version: signatureVersion)
                 let result = LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, signature: signature)
                 guard result.hasValidSignature() else {
                     print("[Loki] Ignoring group chat message with invalid signature.")

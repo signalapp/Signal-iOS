@@ -79,7 +79,8 @@ public final class LokiGroupMessage : NSObject {
     internal func hasValidSignature() -> Bool {
         guard let signature = signature else { return false }
         guard let data = getValidationData(for: signature.version) else { return false }
-        return (try? Ed25519.verifySignature(signature.data, publicKey: Data(hex: hexEncodedPublicKey), data: data)) ?? false
+        let publicKey = Data(hex: hexEncodedPublicKey.removing05PrefixIfNeeded())
+        return (try? Ed25519.verifySignature(signature.data, publicKey: publicKey, data: data)) ?? false
     }
     
     // MARK: JSON
