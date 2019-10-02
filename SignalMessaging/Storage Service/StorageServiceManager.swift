@@ -508,7 +508,7 @@ class StorageServiceOperation: OWSOperation {
         // id is always generated after a change, this should always
         // reflect the only contacts we need to fetch from the service.
         let allManifestContacts: Set<StorageService.ContactIdentifier> = Set(manifest.keys.map { .init(data: $0) })
-        let newOrUpdatedContacts = Array(allManifestContacts.subtracting(identifierMap.values))
+        let newOrUpdatedContacts = Array(allManifestContacts.subtracting(identifierMap.backwardKeys))
 
         // Fetch all the contacts in the new manifest and resolve any conflicts appropriately.
         StorageService.fetchContacts(for: newOrUpdatedContacts).done(on: .global()) { contacts in
