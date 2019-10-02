@@ -127,12 +127,23 @@ public class StickerManager: NSObject {
 
     // MARK: - Paths
 
-    @objc
-    public class func cacheDirUrl() -> URL {
+    private class func ensureCacheDirUrl() -> URL {
         var url = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
         url.appendPathComponent("StickerManager")
         OWSFileSystem.ensureDirectoryExists(url.path)
         return url
+    }
+    private static let cacheDirUrlCached = {
+        return ensureCacheDirUrl()
+    }()
+
+    @objc
+    public class func cacheDirUrl() -> URL {
+        if CurrentAppContext().isRunningTests {
+            return ensureCacheDirUrl()
+        } else {
+            return cacheDirUrlCached
+        }
     }
 
     private class func stickerUrl(stickerInfo: StickerInfo) -> URL {
