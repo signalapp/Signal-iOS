@@ -671,8 +671,8 @@
 /* Label for button to mute a thread for a hour. */
 "CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Mute for one hour";
 
-/* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Mute for two hours";
+/* Label for button to mute a thread for two hours. */
+"CONVERSATION_SETTINGS_MUTE_TWO_HOURS_ACTION" = "Mute for two hours";
 
 /* Label for button to mute a thread for a minute. */
 "CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Mute for one minute";
@@ -683,8 +683,8 @@
 /* Label for button to mute a thread for a month. */
 "CONVERSATION_SETTINGS_MUTE_ONE_MONTH_ACTION" = "Mute for one month";
 
-/* Label for button to mute a thread for a month. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MONTH_ACTION" = "Mute for three months";
+/* Label for button to mute a thread for three months. */
+"CONVERSATION_SETTINGS_MUTE_THREE_MONTHS_ACTION" = "Mute for three months";
 
 /* Label for button to mute a thread for a year. */
 "CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Mute for one year";
