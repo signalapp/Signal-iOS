@@ -75,7 +75,8 @@ public final class LokiGroupChatAPI : LokiDotNetAPI {
                 let isDeleted = (message["is_deleted"] as? Int == 1)
                 guard !isDeleted else { return nil }
                 guard let annotations = message["annotations"] as? [JSON], let annotation = annotations.first, let value = annotation["value"] as? JSON,
-                    let serverID = message["id"] as? UInt64, let body = message["text"] as? String, let hexEncodedPublicKey = value["source"] as? String, let displayName = value["from"] as? String,
+                    let serverID = message["id"] as? UInt64, let hexEncodedSignatureData = value["sig"] as? String, let signatureVersion = value["sigver"] as? Int,
+                    let body = message["text"] as? String, let hexEncodedPublicKey = value["source"] as? String, let displayName = value["from"] as? String,
                     let timestamp = value["timestamp"] as? UInt64 else {
                         print("[Loki] Couldn't parse message for group chat with ID: \(group) on server: \(server) from: \(message).")
                         return nil
@@ -84,20 +85,28 @@ public final class LokiGroupChatAPI : LokiDotNetAPI {
                 if serverID > (lastMessageServerID ?? 0) { setLastMessageServerID(for: group, on: server, to: serverID) }
                 let quote: LokiGroupMessage.Quote?
                 if let quoteAsJSON = value["quote"] as? JSON, let quotedMessageTimestamp = quoteAsJSON["id"] as? UInt64, let quoteeHexEncodedPublicKey = quoteAsJSON["author"] as? String, let quotedMessageBody = quoteAsJSON["text"] as? String {
-                    quote = LokiGroupMessage.Quote(quotedMessageTimestamp: quotedMessageTimestamp, quoteeHexEncodedPublicKey: quoteeHexEncodedPublicKey, quotedMessageBody: quotedMessageBody)
+                    let quotedMessageServerID = message["reply_to"] as? UInt64
+                    quote = LokiGroupMessage.Quote(quotedMessageTimestamp: quotedMessageTimestamp, quoteeHexEncodedPublicKey: quoteeHexEncodedPublicKey, quotedMessageBody: quotedMessageBody, quotedMessageServerID: quotedMessageServerID)
                 } else {
                     quote = nil
                 }
-                return LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote)
+                let signature = LokiGroupMessage.Signature(hexEncodedData: hexEncodedSignatureData, version: UInt64(signatureVersion))
+                let result = LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, signature: signature)
+                guard result.hasValidSignature() else {
+                    print("[Loki] Ignoring group chat message with invalid signature.")
+                    return nil
+                }
+                return result
             }.sorted { $0.timestamp < $1.timestamp }
         }
     }
     
     public static func sendMessage(_ message: LokiGroupMessage, to group: UInt64, on server: String) -> Promise<LokiGroupMessage> {
+        guard let signedMessage = message.sign(with: userKeyPair.privateKey) else { return Promise(error: Error.signingFailed) }
         return getAuthToken(for: server).then { token -> Promise<LokiGroupMessage> in
             print("[Loki] Sending message to group chat with ID: \(group) on server: \(server).")
             let url = URL(string: "\(server)/channels/\(group)/messages")!
-            let parameters = message.toJSON()
+            let parameters = signedMessage.toJSON()
             let request = TSRequest(url: url, method: "POST", parameters: parameters)
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
             let displayName = userDisplayName
@@ -111,7 +120,7 @@ public final class LokiGroupChatAPI : LokiDotNetAPI {
                     throw Error.parsingFailed
                 }
                 let timestamp = UInt64(date.timeIntervalSince1970) * 1000
-                return LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: userHexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp, quote: message.quote)
+                return LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: userHexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp, quote: signedMessage.quote, signature: signedMessage.signature)
             }
         }.recover { error -> Promise<LokiGroupMessage> in
             if let error = error as? NetworkManagerError, error.statusCode == 401 {

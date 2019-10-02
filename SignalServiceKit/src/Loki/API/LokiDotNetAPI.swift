@@ -3,13 +3,13 @@ import PromiseKit
 public class LokiDotNetAPI : NSObject {
 
     // MARK: Convenience
-    private static let userKeyPair = OWSIdentityManager.shared().identityKeyPair()!
     internal static let storage = OWSPrimaryStorage.shared()
+    internal static let userKeyPair = OWSIdentityManager.shared().identityKeyPair()!
     internal static let userHexEncodedPublicKey = userKeyPair.hexEncodedPublicKey
 
     // MARK: Error
     public enum Error : Swift.Error {
-        case parsingFailed, decryptionFailed
+        case parsingFailed, decryptionFailed, signingFailed
     }
 
     // MARK: Database
@@ -58,7 +58,7 @@ public class LokiDotNetAPI : NSObject {
             }
             // Discard the "05" prefix if needed
             if (serverPublicKey.count == 33) {
-                let hexEncodedServerPublicKey = serverPublicKey.hexadecimalString
+                let hexEncodedServerPublicKey = serverPublicKey.toHexString()
                 serverPublicKey = Data.data(fromHex: hexEncodedServerPublicKey.substring(from: 2))!
             }
             // The challenge is prefixed by the 16 bit IV

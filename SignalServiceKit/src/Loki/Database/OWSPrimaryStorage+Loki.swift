@@ -1,6 +1,6 @@
 
-extension OWSPrimaryStorage {
-    
+public extension OWSPrimaryStorage {
+
     private func getCollection(for primaryDevice: String) -> String {
         return "LokiDeviceLinkCollection-\(primaryDevice)"
     }

@@ -1148,8 +1148,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         NSString *displayName = SSKEnvironment.shared.profileManager.localProfileName;
         if (displayName == nil) { displayName = @"Anonymous"; }
         TSQuotedMessage *quote = message.quotedMessage;
+        uint64_t quoteID = quote.timestamp;
+        NSString *quoteeHexEncodedPublicKey = quote.authorId;
+        __block uint64_t quotedMessageServerID;
+        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            quotedMessageServerID = [LKDatabaseUtilities getServerIDForQuoteWithID:quoteID quoteeHexEncodedPublicKey:quoteeHexEncodedPublicKey threadID:messageSend.thread.uniqueId transaction:transaction];
+        }];
         LKGroupMessage *groupMessage = [[LKGroupMessage alloc] initWithHexEncodedPublicKey:userHexEncodedPublicKey displayName:displayName body:message.body type:LKGroupChatAPI.publicChatMessageType
-            timestamp:message.timestamp quotedMessageTimestamp:quote.timestamp quoteeHexEncodedPublicKey:quote.authorId quotedMessageBody:quote.body];
+         timestamp:message.timestamp quotedMessageTimestamp:quoteID quoteeHexEncodedPublicKey:quoteeHexEncodedPublicKey quotedMessageBody:quote.body quotedMessageServerID:quotedMessageServerID hexEncodedSignatureData:nil signatureVersion:0];
         [[LKGroupChatAPI sendMessage:groupMessage toGroup:LKGroupChatAPI.publicChatServerID onServer:LKGroupChatAPI.publicChatServer]
         .thenOn(OWSDispatch.sendingQueue, ^(LKGroupMessage *groupMessage) {
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
