@@ -136,6 +136,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
+  storedShouldAffectUnreadCounts:(BOOL)storedShouldAffectUnreadCounts
+    storedShouldAppearInHomeView:(BOOL)storedShouldAppearInHomeView
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
 {
@@ -147,6 +149,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
     _receivedAtTimestamp = receivedAtTimestamp;
     _sortId = sortId;
+    _storedShouldAffectUnreadCounts = storedShouldAffectUnreadCounts;
+    _storedShouldAppearInHomeView = storedShouldAppearInHomeView;
     _timestamp = timestamp;
     _uniqueThreadId = uniqueThreadId;
 

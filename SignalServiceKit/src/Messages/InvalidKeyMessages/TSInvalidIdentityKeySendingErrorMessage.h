@@ -28,6 +28,8 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeySendingErrorMessage :
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
+  storedShouldAffectUnreadCounts:(BOOL)storedShouldAffectUnreadCounts
+    storedShouldAppearInHomeView:(BOOL)storedShouldAppearInHomeView
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
                    attachmentIds:(NSArray<NSString *> *)attachmentIds
@@ -49,7 +51,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeySendingErrorMessage :
                 recipientAddress:(nullable SignalServiceAddress *)recipientAddress
                        messageId:(NSString *)messageId
                     preKeyBundle:(PreKeyBundle *)preKeyBundle
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:errorMessageSchemaVersion:errorType:read:recipientAddress:messageId:preKeyBundle:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:storedShouldAffectUnreadCounts:storedShouldAppearInHomeView:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:errorMessageSchemaVersion:errorType:read:recipientAddress:messageId:preKeyBundle:));
 
 // clang-format on
 

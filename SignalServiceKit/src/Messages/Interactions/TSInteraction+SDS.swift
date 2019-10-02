@@ -27,6 +27,8 @@ public struct InteractionRecord: SDSRecord {
 
     // Base class properties
     public let receivedAtTimestamp: UInt64
+    public let storedShouldAffectUnreadCounts: Bool
+    public let storedShouldAppearInHomeView: Bool
     public let timestamp: UInt64
     public let threadUniqueId: String
 
@@ -95,6 +97,8 @@ public struct InteractionRecord: SDSRecord {
         case recordType
         case uniqueId
         case receivedAtTimestamp
+        case storedShouldAffectUnreadCounts
+        case storedShouldAppearInHomeView
         case timestamp
         case threadUniqueId = "uniqueThreadId"
         case attachmentIds
@@ -174,66 +178,68 @@ public extension InteractionRecord {
         recordType = row[1]
         uniqueId = row[2]
         receivedAtTimestamp = row[3]
-        timestamp = row[4]
-        threadUniqueId = row[5]
-        attachmentIds = row[6]
-        authorId = row[7]
-        authorPhoneNumber = row[8]
-        authorUUID = row[9]
-        beforeInteractionId = row[10]
-        body = row[11]
-        callSchemaVersion = row[12]
-        callType = row[13]
-        configurationDurationSeconds = row[14]
-        configurationIsEnabled = row[15]
-        contactId = row[16]
-        contactShare = row[17]
-        createdByRemoteName = row[18]
-        createdInExistingGroup = row[19]
-        customMessage = row[20]
-        envelopeData = row[21]
-        errorMessageSchemaVersion = row[22]
-        errorType = row[23]
-        expireStartedAt = row[24]
-        expiresAt = row[25]
-        expiresInSeconds = row[26]
-        groupMetaMessage = row[27]
-        hasAddToContactsOffer = row[28]
-        hasAddToProfileWhitelistOffer = row[29]
-        hasBlockOffer = row[30]
-        hasLegacyMessageState = row[31]
-        hasSyncedTranscript = row[32]
-        incomingMessageSchemaVersion = row[33]
-        infoMessageSchemaVersion = row[34]
-        isFromLinkedDevice = row[35]
-        isLocalChange = row[36]
-        isViewOnceComplete = row[37]
-        isViewOnceMessage = row[38]
-        isVoiceMessage = row[39]
-        legacyMessageState = row[40]
-        legacyWasDelivered = row[41]
-        linkPreview = row[42]
-        messageId = row[43]
-        messageSticker = row[44]
-        messageType = row[45]
-        mostRecentFailureText = row[46]
-        outgoingMessageSchemaVersion = row[47]
-        preKeyBundle = row[48]
-        protocolVersion = row[49]
-        quotedMessage = row[50]
-        read = row[51]
-        recipientAddress = row[52]
-        recipientAddressStates = row[53]
-        schemaVersion = row[54]
-        sender = row[55]
-        serverTimestamp = row[56]
-        sourceDeviceId = row[57]
-        storedMessageState = row[58]
-        storedShouldStartExpireTimer = row[59]
-        unknownProtocolVersionMessageSchemaVersion = row[60]
-        unregisteredAddress = row[61]
-        verificationState = row[62]
-        wasReceivedByUD = row[63]
+        storedShouldAffectUnreadCounts = row[4]
+        storedShouldAppearInHomeView = row[5]
+        timestamp = row[6]
+        threadUniqueId = row[7]
+        attachmentIds = row[8]
+        authorId = row[9]
+        authorPhoneNumber = row[10]
+        authorUUID = row[11]
+        beforeInteractionId = row[12]
+        body = row[13]
+        callSchemaVersion = row[14]
+        callType = row[15]
+        configurationDurationSeconds = row[16]
+        configurationIsEnabled = row[17]
+        contactId = row[18]
+        contactShare = row[19]
+        createdByRemoteName = row[20]
+        createdInExistingGroup = row[21]
+        customMessage = row[22]
+        envelopeData = row[23]
+        errorMessageSchemaVersion = row[24]
+        errorType = row[25]
+        expireStartedAt = row[26]
+        expiresAt = row[27]
+        expiresInSeconds = row[28]
+        groupMetaMessage = row[29]
+        hasAddToContactsOffer = row[30]
+        hasAddToProfileWhitelistOffer = row[31]
+        hasBlockOffer = row[32]
+        hasLegacyMessageState = row[33]
+        hasSyncedTranscript = row[34]
+        incomingMessageSchemaVersion = row[35]
+        infoMessageSchemaVersion = row[36]
+        isFromLinkedDevice = row[37]
+        isLocalChange = row[38]
+        isViewOnceComplete = row[39]
+        isViewOnceMessage = row[40]
+        isVoiceMessage = row[41]
+        legacyMessageState = row[42]
+        legacyWasDelivered = row[43]
+        linkPreview = row[44]
+        messageId = row[45]
+        messageSticker = row[46]
+        messageType = row[47]
+        mostRecentFailureText = row[48]
+        outgoingMessageSchemaVersion = row[49]
+        preKeyBundle = row[50]
+        protocolVersion = row[51]
+        quotedMessage = row[52]
+        read = row[53]
+        recipientAddress = row[54]
+        recipientAddressStates = row[55]
+        schemaVersion = row[56]
+        sender = row[57]
+        serverTimestamp = row[58]
+        sourceDeviceId = row[59]
+        storedMessageState = row[60]
+        storedShouldStartExpireTimer = row[61]
+        unknownProtocolVersionMessageSchemaVersion = row[62]
+        unregisteredAddress = row[63]
+        verificationState = row[64]
+        wasReceivedByUD = row[65]
     }
 }
 
@@ -267,6 +273,8 @@ extension TSInteraction {
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let sortId: UInt64 = UInt64(recordId)
+            let storedShouldAffectUnreadCounts: Bool = record.storedShouldAffectUnreadCounts
+            let storedShouldAppearInHomeView: Bool = record.storedShouldAppearInHomeView
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -300,6 +308,8 @@ extension TSInteraction {
             return OWSAddToContactsOfferMessage(uniqueId: uniqueId,
                                                 receivedAtTimestamp: receivedAtTimestamp,
                                                 sortId: sortId,
+                                                storedShouldAffectUnreadCounts: storedShouldAffectUnreadCounts,
+                                                storedShouldAppearInHomeView: storedShouldAppearInHomeView,
                                                 timestamp: timestamp,
                                                 uniqueThreadId: uniqueThreadId,
                                                 attachmentIds: attachmentIds,
@@ -327,6 +337,8 @@ extension TSInteraction {
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let sortId: UInt64 = UInt64(recordId)
+            let storedShouldAffectUnreadCounts: Bool = record.storedShouldAffectUnreadCounts
+            let storedShouldAppearInHomeView: Bool = record.storedShouldAppearInHomeView
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -360,6 +372,8 @@ extension TSInteraction {
             return OWSAddToProfileWhitelistOfferMessage(uniqueId: uniqueId,
                                                         receivedAtTimestamp: receivedAtTimestamp,
                                                         sortId: sortId,
+                                                        storedShouldAffectUnreadCounts: storedShouldAffectUnreadCounts,
+                                                        storedShouldAppearInHomeView: storedShouldAppearInHomeView,
                                                         timestamp: timestamp,
                                                         uniqueThreadId: uniqueThreadId,
                                                         attachmentIds: attachmentIds,
@@ -387,6 +401,8 @@ extension TSInteraction {
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let sortId: UInt64 = UInt64(recordId)
+            let storedShouldAffectUnreadCounts: Bool = record.storedShouldAffectUnreadCounts
+            let storedShouldAppearInHomeView: Bool = record.storedShouldAppearInHomeView
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let beforeInteractionId: String = try SDSDeserialization.required(record.beforeInteractionId, name: "beforeInteractionId")
@@ -397,6 +413,8 @@ extension TSInteraction {
             return OWSContactOffersInteraction(uniqueId: uniqueId,
                                                receivedAtTimestamp: receivedAtTimestamp,
                                                sortId: sortId,
+                                               storedShouldAffectUnreadCounts: storedShouldAffectUnreadCounts,
+                                               storedShouldAppearInHomeView: storedShouldAppearInHomeView,
                                                timestamp: timestamp,
                                                uniqueThreadId: uniqueThreadId,
                                                beforeInteractionId: beforeInteractionId,
@@ -409,6 +427,8 @@ extension TSInteraction {
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let sortId: UInt64 = UInt64(recordId)
+            let storedShouldAffectUnreadCounts: Bool = record.storedShouldAffectUnreadCounts
+            let storedShouldAppearInHomeView: Bool = record.storedShouldAppearInHomeView
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -445,6 +465,8 @@ extension TSInteraction {
             return OWSDisappearingConfigurationUpdateInfoMessage(uniqueId: uniqueId,
                                                                  receivedAtTimestamp: receivedAtTimestamp,
                                                                  sortId: sortId,
+                                                                 storedShouldAffectUnreadCounts: storedShouldAffectUnreadCounts,
+                                                                 storedShouldAppearInHomeView: storedShouldAppearInHomeView,
                                                                  timestamp: timestamp,
                                                                  uniqueThreadId: uniqueThreadId,
                                                                  attachmentIds: attachmentIds,
@@ -475,6 +497,8 @@ extension TSInteraction {
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let sortId: UInt64 = UInt64(recordId)
+            let storedShouldAffectUnreadCounts: Bool = record.storedShouldAffectUnreadCounts
+            let storedShouldAppearInHomeView: Bool = record.storedShouldAppearInHomeView
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -507,6 +531,8 @@ extension TSInteraction {
             return OWSUnknownContactBlockOfferMessage(uniqueId: uniqueId,
                                                       receivedAtTimestamp: receivedAtTimestamp,
                                                       sortId: sortId,
+                                                      storedShouldAffectUnreadCounts: storedShouldAffectUnreadCounts,
+                                                      storedShouldAppearInHomeView: storedShouldAppearInHomeView,
                                                       timestamp: timestamp,
                                                       uniqueThreadId: uniqueThreadId,
                                                       attachmentIds: attachmentIds,
@@ -533,6 +559,8 @@ extension TSInteraction {
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let sortId: UInt64 = UInt64(recordId)
+            let storedShouldAffectUnreadCounts: Bool = record.storedShouldAffectUnreadCounts
+            let storedShouldAppearInHomeView: Bool = record.storedShouldAppearInHomeView
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -569,6 +597,8 @@ extension TSInteraction {
             return OWSUnknownProtocolVersionMessage(uniqueId: uniqueId,
                                                     receivedAtTimestamp: receivedAtTimestamp,
                                                     sortId: sortId,
+                                                    storedShouldAffectUnreadCounts: storedShouldAffectUnreadCounts,
+                                                    storedShouldAppearInHomeView: storedShouldAppearInHomeView,
                                                     timestamp: timestamp,
                                                     uniqueThreadId: uniqueThreadId,
                                                     attachmentIds: attachmentIds,
@@ -598,6 +628,8 @@ extension TSInteraction {
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let sortId: UInt64 = UInt64(recordId)
+            let storedShouldAffectUnreadCounts: Bool = record.storedShouldAffectUnreadCounts
+            let storedShouldAppearInHomeView: Bool = record.storedShouldAppearInHomeView
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -636,6 +668,8 @@ extension TSInteraction {
             return OWSVerificationStateChangeMessage(uniqueId: uniqueId,
                                                      receivedAtTimestamp: receivedAtTimestamp,
                                                      sortId: sortId,
+                                                     storedShouldAffectUnreadCounts: storedShouldAffectUnreadCounts,
+                                                     storedShouldAppearInHomeView: storedShouldAppearInHomeView,
                                                      timestamp: timestamp,
                                                      uniqueThreadId: uniqueThreadId,
                                                      attachmentIds: attachmentIds,
@@ -665,6 +699,8 @@ extension TSInteraction {
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let sortId: UInt64 = UInt64(recordId)
+            let storedShouldAffectUnreadCounts: Bool = record.storedShouldAffectUnreadCounts
+            let storedShouldAppearInHomeView: Bool = record.storedShouldAppearInHomeView
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let callSchemaVersion: UInt = try SDSDeserialization.required(record.callSchemaVersion, name: "callSchemaVersion")
@@ -676,6 +712,8 @@ extension TSInteraction {
             return TSCall(uniqueId: uniqueId,
                           receivedAtTimestamp: receivedAtTimestamp,
                           sortId: sortId,
+                          storedShouldAffectUnreadCounts: storedShouldAffectUnreadCounts,
+                          storedShouldAppearInHomeView: storedShouldAppearInHomeView,
                           timestamp: timestamp,
                           uniqueThreadId: uniqueThreadId,
                           callSchemaVersion: callSchemaVersion,
@@ -687,6 +725,8 @@ extension TSInteraction {
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let sortId: UInt64 = UInt64(recordId)
+            let storedShouldAffectUnreadCounts: Bool = record.storedShouldAffectUnreadCounts
+            let storedShouldAppearInHomeView: Bool = record.storedShouldAppearInHomeView
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -718,6 +758,8 @@ extension TSInteraction {
             return TSErrorMessage(uniqueId: uniqueId,
                                   receivedAtTimestamp: receivedAtTimestamp,
                                   sortId: sortId,
+                                  storedShouldAffectUnreadCounts: storedShouldAffectUnreadCounts,
+                                  storedShouldAppearInHomeView: storedShouldAppearInHomeView,
                                   timestamp: timestamp,
                                   uniqueThreadId: uniqueThreadId,
                                   attachmentIds: attachmentIds,
@@ -743,6 +785,8 @@ extension TSInteraction {
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let sortId: UInt64 = UInt64(recordId)
+            let storedShouldAffectUnreadCounts: Bool = record.storedShouldAffectUnreadCounts
+            let storedShouldAppearInHomeView: Bool = record.storedShouldAppearInHomeView
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -774,6 +818,8 @@ extension TSInteraction {
             return TSIncomingMessage(uniqueId: uniqueId,
                                      receivedAtTimestamp: receivedAtTimestamp,
                                      sortId: sortId,
+                                     storedShouldAffectUnreadCounts: storedShouldAffectUnreadCounts,
+                                     storedShouldAppearInHomeView: storedShouldAppearInHomeView,
                                      timestamp: timestamp,
                                      uniqueThreadId: uniqueThreadId,
                                      attachmentIds: attachmentIds,
@@ -802,6 +848,8 @@ extension TSInteraction {
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let sortId: UInt64 = UInt64(recordId)
+            let storedShouldAffectUnreadCounts: Bool = record.storedShouldAffectUnreadCounts
+            let storedShouldAppearInHomeView: Bool = record.storedShouldAppearInHomeView
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -834,6 +882,8 @@ extension TSInteraction {
             return TSInfoMessage(uniqueId: uniqueId,
                                  receivedAtTimestamp: receivedAtTimestamp,
                                  sortId: sortId,
+                                 storedShouldAffectUnreadCounts: storedShouldAffectUnreadCounts,
+                                 storedShouldAppearInHomeView: storedShouldAppearInHomeView,
                                  timestamp: timestamp,
                                  uniqueThreadId: uniqueThreadId,
                                  attachmentIds: attachmentIds,
@@ -860,12 +910,16 @@ extension TSInteraction {
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let sortId: UInt64 = UInt64(recordId)
+            let storedShouldAffectUnreadCounts: Bool = record.storedShouldAffectUnreadCounts
+            let storedShouldAppearInHomeView: Bool = record.storedShouldAppearInHomeView
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
 
             return TSInteraction(uniqueId: uniqueId,
                                  receivedAtTimestamp: receivedAtTimestamp,
                                  sortId: sortId,
+                                 storedShouldAffectUnreadCounts: storedShouldAffectUnreadCounts,
+                                 storedShouldAppearInHomeView: storedShouldAppearInHomeView,
                                  timestamp: timestamp,
                                  uniqueThreadId: uniqueThreadId)
 
@@ -874,6 +928,8 @@ extension TSInteraction {
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let sortId: UInt64 = UInt64(recordId)
+            let storedShouldAffectUnreadCounts: Bool = record.storedShouldAffectUnreadCounts
+            let storedShouldAppearInHomeView: Bool = record.storedShouldAppearInHomeView
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -905,6 +961,8 @@ extension TSInteraction {
             return TSInvalidIdentityKeyErrorMessage(uniqueId: uniqueId,
                                                     receivedAtTimestamp: receivedAtTimestamp,
                                                     sortId: sortId,
+                                                    storedShouldAffectUnreadCounts: storedShouldAffectUnreadCounts,
+                                                    storedShouldAppearInHomeView: storedShouldAppearInHomeView,
                                                     timestamp: timestamp,
                                                     uniqueThreadId: uniqueThreadId,
                                                     attachmentIds: attachmentIds,
@@ -930,6 +988,8 @@ extension TSInteraction {
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let sortId: UInt64 = UInt64(recordId)
+            let storedShouldAffectUnreadCounts: Bool = record.storedShouldAffectUnreadCounts
+            let storedShouldAppearInHomeView: Bool = record.storedShouldAppearInHomeView
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -963,6 +1023,8 @@ extension TSInteraction {
             return TSInvalidIdentityKeyReceivingErrorMessage(uniqueId: uniqueId,
                                                              receivedAtTimestamp: receivedAtTimestamp,
                                                              sortId: sortId,
+                                                             storedShouldAffectUnreadCounts: storedShouldAffectUnreadCounts,
+                                                             storedShouldAppearInHomeView: storedShouldAppearInHomeView,
                                                              timestamp: timestamp,
                                                              uniqueThreadId: uniqueThreadId,
                                                              attachmentIds: attachmentIds,
@@ -990,6 +1052,8 @@ extension TSInteraction {
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let sortId: UInt64 = UInt64(recordId)
+            let storedShouldAffectUnreadCounts: Bool = record.storedShouldAffectUnreadCounts
+            let storedShouldAppearInHomeView: Bool = record.storedShouldAppearInHomeView
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -1024,6 +1088,8 @@ extension TSInteraction {
             return TSInvalidIdentityKeySendingErrorMessage(uniqueId: uniqueId,
                                                            receivedAtTimestamp: receivedAtTimestamp,
                                                            sortId: sortId,
+                                                           storedShouldAffectUnreadCounts: storedShouldAffectUnreadCounts,
+                                                           storedShouldAppearInHomeView: storedShouldAppearInHomeView,
                                                            timestamp: timestamp,
                                                            uniqueThreadId: uniqueThreadId,
                                                            attachmentIds: attachmentIds,
@@ -1051,6 +1117,8 @@ extension TSInteraction {
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let sortId: UInt64 = UInt64(recordId)
+            let storedShouldAffectUnreadCounts: Bool = record.storedShouldAffectUnreadCounts
+            let storedShouldAppearInHomeView: Bool = record.storedShouldAppearInHomeView
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -1075,6 +1143,8 @@ extension TSInteraction {
             return TSMessage(uniqueId: uniqueId,
                              receivedAtTimestamp: receivedAtTimestamp,
                              sortId: sortId,
+                             storedShouldAffectUnreadCounts: storedShouldAffectUnreadCounts,
+                             storedShouldAppearInHomeView: storedShouldAppearInHomeView,
                              timestamp: timestamp,
                              uniqueThreadId: uniqueThreadId,
                              attachmentIds: attachmentIds,
@@ -1096,6 +1166,8 @@ extension TSInteraction {
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let sortId: UInt64 = UInt64(recordId)
+            let storedShouldAffectUnreadCounts: Bool = record.storedShouldAffectUnreadCounts
+            let storedShouldAppearInHomeView: Bool = record.storedShouldAppearInHomeView
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -1139,6 +1211,8 @@ extension TSInteraction {
             return TSOutgoingMessage(uniqueId: uniqueId,
                                      receivedAtTimestamp: receivedAtTimestamp,
                                      sortId: sortId,
+                                     storedShouldAffectUnreadCounts: storedShouldAffectUnreadCounts,
+                                     storedShouldAppearInHomeView: storedShouldAppearInHomeView,
                                      timestamp: timestamp,
                                      uniqueThreadId: uniqueThreadId,
                                      attachmentIds: attachmentIds,
@@ -1172,12 +1246,16 @@ extension TSInteraction {
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let sortId: UInt64 = UInt64(recordId)
+            let storedShouldAffectUnreadCounts: Bool = record.storedShouldAffectUnreadCounts
+            let storedShouldAppearInHomeView: Bool = record.storedShouldAppearInHomeView
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
 
             return TSUnreadIndicatorInteraction(uniqueId: uniqueId,
                                                 receivedAtTimestamp: receivedAtTimestamp,
                                                 sortId: sortId,
+                                                storedShouldAffectUnreadCounts: storedShouldAffectUnreadCounts,
+                                                storedShouldAppearInHomeView: storedShouldAppearInHomeView,
                                                 timestamp: timestamp,
                                                 uniqueThreadId: uniqueThreadId)
 
@@ -1276,67 +1354,69 @@ extension TSInteractionSerializer {
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
     // Base class properties
     static let receivedAtTimestampColumn = SDSColumnMetadata(columnName: "receivedAtTimestamp", columnType: .int64, columnIndex: 3)
-    static let timestampColumn = SDSColumnMetadata(columnName: "timestamp", columnType: .int64, columnIndex: 4)
-    static let uniqueThreadIdColumn = SDSColumnMetadata(columnName: "uniqueThreadId", columnType: .unicodeString, columnIndex: 5)
+    static let storedShouldAffectUnreadCountsColumn = SDSColumnMetadata(columnName: "storedShouldAffectUnreadCounts", columnType: .int, columnIndex: 4)
+    static let storedShouldAppearInHomeViewColumn = SDSColumnMetadata(columnName: "storedShouldAppearInHomeView", columnType: .int, columnIndex: 5)
+    static let timestampColumn = SDSColumnMetadata(columnName: "timestamp", columnType: .int64, columnIndex: 6)
+    static let uniqueThreadIdColumn = SDSColumnMetadata(columnName: "uniqueThreadId", columnType: .unicodeString, columnIndex: 7)
     // Subclass properties
-    static let attachmentIdsColumn = SDSColumnMetadata(columnName: "attachmentIds", columnType: .blob, isOptional: true, columnIndex: 6)
-    static let authorIdColumn = SDSColumnMetadata(columnName: "authorId", columnType: .unicodeString, isOptional: true, columnIndex: 7)
-    static let authorPhoneNumberColumn = SDSColumnMetadata(columnName: "authorPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 8)
-    static let authorUUIDColumn = SDSColumnMetadata(columnName: "authorUUID", columnType: .unicodeString, isOptional: true, columnIndex: 9)
-    static let beforeInteractionIdColumn = SDSColumnMetadata(columnName: "beforeInteractionId", columnType: .unicodeString, isOptional: true, columnIndex: 10)
-    static let bodyColumn = SDSColumnMetadata(columnName: "body", columnType: .unicodeString, isOptional: true, columnIndex: 11)
-    static let callSchemaVersionColumn = SDSColumnMetadata(columnName: "callSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 12)
-    static let callTypeColumn = SDSColumnMetadata(columnName: "callType", columnType: .int, isOptional: true, columnIndex: 13)
-    static let configurationDurationSecondsColumn = SDSColumnMetadata(columnName: "configurationDurationSeconds", columnType: .int64, isOptional: true, columnIndex: 14)
-    static let configurationIsEnabledColumn = SDSColumnMetadata(columnName: "configurationIsEnabled", columnType: .int, isOptional: true, columnIndex: 15)
-    static let contactIdColumn = SDSColumnMetadata(columnName: "contactId", columnType: .unicodeString, isOptional: true, columnIndex: 16)
-    static let contactShareColumn = SDSColumnMetadata(columnName: "contactShare", columnType: .blob, isOptional: true, columnIndex: 17)
-    static let createdByRemoteNameColumn = SDSColumnMetadata(columnName: "createdByRemoteName", columnType: .unicodeString, isOptional: true, columnIndex: 18)
-    static let createdInExistingGroupColumn = SDSColumnMetadata(columnName: "createdInExistingGroup", columnType: .int, isOptional: true, columnIndex: 19)
-    static let customMessageColumn = SDSColumnMetadata(columnName: "customMessage", columnType: .unicodeString, isOptional: true, columnIndex: 20)
-    static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob, isOptional: true, columnIndex: 21)
-    static let errorMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "errorMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 22)
-    static let errorTypeColumn = SDSColumnMetadata(columnName: "errorType", columnType: .int, isOptional: true, columnIndex: 23)
-    static let expireStartedAtColumn = SDSColumnMetadata(columnName: "expireStartedAt", columnType: .int64, isOptional: true, columnIndex: 24)
-    static let expiresAtColumn = SDSColumnMetadata(columnName: "expiresAt", columnType: .int64, isOptional: true, columnIndex: 25)
-    static let expiresInSecondsColumn = SDSColumnMetadata(columnName: "expiresInSeconds", columnType: .int64, isOptional: true, columnIndex: 26)
-    static let groupMetaMessageColumn = SDSColumnMetadata(columnName: "groupMetaMessage", columnType: .int, isOptional: true, columnIndex: 27)
-    static let hasAddToContactsOfferColumn = SDSColumnMetadata(columnName: "hasAddToContactsOffer", columnType: .int, isOptional: true, columnIndex: 28)
-    static let hasAddToProfileWhitelistOfferColumn = SDSColumnMetadata(columnName: "hasAddToProfileWhitelistOffer", columnType: .int, isOptional: true, columnIndex: 29)
-    static let hasBlockOfferColumn = SDSColumnMetadata(columnName: "hasBlockOffer", columnType: .int, isOptional: true, columnIndex: 30)
-    static let hasLegacyMessageStateColumn = SDSColumnMetadata(columnName: "hasLegacyMessageState", columnType: .int, isOptional: true, columnIndex: 31)
-    static let hasSyncedTranscriptColumn = SDSColumnMetadata(columnName: "hasSyncedTranscript", columnType: .int, isOptional: true, columnIndex: 32)
-    static let incomingMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "incomingMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 33)
-    static let infoMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "infoMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 34)
-    static let isFromLinkedDeviceColumn = SDSColumnMetadata(columnName: "isFromLinkedDevice", columnType: .int, isOptional: true, columnIndex: 35)
-    static let isLocalChangeColumn = SDSColumnMetadata(columnName: "isLocalChange", columnType: .int, isOptional: true, columnIndex: 36)
-    static let isViewOnceCompleteColumn = SDSColumnMetadata(columnName: "isViewOnceComplete", columnType: .int, isOptional: true, columnIndex: 37)
-    static let isViewOnceMessageColumn = SDSColumnMetadata(columnName: "isViewOnceMessage", columnType: .int, isOptional: true, columnIndex: 38)
-    static let isVoiceMessageColumn = SDSColumnMetadata(columnName: "isVoiceMessage", columnType: .int, isOptional: true, columnIndex: 39)
-    static let legacyMessageStateColumn = SDSColumnMetadata(columnName: "legacyMessageState", columnType: .int, isOptional: true, columnIndex: 40)
-    static let legacyWasDeliveredColumn = SDSColumnMetadata(columnName: "legacyWasDelivered", columnType: .int, isOptional: true, columnIndex: 41)
-    static let linkPreviewColumn = SDSColumnMetadata(columnName: "linkPreview", columnType: .blob, isOptional: true, columnIndex: 42)
-    static let messageIdColumn = SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true, columnIndex: 43)
-    static let messageStickerColumn = SDSColumnMetadata(columnName: "messageSticker", columnType: .blob, isOptional: true, columnIndex: 44)
-    static let messageTypeColumn = SDSColumnMetadata(columnName: "messageType", columnType: .int, isOptional: true, columnIndex: 45)
-    static let mostRecentFailureTextColumn = SDSColumnMetadata(columnName: "mostRecentFailureText", columnType: .unicodeString, isOptional: true, columnIndex: 46)
-    static let outgoingMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "outgoingMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 47)
-    static let preKeyBundleColumn = SDSColumnMetadata(columnName: "preKeyBundle", columnType: .blob, isOptional: true, columnIndex: 48)
-    static let protocolVersionColumn = SDSColumnMetadata(columnName: "protocolVersion", columnType: .int64, isOptional: true, columnIndex: 49)
-    static let quotedMessageColumn = SDSColumnMetadata(columnName: "quotedMessage", columnType: .blob, isOptional: true, columnIndex: 50)
-    static let readColumn = SDSColumnMetadata(columnName: "read", columnType: .int, isOptional: true, columnIndex: 51)
-    static let recipientAddressColumn = SDSColumnMetadata(columnName: "recipientAddress", columnType: .blob, isOptional: true, columnIndex: 52)
-    static let recipientAddressStatesColumn = SDSColumnMetadata(columnName: "recipientAddressStates", columnType: .blob, isOptional: true, columnIndex: 53)
-    static let schemaVersionColumn = SDSColumnMetadata(columnName: "schemaVersion", columnType: .int64, isOptional: true, columnIndex: 54)
-    static let senderColumn = SDSColumnMetadata(columnName: "sender", columnType: .blob, isOptional: true, columnIndex: 55)
-    static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true, columnIndex: 56)
-    static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int64, isOptional: true, columnIndex: 57)
-    static let storedMessageStateColumn = SDSColumnMetadata(columnName: "storedMessageState", columnType: .int, isOptional: true, columnIndex: 58)
-    static let storedShouldStartExpireTimerColumn = SDSColumnMetadata(columnName: "storedShouldStartExpireTimer", columnType: .int, isOptional: true, columnIndex: 59)
-    static let unknownProtocolVersionMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "unknownProtocolVersionMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 60)
-    static let unregisteredAddressColumn = SDSColumnMetadata(columnName: "unregisteredAddress", columnType: .blob, isOptional: true, columnIndex: 61)
-    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true, columnIndex: 62)
-    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true, columnIndex: 63)
+    static let attachmentIdsColumn = SDSColumnMetadata(columnName: "attachmentIds", columnType: .blob, isOptional: true, columnIndex: 8)
+    static let authorIdColumn = SDSColumnMetadata(columnName: "authorId", columnType: .unicodeString, isOptional: true, columnIndex: 9)
+    static let authorPhoneNumberColumn = SDSColumnMetadata(columnName: "authorPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 10)
+    static let authorUUIDColumn = SDSColumnMetadata(columnName: "authorUUID", columnType: .unicodeString, isOptional: true, columnIndex: 11)
+    static let beforeInteractionIdColumn = SDSColumnMetadata(columnName: "beforeInteractionId", columnType: .unicodeString, isOptional: true, columnIndex: 12)
+    static let bodyColumn = SDSColumnMetadata(columnName: "body", columnType: .unicodeString, isOptional: true, columnIndex: 13)
+    static let callSchemaVersionColumn = SDSColumnMetadata(columnName: "callSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 14)
+    static let callTypeColumn = SDSColumnMetadata(columnName: "callType", columnType: .int, isOptional: true, columnIndex: 15)
+    static let configurationDurationSecondsColumn = SDSColumnMetadata(columnName: "configurationDurationSeconds", columnType: .int64, isOptional: true, columnIndex: 16)
+    static let configurationIsEnabledColumn = SDSColumnMetadata(columnName: "configurationIsEnabled", columnType: .int, isOptional: true, columnIndex: 17)
+    static let contactIdColumn = SDSColumnMetadata(columnName: "contactId", columnType: .unicodeString, isOptional: true, columnIndex: 18)
+    static let contactShareColumn = SDSColumnMetadata(columnName: "contactShare", columnType: .blob, isOptional: true, columnIndex: 19)
+    static let createdByRemoteNameColumn = SDSColumnMetadata(columnName: "createdByRemoteName", columnType: .unicodeString, isOptional: true, columnIndex: 20)
+    static let createdInExistingGroupColumn = SDSColumnMetadata(columnName: "createdInExistingGroup", columnType: .int, isOptional: true, columnIndex: 21)
+    static let customMessageColumn = SDSColumnMetadata(columnName: "customMessage", columnType: .unicodeString, isOptional: true, columnIndex: 22)
+    static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob, isOptional: true, columnIndex: 23)
+    static let errorMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "errorMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 24)
+    static let errorTypeColumn = SDSColumnMetadata(columnName: "errorType", columnType: .int, isOptional: true, columnIndex: 25)
+    static let expireStartedAtColumn = SDSColumnMetadata(columnName: "expireStartedAt", columnType: .int64, isOptional: true, columnIndex: 26)
+    static let expiresAtColumn = SDSColumnMetadata(columnName: "expiresAt", columnType: .int64, isOptional: true, columnIndex: 27)
+    static let expiresInSecondsColumn = SDSColumnMetadata(columnName: "expiresInSeconds", columnType: .int64, isOptional: true, columnIndex: 28)
+    static let groupMetaMessageColumn = SDSColumnMetadata(columnName: "groupMetaMessage", columnType: .int, isOptional: true, columnIndex: 29)
+    static let hasAddToContactsOfferColumn = SDSColumnMetadata(columnName: "hasAddToContactsOffer", columnType: .int, isOptional: true, columnIndex: 30)
+    static let hasAddToProfileWhitelistOfferColumn = SDSColumnMetadata(columnName: "hasAddToProfileWhitelistOffer", columnType: .int, isOptional: true, columnIndex: 31)
+    static let hasBlockOfferColumn = SDSColumnMetadata(columnName: "hasBlockOffer", columnType: .int, isOptional: true, columnIndex: 32)
+    static let hasLegacyMessageStateColumn = SDSColumnMetadata(columnName: "hasLegacyMessageState", columnType: .int, isOptional: true, columnIndex: 33)
+    static let hasSyncedTranscriptColumn = SDSColumnMetadata(columnName: "hasSyncedTranscript", columnType: .int, isOptional: true, columnIndex: 34)
+    static let incomingMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "incomingMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 35)
+    static let infoMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "infoMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 36)
+    static let isFromLinkedDeviceColumn = SDSColumnMetadata(columnName: "isFromLinkedDevice", columnType: .int, isOptional: true, columnIndex: 37)
+    static let isLocalChangeColumn = SDSColumnMetadata(columnName: "isLocalChange", columnType: .int, isOptional: true, columnIndex: 38)
+    static let isViewOnceCompleteColumn = SDSColumnMetadata(columnName: "isViewOnceComplete", columnType: .int, isOptional: true, columnIndex: 39)
+    static let isViewOnceMessageColumn = SDSColumnMetadata(columnName: "isViewOnceMessage", columnType: .int, isOptional: true, columnIndex: 40)
+    static let isVoiceMessageColumn = SDSColumnMetadata(columnName: "isVoiceMessage", columnType: .int, isOptional: true, columnIndex: 41)
+    static let legacyMessageStateColumn = SDSColumnMetadata(columnName: "legacyMessageState", columnType: .int, isOptional: true, columnIndex: 42)
+    static let legacyWasDeliveredColumn = SDSColumnMetadata(columnName: "legacyWasDelivered", columnType: .int, isOptional: true, columnIndex: 43)
+    static let linkPreviewColumn = SDSColumnMetadata(columnName: "linkPreview", columnType: .blob, isOptional: true, columnIndex: 44)
+    static let messageIdColumn = SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true, columnIndex: 45)
+    static let messageStickerColumn = SDSColumnMetadata(columnName: "messageSticker", columnType: .blob, isOptional: true, columnIndex: 46)
+    static let messageTypeColumn = SDSColumnMetadata(columnName: "messageType", columnType: .int, isOptional: true, columnIndex: 47)
+    static let mostRecentFailureTextColumn = SDSColumnMetadata(columnName: "mostRecentFailureText", columnType: .unicodeString, isOptional: true, columnIndex: 48)
+    static let outgoingMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "outgoingMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 49)
+    static let preKeyBundleColumn = SDSColumnMetadata(columnName: "preKeyBundle", columnType: .blob, isOptional: true, columnIndex: 50)
+    static let protocolVersionColumn = SDSColumnMetadata(columnName: "protocolVersion", columnType: .int64, isOptional: true, columnIndex: 51)
+    static let quotedMessageColumn = SDSColumnMetadata(columnName: "quotedMessage", columnType: .blob, isOptional: true, columnIndex: 52)
+    static let readColumn = SDSColumnMetadata(columnName: "read", columnType: .int, isOptional: true, columnIndex: 53)
+    static let recipientAddressColumn = SDSColumnMetadata(columnName: "recipientAddress", columnType: .blob, isOptional: true, columnIndex: 54)
+    static let recipientAddressStatesColumn = SDSColumnMetadata(columnName: "recipientAddressStates", columnType: .blob, isOptional: true, columnIndex: 55)
+    static let schemaVersionColumn = SDSColumnMetadata(columnName: "schemaVersion", columnType: .int64, isOptional: true, columnIndex: 56)
+    static let senderColumn = SDSColumnMetadata(columnName: "sender", columnType: .blob, isOptional: true, columnIndex: 57)
+    static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true, columnIndex: 58)
+    static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int64, isOptional: true, columnIndex: 59)
+    static let storedMessageStateColumn = SDSColumnMetadata(columnName: "storedMessageState", columnType: .int, isOptional: true, columnIndex: 60)
+    static let storedShouldStartExpireTimerColumn = SDSColumnMetadata(columnName: "storedShouldStartExpireTimer", columnType: .int, isOptional: true, columnIndex: 61)
+    static let unknownProtocolVersionMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "unknownProtocolVersionMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 62)
+    static let unregisteredAddressColumn = SDSColumnMetadata(columnName: "unregisteredAddress", columnType: .blob, isOptional: true, columnIndex: 63)
+    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true, columnIndex: 64)
+    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true, columnIndex: 65)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -1347,6 +1427,8 @@ extension TSInteractionSerializer {
         recordTypeColumn,
         uniqueIdColumn,
         receivedAtTimestampColumn,
+        storedShouldAffectUnreadCountsColumn,
+        storedShouldAppearInHomeViewColumn,
         timestampColumn,
         uniqueThreadIdColumn,
         attachmentIdsColumn,
@@ -1804,6 +1886,8 @@ class TSInteractionSerializer: SDSSerializer {
 
         // Base class properties
         let receivedAtTimestamp: UInt64 = model.receivedAtTimestamp
+        let storedShouldAffectUnreadCounts: Bool = model.storedShouldAffectUnreadCounts
+        let storedShouldAppearInHomeView: Bool = model.storedShouldAppearInHomeView
         let timestamp: UInt64 = model.timestamp
         let threadUniqueId: String = model.uniqueThreadId
 
@@ -1867,6 +1951,6 @@ class TSInteractionSerializer: SDSSerializer {
         let verificationState: OWSVerificationState? = nil
         let wasReceivedByUD: Bool? = nil
 
-        return InteractionRecord(id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, beforeInteractionId: beforeInteractionId, body: body, callSchemaVersion: callSchemaVersion, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactId: contactId, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorMessageSchemaVersion: errorMessageSchemaVersion, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasAddToContactsOffer: hasAddToContactsOffer, hasAddToProfileWhitelistOffer: hasAddToProfileWhitelistOffer, hasBlockOffer: hasBlockOffer, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, incomingMessageSchemaVersion: incomingMessageSchemaVersion, infoMessageSchemaVersion: infoMessageSchemaVersion, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, outgoingMessageSchemaVersion: outgoingMessageSchemaVersion, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, schemaVersion: schemaVersion, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unknownProtocolVersionMessageSchemaVersion: unknownProtocolVersionMessageSchemaVersion, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD)
+        return InteractionRecord(id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, storedShouldAffectUnreadCounts: storedShouldAffectUnreadCounts, storedShouldAppearInHomeView: storedShouldAppearInHomeView, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, beforeInteractionId: beforeInteractionId, body: body, callSchemaVersion: callSchemaVersion, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactId: contactId, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorMessageSchemaVersion: errorMessageSchemaVersion, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasAddToContactsOffer: hasAddToContactsOffer, hasAddToProfileWhitelistOffer: hasAddToProfileWhitelistOffer, hasBlockOffer: hasBlockOffer, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, incomingMessageSchemaVersion: incomingMessageSchemaVersion, infoMessageSchemaVersion: infoMessageSchemaVersion, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, outgoingMessageSchemaVersion: outgoingMessageSchemaVersion, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, schemaVersion: schemaVersion, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unknownProtocolVersionMessageSchemaVersion: unknownProtocolVersionMessageSchemaVersion, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD)
     }
 }

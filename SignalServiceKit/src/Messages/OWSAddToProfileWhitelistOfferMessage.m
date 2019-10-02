@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
+  storedShouldAffectUnreadCounts:(BOOL)storedShouldAffectUnreadCounts
+    storedShouldAppearInHomeView:(BOOL)storedShouldAppearInHomeView
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
                    attachmentIds:(NSArray<NSString *> *)attachmentIds
@@ -48,6 +50,8 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super initWithUniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
                             sortId:sortId
+    storedShouldAffectUnreadCounts:storedShouldAffectUnreadCounts
+      storedShouldAppearInHomeView:storedShouldAppearInHomeView
                          timestamp:timestamp
                     uniqueThreadId:uniqueThreadId
                      attachmentIds:attachmentIds
