@@ -250,10 +250,10 @@ public class SignalAttachment: NSObject {
         if let dataUrl = dataUrl {
             if isVideo {
                 let resolution = OWSMediaUtils.videoResolution(url: dataUrl)
-                return "\(string), resolution: \(resolution)"
+                return "\(string), resolution: \(resolution), aspectRatio: \(resolution.aspectRatio)"
             } else if isImage {
                 let resolution = NSData.imageSize(forFilePath: dataUrl.path, mimeType: nil)
-                return "\(string), resolution: \(resolution)"
+                return "\(string), resolution: \(resolution), aspectRatio: \(resolution.aspectRatio)"
             }
         }
         #endif

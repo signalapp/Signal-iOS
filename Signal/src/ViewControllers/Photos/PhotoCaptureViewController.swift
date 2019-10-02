@@ -315,7 +315,6 @@ class PhotoCaptureViewController: OWSViewController {
     private func setupPhotoCapture() {
         photoCapture.delegate = self
         captureButton.delegate = photoCapture
-        previewView.contentMode = .scaleAspectFill
 
         let captureReady = { [weak self] in
             guard let self = self else { return }
@@ -340,12 +339,14 @@ class PhotoCaptureViewController: OWSViewController {
     private func showCaptureUI() {
         Logger.debug("")
         view.addSubview(previewView)
-        if UIDevice.current.isIPad {
-            previewView.autoPinEdgesToSuperviewEdges()
-        } else {
-            let bottomOffset: CGFloat = CaptureButton.recordingDiameter + 16 + view.layoutMargins.bottom
-            previewView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 0, leading: 0, bottom: bottomOffset, trailing: 0), excludingEdge: .top)
-            previewView.autoPin(toAspectRatio: 3/4)
+
+        previewView.autoPinWidthToSuperview()
+        previewView.autoPinEdge(toSuperviewMargin: .bottom)
+        previewView.autoPin(toAspectRatio: 9/16, relation: .greaterThanOrEqual)
+        previewView.autoPin(toAspectRatio: 3/4, relation: .lessThanOrEqual)
+        previewView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
+        NSLayoutConstraint.autoSetPriority(.defaultLow) {
+            previewView.autoPinEdge(toSuperviewEdge: .top)
         }
 
         view.addSubview(captureButton)
@@ -692,7 +693,7 @@ class CapturePreviewView: UIView {
     init(session: AVCaptureSession) {
         previewLayer = AVCaptureVideoPreviewLayer(session: session)
         super.init(frame: .zero)
-        self.contentMode = .scaleAspectFit
+        self.contentMode = .scaleAspectFill
         previewLayer.frame = bounds
         layer.addSublayer(previewLayer)
     }
