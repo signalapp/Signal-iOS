@@ -63,7 +63,7 @@ public final class LokiGroupMessage : NSObject {
     
     // MARK: Crypto
     internal func sign(with privateKey: Data) -> LokiGroupMessage? {
-        guard let data = getValidationData() else {
+        guard let data = getValidationData(for: signatureVersion) else {
             print("[Loki] Failed to sign group chat message.")
             return nil
         }
@@ -78,7 +78,7 @@ public final class LokiGroupMessage : NSObject {
     
     internal func hasValidSignature() -> Bool {
         guard let signature = signature else { return false }
-        guard let data = getValidationData() else { return false }
+        guard let data = getValidationData(for: signature.version) else { return false }
         return (try? Ed25519.verifySignature(signature.data, publicKey: Data(hex: hexEncodedPublicKey), data: data)) ?? false
     }
     
@@ -101,7 +101,7 @@ public final class LokiGroupMessage : NSObject {
     }
     
     // MARK: Convenience
-    private func getValidationData() -> Data? {
+    private func getValidationData(for signatureVersion: UInt64) -> Data? {
         var string = "\(body.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines))\(timestamp)"
         if let quote = quote {
             string += "\(quote.quotedMessageTimestamp)\(quote.quoteeHexEncodedPublicKey)\(quote.quotedMessageBody.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines))"
