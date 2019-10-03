@@ -85,13 +85,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable UIImage *)groupAvatarImageWithBackgroundColor:(UIColor *)backgroundColor diameter:(NSUInteger)diameter
 {
-    UIImage *icon = [UIImage imageNamed:@"group-avatar"];
-    // The group-avatar asset is designed for the kStandardAvatarSize.
-    // Adjust its size to reflect the actual output diameter.
-    CGFloat scaling = diameter / (CGFloat)kStandardAvatarSize;
+    UIImage *icon = [UIImage imageNamed:@"group-outline-40"];
+    // Adjust asset size to reflect the output diameter.
+    CGFloat scaling = diameter / (CGFloat)52;
     CGSize iconSize = CGSizeScale(icon.size, scaling);
-    return
-        [OWSAvatarBuilder avatarImageWithIcon:icon iconSize:iconSize backgroundColor:backgroundColor diameter:diameter];
+    return [OWSAvatarBuilder avatarImageWithIcon:icon
+                                        iconSize:iconSize
+                                 backgroundColor:backgroundColor
+                                        diameter:diameter];
 }
 
 @end
