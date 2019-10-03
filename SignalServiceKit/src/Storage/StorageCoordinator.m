@@ -151,6 +151,8 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
 
     OWSLogInfo(@"state: %@", NSStringFromStorageCoordinatorState(self.state));
 
+    [self.databaseStorage logAllFileSizes];
+
     // Don't set this flag for "throwaway" migrations.
     if (SSKFeatureFlags.storageMode == StorageModeGrdb) {
         [SSKPreferences setIsYdbMigrated:YES];
