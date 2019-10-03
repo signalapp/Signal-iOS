@@ -901,60 +901,74 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 {
     OWSAssertDebug(addresses);
 
-    NSMutableSet<SignalServiceAddress *> *newAddresses = [NSMutableSet new];
-    [self.databaseStorage
-        asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            for (SignalServiceAddress *address in addresses) {
-
-                // Normally we add all system contacts to the whitelist, but we don't want to do that for
-                // blocked contacts.
-                if ([self.blockingManager isAddressBlocked:address]) {
-                    continue;
+    // Try to avoid opening a write transaction.
+    [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction * readTransaction) {
+        NSMutableSet<SignalServiceAddress *> *newAddresses = [NSMutableSet new];
+        for (SignalServiceAddress *address in addresses) {
+            
+            // Normally we add all system contacts to the whitelist, but we don't want to do that for
+            // blocked contacts.
+            if ([self.blockingManager isAddressBlocked:address]) {
+                continue;
+            }
+            
+            // We want to add both the UUID and the phone number to the white list.
+            // It's possible we white listed one but not both, so we check each.
+            
+            BOOL shouldAdd = NO;
+            if (address.uuidString) {
+                BOOL currentlyWhitelisted =
+                [self.whitelistedUUIDsStore hasValueForKey:address.uuidString transaction:readTransaction];
+                if (!currentlyWhitelisted) {
+                    shouldAdd = YES;
                 }
-
-                BOOL updatedCollection = NO;
-
-                // We want to add both the UUID and the phone number to the white list.
-                // It's possible we white listed one but not both, so we check each.
-
-                if (address.uuidString) {
-                    BOOL currentlyWhitelisted =
-                        [self.whitelistedUUIDsStore hasValueForKey:address.uuidString transaction:transaction];
-                    if (!currentlyWhitelisted) {
-                        [self.whitelistedUUIDsStore setBool:YES key:address.uuidString transaction:transaction];
-                        updatedCollection = YES;
-                    }
+            }
+            
+            if (address.phoneNumber) {
+                BOOL currentlyWhitelisted =
+                [self.whitelistedPhoneNumbersStore hasValueForKey:address.phoneNumber transaction:readTransaction];
+                if (!currentlyWhitelisted) {
+                    shouldAdd = YES;
                 }
-
-                if (address.phoneNumber) {
-                    BOOL currentlyWhitelisted =
-                        [self.whitelistedPhoneNumbersStore hasValueForKey:address.phoneNumber transaction:transaction];
-                    if (!currentlyWhitelisted) {
-                        [self.whitelistedPhoneNumbersStore setBool:YES key:address.phoneNumber transaction:transaction];
-                        updatedCollection = YES;
-                    }
-                }
-
-                if (updatedCollection) {
-                    [newAddresses addObject:address];
-                }
+            }
+            
+            if (shouldAdd) {
+                [newAddresses addObject:address];
             }
         }
-        completion:^{
-            // Mark the new whitelisted addresses for update
-            if (newAddresses.count > 0) {
-                [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedAddresses:newAddresses.allObjects];
-            }
-
-            for (SignalServiceAddress *address in newAddresses) {
-                [[NSNotificationCenter defaultCenter]
-                    postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                                       object:nil
-                                     userInfo:@ {
-                                         kNSNotificationKey_ProfileAddress : address,
-                                     }];
-            }
-        }];
+        
+        if (newAddresses.count < 1) {
+            return;
+        }
+        
+        [self.databaseStorage
+         asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
+             for (SignalServiceAddress *address in newAddresses) {
+                 if (address.uuidString) {
+                     [self.whitelistedUUIDsStore setBool:YES key:address.uuidString transaction:writeTransaction];
+                 }
+                 
+                 if (address.phoneNumber) {
+                     [self.whitelistedPhoneNumbersStore setBool:YES key:address.phoneNumber transaction:writeTransaction];
+                 }
+             }
+         }
+         completion:^{
+             // Mark the new whitelisted addresses for update
+             if (newAddresses.count > 0) {
+                 [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedAddresses:newAddresses.allObjects];
+             }
+             
+             for (SignalServiceAddress *address in newAddresses) {
+                 [[NSNotificationCenter defaultCenter]
+                  postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+                  object:nil
+                  userInfo:@ {
+                      kNSNotificationKey_ProfileAddress : address,
+                  }];
+             }
+         }];
+    }];
 }
 
 - (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
@@ -986,26 +1000,25 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
     NSString *groupIdKey = [self groupKeyForGroupId:groupId];
 
-    __block BOOL didChange = NO;
-    [self.databaseStorage
-        asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            if ([self.whitelistedGroupsStore hasValueForKey:groupIdKey transaction:transaction]) {
-                // Do nothing.
-            } else {
-                [self.whitelistedGroupsStore setBool:YES key:groupIdKey transaction:transaction];
-                didChange = YES;
-            }
+    // Try to avoid opening a write transaction.
+    [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction * readTransaction) {
+        if ([self.whitelistedGroupsStore hasValueForKey:groupIdKey transaction:readTransaction]) {
+            // Do nothing.
+            return;
         }
-        completion:^{
-            if (didChange) {
-                [[NSNotificationCenter defaultCenter]
-                    postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                                       object:nil
-                                     userInfo:@{
-                                         kNSNotificationKey_ProfileGroupId : groupId,
-                                     }];
-            }
-        }];
+        [self.databaseStorage
+         asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
+             [self.whitelistedGroupsStore setBool:YES key:groupIdKey transaction:writeTransaction];
+         }
+         completion:^{
+             [[NSNotificationCenter defaultCenter]
+              postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+              object:nil
+              userInfo:@{
+                         kNSNotificationKey_ProfileGroupId : groupId,
+                         }];
+         }];
+    }];
 }
 
 - (void)addThreadToProfileWhitelist:(TSThread *)thread
@@ -1021,9 +1034,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         // also add all current members to the profile whitelist
         // individually as well just in case delivery of the profile key
         // fails.
-        for (SignalServiceAddress *address in groupThread.recipientAddresses) {
-            [self addUserToProfileWhitelist:address];
-        }
+        [self addUsersToProfileWhitelist:groupThread.recipientAddresses];
     } else {
         TSContactThread *contactThread = (TSContactThread *)thread;
         [self addUserToProfileWhitelist:contactThread.contactAddress];
