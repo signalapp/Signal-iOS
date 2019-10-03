@@ -20,6 +20,7 @@ public class SignalServiceProfile: NSObject {
     public let avatarUrlPath: String?
     public let unidentifiedAccessVerifier: Data?
     public let hasUnrestrictedUnidentifiedAccess: Bool
+    public let supportsUUID: Bool
 
     public init(address: SignalServiceAddress?, responseObject: Any?) throws {
         guard let params = ParamParser(responseObject: responseObject) else {
@@ -59,5 +60,15 @@ public class SignalServiceProfile: NSObject {
         self.unidentifiedAccessVerifier = try params.optionalBase64EncodedData(key: "unidentifiedAccess")
 
         self.hasUnrestrictedUnidentifiedAccess = try params.optional(key: "unrestrictedUnidentifiedAccess") ?? false
+
+        if FeatureFlags.uuidCapabilities {
+            guard let capabilities = ParamParser(responseObject: try params.required(key: "capabilities")) else {
+                owsFailDebug("invalid capabilities")
+                throw ValidationError.invalid(description: "invalid capabilities: \(String(describing: params))")
+            }
+            self.supportsUUID = try capabilities.required(key: "uuid")
+        } else {
+            self.supportsUUID = false
+        }
     }
 }

@@ -107,6 +107,9 @@ public class FeatureFlags: NSObject {
     public static let preserveYdb = true
 
     @objc
+    public static let uuidCapabilities = !IsUsingProductionService()
+
+    @objc
     public static var audibleErrorLogging = build.includes(.internalPreview)
 
     @objc
