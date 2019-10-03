@@ -510,7 +510,7 @@ public class GRDBKeyValueStoreMigrator<T>: GRDBMigrator {
     public func migrate(grdbTransaction: GRDBWriteTransaction) throws {
         let count = self.count
         Logger.info("\(label): \(count)")
-        try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count)) { memorySampler in
+        try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count), logInProduction: true) { memorySampler in
             var recordCount = 0
             try finder.enumerateLegacyKeysAndObjects { legacyKey, legacyObject in
                 recordCount += 1
@@ -544,7 +544,7 @@ public class GRDBUnorderedRecordMigrator<T>: GRDBMigrator where T: SDSModel {
     public func migrate(grdbTransaction: GRDBWriteTransaction) throws {
         let count = self.count
         Logger.info("\(label): \(count)")
-        try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count)) { memorySampler in
+        try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count), logInProduction: true) { memorySampler in
             var recordCount = 0
             try finder.enumerateLegacyObjects { legacyRecord in
                 recordCount += 1
@@ -574,7 +574,7 @@ public class GRDBJobRecordMigrator: GRDBMigrator {
     public func migrate(grdbTransaction: GRDBWriteTransaction) throws {
         let count = self.count
         Logger.info("\(label): \(count)")
-        try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count)) { memorySampler in
+        try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count), logInProduction: true) { memorySampler in
             var recordCount = 0
             try finder.enumerateJobRecords { legacyRecord in
                 recordCount += 1
@@ -604,7 +604,7 @@ public class GRDBInteractionMigrator: GRDBMigrator {
     public func migrate(grdbTransaction: GRDBWriteTransaction) throws {
         let count = self.count
         Logger.info("\(label): \(count)")
-        try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count)) { memorySampler in
+        try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count), logInProduction: true) { memorySampler in
             var recordCount = 0
             try finder.enumerateLegacyObjects { legacyInteraction in
                 legacyInteraction.anyInsert(transaction: grdbTransaction.asAnyWrite)
@@ -637,7 +637,7 @@ public class GRDBDecryptJobMigrator: GRDBMigrator {
     public func migrate(grdbTransaction: GRDBWriteTransaction) throws {
         let count = self.count
         Logger.info("\(label): \(count)")
-        try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count)) { memorySampler in
+        try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count), logInProduction: true) { memorySampler in
             var recordCount = 0
             try finder.enumerateJobRecords { legacyJob in
                 let newJob = SSKMessageDecryptJobRecord(envelopeData: legacyJob.envelopeData, label: SSKMessageDecryptJobQueue.jobRecordLabel)

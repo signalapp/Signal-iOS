@@ -43,7 +43,7 @@ public func BenchAsync(title: String, block: (@escaping () -> Void) -> Void) {
 ///        }
 ///    }
 ///
-public func Bench<T>(title: String, logIfLongerThan intervalLimit: TimeInterval = 0, block: () throws -> T) rethrows -> T {
+public func Bench<T>(title: String, logIfLongerThan intervalLimit: TimeInterval = 0, logInProduction: Bool = false, block: () throws -> T) rethrows -> T {
     let startTime = CACurrentMediaTime()
 
     let value = try block()
@@ -52,7 +52,12 @@ public func Bench<T>(title: String, logIfLongerThan intervalLimit: TimeInterval 
 
     if timeElapsed > intervalLimit {
         let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
-        Logger.debug("[Bench] title: \(title), duration: \(formattedTime)")
+        let logMessage = "[Bench] title: \(title), duration: \(formattedTime)"
+        if logInProduction {
+            Logger.info(logMessage)
+        } else {
+            Logger.debug(logMessage)
+        }
     }
 
     return value
@@ -91,9 +96,10 @@ public protocol MemorySampler {
 ///
 public func Bench(title: String,
                   memorySamplerRatio: Float,
+                  logInProduction: Bool = false,
                   block: (MemorySampler) throws -> Void) rethrows {
     let memoryBencher = MemoryBencher(title: title, sampleRatio: memorySamplerRatio)
-    try Bench(title: title) {
+    try Bench(title: title, logInProduction: logInProduction) {
         try block(memoryBencher)
         memoryBencher.complete()
     }
