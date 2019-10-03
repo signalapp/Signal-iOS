@@ -131,9 +131,7 @@ struct GRDBThreadFinder: ThreadFinder {
             WHERE \(interactionColumn: .storedShouldAppearInHomeView) == 1
             AND \(interactionColumn: .threadUniqueId) = ?
         """
-        let arguments: StatementArguments = [TSErrorMessageType.nonBlockingIdentityChange.rawValue,
-                                             TSInfoMessageType.verificationStateChange.rawValue,
-                                             threadId]
+        let arguments: StatementArguments = [threadId]
         return try Int64.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? nil
     }
 }
