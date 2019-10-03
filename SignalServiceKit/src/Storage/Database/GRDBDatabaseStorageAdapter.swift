@@ -666,38 +666,6 @@ private struct GRDBKeySpecSource {
 
 // MARK: -
 
-@objc
-public extension SDSDatabaseStorage {
-    var databaseFileSize: UInt64 {
-        switch dataStoreForReporting {
-        case .grdb:
-            return grdbStorage.databaseFileSize
-        case .ydb:
-            return OWSPrimaryStorage.shared?.databaseFileSize() ?? 0
-        }
-    }
-
-    var databaseWALFileSize: UInt64 {
-        switch dataStoreForReporting {
-        case .grdb:
-            return grdbStorage.databaseWALFileSize
-        case .ydb:
-            return OWSPrimaryStorage.shared?.databaseWALFileSize() ?? 0
-        }
-    }
-
-    var databaseSHMFileSize: UInt64 {
-        switch dataStoreForReporting {
-        case .grdb:
-            return grdbStorage.databaseSHMFileSize
-        case .ydb:
-            return OWSPrimaryStorage.shared?.databaseSHMFileSize() ?? 0
-        }
-    }
-}
-
-// MARK: -
-
 extension GRDBDatabaseStorageAdapter {
     var databaseFilePath: String {
         return databaseUrl.path

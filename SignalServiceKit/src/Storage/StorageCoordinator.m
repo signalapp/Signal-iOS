@@ -138,6 +138,8 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
     OWSAssert(self.state == StorageCoordinatorStateBeforeYDBToGRDBMigration);
 
     self.state = StorageCoordinatorStateDuringYDBToGRDBMigration;
+    
+    [self.databaseStorage logAllFileSizes];
 
     OWSLogInfo(@"state: %@", NSStringFromStorageCoordinatorState(self.state));
 }
@@ -150,6 +152,8 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
     self.state = StorageCoordinatorStateGRDB;
 
     OWSLogInfo(@"state: %@", NSStringFromStorageCoordinatorState(self.state));
+
+    [self.databaseStorage logAllFileSizes];
 
     // Don't set this flag for "throwaway" migrations.
     if (SSKFeatureFlags.storageMode == StorageModeGrdb) {
