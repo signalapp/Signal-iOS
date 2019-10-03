@@ -14,6 +14,11 @@ final class SeedModal : Modal {
     }()
     
     // MARK: Lifecycle
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        Analytics.shared.track("Seed Modal Shown")
+    }
+    
     override func populateContentView() {
         // Label
         let titleLabel = UILabel()

@@ -109,7 +109,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
         assert(self.durableOperationDelegate != nil)
 
         /* Loki: Original code
-         * We don't want to delete session. Ref: SignalServiceKit/Loki/Docs/SessionReset.md
+         * We don't want to delete the session. Ref: SignalServiceKit/Loki/Docs/SessionReset.md
          * ================
         if firstAttempt {
             self.dbConnection.readWrite { transaction in

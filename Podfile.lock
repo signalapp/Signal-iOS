@@ -56,7 +56,6 @@ PODS:
   - HKDFKit/Tests (0.0.4):
     - CocoaLumberjack
     - SignalCoreKit
-  - IGIdenticon (0.6)
   - libPhoneNumber-iOS (0.9.13)
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
@@ -220,7 +219,6 @@ DEPENDENCIES:
   - GRKOpenSSLFramework (from `https://github.com/signalapp/GRKOpenSSLFramework`)
   - HKDFKit (from `https://github.com/signalapp/HKDFKit.git`)
   - HKDFKit/Tests (from `https://github.com/signalapp/HKDFKit.git`)
-  - IGIdenticon
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
   - Mixpanel (~> 3.4)
   - NVActivityIndicatorView (~> 4.7)
@@ -250,7 +248,6 @@ SPEC REPOS:
     - FirebaseCore
     - GCDWebServer
     - GoogleUtilities
-    - IGIdenticon
     - libPhoneNumber-iOS
     - Mixpanel
     - NVActivityIndicatorView
@@ -332,7 +329,6 @@ SPEC CHECKSUMS:
   GoogleUtilities: 996e0db07153674fd1b54b220fda3a3dc3547cba
   GRKOpenSSLFramework: 8a3735ad41e7dc1daff460467bccd32ca5d6ae3e
   HKDFKit: 3b6dbbb9d59c221cc6c52c3aa915700cbf24e376
-  IGIdenticon: 5790befde4fe56296927c72c0efed3d07b21de8e
   libPhoneNumber-iOS: e444379ac18bbfbdefad571da735b2cd7e096caa
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   Mixpanel: 696e0a1c7f2685aa06bb23829b7a58ab7203d6c7
@@ -351,6 +347,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: ff66104e65cc960ed08a74b71c27f5caf59f4239
+PODFILE CHECKSUM: 156b349e2791f53224143291e318592b9c1f7ade
 
 COCOAPODS: 1.5.3

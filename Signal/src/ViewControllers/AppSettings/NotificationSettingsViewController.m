@@ -9,6 +9,7 @@
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSSounds.h>
 #import <SignalMessaging/UIUtil.h>
+#import "Session-Swift.h"
 
 @implementation NotificationSettingsViewController
 
@@ -19,6 +20,8 @@
     [self setTitle:NSLocalizedString(@"SETTINGS_NOTIFICATIONS", nil)];
 
     [self updateTableContents];
+    
+    [LKAnalytics.shared track:@"Notification Settings Opened"];
 }
 
 - (void)viewDidAppear:(BOOL)animated

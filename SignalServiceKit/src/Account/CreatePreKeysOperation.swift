@@ -29,7 +29,7 @@ public class CreatePreKeysOperation: OWSOperation {
         
         // Loki: We don't generate PreKeyRecords here.
         // This is because we need the records to be linked to a contact since we don't have a central server.
-        // It is done automatically when we generate a PreKeyBundle to send to a contact (`generatePreKeyBundleForContact:`).
+        // It's done automatically when we generate a pre key bundle to send to a contact (`generatePreKeyBundleForContact:`).
         // You can use `getOrCreatePreKeyForContact:` to generate one if needed.
         let signedPreKeyRecord = primaryStorage.generateRandomSignedRecord()
         signedPreKeyRecord.markAsAcceptedByService()

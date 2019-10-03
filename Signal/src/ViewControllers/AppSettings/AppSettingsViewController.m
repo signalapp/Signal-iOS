@@ -21,6 +21,7 @@
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
+#import "Session-Swift.h"
 
 @interface AppSettingsViewController ()
 
@@ -91,6 +92,8 @@
     self.title = NSLocalizedString(@"SETTINGS_NAV_BAR_TITLE", @"Title for settings activity");
 
     [self updateTableContents];
+    
+    [LKAnalytics.shared track:@"Settings Opened"];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -501,9 +504,10 @@
 
 - (void)sharePublicKey
 {
-    NSString *publicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-    UIActivityViewController *shareVC = [[UIActivityViewController alloc] initWithActivityItems:@[ publicKey ] applicationActivities:nil];
+    NSString *hexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    UIActivityViewController *shareVC = [[UIActivityViewController alloc] initWithActivityItems:@[ hexEncodedPublicKey ] applicationActivities:nil];
     [self presentViewController:shareVC animated:YES completion:nil];
+    [LKAnalytics.shared track:@"Public Key Shared"];
 }
 
 - (void)showQRCode

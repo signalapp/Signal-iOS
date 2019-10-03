@@ -45,7 +45,7 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     [edgesView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [edgesView autoPinWidthToSuperview];
 
-    UIImage *image = [UIImage imageNamed:@"LokiLogo"];
+    UIImage *image = [UIImage imageNamed:@"Loki"];
     UIImageView *imageView = [UIImageView new];
     imageView.image = image;
     [edgesView addSubview:imageView];

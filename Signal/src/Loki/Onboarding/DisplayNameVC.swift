@@ -50,6 +50,7 @@ final class DisplayNameVC : OnboardingBaseViewController {
         stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
         autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
         topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
+        Analytics.shared.track("Display Name Screen Viewed")
     }
     
     override func viewDidAppear(_ animated: Bool) {

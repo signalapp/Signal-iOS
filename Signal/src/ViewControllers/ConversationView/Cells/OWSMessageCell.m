@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) OWSMessageBubbleView *messageBubbleView;
 @property (nonatomic) NSLayoutConstraint *messageBubbleViewBottomConstraint;
 @property (nonatomic) AvatarImageView *avatarView;
-@property (nonatomic) UIImageView *moderatorIconView;
+@property (nonatomic) UIImageView *moderatorIconImageView;
 @property (nonatomic, nullable) LKFriendRequestView *friendRequestView;
 @property (nonatomic, nullable) UIImageView *sendFailureBadgeView;
 
@@ -62,10 +62,10 @@ NS_ASSUME_NONNULL_BEGIN
     [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
     [self.avatarView autoSetDimension:ALDimensionHeight toSize:self.avatarSize];
 
-    self.moderatorIconView = [[UIImageView alloc] init];
-    [self.moderatorIconView autoSetDimension:ALDimensionWidth toSize:20.f];
-    [self.moderatorIconView autoSetDimension:ALDimensionHeight toSize:20.f];
-    self.moderatorIconView.hidden = YES;
+    self.moderatorIconImageView = [[UIImageView alloc] init];
+    [self.moderatorIconImageView autoSetDimension:ALDimensionWidth toSize:20.f];
+    [self.moderatorIconImageView autoSetDimension:ALDimensionHeight toSize:20.f];
+    self.moderatorIconImageView.hidden = YES;
     
     self.messageBubbleViewBottomConstraint = [self.messageBubbleView autoPinBottomToSuperviewMarginWithInset:0];
 
@@ -235,8 +235,8 @@ NS_ASSUME_NONNULL_BEGIN
         ]];
         
         [self.viewConstraints addObjectsFromArray:@[
-            [self.moderatorIconView autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:self.avatarView],
-            [self.moderatorIconView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.avatarView withOffset:3.5]
+            [self.moderatorIconImageView autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:self.avatarView],
+            [self.moderatorIconImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.avatarView withOffset:3.5]
         ]];
     }
 }
@@ -300,11 +300,11 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.viewItem.isGroupThread && !self.viewItem.isRSSFeed) {
         BOOL isModerator = [LKGroupChatAPI isUserModerator:incomingMessage.authorId forGroup:LKGroupChatAPI.publicChatServerID onServer:LKGroupChatAPI.publicChatServer];
         UIImage *moderatorIcon = [UIImage imageNamed:@"Crown"];
-        self.moderatorIconView.image = moderatorIcon;
-        self.moderatorIconView.hidden = !isModerator;
+        self.moderatorIconImageView.image = moderatorIcon;
+        self.moderatorIconImageView.hidden = !isModerator;
     }
     
-    [self.contentView addSubview:self.moderatorIconView];
+    [self.contentView addSubview:self.moderatorIconImageView];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
@@ -405,8 +405,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.avatarView.image = nil;
     [self.avatarView removeFromSuperview];
 
-    self.moderatorIconView.image = nil;
-    [self.moderatorIconView removeFromSuperview];
+    self.moderatorIconImageView.image = nil;
+    [self.moderatorIconImageView removeFromSuperview];
     
     [self.sendFailureBadgeView removeFromSuperview];
     self.sendFailureBadgeView = nil;

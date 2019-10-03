@@ -194,6 +194,7 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
         setUpViewHierarchy()
         handleModeChanged() // Perform initial update
         updateSeed()
+        Analytics.shared.track("Seed Screen Viewed")
     }
     
     private func setUpViewHierarchy() {
@@ -335,7 +336,7 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
         switch mode {
         case .register: Analytics.shared.track("Seed Created")
         case .restore: Analytics.shared.track("Seed Restored")
-        case .link: Analytics.shared.track("Device Linked")
+        case .link: Analytics.shared.track("Device Linking Attempted")
         }
         if mode == .link {
             TSAccountManager.sharedInstance().didRegister()
@@ -366,6 +367,7 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
         linkingRequestMessageSendingTimer?.invalidate()
         UserDefaults.standard.set(true, forKey: "didUpdateForMainnet")
         onboardingController.verificationDidComplete(fromView: self)
+        Analytics.shared.track("Device Linked Successfully")
     }
     
     func handleDeviceLinkingModalDismissed() {

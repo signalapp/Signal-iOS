@@ -145,6 +145,6 @@ public class JazzIcon {
     
     private func hueShift(colours: [UIColor]) -> [UIColor] {
         let amount = generator.nextCGFloat() * 30 - CGFloat(wobble / 2);
-        return colours.map { $0.adjust(hueBy: amount) }
+        return colours.map { $0.adjustHue(by: amount) }
     }
 }

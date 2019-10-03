@@ -19,7 +19,7 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         titleLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
         titleLabel.accessibilityIdentifier = "onboarding.splash." + "titleLabel"
 
-        let lokiLogo = UIImage(named: "LokiLogo")
+        let lokiLogo = UIImage(named: "Loki")
         let lokiLogoImageView = UIImageView(image: lokiLogo)
         lokiLogoImageView.accessibilityIdentifier = "onboarding.splash." + "lokiLogoImageView"
         lokiLogoImageView.autoSetDimension(.height, toSize: 71)
@@ -72,6 +72,8 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
         stackView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
         lokiLogoImageView.autoCenterInSuperview()
+        
+        Analytics.shared.track("Landing Screen Viewed")
     }
 
      // MARK: - Events

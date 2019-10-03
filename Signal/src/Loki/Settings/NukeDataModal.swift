@@ -4,6 +4,11 @@ import NVActivityIndicatorView
 final class NukeDataModal : Modal {
     
     // MARK: Lifecycle
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        Analytics.shared.track("Nuke Data Modal Shown")
+    }
+    
     override func populateContentView() {
         // Label
         let titleLabel = UILabel()
@@ -43,6 +48,7 @@ final class NukeDataModal : Modal {
     
     // MARK: Interaction
     @objc private func nuke() {
+        Analytics.shared.track("Data Nuked")
         ThreadUtil.deleteAllContent()
         SSKEnvironment.shared.identityManager.clearIdentityKey()
         LokiAPI.clearRandomSnodePool()

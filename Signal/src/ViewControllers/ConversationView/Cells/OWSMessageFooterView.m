@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
             [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
         switch (messageStatus) {
             case MessageReceiptStatusCalculatingPoW:
-                statusIndicatorImage = [UIImage imageNamed:@"message_status_pow"];
+                statusIndicatorImage = [UIImage imageNamed:@"Cog"];
                 [self animateSpinningIcon];
                 break;
             case MessageReceiptStatusUploading:

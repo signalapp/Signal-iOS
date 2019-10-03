@@ -1,7 +1,7 @@
 
 extension UIColor {
     
-    public func adjust(hueBy degrees: CGFloat) -> UIColor {
+    public func adjustHue(by degrees: CGFloat) -> UIColor {
         
         var currentHue: CGFloat = 0.0
         var currentSaturation: CGFloat = 0.0

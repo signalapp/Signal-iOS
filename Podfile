@@ -62,7 +62,6 @@ def shared_pods
   pod 'PureLayout', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true
   pod 'YYImage', :inhibit_warnings => true
-  pod 'IGIdenticon', :inhibit_warnings => true
 end
 
 target 'Signal' do

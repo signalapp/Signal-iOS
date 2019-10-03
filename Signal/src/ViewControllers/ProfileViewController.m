@@ -401,6 +401,8 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         return;
     }
 
+    [LKAnalytics.shared track:@"Display Name Updated"];
+    
     // Show an activity indicator to block the UI during the profile upload.
     [ModalActivityIndicatorViewController
         presentFromViewController:self

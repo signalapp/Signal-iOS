@@ -319,10 +319,10 @@ static NSTimeInterval launchStartedAt;
                                                  name:NSNotificationName_2FAStateDidChange
                                                object:nil];
     
-    // Loki - Observe messages received notifications
+    // Loki - Observe new messages received notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleNewMessagesReceived:) name:NSNotification.newMessagesReceived object:nil];
     
-    // Loki - Observe thread deletion notifications
+    // Loki - Observe thread deleted notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleThreadDeleted:) name:NSNotification.threadDeleted object:nil];
 
     OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
@@ -744,7 +744,7 @@ static NSTimeInterval launchStartedAt;
                 // and continue cleaning in the background.
                 [self.disappearingMessagesJob startIfNecessary];
                 
-                // Start Loki friend request expire job
+                // Loki: Start friend request expiration job
                 [self.lokiFriendRequestExpirationJob startIfNecessary];
 
                 [self enableBackgroundRefreshIfNecessary];
@@ -1206,6 +1206,7 @@ static NSTimeInterval launchStartedAt;
     performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
 {
     NSLog(@"[Loki] Performing background fetch.");
+    [LKAnalytics.shared track:@"Performed Background Fetch"];
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         __block AnyPromise *job = [AppEnvironment.shared.messageFetcherJob run].then(^{
             completionHandler(UIBackgroundFetchResultNewData);

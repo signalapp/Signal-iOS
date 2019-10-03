@@ -616,6 +616,7 @@ typedef enum : NSUInteger {
     [self applyTheme];
     [self.conversationViewModel viewDidLoad];
     
+    // Loki: Track events
     if (self.thread.isGroupThread) {
         if (self.isRSSFeed) {
             [LKAnalytics.shared track:@"RSS Feed Opened"];

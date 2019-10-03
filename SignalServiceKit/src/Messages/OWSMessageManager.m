@@ -1404,7 +1404,6 @@ NS_ASSUME_NONNULL_BEGIN
                 }
                 
                 // Loki: Don't process friend requests in group chats
-                
                 if (body.length == 0 && attachmentPointers.count < 1 && !contact) {
                     OWSLogWarn(@"ignoring empty incoming message from: %@ for group: %@ with timestamp: %lu",
                         envelopeAddress(envelope),

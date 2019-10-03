@@ -18,7 +18,7 @@ public class LoadingViewController: UIViewController {
         self.view = UIView()
         view.backgroundColor = UIColor.lokiDarkestGray()
 
-        self.logoView = UIImageView(image: #imageLiteral(resourceName: "LokiLogo"))
+        self.logoView = UIImageView(image: #imageLiteral(resourceName: "Loki"))
         view.addSubview(logoView)
 
         logoView.autoCenterInSuperview()

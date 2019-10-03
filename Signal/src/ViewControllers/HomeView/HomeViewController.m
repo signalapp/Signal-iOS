@@ -1428,7 +1428,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
         [thread removeWithTransaction:transaction];
     }];
     
-    // Loki - Post notification
+    // Loki: Post notification
     [[NSNotificationCenter defaultCenter] postNotificationName:NSNotification.threadDeleted object:nil userInfo:@{ @"threadId": thread.uniqueId }];
     
     [self updateViewState];

@@ -292,6 +292,8 @@ const CGFloat kIconViewLength = 24;
 #endif
 
     [self updateTableContents];
+    
+    [LKAnalytics.shared track:@"Conversation Settings Opened"];
 }
 
 - (void)viewDidAppear:(BOOL)animated

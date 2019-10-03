@@ -1,5 +1,7 @@
 import GCDWebServer
 
+// TODO: Clean
+
 private extension GCDWebServerResponse {
     
     convenience init<E: RawRepresentable>(statusCode: E) where E.RawValue == Int {
