@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
 @class SignalServiceAddress;
 @class TSGroupModel;
@@ -21,6 +22,7 @@ extern NSString *const kNSNotificationName_BlockListDidChange;
 + (instancetype)sharedManager;
 
 - (void)addBlockedAddress:(SignalServiceAddress *)address;
+- (void)addBlockedAddress:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)removeBlockedAddress:(SignalServiceAddress *)address;
 

@@ -153,7 +153,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     return blockedAddresses;
 }
 
-- (void)addBlockedAddress:(SignalServiceAddress *)address
+- (void)addBlockedAddressLocally:(SignalServiceAddress *)address
 {
     OWSAssertDebug(address.isValid);
 
@@ -177,8 +177,21 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     if (wasBlocked != [self isAddressBlocked:address]) {
         [self.storageServiceManager recordPendingUpdatesWithUpdatedAddresses:@[ address ]];
     }
+}
 
-    [self handleUpdate];
+- (void)addBlockedAddress:(SignalServiceAddress *)address
+{
+    [self addBlockedAddressLocally:address];
+    [self handleUpdateAndSendSyncMessage:YES];
+}
+
+- (void)addBlockedAddress:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+
+    [self addBlockedAddressLocally:address];
+
+    [self handleUpdateAndSendSyncMessage:YES transaction:transaction];
 }
 
 - (void)removeBlockedAddress:(SignalServiceAddress *)address
@@ -207,7 +220,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         [self.storageServiceManager recordPendingUpdatesWithUpdatedAddresses:@[ address ]];
     }
 
-    [self handleUpdate];
+    [self handleUpdateAndSendSyncMessage:YES];
 }
 
 - (void)setBlockedPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers sendSyncMessage:(BOOL)sendSyncMessage
@@ -228,7 +241,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         _blockedPhoneNumberSet = [newSet mutableCopy];
     }
 
-    [self handleUpdate:sendSyncMessage];
+    [self handleUpdateAndSendSyncMessage:sendSyncMessage];
 }
 
 - (NSArray<NSString *> *)blockedPhoneNumbers
@@ -307,7 +320,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         self.blockedGroupMap[groupId] = groupModel;
     }
 
-    [self handleUpdate];
+    [self handleUpdateAndSendSyncMessage:YES];
 }
 
 - (void)removeBlockedGroupId:(NSData *)groupId
@@ -327,7 +340,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         [self.blockedGroupMap removeObjectForKey:groupId];
     }
 
-    [self handleUpdate];
+    [self handleUpdateAndSendSyncMessage:YES];
 }
 
 #pragma mark - Thread Blocking
@@ -362,14 +375,14 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
 // This should be called every time the block list changes.
 
-- (void)handleUpdate
+- (void)handleUpdateAndSendSyncMessage:(BOOL)sendSyncMessage
 {
-    // By default, always send a sync message when the block list changes.
-    [self handleUpdate:YES];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self handleUpdateAndSendSyncMessage:sendSyncMessage transaction:transaction];
+    }];
 }
 
-// TODO label the `sendSyncMessage` param
-- (void)handleUpdate:(BOOL)sendSyncMessage
+- (void)handleUpdateAndSendSyncMessage:(BOOL)sendSyncMessage transaction:(SDSAnyWriteTransaction *)transaction
 {
     NSArray<NSString *> *blockedPhoneNumbers = [self blockedPhoneNumbers];
     NSArray<NSString *> *blockedUUIDs = [self blockedUUIDs];
@@ -380,17 +393,15 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     }
     NSArray<NSData *> *blockedGroupIds = blockedGroupMap.allKeys;
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [OWSBlockingManager.keyValueStore setObject:blockedPhoneNumbers
-                                                key:kOWSBlockingManager_BlockedPhoneNumbersKey
-                                        transaction:transaction];
-        [OWSBlockingManager.keyValueStore setObject:blockedUUIDs
-                                                key:kOWSBlockingManager_BlockedUUIDsKey
-                                        transaction:transaction];
-        [OWSBlockingManager.keyValueStore setObject:blockedGroupMap
-                                                key:kOWSBlockingManager_BlockedGroupMapKey
-                                        transaction:transaction];
-    }];
+    [OWSBlockingManager.keyValueStore setObject:blockedPhoneNumbers
+                                            key:kOWSBlockingManager_BlockedPhoneNumbersKey
+                                    transaction:transaction];
+    [OWSBlockingManager.keyValueStore setObject:blockedUUIDs
+                                            key:kOWSBlockingManager_BlockedUUIDsKey
+                                    transaction:transaction];
+    [OWSBlockingManager.keyValueStore setObject:blockedGroupMap
+                                            key:kOWSBlockingManager_BlockedGroupMapKey
+                                    transaction:transaction];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (sendSyncMessage) {
