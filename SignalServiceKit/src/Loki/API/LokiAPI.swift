@@ -52,6 +52,17 @@ public final class LokiAPI : NSObject {
             self.hexEncodedPublicKey = hexEncodedPublicKey
             self.objc_kind = kind
         }
+        
+        override public func isEqual(_ other: Any?) -> Bool {
+            guard let other = other as? Destination else { return false }
+            return hexEncodedPublicKey == other.hexEncodedPublicKey && kind == other.kind
+        }
+        
+        override public var hash: Int { // Override NSObject.hash and not Hashable.hashValue or Hashable.hash(into:)
+            return hexEncodedPublicKey.hashValue ^ kind.hashValue
+        }
+
+        override public var description: String { return "\(kind.rawValue)(\(hexEncodedPublicKey))" }
     }
     
     public typealias MessageListPromise = Promise<[SSKProtoEnvelope]>

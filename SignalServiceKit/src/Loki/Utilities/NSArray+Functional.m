@@ -12,4 +12,13 @@
     return result;
 }
 
+- (NSArray *)map:(NSObject *(^)(NSObject *))transform {
+    NSMutableArray *result = [NSMutableArray new];
+    for (NSObject *object in self) {
+        NSObject *transformedObject = transform(object);
+        [result addObject:transformedObject];
+    }
+    return result;
+}
+
 @end

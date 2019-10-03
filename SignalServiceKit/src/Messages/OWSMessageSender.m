@@ -901,6 +901,22 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return deviceMessages;
 }
 
+- (LKFriendRequestMessage *)getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey
+{
+    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey];
+    return [[LKFriendRequestMessage alloc] initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp
+                                                  inThread:thread
+                                               messageBody:@"Test"
+                                             attachmentIds:[NSMutableArray new]
+                                          expiresInSeconds:0
+                                           expireStartedAt:0
+                                            isVoiceMessage:NO
+                                          groupMetaMessage:TSGroupMetaMessageUnspecified
+                                             quotedMessage:nil
+                                              contactShare:nil
+                                               linkPreview:nil];
+}
+
 - (void)sendMessageToRecipient:(OWSMessageSend *)messageSend
 {
     if (messageSend.thread.isGroupThread) {
@@ -914,16 +930,28 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 return [destination.kind isEqual:@"slave"];
             }];
             for (LKDestination *slaveDestination in slaveDestinations) {
-                OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:slaveDestination];
-                [self sendMessage:messageSendCopy];
+                TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:slaveDestination.hexEncodedPublicKey];
+                if (thread.isContactFriend) {
+                    OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:slaveDestination];
+                    [self sendMessage:messageSendCopy];
+                } else {
+                    LKFriendRequestMessage *friendRequestMessage = [self getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:slaveDestination.hexEncodedPublicKey];
+                    [self sendMessage:friendRequestMessage success:^{ } failure:^(NSError *error) { }];
+                }
             }
             LKDestination *masterDestination = [destinations filtered:^BOOL(NSObject *object) {
                 LKDestination *destination = [object as:LKDestination.class];
                 return [destination.kind isEqual:@"master"];
             }].firstObject;
             if (masterDestination != nil) {
-                OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:masterDestination];
-                [self sendMessage:messageSendCopy];
+                TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:masterDestination.hexEncodedPublicKey];
+                if (thread.isContactFriend) {
+                    OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:masterDestination];
+                    [self sendMessage:messageSendCopy];
+                } else {
+                    LKFriendRequestMessage *friendRequestMessage = [self getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:masterDestination.hexEncodedPublicKey];
+                    [self sendMessage:friendRequestMessage success:messageSend.success failure:messageSend.failure];
+                }
             }
         })
         .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
