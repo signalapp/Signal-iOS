@@ -697,6 +697,10 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
+    if (UIDevice.currentDevice.isIPad) {
+        return UIInterfaceOrientationMaskAll;
+    }
+
     return (self.profileViewMode == ProfileViewMode_Registration ? UIInterfaceOrientationMaskPortrait
                                                                  : UIInterfaceOrientationMaskAllButUpsideDown);
 }

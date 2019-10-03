@@ -164,7 +164,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
     // MARK: Orientation
 
     override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .allButUpsideDown
+        return UIDevice.current.defaultSupportedOrienations
     }
 
     // MARK: UICollectionViewDelegate

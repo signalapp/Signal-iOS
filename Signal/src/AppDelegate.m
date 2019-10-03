@@ -1026,13 +1026,15 @@ static NSTimeInterval launchStartedAt;
 {
     if (self.hasCall) {
         OWSLogInfo(@"has call");
-        // The call-banner window is only suitable for portrait display
-        return UIInterfaceOrientationMaskPortrait;
+        // The call-banner window is only suitable for portrait display on iPhone
+        if (!UIDevice.currentDevice.isIPad) {
+            return UIInterfaceOrientationMaskPortrait;
+        }
     }
 
     UIViewController *_Nullable rootViewController = self.window.rootViewController;
     if (!rootViewController) {
-        return UIInterfaceOrientationMaskAllButUpsideDown;
+        return UIDevice.currentDevice.defaultSupportedOrienations;
     }
     return rootViewController.supportedInterfaceOrientations;
 }

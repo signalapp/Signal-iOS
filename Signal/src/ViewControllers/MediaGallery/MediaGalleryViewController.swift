@@ -277,7 +277,7 @@ public class MediaGalleryNavigationController: OWSNavigationController {
     // MARK: Orientation
 
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .allButUpsideDown
+        return UIDevice.current.defaultSupportedOrienations
     }
 
     // MARK: 

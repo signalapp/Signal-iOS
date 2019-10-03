@@ -144,7 +144,7 @@ public class LoadingViewController: UIViewController {
     // MARK: Orientation
 
     override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait
+        return UIDevice.current.isIPad ? .all : .portrait
     }
 
     // MARK: 

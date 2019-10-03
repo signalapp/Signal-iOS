@@ -4,6 +4,7 @@
 
 #import "OWSViewController.h"
 #import "UIView+OWS.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/Theme.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -252,7 +253,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return UIInterfaceOrientationMaskAllButUpsideDown;
+    return UIDevice.currentDevice.defaultSupportedOrienations;
 }
 
 @end
