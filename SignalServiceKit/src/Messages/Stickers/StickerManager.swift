@@ -133,16 +133,24 @@ public class StickerManager: NSObject {
         OWSFileSystem.ensureDirectoryExists(url.path)
         return url
     }
-    private static let cacheDirUrlCached = {
+    private static let _cacheDirUrl = {
         return ensureCacheDirUrl()
     }()
-
     @objc
     public class func cacheDirUrl() -> URL {
+        // In test we need to compute the sticker cache dir every time we use it,
+        // since it will change from test to test.
+        //
+        // In production, we should only ensure it once because ensuring:
+        //
+        // * Makes sure it exists on disk which is expensive.
+        // * Makes sure it is protected on disk which is expensive.
+        // * Does some logging which really clutters up the logs once you have
+        //   a bunch of stickers installed.
         if CurrentAppContext().isRunningTests {
             return ensureCacheDirUrl()
         } else {
-            return cacheDirUrlCached
+            return _cacheDirUrl
         }
     }
 
