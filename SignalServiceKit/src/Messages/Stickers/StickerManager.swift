@@ -602,7 +602,7 @@ public class StickerManager: NSObject {
         let emojiString = item.emojiString
 
         guard !self.isStickerInstalled(stickerInfo: stickerInfo, transaction: transaction) else {
-            Logger.verbose("Skipping redundant sticker install \(stickerInfo).")
+            // Skipping redundant sticker install.
             return Promise.value(())
         }
 
