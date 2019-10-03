@@ -202,6 +202,20 @@ public final class LokiGroupChatAPI : LokiDotNetAPI {
         return moderators[server]?[group]?.contains(hexEncodedPublicString) ?? false
     }
     
+    public static func setDisplayName(to newDisplayName: String?, on server: String) -> Promise<Void> {
+        print("[Loki] Updating display name on server: \(server).")
+        return getAuthToken(for: server).then { token -> Promise<Void> in
+            let parameters: JSON = [ "name" : newDisplayName ]
+            let url = URL(string: "\(server)/users/me")!
+            let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
+            request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+            return TSNetworkManager.shared().makePromise(request: request).map { _ in }.recover { error in
+                print("Couldn't update display name due to error: \(error).")
+                throw error
+            }
+        }
+    }
+    
     // MARK: Public API (Obj-C)
     @objc(getMessagesForGroup:onServer:)
     public static func objc_getMessages(for group: UInt64, on server: String) -> AnyPromise {
@@ -213,8 +227,13 @@ public final class LokiGroupChatAPI : LokiDotNetAPI {
         return AnyPromise.from(sendMessage(message, to: group, on: server))
     }
     
-    @objc (deleteMessageWithID:forGroup:onServer:isSentByUser:)
+    @objc(deleteMessageWithID:forGroup:onServer:isSentByUser:)
     public static func objc_deleteMessage(with messageID: UInt, for group: UInt64, on server: String, isSentByUser: Bool) -> AnyPromise {
         return AnyPromise.from(deleteMessage(with: messageID, for: group, on: server, isSentByUser: isSentByUser))
+    }
+    
+    @objc(setDisplayName:on:)
+    public static func objc_setDisplayName(to newDisplayName: String?, on server: String) -> AnyPromise {
+        return AnyPromise.from(setDisplayName(to: newDisplayName, on: server))
     }
 }

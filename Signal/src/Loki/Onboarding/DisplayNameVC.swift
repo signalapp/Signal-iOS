@@ -63,10 +63,12 @@ final class DisplayNameVC : OnboardingBaseViewController {
             guard !OWSProfileManager.shared().isProfileNameTooLong(normalizedName) else {
                 return OWSAlerts.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG", comment: "Error message shown when user tries to update profile with a profile name that is too long"))
             }
-            OWSProfileManager.shared().updateLocalProfileName(normalizedUserName, avatarImage: nil, success: { }, failure: { }) // Try to save the user name but ignore the result
         }
         TSAccountManager.sharedInstance().didRegister()
         UserDefaults.standard.set(true, forKey: "didUpdateForMainnet")
         onboardingController.verificationDidComplete(fromView: self)
+        if let normalizedName = normalizedUserName {
+            OWSProfileManager.shared().updateLocalProfileName(normalizedName, avatarImage: nil, success: { }, failure: { }) // Try to save the user name but ignore the result
+        }
     }
 }

@@ -59,20 +59,20 @@ NS_ASSUME_NONNULL_BEGIN
     [maskingView setConfigureShapeLayerBlock:^(CAShapeLayer *layer, CGRect bounds) {
         // Add a circular mask
         UIBezierPath *path = [UIBezierPath bezierPathWithRect:bounds];
-        CGFloat margin = ScaleFromIPhone5To7Plus(8.f, 16.f);
+        CGFloat margin = ScaleFromIPhone5To7Plus(24.f, 48.f);
         CGFloat radius = MIN(bounds.size.width, bounds.size.height) * 0.5f - margin;
 
         // Center the circle's bounding rectangle
         CGRect circleRect = CGRectMake(
             bounds.size.width * 0.5f - radius, bounds.size.height * 0.5f - radius, radius * 2.f, radius * 2.f);
-        UIBezierPath *circlePath = [UIBezierPath bezierPathWithRoundedRect:circleRect cornerRadius:radius];
+        UIBezierPath *circlePath = [UIBezierPath bezierPathWithRoundedRect:circleRect cornerRadius:16.f];
         [path appendPath:circlePath];
         [path setUsesEvenOddFillRule:YES];
 
         layer.path = path.CGPath;
         layer.fillRule = kCAFillRuleEvenOdd;
-        layer.fillColor = [UIColor grayColor].CGColor;
-        layer.opacity = 0.5f;
+        layer.fillColor = UIColor.lokiDarkestGray.CGColor;
+        layer.opacity = 0.32f;
     }];
     [self.view addSubview:maskingView];
     [maskingView ows_autoPinToSuperviewEdges];

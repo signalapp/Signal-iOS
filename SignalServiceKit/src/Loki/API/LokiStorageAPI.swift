@@ -123,6 +123,5 @@ public final class LokiStorageAPI : LokiDotNetAPI {
                 throw error
             }
         }
-
     }
 }

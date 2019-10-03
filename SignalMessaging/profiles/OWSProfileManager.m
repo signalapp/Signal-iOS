@@ -534,25 +534,14 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                              failure:(ProfileManagerFailureBlock)failureBlock {
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
-    
-    // Loki: We don't need to make any server calls so succeed automatically
-    successBlock();
-    
-    /* ============ Original code ============
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSData *_Nullable encryptedPaddedName = [self encryptProfileNameWithUnpaddedName:localProfileName];
 
-        TSRequest *request = [OWSRequestBuilder profileNameSetRequestWithEncryptedPaddedName:encryptedPaddedName];
-        [self.networkManager makeRequest:request
-            success:^(NSURLSessionDataTask *task, id responseObject) {
-                successBlock();
-            }
-            failure:^(NSURLSessionDataTask *task, NSError *error) {
-                OWSLogError(@"Failed to update profile with error: %@", error);
-                failureBlock(error);
-            }];
-    });
-    */
+    [[LKGroupChatAPI setDisplayName:localProfileName on:LKGroupChatAPI.publicChatServer]
+    .thenOn(dispatch_get_main_queue(), ^() {
+        successBlock();
+    })
+    .catchOn(dispatch_get_main_queue(), ^(NSError *error) {
+        failureBlock(error);
+    }) retainUntilComplete];
 }
 
 - (void)fetchLocalUsersProfile
