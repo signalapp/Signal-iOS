@@ -62,7 +62,6 @@ extension StorageServiceProtoContactRecord {
         var isInWhitelist: Bool = false
         var profileKey: Data?
         var profileName: String?
-        var profileAvatarData: Data?
         databaseStorage.read { transaction in
             isInWhitelist = profileManager.isUser(inProfileWhitelist: address,
                                                 transaction: transaction)
@@ -70,8 +69,6 @@ extension StorageServiceProtoContactRecord {
                                                        transaction: transaction)
             profileName = profileManager.profileName(for: address,
                                                      transaction: transaction)
-            profileAvatarData = profileManager.profileAvatarData(for: address,
-                                                                 transaction: transaction)
         }
 
         builder.setBlocked(blockingManager.isAddressBlocked(address))
@@ -101,10 +98,6 @@ extension StorageServiceProtoContactRecord {
             profileBuilder.setName(profileName)
         }
 
-        if let profileAvatarData = profileAvatarData {
-            profileBuilder.setAvatar(profileAvatarData)
-        }
-
         builder.setProfile(try profileBuilder.build())
 
         return try builder.build()
@@ -122,63 +115,87 @@ extension StorageServiceProtoContactRecord {
             return .invalid
         }
 
+        // Our general merge philosophy is that the latest value on the service
+        // is always right. There are some edge cases where this could cause
+        // user changes to get blown away, such as if you're changing values
+        // simultaneously on two devices or if you force quit the application,
+        // your battery dies, etc. before it has had a chance to sync.
+        //
+        // In general, to try and mitigate these issues, we try and very proactively
+        // push any changes up to the storage service as contact information
+        // should not be changing very frequently.
+        //
+        // Should this prove unreliable, we may need to start maintaining time stamps
+        // representing the remote and local last update time for every value we sync.
+        // For now, we'd like to avoid that as it adds its own set of problems.
+
         // Mark the user as registered, only registered contacts should exist in the sync'd data.
         let recipient = SignalRecipient.mark(asRegisteredAndGet: address, transaction: transaction)
 
         var mergeState: MergeState = .resolved(recipient.accountId)
 
-        // If we don't yet have a profile for this user, restore the profile information.
-        if let profile = profile, profileManager.profileKey(for: address, transaction: transaction) == nil {
-            if let key = profile.key {
-                profileManager.setProfileKeyData(key, for: address, transaction: transaction)
+        // Gather some local contact state to do comparisons against.
+        let localProfileKey = profileManager.profileKey(for: address, transaction: transaction)
+        let localIdentityKey = identityManager.identityKey(for: address, transaction: transaction)
+        let localIdentityState = identityManager.verificationState(for: address, transaction: transaction)
+        let localIsBlocked = blockingManager.isAddressBlocked(address)
+        let localIsWhitelisted = profileManager.isUser(inProfileWhitelist: address, transaction: transaction)
+
+        // If our local profile key record differs from what's on the service, use the service's value.
+        if let profileKey = profile?.key, localProfileKey?.keyData != profileKey {
+            profileManager.setProfileKeyData(profileKey, for: address, transaction: transaction)
+
+            // We'll immediately schedule a fetch of the new profile, but restore the name
+            // if it exists so we we can start displaying it immediately.
+            if let profileName = profile?.name {
+                profileManager.setProfileName(profileName, for: address, transaction: transaction)
             }
 
-            // TODO: Maybe restore the name and avatar? For now we'll refetch them once we set the key.
-
-        // Otherwise, if our local profile key is different, defer
-        // to the local value and flag this user as needing update.
-        } else if profileManager.profileKey(for: address, transaction: transaction)?.keyData != profile?.key {
+        // If we have a local profile key for this user but the service doesn't mark it as needing update.
+        } else if localProfileKey != nil && profile?.hasKey != true {
             mergeState = .needsUpdate(recipient.accountId)
         }
 
-        // If we don't yet have an identity key for this user, restore the identity information.
-        if let identity = identity, identityManager.identityKey(for: address, transaction: transaction) == nil {
-            if let state = identity.state?.verificationState, let key = identity.key {
-                identityManager.setVerificationState(
-                    state,
-                    identityKey: key,
-                    address: address,
-                    isUserInitiatedChange: false,
-                    transaction: transaction
-                )
-            }
+        // If our local identity differs from the service, use the service's value.
+        if let identityKey = identity?.key, let identityState = identity?.state?.verificationState,
+            localIdentityKey != identityKey || localIdentityState != identityState {
+            identityManager.setVerificationState(
+                identityState,
+                identityKey: identityKey,
+                address: address,
+                isUserInitiatedChange: false,
+                transaction: transaction
+            )
 
-        // Otherwise, if our local identity is different, defer to the
-        // local value and flag this user as needing update.
-        } else if (identityManager.identityKey(for: address, transaction: transaction) != identity?.key) ||
-            (identityManager.verificationState(for: address, transaction: transaction) != identity?.state?.verificationState) {
+        // If we have a local identity for this user but the service doesn't mark it as needing update.
+        } else if localIdentityKey != nil && identity?.hasKey != true {
             mergeState = .needsUpdate(recipient.accountId)
         }
 
-        // If our block state doesn't match the conflicted version, default to whichever
-        // version is currently blocked. We don't want to unblock someone accidentally
-        // through a conflict resolution.
-        if hasBlocked, blocked != blockingManager.isAddressBlocked(address) {
+        // If our local blocked state differs from the service state, use the service's value.
+        if hasBlocked, blocked != localIsBlocked {
             if blocked {
                 blockingManager.addBlockedAddress(address, transaction: transaction)
             } else {
-                mergeState = .needsUpdate(recipient.accountId)
+                blockingManager.removeBlockedAddress(address, transaction: transaction)
             }
+
+        // If the service is missing a blocked state, mark it as needing update.
+        } else if !hasBlocked {
+            mergeState = .needsUpdate(recipient.accountId)
         }
 
-        // If our whitelist state doesn't match the conflicted version, default to
-        // being whitelisted. There's currently no way to unwhitelist a contact.
-        if hasWhitelisted, whitelisted != profileManager.isUser(inProfileWhitelist: address, transaction: transaction) {
+        // If our local whitelisted state differs from the service state, use the service's value.
+        if hasWhitelisted, whitelisted != localIsWhitelisted {
             if whitelisted {
                 profileManager.addUser(toProfileWhitelist: address)
             } else {
-                mergeState = .needsUpdate(recipient.accountId)
+                profileManager.removeUser(fromProfileWhitelist: address)
             }
+
+        // If the service is missing a whitelisted state, mark it as needing update.
+        } else if !hasWhitelisted {
+            mergeState = .needsUpdate(recipient.accountId)
         }
 
         return mergeState

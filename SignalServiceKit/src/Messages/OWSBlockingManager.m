@@ -194,7 +194,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     [self handleUpdateAndSendSyncMessage:YES transaction:transaction];
 }
 
-- (void)removeBlockedAddress:(SignalServiceAddress *)address
+- (void)removeBlockedAddressLocally:(SignalServiceAddress *)address
 {
     OWSAssertDebug(address.isValid);
 
@@ -219,8 +219,21 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     if (wasBlocked != [self isAddressBlocked:address]) {
         [self.storageServiceManager recordPendingUpdatesWithUpdatedAddresses:@[ address ]];
     }
+}
 
+- (void)removeBlockedAddress:(SignalServiceAddress *)address
+{
+    [self removeBlockedAddressLocally:address];
     [self handleUpdateAndSendSyncMessage:YES];
+}
+
+- (void)removeBlockedAddress:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+
+    [self removeBlockedAddressLocally:address];
+
+    [self handleUpdateAndSendSyncMessage:YES transaction:transaction];
 }
 
 - (void)setBlockedPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers sendSyncMessage:(BOOL)sendSyncMessage

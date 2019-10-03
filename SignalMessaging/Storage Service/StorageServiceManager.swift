@@ -22,6 +22,13 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
                 name: .RegistrationStateDidChange,
                 object: nil
             )
+
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(self.willResignActive),
+                name: .OWSApplicationWillResignActive,
+                object: nil
+            )
         }
     }
 
@@ -30,10 +37,18 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
         // Schedule a restore. This will do nothing unless we've never
         // registered a manifest before.
-        self.restoreOrCreateManifestIfNecessary()
+        restoreOrCreateManifestIfNecessary()
 
         // If we have any pending changes since we last launch, back them up now.
-        self.backupPendingChanges()
+        backupPendingChanges()
+    }
+
+    @objc private func willResignActive() {
+        // If we have any pending changes, start a back up immediately
+        // to try and make sure the service doesn't get stale. If for
+        // some reason we aren't able to successfully complete this backup
+        // while in the background we'll try again on the next app launch.
+        backupPendingChanges()
     }
 
     // MARK: -
@@ -43,7 +58,7 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         let operation = StorageServiceOperation.recordPendingDeletions(deletedIds)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
-        // Schedule a backup to run in the next 10 minutes
+        // Schedule a backup to run in the next ten seconds
         // if one hasn't been scheduled already.
         scheduleBackupIfNecessary()
     }
@@ -53,7 +68,7 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         let operation = StorageServiceOperation.recordPendingDeletions(deletedAddresses)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
-        // Schedule a backup to run in the next 10 minutes
+        // Schedule a backup to run in the next ten seconds
         // if one hasn't been scheduled already.
         scheduleBackupIfNecessary()
     }
@@ -63,7 +78,7 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         let operation = StorageServiceOperation.recordPendingUpdates(updatedIds)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
-        // Schedule a backup to run in the next 10 minutes
+        // Schedule a backup to run in the next ten seconds
         // if one hasn't been scheduled already.
         scheduleBackupIfNecessary()
     }
@@ -73,7 +88,7 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         let operation = StorageServiceOperation.recordPendingUpdates(updatedAddresses)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
-        // Schedule a backup to run in the next 10 minutes
+        // Schedule a backup to run in the next ten seconds
         // if one hasn't been scheduled already.
         scheduleBackupIfNecessary()
     }
@@ -92,11 +107,11 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     // MARK: - Backup Scheduling
 
-    private static var scheduledBackupInterval: TimeInterval = kMinuteInterval * 10
+    private static var backupDebounceInterval: TimeInterval = kSecondInterval * 10
     private var backupTimer: Timer?
 
     // Schedule a one time backup. By default, this will happen ten
-    // minutes after the first pending change is recorded.
+    // seconds after the first pending change is recorded.
     private func scheduleBackupIfNecessary() {
         DispatchQueue.main.async {
             // If we already have a backup scheduled, do nothing
@@ -105,7 +120,7 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
             Logger.info("")
 
             self.backupTimer = Timer.scheduledTimer(
-                timeInterval: StorageServiceManager.scheduledBackupInterval,
+                timeInterval: StorageServiceManager.backupDebounceInterval,
                 target: self,
                 selector: #selector(self.backupTimerFired),
                 userInfo: nil,

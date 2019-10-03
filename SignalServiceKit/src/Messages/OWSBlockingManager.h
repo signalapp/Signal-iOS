@@ -25,6 +25,7 @@ extern NSString *const kNSNotificationName_BlockListDidChange;
 - (void)addBlockedAddress:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)removeBlockedAddress:(SignalServiceAddress *)address;
+- (void)removeBlockedAddress:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction;
 
 // When updating the block list from a sync message, we don't
 // want to fire a sync message.
