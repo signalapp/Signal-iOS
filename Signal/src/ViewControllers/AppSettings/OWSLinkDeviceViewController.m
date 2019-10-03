@@ -109,7 +109,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidAppear:animated];
 
-    [UIDevice.currentDevice ows_setOrientation:UIInterfaceOrientationPortrait];
+    if (!UIDevice.currentDevice.isIPad) {
+        [UIDevice.currentDevice ows_setOrientation:UIInterfaceOrientationPortrait];
+    }
 
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.qrScanningController startCapture];
@@ -273,7 +275,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return UIInterfaceOrientationMaskPortrait;
+    return UIDevice.currentDevice.isIPad ? UIInterfaceOrientationMaskAll : UIInterfaceOrientationMaskPortrait;
 }
 
 @end

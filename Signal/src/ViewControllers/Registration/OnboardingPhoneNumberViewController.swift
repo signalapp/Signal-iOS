@@ -315,7 +315,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
         let countryCodeController = CountryCodeViewController()
         countryCodeController.countryCodeDelegate = self
-        countryCodeController.interfaceOrientationMask = .portrait
+        countryCodeController.interfaceOrientationMask = UIDevice.current.isIPad ? .all : .portrait
         let navigationController = OWSNavigationController(rootViewController: countryCodeController)
         self.present(navigationController, animated: true, completion: nil)
     }
@@ -358,7 +358,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
         onboardingController.update(phoneNumber: OnboardingPhoneNumber(e164: e164PhoneNumber, userInput: phoneNumberText))
 
-        if UIDevice.current.isIPad {
+        if UIDevice.current.isIPad || UIDevice.current.isCompatabilityModeIPad {
             OWSAlerts.showConfirmationAlert(title: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_TITLE",
                                                                       comment: "alert title when registering an iPad"),
                                             message: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_BODY",

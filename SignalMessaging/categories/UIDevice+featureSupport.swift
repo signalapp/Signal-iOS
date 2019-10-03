@@ -11,6 +11,9 @@ public extension UIDevice {
     }
 
     var hasIPhoneXNotch: Bool {
+        // Only phones have notch
+        guard !isIPad else { return false }
+
         switch UIScreen.main.nativeBounds.height {
         case 960:
             //  iPad in iPhone compatibility mode (using old iPhone 4 screen size)
@@ -44,11 +47,16 @@ public extension UIDevice {
         return UIScreen.main.bounds.height < 568
     }
 
-    var isIPad: Bool {
-        let isNativeIPad = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.pad
-        let isCompatabilityModeIPad = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.phone && self.model.hasPrefix("iPad")
+    var isCompatabilityModeIPad: Bool {
+        return userInterfaceIdiom == .phone && model.hasPrefix("iPad")
+    }
 
-        return isNativeIPad || isCompatabilityModeIPad
+    var isIPad: Bool {
+        return userInterfaceIdiom == .pad
+    }
+
+    var defaultSupportedOrienations: UIInterfaceOrientationMask {
+        return isIPad ? .all : .allButUpsideDown
     }
 
     func ows_setOrientation(_ orientation: UIInterfaceOrientation) {

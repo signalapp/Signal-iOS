@@ -219,12 +219,12 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             // Avoid crash in SAE on iOS9
             if (!CurrentAppContext().isMainApp) {
-                return UIInterfaceOrientationMaskAllButUpsideDown;
+                return UIDevice.currentDevice.defaultSupportedOrienations;
             }
         }
         return self.visibleViewController.supportedInterfaceOrientations;
     } else {
-        return UIInterfaceOrientationMaskAllButUpsideDown;
+        return UIDevice.currentDevice.defaultSupportedOrienations;
     }
 }
 

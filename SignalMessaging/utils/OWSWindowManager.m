@@ -100,7 +100,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return UIInterfaceOrientationMaskAllButUpsideDown;
+    return UIDevice.currentDevice.defaultSupportedOrienations;
 }
 
 @end
@@ -119,7 +119,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return UIInterfaceOrientationMaskAllButUpsideDown;
+    return UIDevice.currentDevice.defaultSupportedOrienations;
 }
 
 @end
@@ -216,7 +216,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (void)ensureReturnToCallWindowFrame
 {
-    CGRect newFrame = self.returnToCallWindow.frame;
+    CGRect newFrame = self.rootWindow.frame;
     newFrame.size.height = OWSWindowManagerCallBannerHeight();
     OWSLogDebug(@"returnToCallWindowFrame: %@", NSStringFromCGRect(newFrame));
     self.returnToCallWindow.frame = newFrame;
@@ -389,9 +389,11 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     [self.callNavigationController popToRootViewControllerAnimated:NO];
     [self.callNavigationController pushViewController:callViewController animated:NO];
     self.shouldShowCallView = YES;
-    // CallViewController only supports portrait, but if we're _already_ landscape it won't
+    // CallViewController only supports portrait for iPhones, but if we're _already_ landscape it won't
     // automatically switch.
-    [UIDevice.currentDevice ows_setOrientation:UIInterfaceOrientationPortrait];
+    if (!UIDevice.currentDevice.isIPad) {
+        [UIDevice.currentDevice ows_setOrientation:UIInterfaceOrientationPortrait];
+    }
     [self ensureWindowState];
 }
 

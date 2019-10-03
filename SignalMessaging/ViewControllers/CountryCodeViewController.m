@@ -9,6 +9,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalCoreKit/NSString+OWS.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
     [super loadView];
 
     self.shouldUseTheme = NO;
-    self.interfaceOrientationMask = UIInterfaceOrientationMaskAllButUpsideDown;
+    self.interfaceOrientationMask = UIDevice.currentDevice.defaultSupportedOrienations;
 
     self.view.backgroundColor = [UIColor whiteColor];
     self.title = NSLocalizedString(@"COUNTRYCODE_SELECT_TITLE", @"");

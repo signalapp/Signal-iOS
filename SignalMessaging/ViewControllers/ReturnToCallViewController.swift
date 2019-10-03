@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -81,7 +81,7 @@ public class ReturnToCallViewController: UIViewController {
     // MARK: Orientation
 
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait
+        return UIDevice.current.isIPad ? .all : .portrait
     }
 
 }

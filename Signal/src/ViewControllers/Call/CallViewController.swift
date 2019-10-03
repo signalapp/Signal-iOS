@@ -223,7 +223,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait
+        return UIDevice.current.isIPad ? .all : .portrait
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {

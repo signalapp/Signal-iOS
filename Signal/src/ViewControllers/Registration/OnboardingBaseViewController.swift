@@ -106,7 +106,7 @@ public class OnboardingBaseViewController: OWSViewController {
     // MARK: - Orientation
 
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait
+        return UIDevice.current.isIPad ? .all : .portrait
     }
 
     public override var preferredStatusBarStyle: UIStatusBarStyle {
