@@ -77,6 +77,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 - (void)regenerateLocalProfileWithSneakyTransaction;
 
 - (void)addThreadToProfileWhitelist:(TSThread *)thread;
+- (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses;
 
 - (void)setContactAddresses:(NSArray<SignalServiceAddress *> *)contactAddresses;
 
