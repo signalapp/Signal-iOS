@@ -101,7 +101,7 @@ public final class GroupChatPoller : NSObject {
                 expireStartedAt: 0, isVoiceMessage: false, groupMetaMessage: .deliver, quotedMessage: signalQuote, contactShare: nil, linkPreview: nil)
             storage.dbReadWriteConnection.readWrite { transaction in
                 message.update(withSentRecipient: group.server, wasSentByUD: false, transaction: transaction)
-                message.saveGroupChatMessageID(messageServerID, in: transaction)
+                message.saveGroupChatServerID(messageServerID, in: transaction)
                 guard let messageID = message.uniqueId else { return print("[Loki] Failed to save group message.") }
                 storage.setIDForMessageWithServerID(UInt(messageServerID), to: messageID, in: transaction)
             }

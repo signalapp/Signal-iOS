@@ -142,10 +142,10 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 @property (nonatomic, readonly) BOOL isOnline;
 
-/// Loki: Bool to indicate if proof of work is being calculated for this message
+/// Loki: Whether proof of work is being calculated for this message.
 @property (atomic, readonly) BOOL isCalculatingPoW;
 
-/// Loki: Time to live for the message in seconds
+/// Loki: Time to live for the message in milliseconds.
 @property (nonatomic, readonly) uint ttl;
 
 /**

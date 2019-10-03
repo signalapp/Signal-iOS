@@ -1393,7 +1393,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 wasReceivedByUD:wasReceivedByUD];
                 
                 if (envelope.isPtpMessage) { incomingMessage.isP2P = YES; }
-                if (dataMessage.publicChatInfo && dataMessage.publicChatInfo.hasServerID) { incomingMessage.groupChatMessageID = dataMessage.publicChatInfo.serverID; }
+                if (dataMessage.publicChatInfo && dataMessage.publicChatInfo.hasServerID) { incomingMessage.groupChatServerID = dataMessage.publicChatInfo.serverID; }
 
                 NSArray<TSAttachmentPointer *> *attachmentPointers =
                     [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments

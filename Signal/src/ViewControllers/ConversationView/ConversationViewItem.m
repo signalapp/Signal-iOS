@@ -1189,7 +1189,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         
         // Delete the message
         BOOL isSentByUser = (interationType == OWSInteractionType_OutgoingMessage);
-        [[LKGroupChatAPI deleteMessageWithID:message.groupChatMessageID forGroup:LKGroupChatAPI.publicChatServerID onServer:LKGroupChatAPI.publicChatServer isSentByUser:isSentByUser].catch(^(NSError *error) {
+        [[LKGroupChatAPI deleteMessageWithID:message.groupChatServerID forGroup:LKGroupChatAPI.publicChatServerID onServer:LKGroupChatAPI.publicChatServer isSentByUser:isSentByUser].catch(^(NSError *error) {
             // Roll back
             [self.interaction save];
         }) retainUntilComplete];

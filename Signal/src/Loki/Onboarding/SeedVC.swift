@@ -351,9 +351,6 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
                 self?.sendLinkingRequestMessage(linkingRequestMessage)
             }
             sendLinkingRequestMessage(linkingRequestMessage)
-
-            // TODO: Sending bug
-
         } else {
             onboardingController.pushDisplayNameVC(from: self)
         }

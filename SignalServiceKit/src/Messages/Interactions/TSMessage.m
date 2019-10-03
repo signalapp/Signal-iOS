@@ -82,7 +82,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _linkPreview = linkPreview;
     _friendRequestStatus = LKMessageFriendRequestStatusNone;
     _friendRequestExpiresAt = 0;
-    _groupChatMessageID = -1;
+    _groupChatServerID = -1;
 
     return self;
 }
@@ -498,11 +498,11 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 #pragma mark - Group Chat
 
 - (BOOL) isGroupChatMessage {
-    return self.groupChatMessageID > 0;
+    return self.groupChatServerID > 0;
 }
 
-- (void)saveGroupChatMessageID:(uint64_t)serverMessageID in:(YapDatabaseReadWriteTransaction *_Nullable)transaction {
-    self.groupChatMessageID = serverMessageID;
+- (void)saveGroupChatServerID:(uint64_t)serverMessageID in:(YapDatabaseReadWriteTransaction *_Nullable)transaction {
+    self.groupChatServerID = serverMessageID;
     if (transaction == nil) {
         [self save];
         [self.dbReadWriteConnection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:^{}];
@@ -513,7 +513,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 }
 
 #pragma mark - Link Preview
-
 
 - (void)generateLinkPreviewIfNeededFromURL:(NSString *)url {
     [OWSLinkPreview tryToBuildPreviewInfoObjcWithPreviewUrl:url]

@@ -6,8 +6,6 @@
 
 @implementation LKFriendRequestMessage
 
-- (uint)ttl { return 4 * kDayInMs; } // Friend requests should stay for the longest on the storage server
-
 - (SSKProtoContentBuilder *)contentBuilder:(SignalRecipient *)recipient {
     SSKProtoContentBuilder *contentBuilder = [super contentBuilder:recipient];
     
@@ -24,6 +22,10 @@
     }
     
     return contentBuilder;
+}
+
+- (uint)ttl {
+    return 4 * kDayInMs;
 }
 
 @end

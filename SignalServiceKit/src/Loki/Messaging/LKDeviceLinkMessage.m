@@ -65,7 +65,7 @@
 }
 
 #pragma mark Settings
-- (uint)ttl { 8 * kMinuteInMs; }
+- (uint)ttl { return 2 * kMinuteInMs; }
 - (BOOL)shouldSyncTranscript { return NO; }
 - (BOOL)shouldBeSaved { return NO; }
 
