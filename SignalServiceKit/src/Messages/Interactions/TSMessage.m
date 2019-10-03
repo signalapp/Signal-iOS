@@ -413,7 +413,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     NSData *_Nullable data = [NSData dataWithContentsOfFile:attachmentStream.originalFilePath];
     if (!data) {
-        OWSFailDebug(@"Can't load oversize text data.");
+//        OWSFailDebug(@"Can't load oversize text data.");
         return nil;
     }
     NSString *_Nullable text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];

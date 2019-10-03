@@ -135,7 +135,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     }
     NSData *_Nullable data = UIImagePNGRepresentation(image);
     if (data.length < 1) {
-        OWSFailDebug(@"Could not convert group avatar to PNG.");
+//        OWSFailDebug(@"Could not convert group avatar to PNG.");
         return nil;
     }
     // We should never hit this limit, given the max dimension above.
