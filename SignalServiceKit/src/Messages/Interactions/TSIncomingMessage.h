@@ -116,10 +116,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 // convenience method for expiring a message which was just read
 - (void)markAsReadNowWithSendReadReceipt:(BOOL)sendReadReceipt transaction:(SDSAnyWriteTransaction *)transaction;
 
-#ifdef DEBUG
-- (void)markAsReadForTestsWithTransaction:(SDSAnyWriteTransaction *)transaction;
-#endif
-
 @end
 
 NS_ASSUME_NONNULL_END

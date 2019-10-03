@@ -96,6 +96,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _isViewOnceMessage = isViewOnceMessage;
     _isViewOnceComplete = NO;
 
+#ifdef DEBUG
+    [self verifyPerConversationExpiration];
+#endif
+
     return self;
 }
 
@@ -159,7 +163,23 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (void)sdsFinalizeMessage
 {
+#ifdef DEBUG
+    [self verifyPerConversationExpiration];
+#endif
+
     [self updateExpiresAt];
+}
+
+- (void)verifyPerConversationExpiration
+{
+    if (_expireStartedAt > 0 || _expiresAt > 0) {
+        // It only makes sense to set expireStartedAt and expiresAt for messages
+        // with per-conversation expiration, e.g. expiresInSeconds > 0.
+        // If either expireStartedAt and expiresAt are set, both should be set.
+        OWSAssertDebug(_expiresInSeconds > 0);
+        OWSAssertDebug(_expireStartedAt > 0);
+        OWSAssertDebug(_expiresAt > 0);
+    }
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
@@ -252,6 +272,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 
     _expireStartedAt = MIN(now, expireStartedAt);
+
     [self updateExpiresAt];
 }
 
@@ -511,6 +532,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 
     [self updateStoredShouldStartExpireTimer];
+
+#ifdef DEBUG
+    [self verifyPerConversationExpiration];
+#endif
 }
 
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -525,6 +550,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [super anyWillUpdateWithTransaction:transaction];
 
     [self updateStoredShouldStartExpireTimer];
+
+#ifdef DEBUG
+    [self verifyPerConversationExpiration];
+#endif
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -603,7 +632,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (BOOL)hasPerConversationExpirationStarted
 {
-    return self.expireStartedAt > 0;
+    return _expireStartedAt > 0 && _expiresInSeconds > 0;
 }
 
 - (uint64_t)timestampForLegacySorting
@@ -640,6 +669,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(expireStartedAt > 0);
+    OWSAssertDebug(self.expiresInSeconds > 0);
 
     [self anyUpdateMessageWithTransaction:transaction
                                     block:^(TSMessage *message) {
