@@ -218,6 +218,11 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                                                 message.read = YES;
                                             }];
 
+    // readTimestamp may be earlier than now, so backdate the expiration if necessary.
+    [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:self
+                                                     expirationStartedAt:readTimestamp
+                                                             transaction:transaction];
+
     [transaction addCompletionWithBlock:^{
         [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
                                                                  object:self];
@@ -227,18 +232,6 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
         [OWSReadReceiptManager.sharedManager messageWasReadLocally:self];
     }
 }
-
-#ifdef DEBUG
-- (void)markAsReadForTestsWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    [self anyUpdateIncomingMessageWithTransaction:transaction
-                                            block:^(TSIncomingMessage *message) {
-                                                message.read = YES;
-                                            }];
-}
-#endif
 
 - (SignalServiceAddress *)authorAddress
 {

@@ -1025,7 +1025,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return result;
 }
 
-#ifdef DEBUG
+#if defined(DEBUG) || defined(TESTABLE_BUILD)
 - (void)updateWithFakeMessageState:(TSOutgoingMessageState)messageState
                        transaction:(SDSAnyWriteTransaction *)transaction
 {
