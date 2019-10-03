@@ -9,7 +9,7 @@ public protocol ThreadFinder {
     associatedtype ReadTransaction
 
     func visibleThreadCount(isArchived: Bool, transaction: ReadTransaction) throws -> UInt
-    func enumerateVisibleThreads(isArchived: Bool, transaction: ReadTransaction, block: @escaping (TSThread) -> Void) throws
+    func sortedVisibleThreads(isArchived: Bool, transaction: ReadTransaction) throws -> [TSThread]
 }
 
 public class AnyThreadFinder: ThreadFinder {
@@ -29,12 +29,12 @@ public class AnyThreadFinder: ThreadFinder {
         }
     }
 
-    public func enumerateVisibleThreads(isArchived: Bool, transaction: SDSAnyReadTransaction, block: @escaping (TSThread) -> Void) throws {
+    public func sortedVisibleThreads(isArchived: Bool, transaction: SDSAnyReadTransaction) throws -> [TSThread] {
         switch transaction.readTransaction {
         case .grdbRead(let grdb):
-            try grdbAdapter.enumerateVisibleThreads(isArchived: isArchived, transaction: grdb, block: block)
+            return try grdbAdapter.sortedVisibleThreads(isArchived: isArchived, transaction: grdb)
         case .yapRead(let yap):
-            yapAdapter.enumerateVisibleThreads(isArchived: isArchived, transaction: yap, block: block)
+            return yapAdapter.sortedVisibleThreads(isArchived: isArchived, transaction: yap)
         }
     }
 }
@@ -49,9 +49,10 @@ struct YAPDBThreadFinder: ThreadFinder {
         return view.numberOfItems(inGroup: group(isArchived: isArchived))
     }
 
-    func enumerateVisibleThreads(isArchived: Bool, transaction: YapDatabaseReadTransaction, block: @escaping (TSThread) -> Void) {
+    func sortedVisibleThreads(isArchived: Bool, transaction: YapDatabaseReadTransaction) -> [TSThread] {
+        var result = [TSThread]()
         guard let view = ext(transaction) else {
-            return
+            return []
         }
         view.safe_enumerateKeysAndObjects(inGroup: group(isArchived: isArchived),
                                           extensionName: type(of: self).extensionName,
@@ -60,8 +61,10 @@ struct YAPDBThreadFinder: ThreadFinder {
                                                 owsFailDebug("unexpected object: \(type(of: object))")
                                                 return
                                             }
-                                            block(thread)
+                                            result.append(thread)
         }
+        // The YDB view is pre-sorted.
+        return result
     }
 
     // MARK: -
@@ -83,15 +86,24 @@ struct GRDBThreadFinder: ThreadFinder {
     static let cn = ThreadRecord.columnName
 
     func visibleThreadCount(isArchived: Bool, transaction: GRDBReadTransaction) throws -> UInt {
-        var count: UInt = 0
-        try enumerateVisibleThreads(isArchived: isArchived, transaction: transaction) { _ in
-            count += 1
-        }
-        return count
+        return UInt(try sortedVisibleThreads(isArchived: isArchived, transaction: transaction).count)
     }
 
-    func enumerateVisibleThreads(isArchived: Bool, transaction: GRDBReadTransaction, block: @escaping (TSThread) -> Void) throws {
-        // TODO: Find a performant way to pull the isThreadArchived() check into this query.
+    func sortedVisibleThreads(isArchived: Bool, transaction: GRDBReadTransaction) throws -> [TSThread] {
+        let longAgo = Date(timeIntervalSince1970: 0)
+        let sortDateForThread: (TSThread) -> Date = { thread in
+            if let lastInteraction = thread.lastInteractionForInbox(transaction: transaction.asAnyRead) {
+                return lastInteraction.receivedAtDate()
+            }
+            guard let creationDate = thread.creationDate else {
+                return longAgo
+            }
+            return creationDate
+        }
+
+        typealias SortableThread = (thread: TSThread, date: Date)
+        var sortableThreads = [SortableThread]()
+        // TODO: Find a performant way to pull the isThreadArchived() check and sorting into this query.
         let sql = """
             SELECT *
             FROM \(ThreadRecord.databaseTableName)
@@ -101,37 +113,33 @@ struct GRDBThreadFinder: ThreadFinder {
 
         try ThreadRecord.fetchCursor(transaction.database, sql: sql, arguments: arguments).forEach { threadRecord in
             let thread = try TSThread.fromRecord(threadRecord)
-            let isThreadArchived = try self.isThreadArchived(thread: thread, transaction: transaction)
+            let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
+            let mostRecentInteraction: TSInteraction? = interactionFinder.mostRecentInteractionForInbox(transaction: transaction.asAnyRead)
+            let isThreadArchived = try self.isThreadArchived(thread: thread, mostRecentInteraction: mostRecentInteraction)
             guard isArchived == isThreadArchived else {
                 return
             }
-            block(thread)
+            sortableThreads.append(SortableThread(thread: thread, date: sortDateForThread(thread)))
+        }
+        sortableThreads.sort { (lhs, rhs) -> Bool in
+            return lhs.date > rhs.date
+        }
+        return sortableThreads.map { sortableThread in
+            sortableThread.thread
         }
     }
 
-    func isThreadArchived(thread: TSThread, transaction: GRDBReadTransaction) throws -> Bool {
+    func isThreadArchived(thread: TSThread, mostRecentInteraction: TSInteraction?) throws -> Bool {
         guard let archivedAsOfMessageSortId = thread.archivedAsOfMessageSortId else {
             // Thread was never archived.
             return false
         }
-        guard let lastVisibleInteractionRowId = try lastVisibleInteractionRowId(threadId: thread.uniqueId, transaction: transaction) else {
+        guard let lastVisibleInteractionRowId = mostRecentInteraction?.sortId else {
             // Thread archived, no visible interactions.
             return true
         }
         // Thread is still archived if the most recent visible interaction is
         // from before when the thread was archived.
         return lastVisibleInteractionRowId <= archivedAsOfMessageSortId.int64Value
-    }
-
-    func lastVisibleInteractionRowId(threadId: String, transaction: GRDBReadTransaction) throws -> Int64? {
-        let sql = """
-            SELECT
-            MAX(\(interactionColumn: .id)) as maxInteractionId
-            FROM \(InteractionRecord.databaseTableName)
-            WHERE \(interactionColumn: .storedShouldAppearInHomeView) == 1
-            AND \(interactionColumn: .threadUniqueId) = ?
-        """
-        let arguments: StatementArguments = [threadId]
-        return try Int64.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? nil
     }
 }

@@ -852,6 +852,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .threadUniqueId) = ?
         ORDER BY \(interactionColumn: .id) DESC
+        LIMIT 1
         """
         let arguments: StatementArguments = [threadUniqueId]
         return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
@@ -864,6 +865,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                 WHERE \(interactionColumn: .threadUniqueId) = ?
                 AND \(interactionColumn: .storedShouldAppearInHomeView) == 1
                 ORDER BY \(interactionColumn: .id) DESC
+                LIMIT 1
                 """
         let arguments: StatementArguments = [threadUniqueId]
         return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)

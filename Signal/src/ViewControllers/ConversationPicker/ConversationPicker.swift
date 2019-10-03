@@ -198,11 +198,13 @@ class ConversationPickerViewController: OWSViewController {
                 }
             }
 
-            try! AnyThreadFinder().enumerateVisibleThreads(isArchived: false, transaction: transaction) { thread in
+            let unarchivedThreads = try! AnyThreadFinder().sortedVisibleThreads(isArchived: false, transaction: transaction)
+            for thread in unarchivedThreads {
                 addThread(thread)
             }
 
-            try! AnyThreadFinder().enumerateVisibleThreads(isArchived: true, transaction: transaction) { thread in
+            let archivedThreads = try! AnyThreadFinder().sortedVisibleThreads(isArchived: true, transaction: transaction)
+            for thread in archivedThreads {
                 addThread(thread)
             }
 
