@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+
+import fileinput
+import os
+import subprocess 
+import sys
+
+git_repo_path = os.path.abspath(subprocess.check_output(['git', 'rev-parse', '--show-toplevel']).strip())
+
+file = fileinput.FileInput(git_repo_path + '/Signal.xcodeproj/project.pbxproj', inplace=True)
+
+for line in file:
+    sys.stdout.write(line.replace('TARGETED_DEVICE_FAMILY = "1,2";', 'TARGETED_DEVICE_FAMILY = 1;'))
+
+file.close()
