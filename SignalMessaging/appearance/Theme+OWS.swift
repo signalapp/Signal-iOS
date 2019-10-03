@@ -60,16 +60,15 @@ public extension Theme {
         case .settingsAllMedia:
             return isDarkThemeEnabled ? "photo-album-solid-24" : "photo-album-outline-24"
         case .settingsEditGroup:
-            // TODO NEEDS_ASSET - waiting on design to provide an updated asset.
-            return "table_ic_group_edit"
+            return isDarkThemeEnabled ? "compose-solid-24" : "compose-outline-24"
         case .settingsLeaveGroup:
-            return "table_ic_group_leave"
+            return "leave-24"
         case .settingsViewSafetyNumber:
             return isDarkThemeEnabled ? "safety-number-solid-24" : "safety-number-outline-24"
         case .settingsProfile:
             return isDarkThemeEnabled ? "profile-circle-solid-24" : "profile-circle-outline-24"
         case .settingsShowGroup:
-            return "table_ic_group_members"
+            return isDarkThemeEnabled ? "group-solid-24" : "group-outline-24"
         case .settingsTimer:
             return "timer-24"
         case .settingsTimerDisabled:
