@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import GRDB
 
 @objc
 public class CDSContactQueryBuilder: NSObject {
@@ -180,7 +181,8 @@ struct GRDBContactQueryFinder: ContactQueryFinder {
 
         do {
             var stop: ObjCBool = false
-            let cursor = try String.fetchCursor(transaction.database, sql: sql, arguments: [referenceDate])
+            let arguments: StatementArguments = [convertDateForGrdb(referenceDate)]
+            let cursor = try String.fetchCursor(transaction.database, sql: sql, arguments: arguments)
             while !stop.boolValue, let next = try cursor.next() {
                 block(next, &stop)
             }

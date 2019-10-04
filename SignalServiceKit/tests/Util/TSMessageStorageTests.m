@@ -158,8 +158,6 @@
                                                                                             groupId:groupId]
                                                     transaction:transaction];
 
-        [thread anyInsertWithTransaction:transaction];
-
         NSMutableArray<TSIncomingMessage *> *messages = [NSMutableArray new];
         for (uint64_t i = 0; i < 10; i++) {
             SignalServiceAddress *authorAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+fakephone"];
