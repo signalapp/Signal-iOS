@@ -60,6 +60,11 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return SDSDatabaseStorage.shared;
 }
 
+- (OWSProfileManager *)profileManager
+{
+    return OWSProfileManager.sharedManager;
+}
+
 #pragma mark -
 
 - (id)init
@@ -602,6 +607,10 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             }
         }];
 
+        // Add system contacts to the profile whitelist immediately
+        // so that they do not see the "message request" UI.
+        [self.profileManager addUsersToProfileWhitelist:seenAddresses.allObjects];
+
         dispatch_async(dispatch_get_main_queue(), ^{
             [self updateSignalAccounts:signalAccounts shouldSetHasLoadedContacts:didLoad];
         });
@@ -648,12 +657,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     [[NSNotificationCenter defaultCenter]
         postNotificationNameAsync:OWSContactsManagerSignalAccountsDidChangeNotification
                            object:nil];
-}
-
-// TODO dependency inject, avoid circular dependencies.
-- (OWSProfileManager *)profileManager
-{
-    return [OWSProfileManager sharedManager];
 }
 
 - (nullable NSString *)cachedContactNameForAddress:(SignalServiceAddress *)address

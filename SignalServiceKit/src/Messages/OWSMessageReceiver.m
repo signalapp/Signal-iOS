@@ -510,6 +510,11 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     return SSKEnvironment.shared.messageDecryptJobQueue;
 }
 
+- (StorageCoordinator *)storageCoordinator
+{
+    return SSKEnvironment.shared.storageCoordinator;
+}
+
 #pragma mark - class methods
 
 + (NSString *)databaseExtensionName
@@ -547,7 +552,8 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         OWSFailDebug(@"Unexpectedly large message.");
     }
 
-    if (SSKFeatureFlags.storageMode == StorageModeYdb || SSKFeatureFlags.storageMode == StorageModeYdbTests) {
+    if (self.storageCoordinator.state == StorageCoordinatorStateYDB
+        || self.storageCoordinator.state == StorageCoordinatorStateYDBTests) {
         [self.yapProcessingQueue enqueueEnvelopeData:envelopeData];
         [self.yapProcessingQueue drainQueue];
     } else {

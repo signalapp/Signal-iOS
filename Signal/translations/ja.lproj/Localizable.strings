@@ -89,6 +89,15 @@
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "アップデートする";
 
+/* Name indicating that the dark theme is enabled. */
+"APPEARANCE_SETTINGS_DARK_THEME_NAME" = "ダーク";
+
+/* Name indicating that the light theme is enabled. */
+"APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "ライト";
+
+/* Name indicating that the system theme is enabled. */
+"APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "システム";
+
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
 
@@ -1764,10 +1773,13 @@
 "PER_MESSAGE_EXPIRATION_NOTIFICATION" = "写真が消去されます";
 
 /* Label for outgoing view-once messages. */
-"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "写真";
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "メディア";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW" = "写真を見る";
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "写真を見る";
+
+/* Label for view-once messages indicating that user can tap to view the message's contents. */
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "View Video";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "閲覧済み";
@@ -2283,7 +2295,13 @@
 "SETTINGS_ADVANCED_TITLE" = "詳細設定";
 
 /* table cell label */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "エラーログを見る";
+"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Error Logs";
+
+/* The title for the theme section in the appearance settings. */
+"SETTINGS_APPEARANCE_THEME_TITLE" = "テーマ";
+
+/* The title for the appearance settings. */
+"SETTINGS_APPEARANCE_TITLE" = "デザイン設定";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@（デフォルト）";

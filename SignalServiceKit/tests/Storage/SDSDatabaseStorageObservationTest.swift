@@ -82,6 +82,12 @@ extension MockObserver: SDSDatabaseStorageObserver {
 
 class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
+    // MARK: - Dependencies
+
+    var storageCoordinator: StorageCoordinator {
+        return SSKEnvironment.shared.storageCoordinator
+    }
+
     // MARK: - YDB
 
     func testYDBSyncWrite() {
@@ -492,7 +498,12 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertTrue(lastChange.didUpdate(keyValueStore: keyValueStore))
             // Note: For GRDB, didUpdate(keyValueStore:) currently returns true
             //       if any key value stores was updated.
-            XCTAssertTrue(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
+            if self.storageCoordinator.state == .YDB ||
+                self.storageCoordinator.state == .ydbTests {
+                XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
+            } else {
+                XCTAssertTrue(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
+            }
         }
         mockObserver.clear()
 
@@ -665,7 +676,12 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertTrue(lastChange.didUpdate(keyValueStore: keyValueStore))
             // Note: For GRDB, didUpdate(keyValueStore:) currently returns true
             //       if any key value stores was updated.
-            XCTAssertTrue(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
+            if self.storageCoordinator.state == .YDB ||
+                self.storageCoordinator.state == .ydbTests {
+                XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
+            } else {
+                XCTAssertTrue(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
+            }
         }
         mockObserver.clear()
 

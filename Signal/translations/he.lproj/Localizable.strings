@@ -89,6 +89,15 @@
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "עדכן";
 
+/* Name indicating that the dark theme is enabled. */
+"APPEARANCE_SETTINGS_DARK_THEME_NAME" = "כהה";
+
+/* Name indicating that the light theme is enabled. */
+"APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "בהיר";
+
+/* Name indicating that the system theme is enabled. */
+"APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "מערכת";
+
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
 
@@ -826,7 +835,7 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "הודעות בשיחה זו ייעלמו לאחר %@.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "כאשר מאופשר, הודעות אשר נשלחו והתקבלו בשיחה זו יעלמו לאחר שנקראו.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "כאשר מאופשר, הודעות אשר נשלחות ומתקבלות בשיחה זו יעלמו לאחר שייקראו.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "כרגע הודעות נעלמות לאחר %@";
@@ -1605,7 +1614,7 @@
 "NOTIFICATIONS_FOOTER_WARNING" = "עקב תקלים ידועים במערכת הדחיפה של Apple, תצוגה מקדימה של הודעות תיראה רק אם ההודעה מאוחזרת תוך 30 שניות לאחר שנשלחה. תג היישום עלול להיות לא מדויק כתוצאה מכך.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "אין שם או תוכן";
+"NOTIFICATIONS_NONE" = "ללא שם או תוכן";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "נגן בזמן שהיישום פתוח";
@@ -1764,10 +1773,13 @@
 "PER_MESSAGE_EXPIRATION_NOTIFICATION" = "תצלום נעלם";
 
 /* Label for outgoing view-once messages. */
-"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "תצלום";
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "מדיה";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW" = "הצג תצלום";
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "הצג תצלום";
+
+/* Label for view-once messages indicating that user can tap to view the message's contents. */
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "View Video";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "הוצג";
@@ -2283,7 +2295,13 @@
 "SETTINGS_ADVANCED_TITLE" = "מתקדם";
 
 /* table cell label */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "הצג רישומי שגיאה";
+"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Error Logs";
+
+/* The title for the theme section in the appearance settings. */
+"SETTINGS_APPEARANCE_THEME_TITLE" = "ערכת נושא";
+
+/* The title for the appearance settings. */
+"SETTINGS_APPEARANCE_TITLE" = "מראה";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (ברירת מחדל)";
@@ -2358,7 +2376,7 @@
 "SETTINGS_CLEAR_HISTORY" = "נקה היסטורית שיחות";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "זכויות יוצרים Signal Messenger \n ברשיון תחת GPLv3";
+"SETTINGS_COPYRIGHT" = "זכויות יוצרים Signal Messenger \n ברישיון תחת GPLv3";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "מחק חשבון";

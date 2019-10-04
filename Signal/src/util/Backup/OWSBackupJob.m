@@ -305,11 +305,11 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
             return nil;
         }
         // uncompressedDataLength is an optional field.
-        if (uncompressedDataLength && ![uncompressedDataLength isKindOfClass:[NSNumber class]]) {
+        if (uncompressedDataLength != nil && ![uncompressedDataLength isKindOfClass:[NSNumber class]]) {
             OWSFailDebug(@"manifest has invalid uncompressedDataLength: %@.", uncompressedDataLength);
             return nil;
         }
-        if (![SDS fitsInInt64WithNSNumber:uncompressedDataLength]) {
+        if (uncompressedDataLength != nil && ![SDS fitsInInt64WithNSNumber:uncompressedDataLength]) {
             OWSFailDebug(@"Invalid export item.");
             return nil;
         }

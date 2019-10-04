@@ -89,6 +89,15 @@
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "به روز رسانی";
 
+/* Name indicating that the dark theme is enabled. */
+"APPEARANCE_SETTINGS_DARK_THEME_NAME" = "تاریک";
+
+/* Name indicating that the light theme is enabled. */
+"APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "روشن";
+
+/* Name indicating that the system theme is enabled. */
+"APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "سیستم";
+
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
 
@@ -1764,10 +1773,13 @@
 "PER_MESSAGE_EXPIRATION_NOTIFICATION" = "عکس ناپدید شد";
 
 /* Label for outgoing view-once messages. */
-"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "تصویر";
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "مدیا";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW" = "مشاهده عکس";
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "مشاهده عکس";
+
+/* Label for view-once messages indicating that user can tap to view the message's contents. */
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "View Video";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "مشاهده شده";
@@ -2283,7 +2295,13 @@
 "SETTINGS_ADVANCED_TITLE" = "تنظیمات پیشرفته";
 
 /* table cell label */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "View Error Logs";
+"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Error Logs";
+
+/* The title for the theme section in the appearance settings. */
+"SETTINGS_APPEARANCE_THEME_TITLE" = "زمینه";
+
+/* The title for the appearance settings. */
+"SETTINGS_APPEARANCE_TITLE" = "ظاهر برنامه";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (پیشفرض)";
