@@ -926,25 +926,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         BOOL isFriendRequestMessage = [message isKindOfClass:LKFriendRequestMessage.class];
         [[LKAPI getDestinationsFor:contactID]
         .thenOn(OWSDispatch.sendingQueue, ^(NSArray<LKDestination *> *destinations) {
-            // Use a best attempt approach for multi device for now
-            NSArray *slaveDestinations = [destinations filtered:^BOOL(NSObject *object) {
-                LKDestination *destination = [object as:LKDestination.class];
-                return [destination.kind isEqual:@"slave"];
-            }];
-            for (LKDestination *slaveDestination in slaveDestinations) {
-                TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:slaveDestination.hexEncodedPublicKey];
-                if (thread.isContactFriend || isSilentMessage || (isFriendRequestMessage && contactID == slaveDestination.hexEncodedPublicKey)) {
-                    OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:slaveDestination];
-                    [self sendMessage:messageSendCopy];
-                } else {
-                    OWSMessageSend *friendRequestMessage = [self getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:slaveDestination.hexEncodedPublicKey];
-                    [self sendMessage:friendRequestMessage];
-                }
-            }
+            // Get master destination
             LKDestination *masterDestination = [destinations filtered:^BOOL(NSObject *object) {
                 LKDestination *destination = [object as:LKDestination.class];
                 return [destination.kind isEqual:@"master"];
             }].firstObject;
+            // Send to master destination
             if (masterDestination != nil) {
                 TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:masterDestination.hexEncodedPublicKey];
                 if (thread.isContactFriend || isSilentMessage || (isFriendRequestMessage && contactID == masterDestination.hexEncodedPublicKey)) {
@@ -952,6 +939,22 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     [self sendMessage:messageSendCopy];
                 } else {
                     OWSMessageSend *friendRequestMessage = [self getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:masterDestination.hexEncodedPublicKey];
+                    [self sendMessage:friendRequestMessage];
+                }
+            }
+            // Get slave destinations
+            NSArray *slaveDestinations = [destinations filtered:^BOOL(NSObject *object) {
+                LKDestination *destination = [object as:LKDestination.class];
+                return [destination.kind isEqual:@"slave"];
+            }];
+            // Send to slave destinations (using a best attempt approach (i.e. ignoring the message send result) for now)
+            for (LKDestination *slaveDestination in slaveDestinations) {
+                TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:slaveDestination.hexEncodedPublicKey];
+                if (thread.isContactFriend || isSilentMessage || (isFriendRequestMessage && contactID == slaveDestination.hexEncodedPublicKey)) {
+                    OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:slaveDestination];
+                    [self sendMessage:messageSendCopy];
+                } else {
+                    OWSMessageSend *friendRequestMessage = [self getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:slaveDestination.hexEncodedPublicKey];
                     [self sendMessage:friendRequestMessage];
                 }
             }
