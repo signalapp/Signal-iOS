@@ -19,4 +19,9 @@ public final class LokiDatabaseUtilities : NSObject {
         }, with: transaction).first as! TSMessage? else { return 0 }
         return message.groupChatServerID
     }
+    
+    @objc(getMasterHexEncodedPublicKeyFor:in:)
+    public static func objc_getMasterHexEncodedPublicKey(for slaveHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> String? {
+        return OWSPrimaryStorage.shared().getMasterHexEncodedPublicKey(for: slaveHexEncodedPublicKey, in: transaction)
+    }
 }

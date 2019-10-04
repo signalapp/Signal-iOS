@@ -56,6 +56,7 @@
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -1436,14 +1437,18 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
     } else {
+        // PMKHang([LKAPI getDestinationsFor:envelope.source]); // This should always be called from OWSBatchMessageProcessor.serialQueue, which is a background thread
+        
+        NSString *hexEncodedPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source);
+        
         OWSLogDebug(
-            @"incoming message from: %@ with timestamp: %lu", envelopeAddress(envelope), (unsigned long)timestamp);
+            @"incoming message from: %@ with timestamp: %lu", hexEncodedPublicKey, (unsigned long)timestamp);
         TSContactThread *thread =
-            [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+            [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
 
         [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                                                   thread:thread
-                                                              createdByRemoteRecipientId:envelope.source
+                                                              createdByRemoteRecipientId:hexEncodedPublicKey
                                                                   createdInExistingGroup:NO
                                                                              transaction:transaction];
 
@@ -1498,18 +1503,18 @@ NS_ASSUME_NONNULL_BEGIN
         
         if (body.length == 0 && attachmentPointers.count < 1 && !contact) {
             OWSLogWarn(@"ignoring empty incoming message from: %@ with timestamp: %lu",
-                envelopeAddress(envelope),
+                hexEncodedPublicKey,
                 (unsigned long)timestamp);
             return nil;
         }
         
         // Loki: If we received a message from a contact in the last 2 minutes that wasn't P2P, then we need to ping them.
         // We assume this occurred because they don't have our P2P details.
-        if (!envelope.isPtpMessage && envelope.source != nil) {
+        if (!envelope.isPtpMessage && hexEncodedPublicKey != nil) {
             uint64_t timestamp = envelope.timestamp;
             uint64_t now = NSDate.ows_millisecondTimeStamp;
             uint64_t ageInSeconds = (now - timestamp) / 1000;
-            if (ageInSeconds <= 120) { [LKP2PAPI pingContact:envelope.source]; }
+            if (ageInSeconds <= 120) { [LKP2PAPI pingContact:hexEncodedPublicKey]; }
         }
 
         [self finalizeIncomingMessage:incomingMessage
@@ -1617,7 +1622,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.
-    if ([envelope.source isEqualToString:self.tsAccountManager.localNumber]) {
+    if ([(thread.contactIdentifier ?: envelope.source) isEqualToString:self.tsAccountManager.localNumber]) {
         // Don't send a read receipt for messages sent by ourselves.
         [incomingMessage markAsReadAtTimestamp:envelope.timestamp sendReadReceipt:NO transaction:transaction];
     }
@@ -1679,7 +1684,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.typingIndicators didReceiveIncomingMessageInThread:thread
-                                                     recipientId:envelope.source
+                                                     recipientId:(thread.contactIdentifier ?: envelope.source)
                                                         deviceId:envelope.sourceDevice];
     });
 }
