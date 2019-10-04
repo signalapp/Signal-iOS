@@ -4689,10 +4689,14 @@ typedef enum : NSUInteger {
 - (CGPoint)collectionView:(UICollectionView *)collectionView
     targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset
 {
-    if (self.menuActionsViewController != nil) {
-        NSValue *_Nullable contentOffset = [self contentOffsetForMenuActionInteraction];
-        if (contentOffset != nil) {
-            return contentOffset.CGPointValue;
+    if (@available(iOS 13, *)) {
+        
+    } else {
+        if (self.menuActionsViewController != nil) {
+            NSValue *_Nullable contentOffset = [self contentOffsetForMenuActionInteraction];
+            if (contentOffset != nil) {
+                return contentOffset.CGPointValue;
+            }
         }
     }
 
