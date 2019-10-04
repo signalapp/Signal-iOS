@@ -4,7 +4,7 @@
     @objc public var isGroupChatMessage: Bool {
         do {
             let contentProto = try SSKProtoContent.parseData(self.content!)
-            return contentProto.dataMessage!.group != nil
+            return contentProto.dataMessage?.group != nil
         } catch {
             return false
         }

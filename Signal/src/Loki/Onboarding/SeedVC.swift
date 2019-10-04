@@ -362,7 +362,9 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
     
     func handleDeviceLinkAuthorized(_ deviceLink: DeviceLink) {
         linkingRequestMessageSendingTimer?.invalidate()
-        UserDefaults.standard.set(true, forKey: "didUpdateForMainnet")
+        let userDefaults = UserDefaults.standard
+        userDefaults.set(true, forKey: "didUpdateForMainnet")
+        userDefaults.set(deviceLink.master.hexEncodedPublicKey, forKey: "masterDeviceHexEncodedPublicKey")
         onboardingController.verificationDidComplete(fromView: self)
         Analytics.shared.track("Device Linked Successfully")
     }

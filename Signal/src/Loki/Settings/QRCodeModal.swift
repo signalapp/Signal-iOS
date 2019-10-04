@@ -13,7 +13,12 @@ final class QRCodeModal : Modal {
         label.textColor = UIColor.ows_white
         // Image view
         let imageView = UIImageView()
-        let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+        let hexEncodedPublicKey: String
+        if let masterDeviceHexEncodedPublicKey = UserDefaults.standard.string(forKey: "masterDeviceHexEncodedPublicKey") {
+            hexEncodedPublicKey = masterDeviceHexEncodedPublicKey
+        } else {
+            hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+        }
         let data = hexEncodedPublicKey.data(using: .utf8)
         let filter = CIFilter(name: "CIQRCodeGenerator")!
         filter.setValue(data, forKey: "inputMessage")

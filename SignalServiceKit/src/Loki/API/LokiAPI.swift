@@ -39,7 +39,9 @@ public final class LokiAPI : NSObject {
         @objc(kind)
         public let objc_kind: String
         
-        public var kind: Kind { return Kind(rawValue: objc_kind)! }
+        public var kind: Kind {
+            return Kind(rawValue: objc_kind)!
+        }
         
         public enum Kind : String { case master, slave }
         

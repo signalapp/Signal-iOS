@@ -112,6 +112,8 @@
 
 - (void)updateTableContents
 {
+    NSString *masterDeviceHexEncodedPublicKey = [NSUserDefaults.standardUserDefaults stringForKey:@"masterDeviceHexEncodedPublicKey"];
+    BOOL isMasterDevice = (masterDeviceHexEncodedPublicKey == nil);
     OWSTableContents *contents = [OWSTableContents new];
 
     __weak AppSettingsViewController *weakSelf = self;
@@ -123,14 +125,16 @@
 #endif
 
     OWSTableSection *section = [OWSTableSection new];
-    [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        return [weakSelf profileHeaderCell];
+    if (isMasterDevice) {
+        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
+            return [weakSelf profileHeaderCell];
+        }
+                             customRowHeight:100.f
+                             actionBlock:^{
+                                 [weakSelf showProfile];
+                             }]];
     }
-                         customRowHeight:100.f
-                         actionBlock:^{
-                             [weakSelf showProfile];
-                         }]];
-
+    
     if (OWSSignalService.sharedInstance.isCensorshipCircumventionActive) {
         [section
             addItem:[OWSTableItem disclosureItemWithText:
@@ -244,8 +248,10 @@
 
     [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Share Public Key", @"") actionBlock:^{ [weakSelf sharePublicKey]; }]];
     [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Show QR Code", @"") actionBlock:^{ [weakSelf showQRCode]; }]];
-    [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Link Device", @"") actionBlock:^{ [weakSelf linkDevice]; }]];
-    [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Show Seed", @"") actionBlock:^{ [weakSelf showSeed]; }]];
+    if (isMasterDevice) {
+        [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Link Device", @"") actionBlock:^{ [weakSelf linkDevice]; }]];
+        [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Show Seed", @"") actionBlock:^{ [weakSelf showSeed]; }]];
+    }
     [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Clear All Data", @"") actionBlock:^{ [weakSelf clearAllData]; }]];
     
     if (TSAccountManager.sharedInstance.isDeregistered) {
@@ -504,7 +510,13 @@
 
 - (void)sharePublicKey
 {
-    NSString *hexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    NSString *hexEncodedPublicKey;
+    NSString *masterDeviceHexEncodedPublicKey = [NSUserDefaults.standardUserDefaults stringForKey:@"masterDeviceHexEncodedPublicKey"];
+    if (masterDeviceHexEncodedPublicKey != nil) {
+        hexEncodedPublicKey = masterDeviceHexEncodedPublicKey;
+    } else {
+        hexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    }
     UIActivityViewController *shareVC = [[UIActivityViewController alloc] initWithActivityItems:@[ hexEncodedPublicKey ] applicationActivities:nil];
     [self presentViewController:shareVC animated:YES completion:nil];
     [LKAnalytics.shared track:@"Public Key Shared"];
