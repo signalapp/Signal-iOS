@@ -54,7 +54,7 @@ public class NewAccountDiscovery: NSObject {
                 // but for testing we disabled the `forNewThreadsOnly` flag.
                 if forNewThreadsOnly {
                     guard TSContactThread.getWithContactAddress(recipient.address, transaction: transaction) == nil else {
-                        owsFailDebug("not creating notification for 'new' user in existing thread.")
+                        Logger.info("not creating notification for reregistered user with existing thread.")
                         continue
                     }
                 }
