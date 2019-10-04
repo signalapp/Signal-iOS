@@ -89,6 +89,15 @@
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Aggiorna";
 
+/* Name indicating that the dark theme is enabled. */
+"APPEARANCE_SETTINGS_DARK_THEME_NAME" = "Scuro";
+
+/* Name indicating that the light theme is enabled. */
+"APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "Chiaro";
+
+/* Name indicating that the system theme is enabled. */
+"APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "Sistema";
+
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
 
@@ -931,7 +940,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Chiamata fallita.";
 
 /* Label indicating that this OS version is no longer supported. */
-"END_OF_LIFE_OS_WARNING" = "Le ultime funzionalità di Signal non funzioneranno in questa versione di iOS. Per favore aggiorna questo dispositivo per ricevere i futuri aggiornamenti di Signal. ";
+"END_OF_LIFE_OS_WARNING" = "Le ultime funzionalità di Signal non funzioneranno in questa versione di iOS. Per favore aggiorna questo dispositivo per ricevere i futuri aggiornamenti di Signal.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Impossibile accedere ai contatti.";
@@ -1764,10 +1773,13 @@
 "PER_MESSAGE_EXPIRATION_NOTIFICATION" = "Foto a scomparsa";
 
 /* Label for outgoing view-once messages. */
-"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Foto";
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Media";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW" = "Visualizza foto";
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Visualizza foto";
+
+/* Label for view-once messages indicating that user can tap to view the message's contents. */
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "View Video";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "Visualizzata";
@@ -2283,7 +2295,13 @@
 "SETTINGS_ADVANCED_TITLE" = "Avanzate";
 
 /* table cell label */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Visualizza i log di errore";
+"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Error Logs";
+
+/* The title for the theme section in the appearance settings. */
+"SETTINGS_APPEARANCE_THEME_TITLE" = "Tema";
+
+/* The title for the appearance settings. */
+"SETTINGS_APPEARANCE_TITLE" = "Aspetto";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (predefinito)";
