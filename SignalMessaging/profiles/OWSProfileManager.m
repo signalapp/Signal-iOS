@@ -1021,9 +1021,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         // also add all current members to the profile whitelist
         // individually as well just in case delivery of the profile key
         // fails.
-        for (SignalServiceAddress *address in groupThread.recipientAddresses) {
-            [self addUserToProfileWhitelist:address];
-        }
+        [self addUsersToProfileWhitelist:groupThread.recipientAddresses];
     } else {
         TSContactThread *contactThread = (TSContactThread *)thread;
         [self addUserToProfileWhitelist:contactThread.contactAddress];
