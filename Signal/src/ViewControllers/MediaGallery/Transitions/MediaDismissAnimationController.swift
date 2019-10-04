@@ -152,7 +152,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
                 // `toMediaContext` can be nil if the target item is scrolled off of the
                 // contextProvider's screen, so we synthesize a context to dismiss the item
                 // off screen
-                 let offscreenFrame = fromMediaContext.presentationFrame.offsetBy(dx: 0, dy: UIScreen.main.bounds.height)
+                let offscreenFrame = fromMediaContext.presentationFrame.offsetBy(dx: 0, dy: fromMediaContext.presentationFrame.height)
                 destinationFrame = offscreenFrame
                 destinationCornerRadius = fromMediaContext.cornerRadius
             }

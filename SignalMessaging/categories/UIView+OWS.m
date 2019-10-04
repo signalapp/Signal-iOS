@@ -10,9 +10,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static inline CGFloat ScreenShortDimension()
+static inline CGFloat ApplicationShortDimension()
 {
-    return MIN([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
+    return MIN(CurrentAppContext().frame.size.width, CurrentAppContext().frame.size.height);
 }
 
 static const CGFloat kIPhone5ScreenWidth = 320.f;
@@ -20,16 +20,16 @@ static const CGFloat kIPhone7PlusScreenWidth = 414.f;
 
 CGFloat ScaleFromIPhone5To7Plus(CGFloat iPhone5Value, CGFloat iPhone7PlusValue)
 {
-    CGFloat screenShortDimension = ScreenShortDimension();
+    CGFloat applicationShortDimension = ApplicationShortDimension();
     return (CGFloat)round(CGFloatLerp(iPhone5Value,
         iPhone7PlusValue,
-        CGFloatClamp01(CGFloatInverseLerp(screenShortDimension, kIPhone5ScreenWidth, kIPhone7PlusScreenWidth))));
+        CGFloatClamp01(CGFloatInverseLerp(applicationShortDimension, kIPhone5ScreenWidth, kIPhone7PlusScreenWidth))));
 }
 
 CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
-    CGFloat screenShortDimension = ScreenShortDimension();
-    return (CGFloat)round(iPhone5Value * screenShortDimension / kIPhone5ScreenWidth);
+    CGFloat applicationShortDimension = ApplicationShortDimension();
+    return (CGFloat)round(iPhone5Value * applicationShortDimension / kIPhone5ScreenWidth);
 }
 
 #pragma mark -

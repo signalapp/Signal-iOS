@@ -128,9 +128,9 @@ public class ImageEditorCanvasView: UIView {
         let aspectRatio = outputSizePixels
         var constraints = superview.applyScaleAspectFitLayout(subview: contentView, aspectRatio: aspectRatio.width / aspectRatio.height)
 
-        let screenSize = UIScreen.main.bounds.size
-        let maxScreenSize = max(screenSize.width, screenSize.height)
-        let outputSizePoints = CGSize(width: maxScreenSize, height: maxScreenSize)
+        let superviewSize = superview.frame.size
+        let maxSuperviewDimension = max(superviewSize.width, superviewSize.height)
+        let outputSizePoints = CGSize(width: maxSuperviewDimension, height: maxSuperviewDimension)
         // TODO: Add a "shouldFill" parameter.
         //        let outputSizePoints = CGSizeScale(outputSizePixels, 1.0 / UIScreen.main.scale)
         NSLayoutConstraint.autoSetPriority(UILayoutPriority.defaultLow) {

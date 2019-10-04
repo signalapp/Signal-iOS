@@ -1351,8 +1351,8 @@ typedef enum : NSUInteger {
     } else {
         // Request "full width" title; the navigation bar will truncate this
         // to fit between the left and right buttons.
-        CGSize screenSize = [UIScreen mainScreen].bounds.size;
-        CGRect headerFrame = CGRectMake(0, 0, screenSize.width, 44);
+        CGSize navControllerSize = self.navigationController.view.frame.size;
+        CGRect headerFrame = CGRectMake(0, 0, navControllerSize.width, 44);
         self.headerView.frame = headerFrame;
     }
 }
@@ -1790,8 +1790,8 @@ typedef enum : NSUInteger {
     if (!self.showLoadMoreHeader) {
         return;
     }
-    CGSize screenSize = UIScreen.mainScreen.bounds.size;
-    CGFloat loadMoreThreshold = MAX(screenSize.width, screenSize.height);
+    CGSize navControllerSize = self.navigationController.view.frame.size;
+    CGFloat loadMoreThreshold = MAX(navControllerSize.width, navControllerSize.height);
 
     [BenchManager
         benchWithTitle:@"loading more interactions"
@@ -2072,8 +2072,8 @@ typedef enum : NSUInteger {
     // e.g. In a new conversation, there might be only a single message
     // which we might want to scroll to the bottom of the screen to
     // pin above the menu actions popup.
-    CGSize mainScreenSize = UIScreen.mainScreen.bounds.size;
-    self.extraContentInsetPadding = MAX(mainScreenSize.width, mainScreenSize.height);
+    CGSize navControllerSize = self.navigationController.view.frame.size;
+    self.extraContentInsetPadding = MAX(navControllerSize.width, navControllerSize.height);
 
     UIEdgeInsets contentInset = self.collectionView.contentInset;
     contentInset.top += self.extraContentInsetPadding;

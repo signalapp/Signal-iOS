@@ -127,6 +127,16 @@ NS_ASSUME_NONNULL_BEGIN
     return _buildTime;
 }
 
+- (CGRect)frame
+{
+    return self.mainWindow.frame;
+}
+
+- (BOOL)isRunningInFullScreen
+{
+    return CGRectEqualToRect(self.mainWindow.frame, self.mainWindow.bounds);
+}
+
 - (UIInterfaceOrientation)interfaceOrientation
 {
     return UIInterfaceOrientationPortrait;

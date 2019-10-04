@@ -216,7 +216,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (void)ensureReturnToCallWindowFrame
 {
-    CGRect newFrame = self.rootWindow.frame;
+    CGRect newFrame = CurrentAppContext().frame;
     newFrame.size.height = OWSWindowManagerCallBannerHeight();
     OWSLogDebug(@"returnToCallWindowFrame: %@", NSStringFromCGRect(newFrame));
     self.returnToCallWindow.frame = newFrame;
@@ -233,9 +233,9 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     OWSAssertDebug(rootWindow);
 
     // "Return to call" should remain at the top of the screen.
-    CGRect windowFrame = UIScreen.mainScreen.bounds;
-    windowFrame.size.height = OWSWindowManagerCallBannerHeight();
-    UIWindow *window = [[OWSWindow alloc] initWithFrame:windowFrame];
+    CGRect applicationFrame = CurrentAppContext().frame;
+    applicationFrame.size.height = OWSWindowManagerCallBannerHeight();
+    UIWindow *window = [[OWSWindow alloc] initWithFrame:applicationFrame];
     window.hidden = YES;
     window.windowLevel = UIWindowLevel_ReturnToCall();
     window.opaque = YES;
@@ -325,14 +325,13 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 {
     OWSAssertIsOnMainThread();
 
-    CGRect windowFrame = [[UIScreen mainScreen] bounds];
     for (UIWindow *window in @[
              self.rootWindow,
              self.callViewWindow,
              self.screenBlockingWindow,
          ]) {
-        if (!CGRectEqualToRect(window.frame, windowFrame)) {
-            window.frame = windowFrame;
+        if (!CGRectEqualToRect(window.frame, CurrentAppContext().frame)) {
+            window.frame = CurrentAppContext().frame;
         }
     }
 }

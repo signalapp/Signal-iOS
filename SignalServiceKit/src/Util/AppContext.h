@@ -47,6 +47,9 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 @property (atomic, nullable) UIWindow *mainWindow;
 
+@property (nonatomic) CGRect frame;
+@property (nonatomic) BOOL isRunningInFullScreen;
+
 @property (nonatomic, readonly) UIInterfaceOrientation interfaceOrientation;
 
 // Unlike UIApplication.applicationState, this is thread-safe.
