@@ -83,31 +83,39 @@ struct GRDBThreadFinder: ThreadFinder {
     static let cn = ThreadRecord.columnName
 
     func visibleThreadCount(isArchived: Bool, transaction: Database) throws -> UInt {
-        guard let count = try UInt.fetchOne(transaction, sql: """
+        let sql = """
             SELECT COUNT(*)
             FROM (
                 SELECT
-                    \( threadColumn: .shouldThreadBeVisible),
-                    CASE maxInteractionId <= \(threadColumn: .archivedAsOfMessageSortId)
+                    CASE maxInteractionId <= archivedAsOfMessageSortId
                         WHEN 1 THEN 1
                         ELSE 0
                     END isArchived
-                FROM \(ThreadRecord.databaseTableName)
-                LEFT JOIN (
+                FROM (
                     SELECT
-                        MAX(\(interactionColumn: .id)) as maxInteractionId,
-                        \(interactionColumn: .threadUniqueId)
-                    FROM \(InteractionRecord.databaseTableName)
-                    GROUP BY \(interactionColumn: .threadUniqueId)
-                ) latestInteractions
-                ON latestInteractions.\(interactionColumn: .threadUniqueId) = \(threadColumn: .uniqueId)
+                        archivedAsOfMessageSortId,
+                        (
+                            SELECT id
+                            FROM \(InteractionRecord.databaseTableName)
+                            WHERE \(interactionColumn: .threadUniqueId) = \(threadColumnFullyQualified: .uniqueId)
+                              AND \(interactionColumn: .errorType) IS NOT ?
+                              AND \(interactionColumn: .messageType) IS NOT ?
+                            ORDER BY \(interactionColumn: .id) DESC
+                            LIMIT 1
+                        ) as maxInteractionId
+                    FROM \(ThreadRecord.databaseTableName)
+                    WHERE \(threadColumn: .shouldThreadBeVisible) = 1
+                )
+                WHERE isArchived = ?
             )
-            WHERE isArchived = ?
-            AND \(threadColumn: .shouldThreadBeVisible) = 1
-            """,
-            arguments: [isArchived]) else {
-                owsFailDebug("count was unexpectedly nil")
-                return 0
+        """
+        let arguments: StatementArguments = [TSErrorMessageType.nonBlockingIdentityChange.rawValue,
+                                             TSInfoMessageType.verificationStateChange.rawValue,
+                                             isArchived]
+
+        guard let count = try UInt.fetchOne(transaction, sql: sql, arguments: arguments) else {
+            owsFailDebug("count was unexpectedly nil")
+            return 0
         }
 
         return count
@@ -115,29 +123,29 @@ struct GRDBThreadFinder: ThreadFinder {
 
     func enumerateVisibleThreads(isArchived: Bool, transaction: Database, block: @escaping (TSThread) -> Void) throws {
         let sql = """
-            SELECT *
+            SELECT
+                *,
+                CASE maxInteractionId <= archivedAsOfMessageSortId
+                    WHEN 1 THEN 1
+                    ELSE 0
+                END isArchived
             FROM (
                 SELECT
                     \(ThreadRecord.databaseTableName).*,
-                    CASE maxInteractionId <= \(threadColumn: .archivedAsOfMessageSortId)
-                        WHEN 1 THEN 1
-                        ELSE 0
-                    END isArchived
+                    (
+                        SELECT id
+                        FROM \(InteractionRecord.databaseTableName)
+                        WHERE \(interactionColumn: .threadUniqueId) = \(threadColumnFullyQualified: .uniqueId)
+                          AND \(interactionColumn: .errorType) IS NOT ?
+                          AND \(interactionColumn: .messageType) IS NOT ?
+                        ORDER BY \(interactionColumn: .id) DESC
+                        LIMIT 1
+                    ) as maxInteractionId
                 FROM \(ThreadRecord.databaseTableName)
-                LEFT JOIN (
-                    SELECT
-                        MAX(\(interactionColumn: .id)) as maxInteractionId,
-                        \(interactionColumn: .threadUniqueId)
-                    FROM \(InteractionRecord.databaseTableName)
-                    WHERE \(interactionColumn: .errorType) IS NOT ?
-                    AND \(interactionColumn: .messageType) IS NOT ?
-                    GROUP BY \(interactionColumn: .threadUniqueId)
-                ) latestInteractions
-                ON latestInteractions.\(interactionColumn: .threadUniqueId) = \(threadColumn: .uniqueId)
-                ORDER BY maxInteractionId DESC
+                WHERE \(threadColumn: .shouldThreadBeVisible) = 1
             )
             WHERE isArchived = ?
-            AND \( threadColumn: .shouldThreadBeVisible) = 1
+            ORDER BY maxInteractionId DESC
             """
         let arguments: StatementArguments = [TSErrorMessageType.nonBlockingIdentityChange.rawValue,
                                              TSInfoMessageType.verificationStateChange.rawValue,
