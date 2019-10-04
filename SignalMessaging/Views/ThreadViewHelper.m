@@ -116,7 +116,9 @@ NS_ASSUME_NONNULL_BEGIN
     _shouldObserveDBModifications = shouldObserveDBModifications;
 
     if (SSKFeatureFlags.storageMode != StorageModeYdb) {
-        [self updateThreads];
+        if (shouldObserveDBModifications) {
+            [self updateThreads];
+        }
         return;
     }
 
