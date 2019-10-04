@@ -15,7 +15,7 @@ public final class LokiAPI : NSObject {
     private static let longPollingTimeout: TimeInterval = 40
     private static let deviceLinkUpdateInterval: TimeInterval = 8 * 60
     public static let defaultMessageTTL: UInt64 = 24 * 60 * 60 * 1000
-    internal static var powDifficulty: UInt = 40
+    internal static var powDifficulty: UInt = 4
     
     // MARK: Types
     public typealias RawResponse = Any

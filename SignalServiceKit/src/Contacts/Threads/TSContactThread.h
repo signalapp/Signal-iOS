@@ -25,6 +25,8 @@ extern NSString *const TSContactThreadPrefix;
 
 @property (nonatomic) BOOL hasDismissedOffers;
 
+- (instancetype)initWithContactId:(NSString *)contactId;
+
 + (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId NS_SWIFT_NAME(getOrCreateThread(contactId:));
 
 + (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
@@ -37,10 +39,7 @@ extern NSString *const TSContactThreadPrefix;
 
 + (NSString *)contactIdFromThreadId:(NSString *)threadId;
 
-// This is only exposed for tests.
-#ifdef DEBUG
 + (NSString *)threadIdFromContactId:(NSString *)contactId;
-#endif
 
 // This method can be used to get the conversation color for a given
 // recipient without using a read/write transaction to create a

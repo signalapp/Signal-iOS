@@ -24,8 +24,6 @@
     return contentBuilder;
 }
 
-- (uint)ttl {
-    return 4 * kDayInMs;
-}
+- (uint)ttl { return 4 * kDayInMs; }
 
 @end

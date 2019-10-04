@@ -64,6 +64,7 @@ typedef NS_ENUM(NSInteger, LKThreadFriendRequestStatus) {
 @property (nonatomic, readonly) BOOL hasCurrentUserSentFriendRequest;
 @property (nonatomic, readonly) BOOL hasCurrentUserReceivedFriendRequest;
 // ========
+@property (nonatomic) BOOL isForceHidden;
 
 /**
  *  Whether the object is a group thread or not.

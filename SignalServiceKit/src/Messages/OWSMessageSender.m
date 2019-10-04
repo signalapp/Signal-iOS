@@ -43,6 +43,7 @@
 #import "TSRequest.h"
 #import "TSSocketManager.h"
 #import "TSThread.h"
+#import "TSContactThread.h"
 #import "LKFriendRequestMessage.h"
 #import "LKDeviceLinkMessage.h"
 #import "LKAddressMessage.h"
@@ -903,8 +904,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (OWSMessageSend *)getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey
 {
-    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey];
-    LKFriendRequestMessage *message = [[LKFriendRequestMessage alloc] initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:@"Please accept this friend request to enable multi device messaging" attachmentIds:[NSMutableArray new]
+    __block TSContactThread *thread;
+    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        thread = [TSContactThread fetchObjectWithUniqueID:[TSContactThread threadIdFromContactId:hexEncodedPublicKey] transaction:transaction];
+        if (thread == nil) {
+            thread = [[TSContactThread alloc] initWithContactId:hexEncodedPublicKey];
+        }
+        thread.isForceHidden = YES;
+        [thread saveWithTransaction:transaction];
+    }];
+    LKFriendRequestMessage *message = [[LKFriendRequestMessage alloc] initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:@"Accept this friend request to enable messages to be synced across devices" attachmentIds:[NSMutableArray new]
         expiresInSeconds:0 expireStartedAt:0 isVoiceMessage:NO groupMetaMessage:TSGroupMetaMessageUnspecified quotedMessage:nil contactShare:nil linkPreview:nil];
     SignalRecipient *recipient = [[SignalRecipient alloc] initWithUniqueId:hexEncodedPublicKey];
     NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;

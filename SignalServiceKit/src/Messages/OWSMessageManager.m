@@ -1437,7 +1437,8 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
     } else {
-        // PMKHang([LKAPI getDestinationsFor:envelope.source]); // This should always be called from OWSBatchMessageProcessor.serialQueue, which is a background thread
+        
+        // TODO: Do we need to fetch the device mapping here?
         
         NSString *hexEncodedPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source);
         
