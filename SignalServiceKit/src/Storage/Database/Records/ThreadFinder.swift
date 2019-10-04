@@ -12,13 +12,12 @@ public protocol ThreadFinder {
     func enumerateVisibleThreads(isArchived: Bool, transaction: ReadTransaction, block: @escaping (TSThread) -> Void) throws
 }
 
-public class AnyThreadFinder: ThreadFinder {
+@objc
+public class AnyThreadFinder: NSObject, ThreadFinder {
     public typealias ReadTransaction = SDSAnyReadTransaction
 
     let grdbAdapter: GRDBThreadFinder = GRDBThreadFinder()
     let yapAdapter: YAPDBThreadFinder = YAPDBThreadFinder()
-
-    public init() { }
 
     public func visibleThreadCount(isArchived: Bool, transaction: SDSAnyReadTransaction) throws -> UInt {
         switch transaction.readTransaction {
@@ -29,6 +28,7 @@ public class AnyThreadFinder: ThreadFinder {
         }
     }
 
+    @objc
     public func enumerateVisibleThreads(isArchived: Bool, transaction: SDSAnyReadTransaction, block: @escaping (TSThread) -> Void) throws {
         switch transaction.readTransaction {
         case .grdbRead(let grdb):
