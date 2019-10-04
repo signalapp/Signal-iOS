@@ -332,15 +332,6 @@ public class SDSDatabaseStorage: SDSTransactable {
         NotificationCenter.default.postNotificationNameAsync(SDSDatabaseStorage.didReceiveCrossProcessNotification, object: nil)
     }
 
-    // MARK: - Misc.
-
-    @objc
-    public func logFileSizes() {
-        Logger.info("Database : \(databaseFileSize)")
-        Logger.info("\t WAL file size: \(databaseWALFileSize)")
-        Logger.info("\t SHM file size: \(databaseSHMFileSize)")
-    }
-
     // MARK: - Generic Observation
 
     @objc(addDatabaseStorageObserver:)
@@ -632,5 +623,56 @@ public class SDS: NSObject {
     @objc(fitsInInt64WithNSNumber:)
     public func fitsInInt64(nsNumber value: NSNumber) -> Bool {
         return SDS.fitsInInt64(nsNumber: value)
+    }
+}
+
+// MARK: -
+
+@objc
+public extension SDSDatabaseStorage {
+    func logFileSizes() {
+        Logger.info("Database : \(databaseFileSize)")
+        Logger.info("\t WAL file size: \(databaseWALFileSize)")
+        Logger.info("\t SHM file size: \(databaseSHMFileSize)")
+    }
+
+    func logAllFileSizes() {
+        if canLoadYdb {
+            Logger.info("YDB Database : \(yapStorage.databaseFileSize)")
+            Logger.info("\t YDB WAL file size: \(yapStorage.databaseWALFileSize)")
+            Logger.info("\t YDB SHM file size: \(yapStorage.databaseSHMFileSize)")
+        }
+        if canLoadGrdb {
+            Logger.info("GDRB Database : \(grdbStorage.databaseFileSize)")
+            Logger.info("\t GDRB WAL file size: \(grdbStorage.databaseWALFileSize)")
+            Logger.info("\t GDRB SHM file size: \(grdbStorage.databaseSHMFileSize)")
+        }
+    }
+
+    var databaseFileSize: UInt64 {
+        switch dataStoreForReporting {
+        case .grdb:
+            return grdbStorage.databaseFileSize
+        case .ydb:
+            return yapStorage.databaseFileSize
+        }
+    }
+
+    var databaseWALFileSize: UInt64 {
+        switch dataStoreForReporting {
+        case .grdb:
+            return grdbStorage.databaseWALFileSize
+        case .ydb:
+            return yapStorage.databaseWALFileSize
+        }
+    }
+
+    var databaseSHMFileSize: UInt64 {
+        switch dataStoreForReporting {
+        case .grdb:
+            return grdbStorage.databaseSHMFileSize
+        case .ydb:
+            return yapStorage.databaseSHMFileSize
+        }
     }
 }
