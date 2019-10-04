@@ -2,6 +2,14 @@
 
 @implementation NSArray (Functional)
 
+- (BOOL)contains:(BOOL (^)(NSObject *))predicate {
+    for (NSObject *object in self) {
+        BOOL isPredicateSatisfied = predicate(object);
+        if (isPredicateSatisfied) { return YES; }
+    }
+    return NO;
+}
+
 - (NSArray *)filtered:(BOOL (^)(NSObject *))isIncluded {
     NSMutableArray *result = [NSMutableArray new];
     for (NSObject *object in self) {

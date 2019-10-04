@@ -901,28 +901,30 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return deviceMessages;
 }
 
-- (LKFriendRequestMessage *)getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey
+- (OWSMessageSend *)getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey
 {
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey];
-    return [[LKFriendRequestMessage alloc] initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp
-                                                  inThread:thread
-                                               messageBody:@"Test"
-                                             attachmentIds:[NSMutableArray new]
-                                          expiresInSeconds:0
-                                           expireStartedAt:0
-                                            isVoiceMessage:NO
-                                          groupMetaMessage:TSGroupMetaMessageUnspecified
-                                             quotedMessage:nil
-                                              contactShare:nil
-                                               linkPreview:nil];
+    LKFriendRequestMessage *message = [[LKFriendRequestMessage alloc] initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:@"Please accept this friend request to enable multi device messaging" attachmentIds:[NSMutableArray new]
+        expiresInSeconds:0 expireStartedAt:0 isVoiceMessage:NO groupMetaMessage:TSGroupMetaMessageUnspecified quotedMessage:nil contactShare:nil linkPreview:nil];
+    SignalRecipient *recipient = [[SignalRecipient alloc] initWithUniqueId:hexEncodedPublicKey];
+    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    return [[OWSMessageSend alloc] initWithMessage:message thread:thread recipient:recipient senderCertificate:nil udAccess:nil localNumber:userHexEncodedPublicKey success:^{ } failure:^(NSError *error) { }];
 }
 
 - (void)sendMessageToRecipient:(OWSMessageSend *)messageSend
 {
-    if (messageSend.thread.isGroupThread) {
+    TSOutgoingMessage *message = messageSend.message;
+    NSString *contactID = messageSend.recipient.recipientId;
+    BOOL isGroupMessage = messageSend.thread.isGroupThread;
+    BOOL isDeviceLinkMessage = [message isKindOfClass:LKDeviceLinkMessage.class];
+    BOOL isMessageToSelf = (contactID == OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey);
+    BOOL isSyncMessage = [message isKindOfClass:OWSOutgoingSyncMessage.class];
+    if (isGroupMessage || isDeviceLinkMessage || isMessageToSelf || isSyncMessage) {
         [self sendMessage:messageSend];
     } else {
-        [[LKAPI getDestinationsFor:messageSend.recipient.recipientId]
+        BOOL isSilentMessage = message.isSilent;
+        BOOL isFriendRequestMessage = [message isKindOfClass:LKFriendRequestMessage.class];
+        [[LKAPI getDestinationsFor:contactID]
         .thenOn(OWSDispatch.sendingQueue, ^(NSArray<LKDestination *> *destinations) {
             // Use a best attempt approach for multi device for now
             NSArray *slaveDestinations = [destinations filtered:^BOOL(NSObject *object) {
@@ -931,12 +933,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }];
             for (LKDestination *slaveDestination in slaveDestinations) {
                 TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:slaveDestination.hexEncodedPublicKey];
-                if (thread.isContactFriend) {
+                if (thread.isContactFriend || isSilentMessage || (isFriendRequestMessage && contactID == slaveDestination.hexEncodedPublicKey)) {
                     OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:slaveDestination];
                     [self sendMessage:messageSendCopy];
                 } else {
-                    LKFriendRequestMessage *friendRequestMessage = [self getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:slaveDestination.hexEncodedPublicKey];
-                    [self sendMessage:friendRequestMessage success:^{ } failure:^(NSError *error) { }];
+                    OWSMessageSend *friendRequestMessage = [self getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:slaveDestination.hexEncodedPublicKey];
+                    [self sendMessage:friendRequestMessage];
                 }
             }
             LKDestination *masterDestination = [destinations filtered:^BOOL(NSObject *object) {
@@ -945,12 +947,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }].firstObject;
             if (masterDestination != nil) {
                 TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:masterDestination.hexEncodedPublicKey];
-                if (thread.isContactFriend) {
+                if (thread.isContactFriend || isSilentMessage || (isFriendRequestMessage && contactID == masterDestination.hexEncodedPublicKey)) {
                     OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:masterDestination];
                     [self sendMessage:messageSendCopy];
                 } else {
-                    LKFriendRequestMessage *friendRequestMessage = [self getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:masterDestination.hexEncodedPublicKey];
-                    [self sendMessage:friendRequestMessage success:messageSend.success failure:messageSend.failure];
+                    OWSMessageSend *friendRequestMessage = [self getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:masterDestination.hexEncodedPublicKey];
+                    [self sendMessage:friendRequestMessage];
                 }
             }
         })

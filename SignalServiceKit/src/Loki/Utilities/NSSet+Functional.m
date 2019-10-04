@@ -2,7 +2,7 @@
 
 @implementation NSSet (Functional)
 
--(BOOL)contains:(BOOL (^)(NSObject *))predicate {
+- (BOOL)contains:(BOOL (^)(NSObject *))predicate {
     for (NSObject *object in self) {
         BOOL isPredicateSatisfied = predicate(object);
         if (isPredicateSatisfied) { return YES; }
