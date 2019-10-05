@@ -143,6 +143,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) OWSAudioActivity *recordVoiceNoteAudioActivity;
 @property (nonatomic, readonly) NSTimeInterval viewControllerCreatedAt;
 
+@property (nonatomic, readonly) InputAccessoryViewWrapper *inputWrapper;
 @property (nonatomic, readonly) ConversationInputToolbar *inputToolbar;
 @property (nonatomic, readonly) ConversationCollectionView *collectionView;
 @property (nonatomic, readonly) ConversationViewLayout *layout;
@@ -623,6 +624,8 @@ typedef enum : NSUInteger {
     self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyBoard)];
     [self.collectionView addGestureRecognizer:self.tapGestureRecognizer];
 
+    _inputWrapper = [InputAccessoryViewWrapper new];
+
     _inputToolbar = [[ConversationInputToolbar alloc] initWithConversationStyle:self.conversationStyle];
     self.inputToolbar.inputToolbarDelegate = self;
     self.inputToolbar.inputTextViewDelegate = self;
@@ -671,13 +674,20 @@ typedef enum : NSUInteger {
 
 - (nullable UIView *)inputAccessoryView
 {
+    UIView *inputAccessoryView;
+
     if (self.messageRequestView) {
-        return self.messageRequestView;
+        inputAccessoryView = self.messageRequestView;
     } else if (self.isShowingSearchUI) {
-        return self.searchController.resultsBar;
+        inputAccessoryView = self.searchController.resultsBar;
     } else {
-        return self.inputToolbar;
+        inputAccessoryView = self.inputToolbar;
     }
+
+    self.inputWrapper.wrappedView = inputAccessoryView;
+    self.inputWrapper.containerWidth = self.view.width;
+
+    return self.inputWrapper;
 }
 
 - (void)registerCellClasses
@@ -5282,7 +5292,9 @@ typedef enum : NSUInteger {
         bottomInset = self.view.safeAreaInsets.bottom;
     }
 
-    MessageRequestView *dismissingView = self.messageRequestView;
+    InputAccessoryViewWrapper *dismissingView = [InputAccessoryViewWrapper new];
+    dismissingView.wrappedView = self.messageRequestView;
+    dismissingView.containerWidth = self.view.width;
     self.messageRequestView = nil;
 
     [self reloadInputViews];
