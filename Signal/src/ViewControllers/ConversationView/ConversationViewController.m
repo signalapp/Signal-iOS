@@ -577,14 +577,7 @@ typedef enum : NSUInteger {
     [self createConversationScrollButtons];
     [self createHeaderViews];
 
-    if (@available(iOS 11, *)) {
-        // We use the default back button from home view, which animates nicely with interactive transitions like the
-        // interactive pop gesture and the "slide left" for info.
-    } else {
-        // On iOS9/10 the default back button is too wide, so we use a custom back button. This doesn't animate nicely
-        // with interactive transitions, but has the appropriate width.
-        [self createBackButton];
-    }
+    [self updateLeftBarItem];
 
     [self addNotificationListeners];
     [self loadDraftInCompose];
@@ -759,7 +752,7 @@ typedef enum : NSUInteger {
     self.isViewVisible = YES;
 
     // We should have already requested contact access at this point, so this should be a no-op
-    // unless it ever becomes possible to load this VC without going via the HomeViewController.
+    // unless it ever becomes possible to load this VC without going via the ConversationListViewController.
     [self.contactsManager requestSystemContactsOnce];
 
     [self updateDisappearingMessagesConfigurationWithSneakyTransaction];
@@ -1444,8 +1437,39 @@ typedef enum : NSUInteger {
     return 16;
 }
 
+- (void)updateLeftBarItem
+{
+    // Show the close button if the split view is not collapsed.
+    if (!self.conversationSplitViewController.isCollapsed) {
+        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
+            initWithTitle:NSLocalizedString(
+                              @"CLOSE_BUTTON", @"A string indicating that the user can close the current conversation")
+                    style:UIBarButtonItemStyleDone
+                   target:self
+                   action:@selector(closeButtonPressed)];
+        return;
+    }
+
+    // Otherwise, show the back button.
+
+    if (@available(iOS 11, *)) {
+        // We use the default back button from conversation list, which animates nicely with interactive transitions
+        // like the interactive pop gesture and the "slide left" for info.
+        self.navigationItem.leftBarButtonItem = nil;
+    } else {
+        // On iOS9/10 the default back button is too wide, so we use a custom back button. This doesn't animate nicely
+        // with interactive transitions, but has the appropriate width.
+        [self createBackButton];
+    }
+}
+
 - (void)createBackButton
 {
+    if (self.navigationController.viewControllers.count == 1) {
+        // There's nowhere to go back to, do nothing.
+        return;
+    }
+
     UIBarButtonItem *backItem = [self createOWSBackButton];
     self.customBackButton = backItem;
     if (backItem.customView) {
@@ -1473,6 +1497,11 @@ typedef enum : NSUInteger {
     }
 
     self.navigationItem.leftBarButtonItem = backItem;
+}
+
+- (void)closeButtonPressed
+{
+    [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
 }
 
 - (void)windowManagerCallDidChange:(NSNotification *)notification
@@ -5192,6 +5221,7 @@ typedef enum : NSUInteger {
     }
     [self updateInputToolbarLayout];
     [self updateHeaderViewFrame];
+    [self updateLeftBarItem];
 }
 
 - (void)viewSafeAreaInsetsDidChange
@@ -5307,7 +5337,7 @@ typedef enum : NSUInteger {
         [self.thread softDeleteThreadWithTransaction:transaction];
 
         [transaction addCompletionWithBlock:^{
-            [self.navigationController popViewControllerAnimated:YES];
+            [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
         }];
     }];
 }

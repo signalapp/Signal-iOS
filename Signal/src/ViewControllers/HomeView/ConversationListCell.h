@@ -6,12 +6,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class ThreadViewModel;
 
-@interface HomeViewCell : UITableViewCell
+@interface ConversationListCell : UITableViewCell
 
 + (NSString *)cellReuseIdentifier;
 
-- (void)configureWithThread:(ThreadViewModel *)thread
-                  isBlocked:(BOOL)isBlocked;
+- (void)configureWithThread:(ThreadViewModel *)thread isBlocked:(BOOL)isBlocked;
 
 - (void)configureWithThread:(ThreadViewModel *)thread
                   isBlocked:(BOOL)isBlocked

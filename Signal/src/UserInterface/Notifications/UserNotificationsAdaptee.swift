@@ -208,12 +208,12 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
             return true
         }
 
-        guard let conversationViewController = UIApplication.shared.frontmostViewController as? ConversationViewController else {
+        guard let conversationSplitVC = UIApplication.shared.frontmostViewController as? ConversationSplitViewController else {
             return true
         }
 
-        // Show notifications for any *other* thread
-        return conversationViewController.thread.uniqueId != notificationThreadId
+        // Show notifications for any *other* thread than the currently selected thread
+        return conversationSplitVC.selectedThread?.uniqueId != notificationThreadId
     }
 }
 

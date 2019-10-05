@@ -3,8 +3,8 @@
 //
 
 #import "AppDelegate.h"
+#import "ConversationListViewController.h"
 #import "DebugLogger.h"
-#import "HomeViewController.h"
 #import "MainAppContext.h"
 #import "OWS2FASettingsViewController.h"
 #import "OWSBackup.h"
@@ -55,7 +55,6 @@ static NSTimeInterval launchStartedAt;
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate>
 
-@property (nonatomic) BOOL hasInitialRootViewController;
 @property (nonatomic) BOOL areVersionMigrationsComplete;
 @property (nonatomic) BOOL didAppLaunchFail;
 
@@ -510,21 +509,7 @@ static NSTimeInterval launchStartedAt;
 
     if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
         if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![self.tsAccountManager isRegistered]) {
-            id signupController = SignalApp.sharedApp.signUpFlowNavigationController;
-            if ([signupController isKindOfClass:[OWSNavigationController class]]) {
-                OWSNavigationController *navController = (OWSNavigationController *)signupController;
-                UIViewController *controller = [navController.childViewControllers lastObject];
-                if ([controller isKindOfClass:[OnboardingVerificationViewController class]]) {
-                    OnboardingVerificationViewController *verificationView
-                        = (OnboardingVerificationViewController *)controller;
-                    NSString *verificationCode           = [url.path substringFromIndex:1];
-                    [verificationView setVerificationCodeAndTryToVerify:verificationCode];
-                    return YES;
-                } else {
-                    OWSLogWarn(@"Not the verification view controller we expected. Got %@ instead",
-                        NSStringFromClass(controller.class));
-                }
-            }
+            return [SignalApp.sharedApp receivedVerificationCode:[url.path substringFromIndex:1]];
         } else if ([url.host hasPrefix:kURLHostAddStickersPrefix] && [self.tsAccountManager isRegistered]) {
             if (!SSKFeatureFlags.stickerAutoEnable && !SSKFeatureFlags.stickerSend) {
                 return NO;
@@ -591,7 +576,7 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    [self ensureRootViewController];
+    [SignalApp.sharedApp ensureRootViewController:launchStartedAt];
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [self handleActivation];
@@ -789,7 +774,7 @@ static NSTimeInterval launchStartedAt;
             return;
         }
 
-        [SignalApp.sharedApp.homeViewController showNewConversationView];
+        [SignalApp.sharedApp showNewConversationView];
 
         completionHandler(YES);
     }];
@@ -1306,7 +1291,7 @@ static NSTimeInterval launchStartedAt;
     [self.profileManager fetchLocalUsersProfile];
     [self.readReceiptManager prepareCachedValues];
 
-    [self ensureRootViewController];
+    [SignalApp.sharedApp ensureRootViewController:launchStartedAt];
 
     [self.messageManager startObserving];
 
@@ -1363,43 +1348,6 @@ static NSTimeInterval launchStartedAt;
 - (void)registrationLockDidChange:(NSNotification *)notification
 {
     [self enableBackgroundRefreshIfNecessary];
-}
-
-- (void)ensureRootViewController
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogInfo(@"ensureRootViewController");
-
-    if (!AppReadiness.isAppReady || self.hasInitialRootViewController) {
-        return;
-    }
-    self.hasInitialRootViewController = YES;
-
-    NSTimeInterval startupDuration = CACurrentMediaTime() - launchStartedAt;
-    OWSLogInfo(@"Presenting app %.2f seconds after launch started.", startupDuration);
-
-    UIViewController *rootViewController;
-    BOOL navigationBarHidden = NO;
-    if ([self.tsAccountManager isRegistered]) {
-        if (self.backup.hasPendingRestoreDecision) {
-            rootViewController = [BackupRestoreViewController new];
-        } else {
-            rootViewController = [HomeViewController new];
-        }
-    } else {
-        rootViewController = [[OnboardingController new] initialViewController];
-        navigationBarHidden = YES;
-    }
-    OWSAssertDebug(rootViewController);
-    OWSNavigationController *navigationController =
-        [[OWSNavigationController alloc] initWithRootViewController:rootViewController];
-    navigationController.navigationBarHidden = navigationBarHidden;
-    self.window.rootViewController = navigationController;
-
-    [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
-
-    [UIViewController attemptRotationToDeviceOrientation];
 }
 
 #pragma mark - status bar touches
