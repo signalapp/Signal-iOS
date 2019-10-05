@@ -173,6 +173,12 @@ public extension UIViewController {
         viewControllerToPresent.modalPresentationStyle = .fullScreen
         present(viewControllerToPresent, animated: animated, completion: completion)
     }
+
+    @objc(presentFormSheetViewController:animated:completion:)
+    func presentFormSheet(_ viewControllerToPresent: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
+        viewControllerToPresent.modalPresentationStyle = .formSheet
+        present(viewControllerToPresent, animated: animated, completion: completion)
+    }
 }
 
 // MARK: -

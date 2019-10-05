@@ -2579,7 +2579,7 @@ typedef enum : NSUInteger {
     }
 
     StickerPackViewController *packView = [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
-    [self presentViewController:packView animated:YES completion:nil];
+    [self presentFormSheetViewController:packView animated:YES completion:nil];
 }
 
 - (void)didTapFailedIncomingAttachment:(id<ConversationViewItem>)viewItem
@@ -2720,7 +2720,7 @@ typedef enum : NSUInteger {
     }
 
     StickerPackViewController *packView = [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
-    [self presentViewController:packView animated:YES completion:nil];
+    [self presentFormSheetViewController:packView animated:YES completion:nil];
 }
 
 #pragma mark - OWSMessageViewOnceViewDelegate
@@ -2881,7 +2881,7 @@ typedef enum : NSUInteger {
     OWSNavigationController *navigationController =
         [[OWSNavigationController alloc] initWithRootViewController:contactsPicker];
     [self dismissKeyBoard];
-    [self presentViewController:navigationController animated:YES completion:nil];
+    [self presentFormSheetViewController:navigationController animated:YES completion:nil];
 }
 
 #pragma mark - Attachment Picking: Documents
@@ -2920,7 +2920,7 @@ typedef enum : NSUInteger {
     GifPickerNavigationViewController *gifModal = [GifPickerNavigationViewController new];
     gifModal.approvalDelegate = self;
     [self dismissKeyBoard];
-    [self presentViewController:gifModal animated:YES completion:nil];
+    [self presentFormSheetViewController:gifModal animated:YES completion:nil];
 }
 
 - (void)messageWasSent:(TSOutgoingMessage *)message
@@ -2947,7 +2947,7 @@ typedef enum : NSUInteger {
     documentPicker.delegate = self;
 
     [self dismissKeyBoard];
-    [self presentViewController:documentPicker animated:YES completion:nil];
+    [self presentFormSheetViewController:documentPicker animated:YES completion:nil];
 }
 
 #pragma mark UIDocumentPickerDelegate
@@ -3441,7 +3441,7 @@ typedef enum : NSUInteger {
     OWSNavigationController *navigationController =
         [[OWSNavigationController alloc] initWithRootViewController:locationPicker];
     [self dismissKeyBoard];
-    [self presentViewController:navigationController animated:YES completion:nil];
+    [self presentFormSheetViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)didSelectRecentPhotoWithAsset:(PHAsset *)asset attachment:(SignalAttachment *)attachment
@@ -4430,7 +4430,7 @@ typedef enum : NSUInteger {
     ManageStickersViewController *manageStickersView = [ManageStickersViewController new];
     OWSNavigationController *navigationController =
         [[OWSNavigationController alloc] initWithRootViewController:manageStickersView];
-    [self presentViewController:navigationController animated:YES completion:nil];
+    [self presentFormSheetViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)voiceMemoGestureDidStart
