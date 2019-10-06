@@ -205,7 +205,7 @@ public final class LokiGroupChatAPI : LokiDotNetAPI {
     public static func setDisplayName(to newDisplayName: String?, on server: String) -> Promise<Void> {
         print("[Loki] Updating display name on server: \(server).")
         return getAuthToken(for: server).then { token -> Promise<Void> in
-            let parameters: JSON = [ "name" : newDisplayName ]
+            let parameters: JSON = [ "name" : (newDisplayName ?? "") ]
             let url = URL(string: "\(server)/users/me")!
             let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
