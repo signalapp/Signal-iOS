@@ -117,12 +117,18 @@ public class ConversationAvatarImageView: AvatarImageView {
             NotificationCenter.default.addObserver(self, selector: #selector(handleGroupAvatarChanged(notification:)), name: .TSGroupThreadAvatarChanged, object: nil)
         }
 
+        NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: .ThemeDidChange, object: nil)
+
         // TODO group avatar changed
         self.updateImage()
     }
 
     required public init?(coder aDecoder: NSCoder) {
         notImplemented()
+    }
+
+    @objc func themeDidChange() {
+        updateImage()
     }
 
     @objc func handleSignalAccountsChanged(notification: Notification) {

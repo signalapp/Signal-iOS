@@ -409,6 +409,10 @@ typedef enum : NSUInteger {
                                              selector:@selector(keyboardDidChangeFrame:)
                                                  name:UIKeyboardDidChangeFrameNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(themeDidChange:)
+                                                 name:ThemeDidChangeNotification
+                                               object:nil];
 }
 
 - (BOOL)isGroupConversation
@@ -470,6 +474,11 @@ typedef enum : NSUInteger {
 
     [self updateNavigationBarSubtitleLabel];
     [self ensureBannerState];
+}
+
+- (void)themeDidChange:(NSNotification *)notification
+{
+    [self applyTheme];
 }
 
 - (void)peekSetup
@@ -625,11 +634,6 @@ typedef enum : NSUInteger {
     [self.collectionView addGestureRecognizer:self.tapGestureRecognizer];
 
     _inputWrapper = [InputAccessoryViewWrapper new];
-
-    _inputToolbar = [[ConversationInputToolbar alloc] initWithConversationStyle:self.conversationStyle];
-    self.inputToolbar.inputToolbarDelegate = self;
-    self.inputToolbar.inputTextViewDelegate = self;
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputToolbar);
 
     self.loadMoreHeader = [UILabel new];
     self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
@@ -1398,7 +1402,9 @@ typedef enum : NSUInteger {
     self.headerView.titleIcon = icon;
 
     if (name && !attributedName) {
-        attributedName = [[NSAttributedString alloc] initWithString:name];
+        attributedName =
+            [[NSAttributedString alloc] initWithString:name
+                                            attributes:@{ NSForegroundColorAttributeName : Theme.primaryTextColor }];
     }
 
     if ([attributedName isEqual:self.headerView.attributedTitle]) {
@@ -3951,7 +3957,21 @@ typedef enum : NSUInteger {
     self.view.backgroundColor = Theme.toolbarBackgroundColor;
     self.collectionView.backgroundColor = Theme.backgroundColor;
 
+    [self updateNavigationTitle];
     [self updateNavigationBarSubtitleLabel];
+
+    [self createInputToolbar];
+    [self updateInputToolbarLayout];
+
+    [self.collectionView reloadData];
+}
+
+- (void)createInputToolbar
+{
+    _inputToolbar = [[ConversationInputToolbar alloc] initWithConversationStyle:self.conversationStyle];
+    self.inputToolbar.inputToolbarDelegate = self;
+    self.inputToolbar.inputTextViewDelegate = self;
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputToolbar);
 }
 
 #pragma mark - AttachmentApprovalViewControllerDelegate
@@ -5209,9 +5229,9 @@ typedef enum : NSUInteger {
 {
     [super traitCollectionDidChange:previousTraitCollection];
 
-    [self updateNavigationBarSubtitleLabel];
     [self ensureBannerState];
     [self updateBarButtonItems];
+    [self updateNavigationBarSubtitleLabel];
 }
 
 - (void)resetForSizeOrOrientationChange
