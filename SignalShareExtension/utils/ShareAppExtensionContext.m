@@ -220,7 +220,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGRect)frame
 {
-    return self.rootViewController.frame;
+    return self.rootViewController.view.frame;
 }
 
 - (UIInterfaceOrientation)interfaceOrientation
