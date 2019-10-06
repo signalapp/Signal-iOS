@@ -56,6 +56,13 @@ public class ReturnToCallViewController: UIViewController {
         returnToCallLabel.autoHCenterInSuperview()
     }
 
+    public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: { _ in
+            OWSWindowManager.shared().ensureReturnToCallWindowFrame()
+        }, completion: nil)
+    }
+
     @objc
     public func didTapView(gestureRecognizer: UITapGestureRecognizer) {
         self.delegate?.returnToCallWasTapped(self)

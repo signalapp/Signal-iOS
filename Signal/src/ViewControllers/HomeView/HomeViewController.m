@@ -412,8 +412,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     emptyInboxImageView.layer.minificationFilter = kCAFilterTrilinear;
     emptyInboxImageView.layer.magnificationFilter = kCAFilterTrilinear;
     [emptyInboxImageView autoPinToAspectRatioWithSize:emptyInboxImageView.image.size];
-    CGSize screenSize = UIScreen.mainScreen.bounds.size;
-    CGFloat emptyInboxImageSize = MIN(screenSize.width, screenSize.height) * 0.65f;
+    CGSize navControllerSize = self.navigationController.view.frame.size;
+    CGFloat emptyInboxImageSize = MIN(navControllerSize.width, navControllerSize.height) * 0.65f;
     [emptyInboxImageView autoSetDimension:ALDimensionWidth toSize:emptyInboxImageSize];
 
     UILabel *emptyInboxLabel = [UILabel new];

@@ -36,6 +36,7 @@ extern const UIWindowLevel UIWindowLevel_Background;
 - (BOOL)isAppWindow:(UIWindow *)window;
 
 - (void)updateWindowFrames;
+- (void)ensureReturnToCallWindowFrame;
 
 #pragma mark - Message Actions
 

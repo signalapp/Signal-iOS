@@ -50,8 +50,8 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     [edgesView addSubview:imageView];
     [imageView autoHCenterInSuperview];
 
-    const CGSize screenSize = UIScreen.mainScreen.bounds.size;
-    const CGFloat shortScreenDimension = MIN(screenSize.width, screenSize.height);
+    const CGSize applicationSize = CurrentAppContext().frame.size;
+    const CGFloat shortScreenDimension = MIN(applicationSize.width, applicationSize.height);
     const CGFloat imageSize = (CGFloat)round(shortScreenDimension / 3.f);
     [imageView autoSetDimension:ALDimensionWidth toSize:imageSize];
     [imageView autoSetDimension:ALDimensionHeight toSize:imageSize];

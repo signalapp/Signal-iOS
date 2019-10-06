@@ -19,6 +19,9 @@ const NSUInteger kThumbnailDimensionPointsMedium = 450;
 // This size is large enough to render full screen.
 const NSUInteger ThumbnailDimensionPointsLarge()
 {
+    // We use the screen size here rather than the application size, as we
+    // want the thumbnail to be big enough to adapt to when the app is running
+    // full screen.
     CGSize screenSizePoints = UIScreen.mainScreen.bounds.size;
     const CGFloat kMinZoomFactor = 2.f;
     return MAX(screenSizePoints.width, screenSizePoints.height) * kMinZoomFactor;

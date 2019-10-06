@@ -127,6 +127,11 @@ NS_ASSUME_NONNULL_BEGIN
     return _buildTime;
 }
 
+- (CGRect)frame
+{
+    return CGRectZero;
+}
+
 - (UIInterfaceOrientation)interfaceOrientation
 {
     return UIInterfaceOrientationPortrait;

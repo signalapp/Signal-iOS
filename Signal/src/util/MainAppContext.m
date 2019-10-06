@@ -280,6 +280,11 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     return _buildTime;
 }
 
+- (CGRect)frame
+{
+    return UIApplication.sharedApplication.keyWindow.frame;
+}
+
 - (UIInterfaceOrientation)interfaceOrientation
 {
     return [UIApplication sharedApplication].statusBarOrientation;

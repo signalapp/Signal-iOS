@@ -218,6 +218,11 @@ NS_ASSUME_NONNULL_BEGIN
     return _buildTime;
 }
 
+- (CGRect)frame
+{
+    return self.rootViewController.frame;
+}
+
 - (UIInterfaceOrientation)interfaceOrientation
 {
     return UIInterfaceOrientationPortrait;

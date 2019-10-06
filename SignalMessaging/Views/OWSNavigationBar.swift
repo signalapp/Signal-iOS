@@ -31,7 +31,7 @@ public class OWSNavigationBar: UINavigationBar {
 
     @objc
     public var fullWidth: CGFloat {
-        return UIScreen.main.bounds.size.width
+        return superview?.frame.width ?? CurrentAppContext().frame.width
     }
 
     public required init?(coder aDecoder: NSCoder) {
@@ -213,10 +213,10 @@ public class OWSNavigationBar: UINavigationBar {
             return
         }
 
+        super.layoutSubviews()
+
         self.frame = CGRect(x: 0, y: callBannerHeight, width: fullWidth, height: navbarWithoutStatusHeight)
         self.bounds = CGRect(x: 0, y: 0, width: fullWidth, height: navbarWithoutStatusHeight)
-
-        super.layoutSubviews()
 
         // This is only necessary on iOS11, which has some private views within that lay outside of the navbar.
         // They aren't actually visible behind the call status bar, but they looks strange during present/dismiss

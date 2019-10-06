@@ -281,7 +281,7 @@ static NSTimeInterval launchStartedAt;
 
     [UIUtil setupSignalAppearence];
 
-    UIWindow *mainWindow = [[OWSWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    UIWindow *mainWindow = [OWSWindow new];
     self.window = mainWindow;
     CurrentAppContext().mainWindow = mainWindow;
     // Show LoadingViewController until the async database view registrations are complete.
@@ -383,7 +383,7 @@ static NSTimeInterval launchStartedAt;
     [AppVersion sharedInstance];
     [self startupLogging];
 
-    self.window = [[OWSWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window = [OWSWindow new];
 
     // Show the launch screen
     self.window.rootViewController =

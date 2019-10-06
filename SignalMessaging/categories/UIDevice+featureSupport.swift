@@ -44,7 +44,7 @@ public extension UIDevice {
     }
 
     var isShorterThanIPhone5: Bool {
-        return UIScreen.main.bounds.height < 568
+        return CurrentAppContext().frame.height < 568
     }
 
     var isCompatabilityModeIPad: Bool {
