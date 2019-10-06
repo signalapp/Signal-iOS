@@ -16,7 +16,14 @@ class ConversationSplitViewController: UISplitViewController {
     @objc var selectedThread: TSThread? {
         // If the placeholder view is in the view hierarchy, there is no selected thread.
         guard detailPlaceholderVC.view.superview == nil else { return nil }
-        return selectedConversationViewController?.thread
+        guard let selectedConversationViewController = selectedConversationViewController else { return nil }
+
+        // In order to not show selected when collapsed during an interactive dismissal,
+        // we verify the conversation is still in the nav stack when collapsed. There is
+        // no interactive dismissal when expanded, so we don't have to do any special check.
+        guard !isCollapsed || primaryNavController.viewControllers.contains(selectedConversationViewController) else { return nil }
+
+        return selectedConversationViewController.thread
     }
 
     @objc
