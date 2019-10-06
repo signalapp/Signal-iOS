@@ -42,6 +42,10 @@ class ConversationSplitViewController: UISplitViewController {
         return Theme.isDarkThemeEnabled ? .lightContent : .default
     }
 
+    override var canBecomeFirstResponder: Bool {
+        return false
+    }
+
     @objc
     func showNewConversationView() {
         conversationListVC.showNewConversationView()

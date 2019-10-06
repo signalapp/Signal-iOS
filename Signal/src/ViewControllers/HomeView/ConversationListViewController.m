@@ -1308,8 +1308,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     self.searchBar.text = nil;
 
-    [self.searchBar resignFirstResponder];
-    OWSAssertDebug(!self.searchBar.isFirstResponder);
+    [self dismissSearchKeyboard];
 
     [self updateSearchResultsVisibility];
 
@@ -1348,20 +1347,27 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.tableView setContentOffset:CGPointMake(0, -topInset) animated:isAnimated];
 }
 
+- (void)dismissSearchKeyboard
+{
+    [self.searchBar resignFirstResponder];
+    OWSAssertDebug(!self.searchBar.isFirstResponder);
+
+    // If we have a visible conversation, restore its first responder status so the input toolbar renders.
+    [self.conversationSplitViewController.selectedConversationViewController becomeFirstResponder];
+}
+
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
-    [self.searchBar resignFirstResponder];
-    OWSAssertDebug(!self.searchBar.isFirstResponder);
+    [self dismissSearchKeyboard];
 }
 
 #pragma mark - ConversationSearchViewDelegate
 
 - (void)conversationSearchViewWillBeginDragging
 {
-    [self.searchBar resignFirstResponder];
-    OWSAssertDebug(!self.searchBar.isFirstResponder);
+    [self dismissSearchKeyboard];
 }
 
 #pragma mark - HomeFeedTableViewCellDelegate
@@ -1447,7 +1453,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     OWSLogInfo(@"%ld %ld", (long)indexPath.row, (long)indexPath.section);
 
-    [self.searchBar resignFirstResponder];
+    [self dismissSearchKeyboard];
+
     ConversationListViewControllerSection section = (ConversationListViewControllerSection)indexPath.section;
     switch (section) {
         case ConversationListViewControllerSectionReminders: {
