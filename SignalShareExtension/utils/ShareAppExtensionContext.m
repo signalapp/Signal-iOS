@@ -220,12 +220,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGRect)frame
 {
-    return self.mainWindow.frame;
-}
-
-- (BOOL)isRunningInFullScreen
-{
-    return CGRectEqualToRect(self.mainWindow.frame, self.mainWindow.bounds);
+    return self.rootViewController.frame;
 }
 
 - (UIInterfaceOrientation)interfaceOrientation
