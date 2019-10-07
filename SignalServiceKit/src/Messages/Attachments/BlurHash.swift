@@ -84,4 +84,23 @@ public class BlurHash: NSObject {
 
         return promise
     }
+
+    @objc(imageForBlurHash:)
+    public class func image(for blurHash: String) -> UIImage? {
+        // A small thumbnail size will suffice.
+        //
+        // We use a slightly smaller size than we need to
+        // to future-proof this in case we decide to improve
+        // the quality in a future release.
+        //
+        // We could extract the content size from the
+        // blurHash, but it doesn't seem worth the trouble.
+        let thumbnailDimension: CGFloat = 16
+        let thumbnailSize = CGSize(width: thumbnailDimension, height: thumbnailDimension)
+        guard let image = UIImage(blurHash: blurHash, size: thumbnailSize) else {
+            owsFailDebug("Couldn't generate image for blurHash.")
+            return nil
+        }
+        return image
+    }
 }
