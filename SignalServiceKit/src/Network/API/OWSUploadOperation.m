@@ -116,10 +116,10 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
     OWSAttachmentUploadV2 *upload = [OWSAttachmentUploadV2 new];
     [[BlurHash ensureBlurHashForAttachmentStream:attachmentStream]
             .thenInBackground(^{
-                [upload uploadAttachmentToService:attachmentStream
-                                    progressBlock:^(NSProgress *uploadProgress) {
-                                        [self fireNotificationWithProgress:uploadProgress.fractionCompleted];
-                                    }];
+                return [upload uploadAttachmentToService:attachmentStream
+                                           progressBlock:^(NSProgress *uploadProgress) {
+                                               [self fireNotificationWithProgress:uploadProgress.fractionCompleted];
+                                           }];
             })
             .thenInBackground(^{
                 [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
