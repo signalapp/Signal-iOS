@@ -39,6 +39,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
 
 @property (nonatomic, readonly) CGSize mediaSize;
 
+@property (nonatomic, nullable, readonly) NSString *blurHash;
+
 // Non-nil for attachments which need "lazy backup restore."
 - (nullable OWSBackupFragment *)lazyRestoreFragmentWithTransaction:(SDSAnyReadTransaction *)transaction;
 
@@ -75,7 +77,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
                          caption:(nullable NSString *)caption
                   albumMessageId:(nullable NSString *)albumMessageId
                   attachmentType:(TSAttachmentType)attachmentType
-                       mediaSize:(CGSize)mediaSize NS_DESIGNATED_INITIALIZER;
+                       mediaSize:(CGSize)mediaSize
+                        blurHash:(nullable NSString *)blurHash NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initForRestoreWithAttachmentStream:(TSAttachmentStream *)attachmentStream NS_DESIGNATED_INITIALIZER;
 
