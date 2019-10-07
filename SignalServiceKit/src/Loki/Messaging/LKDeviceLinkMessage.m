@@ -1,5 +1,6 @@
 #import "LKDeviceLinkMessage.h"
 #import "OWSIdentityManager.h"
+#import "OWSPrimaryStorage+Loki.h"
 #import "SignalRecipient.h"
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
@@ -30,19 +31,28 @@
 }
 
 #pragma mark Building
-- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
+- (SSKProtoContentBuilder *)contentBuilder:(SignalRecipient *)recipient
 {
-    // Prepare
-    SSKProtoContentBuilder *contentBuilder = [self contentBuilder:recipient];
-    NSError *error;
-    // Data message
-    SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:recipient.recipientId];
-    if (!dataMessage) {
-        OWSFailDebug(@"Failed to build data message.");
-        return nil;
+    SSKProtoContentBuilder *contentBuilder = [super contentBuilder:recipient];
+       
+    // If it's a linking request then we should send a prekey bundle
+    if (self.masterSignature == nil) {
+        PreKeyBundle *bundle = [OWSPrimaryStorage.sharedManager generatePreKeyBundleForContact:recipient.recipientId];
+        SSKProtoPrekeyBundleMessageBuilder *preKeyBuilder = [SSKProtoPrekeyBundleMessage builderFromPreKeyBundle:bundle];
+
+        // Build the prekey bundle message
+        NSError *error;
+        SSKProtoPrekeyBundleMessage *_Nullable message = [preKeyBuilder buildAndReturnError:&error];
+        if (error || !message) {
+            OWSFailDebug(@"Failed to build pre key bundle for %@: %@", recipient.recipientId, error);
+            return nil;
+        } else {
+            [contentBuilder setPrekeyBundleMessage:message];
+        }
     }
-    [contentBuilder setDataMessage:dataMessage];
+    
     // Device link message
+    NSError *error;
     SSKProtoLokiDeviceLinkMessageBuilder *deviceLinkMessageBuilder = [SSKProtoLokiDeviceLinkMessage builder];
     [deviceLinkMessageBuilder setMasterHexEncodedPublicKey:self.masterHexEncodedPublicKey];
     [deviceLinkMessageBuilder setSlaveHexEncodedPublicKey:self.slaveHexEncodedPublicKey];
@@ -52,16 +62,11 @@
     if (error || deviceLinkMessage == nil) {
         OWSFailDebug(@"Failed to build device link message due to error: %@.", error);
         return nil;
+    } else {
+        [contentBuilder setLokiDeviceLinkMessage:deviceLinkMessage];
     }
-    [contentBuilder setLokiDeviceLinkMessage:deviceLinkMessage];
-    // Serialize
-    NSData *_Nullable contentAsData = [contentBuilder buildSerializedDataAndReturnError:&error];
-    if (error || !contentAsData) {
-        OWSFailDebug(@"Failed to build serialized message content due to error: %@.", error);
-        return nil;
-    }
-    // Return
-    return contentAsData;
+    
+    return contentBuilder;
 }
 
 #pragma mark Settings

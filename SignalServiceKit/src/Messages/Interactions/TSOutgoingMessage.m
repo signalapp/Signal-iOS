@@ -1137,6 +1137,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     }
 
     SSKProtoContentBuilder *contentBuilder = [self contentBuilder:recipient];
+    if (contentBuilder == nil) { return nil; }
+    
     [contentBuilder setDataMessage:dataMessage];
     NSData *_Nullable contentData = [contentBuilder buildSerializedDataAndReturnError:&error];
     if (error || !contentData) {
