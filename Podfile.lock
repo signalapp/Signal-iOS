@@ -26,6 +26,7 @@ PODS:
     - HKDFKit (~> 0.0.3)
     - SignalCoreKit
     - SwiftProtobuf
+  - blurhash (0.0.1)
   - CocoaLumberjack (3.5.3):
     - CocoaLumberjack/Core (= 3.5.3)
   - CocoaLumberjack/Core (3.5.3)
@@ -221,6 +222,7 @@ DEPENDENCIES:
   - AFNetworking
   - AxolotlKit (from `https://github.com/signalapp/SignalProtocolKit.git`, branch `master`)
   - AxolotlKit/Tests (from `https://github.com/signalapp/SignalProtocolKit.git`, branch `master`)
+  - blurhash (from `../blurhash`)
   - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit`)
   - Curve25519Kit/Tests (from `https://github.com/signalapp/Curve25519Kit`)
   - GRDB.swift/SQLCipher
@@ -264,6 +266,8 @@ EXTERNAL SOURCES:
   AxolotlKit:
     :branch: master
     :git: https://github.com/signalapp/SignalProtocolKit.git
+  blurhash:
+    :path: "../blurhash"
   Curve25519Kit:
     :git: https://github.com/signalapp/Curve25519Kit
   GRKOpenSSLFramework:
@@ -319,6 +323,7 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
   AxolotlKit: ac03e4d79486b62d08282c840da410116227683e
+  blurhash: 4b3b2b8909cf41ab59fa349788654b8387284ff4
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
   GRDB.swift: 083ec261ce573888d8ed2eae1b49bc0bf40d9e2c
@@ -342,6 +347,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: 237d5a49f4b7cc6f72d107bd40b372f72f433475
+PODFILE CHECKSUM: d3868ca2c011f96e395caa5ecc6edd3b6816d726
 
 COCOAPODS: 1.7.5
