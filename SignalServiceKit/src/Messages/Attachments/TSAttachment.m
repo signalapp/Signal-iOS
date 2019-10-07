@@ -22,6 +22,8 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
 
 @property (nonatomic) NSString *contentType;
 
+@property (nonatomic, nullable) NSString *blurHash;
+
 @end
 
 #pragma mark -
@@ -37,6 +39,7 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
                   sourceFilename:(nullable NSString *)sourceFilename
                          caption:(nullable NSString *)caption
                   albumMessageId:(nullable NSString *)albumMessageId
+                        blurHash:(nullable NSString *)blurHash
 {
     OWSAssertDebug(serverId > 0);
     OWSAssertDebug(encryptionKey.length > 0);
@@ -63,6 +66,7 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     _sourceFilename = sourceFilename;
     _caption = caption;
     _albumMessageId = albumMessageId;
+    _blurHash = blurHash;
 
     _attachmentSchemaVersion = TSAttachmentSchemaVersion;
 
@@ -168,6 +172,7 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     _contentType = contentType;
     _caption = pointer.caption;
     _albumMessageId = pointer.albumMessageId;
+    _blurHash = pointer.blurHash;
 
     _attachmentSchemaVersion = TSAttachmentSchemaVersion;
 
@@ -342,6 +347,18 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
 - (NSString *)contentType
 {
     return _contentType.filterFilename;
+}
+
+#pragma mark - Update With...
+
+- (void)updateWithBlurHash:(NSString *)blurHash transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(blurHash.length > 0);
+
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSAttachment *attachment) {
+                                 attachment.blurHash = blurHash;
+                             }];
 }
 
 #pragma mark - Relationships

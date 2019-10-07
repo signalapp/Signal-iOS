@@ -39,8 +39,6 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
 
 @property (nonatomic, readonly) CGSize mediaSize;
 
-@property (nonatomic, nullable, readonly) NSString *blurHash;
-
 // Non-nil for attachments which need "lazy backup restore."
 - (nullable OWSBackupFragment *)lazyRestoreFragmentWithTransaction:(SDSAnyReadTransaction *)transaction;
 

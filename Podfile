@@ -64,9 +64,6 @@ def shared_pods
   pod 'PureLayout', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true
   pod 'lottie-ios', :inhibit_warnings => true
-
-  pod 'blurhash', git: 'git@github.com:signalapp/blurhash.git', branch: 'addPodspec'
-  # pod 'blurhash', path: '../blurhash'
 end
 
 target 'Signal' do

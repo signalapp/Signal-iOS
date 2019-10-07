@@ -102,7 +102,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 }
 
 - (instancetype)initWithPointer:(TSAttachmentPointer *)pointer transaction:(SDSAnyReadTransaction *)transaction
-
 {
     // Once saved, this AttachmentStream will replace the AttachmentPointer in the attachments collection.
     self = [super initWithPointer:pointer transaction:transaction];
@@ -1150,6 +1149,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     builder.key = self.encryptionKey;
     builder.digest = self.digest;
     builder.flags = self.isVoiceMessage ? SSKProtoAttachmentPointerFlagsVoiceMessage : 0;
+    if (self.blurHash.length > 0) {
+        builder.blurHash = self.blurHash;
+    }
 
     if (self.shouldHaveImageSize) {
         CGSize imageSize = self.imageSize;

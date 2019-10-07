@@ -68,7 +68,8 @@ NS_ASSUME_NONNULL_BEGIN
                        contentType:contentType
                     sourceFilename:sourceFilename
                            caption:caption
-                    albumMessageId:albumMessageId];
+                    albumMessageId:albumMessageId
+                          blurHash:blurHash];
     if (!self) {
         return self;
     }
@@ -78,7 +79,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.attachmentType = attachmentType;
     _pointerType = TSAttachmentPointerTypeIncoming;
     _mediaSize = mediaSize;
-    _blurHash = blurHash;
 
     return self;
 }
@@ -217,8 +217,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSString *_Nullable blurHash;
-    if (contentType.length > 0 && [MIMETypeUtil isImage:contentType] && attachmentProto.hasBlurHash) {
+    if (contentType.length > 0 && [MIMETypeUtil isVisualMedia:contentType] && attachmentProto.hasBlurHash) {
         blurHash = attachmentProto.blurHash;
+        if (![BlurHash isValidBlurHash:blurHash]) {
+            blurHash = nil;
+        }
     }
 
     TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:serverId
