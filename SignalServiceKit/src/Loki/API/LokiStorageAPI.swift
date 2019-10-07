@@ -96,6 +96,13 @@ public final class LokiStorageAPI : LokiDotNetAPI {
                     storage.setDeviceLinks(deviceLinks, in: transaction)
                 }
                 return deviceLinks
+            }.recover { _ -> Promise<Set<DeviceLink>> in
+                // If we error out at any time then fallback to the device links we have in storage
+                var deviceLinks = Set<DeviceLink>()
+                storage.dbReadConnection.read { transaction in
+                    deviceLinks = storage.getDeviceLinks(for: hexEncodedPublicKey, in: transaction)
+                }
+                return Promise.value(deviceLinks)
             }
         }
     }
