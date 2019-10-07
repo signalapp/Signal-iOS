@@ -26,7 +26,6 @@ PODS:
     - HKDFKit (~> 0.0.3)
     - SignalCoreKit
     - SwiftProtobuf
-  - blurhash (0.0.1)
   - CocoaLumberjack (3.5.3):
     - CocoaLumberjack/Core (= 3.5.3)
   - CocoaLumberjack/Core (3.5.3)
@@ -109,7 +108,6 @@ PODS:
   - SignalServiceKit (0.9.0):
     - AFNetworking
     - AxolotlKit
-    - blurhash
     - CocoaLumberjack
     - Curve25519Kit
     - GRDB.swift/SQLCipher
@@ -129,7 +127,6 @@ PODS:
   - SignalServiceKit/Tests (0.9.0):
     - AFNetworking
     - AxolotlKit
-    - blurhash
     - CocoaLumberjack
     - Curve25519Kit
     - GRDB.swift/SQLCipher
@@ -249,7 +246,6 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - AFNetworking
-    - blurhash
     - CocoaLumberjack
     - GRDB.swift
     - libPhoneNumber-iOS
@@ -323,7 +319,6 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
   AxolotlKit: ac03e4d79486b62d08282c840da410116227683e
-  blurhash: 4b3b2b8909cf41ab59fa349788654b8387284ff4
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
   GRDB.swift: 083ec261ce573888d8ed2eae1b49bc0bf40d9e2c
@@ -339,7 +334,7 @@ SPEC CHECKSUMS:
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalCoreKit: 4562b2bbd9830077439ca003f952a798457d4ea5
   SignalMetadataKit: a7aacedf262d947c22e2c619f0fd217163d2a637
-  SignalServiceKit: 879bcaa796dbae9c5abfe1e5df83e8d5df97a099
+  SignalServiceKit: e80c4b7c967b832cc57ea3495bfe935578284787
   SQLCipher: 4636a257060f6f1b4e143a143028b61a2b462d0d
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
