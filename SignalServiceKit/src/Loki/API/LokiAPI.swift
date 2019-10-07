@@ -126,7 +126,18 @@ public final class LokiAPI : NSObject {
         if timeSinceLastUpdate > deviceLinkUpdateInterval {
             storage.dbReadConnection.read { transaction in
                 let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
-                LokiStorageAPI.getDeviceLinks(associatedWith: masterHexEncodedPublicKey).done { _ in getDestinations() }.catch { seal.reject($0) }
+                LokiStorageAPI.getDeviceLinks(associatedWith: masterHexEncodedPublicKey).done { _ in
+                    getDestinations()
+                    lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()
+                }.catch { error in
+                    if case LokiDotNetAPI.Error.parsingFailed = error {
+                        // If it's a parsing error then just cache
+                        getDestinations()
+                        lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()
+                    } else {
+                        seal.reject(error)
+                    }
+                }
             }
         } else {
             getDestinations()
