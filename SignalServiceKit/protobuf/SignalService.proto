@@ -89,8 +89,8 @@ message LokiAddressMessage { // Loki
 message LokiDeviceLinkMessage { // Loki
   optional string masterHexEncodedPublicKey = 1;
   optional string slaveHexEncodedPublicKey  = 2;
-  optional bytes  masterSignature           = 3;
-  optional bytes  slaveSignature            = 4;
+  optional bytes  slaveSignature            = 3;
+  optional bytes  masterSignature           = 4;
 }
 
 message CallMessage {

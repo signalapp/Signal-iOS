@@ -510,15 +510,6 @@ struct SignalServiceProtos_LokiDeviceLinkMessage {
   /// Clears the value of `slaveHexEncodedPublicKey`. Subsequent reads from it will return its default value.
   mutating func clearSlaveHexEncodedPublicKey() {self._slaveHexEncodedPublicKey = nil}
 
-  var masterSignature: Data {
-    get {return _masterSignature ?? SwiftProtobuf.Internal.emptyData}
-    set {_masterSignature = newValue}
-  }
-  /// Returns true if `masterSignature` has been explicitly set.
-  var hasMasterSignature: Bool {return self._masterSignature != nil}
-  /// Clears the value of `masterSignature`. Subsequent reads from it will return its default value.
-  mutating func clearMasterSignature() {self._masterSignature = nil}
-
   var slaveSignature: Data {
     get {return _slaveSignature ?? SwiftProtobuf.Internal.emptyData}
     set {_slaveSignature = newValue}
@@ -528,14 +519,23 @@ struct SignalServiceProtos_LokiDeviceLinkMessage {
   /// Clears the value of `slaveSignature`. Subsequent reads from it will return its default value.
   mutating func clearSlaveSignature() {self._slaveSignature = nil}
 
+  var masterSignature: Data {
+    get {return _masterSignature ?? SwiftProtobuf.Internal.emptyData}
+    set {_masterSignature = newValue}
+  }
+  /// Returns true if `masterSignature` has been explicitly set.
+  var hasMasterSignature: Bool {return self._masterSignature != nil}
+  /// Clears the value of `masterSignature`. Subsequent reads from it will return its default value.
+  mutating func clearMasterSignature() {self._masterSignature = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
 
   fileprivate var _masterHexEncodedPublicKey: String? = nil
   fileprivate var _slaveHexEncodedPublicKey: String? = nil
-  fileprivate var _masterSignature: Data? = nil
   fileprivate var _slaveSignature: Data? = nil
+  fileprivate var _masterSignature: Data? = nil
 }
 
 struct SignalServiceProtos_CallMessage {
@@ -2983,8 +2983,8 @@ extension SignalServiceProtos_LokiDeviceLinkMessage: SwiftProtobuf.Message, Swif
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "masterHexEncodedPublicKey"),
     2: .same(proto: "slaveHexEncodedPublicKey"),
-    3: .same(proto: "masterSignature"),
-    4: .same(proto: "slaveSignature"),
+    3: .same(proto: "slaveSignature"),
+    4: .same(proto: "masterSignature"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2992,8 +2992,8 @@ extension SignalServiceProtos_LokiDeviceLinkMessage: SwiftProtobuf.Message, Swif
       switch fieldNumber {
       case 1: try decoder.decodeSingularStringField(value: &self._masterHexEncodedPublicKey)
       case 2: try decoder.decodeSingularStringField(value: &self._slaveHexEncodedPublicKey)
-      case 3: try decoder.decodeSingularBytesField(value: &self._masterSignature)
-      case 4: try decoder.decodeSingularBytesField(value: &self._slaveSignature)
+      case 3: try decoder.decodeSingularBytesField(value: &self._slaveSignature)
+      case 4: try decoder.decodeSingularBytesField(value: &self._masterSignature)
       default: break
       }
     }
@@ -3006,10 +3006,10 @@ extension SignalServiceProtos_LokiDeviceLinkMessage: SwiftProtobuf.Message, Swif
     if let v = self._slaveHexEncodedPublicKey {
       try visitor.visitSingularStringField(value: v, fieldNumber: 2)
     }
-    if let v = self._masterSignature {
+    if let v = self._slaveSignature {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
     }
-    if let v = self._slaveSignature {
+    if let v = self._masterSignature {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -3018,8 +3018,8 @@ extension SignalServiceProtos_LokiDeviceLinkMessage: SwiftProtobuf.Message, Swif
   static func ==(lhs: SignalServiceProtos_LokiDeviceLinkMessage, rhs: SignalServiceProtos_LokiDeviceLinkMessage) -> Bool {
     if lhs._masterHexEncodedPublicKey != rhs._masterHexEncodedPublicKey {return false}
     if lhs._slaveHexEncodedPublicKey != rhs._slaveHexEncodedPublicKey {return false}
-    if lhs._masterSignature != rhs._masterSignature {return false}
     if lhs._slaveSignature != rhs._slaveSignature {return false}
+    if lhs._masterSignature != rhs._masterSignature {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

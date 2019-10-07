@@ -979,11 +979,11 @@ extension SSKProtoLokiAddressMessage.SSKProtoLokiAddressMessageBuilder {
         if let _value = slaveHexEncodedPublicKey {
             builder.setSlaveHexEncodedPublicKey(_value)
         }
-        if let _value = masterSignature {
-            builder.setMasterSignature(_value)
-        }
         if let _value = slaveSignature {
             builder.setSlaveSignature(_value)
+        }
+        if let _value = masterSignature {
+            builder.setMasterSignature(_value)
         }
         return builder
     }
@@ -1002,12 +1002,12 @@ extension SSKProtoLokiAddressMessage.SSKProtoLokiAddressMessageBuilder {
             proto.slaveHexEncodedPublicKey = valueParam
         }
 
-        @objc public func setMasterSignature(_ valueParam: Data) {
-            proto.masterSignature = valueParam
-        }
-
         @objc public func setSlaveSignature(_ valueParam: Data) {
             proto.slaveSignature = valueParam
+        }
+
+        @objc public func setMasterSignature(_ valueParam: Data) {
+            proto.masterSignature = valueParam
         }
 
         @objc public func build() throws -> SSKProtoLokiDeviceLinkMessage {
@@ -1041,16 +1041,6 @@ extension SSKProtoLokiAddressMessage.SSKProtoLokiAddressMessageBuilder {
         return proto.hasSlaveHexEncodedPublicKey
     }
 
-    @objc public var masterSignature: Data? {
-        guard proto.hasMasterSignature else {
-            return nil
-        }
-        return proto.masterSignature
-    }
-    @objc public var hasMasterSignature: Bool {
-        return proto.hasMasterSignature
-    }
-
     @objc public var slaveSignature: Data? {
         guard proto.hasSlaveSignature else {
             return nil
@@ -1059,6 +1049,16 @@ extension SSKProtoLokiAddressMessage.SSKProtoLokiAddressMessageBuilder {
     }
     @objc public var hasSlaveSignature: Bool {
         return proto.hasSlaveSignature
+    }
+
+    @objc public var masterSignature: Data? {
+        guard proto.hasMasterSignature else {
+            return nil
+        }
+        return proto.masterSignature
+    }
+    @objc public var hasMasterSignature: Bool {
+        return proto.hasMasterSignature
     }
 
     private init(proto: SignalServiceProtos_LokiDeviceLinkMessage) {
