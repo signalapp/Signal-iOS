@@ -253,7 +253,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 // This method is used to forge the message state for fake messages.
 //
 // NOTE: This method should only be used by Debug UI, etc.
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 - (void)updateWithFakeMessageState:(TSOutgoingMessageState)messageState
                        transaction:(SDSAnyWriteTransaction *)transaction;
 #endif

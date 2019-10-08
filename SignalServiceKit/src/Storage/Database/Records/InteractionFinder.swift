@@ -823,7 +823,10 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         SELECT *
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .storedShouldStartExpireTimer) IS TRUE
-        AND \(interactionColumn: .expiresAt) IS 0
+        AND (
+            \(interactionColumn: .expiresAt) IS 0 OR
+            \(interactionColumn: .expireStartedAt) IS 0
+        )
         """
         let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: [], transaction: transaction)
         do {
@@ -1031,7 +1034,10 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .threadUniqueId) = ?
         AND \(interactionColumn: .storedShouldStartExpireTimer) IS TRUE
-        AND \(interactionColumn: .expiresAt) IS 0
+        AND (
+            \(interactionColumn: .expiresAt) IS 0 OR
+            \(interactionColumn: .expireStartedAt) IS 0
+        )
         """
         let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: [threadUniqueId], transaction: transaction)
         do {
