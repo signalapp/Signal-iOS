@@ -345,6 +345,18 @@ public class FullTextSearcher: NSObject {
             }
         }
 
+        if matchesNoteToSelf(searchText: searchText, transaction: transaction) {
+            if !contacts.contains(where: { $0.signalAccount.recipientAddress.isLocalAddress }) {
+                if let localAddress = TSAccountManager.localAddress {
+                    let localAccount = SignalAccount(address: localAddress)
+                    let localResult = ContactSearchResult(signalAccount: localAccount)
+                    contacts.append(localResult)
+                } else {
+                    owsFailDebug("localAddress was unexpectedly nil")
+                }
+            }
+        }
+
         // Only show contacts which were not included in an existing 1:1 conversation.
         var otherContacts: [ContactSearchResult] = contacts.filter { !existingConversationAddresses.contains($0.recipientAddress) }
 
