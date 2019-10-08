@@ -4,6 +4,7 @@
 
 import Foundation
 import PromiseKit
+import blurhash
 
 @objc
 public class BlurHash: NSObject {

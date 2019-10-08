@@ -24,6 +24,8 @@ def shared_pods
   pod 'SignalMetadataKit', git: 'git@github.com:signalapp/SignalMetadataKit', testspecs: ["Tests"]
   # pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
 
+  pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'addPodspec'
+
   pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
 
   # Project does not compile with PromiseKit 6.7.1
