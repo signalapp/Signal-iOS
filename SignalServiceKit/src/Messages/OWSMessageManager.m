@@ -1414,6 +1414,7 @@ NS_ASSUME_NONNULL_BEGIN
                 }
 
                 // Loki: Cache the user hex encoded public key (for mentions)
+                [LKAPI populateUserIDCacheIfNeededFor:oldGroupThread.uniqueId];
                 [LKAPI cache:incomingMessage.authorId for:oldGroupThread.uniqueId];
                 
                 [self finalizeIncomingMessage:incomingMessage

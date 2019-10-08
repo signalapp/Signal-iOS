@@ -709,23 +709,23 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error1;
     NSRegularExpression *regex1 = [[NSRegularExpression alloc] initWithPattern:@"@\\w*" options:0 error:&error1];
     OWSAssertDebug(error1 == nil);
-    NSSet<NSString *> *knownUserIDs = LKAPI.userHexEncodedPublicKeyCache[threadID];
+    NSSet<NSString *> *knownUserIDs = LKAPI.userIDCache[threadID];
     NSMutableSet<NSValue *> *mentions = [NSMutableSet new];
-    NSTextCheckingResult *match = [regex1 firstMatchInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, text.length)];
-    if (match != nil) {
+    NSTextCheckingResult *match1 = [regex1 firstMatchInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, text.length)];
+    if (match1 != nil) {
         while (YES) {
-            NSString *userID = [[text substringWithRange:match.range] stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
+            NSString *userID = [[text substringWithRange:match1.range] stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
             NSUInteger matchEnd;
             if ([knownUserIDs containsObject:userID]) {
                 NSString *userDisplayName = [Environment.shared.contactsManager attributedContactOrProfileNameForPhoneIdentifier:userID primaryFont:font secondaryFont:font].string;
-                text = [text stringByReplacingCharactersInRange:match.range withString:[NSString stringWithFormat:@"@%@", userDisplayName]];
-                [mentions addObject:[NSValue valueWithRange:NSMakeRange(match.range.location, userDisplayName.length + 1)]];
-                matchEnd = match.range.location + userDisplayName.length;
+                text = [text stringByReplacingCharactersInRange:match1.range withString:[NSString stringWithFormat:@"@%@", userDisplayName]];
+                [mentions addObject:[NSValue valueWithRange:NSMakeRange(match1.range.location, userDisplayName.length + 1)]];
+                matchEnd = match1.range.location + userDisplayName.length;
             } else {
-                matchEnd = match.range.location + match.range.length;
+                matchEnd = match1.range.location + match1.range.length;
             }
-            match = [regex1 firstMatchInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(matchEnd, text.length - matchEnd)];
-            if (match == nil) { break; }
+            match1 = [regex1 firstMatchInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(matchEnd, text.length - matchEnd)];
+            if (match1 == nil) { break; }
         }
     }
     NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithString:text attributes:@{ NSFontAttributeName : font, NSForegroundColorAttributeName : textColor }];
@@ -740,11 +740,11 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *error2;
         NSRegularExpression *regex2 = [[NSRegularExpression alloc] initWithPattern:[NSRegularExpression escapedPatternForString:searchableText] options:NSRegularExpressionCaseInsensitive error:&error2];
         OWSAssertDebug(error2 == nil);
-        for (NSTextCheckingResult *match in
+        for (NSTextCheckingResult *match2 in
             [regex2 matchesInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, text.length)]) {
-            OWSAssertDebug(match.range.length >= ConversationSearchController.kMinimumSearchTextLength);
-            [attributedText addAttribute:NSBackgroundColorAttributeName value:UIColor.yellowColor range:match.range];
-            [attributedText addAttribute:NSForegroundColorAttributeName value:UIColor.ows_blackColor range:match.range];
+            OWSAssertDebug(match2.range.length >= ConversationSearchController.kMinimumSearchTextLength);
+            [attributedText addAttribute:NSBackgroundColorAttributeName value:UIColor.yellowColor range:match2.range];
+            [attributedText addAttribute:NSForegroundColorAttributeName value:UIColor.ows_blackColor range:match2.range];
         }
     }
 

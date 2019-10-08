@@ -3,6 +3,7 @@ import PromiseKit
 @objc(LKAPI)
 public final class LokiAPI : NSObject {
     private static var lastDeviceLinkUpdate: [String:Date] = [:] // Hex encoded public key to date
+    @objc static var userIDCache: [String:Set<String>] = [:] // Thread ID to set of user hex encoded public keys
     
     // MARK: Convenience
     internal static let storage = OWSPrimaryStorage.shared()
@@ -14,8 +15,11 @@ public final class LokiAPI : NSObject {
     private static let defaultTimeout: TimeInterval = 20
     private static let longPollingTimeout: TimeInterval = 40
     private static let deviceLinkUpdateInterval: TimeInterval = 8 * 60
-    public static let defaultMessageTTL: UInt64 = 24 * 60 * 60 * 1000
+    private static let receivedMessageHashValuesKey = "receivedMessageHashValuesKey"
+    private static let receivedMessageHashValuesCollection = "receivedMessageHashValuesCollection"
+    private static var userIDScanLimit: UInt = 4096
     internal static var powDifficulty: UInt = 4
+    public static let defaultMessageTTL: UInt64 = 24 * 60 * 60 * 1000
     
     // MARK: Types
     public typealias RawResponse = Any
@@ -260,10 +264,7 @@ public final class LokiAPI : NSObject {
         }
     }
 
-    // MARK: Message Caching
-    private static let receivedMessageHashValuesKey = "receivedMessageHashValuesKey"
-    private static let receivedMessageHashValuesCollection = "receivedMessageHashValuesCollection"
-
+    // MARK: Message Hash Caching
     private static func getLastMessageHashValue(for target: LokiAPITarget) -> String? {
         var result: String? = nil
         // Uses a read/write connection because getting the last message hash value also removes expired messages as needed
@@ -295,16 +296,29 @@ public final class LokiAPI : NSObject {
     }
     
     // MARK: User ID Caching
-    @objc static var userHexEncodedPublicKeyCache: [String:Set<String>] = [:] // Thread ID to set of user hex encoded public keys
-    
-    @objc public static func cache(_ userHexEncodedPublicKey: String, for thread: String) {
-        if let cache = userHexEncodedPublicKeyCache[thread] {
+    @objc public static func cache(_ userHexEncodedPublicKey: String, for threadID: String) {
+        if let cache = userIDCache[threadID] {
             var mutableCache = cache
             mutableCache.insert(userHexEncodedPublicKey)
-            userHexEncodedPublicKeyCache[thread] = mutableCache
+            userIDCache[threadID] = mutableCache
         } else {
-            userHexEncodedPublicKeyCache[thread] = [ userHexEncodedPublicKey ]
+            userIDCache[threadID] = [ userHexEncodedPublicKey ]
         }
+    }
+    
+    @objc public static func populateUserIDCacheIfNeeded(for threadID: String) {
+        guard userIDCache[threadID] == nil else { return }
+        var result: Set<String> = []
+        storage.dbReadWriteConnection.readWrite { transaction in
+            guard let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return }
+            let interactions = transaction.ext(TSMessageDatabaseViewExtensionName) as! YapDatabaseViewTransaction
+            interactions.enumerateKeysAndObjects(inGroup: threadID) { _, _, object, index, _ in
+                guard let message = object as? TSIncomingMessage, index < userIDScanLimit else { return }
+                result.insert(message.authorId)
+            }
+        }
+        result.insert(userHexEncodedPublicKey)
+        userIDCache[threadID] = result
     }
 }
 

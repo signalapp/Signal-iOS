@@ -523,6 +523,8 @@ typedef enum : NSUInteger {
                                                           selector:@selector(reloadTimerDidFire)
                                                           userInfo:nil
                                                            repeats:YES];
+    
+    [LKAPI populateUserIDCacheIfNeededFor:thread.uniqueId];
 }
 
 - (void)dealloc
