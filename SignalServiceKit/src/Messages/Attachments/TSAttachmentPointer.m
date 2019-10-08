@@ -60,6 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
                   albumMessageId:(nullable NSString *)albumMessageId
                   attachmentType:(TSAttachmentType)attachmentType
                        mediaSize:(CGSize)mediaSize
+                        blurHash:(nullable NSString *)blurHash
 {
     self = [super initWithServerId:serverId
                      encryptionKey:key
@@ -67,7 +68,8 @@ NS_ASSUME_NONNULL_BEGIN
                        contentType:contentType
                     sourceFilename:sourceFilename
                            caption:caption
-                    albumMessageId:albumMessageId];
+                    albumMessageId:albumMessageId
+                          blurHash:blurHash];
     if (!self) {
         return self;
     }
@@ -213,6 +215,15 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Invalid server id.");
         return nil;
     }
+
+    NSString *_Nullable blurHash;
+    if (contentType.length > 0 && [MIMETypeUtil isVisualMedia:contentType] && attachmentProto.hasBlurHash) {
+        blurHash = attachmentProto.blurHash;
+        if (![BlurHash isValidBlurHash:blurHash]) {
+            blurHash = nil;
+        }
+    }
+
     TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:serverId
                                                                              key:attachmentProto.key
                                                                           digest:digest
@@ -222,7 +233,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                          caption:caption
                                                                   albumMessageId:albumMessageId
                                                                   attachmentType:attachmentType
-                                                                       mediaSize:mediaSize];
+                                                                       mediaSize:mediaSize
+                                                                        blurHash:blurHash];
     return pointer;
 }
 

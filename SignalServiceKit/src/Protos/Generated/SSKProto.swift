@@ -6434,6 +6434,9 @@ extension SSKProtoSyncMessage.SSKProtoSyncMessageBuilder {
         if let _value = caption {
             builder.setCaption(_value)
         }
+        if let _value = blurHash {
+            builder.setBlurHash(_value)
+        }
         return builder
     }
 
@@ -6540,6 +6543,17 @@ extension SSKProtoSyncMessage.SSKProtoSyncMessageBuilder {
             proto.caption = valueParam
         }
 
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setBlurHash(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.blurHash = valueParam
+        }
+
+        public func setBlurHash(_ valueParam: String) {
+            proto.blurHash = valueParam
+        }
+
         @objc public func build() throws -> SSKProtoAttachmentPointer {
             return try SSKProtoAttachmentPointer.parseProto(proto)
         }
@@ -6639,6 +6653,16 @@ extension SSKProtoSyncMessage.SSKProtoSyncMessageBuilder {
     }
     @objc public var hasCaption: Bool {
         return proto.hasCaption
+    }
+
+    @objc public var blurHash: String? {
+        guard proto.hasBlurHash else {
+            return nil
+        }
+        return proto.blurHash
+    }
+    @objc public var hasBlurHash: Bool {
+        return proto.hasBlurHash
     }
 
     private init(proto: SignalServiceProtos_AttachmentPointer,

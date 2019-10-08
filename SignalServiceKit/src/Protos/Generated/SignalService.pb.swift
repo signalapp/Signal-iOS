@@ -2224,6 +2224,15 @@ struct SignalServiceProtos_AttachmentPointer {
   /// Clears the value of `caption`. Subsequent reads from it will return its default value.
   mutating func clearCaption() {self._caption = nil}
 
+  var blurHash: String {
+    get {return _blurHash ?? String()}
+    set {_blurHash = newValue}
+  }
+  /// Returns true if `blurHash` has been explicitly set.
+  var hasBlurHash: Bool {return self._blurHash != nil}
+  /// Clears the value of `blurHash`. Subsequent reads from it will return its default value.
+  mutating func clearBlurHash() {self._blurHash = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum Flags: SwiftProtobuf.Enum {
@@ -2262,6 +2271,7 @@ struct SignalServiceProtos_AttachmentPointer {
   fileprivate var _width: UInt32?
   fileprivate var _height: UInt32?
   fileprivate var _caption: String?
+  fileprivate var _blurHash: String?
 }
 
 #if swift(>=4.2)
@@ -4999,7 +5009,8 @@ extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftPro
     8: .same(proto: "flags"),
     9: .same(proto: "width"),
     10: .same(proto: "height"),
-    11: .same(proto: "caption")
+    11: .same(proto: "caption"),
+    12: .same(proto: "blurHash")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5016,6 +5027,7 @@ extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftPro
       case 9: try decoder.decodeSingularUInt32Field(value: &self._width)
       case 10: try decoder.decodeSingularUInt32Field(value: &self._height)
       case 11: try decoder.decodeSingularStringField(value: &self._caption)
+      case 12: try decoder.decodeSingularStringField(value: &self._blurHash)
       default: break
       }
     }
@@ -5055,6 +5067,9 @@ extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftPro
     if let v = self._caption {
       try visitor.visitSingularStringField(value: v, fieldNumber: 11)
     }
+    if let v = self._blurHash {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 12)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -5070,6 +5085,7 @@ extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftPro
     if lhs._width != rhs._width {return false}
     if lhs._height != rhs._height {return false}
     if lhs._caption != rhs._caption {return false}
+    if lhs._blurHash != rhs._blurHash {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

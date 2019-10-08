@@ -121,6 +121,7 @@ public class ConversationMediaView: UIView {
         AssertIsOnMainThread()
 
         guard let attachmentStream = attachment as? TSAttachmentStream else {
+            tryToConfigureForBlurHash(attachment: attachment)
             addDownloadProgressIfNecessary()
             return
         }
@@ -183,6 +184,59 @@ public class ConversationMediaView: UIView {
         self.addSubview(progressView)
         progressView.autoPinEdgesToSuperviewEdges()
         return true
+    }
+
+    private func tryToConfigureForBlurHash(attachment: TSAttachment) {
+        guard let pointer = attachment as? TSAttachmentPointer else {
+            owsFailDebug("Invalid attachment.")
+            return
+        }
+        guard let blurHash = pointer.blurHash,
+            blurHash.count > 0 else {
+                return
+        }
+        let cacheKey = blurHash
+        let stillImageView = UIImageView()
+        // We need to specify a contentMode since the size of the image
+        // might not match the aspect ratio of the view.
+        stillImageView.contentMode = .scaleAspectFill
+        // Use trilinear filters for better scaling quality at
+        // some performance cost.
+        stillImageView.layer.minificationFilter = .trilinear
+        stillImageView.layer.magnificationFilter = .trilinear
+        stillImageView.backgroundColor = Theme.washColor
+        addSubview(stillImageView)
+        stillImageView.autoPinEdgesToSuperviewEdges()
+        loadBlock = { [weak self] in
+            AssertIsOnMainThread()
+
+            if stillImageView.image != nil {
+                owsFailDebug("Unexpectedly already loaded.")
+                return
+            }
+            self?.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
+                guard let image = BlurHash.image(for: blurHash) else {
+                    Logger.warn("Missing image for blurHash.")
+                    return nil
+                }
+                return image
+            },
+                                 applyMediaBlock: { (media) in
+                                    AssertIsOnMainThread()
+
+                                    guard let image = media as? UIImage else {
+                                        owsFailDebug("Media has unexpected type: \(type(of: media))")
+                                        return
+                                    }
+                                    stillImageView.image = image
+            },
+                                 cacheKey: cacheKey)
+        }
+        unloadBlock = {
+            AssertIsOnMainThread()
+
+            stillImageView.image = nil
+        }
     }
 
     private func configureForAnimatedImage(attachmentStream: TSAttachmentStream) {

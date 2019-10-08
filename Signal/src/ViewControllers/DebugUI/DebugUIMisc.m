@@ -526,7 +526,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                caption:nil
                                         albumMessageId:nil
                                         attachmentType:TSAttachmentTypeDefault
-                                             mediaSize:CGSizeMake(1, 10)] anyInsertWithTransaction:transaction];
+                                             mediaSize:CGSizeMake(1, 10)
+                                              blurHash:nil] anyInsertWithTransaction:transaction];
         [[[TSAttachmentStream alloc] initWithContentType:OWSMimeTypePdf
                                                byteCount:1024
                                           sourceFilename:nil

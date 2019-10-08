@@ -383,6 +383,7 @@ message AttachmentPointer {
   optional uint32  width       = 9;
   optional uint32  height      = 10;
   optional string  caption     = 11;
+  optional string  blurHash    = 12;
 }
 
 message GroupContext {

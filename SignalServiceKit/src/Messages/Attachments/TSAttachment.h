@@ -41,6 +41,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 // not the filename on disk.
 @property (nonatomic, readonly, nullable) NSString *sourceFilename;
 
+@property (nonatomic, readonly, nullable) NSString *blurHash;
+
 #pragma mark - Media Album
 
 @property (nonatomic, readonly, nullable) NSString *caption;
@@ -64,7 +66,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
                      contentType:(NSString *)contentType
                   sourceFilename:(nullable NSString *)sourceFilename
                          caption:(nullable NSString *)caption
-                  albumMessageId:(nullable NSString *)albumMessageId;
+                  albumMessageId:(nullable NSString *)albumMessageId
+                        blurHash:(nullable NSString *)blurHash;
 
 // This constructor is used for new instances of TSAttachmentPointer,
 // i.e. undownloaded restoring attachments.
@@ -122,6 +125,10 @@ NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentTyp
 @property (nonatomic, readonly) BOOL isOversizeText;
 
 + (NSString *)emojiForMimeType:(NSString *)contentType;
+
+#pragma mark - Update With...
+
+- (void)updateWithBlurHash:(NSString *)blurHash transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 
