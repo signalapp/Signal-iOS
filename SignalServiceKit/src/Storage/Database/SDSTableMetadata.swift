@@ -88,47 +88,4 @@ public class SDSTableMetadata: NSObject {
     public var columnNames: [String] {
         return columns.map { $0.columnName }
     }
-
-    // MARK: - Table Creation
-
-    public var hasValidTableName: Bool {
-        // Only allow a-z, 0-9, and underscore
-        let regex = try! NSRegularExpression(pattern: "^[a-zA-Z0-9_]+$", options: [])
-        return regex.hasMatch(input: tableName)
-    }
-
-    public func createTable(database: Database) throws {
-        if !hasValidTableName {
-            owsFail("Invalid table name: \(tableName)")
-        }
-
-        try database.create(table: tableName) { (table) in
-            for columnMetadata in self.columns {
-                let column: ColumnDefinition
-                switch columnMetadata.columnType {
-                case .primaryKey:
-                    column = table.autoIncrementedPrimaryKey(columnMetadata.columnName)
-                case .unicodeString:
-                    column = table.column(columnMetadata.columnName, .text)
-                case .blob:
-                    column = table.column(columnMetadata.columnName, .blob)
-                case .bool:
-                    column = table.column(columnMetadata.columnName, .boolean)
-                case .int:
-                    column = table.column(columnMetadata.columnName, .integer)
-                case .int64:
-                    column = table.column(columnMetadata.columnName, .integer)
-                case .double:
-                    column = table.column(columnMetadata.columnName, .double)
-                }
-
-                if !columnMetadata.isOptional {
-                    column.notNull()
-                }
-                if columnMetadata.isUnique {
-                    column.unique(onConflict: .fail)
-                }
-            }
-        }
-    }
 }

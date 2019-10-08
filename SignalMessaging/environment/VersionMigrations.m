@@ -11,6 +11,7 @@
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSRequestFactory.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <YapDatabase/YapDatabase.h>
@@ -54,10 +55,15 @@ NS_ASSUME_NONNULL_BEGIN
         currentVersion,
         lastCompletedLaunchAppVersion);
 
+    GRDBSchemaMigrator *grdbSchemaMigrator = [GRDBSchemaMigrator new];
+
     if (!lastCompletedLaunchAppVersion) {
         OWSLogInfo(@"No previous version found. Probably first launch since install - nothing to migrate.");
         OWSDatabaseMigrationRunner *runner = [[OWSDatabaseMigrationRunner alloc] init];
         [runner assumeAllExistingMigrationsRun];
+
+        [grdbSchemaMigrator runMigrationsForNewUser];
+
         dispatch_async(dispatch_get_main_queue(), ^{
             completion();
         });
@@ -94,7 +100,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [[[OWSDatabaseMigrationRunner alloc] init] runAllOutstandingWithCompletion:completion];
+        [[[OWSDatabaseMigrationRunner alloc] init] runAllOutstandingWithCompletion:^{
+            [grdbSchemaMigrator runOutstandingMigrationsForExistingUser];
+            completion();
+        }];
     });
 }
 
