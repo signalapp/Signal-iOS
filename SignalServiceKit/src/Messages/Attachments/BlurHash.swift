@@ -65,11 +65,15 @@ public class BlurHash: NSObject {
                 resolver.reject(OWSErrorMakeAssertionError("Could not load small thumbnail."))
                 return
             }
+            guard let normalized = normalize(image: thumbnail, backgroundColor: .white) else {
+                resolver.reject(OWSErrorMakeAssertionError("Could not normalize thumbnail."))
+                return
+            }
             // blurHash uses a DCT transform, so these are AC and DC components.
             // We use 4x3.
             //
             // https://github.com/woltapp/blurhash/blob/master/Algorithm.md
-            guard let blurHash = thumbnail.blurHash(numberOfComponents: (4, 3)) else {
+            guard let blurHash = normalized.blurHash(numberOfComponents: (4, 3)) else {
                 resolver.reject(OWSErrorMakeAssertionError("Could not generate blurHash."))
                 return
             }
@@ -103,5 +107,46 @@ public class BlurHash: NSObject {
         // these thumbnails.
         let defaultSize: CGFloat = 16
         return CGSize(width: defaultSize, height: defaultSize)
+    }
+
+    // BlurHashEncode only works with images in a very specific
+    // pixel format: RGBA8888.
+    private class func normalize(image: UIImage, backgroundColor: UIColor) -> UIImage? {
+        guard let cgImage = image.cgImage else {
+            owsFailDebug("Invalid image.")
+            return nil
+        }
+
+        // As long as we're normalizing the image, reduce the size.
+        // The blurHash algorithm doesn't need more data.
+        // This also places an upper bound on blurHash perf cost.
+        let srcSize = image.pixelSize()
+        guard srcSize.width > 0, srcSize.height > 0 else {
+            owsFailDebug("Invalid image size.")
+            return nil
+        }
+        let srcMinDimension: CGFloat = min(srcSize.width, srcSize.height)
+        // Make sure the short dimension is N.
+        let scale: CGFloat = min(1.0, 16 / srcMinDimension)
+        let dstWidth: Int = Int(round(srcSize.width * scale))
+        let dstHeight: Int = Int(round(srcSize.height * scale))
+        let dstSize = CGSize(width: dstWidth, height: dstHeight)
+        let dstRect = CGRect(origin: .zero, size: dstSize)
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        // RGBA8888 pixel format
+        let bitmapInfo = CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.premultipliedLast.rawValue
+        guard let context = CGContext(data: nil,
+                                      width: dstWidth,
+                                      height: dstHeight,
+                                      bitsPerComponent: 8,
+                                      bytesPerRow: dstWidth * 4,
+                                      space: colorSpace,
+                                      bitmapInfo: bitmapInfo) else {
+                                        return nil
+        }
+        context.setFillColor(backgroundColor.cgColor)
+        context.fill(dstRect)
+        context.draw(cgImage, in: dstRect)
+        return (context.makeImage().flatMap { UIImage(cgImage: $0) })
     }
 }
