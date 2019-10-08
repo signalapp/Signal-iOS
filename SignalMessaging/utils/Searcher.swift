@@ -8,28 +8,28 @@ import Foundation
 @objc class AnySearcher: NSObject {
     private let searcher: Searcher<AnyObject>
 
-    public init(indexer: @escaping (AnyObject) -> String ) {
+    public init(indexer: @escaping (AnyObject, SDSAnyReadTransaction) -> String ) {
         searcher = Searcher(indexer: indexer)
         super.init()
     }
 
-    @objc(item:doesMatchQuery:)
-    public func matches(item: AnyObject, query: String) -> Bool {
-        return searcher.matches(item: item, query: query)
+    @objc(item:doesMatchQuery:transaction:)
+    public func matches(item: AnyObject, query: String, transaction: SDSAnyReadTransaction) -> Bool {
+        return searcher.matches(item: item, query: query, transaction: transaction)
     }
 }
 
 // A generic searching class, configurable with an indexing block
 public class Searcher<T> {
 
-    private let indexer: (T) -> String
+    private let indexer: (T, SDSAnyReadTransaction) -> String
 
-    public init(indexer: @escaping (T) -> String) {
+    public init(indexer: @escaping (T, SDSAnyReadTransaction) -> String) {
         self.indexer = indexer
     }
 
-    public func matches(item: T, query: String) -> Bool {
-        let itemString = normalize(string: indexer(item))
+    public func matches(item: T, query: String, transaction: SDSAnyReadTransaction) -> Bool {
+        let itemString = normalize(string: indexer(item, transaction))
         return stem(string: query).map { queryStem in
             return itemString.contains(queryStem)
         }.reduce(true) { $0 && $1 }

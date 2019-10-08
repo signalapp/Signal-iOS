@@ -6,6 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class Contact;
 @class ContactsViewHelper;
+@class SDSAnyReadTransaction;
 @class SignalAccount;
 @class TSThread;
 
@@ -70,7 +71,8 @@ NS_ASSUME_NONNULL_BEGIN
 // NOTE: This method uses a transaction.
 - (SignalServiceAddress *)localAddress;
 
-- (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText;
+- (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText
+                                                     transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)warmNonSignalContactsCacheAsync;
 - (NSArray<Contact *> *)nonSignalContactsMatchingSearchString:(NSString *)searchText;

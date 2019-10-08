@@ -190,7 +190,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *recentChatsSection = [OWSTableSection new];
     recentChatsSection.headerTitle = NSLocalizedString(
         @"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE", @"Table section header for recently active conversations");
-    for (TSThread *thread in [self filteredThreadsWithSearchText]) {
+
+    __block NSArray<TSThread *> *filteredThreads;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        filteredThreads = [self filteredThreadsWithTransaction:transaction];
+    }];
+    for (TSThread *thread in filteredThreads) {
         [recentChatsSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
@@ -268,7 +273,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *otherContactsSection = [OWSTableSection new];
     otherContactsSection.headerTitle = NSLocalizedString(
         @"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE", @"Table section header for conversations you haven't recently used.");
-    NSArray<SignalAccount *> *filteredSignalAccounts = [self filteredSignalAccountsWithSearchText];
+    __block NSArray<SignalAccount *> *filteredSignalAccounts;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        filteredSignalAccounts = [self filteredSignalAccountsWithTransaction:transaction];
+    }];
+
     for (SignalAccount *signalAccount in filteredSignalAccounts) {
         [otherContactsSection
             addItem:[OWSTableItem
@@ -338,14 +347,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Filter
 
-- (NSArray<TSThread *> *)filteredThreadsWithSearchText
+- (NSArray<TSThread *> *)filteredThreadsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     NSString *searchTerm = [[self.searchBar text] ows_stripped];
 
-    return [self.fullTextSearcher filterThreads:self.threadViewHelper.threads withSearchText:searchTerm];
+    return [self.fullTextSearcher filterThreads:self.threadViewHelper.threads
+                                 withSearchText:searchTerm
+                                    transaction:transaction];
 }
 
-- (NSArray<SignalAccount *> *)filteredSignalAccountsWithSearchText
+- (NSArray<SignalAccount *> *)filteredSignalAccountsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     // We don't want to show a 1:1 thread with Alice and Alice's contact,
     // so we de-duplicate by recipientId.
@@ -360,7 +371,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *searchString = self.searchBar.text;
     NSArray<SignalAccount *> *matchingAccounts =
-        [self.contactsViewHelper signalAccountsMatchingSearchString:searchString];
+        [self.contactsViewHelper signalAccountsMatchingSearchString:searchString transaction:transaction];
 
     return [matchingAccounts
         filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(SignalAccount *signalAccount,
