@@ -7,12 +7,20 @@ import SignalServiceKit
 
 public typealias MessageSortKey = UInt64
 public struct ConversationSortKey: Comparable {
+    let isContactThread: Bool
     let creationDate: Date?
     let lastMessageReceivedAtDate: Date?
 
     // MARK: Comparable
 
     public static func < (lhs: ConversationSortKey, rhs: ConversationSortKey) -> Bool {
+        // always show matching contact results first
+        if lhs.isContactThread, !rhs.isContactThread {
+            return false
+        } else if !lhs.isContactThread, rhs.isContactThread {
+            return true
+        }
+
         let longAgo = Date(timeIntervalSince1970: 0)
         let lhsDate = lhs.lastMessageReceivedAtDate ?? lhs.creationDate ?? longAgo
         let rhsDate = rhs.lastMessageReceivedAtDate ?? rhs.creationDate ?? longAgo
@@ -248,7 +256,8 @@ public class FullTextSearcher: NSObject {
                 let searchResult = ContactSearchResult(signalAccount: signalAccount)
                 signalContacts.append(searchResult)
             case let groupThread as TSGroupThread:
-                let sortKey = ConversationSortKey(creationDate: groupThread.creationDate,
+                let sortKey = ConversationSortKey(isContactThread: false,
+                                                  creationDate: groupThread.creationDate,
                                                   lastMessageReceivedAtDate: groupThread.lastInteractionForInbox(transaction: transaction)?.receivedAtDate())
                 let threadViewModel = ThreadViewModel(thread: groupThread, transaction: transaction)
                 let searchResult = GroupSearchResult(thread: threadViewModel, sortKey: sortKey)
@@ -311,7 +320,8 @@ public class FullTextSearcher: NSObject {
 
             if let thread = match as? TSThread {
                 let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
-                let sortKey = ConversationSortKey(creationDate: thread.creationDate,
+                let sortKey = ConversationSortKey(isContactThread: thread is TSContactThread,
+                                                  creationDate: thread.creationDate,
                                                   lastMessageReceivedAtDate: thread.lastInteractionForInbox(transaction: transaction)?.receivedAtDate())
                 let searchResult = ConversationSearchResult(thread: threadViewModel, sortKey: sortKey)
                 switch thread {
