@@ -131,9 +131,9 @@ public final class LokiAPI : NSObject {
                     lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()
                 }.catch { error in
                     if case LokiDotNetAPI.Error.parsingFailed = error {
-                        // If it's a parsing error then just cache
-                        getDestinations()
+                        // Don't immediately re-fetch in case of failure due to a parsing error
                         lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()
+                        getDestinations()
                     } else {
                         seal.reject(error)
                     }
