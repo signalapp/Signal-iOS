@@ -282,6 +282,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                           on: InteractionRecord.databaseTableName,
                           columns: [
                             InteractionRecord.columnName(.expiresAt),
+                            InteractionRecord.columnName(.expireStartedAt),
                             InteractionRecord.columnName(.storedShouldStartExpireTimer),
                             InteractionRecord.columnName(.threadUniqueId)
                 ])
