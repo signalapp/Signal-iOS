@@ -260,7 +260,7 @@ public final class LokiAPI : NSObject {
         }
     }
 
-    // MARK: Caching
+    // MARK: Message Caching
     private static let receivedMessageHashValuesKey = "receivedMessageHashValuesKey"
     private static let receivedMessageHashValuesCollection = "receivedMessageHashValuesCollection"
 
@@ -291,6 +291,19 @@ public final class LokiAPI : NSObject {
     private static func setReceivedMessageHashValues(to receivedMessageHashValues: Set<String>) {
         storage.dbReadWriteConnection.readWrite { transaction in
             transaction.setObject(receivedMessageHashValues, forKey: receivedMessageHashValuesKey, inCollection: receivedMessageHashValuesCollection)
+        }
+    }
+    
+    // MARK: User ID Caching
+    @objc static var userHexEncodedPublicKeyCache: [String:Set<String>] = [:] // Thread ID to set of user hex encoded public keys
+    
+    @objc public static func cache(_ userHexEncodedPublicKey: String, for thread: String) {
+        if let cache = userHexEncodedPublicKeyCache[thread] {
+            var mutableCache = cache
+            mutableCache.insert(userHexEncodedPublicKey)
+            userHexEncodedPublicKeyCache[thread] = mutableCache
+        } else {
+            userHexEncodedPublicKeyCache[thread] = [ userHexEncodedPublicKey ]
         }
     }
 }

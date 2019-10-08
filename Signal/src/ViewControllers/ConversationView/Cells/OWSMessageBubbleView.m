@@ -676,12 +676,14 @@ NS_ASSUME_NONNULL_BEGIN
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
         shouldIgnoreEvents = outgoingMessage.messageState != TSOutgoingMessageStateSent;
     }
+    NSString *threadID = self.viewItem.interaction.uniqueThreadId;
     [self.class loadForTextDisplay:self.bodyTextView
                    displayableText:self.displayableBodyText
                         searchText:self.delegate.lastSearchedText
                          textColor:self.bodyTextColor
                               font:self.textMessageFont
-                shouldIgnoreEvents:shouldIgnoreEvents];
+                shouldIgnoreEvents:shouldIgnoreEvents
+                          threadID:threadID];
 }
 
 + (void)loadForTextDisplay:(OWSMessageTextView *)textView
@@ -690,11 +692,11 @@ NS_ASSUME_NONNULL_BEGIN
                  textColor:(UIColor *)textColor
                       font:(UIFont *)font
         shouldIgnoreEvents:(BOOL)shouldIgnoreEvents
+                  threadID:(NSString *)threadID
 {
     textView.hidden = NO;
     textView.textColor = textColor;
 
-    // Honor dynamic type in the message bodies.
     textView.font = font;
     textView.linkTextAttributes = @{
         NSForegroundColorAttributeName : textColor,
@@ -703,21 +705,43 @@ NS_ASSUME_NONNULL_BEGIN
     textView.shouldIgnoreEvents = shouldIgnoreEvents;
 
     NSString *text = displayableText.displayText;
-
-    NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc]
-        initWithString:text
-            attributes:@{ NSFontAttributeName : font, NSForegroundColorAttributeName : textColor }];
+    
+    NSError *error1;
+    NSRegularExpression *regex1 = [[NSRegularExpression alloc] initWithPattern:@"@\\w*" options:0 error:&error1];
+    OWSAssertDebug(error1 == nil);
+    NSSet<NSString *> *knownUserIDs = LKAPI.userHexEncodedPublicKeyCache[threadID];
+    NSMutableSet<NSValue *> *mentions = [NSMutableSet new];
+    NSTextCheckingResult *match = [regex1 firstMatchInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, text.length)];
+    if (match != nil) {
+        while (YES) {
+            NSString *userID = [[text substringWithRange:match.range] stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
+            NSUInteger matchEnd;
+            if ([knownUserIDs containsObject:userID]) {
+                NSString *userDisplayName = [Environment.shared.contactsManager attributedContactOrProfileNameForPhoneIdentifier:userID primaryFont:font secondaryFont:font].string;
+                text = [text stringByReplacingCharactersInRange:match.range withString:[NSString stringWithFormat:@"@%@", userDisplayName]];
+                [mentions addObject:[NSValue valueWithRange:NSMakeRange(match.range.location, userDisplayName.length + 1)]];
+                matchEnd = match.range.location + userDisplayName.length;
+            } else {
+                matchEnd = match.range.location + match.range.length;
+            }
+            match = [regex1 firstMatchInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(matchEnd, text.length - matchEnd)];
+            if (match == nil) { break; }
+        }
+    }
+    NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithString:text attributes:@{ NSFontAttributeName : font, NSForegroundColorAttributeName : textColor }];
+    for (NSValue *mention in mentions) {
+        NSRange range = mention.rangeValue;
+        [attributedText addAttribute:NSBackgroundColorAttributeName value:UIColor.lokiDarkGray range:range];
+        [attributedText addAttribute:NSForegroundColorAttributeName value:UIColor.ows_whiteColor range:range];
+    }
+    
     if (searchText.length >= ConversationSearchController.kMinimumSearchTextLength) {
         NSString *searchableText = [FullTextSearchFinder normalizeWithText:searchText];
-        NSError *error;
-        NSRegularExpression *regex =
-            [[NSRegularExpression alloc] initWithPattern:[NSRegularExpression escapedPatternForString:searchableText]
-                                                 options:NSRegularExpressionCaseInsensitive
-                                                   error:&error];
-        OWSAssertDebug(error == nil);
+        NSError *error2;
+        NSRegularExpression *regex2 = [[NSRegularExpression alloc] initWithPattern:[NSRegularExpression escapedPatternForString:searchableText] options:NSRegularExpressionCaseInsensitive error:&error2];
+        OWSAssertDebug(error2 == nil);
         for (NSTextCheckingResult *match in
-            [regex matchesInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, text.length)]) {
-
+            [regex2 matchesInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, text.length)]) {
             OWSAssertDebug(match.range.length >= ConversationSearchController.kMinimumSearchTextLength);
             [attributedText addAttribute:NSBackgroundColorAttributeName value:UIColor.yellowColor range:match.range];
             [attributedText addAttribute:NSForegroundColorAttributeName value:UIColor.ows_blackColor range:match.range];

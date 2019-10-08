@@ -1413,15 +1413,20 @@ NS_ASSUME_NONNULL_BEGIN
                     return nil;
                 }
 
+                // Loki: Cache the user hex encoded public key (for mentions)
+                [LKAPI cache:incomingMessage.authorId for:oldGroupThread.uniqueId];
+                
                 [self finalizeIncomingMessage:incomingMessage
                                        thread:oldGroupThread
                                      envelope:envelope
                                   transaction:transaction];
                 
+                // Loki: Map the message ID to the message server ID if needed
                 if (dataMessage.publicChatInfo != nil && dataMessage.publicChatInfo.hasServerID) {
                     [self.primaryStorage setIDForMessageWithServerID:dataMessage.publicChatInfo.serverID to:incomingMessage.uniqueId in:transaction];
                 }
 
+                // Loki: Generate a link preview if needed
                 dispatch_async(dispatch_get_main_queue(), ^{
                     NSString *linkPreviewURL = [OWSLinkPreview previewURLForRawBodyText:incomingMessage.body];
                     if (linkPreviewURL != nil) {
