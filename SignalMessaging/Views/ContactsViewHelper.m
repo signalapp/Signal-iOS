@@ -233,12 +233,15 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText
+                                                     transaction:(SDSAnyReadTransaction *)transaction
 {
     // Check for matches against "Note to Self".
     NSMutableArray<SignalAccount *> *signalAccountsToSearch = [self.signalAccounts mutableCopy];
     SignalAccount *selfAccount = [[SignalAccount alloc] initWithSignalServiceAddress:self.localAddress];
     [signalAccountsToSearch addObject:selfAccount];
-    return [self.fullTextSearcher filterSignalAccounts:signalAccountsToSearch withSearchText:searchText];
+    return [self.fullTextSearcher filterSignalAccounts:signalAccountsToSearch
+                                        withSearchText:searchText
+                                           transaction:transaction];
 }
 
 - (BOOL)doesContact:(Contact *)contact matchSearchTerm:(NSString *)searchTerm
