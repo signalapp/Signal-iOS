@@ -14,7 +14,7 @@
 "ACCESSIBILITY_LABEL_CONTACT" = "Контакт";
 
 /* Accessibility label for media. */
-"ACCESSIBILITY_LABEL_MEDIA" = "Media";
+"ACCESSIBILITY_LABEL_MEDIA" = "Медија";
 
 /* Accessibility label for message. */
 "ACCESSIBILITY_LABEL_MESSAGE" = "Порака";
@@ -1773,7 +1773,7 @@
 "PER_MESSAGE_EXPIRATION_NOTIFICATION" = "Исчезнувачка слика ";
 
 /* Label for outgoing view-once messages. */
-"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Media";
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Медија";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Види Слика";
