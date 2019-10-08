@@ -762,7 +762,7 @@
 "DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
 
 /* The present; the current time. */
-"DATE_NOW" = "Now";
+"DATE_NOW" = "ယခု";
 
 /* The current day. */
 "DATE_TODAY" = "ယနေ့";
@@ -1605,7 +1605,7 @@
 "NON_CONTACT_TABLE_CELL_SEND_SMS" = "No user found. Invite via SMS?";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Note to Self";
+"NOTE_TO_SELF" = "မိမိမှတ်စု";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "သင်၏ %@ ကို ပြန်လည်စတင်နေသည့်အချိန်အတွင်း စာများ လက်ခံရယူနိုင်ပါသည်။";
