@@ -1,7 +1,10 @@
 
 public extension OWSPrimaryStorage {
-
-    private func getCollection(for primaryDevice: String) -> String {
+    private var groupChatCollection: String {
+        return "LokiGroupChatCollection"
+    }
+    
+    private func getDeviceLinkCollection(for primaryDevice: String) -> String {
         return "LokiDeviceLinkCollection-\(primaryDevice)"
     }
 
@@ -13,23 +16,23 @@ public extension OWSPrimaryStorage {
             return
         }
         let masterHexEncodedPublicKey = masterHexEncodedPublicKeys.first!
-        let collection = getCollection(for: masterHexEncodedPublicKey)
+        let collection = getDeviceLinkCollection(for: masterHexEncodedPublicKey)
         transaction.removeAllObjects(inCollection: collection)
         deviceLinks.forEach { addDeviceLink($0, in: transaction) } // TODO: Check the performance impact of this
     }
 
     public func addDeviceLink(_ deviceLink: DeviceLink, in transaction: YapDatabaseReadWriteTransaction) {
-        let collection = getCollection(for: deviceLink.master.hexEncodedPublicKey)
+        let collection = getDeviceLinkCollection(for: deviceLink.master.hexEncodedPublicKey)
         transaction.setObject(deviceLink, forKey: deviceLink.slave.hexEncodedPublicKey, inCollection: collection)
     }
 
     public func removeDeviceLink(_ deviceLink: DeviceLink, in transaction: YapDatabaseReadWriteTransaction) {
-        let collection = getCollection(for: deviceLink.master.hexEncodedPublicKey)
+        let collection = getDeviceLinkCollection(for: deviceLink.master.hexEncodedPublicKey)
         transaction.removeObject(forKey: deviceLink.slave.hexEncodedPublicKey, inCollection: collection)
     }
     
     public func getDeviceLinks(for masterHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> Set<DeviceLink> {
-        let collection = getCollection(for: masterHexEncodedPublicKey)
+        let collection = getDeviceLinkCollection(for: masterHexEncodedPublicKey)
         var result: Set<DeviceLink> = []
         transaction.enumerateRows(inCollection: collection) { _, object, _, _ in
             guard let deviceLink = object as? DeviceLink else { return }
@@ -50,5 +53,27 @@ public extension OWSPrimaryStorage {
     
     public func getMasterHexEncodedPublicKey(for slaveHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> String? {
         return getDeviceLink(for: slaveHexEncodedPublicKey, in: transaction)?.master.hexEncodedPublicKey
+    }
+    
+    public func getAllGroupChats(in transaction: YapDatabaseReadTransaction) -> [String: LokiGroupChat] {
+        var dict = [String: LokiGroupChat]()
+        transaction.enumerateKeysAndObjects(inCollection: groupChatCollection) { (threadID, object, _) in
+            if let groupChat = object as? LokiGroupChat {
+                dict[threadID] = groupChat
+            }
+        }
+        return dict
+    }
+    
+    public func getGroupChat(for threadID: String, in transaction: YapDatabaseReadTransaction) -> LokiGroupChat? {
+        return transaction.object(forKey: threadID, inCollection: groupChatCollection) as? LokiGroupChat
+    }
+    
+    public func setGroupChat(_ groupChat: LokiGroupChat, for threadID: String, in transaction: YapDatabaseReadWriteTransaction) {
+        transaction.setObject(groupChat, forKey: threadID, inCollection: groupChatCollection)
+    }
+    
+    public func removeGroupChat(for threadID: String, in transaction: YapDatabaseReadWriteTransaction) {
+        transaction.removeObject(forKey: threadID, inCollection: groupChatCollection)
     }
 }

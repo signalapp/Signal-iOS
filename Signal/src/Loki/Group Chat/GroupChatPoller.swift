@@ -110,7 +110,7 @@ public final class GroupChatPoller : NSObject {
             }
         }
         // Poll
-        let _ = LokiGroupChatAPI.getMessages(for: group.serverID, on: group.server).done(on: .main) { messages in
+        let _ = LokiGroupChatAPI.getMessages(for: group.channel, on: group.server).done(on: .main) { messages in
             messages.forEach { message in
                 if message.hexEncodedPublicKey != userHexEncodedPublicKey {
                     processIncomingMessage(message)
@@ -123,7 +123,7 @@ public final class GroupChatPoller : NSObject {
     
     private func pollForDeletedMessages() {
         let group = self.group
-        let _ = LokiGroupChatAPI.getDeletedMessageServerIDs(for: group.serverID, on: group.server).done { deletedMessageServerIDs in
+        let _ = LokiGroupChatAPI.getDeletedMessageServerIDs(for: group.channel, on: group.server).done { deletedMessageServerIDs in
             let storage = OWSPrimaryStorage.shared()
             storage.dbReadWriteConnection.readWrite { transaction in
                 let deletedMessageIDs = deletedMessageServerIDs.compactMap { storage.getIDForMessage(withServerID: UInt($0), in: transaction) }
@@ -135,6 +135,6 @@ public final class GroupChatPoller : NSObject {
     }
     
     private func pollForModerators() {
-        let _ = LokiGroupChatAPI.getModerators(for: group.serverID, on: group.server)
+        let _ = LokiGroupChatAPI.getModerators(for: group.channel, on: group.server)
     }
 }

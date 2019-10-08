@@ -1527,7 +1527,7 @@ static NSTimeInterval launchStartedAt;
 
 - (LKGroupChat *)lokiPublicChat
 {
-    return [[LKGroupChat alloc] initWithServerID:LKGroupChatAPI.publicChatServerID server:LKGroupChatAPI.publicChatServer displayName:NSLocalizedString(@"Loki Public Chat", @"") isDeletable:true];
+    return [[LKGroupChat alloc] initWithChannel:LKGroupChatAPI.publicChatServerID server:LKGroupChatAPI.publicChatServer displayName:NSLocalizedString(@"Loki Public Chat", @"") isDeletable:true];
 }
 
 - (LKRSSFeed *)lokiNewsFeed

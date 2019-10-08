@@ -24,4 +24,24 @@ public final class LokiDatabaseUtilities : NSObject {
     public static func objc_getMasterHexEncodedPublicKey(for slaveHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> String? {
         return OWSPrimaryStorage.shared().getMasterHexEncodedPublicKey(for: slaveHexEncodedPublicKey, in: transaction)
     }
+    
+    @objc(getAllGroupChats:)
+    public static func objc_getAllGroupChats(in transaction: YapDatabaseReadTransaction) -> [String: LokiGroupChat] {
+        return OWSPrimaryStorage.shared().getAllGroupChats(in: transaction)
+    }
+
+    @objc(getGroupChatForThreadID:transaction:)
+    public static func objc_getGroupChat(for threadID: String, in transaction: YapDatabaseReadTransaction) -> LokiGroupChat? {
+       return OWSPrimaryStorage.shared().getGroupChat(for: threadID, in: transaction)
+    }
+
+    @objc(setGroupChat:threadID:transaction:)
+    public static func objc_setGroupChat(_ groupChat: LokiGroupChat, for threadID: String, in transaction: YapDatabaseReadWriteTransaction) {
+       return OWSPrimaryStorage.shared().setGroupChat(groupChat, for: threadID, in: transaction)
+    }
+
+    @objc(removeGroupChatForThreadID:transaction:)
+    public static func objc_removeGroupChat(for threadID: String, in transaction: YapDatabaseReadWriteTransaction) {
+       return OWSPrimaryStorage.shared().removeGroupChat(for: threadID, in: transaction)
+    }
 }
