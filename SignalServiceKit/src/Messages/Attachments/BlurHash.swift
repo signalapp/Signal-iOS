@@ -91,6 +91,11 @@ public class BlurHash: NSObject {
         return promise
     }
 
+    // Large enough to reflect max quality of blurHash;
+    // Small enough to avoid most perf hotspots around
+    // these thumbnails.
+    private static let kDefaultSize: CGFloat = 16
+
     @objc(imageForBlurHash:)
     public class func image(for blurHash: String) -> UIImage? {
         let thumbnailSize = imageSize(for: blurHash)
@@ -102,11 +107,7 @@ public class BlurHash: NSObject {
     }
 
     private class func imageSize(for blurHash: String) -> CGSize {
-        // Large enough to reflect max quality of blurHash;
-        // Small enough to avoid most perf hotspots around
-        // these thumbnails.
-        let defaultSize: CGFloat = 16
-        return CGSize(width: defaultSize, height: defaultSize)
+        return CGSize(width: kDefaultSize, height: kDefaultSize)
     }
 
     // BlurHashEncode only works with images in a very specific
@@ -127,7 +128,7 @@ public class BlurHash: NSObject {
         }
         let srcMinDimension: CGFloat = min(srcSize.width, srcSize.height)
         // Make sure the short dimension is N.
-        let scale: CGFloat = min(1.0, 16 / srcMinDimension)
+        let scale: CGFloat = min(1.0, kDefaultSize / srcMinDimension)
         let dstWidth: Int = Int(round(srcSize.width * scale))
         let dstHeight: Int = Int(round(srcSize.height * scale))
         let dstSize = CGSize(width: dstWidth, height: dstHeight)
