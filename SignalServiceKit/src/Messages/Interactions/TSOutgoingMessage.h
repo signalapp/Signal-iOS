@@ -162,10 +162,9 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 - (nullable SSKProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId;
 
 /**
- * Intermediate protobuf representation
- * Subclasses can augment if they want to manipulate the content message before building.
+ * Allows subclasses to supply a custom content builder that has already prepared part of the message.
  */
-- (SSKProtoContentBuilder *)contentBuilder:(SignalRecipient *)recipient;
+- (SSKProtoContentBuilder *)prepareCustomContentBuilder:(SignalRecipient *)recipient;
 
 /**
  * Should this message be synced to the users other registered devices? This is

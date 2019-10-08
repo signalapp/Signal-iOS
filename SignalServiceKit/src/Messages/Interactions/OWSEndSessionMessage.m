@@ -48,17 +48,17 @@ NS_ASSUME_NONNULL_BEGIN
     return builder;
 }
 
-- (SSKProtoContentBuilder *)contentBuilder:(SignalRecipient *)recipient {
-    SSKProtoContentBuilder *builder = [super contentBuilder:recipient];
+- (SSKProtoContentBuilder *)prepareCustomContentBuilder:(SignalRecipient *)recipient {
+    SSKProtoContentBuilder *builder = SSKProtoContent.builder;
     
     PreKeyBundle *bundle = [OWSPrimaryStorage.sharedManager generatePreKeyBundleForContact:recipient.recipientId];
     SSKProtoPrekeyBundleMessageBuilder *preKeyBuilder = [SSKProtoPrekeyBundleMessage builderFromPreKeyBundle:bundle];
     
-    // Build the prekey bundle message
+    // Build the pre key bundle message
     NSError *error;
     SSKProtoPrekeyBundleMessage *_Nullable message = [preKeyBuilder buildAndReturnError:&error];
     if (error || !message) {
-        OWSFailDebug(@"Failed to build preKeyBundle for %@: %@", recipient.recipientId, error);
+        OWSFailDebug(@"Failed to build pre key bundle for: %@ due to error: %@.", recipient.recipientId, error);
     } else {
         [builder setPrekeyBundleMessage:message];
     }

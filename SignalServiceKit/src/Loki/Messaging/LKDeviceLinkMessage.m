@@ -31,27 +31,23 @@
 }
 
 #pragma mark Building
-- (SSKProtoContentBuilder *)contentBuilder:(SignalRecipient *)recipient
-{
-    SSKProtoContentBuilder *contentBuilder = [super contentBuilder:recipient];
-       
-    // If it's a linking request then we should send a prekey bundle
-    if (self.masterSignature == nil) {
+- (SSKProtoContentBuilder *)prepareCustomContentBuilder:(SignalRecipient *)recipient {
+    SSKProtoContentBuilder *contentBuilder = SSKProtoContent.builder;
+    // If this is a request then we should attach a pre key bundle
+    if (self.kind == LKDeviceLinkMessageKindRequest) {
         PreKeyBundle *bundle = [OWSPrimaryStorage.sharedManager generatePreKeyBundleForContact:recipient.recipientId];
         SSKProtoPrekeyBundleMessageBuilder *preKeyBuilder = [SSKProtoPrekeyBundleMessage builderFromPreKeyBundle:bundle];
-
-        // Build the prekey bundle message
+        // Build the pre key bundle message
         NSError *error;
-        SSKProtoPrekeyBundleMessage *_Nullable message = [preKeyBuilder buildAndReturnError:&error];
+        SSKProtoPrekeyBundleMessage *message = [preKeyBuilder buildAndReturnError:&error];
         if (error || !message) {
-            OWSFailDebug(@"Failed to build pre key bundle for %@: %@", recipient.recipientId, error);
+            OWSFailDebug(@"Failed to build pre key bundle for: %@ due to error: %@.", recipient.recipientId, error);
             return nil;
         } else {
             [contentBuilder setPrekeyBundleMessage:message];
         }
     }
-    
-    // Device link message
+    // Build the device link message
     NSError *error;
     SSKProtoLokiDeviceLinkMessageBuilder *deviceLinkMessageBuilder = [SSKProtoLokiDeviceLinkMessage builder];
     [deviceLinkMessageBuilder setMasterHexEncodedPublicKey:self.masterHexEncodedPublicKey];
@@ -60,12 +56,12 @@
     [deviceLinkMessageBuilder setSlaveSignature:self.slaveSignature];
     SSKProtoLokiDeviceLinkMessage *deviceLinkMessage = [deviceLinkMessageBuilder buildAndReturnError:&error];
     if (error || deviceLinkMessage == nil) {
-        OWSFailDebug(@"Failed to build device link message due to error: %@.", error);
+        OWSFailDebug(@"Failed to build device link message for: %@ due to error: %@.", recipient.recipientId, error);
         return nil;
     } else {
         [contentBuilder setLokiDeviceLinkMessage:deviceLinkMessage];
     }
-    
+    // Return
     return contentBuilder;
 }
 

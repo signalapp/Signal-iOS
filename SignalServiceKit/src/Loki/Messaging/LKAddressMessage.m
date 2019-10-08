@@ -24,8 +24,8 @@
     return self;
 }
 
-- (SSKProtoContentBuilder *)contentBuilder:(SignalRecipient *)recipient {
-    SSKProtoContentBuilder *contentBuilder = [super contentBuilder:recipient];
+- (SSKProtoContentBuilder *)prepareCustomContentBuilder:(SignalRecipient *)recipient {
+    SSKProtoContentBuilder *contentBuilder = SSKProtoContent.builder;
   
     SSKProtoLokiAddressMessageBuilder *addressBuilder = [SSKProtoLokiAddressMessage builder];
     [addressBuilder setPtpAddress:self.address];
@@ -35,7 +35,7 @@
     NSError *error;
     SSKProtoLokiAddressMessage *addressMessage = [addressBuilder buildAndReturnError:&error];
     if (error || !addressMessage) {
-        OWSFailDebug(@"Failed to build LokiAddressMessage for %@: %@.", recipient.recipientId, error);
+        OWSFailDebug(@"Failed to build Loki address message for: %@ due to error: %@.", recipient.recipientId, error);
     } else {
         [contentBuilder setLokiAddressMessage:addressMessage];
     }

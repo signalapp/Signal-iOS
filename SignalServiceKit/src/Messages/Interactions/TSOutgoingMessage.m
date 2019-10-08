@@ -1122,11 +1122,6 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     return dataProto;
 }
 
-- (SSKProtoContentBuilder *)contentBuilder:(SignalRecipient *)recipient
-{
-    return SSKProtoContent.builder;
-}
-
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
     NSError *error;
@@ -1136,8 +1131,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         return nil;
     }
 
-    SSKProtoContentBuilder *contentBuilder = [self contentBuilder:recipient];
-    if (contentBuilder == nil) { return nil; }
+    SSKProtoContentBuilder *contentBuilder = [self prepareCustomContentBuilder:recipient] ?: SSKProtoContent.builder;
     
     [contentBuilder setDataMessage:dataMessage];
     NSData *_Nullable contentData = [contentBuilder buildSerializedDataAndReturnError:&error];
@@ -1145,6 +1139,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         OWSFailDebug(@"could not serialize protobuf: %@", error);
         return nil;
     }
+    
     return contentData;
 }
 
