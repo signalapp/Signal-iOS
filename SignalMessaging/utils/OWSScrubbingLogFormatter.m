@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSScrubbingLogFormatter.h"
@@ -24,6 +24,22 @@ NS_ASSUME_NONNULL_BEGIN
     return regex;
 }
 
+- (NSRegularExpression *)uuidRegex
+{
+    static NSRegularExpression *regex = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // Example: AF112388-9F3D-4EBA-A321-CCE01BA2C85D
+        NSError *error;
+        regex = [NSRegularExpression regularExpressionWithPattern:@"[\\da-f]{8}\\-[\\da-f]{4}\\-[\\da-f]{4}\\-[\\da-f]{4}\\-[\\da-f]{8}([\\da-f]{4})"
+                                                          options:NSRegularExpressionCaseInsensitive
+                                                            error:&error];
+        if (error || !regex) {
+            OWSFail(@"could not compile regular expression: %@", error);
+        }
+    });
+    return regex;
+}
 - (NSRegularExpression *)dataRegex
 {
     static NSRegularExpression *regex = nil;
@@ -67,6 +83,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                        range:NSMakeRange(0, [logString length])
                                                 withTemplate:@"[ REDACTED_PHONE_NUMBER:xxx$1 ]"];
 
+    NSRegularExpression *uuidRegex = self.uuidRegex;
+    logString = [uuidRegex stringByReplacingMatchesInString:logString
+                                                     options:0
+                                                       range:NSMakeRange(0, [logString length])
+                                                withTemplate:@"[ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx$1 ]"];
 
     // We capture only the first two characters of the hex string for logging.
     // example log line: "Called someFunction with nsData: <01234567 89abcdef>"
