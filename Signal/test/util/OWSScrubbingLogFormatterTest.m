@@ -156,7 +156,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSScrubbingLogFormatter *formatter = [OWSScrubbingLogFormatter new];
         NSString *messageText = [NSString stringWithFormat:@"My UUID is %@", uuidString];
         NSString *actual = [formatter formatLogMessage:[self messageWithString:messageText]];
-        NSRange redactedRange = [actual rangeOfString:@"My UUID is [ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx"];
+        NSRange redactedRange = [actual rangeOfString:@"My UUID is [ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"];
         XCTAssertNotEqual(NSNotFound, redactedRange.location, "Failed to redact UUID string: %@", uuidString);
         
         NSRange uuidRange = [actual rangeOfString:uuidString];
@@ -171,7 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *messageText = [NSString stringWithFormat:@"My UUID is %@", uuidString];
     NSString *actual = [formatter formatLogMessage:[self messageWithString:messageText]];
     OWSLogVerbose(@"actual: %@", actual);
-    NSRange redactedRange = [actual rangeOfString:@"My UUID is [ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx8748 ]"];
+    NSRange redactedRange = [actual rangeOfString:@"My UUID is [ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx48 ]"];
     XCTAssertNotEqual(NSNotFound, redactedRange.location, "Failed to redact UUID string: %@", uuidString);
     
     NSRange uuidRange = [actual rangeOfString:uuidString];
