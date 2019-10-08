@@ -859,8 +859,8 @@ static NSTimeInterval launchStartedAt;
             // * It can be received if the user taps the "video" button for a contact in the
             //   contacts app.  If so, the correct response is to try to initiate a new call
             //   to that user - unless there already is another call in progress.
-            if (AppEnvironment.shared.callService.call != nil) {
-                if ([address isEqualToAddress:AppEnvironment.shared.callService.call.remoteAddress]) {
+            if (AppEnvironment.shared.callService.currentCall != nil) {
+                if ([address isEqualToAddress:AppEnvironment.shared.callService.currentCall.remoteAddress]) {
                     OWSLogWarn(@"trying to upgrade ongoing call to video.");
                     [AppEnvironment.shared.callService handleCallKitStartVideo];
                     return;
@@ -910,7 +910,7 @@ static NSTimeInterval launchStartedAt;
                 return;
             }
 
-            if (AppEnvironment.shared.callService.call != nil) {
+            if (AppEnvironment.shared.callService.currentCall != nil) {
                 OWSLogWarn(@"ignoring INStartAudioCallIntent due to ongoing WebRTC call.");
                 return;
             }
@@ -959,7 +959,7 @@ static NSTimeInterval launchStartedAt;
                 return;
             }
 
-            if (AppEnvironment.shared.callService.call != nil) {
+            if (AppEnvironment.shared.callService.currentCall != nil) {
                 OWSLogWarn(@"ignoring INStartCallIntent due to ongoing WebRTC call.");
                 return;
             }

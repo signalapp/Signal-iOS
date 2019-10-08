@@ -823,6 +823,36 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
             }
         } else {
             AVURLAsset *asset = [AVURLAsset assetWithURL:self.originalMediaURL];
+
+            // If the asset isn't readable, we may not be able to generate a waveform for this file
+            if (!asset.isReadable) {
+                // Android sends voice messages in a hacky m4a container that we can't process
+                // when it has the m4a extension. If we hint to the OS that it's an AAC file with
+                // the file extension, we can. This is pretty brittle and hopefully android will
+                // be able to fix the issue in the future in which case `isReadable` will become
+                // true and this path will no longer be hit.
+                if (self.isVoiceMessage && [self.originalFilePath hasSuffix:@"m4a"]) {
+                    NSString *symlinkPath = [self.uniqueIdAttachmentFolder stringByAppendingString:@"/Voice-Memo.aac"];
+                    if (![NSFileManager.defaultManager fileExistsAtPath:symlinkPath]) {
+                        [self ensureUniqueIdAttachmentFolder];
+                        NSError *error;
+                        [[NSFileManager defaultManager] createSymbolicLinkAtPath:symlinkPath
+                                                             withDestinationPath:self.originalFilePath
+                                                                           error:&error];
+                        if (error) {
+                            OWSFailDebug(@"Failed to create voice memo symlink: %@", error);
+                            return nil;
+                        }
+                    }
+                    asset = [AVURLAsset assetWithURL:[NSURL fileURLWithPath:symlinkPath]];
+                }
+            }
+
+            if (!asset.isReadable) {
+                OWSFailDebug(@"unexpectedly encountered unreadable audio file.");
+                return nil;
+            }
+
             waveform = [[AudioWaveform alloc] initWithAsset:asset];
 
             // Listen for sampling completion so we can cache the final waveform to disk.

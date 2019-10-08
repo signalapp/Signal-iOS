@@ -137,7 +137,10 @@ class AudioWaveformProgressView: UIView {
 
         playedShapeLayer.frame = layer.frame
         unplayedShapeLayer.frame = layer.frame
-        thumbImageView.center = CGPoint(x: sampleHMargin + (samplesWidth * value), y: layer.frame.center.y)
+
+        var thumbXPos = sampleHMargin + (samplesWidth * value)
+        if CurrentAppContext().isRTL { thumbXPos = samplesWidth - thumbXPos }
+        thumbImageView.center = CGPoint(x: thumbXPos, y: layer.frame.center.y)
 
         defer {
             playedShapeLayer.path = playedBezierPath.cgPath
@@ -161,10 +164,13 @@ class AudioWaveformProgressView: UIView {
             // Center the sample vertically.
             let yPos = frame.center.y - height / 2
 
+            var xPos = CGFloat(x) * (sampleWidth + sampleSpacing) + sampleHMargin
+            if CurrentAppContext().isRTL { xPos = samplesWidth - xPos }
+
             path.append(
                 UIBezierPath(
                     roundedRect: CGRect(
-                        x: CGFloat(x) * (sampleWidth + sampleSpacing) + sampleHMargin,
+                        x: xPos,
                         y: yPos,
                         width: sampleWidth,
                         height: height
