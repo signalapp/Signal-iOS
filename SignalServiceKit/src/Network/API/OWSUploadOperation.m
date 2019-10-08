@@ -115,6 +115,10 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 
     OWSAttachmentUploadV2 *upload = [OWSAttachmentUploadV2 new];
     [[BlurHash ensureBlurHashForAttachmentStream:attachmentStream]
+            .catchInBackground(^{
+                // Swallow these errors; blurHashes are strictly optional.
+                OWSLogWarn(@"Error generating blurHash.");
+            })
             .thenInBackground(^{
                 return [upload uploadAttachmentToService:attachmentStream
                                            progressBlock:^(NSProgress *uploadProgress) {

@@ -45,33 +45,35 @@ public class BlurHash: NSObject {
 
         DispatchQueue.global().async {
             guard attachmentStream.blurHash == nil else {
-                // Attachment already has a blur hash.
+                // Attachment already has a blurHash.
+                resolver.fulfill(())
+                return
+            }
+            guard attachmentStream.isVisualMedia else {
+                // We only generate a blurHash for visual media.
                 resolver.fulfill(())
                 return
             }
             guard attachmentStream.isValidVisualMedia else {
-                // Never fail; blurHashes are strictly optional.
-                resolver.fulfill(())
+                resolver.reject(OWSErrorMakeAssertionError("Invalid attachment."))
                 return
             }
             // Use the smallest available thumbnail; quality doesn't matter.
+            // This is important for perf.
             guard let thumbnail: UIImage = attachmentStream.thumbnailImageSmallSync() else {
-                // Never fail; blurHashes are strictly optional.
-                owsFailDebug("Could not load small thumbnail.")
-                resolver.fulfill(())
+                resolver.reject(OWSErrorMakeAssertionError("Could not load small thumbnail."))
                 return
             }
-            // We use 4x3 placeholders.
+            // blurHash uses a DCT transform, so these are AC and DC components.
+            // We use 4x3.
+            //
+            // https://github.com/woltapp/blurhash/blob/master/Algorithm.md
             guard let blurHash = thumbnail.blurHash(numberOfComponents: (4, 3)) else {
-                // Never fail; blurHashes are strictly optional.
-                owsFailDebug("Could not generate blurHash.")
-                resolver.fulfill(())
+                resolver.reject(OWSErrorMakeAssertionError("Could not generate blurHash."))
                 return
             }
             guard self.isValidBlurHash(blurHash) else {
-                // Never fail; blurHashes are strictly optional.
-                owsFailDebug("Generated invalid blurHash.")
-                resolver.fulfill(())
+                resolver.reject(OWSErrorMakeAssertionError("Generated invalid blurHash."))
                 return
             }
             self.databaseStorage.write { transaction in
@@ -95,15 +97,10 @@ public class BlurHash: NSObject {
     }
 
     private class func imageSize(for blurHash: String) -> CGSize {
-        guard let size = BlurHashDecode.contentSize(for: blurHash) else {
-            // A small thumbnail size will suffice.
-            //
-            // We use a slightly smaller size than we need to
-            // to future-proof this in case we decide to improve
-            // the quality in a future release.
-            let defaultSize: CGFloat = 16
-            return CGSize(width: defaultSize, height: defaultSize)
-        }
-        return size
+        // Large enough to reflect max quality of blurHash;
+        // Small enough to avoid most perf hotspots around
+        // these thumbnails.
+        let defaultSize: CGFloat = 16
+        return CGSize(width: defaultSize, height: defaultSize)
     }
 }
