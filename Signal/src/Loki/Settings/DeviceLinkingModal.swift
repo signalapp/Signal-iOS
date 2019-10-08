@@ -171,9 +171,11 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     }
     
     @objc override func cancel() {
-        let session = DeviceLinkingSession.current
-        session?.stopListeningForLinkingRequests()
-        session?.markLinkingRequestAsProcessed() // Only relevant in master mode
+        guard let session = DeviceLinkingSession.current else {
+            return print("[Loki] Device linking session missing.") // Should never occur
+        }
+        session.stopListeningForLinkingRequests()
+        session.markLinkingRequestAsProcessed() // Only relevant in master mode
         delegate?.handleDeviceLinkingModalDismissed() // Only relevant in slave mode
         if let deviceLink = deviceLink {
             OWSPrimaryStorage.shared().dbReadWriteConnection.readWrite { transaction in
