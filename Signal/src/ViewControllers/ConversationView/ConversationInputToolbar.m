@@ -1095,12 +1095,16 @@ const CGFloat kMaxTextViewHeight = 98;
 {
     self.userSelectionView.hasGroupContext = thread.isGroupThread; // Must happen before setting the users
     self.userSelectionView.users = users;
-    self.userSelectionViewSizeConstraint.constant = 4 + MIN(users.count, 4) * 52 + 4;
+    self.userSelectionViewSizeConstraint.constant = 10 + MIN(users.count, 4) * 52;
+    [self setNeedsLayout];
+    [self layoutIfNeeded];
 }
 
 - (void)hideUserSelectionView
 {
     self.userSelectionViewSizeConstraint.constant = 0;
+    [self setNeedsLayout];
+    [self layoutIfNeeded];
 }
 
 - (void)handleUserSelected:(NSString *)user from:(LKUserSelectionView *)userSelectionView

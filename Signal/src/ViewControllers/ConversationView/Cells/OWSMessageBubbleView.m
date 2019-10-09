@@ -683,7 +683,8 @@ NS_ASSUME_NONNULL_BEGIN
                          textColor:self.bodyTextColor
                               font:self.textMessageFont
                 shouldIgnoreEvents:shouldIgnoreEvents
-                            thread:self.viewItem.interaction.thread];
+                            thread:self.viewItem.interaction.thread
+                        isOutgoing:[self.viewItem.interaction isKindOfClass:TSOutgoingMessage.self]];
 }
 
 + (void)loadForTextDisplay:(OWSMessageTextView *)textView
@@ -693,6 +694,7 @@ NS_ASSUME_NONNULL_BEGIN
                       font:(UIFont *)font
         shouldIgnoreEvents:(BOOL)shouldIgnoreEvents
                     thread:(TSThread *)thread
+                isOutgoing:(BOOL)isOutgoing
 {
     textView.hidden = NO;
     textView.textColor = textColor;
@@ -710,7 +712,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSRegularExpression *regex1 = [[NSRegularExpression alloc] initWithPattern:@"@\\w*" options:0 error:&error1];
     OWSAssertDebug(error1 == nil);
     NSSet<NSString *> *knownUserIDs = LKAPI.userIDCache[thread.uniqueId];
-    NSMutableSet<NSValue *> *mentions = [NSMutableSet new];
+    NSMutableArray<NSValue *> *mentions = [NSMutableArray new];
     NSTextCheckingResult *match1 = [regex1 firstMatchInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, text.length)];
     if (match1 != nil && thread.isGroupThread) {
         while (YES) {
@@ -718,10 +720,14 @@ NS_ASSUME_NONNULL_BEGIN
             NSUInteger matchEnd;
             if ([knownUserIDs containsObject:userID]) {
                 __block NSString *userDisplayName;
-                [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                    NSString *collection = [NSString stringWithFormat:@"%@.%llu", LKGroupChatAPI.publicChatServer, LKGroupChatAPI.publicChatServerID];
-                    userDisplayName = [transaction objectForKey:userID inCollection:collection];
-                }];
+                if ([userID isEqual:OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey]) {
+                    userDisplayName = OWSProfileManager.sharedManager.localProfileName;
+                } else {
+                    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                        NSString *collection = [NSString stringWithFormat:@"%@.%llu", LKGroupChatAPI.publicChatServer, LKGroupChatAPI.publicChatServerID];
+                        userDisplayName = [transaction objectForKey:userID inCollection:collection];
+                    }];
+                }
                 if (userDisplayName != nil) {
                     text = [text stringByReplacingCharactersInRange:match1.range withString:[NSString stringWithFormat:@"@%@", userDisplayName]];
                     [mentions addObject:[NSValue valueWithRange:NSMakeRange(match1.range.location, userDisplayName.length + 1)]];
@@ -739,8 +745,8 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithString:text attributes:@{ NSFontAttributeName : font, NSForegroundColorAttributeName : textColor }];
     for (NSValue *mention in mentions) {
         NSRange range = mention.rangeValue;
-        [attributedText addAttribute:NSBackgroundColorAttributeName value:UIColor.lokiDarkGray range:range];
-        [attributedText addAttribute:NSForegroundColorAttributeName value:UIColor.ows_whiteColor range:range];
+        UIColor *highlightColor = isOutgoing ? UIColor.lokiDarkGray : UIColor.lokiGreen;
+        [attributedText addAttribute:NSBackgroundColorAttributeName value:highlightColor range:range];
     }
     
     if (searchText.length >= ConversationSearchController.kMinimumSearchTextLength) {

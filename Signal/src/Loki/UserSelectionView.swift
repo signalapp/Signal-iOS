@@ -15,7 +15,7 @@ final class UserSelectionView : UIView, UITableViewDataSource, UITableViewDelega
         result.register(Cell.self, forCellReuseIdentifier: "Cell")
         result.separatorStyle = .none
         result.backgroundColor = .clear
-        result.contentInset = UIEdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0)
+        result.contentInset = UIEdgeInsets(top: 10, leading: 0, bottom: 0, trailing: 0)
         return result
     }()
     
