@@ -306,6 +306,30 @@ public final class LokiAPI : NSObject {
         }
     }
     
+    @objc public static func getUserIDs(for query: String, in threadID: String) -> [String] {
+        // Prepare
+        guard let cache = userIDCache[threadID] else { return [] }
+        var candidates: [(id: String, displayName: String)] = []
+        // Gather candidates
+        storage.dbReadConnection.read { transaction in
+            let collection = "\(LokiGroupChatAPI.publicChatServer).\(LokiGroupChatAPI.publicChatServerID)"
+            candidates = cache.flatMap { id in
+                guard let displayName = transaction.object(forKey: id, inCollection: collection) as! String? else { return nil }
+                return (id: id, displayName: displayName)
+            }
+        }
+        // Sort alphabetically first
+        candidates.sort { $0.displayName < $1.displayName }
+        if query.count >= 2 {
+            // Filter out any non-matching candidates
+            candidates = candidates.filter { $0.displayName.contains(query) }
+            // Sort based on where in the candidate the query occurs
+            candidates.sort { $0.displayName.range(of: query)!.lowerBound < $1.displayName.range(of: query)!.lowerBound }
+        }
+        // Return
+        return candidates.map { $0.id } // Inefficient to do this and then look up the display name again later, but easy to interface with Obj-C
+    }
+    
     @objc public static func populateUserIDCacheIfNeeded(for threadID: String, in transaction: YapDatabaseReadWriteTransaction? = nil) {
         guard userIDCache[threadID] == nil else { return }
         var result: Set<String> = []

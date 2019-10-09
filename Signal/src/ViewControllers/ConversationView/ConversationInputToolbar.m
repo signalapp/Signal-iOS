@@ -50,7 +50,8 @@ const CGFloat kMaxTextViewHeight = 98;
 
 @interface ConversationInputToolbar () <ConversationTextViewToolbarDelegate,
     QuotedReplyPreviewDelegate,
-    LinkPreviewViewDraftDelegate>
+    LinkPreviewViewDraftDelegate,
+    LKUserSelectionViewDelegate>
 
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
 
@@ -85,6 +86,8 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic, nullable) InputLinkPreview *inputLinkPreview;
 @property (nonatomic) BOOL wasLinkPreviewCancelled;
 @property (nonatomic, nullable, weak) LinkPreviewView *linkPreviewView;
+@property (nonatomic) LKUserSelectionView *userSelectionView;
+@property (nonatomic) NSLayoutConstraint *userSelectionViewSizeConstraint;
 
 @end
 
@@ -219,6 +222,14 @@ const CGFloat kMaxTextViewHeight = 98;
     [vStackWrapper setContentHuggingHorizontalLow];
     [vStackWrapper setCompressionResistanceHorizontalLow];
 
+    // User Selection View
+    _userSelectionView = [LKUserSelectionView new];
+    [self addSubview:self.userSelectionView];
+    [self.userSelectionView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [self.userSelectionView autoPinWidthToSuperview];
+    self.userSelectionViewSizeConstraint = [self.userSelectionView autoSetDimension:ALDimensionHeight toSize:0];
+    self.userSelectionView.delegate = self;
+    
     // H Stack
     _hStack = [[UIStackView alloc]
         initWithArrangedSubviews:@[ /*self.attachmentButton,*/ vStackWrapper, /*self.voiceMemoButton,*/ self.sendButton ]];
@@ -229,7 +240,7 @@ const CGFloat kMaxTextViewHeight = 98;
     self.hStack.spacing = 8;
 
     [self addSubview:self.hStack];
-    [self.hStack autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [self.hStack autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.userSelectionView];
     [self.hStack autoPinEdgeToSuperviewSafeArea:ALEdgeBottom];
     [self.hStack setContentHuggingHorizontalLow];
     [self.hStack setCompressionResistanceHorizontalLow];
@@ -1076,6 +1087,25 @@ const CGFloat kMaxTextViewHeight = 98;
 {
     self.hStack.hidden = YES;
     self.borderView.hidden = YES;
+}
+
+#pragma mark - User Selection View
+
+- (void)showUserSelectionViewFor:(NSArray<NSString *> *)users in:(TSThread *)thread
+{
+    self.userSelectionView.hasGroupContext = thread.isGroupThread; // Must happen before setting the users
+    self.userSelectionView.users = users;
+    self.userSelectionViewSizeConstraint.constant = 4 + MIN(users.count, 4) * 52 + 4;
+}
+
+- (void)hideUserSelectionView
+{
+    self.userSelectionViewSizeConstraint.constant = 0;
+}
+
+- (void)handleUserSelected:(NSString *)user from:(LKUserSelectionView *)userSelectionView
+{
+    [self.inputToolbarDelegate handleUserSelected:user from:userSelectionView];
 }
 
 @end

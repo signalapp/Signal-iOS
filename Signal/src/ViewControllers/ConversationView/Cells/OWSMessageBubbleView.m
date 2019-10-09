@@ -676,14 +676,14 @@ NS_ASSUME_NONNULL_BEGIN
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
         shouldIgnoreEvents = outgoingMessage.messageState != TSOutgoingMessageStateSent;
     }
-    NSString *threadID = self.viewItem.interaction.uniqueThreadId;
+    
     [self.class loadForTextDisplay:self.bodyTextView
                    displayableText:self.displayableBodyText
                         searchText:self.delegate.lastSearchedText
                          textColor:self.bodyTextColor
                               font:self.textMessageFont
                 shouldIgnoreEvents:shouldIgnoreEvents
-                          threadID:threadID];
+                            thread:self.viewItem.interaction.thread];
 }
 
 + (void)loadForTextDisplay:(OWSMessageTextView *)textView
@@ -692,7 +692,7 @@ NS_ASSUME_NONNULL_BEGIN
                  textColor:(UIColor *)textColor
                       font:(UIFont *)font
         shouldIgnoreEvents:(BOOL)shouldIgnoreEvents
-                  threadID:(NSString *)threadID
+                    thread:(TSThread *)thread
 {
     textView.hidden = NO;
     textView.textColor = textColor;
@@ -709,27 +709,26 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error1;
     NSRegularExpression *regex1 = [[NSRegularExpression alloc] initWithPattern:@"@\\w*" options:0 error:&error1];
     OWSAssertDebug(error1 == nil);
-    NSSet<NSString *> *knownUserIDs = LKAPI.userIDCache[threadID];
+    NSSet<NSString *> *knownUserIDs = LKAPI.userIDCache[thread.uniqueId];
     NSMutableSet<NSValue *> *mentions = [NSMutableSet new];
     NSTextCheckingResult *match1 = [regex1 firstMatchInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, text.length)];
-    if (match1 != nil) {
+    if (match1 != nil && thread.isGroupThread) {
         while (YES) {
             NSString *userID = [[text substringWithRange:match1.range] stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
             NSUInteger matchEnd;
             if ([knownUserIDs containsObject:userID]) {
-                __block NSString *userDisplayName = [Environment.shared.contactsManager attributedContactOrProfileNameForPhoneIdentifier:userID primaryFont:font secondaryFont:font].string;
-                if ([userDisplayName isEqual:userID]) {
-                    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                        NSString *collection = [NSString stringWithFormat:@"%@.%llu", LKGroupChatAPI.publicChatServer, LKGroupChatAPI.publicChatServerID];
-                        NSString *userDisplayNameCandidate = [transaction objectForKey:userID inCollection:collection];
-                        if (userDisplayNameCandidate != nil) {
-                            userDisplayName = userDisplayNameCandidate;
-                        }
-                    }];
+                __block NSString *userDisplayName;
+                [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                    NSString *collection = [NSString stringWithFormat:@"%@.%llu", LKGroupChatAPI.publicChatServer, LKGroupChatAPI.publicChatServerID];
+                    userDisplayName = [transaction objectForKey:userID inCollection:collection];
+                }];
+                if (userDisplayName != nil) {
+                    text = [text stringByReplacingCharactersInRange:match1.range withString:[NSString stringWithFormat:@"@%@", userDisplayName]];
+                    [mentions addObject:[NSValue valueWithRange:NSMakeRange(match1.range.location, userDisplayName.length + 1)]];
+                    matchEnd = match1.range.location + userDisplayName.length;
+                } else {
+                    matchEnd = match1.range.location + match1.range.length;
                 }
-                text = [text stringByReplacingCharactersInRange:match1.range withString:[NSString stringWithFormat:@"@%@", userDisplayName]];
-                [mentions addObject:[NSValue valueWithRange:NSMakeRange(match1.range.location, userDisplayName.length + 1)]];
-                matchEnd = match1.range.location + userDisplayName.length;
             } else {
                 matchEnd = match1.range.location + match1.range.length;
             }
