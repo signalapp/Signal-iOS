@@ -213,6 +213,8 @@ typedef enum : NSUInteger {
 @property (nonatomic) CGFloat extraContentInsetPadding;
 @property (nonatomic) CGFloat contentInsetBottom;
 
+@property (nonatomic) NSInteger mentionStartIndex;
+
 @end
 
 #pragma mark -
@@ -256,6 +258,8 @@ typedef enum : NSUInteger {
     _recordVoiceNoteAudioActivity = [[OWSAudioActivity alloc] initWithAudioDescription:audioActivityDescription behavior:OWSAudioBehavior_PlayAndRecord];
 
     self.scrollContinuity = kScrollContinuityBottom;
+    
+    _mentionStartIndex = -1;
 }
 
 #pragma mark - Dependencies
@@ -523,6 +527,8 @@ typedef enum : NSUInteger {
                                                           selector:@selector(reloadTimerDidFire)
                                                           userInfo:nil
                                                            repeats:YES];
+    
+    [LKAPI populateUserIDCacheIfNeededFor:thread.uniqueId in:nil];
 }
 
 - (void)dealloc
@@ -596,7 +602,7 @@ typedef enum : NSUInteger {
     [super viewDidLoad];
 
     [self createContents];
-
+    
     [self registerCellClasses];
 
     [self createConversationScrollButtons];
@@ -668,7 +674,7 @@ typedef enum : NSUInteger {
     self.inputToolbar.inputTextViewDelegate = self;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputToolbar);
     [self updateInputToolbar];
-
+    
     self.loadMoreHeader = [UILabel new];
     self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
         @"Indicates that the app is loading more messages in this conversation.");
@@ -3767,6 +3773,32 @@ typedef enum : NSUInteger {
     if (textView.text.length > 0) {
         [self.typingIndicators didStartTypingOutgoingInputInThread:self.thread];
     }
+    NSUInteger currentEndIndex = (textView.text.length != 0) ? textView.text.length - 1 : 0;
+    unichar lastCharacter = [textView.text characterAtIndex:currentEndIndex];
+    NSMutableCharacterSet *allowedCharacters = NSMutableCharacterSet.lowercaseLetterCharacterSet;
+    [allowedCharacters formUnionWithCharacterSet:NSCharacterSet.uppercaseLetterCharacterSet];
+    if (lastCharacter == '@') {
+        NSArray<NSString *> *userIDs = [LKAPI getUserIDsFor:@"" in:self.thread.uniqueId];
+        self.mentionStartIndex = (NSInteger)currentEndIndex + 1;
+        [self.inputToolbar showUserSelectionViewFor:userIDs in:self.thread];
+    } else if (![allowedCharacters characterIsMember:lastCharacter]) {
+        self.mentionStartIndex = -1;
+        [self.inputToolbar hideUserSelectionView];
+    } else {
+        if (self.mentionStartIndex != -1) {
+            NSString *query = [textView.text substringFromIndex:(NSUInteger)self.mentionStartIndex];
+            NSArray<NSString *> *userIDs = [LKAPI getUserIDsFor:query in:self.thread.uniqueId];
+            [self.inputToolbar showUserSelectionViewFor:userIDs in:self.thread];
+        }
+    }
+}
+
+- (void)handleUserSelected:(NSString *)user from:(LKUserSelectionView *)userSelectionView
+{
+    NSString *oldText = self.inputToolbar.messageText;
+    NSUInteger mentionStartIndex = (NSUInteger)self.mentionStartIndex;
+    NSString *newText = [oldText stringByReplacingCharactersInRange:NSMakeRange(mentionStartIndex, oldText.length - mentionStartIndex) withString:user];
+    [self.inputToolbar setMessageText:newText animated:NO];
 }
 
 - (void)inputTextViewSendMessagePressed
