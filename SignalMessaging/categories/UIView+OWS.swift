@@ -539,21 +539,6 @@ public extension UITextField {
     }
 }
 
-@objc
-public extension UIView {
-    var findFirstResponder: UIView? {
-        guard !isFirstResponder else { return self }
-
-        for subview in subviews {
-            if let firstResponder = subview.findFirstResponder {
-                return firstResponder
-            }
-        }
-
-        return nil
-    }
-}
-
 public extension UIView {
     func firstAncestor<T>(ofType type: T.Type) -> T? {
         guard let superview = superview else {

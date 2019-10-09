@@ -26,6 +26,14 @@ class ConversationSplitViewController: UISplitViewController {
         return selectedConversationViewController.thread
     }
 
+    @objc var topViewController: UIViewController? {
+        guard !isCollapsed else {
+            return primaryNavController.topViewController
+        }
+
+        return detailNavController.topViewController ?? primaryNavController.topViewController
+    }
+
     @objc
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -79,7 +87,17 @@ class ConversationSplitViewController: UISplitViewController {
     func presentThread(_ thread: TSThread, action: ConversationViewAction, focusMessageId: String?, animated: Bool) {
         AssertIsOnMainThread()
 
-        guard selectedThread?.uniqueId != thread.uniqueId else { return }
+        guard selectedThread?.uniqueId != thread.uniqueId else {
+            // If this thread is already selected, pop to the thread if
+            // anything else has been presented above the view.
+            guard let selectedConversationVC = selectedConversationViewController else { return }
+            if isCollapsed {
+                primaryNavController.popToViewController(selectedConversationVC, animated: animated)
+            } else {
+                detailNavController.popToViewController(selectedConversationVC, animated: animated)
+            }
+            return
+        }
 
         // Update the last viewed thread on the conversation list so it
         // can maintain its scroll position when navigating back.

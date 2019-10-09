@@ -1519,7 +1519,7 @@ const CGFloat kIconViewLength = 24;
         [MediaGalleryNavigationController showingTileViewWithThread:self.thread
                                                             options:MediaGalleryOptionSliderEnabled];
 
-    [self presentFormSheetViewController:mediaGallery animated:YES completion:nil];
+    [self presentViewController:mediaGallery animated:YES completion:nil];
 }
 
 - (void)tappedConversationSearch

@@ -44,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)resetAppData;
 
+- (void)showOnboardingView;
 - (void)showConversationSplitView;
 - (void)ensureRootViewController:(NSTimeInterval)launchStartedAt;
 - (BOOL)receivedVerificationCode:(NSString *)verificationCode;

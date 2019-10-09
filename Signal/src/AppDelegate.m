@@ -522,7 +522,6 @@ static NSTimeInterval launchStartedAt;
             StickerPackViewController *packView =
                 [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
             UIViewController *rootViewController = self.window.rootViewController;
-            OWSAssertDebug([rootViewController isKindOfClass:[OWSNavigationController class]]);
             if (rootViewController.presentedViewController) {
                 [rootViewController dismissViewControllerAnimated:NO
                                                        completion:^{

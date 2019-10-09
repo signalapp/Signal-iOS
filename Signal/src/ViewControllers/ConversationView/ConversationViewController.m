@@ -1250,8 +1250,8 @@ typedef enum : NSUInteger {
     // - Longpress on a message to show edit menu, which entails making the pressed view the first responder.
     // - Begin presenting another view, e.g. swipe-left for details or swipe-right to go back, but quit part way, so that you remain on the conversation view
     // - toolbar will be not be visible unless we reaquire first responder.
-    if (!self.isFirstResponder) {
-        
+    if (!self.isFirstResponder && !self.presentedViewController) {
+
         // We don't have to worry about the input toolbar being visible if the inputToolbar.textView is first responder
         // In fact doing so would unnecessarily dismiss the keyboard which is probably not desirable and at least
         // a distracting animation.
