@@ -114,6 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
                   albumMessageId:(nullable NSString *)albumMessageId
          attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                   attachmentType:(TSAttachmentType)attachmentType
+                        blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
                          caption:(nullable NSString *)caption
                      contentType:(NSString *)contentType
@@ -132,6 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
                     albumMessageId:albumMessageId
            attachmentSchemaVersion:attachmentSchemaVersion
                     attachmentType:attachmentType
+                          blurHash:blurHash
                          byteCount:byteCount
                            caption:caption
                        contentType:contentType

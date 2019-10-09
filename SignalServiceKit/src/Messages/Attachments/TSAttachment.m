@@ -216,6 +216,7 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
                   albumMessageId:(nullable NSString *)albumMessageId
          attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                   attachmentType:(TSAttachmentType)attachmentType
+                        blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
                          caption:(nullable NSString *)caption
                      contentType:(NSString *)contentType
@@ -233,6 +234,7 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     _albumMessageId = albumMessageId;
     _attachmentSchemaVersion = attachmentSchemaVersion;
     _attachmentType = attachmentType;
+    _blurHash = blurHash;
     _byteCount = byteCount;
     _caption = caption;
     _contentType = contentType;

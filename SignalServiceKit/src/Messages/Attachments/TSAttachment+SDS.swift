@@ -29,6 +29,7 @@ public struct AttachmentRecord: SDSRecord {
     public let albumMessageId: String?
     public let attachmentSchemaVersion: UInt
     public let attachmentType: TSAttachmentType
+    public let blurHash: String?
     public let byteCount: UInt32
     public let caption: String?
     public let contentType: String
@@ -61,6 +62,7 @@ public struct AttachmentRecord: SDSRecord {
         case albumMessageId
         case attachmentSchemaVersion
         case attachmentType
+        case blurHash
         case byteCount
         case caption
         case contentType
@@ -104,28 +106,29 @@ public extension AttachmentRecord {
         albumMessageId = row[3]
         attachmentSchemaVersion = row[4]
         attachmentType = row[5]
-        byteCount = row[6]
-        caption = row[7]
-        contentType = row[8]
-        encryptionKey = row[9]
-        isDownloaded = row[10]
-        serverId = row[11]
-        sourceFilename = row[12]
-        cachedAudioDurationSeconds = row[13]
-        cachedImageHeight = row[14]
-        cachedImageWidth = row[15]
-        creationTimestamp = row[16]
-        digest = row[17]
-        isUploaded = row[18]
-        isValidImageCached = row[19]
-        isValidVideoCached = row[20]
-        lazyRestoreFragmentId = row[21]
-        localRelativeFilePath = row[22]
-        mediaSize = row[23]
-        mostRecentFailureLocalizedText = row[24]
-        pointerType = row[25]
-        shouldAlwaysPad = row[26]
-        state = row[27]
+        blurHash = row[6]
+        byteCount = row[7]
+        caption = row[8]
+        contentType = row[9]
+        encryptionKey = row[10]
+        isDownloaded = row[11]
+        serverId = row[12]
+        sourceFilename = row[13]
+        cachedAudioDurationSeconds = row[14]
+        cachedImageHeight = row[15]
+        cachedImageWidth = row[16]
+        creationTimestamp = row[17]
+        digest = row[18]
+        isUploaded = row[19]
+        isValidImageCached = row[20]
+        isValidVideoCached = row[21]
+        lazyRestoreFragmentId = row[22]
+        localRelativeFilePath = row[23]
+        mediaSize = row[24]
+        mostRecentFailureLocalizedText = row[25]
+        pointerType = row[26]
+        shouldAlwaysPad = row[27]
+        state = row[28]
     }
 }
 
@@ -160,6 +163,7 @@ extension TSAttachment {
             let albumMessageId: String? = record.albumMessageId
             let attachmentSchemaVersion: UInt = record.attachmentSchemaVersion
             let attachmentType: TSAttachmentType = record.attachmentType
+            let blurHash: String? = record.blurHash
             let byteCount: UInt32 = record.byteCount
             let caption: String? = record.caption
             let contentType: String = record.contentType
@@ -172,6 +176,7 @@ extension TSAttachment {
                                 albumMessageId: albumMessageId,
                                 attachmentSchemaVersion: attachmentSchemaVersion,
                                 attachmentType: attachmentType,
+                                blurHash: blurHash,
                                 byteCount: byteCount,
                                 caption: caption,
                                 contentType: contentType,
@@ -186,6 +191,7 @@ extension TSAttachment {
             let albumMessageId: String? = record.albumMessageId
             let attachmentSchemaVersion: UInt = record.attachmentSchemaVersion
             let attachmentType: TSAttachmentType = record.attachmentType
+            let blurHash: String? = record.blurHash
             let byteCount: UInt32 = record.byteCount
             let caption: String? = record.caption
             let contentType: String = record.contentType
@@ -209,6 +215,7 @@ extension TSAttachment {
                                        albumMessageId: albumMessageId,
                                        attachmentSchemaVersion: attachmentSchemaVersion,
                                        attachmentType: attachmentType,
+                                       blurHash: blurHash,
                                        byteCount: byteCount,
                                        caption: caption,
                                        contentType: contentType,
@@ -229,6 +236,7 @@ extension TSAttachment {
             let albumMessageId: String? = record.albumMessageId
             let attachmentSchemaVersion: UInt = record.attachmentSchemaVersion
             let attachmentType: TSAttachmentType = record.attachmentType
+            let blurHash: String? = record.blurHash
             let byteCount: UInt32 = record.byteCount
             let caption: String? = record.caption
             let contentType: String = record.contentType
@@ -254,6 +262,7 @@ extension TSAttachment {
                                       albumMessageId: albumMessageId,
                                       attachmentSchemaVersion: attachmentSchemaVersion,
                                       attachmentType: attachmentType,
+                                      blurHash: blurHash,
                                       byteCount: byteCount,
                                       caption: caption,
                                       contentType: contentType,
@@ -324,29 +333,30 @@ extension TSAttachmentSerializer {
     static let albumMessageIdColumn = SDSColumnMetadata(columnName: "albumMessageId", columnType: .unicodeString, isOptional: true, columnIndex: 3)
     static let attachmentSchemaVersionColumn = SDSColumnMetadata(columnName: "attachmentSchemaVersion", columnType: .int64, columnIndex: 4)
     static let attachmentTypeColumn = SDSColumnMetadata(columnName: "attachmentType", columnType: .int, columnIndex: 5)
-    static let byteCountColumn = SDSColumnMetadata(columnName: "byteCount", columnType: .int64, columnIndex: 6)
-    static let captionColumn = SDSColumnMetadata(columnName: "caption", columnType: .unicodeString, isOptional: true, columnIndex: 7)
-    static let contentTypeColumn = SDSColumnMetadata(columnName: "contentType", columnType: .unicodeString, columnIndex: 8)
-    static let encryptionKeyColumn = SDSColumnMetadata(columnName: "encryptionKey", columnType: .blob, isOptional: true, columnIndex: 9)
-    static let isDownloadedColumn = SDSColumnMetadata(columnName: "isDownloaded", columnType: .int, columnIndex: 10)
-    static let serverIdColumn = SDSColumnMetadata(columnName: "serverId", columnType: .int64, columnIndex: 11)
-    static let sourceFilenameColumn = SDSColumnMetadata(columnName: "sourceFilename", columnType: .unicodeString, isOptional: true, columnIndex: 12)
+    static let blurHashColumn = SDSColumnMetadata(columnName: "blurHash", columnType: .unicodeString, isOptional: true, columnIndex: 6)
+    static let byteCountColumn = SDSColumnMetadata(columnName: "byteCount", columnType: .int64, columnIndex: 7)
+    static let captionColumn = SDSColumnMetadata(columnName: "caption", columnType: .unicodeString, isOptional: true, columnIndex: 8)
+    static let contentTypeColumn = SDSColumnMetadata(columnName: "contentType", columnType: .unicodeString, columnIndex: 9)
+    static let encryptionKeyColumn = SDSColumnMetadata(columnName: "encryptionKey", columnType: .blob, isOptional: true, columnIndex: 10)
+    static let isDownloadedColumn = SDSColumnMetadata(columnName: "isDownloaded", columnType: .int, columnIndex: 11)
+    static let serverIdColumn = SDSColumnMetadata(columnName: "serverId", columnType: .int64, columnIndex: 12)
+    static let sourceFilenameColumn = SDSColumnMetadata(columnName: "sourceFilename", columnType: .unicodeString, isOptional: true, columnIndex: 13)
     // Subclass properties
-    static let cachedAudioDurationSecondsColumn = SDSColumnMetadata(columnName: "cachedAudioDurationSeconds", columnType: .double, isOptional: true, columnIndex: 13)
-    static let cachedImageHeightColumn = SDSColumnMetadata(columnName: "cachedImageHeight", columnType: .double, isOptional: true, columnIndex: 14)
-    static let cachedImageWidthColumn = SDSColumnMetadata(columnName: "cachedImageWidth", columnType: .double, isOptional: true, columnIndex: 15)
-    static let creationTimestampColumn = SDSColumnMetadata(columnName: "creationTimestamp", columnType: .double, isOptional: true, columnIndex: 16)
-    static let digestColumn = SDSColumnMetadata(columnName: "digest", columnType: .blob, isOptional: true, columnIndex: 17)
-    static let isUploadedColumn = SDSColumnMetadata(columnName: "isUploaded", columnType: .int, isOptional: true, columnIndex: 18)
-    static let isValidImageCachedColumn = SDSColumnMetadata(columnName: "isValidImageCached", columnType: .int, isOptional: true, columnIndex: 19)
-    static let isValidVideoCachedColumn = SDSColumnMetadata(columnName: "isValidVideoCached", columnType: .int, isOptional: true, columnIndex: 20)
-    static let lazyRestoreFragmentIdColumn = SDSColumnMetadata(columnName: "lazyRestoreFragmentId", columnType: .unicodeString, isOptional: true, columnIndex: 21)
-    static let localRelativeFilePathColumn = SDSColumnMetadata(columnName: "localRelativeFilePath", columnType: .unicodeString, isOptional: true, columnIndex: 22)
-    static let mediaSizeColumn = SDSColumnMetadata(columnName: "mediaSize", columnType: .blob, isOptional: true, columnIndex: 23)
-    static let mostRecentFailureLocalizedTextColumn = SDSColumnMetadata(columnName: "mostRecentFailureLocalizedText", columnType: .unicodeString, isOptional: true, columnIndex: 24)
-    static let pointerTypeColumn = SDSColumnMetadata(columnName: "pointerType", columnType: .int, isOptional: true, columnIndex: 25)
-    static let shouldAlwaysPadColumn = SDSColumnMetadata(columnName: "shouldAlwaysPad", columnType: .int, isOptional: true, columnIndex: 26)
-    static let stateColumn = SDSColumnMetadata(columnName: "state", columnType: .int, isOptional: true, columnIndex: 27)
+    static let cachedAudioDurationSecondsColumn = SDSColumnMetadata(columnName: "cachedAudioDurationSeconds", columnType: .double, isOptional: true, columnIndex: 14)
+    static let cachedImageHeightColumn = SDSColumnMetadata(columnName: "cachedImageHeight", columnType: .double, isOptional: true, columnIndex: 15)
+    static let cachedImageWidthColumn = SDSColumnMetadata(columnName: "cachedImageWidth", columnType: .double, isOptional: true, columnIndex: 16)
+    static let creationTimestampColumn = SDSColumnMetadata(columnName: "creationTimestamp", columnType: .double, isOptional: true, columnIndex: 17)
+    static let digestColumn = SDSColumnMetadata(columnName: "digest", columnType: .blob, isOptional: true, columnIndex: 18)
+    static let isUploadedColumn = SDSColumnMetadata(columnName: "isUploaded", columnType: .int, isOptional: true, columnIndex: 19)
+    static let isValidImageCachedColumn = SDSColumnMetadata(columnName: "isValidImageCached", columnType: .int, isOptional: true, columnIndex: 20)
+    static let isValidVideoCachedColumn = SDSColumnMetadata(columnName: "isValidVideoCached", columnType: .int, isOptional: true, columnIndex: 21)
+    static let lazyRestoreFragmentIdColumn = SDSColumnMetadata(columnName: "lazyRestoreFragmentId", columnType: .unicodeString, isOptional: true, columnIndex: 22)
+    static let localRelativeFilePathColumn = SDSColumnMetadata(columnName: "localRelativeFilePath", columnType: .unicodeString, isOptional: true, columnIndex: 23)
+    static let mediaSizeColumn = SDSColumnMetadata(columnName: "mediaSize", columnType: .blob, isOptional: true, columnIndex: 24)
+    static let mostRecentFailureLocalizedTextColumn = SDSColumnMetadata(columnName: "mostRecentFailureLocalizedText", columnType: .unicodeString, isOptional: true, columnIndex: 25)
+    static let pointerTypeColumn = SDSColumnMetadata(columnName: "pointerType", columnType: .int, isOptional: true, columnIndex: 26)
+    static let shouldAlwaysPadColumn = SDSColumnMetadata(columnName: "shouldAlwaysPad", columnType: .int, isOptional: true, columnIndex: 27)
+    static let stateColumn = SDSColumnMetadata(columnName: "state", columnType: .int, isOptional: true, columnIndex: 28)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -359,6 +369,7 @@ extension TSAttachmentSerializer {
         albumMessageIdColumn,
         attachmentSchemaVersionColumn,
         attachmentTypeColumn,
+        blurHashColumn,
         byteCountColumn,
         captionColumn,
         contentTypeColumn,
@@ -780,6 +791,7 @@ class TSAttachmentSerializer: SDSSerializer {
         let albumMessageId: String? = model.albumMessageId
         let attachmentSchemaVersion: UInt = model.attachmentSchemaVersion
         let attachmentType: TSAttachmentType = model.attachmentType
+        let blurHash: String? = model.blurHash
         let byteCount: UInt32 = model.byteCount
         let caption: String? = model.caption
         let contentType: String = model.contentType
@@ -805,6 +817,6 @@ class TSAttachmentSerializer: SDSSerializer {
         let shouldAlwaysPad: Bool? = nil
         let state: TSAttachmentPointerState? = nil
 
-        return AttachmentRecord(id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentSchemaVersion: attachmentSchemaVersion, attachmentType: attachmentType, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, isDownloaded: isDownloaded, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, mostRecentFailureLocalizedText: mostRecentFailureLocalizedText, pointerType: pointerType, shouldAlwaysPad: shouldAlwaysPad, state: state)
+        return AttachmentRecord(id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentSchemaVersion: attachmentSchemaVersion, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, isDownloaded: isDownloaded, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, mostRecentFailureLocalizedText: mostRecentFailureLocalizedText, pointerType: pointerType, shouldAlwaysPad: shouldAlwaysPad, state: state)
     }
 }
