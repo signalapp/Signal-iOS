@@ -787,11 +787,21 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     self.navigationItem.leftBarButtonItem = settingsButton;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, settingsButton);
 
-    self.navigationItem.rightBarButtonItem =
-        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
-                                                      target:self
-                                                      action:@selector(showNewConversationView)
-                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"compose")];
+    UIBarButtonItem *newConversation = [[UIBarButtonItem alloc]
+                                        initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
+                                                             target:self
+                                                             action:@selector(showNewConversationView)
+                                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"compose")];
+    
+    UIBarButtonItem *newServer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                                                                                     target:self
+                                                                                     action:@selector(showNewPublicChatView)
+                                                                    accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"addServer")];
+    
+    self.navigationItem.rightBarButtonItems = @[
+        newConversation,
+        newServer,
+    ];
 }
 
 - (void)settingsButtonPressed:(id)sender
@@ -859,6 +869,13 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
         [self.navigationController presentViewController:modal animated:YES completion:nil];
     }];
      */
+}
+
+- (void)showNewPublicChatView
+{
+    LKNewPublicChatVC *newPublicChatVC = [LKNewPublicChatVC new];
+    OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:newPublicChatVC];
+    [self.navigationController presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated

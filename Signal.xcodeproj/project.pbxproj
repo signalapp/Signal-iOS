@@ -11,6 +11,7 @@
 		241C6315231F64CE00B4198E /* CGFloat+Rounding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C6312231F5F1D00B4198E /* CGFloat+Rounding.swift */; };
 		241C6316231F64CE00B4198E /* UIColor+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C6310231F5C4400B4198E /* UIColor+Helper.swift */; };
 		24A830A22293CD0100F4CAC0 /* LokiP2PServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */; };
+		24BD2609234DA2050008EB0A /* NewPublicChatVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24BD2608234DA2050008EB0A /* NewPublicChatVC.swift */; };
 		2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */; };
 		3403B95D20EA9527001A1F44 /* OWSContactShareButtonsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3403B95B20EA9526001A1F44 /* OWSContactShareButtonsView.m */; };
 		34074F61203D0CBE004596AE /* OWSSounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074F5F203D0CBD004596AE /* OWSSounds.m */; };
@@ -678,6 +679,7 @@
 		241C6310231F5C4400B4198E /* UIColor+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Helper.swift"; sourceTree = "<group>"; };
 		241C6312231F5F1D00B4198E /* CGFloat+Rounding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGFloat+Rounding.swift"; sourceTree = "<group>"; };
 		24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokiP2PServer.swift; sourceTree = "<group>"; };
+		24BD2608234DA2050008EB0A /* NewPublicChatVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPublicChatVC.swift; sourceTree = "<group>"; };
 		264242150E87D10A357DB07B /* Pods_SignalMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3403B95B20EA9526001A1F44 /* OWSContactShareButtonsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactShareButtonsView.m; sourceTree = "<group>"; };
 		3403B95C20EA9527001A1F44 /* OWSContactShareButtonsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactShareButtonsView.h; sourceTree = "<group>"; };
@@ -2649,6 +2651,7 @@
 				B89841E222B7579F00B1BDC6 /* NewConversationVC.swift */,
 				B8258491230FA5DA001B41CB /* ScanQRCodeVC.h */,
 				B8258492230FA5E9001B41CB /* ScanQRCodeVC.m */,
+				24BD2608234DA2050008EB0A /* NewPublicChatVC.swift */,
 			);
 			path = Loki;
 			sourceTree = "<group>";
@@ -3841,6 +3844,7 @@
 				B821F2F82272CED3002C88C0 /* DisplayNameVC.swift in Sources */,
 				34D8C0271ED3673300188D7C /* DebugUIMessages.m in Sources */,
 				B885D5F62334A32100EE0D8E /* UIView+Constraint.swift in Sources */,
+				24BD2609234DA2050008EB0A /* NewPublicChatVC.swift in Sources */,
 				34DBF003206BD5A500025978 /* OWSMessageTextView.m in Sources */,
 				34D1F0B41F86D31D0066283D /* ConversationCollectionView.m in Sources */,
 				34B3F8821E8DF1700035BE1A /* NewContactThreadViewController.m in Sources */,

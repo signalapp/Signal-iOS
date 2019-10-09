@@ -46,7 +46,10 @@ public final class LokiPublicChatManager: NSObject {
     }
     
     public func addChat(server: String, channel: UInt64) -> Promise<LokiGroupChat> {
-        guard let ourHexEncodedPublicKey = ourHexEncodedPublicKey else { return Promise(error: Error.userPublicKeyNotFound)  }
+        if let existingChat = getChat(server: server, channel: channel) {
+            return Promise.value(self.addChat(server: server, channel: channel, name: existingChat.displayName))
+        }
+        
         return LokiGroupChatAPI.getAuthToken(for: server).then { token in
             return LokiGroupChatAPI.getChannelInfo(channel, on: server)
         }.map { channelInfo -> LokiGroupChat in
@@ -112,10 +115,23 @@ public final class LokiPublicChatManager: NSObject {
     
     @objc private func onThreadDeleted(_ notification: Notification) {
         guard let threadId = notification.userInfo?["threadId"] as? String else { return }
+        
+        // Reset the last message cache
+        if let chat = self.chats[threadId] {
+            LokiGroupChatAPI.resetLastMessageCache(for: chat.channel, on: chat.server)
+        }
+        
+        // Remove the chat from the db
         storage.dbReadWriteConnection.readWrite { transaction in
             self.storage.removeGroupChat(for: threadId, in: transaction)
         }
-        
+
         refreshChatsAndPollers()
+    }
+    
+    private func getChat(server: String, channel: UInt64) -> LokiGroupChat? {
+        return chats.values.first { chat in
+            return chat.server == server && chat.channel == channel
+        }
     }
 }

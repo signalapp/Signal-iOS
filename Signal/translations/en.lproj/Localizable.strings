@@ -2551,6 +2551,8 @@
 "Type an optional password for added security" = "Type an optional password for added security";
 "Password (Optional)" = "Password (Optional)";
 "Next" = "Next";
+"Add" = "Add";
+"Connecting to server" = "Connecting to server...";
 "Please save the seed below in a safe location. It can be used to restore your account if you lose access, or to migrate to a new device." = "Please save the seed below in a safe location. It can be used to restore your account if you lose access, or to migrate to a new device.";
 "Restore your account by entering your seed below." = "Restore your account by entering your seed below.";
 "Copy" = "Copy";
@@ -2569,6 +2571,7 @@
 "Start a Conversation" = "Start a Conversation";
 "Invalid public key" = "Invalid public key";
 "No search results" = "No search results";
+"Failed to connect to server" = "Failed to connect to server";
 "Calculating proof of work" = "Calculating proof of work";
 "Failed to calculate proof of work." = "Failed to calculate proof of work.";
 "Share Public Key" = "Share Public Key";
@@ -2594,7 +2597,9 @@
 "Loki Messenger" = "Loki Messenger";
 "Privacy Policy" = "Privacy Policy";
 "New Conversation" = "New Conversation";
+"Add Public Chat Server" = "Add Public Chat Server";
 "Enter a Public Key" = "Enter a Public Key";
+"Enter a Server URL" = "Enter a Server URL";
 "For example: 059abcf223aa8c10e3dc2d623688b75dd25896794717e4a9c486772664fc95e41e." = "For example: 059abcf223aa8c10e3dc2d623688b75dd25896794717e4a9c486772664fc95e41e.";
 "Invalid Public Key" = "Invalid Public Key";
 "Please check the public key you entered and try again." = "Please check the public key you entered and try again.";
@@ -2636,3 +2641,5 @@
 "Your device has been linked successfully" = "Your device has been linked successfully";
 "Link" = "Link";
 "Anonymous" = "Anonymous";
+"Invalid server URL provided" = "Invalid server URL provided";
+"Please make sure you have provided the full url" = "Please make sure you have provided the full url. E.g https://public-chat-server.url/";

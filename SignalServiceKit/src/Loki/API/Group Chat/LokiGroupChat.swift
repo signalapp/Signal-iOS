@@ -22,7 +22,7 @@ public final class LokiGroupChat : NSObject, NSCoding {
     
     @objc public init(channel: UInt64, server: String, displayName: String, isDeletable: Bool) {
         self.channel = channel
-        self.server = server
+        self.server = server.lowercased()
         self.displayName = displayName
         self.isDeletable = isDeletable
     }

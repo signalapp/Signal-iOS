@@ -36,6 +36,12 @@ public final class LokiGroupChatAPI : LokiDotNetAPI {
         }
     }
     
+    private static func removeLastMessageServerID(for group: UInt64, on server: String) {
+        storage.dbReadWriteConnection.readWrite { transaction in
+            transaction.removeObject(forKey: "\(server).\(group)", inCollection: lastMessageServerIDCollection)
+        }
+    }
+    
     private static func getLastDeletionServerID(for group: UInt64, on server: String) -> UInt? {
         var result: UInt? = nil
         storage.dbReadConnection.read { transaction in
@@ -47,6 +53,12 @@ public final class LokiGroupChatAPI : LokiDotNetAPI {
     private static func setLastDeletionServerID(for group: UInt64, on server: String, to newValue: UInt64) {
         storage.dbReadWriteConnection.readWrite { transaction in
             transaction.setObject(newValue, forKey: "\(server).\(group)", inCollection: lastDeletionServerIDCollection)
+        }
+    }
+    
+    private static func removeLastDeletionServerID(for group: UInt64, on server: String) {
+        storage.dbReadWriteConnection.readWrite { transaction in
+            transaction.removeObject(forKey: "\(server).\(group)", inCollection: lastDeletionServerIDCollection)
         }
     }
     
@@ -226,6 +238,11 @@ public final class LokiGroupChatAPI : LokiDotNetAPI {
             }
             return LokiPublicChannel(name: name)
         }
+    }
+    
+    public static func resetLastMessageCache(for group: UInt64, on server: String) {
+        removeLastMessageServerID(for: group, on: server)
+        removeLastDeletionServerID(for: group, on: server)
     }
     
     // MARK: Public API (Obj-C)
