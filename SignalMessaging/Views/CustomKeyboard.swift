@@ -133,6 +133,10 @@ private class CustomKeyboardResponder: UITextView {
         self.customKeyboard = customKeyboard
         super.init(frame: .zero, textContainer: nil)
         inputView = customKeyboard
+        autocorrectionType = .no
+        keyboardAppearance = Theme.keyboardAppearance
+        inputAssistantItem.leadingBarButtonGroups = []
+        inputAssistantItem.trailingBarButtonGroups = []
     }
 
     required init?(coder aDecoder: NSCoder) {

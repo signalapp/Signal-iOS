@@ -2,10 +2,10 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "HomeViewController.h"
+#import "ConversationListViewController.h"
 #import "AppDelegate.h"
 #import "AppSettingsViewController.h"
-#import "HomeViewCell.h"
+#import "ConversationListCell.h"
 #import "OWSNavigationController.h"
 #import "OWSPrimaryStorage.h"
 #import "ProfileViewController.h"
@@ -37,9 +37,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversationsReuseIdentifier";
 
-typedef NS_ENUM(NSInteger, HomeViewMode) {
-    HomeViewMode_Archive,
-    HomeViewMode_Inbox,
+typedef NS_ENUM(NSInteger, ConversationListMode) {
+    ConversationListMode_Archive,
+    ConversationListMode_Inbox,
 };
 
 // The bulk of the content in this view is driven by a YapDB view/mapping.
@@ -53,12 +53,12 @@ typedef NS_ENUM(NSInteger, HomeViewMode) {
 NSString *const kReminderViewPseudoGroup = @"kReminderViewPseudoGroup";
 NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
-@interface HomeViewController () <UITableViewDelegate,
+@interface ConversationListViewController () <UITableViewDelegate,
     UITableViewDataSource,
     UIViewControllerPreviewingDelegate,
     UISearchBarDelegate,
     ConversationSearchViewDelegate,
-    HomeViewDatabaseSnapshotDelegate,
+    ConversationListDatabaseSnapshotDelegate,
     OWSBlockListCacheDelegate,
     CameraFirstCaptureDelegate>
 
@@ -69,7 +69,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 @property (nonatomic) UILabel *firstConversationLabel;
 
 @property (nonatomic, readonly) ThreadMapping *threadMapping;
-@property (nonatomic) HomeViewMode homeViewMode;
+@property (nonatomic) ConversationListMode conversationListMode;
 @property (nonatomic) id previewingContext;
 @property (nonatomic, readonly) NSCache<NSString *, ThreadViewModel *> *threadViewModelCache;
 @property (nonatomic) BOOL isViewVisible;
@@ -95,8 +95,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 @property (nonatomic, readonly) UIView *archiveReminderView;
 @property (nonatomic, readonly) UIView *missingContactsPermissionView;
 
-@property (nonatomic) TSThread *lastThread;
-
 @property (nonatomic) BOOL hasArchivedThreadsRow;
 @property (nonatomic) BOOL hasThemeChanged;
 @property (nonatomic) BOOL hasVisibleReminders;
@@ -105,7 +103,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 #pragma mark -
 
-@implementation HomeViewController
+@implementation ConversationListViewController
 
 #pragma mark - Init
 
@@ -116,7 +114,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         return self;
     }
 
-    _homeViewMode = HomeViewMode_Inbox;
+    _conversationListMode = ConversationListMode_Inbox;
 
     [self commonInit];
 
@@ -184,7 +182,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                  name:OWSApplicationWillResignActiveNotification
                                                object:nil];
     if (SSKFeatureFlags.storageMode != StorageModeYdb) {
-        [self.databaseStorage.grdbStorage.homeViewDatabaseObserver appendSnapshotDelegate:self];
+        [self.databaseStorage.grdbStorage.conversationListDatabaseObserver appendSnapshotDelegate:self];
     } else {
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(uiDatabaseDidUpdateExternally:)
@@ -284,11 +282,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     [super loadView];
 
-    // TODO: Remove this.
-    if (self.homeViewMode == HomeViewMode_Inbox) {
-        [SignalApp.sharedApp setHomeViewController:self];
-    }
-
     UIStackView *reminderStackView = [UIStackView new];
     _reminderStackView = reminderStackView;
     reminderStackView.axis = UILayoutConstraintAxisVertical;
@@ -300,12 +293,12 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _reminderViewCell);
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, reminderStackView);
 
-    __weak HomeViewController *weakSelf = self;
+    __weak ConversationListViewController *weakSelf = self;
     ReminderView *deregisteredView =
         [ReminderView nagWithText:NSLocalizedString(@"DEREGISTRATION_WARNING",
                                       @"Label warning the user that they have been de-registered.")
                         tapAction:^{
-                            HomeViewController *strongSelf = weakSelf;
+                            ConversationListViewController *strongSelf = weakSelf;
                             if (!strongSelf) {
                                 return;
                             }
@@ -357,7 +350,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     self.tableView.dataSource = self;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.separatorColor = Theme.cellSeparatorColor;
-    [self.tableView registerClass:[HomeViewCell class] forCellReuseIdentifier:HomeViewCell.cellReuseIdentifier];
+    [self.tableView registerClass:[ConversationListCell class]
+           forCellReuseIdentifier:ConversationListCell.cellReuseIdentifier];
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kArchivedConversationsReuseIdentifier];
     [self.view addSubview:self.tableView];
     [self.tableView autoPinEdgesToSuperviewEdges];
@@ -400,13 +394,13 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (UIView *)createEmptyInboxView
 {
     NSArray<NSString *> *emptyInboxImageNames = @[
-                                                  @"home_empty_splash_1",
-                                                  @"home_empty_splash_2",
-                                                  @"home_empty_splash_3",
-                                                  @"home_empty_splash_4",
-                                                  @"home_empty_splash_5",
-                                                  ];
-    NSString *emptyInboxImageName = emptyInboxImageNames[arc4random_uniform((uint32_t) emptyInboxImageNames.count)];
+        @"home_empty_splash_1",
+        @"home_empty_splash_2",
+        @"home_empty_splash_3",
+        @"home_empty_splash_4",
+        @"home_empty_splash_5",
+    ];
+    NSString *emptyInboxImageName = emptyInboxImageNames[arc4random_uniform((uint32_t)emptyInboxImageNames.count)];
     UIImageView *emptyInboxImageView = [UIImageView new];
     emptyInboxImageView.image = [UIImage imageNamed:emptyInboxImageName];
     emptyInboxImageView.layer.minificationFilter = kCAFilterTrilinear;
@@ -417,18 +411,18 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [emptyInboxImageView autoSetDimension:ALDimensionWidth toSize:emptyInboxImageSize];
 
     UILabel *emptyInboxLabel = [UILabel new];
-    emptyInboxLabel.text = NSLocalizedString(@"INBOX_VIEW_EMPTY_INBOX",
-                                             @"Message shown in the home view when the inbox is empty.");
+    emptyInboxLabel.text = NSLocalizedString(
+        @"INBOX_VIEW_EMPTY_INBOX", @"Message shown in the conversation list when the inbox is empty.");
     emptyInboxLabel.font = UIFont.ows_dynamicTypeBodyClampedFont;
     emptyInboxLabel.textColor = Theme.secondaryTextAndIconColor;
     emptyInboxLabel.textAlignment = NSTextAlignmentCenter;
     emptyInboxLabel.numberOfLines = 0;
     emptyInboxLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    
+
     UIStackView *emptyInboxStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-                                                                                   emptyInboxImageView,
-                                                                                   emptyInboxLabel,
-                                                                                   ]];
+        emptyInboxImageView,
+        emptyInboxLabel,
+    ]];
     emptyInboxStack.axis = UILayoutConstraintAxisVertical;
     emptyInboxStack.alignment = UIStackViewAlignmentCenter;
     emptyInboxStack.spacing = 12;
@@ -597,7 +591,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)updateReminderViews
 {
-    self.archiveReminderView.hidden = self.homeViewMode != HomeViewMode_Archive;
+    self.archiveReminderView.hidden = self.conversationListMode != ConversationListMode_Archive;
     // App is killed and restarted when the user changes their contact permissions, so need need to "observe" anything
     // to re-render this.
     self.missingContactsPermissionView.hidden = !self.contactsManager.isSystemContactsDenied;
@@ -631,13 +625,15 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self resetMappings];
     [self tableViewSetUp];
 
-    switch (self.homeViewMode) {
-        case HomeViewMode_Inbox:
+    switch (self.conversationListMode) {
+        case ConversationListMode_Inbox:
             // TODO: Should our app name be translated?  Probably not.
-            self.title = NSLocalizedString(@"HOME_VIEW_TITLE_INBOX", @"Title for the home view's default mode.");
+            self.title
+                = NSLocalizedString(@"HOME_VIEW_TITLE_INBOX", @"Title for the conversation list's default mode.");
             break;
-        case HomeViewMode_Archive:
-            self.title = NSLocalizedString(@"HOME_VIEW_TITLE_ARCHIVE", @"Title for the home view's 'archive' mode.");
+        case ConversationListMode_Archive:
+            self.title
+                = NSLocalizedString(@"HOME_VIEW_TITLE_ARCHIVE", @"Title for the conversation list's 'archive' mode.");
             break;
     }
 
@@ -647,7 +643,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
         [self registerForPreviewingWithDelegate:self sourceView:self.tableView];
     }
-    
+
     // Search
 
     UISearchBar *searchBar = [OWSSearchBar new];
@@ -741,7 +737,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)updateBarButtonItems
 {
-    if (self.homeViewMode != HomeViewMode_Inbox) {
+    if (self.conversationListMode != ConversationListMode_Inbox) {
         return;
     }
 
@@ -799,7 +795,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)settingsButtonPressed:(id)sender
 {
     OWSNavigationController *navigationController = [AppSettingsViewController inModalNavigationController];
-    [self presentViewController:navigationController animated:YES completion:nil];
+    [self presentFormSheetViewController:navigationController animated:YES completion:nil];
 }
 
 - (nullable UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
@@ -811,7 +807,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         return nil;
     }
 
-    if (indexPath.section != HomeViewControllerSectionConversations) {
+    if (indexPath.section != ConversationListViewControllerSectionConversations) {
         return nil;
     }
 
@@ -819,7 +815,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     ConversationViewController *vc = [ConversationViewController new];
     TSThread *thread = [self threadForIndexPath:indexPath];
-    self.lastThread = thread;
+    self.lastViewedThread = thread;
     [vc configureForThread:thread action:ConversationViewActionNone focusMessageId:nil];
     [vc peekSetup];
 
@@ -853,7 +849,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         // We just want to make sure contact access is *complete* before showing the compose
         // screen to avoid flicker.
         OWSNavigationController *modal = [[OWSNavigationController alloc] initWithRootViewController:viewController];
-        [self.navigationController presentViewController:modal animated:YES completion:nil];
+        [self.navigationController presentFormSheetViewController:modal animated:YES completion:nil];
     }];
 }
 
@@ -890,14 +886,14 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         OWSAssertDebug(self.searchBar.text.ows_stripped.length > 0);
         [self scrollSearchBarToTopAnimated:NO];
         [self.searchBar becomeFirstResponder];
-    } else if (self.lastThread) {
+    } else if (self.lastViewedThread) {
         OWSAssertDebug(self.searchBar.text.ows_stripped.length == 0);
 
-        // When returning to home view, try to ensure that the "last" thread is still
+        // When returning to conversation list, try to ensure that the "last" thread is still
         // visible.  The threads often change ordering while in conversation view due
         // to incoming & outgoing messages.
         NSIndexPath *_Nullable indexPathOfLastThread =
-            [self.threadMapping indexPathForUniqueId:self.lastThread.uniqueId];
+            [self.threadMapping indexPathForUniqueId:self.lastViewedThread.uniqueId];
         if (indexPathOfLastThread) {
             [self.tableView scrollToRowAtIndexPath:indexPathOfLastThread
                                   atScrollPosition:UITableViewScrollPositionNone
@@ -958,7 +954,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)resetMappings
 {
-    [BenchManager benchWithTitle:@"HomeViewController#resetMappings"
+    [BenchManager benchWithTitle:@"ConversationListViewController#resetMappings"
                            block:^{
                                [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
                                    [self.threadMapping updateSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
@@ -974,7 +970,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (BOOL)isViewingArchive
 {
-    return self.homeViewMode == HomeViewMode_Archive;
+    return self.conversationListMode == ConversationListMode_Archive;
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
@@ -1040,7 +1036,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 // Returns YES IFF this value changes.
 - (BOOL)updateHasArchivedThreadsRow
 {
-    BOOL hasArchivedThreadsRow = (self.homeViewMode == HomeViewMode_Inbox && self.numberOfArchivedThreads > 0);
+    BOOL hasArchivedThreadsRow
+        = (self.conversationListMode == ConversationListMode_Inbox && self.numberOfArchivedThreads > 0);
     if (self.hasArchivedThreadsRow == hasArchivedThreadsRow) {
         return NO;
     }
@@ -1056,15 +1053,15 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)aSection
 {
-    HomeViewControllerSection section = (HomeViewControllerSection)aSection;
+    ConversationListViewControllerSection section = (ConversationListViewControllerSection)aSection;
     switch (section) {
-        case HomeViewControllerSectionReminders: {
+        case ConversationListViewControllerSectionReminders: {
             return self.hasVisibleReminders ? 1 : 0;
         }
-        case HomeViewControllerSectionConversations: {
+        case ConversationListViewControllerSectionConversations: {
             return [self.threadMapping numberOfItemsInSection:section];
         }
-        case HomeViewControllerSectionArchiveButton: {
+        case ConversationListViewControllerSectionArchiveButton: {
             return self.hasArchivedThreadsRow ? 1 : 0;
         }
     }
@@ -1093,17 +1090,17 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    HomeViewControllerSection section = (HomeViewControllerSection)indexPath.section;
+    ConversationListViewControllerSection section = (ConversationListViewControllerSection)indexPath.section;
     switch (section) {
-        case HomeViewControllerSectionReminders: {
+        case ConversationListViewControllerSectionReminders: {
             OWSAssert(self.reminderStackView);
 
             return self.reminderViewCell;
         }
-        case HomeViewControllerSectionConversations: {
+        case ConversationListViewControllerSectionConversations: {
             return [self tableView:tableView cellForConversationAtIndexPath:indexPath];
         }
-        case HomeViewControllerSectionArchiveButton: {
+        case ConversationListViewControllerSectionArchiveButton: {
             return [self cellForArchivedConversationsRow:tableView];
         }
     }
@@ -1114,7 +1111,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForConversationAtIndexPath:(NSIndexPath *)indexPath
 {
-    HomeViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:HomeViewCell.cellReuseIdentifier];
+    ConversationListCell *cell =
+        [self.tableView dequeueReusableCellWithIdentifier:ConversationListCell.cellReuseIdentifier];
     OWSAssertDebug(cell);
 
     ThreadViewModel *thread = [self threadViewModelForIndexPath:indexPath];
@@ -1132,6 +1130,12 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
     cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, cellName);
 
+    if ([self isConversationActiveForThread:thread.threadRecord]) {
+        [tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+    } else {
+        [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    }
+
     return cell;
 }
 
@@ -1140,6 +1144,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kArchivedConversationsReuseIdentifier];
     OWSAssertDebug(cell);
     [OWSTableItem configureCell:cell];
+
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
     for (UIView *subview in cell.contentView.subviews) {
         [subview removeFromSuperview];
@@ -1206,12 +1212,12 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (nullable NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    HomeViewControllerSection section = (HomeViewControllerSection)indexPath.section;
+    ConversationListViewControllerSection section = (ConversationListViewControllerSection)indexPath.section;
     switch (section) {
-        case HomeViewControllerSectionReminders: {
+        case ConversationListViewControllerSectionReminders: {
             return @[];
         }
-        case HomeViewControllerSectionConversations: {
+        case ConversationListViewControllerSectionConversations: {
             UITableViewRowAction *deleteAction =
                 [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault
                                                    title:NSLocalizedString(@"TXT_DELETE_TITLE", nil)
@@ -1220,7 +1226,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                  }];
 
             UITableViewRowAction *archiveAction;
-            if (self.homeViewMode == HomeViewMode_Inbox) {
+            if (self.conversationListMode == ConversationListMode_Inbox) {
                 archiveAction = [UITableViewRowAction
                     rowActionWithStyle:UITableViewRowActionStyleNormal
                                  title:NSLocalizedString(@"ARCHIVE_ACTION",
@@ -1246,7 +1252,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                 deleteAction,
             ];
         }
-        case HomeViewControllerSectionArchiveButton: {
+        case ConversationListViewControllerSectionArchiveButton: {
             return @[];
         }
     }
@@ -1254,15 +1260,15 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    HomeViewControllerSection section = (HomeViewControllerSection)indexPath.section;
+    ConversationListViewControllerSection section = (ConversationListViewControllerSection)indexPath.section;
     switch (section) {
-        case HomeViewControllerSectionReminders: {
+        case ConversationListViewControllerSectionReminders: {
             return NO;
         }
-        case HomeViewControllerSectionConversations: {
+        case ConversationListViewControllerSectionConversations: {
             return YES;
         }
-        case HomeViewControllerSectionArchiveButton: {
+        case ConversationListViewControllerSectionArchiveButton: {
             return NO;
         }
     }
@@ -1302,8 +1308,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     self.searchBar.text = nil;
 
-    [self.searchBar resignFirstResponder];
-    OWSAssertDebug(!self.searchBar.isFirstResponder);
+    [self dismissSearchKeyboard];
 
     [self updateSearchResultsVisibility];
 
@@ -1342,34 +1347,41 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.tableView setContentOffset:CGPointMake(0, -topInset) animated:isAnimated];
 }
 
+- (void)dismissSearchKeyboard
+{
+    [self.searchBar resignFirstResponder];
+    OWSAssertDebug(!self.searchBar.isFirstResponder);
+
+    // If we have a visible conversation, restore its first responder status so the input toolbar renders.
+    [self.conversationSplitViewController.selectedConversationViewController becomeFirstResponder];
+}
+
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
-    [self.searchBar resignFirstResponder];
-    OWSAssertDebug(!self.searchBar.isFirstResponder);
+    [self dismissSearchKeyboard];
 }
 
 #pragma mark - ConversationSearchViewDelegate
 
 - (void)conversationSearchViewWillBeginDragging
 {
-    [self.searchBar resignFirstResponder];
-    OWSAssertDebug(!self.searchBar.isFirstResponder);
+    [self dismissSearchKeyboard];
 }
 
 #pragma mark - HomeFeedTableViewCellDelegate
 
 - (void)tableViewCellTappedDelete:(NSIndexPath *)indexPath
 {
-    if (indexPath.section != HomeViewControllerSectionConversations) {
+    if (indexPath.section != ConversationListViewControllerSectionConversations) {
         OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)indexPath.section);
         return;
     }
 
     TSThread *thread = [self threadForIndexPath:indexPath];
 
-    __weak HomeViewController *weakSelf = self;
+    __weak ConversationListViewController *weakSelf = self;
     UIAlertController *alert =
         [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE",
                                                         @"Title for the 'conversation delete confirmation' alert.")
@@ -1388,6 +1400,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)deleteThread:(TSThread *)thread
 {
+    // If this conversation is currently visible, close it.
+    if ([self.conversationSplitViewController.selectedThread.uniqueId isEqualToString:thread.uniqueId]) {
+        [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
+    }
+
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         if ([thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread *groupThread = (TSGroupThread *)thread;
@@ -1407,19 +1424,24 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)archiveIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section != HomeViewControllerSectionConversations) {
+    if (indexPath.section != ConversationListViewControllerSectionConversations) {
         OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)indexPath.section);
         return;
     }
 
     TSThread *thread = [self threadForIndexPath:indexPath];
 
+    // If this conversation is currently visible, close it.
+    if ([self.conversationSplitViewController.selectedThread.uniqueId isEqualToString:thread.uniqueId]) {
+        [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
+    }
+
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        switch (self.homeViewMode) {
-            case HomeViewMode_Inbox:
+        switch (self.conversationListMode) {
+            case ConversationListMode_Inbox:
                 [thread archiveThreadWithTransaction:transaction];
                 break;
-            case HomeViewMode_Archive:
+            case ConversationListMode_Archive:
                 [thread unarchiveThreadWithTransaction:transaction];
                 break;
         }
@@ -1431,19 +1453,19 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     OWSLogInfo(@"%ld %ld", (long)indexPath.row, (long)indexPath.section);
 
-    [self.searchBar resignFirstResponder];
-    HomeViewControllerSection section = (HomeViewControllerSection)indexPath.section;
+    [self dismissSearchKeyboard];
+
+    ConversationListViewControllerSection section = (ConversationListViewControllerSection)indexPath.section;
     switch (section) {
-        case HomeViewControllerSectionReminders: {
+        case ConversationListViewControllerSectionReminders: {
             break;
         }
-        case HomeViewControllerSectionConversations: {
+        case ConversationListViewControllerSectionConversations: {
             TSThread *thread = [self threadForIndexPath:indexPath];
             [self presentThread:thread action:ConversationViewActionNone animated:YES];
-            [tableView deselectRowAtIndexPath:indexPath animated:YES];
             break;
         }
-        case HomeViewControllerSectionArchiveButton: {
+        case ConversationListViewControllerSectionArchiveButton: {
             [self showArchivedConversations];
             break;
         }
@@ -1465,44 +1487,41 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         return;
     }
 
-    DispatchMainThreadSafe(^{
-        ConversationViewController *conversationVC = [ConversationViewController new];
-        [conversationVC configureForThread:thread action:action focusMessageId:focusMessageId];
-        self.lastThread = thread;
+    [self.conversationSplitViewController presentThread:thread
+                                                 action:action
+                                         focusMessageId:focusMessageId
+                                               animated:isAnimated];
+}
 
-        if (self.homeViewMode == HomeViewMode_Archive) {
-            [self.navigationController pushViewController:conversationVC animated:isAnimated];
-        } else {
-            [self.navigationController setViewControllers:@[ self, conversationVC ] animated:isAnimated];
-            if (self.navigationController.presentedViewController) {
-                [self.navigationController dismissViewControllerAnimated:YES completion:nil];
-            }
-        }
-    });
+- (BOOL)isConversationActiveForThread:(TSThread *)thread
+{
+    OWSAssertDebug(thread);
+
+    return [self.conversationSplitViewController.selectedThread.uniqueId isEqualToString:thread.uniqueId];
 }
 
 #pragma mark - Groupings
 
 - (void)showArchivedConversations
 {
-    OWSAssertDebug(self.homeViewMode == HomeViewMode_Inbox);
+    OWSAssertDebug(self.conversationListMode == ConversationListMode_Inbox);
 
     // When showing archived conversations, we want to use a conventional "back" button
-    // to return to the "inbox" home view.
+    // to return to the "inbox" conversation list.
     [self applyArchiveBackButton];
 
     // Push a separate instance of this view using "archive" mode.
-    HomeViewController *homeView = [HomeViewController new];
-    homeView.homeViewMode = HomeViewMode_Archive;
-    [self.navigationController pushViewController:homeView animated:YES];
+    ConversationListViewController *conversationList = [ConversationListViewController new];
+    conversationList.conversationListMode = ConversationListMode_Archive;
+    [self showViewController:conversationList sender:self];
 }
 
 - (NSString *)currentGrouping
 {
-    switch (self.homeViewMode) {
-        case HomeViewMode_Inbox:
+    switch (self.conversationListMode) {
+        case ConversationListMode_Inbox:
             return TSInboxGroup;
-        case HomeViewMode_Archive:
+        case ConversationListMode_Archive:
             return TSArchiveGroup;
     }
 }
@@ -1511,13 +1530,13 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 #pragma mark GRDB Update
 
-- (void)homeViewDatabaseSnapshotWillUpdate
+- (void)conversationListDatabaseSnapshotWillUpdate
 {
     OWSAssertIsOnMainThread();
     [self anyUIDBWillUpdate];
 }
 
-- (void)homeViewDatabaseSnapshotDidUpdateWithUpdatedThreadIds:(NSSet<NSString *> *)updatedThreadIds
+- (void)conversationListDatabaseSnapshotDidUpdateWithUpdatedThreadIds:(NSSet<NSString *> *)updatedThreadIds
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(SSKFeatureFlags.storageMode != StorageModeYdb);
@@ -1529,13 +1548,13 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self anyUIDBDidUpdateWithUpdatedThreadIds:updatedThreadIds];
 }
 
-- (void)homeViewDatabaseSnapshotDidUpdateExternally
+- (void)conversationListDatabaseSnapshotDidUpdateExternally
 {
     OWSAssertIsOnMainThread();
     [self anyUIDBDidUpdateExternally];
 }
 
-- (void)homeViewDatabaseSnapshotDidReset
+- (void)conversationListDatabaseSnapshotDidReset
 {
     OWSAssertIsOnMainThread();
     if (self.shouldObserveDBModifications) {
@@ -1708,7 +1727,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         hasSavedThread = [SSKPreferences hasSavedThreadWithTransaction:transaction];
     }];
 
-    return (self.homeViewMode == HomeViewMode_Inbox && self.numberOfInboxThreads == 0
+    return (self.conversationListMode == ConversationListMode_Inbox && self.numberOfInboxThreads == 0
         && self.numberOfArchivedThreads == 0 && !hasDimissedFirstConversationCue && !hasSavedThread);
 }
 

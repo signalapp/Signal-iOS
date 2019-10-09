@@ -2,7 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "HomeViewCell.h"
+#import "ConversationListCell.h"
 #import "OWSAvatarBuilder.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/OWSFormat.h>
@@ -14,7 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface HomeViewCell ()
+@interface ConversationListCell ()
 
 @property (nonatomic) AvatarImageView *avatarView;
 @property (nonatomic) UILabel *nameLabel;
@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@implementation HomeViewCell
+@implementation ConversationListCell
 
 #pragma mark - Dependencies
 
@@ -197,13 +197,9 @@ NS_ASSUME_NONNULL_BEGIN
     return NSStringFromClass(self.class);
 }
 
-- (void)configureWithThread:(ThreadViewModel *)thread
-                  isBlocked:(BOOL)isBlocked
+- (void)configureWithThread:(ThreadViewModel *)thread isBlocked:(BOOL)isBlocked
 {
-    [self configureWithThread:thread
-                    isBlocked:isBlocked
-              overrideSnippet:nil
-                 overrideDate:nil];
+    [self configureWithThread:thread isBlocked:isBlocked overrideSnippet:nil overrideDate:nil];
 }
 
 - (void)configureWithThread:(ThreadViewModel *)thread
@@ -257,7 +253,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSUInteger unreadCount = thread.unreadCount;
     if (overrideSnippet) {
-        // If we're using the home view cell to render search results,
+        // If we're using the conversation list cell to render search results,
         // don't show "unread badge" or "message status" indicator.
         self.unreadBadge.hidden = YES;
         self.messageStatusView.hidden = YES;

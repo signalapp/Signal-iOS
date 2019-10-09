@@ -89,11 +89,11 @@ public class OnboardingController: NSObject {
     // MARK: - Factory Methods
 
     @objc
-    public func initialViewController() -> UIViewController {
-        AssertIsOnMainThread()
+    private(set) lazy var initialViewController = OnboardingSplashViewController(onboardingController: self)
 
-        let view = OnboardingSplashViewController(onboardingController: self)
-        return view
+    @objc
+    var currentViewController: UIViewController? {
+        return initialViewController.navigationController?.topViewController
     }
 
     // MARK: - Transitions
@@ -170,8 +170,8 @@ public class OnboardingController: NSObject {
         // At this point, the user has been prompted for contact access
         // and has valid service credentials.
         // We start the contact fetch/intersection now so that by the time
-        // they get to HomeView we can show meaningful contact in the suggested
-        // contact bubble.
+        // they get to conversation list we can show meaningful contact in
+        // the suggested contact bubble.
         contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
 
         if tsAccountManager.isReregistering() {
@@ -274,7 +274,7 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        showHomeView(view: view)
+        showConversationSplitView(view: view)
     }
 
     @objc
@@ -283,10 +283,10 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        showHomeView(view: view)
+        showConversationSplitView(view: view)
     }
 
-    private func showHomeView(view: UIViewController) {
+    private func showConversationSplitView(view: UIViewController) {
         AssertIsOnMainThread()
 
         guard let navigationController = view.navigationController else {
@@ -299,10 +299,10 @@ public class OnboardingController: NSObject {
         let isModal = navigationController.presentingViewController != nil
         if isModal {
             view.dismiss(animated: true, completion: {
-                SignalApp.shared().showHomeView()
+                SignalApp.shared().showConversationSplitView()
             })
         } else {
-            SignalApp.shared().showHomeView()
+            SignalApp.shared().showConversationSplitView()
         }
     }
 

@@ -5,7 +5,7 @@
 #import "ProfileViewController.h"
 #import "AppDelegate.h"
 #import "AvatarViewHelper.h"
-#import "HomeViewController.h"
+#import "ConversationListViewController.h"
 #import "OWSNavigationController.h"
 #import "Signal-Swift.h"
 #import "SignalsNavigationController.h"
@@ -482,12 +482,12 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     }
 }
 
-- (void)showHomeView
+- (void)showConversationSplitView
 {
     OWSAssertIsOnMainThread();
     OWSLogVerbose(@"");
 
-    [SignalApp.sharedApp showHomeView];
+    [SignalApp.sharedApp showConversationSplitView];
 }
 
 - (void)showPinCreation
@@ -497,12 +497,12 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
     // If the user already has a pin, or the pins for all feature is disabled, just go home
     if ([OWS2FAManager sharedManager].is2FAEnabled || !SSKFeatureFlags.pinsForEveryone) {
-        return [self showHomeView];
+        return [self showConversationSplitView];
     }
 
     __weak ProfileViewController *weakSelf = self;
     OWSPinSetupViewController *vc = [[OWSPinSetupViewController alloc] initWithCompletionHandler:^{
-        [weakSelf showHomeView];
+        [weakSelf showConversationSplitView];
     }];
 
     [self.navigationController pushViewController:vc animated:YES];

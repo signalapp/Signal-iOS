@@ -5,9 +5,7 @@
 #import "SignalApp.h"
 #import "AppDelegate.h"
 #import "ConversationViewController.h"
-#import "HomeViewController.h"
 #import "Signal-Swift.h"
-#import "SignalsNavigationController.h"
 #import <SignalCoreKit/Threading.h>
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>
@@ -16,6 +14,14 @@
 #import <SignalServiceKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface SignalApp ()
+
+@property (nonatomic, nullable, weak) ConversationSplitViewController *conversationSplitViewController;
+@property (nonatomic, nullable, weak) OnboardingController *onboardingController;
+@property (nonatomic) BOOL hasInitialRootViewController;
+
+@end
 
 @implementation SignalApp
 
@@ -52,6 +58,18 @@ NS_ASSUME_NONNULL_BEGIN
 + (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
+}
+
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
+- (OWSBackup *)backup
+{
+    return AppEnvironment.shared.backup;
 }
 
 #pragma mark -
@@ -113,6 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
                             animated:(BOOL)isAnimated
 {
     OWSAssertIsOnMainThread();
+    OWSAssertDebug(self.conversationSplitViewController);
 
     OWSLogInfo(@"");
 
@@ -122,17 +141,17 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     DispatchMainThreadSafe(^{
-        UIViewController *frontmostVC = [[UIApplication sharedApplication] frontmostViewController];
-        
-        if ([frontmostVC isKindOfClass:[ConversationViewController class]]) {
-            ConversationViewController *conversationVC = (ConversationViewController *)frontmostVC;
-            if ([conversationVC.thread.uniqueId isEqualToString:thread.uniqueId]) {
-                [conversationVC popKeyBoard];
+        if (self.conversationSplitViewController.selectedThread) {
+            if ([self.conversationSplitViewController.selectedThread.uniqueId isEqualToString:thread.uniqueId]) {
+                [self.conversationSplitViewController.selectedConversationViewController popKeyBoard];
                 return;
             }
         }
-        
-        [self.homeViewController presentThread:thread action:action focusMessageId:focusMessageId animated:isAnimated];
+
+        [self.conversationSplitViewController presentThread:thread
+                                                     action:action
+                                             focusMessageId:focusMessageId
+                                                   animated:isAnimated];
     });
 }
 
@@ -140,6 +159,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(threadId.length > 0);
+    OWSAssertDebug(self.conversationSplitViewController);
 
     OWSLogInfo(@"");
 
@@ -153,20 +173,18 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     DispatchMainThreadSafe(^{
-        UIViewController *frontmostVC = [[UIApplication sharedApplication] frontmostViewController];
-
-        if ([frontmostVC isKindOfClass:[ConversationViewController class]]) {
-            ConversationViewController *conversationVC = (ConversationViewController *)frontmostVC;
-            if ([conversationVC.thread.uniqueId isEqualToString:thread.uniqueId]) {
-                [conversationVC scrollToFirstUnreadMessage:isAnimated];
+        if (self.conversationSplitViewController.selectedThread) {
+            if ([self.conversationSplitViewController.selectedThread.uniqueId isEqualToString:thread.uniqueId]) {
+                [self.conversationSplitViewController.selectedConversationViewController
+                    scrollToFirstUnreadMessage:isAnimated];
                 return;
             }
         }
 
-        [self.homeViewController presentThread:thread
-                                        action:ConversationViewActionNone
-                                focusMessageId:nil
-                                      animated:isAnimated];
+        [self.conversationSplitViewController presentThread:thread
+                                                     action:ConversationViewActionNone
+                                             focusMessageId:nil
+                                                   animated:isAnimated];
     });
 }
 
@@ -197,17 +215,96 @@ NS_ASSUME_NONNULL_BEGIN
     exit(0);
 }
 
-- (void)showHomeView
+- (void)showConversationSplitView
 {
-    HomeViewController *homeView = [HomeViewController new];
-    SignalsNavigationController *navigationController =
-        [[SignalsNavigationController alloc] initWithRootViewController:homeView];
-    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-    appDelegate.window.rootViewController = navigationController;
-    OWSAssertDebug([navigationController.topViewController isKindOfClass:[HomeViewController class]]);
+    ConversationSplitViewController *splitViewController = [ConversationSplitViewController new];
 
-    // Clear the signUpFlowNavigationController.
-    [self setSignUpFlowNavigationController:nil];
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    appDelegate.window.rootViewController = splitViewController;
+
+    self.conversationSplitViewController = splitViewController;
+    self.onboardingController = nil;
+}
+
+- (void)showOnboardingView
+{
+    OnboardingController *onboardingController = [OnboardingController new];
+    UIViewController *initialViewController = [onboardingController initialViewController];
+    OWSNavigationController *navController =
+        [[OWSNavigationController alloc] initWithRootViewController:initialViewController];
+
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    appDelegate.window.rootViewController = navController;
+
+    self.onboardingController = onboardingController;
+    self.conversationSplitViewController = nil;
+}
+
+- (void)showBackupRestoreView
+{
+    BackupRestoreViewController *backupRestoreVC = [BackupRestoreViewController new];
+    OWSNavigationController *navController =
+        [[OWSNavigationController alloc] initWithRootViewController:backupRestoreVC];
+
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    appDelegate.window.rootViewController = navController;
+
+    self.onboardingController = nil;
+    self.conversationSplitViewController = nil;
+}
+
+- (void)ensureRootViewController:(NSTimeInterval)launchStartedAt
+{
+    OWSAssertIsOnMainThread();
+
+    OWSLogInfo(@"ensureRootViewController");
+
+    if (!AppReadiness.isAppReady || self.hasInitialRootViewController) {
+        return;
+    }
+    self.hasInitialRootViewController = YES;
+
+    NSTimeInterval startupDuration = CACurrentMediaTime() - launchStartedAt;
+    OWSLogInfo(@"Presenting app %.2f seconds after launch started.", startupDuration);
+
+    if ([self.tsAccountManager isRegistered]) {
+        if (self.backup.hasPendingRestoreDecision) {
+            [self showBackupRestoreView];
+        } else {
+            [self showConversationSplitView];
+        }
+    } else {
+        [self showOnboardingView];
+    }
+
+    [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
+
+    [UIViewController attemptRotationToDeviceOrientation];
+}
+
+- (BOOL)receivedVerificationCode:(NSString *)verificationCode
+{
+    OWSAssertDebug(self.onboardingController);
+
+    UIViewController *currentOnboardingVC = self.onboardingController.currentViewController;
+    if (![currentOnboardingVC isKindOfClass:[OnboardingVerificationViewController class]]) {
+        OWSLogWarn(@"Not the verification view controller we expected. Got %@ instead",
+            NSStringFromClass(currentOnboardingVC.class));
+
+        return NO;
+    }
+
+    OnboardingVerificationViewController *verificationVC = (OnboardingVerificationViewController *)currentOnboardingVC;
+    [verificationVC setVerificationCodeAndTryToVerify:verificationCode];
+    return YES;
+}
+
+- (void)showNewConversationView
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(self.conversationSplitViewController);
+
+    [self.conversationSplitViewController showNewConversationView];
 }
 
 @end

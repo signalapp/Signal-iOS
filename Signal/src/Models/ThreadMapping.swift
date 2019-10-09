@@ -90,7 +90,7 @@ class ThreadMapping: NSObject {
 
     private var threads: [TSThread] = []
 
-    private let kSection: Int = HomeViewControllerSection.conversations.rawValue
+    private let kSection: Int = ConversationListViewControllerSection.conversations.rawValue
 
     @objc
     let numberOfSections: Int = 1

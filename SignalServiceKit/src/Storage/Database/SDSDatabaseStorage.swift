@@ -267,10 +267,10 @@ public class SDSDatabaseStorage: SDSTransactable {
                     return
                 }
 
-                if let homeViewDatabaseObserver = grdbStorage.homeViewDatabaseObserver {
-                    homeViewDatabaseObserver.didTouch(threadId: thread.uniqueId, transaction: grdb)
+                if let conversationListDatabaseObserver = grdbStorage.conversationListDatabaseObserver {
+                    conversationListDatabaseObserver.didTouch(threadId: thread.uniqueId, transaction: grdb)
                 } else if AppReadiness.isAppReady() {
-                    owsFailDebug("homeViewDatabaseObserver was unexpectedly nil")
+                    owsFailDebug("conversationListDatabaseObserver was unexpectedly nil")
                 }
                 if let genericDatabaseObserver = grdbStorage.genericDatabaseObserver {
                     genericDatabaseObserver.didTouchThread(transaction: grdb)
