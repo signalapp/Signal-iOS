@@ -478,25 +478,32 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     public func getFileForCell(_ cell: GifPickerCell) {
+        enum GetFileError: Error {
+            case noLongerRelevant
+        }
+
         GiphyDownloader.giphyDownloader.cancelAllRequests()
 
         firstly {
             cell.requestRenditionForSending()
-        }.done { [weak self] (asset: ProxiedContentAsset) in
-            guard let self = self else {
-                Logger.info("ignoring send, since VC was dismissed before fetching finished.")
-                return
-            }
+        }.map(on: .global()) { [weak self] (asset: ProxiedContentAsset) -> SignalAttachment in
+            guard let _ = self else { throw GetFileError.noLongerRelevant }
+
             guard let rendition = asset.assetDescription as? GiphyRendition else {
-                owsFailDebug("Invalid asset description.")
-                return
+                throw OWSAssertionError("Invalid asset description.")
             }
 
-            let filePath = asset.filePath
-            let dataSource = try DataSourcePath.dataSource(withFilePath: filePath,
+            let pathForCachedAsset = asset.filePath
+            let pathForConsumableFile = OWSFileSystem.temporaryFilePath(withFileExtension: "gif")
+            try FileManager.default.copyItem(atPath: pathForCachedAsset, toPath: pathForConsumableFile)
+            let dataSource = try DataSourcePath.dataSource(withFilePath: pathForConsumableFile,
                                                            shouldDeleteOnDeallocation: false)
 
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: rendition.utiType, imageQuality: .original)
+            return SignalAttachment.attachment(dataSource: dataSource, dataUTI: rendition.utiType, imageQuality: .original)
+        }.done { [weak self] attachment in
+            guard let self = self else {
+                throw GetFileError.noLongerRelevant
+            }
 
             self.delegate?.gifPickerDidSelect(attachment: attachment)
         }.catch { [weak self] error in
@@ -509,7 +516,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                                           message: error.localizedDescription,
                                           preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: CommonStrings.retryButton, style: .default) { _ in
-                    self.getFileForCell(cell)
+                self.getFileForCell(cell)
             })
             alert.addAction(UIAlertAction(title: CommonStrings.dismissButton, style: .cancel) { _ in
                 self.delegate?.gifPickerDidCancel()
