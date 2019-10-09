@@ -1185,7 +1185,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [self messageSendDidFail:messageSend deviceMessages:deviceMessages statusCode:statusCode error:error responseData:responseData];
     };
     
-    if ([recipient.recipientId isEqualToString:LKGroupChatAPI.publicChatServer]) {
+    // Get the group chat info if we have it
+    __block LKGroupChat *groupChat;
+    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        groupChat = [LKDatabaseUtilities getGroupChatForThreadID:message.uniqueThreadId transaction: transaction];
+    }];
+    
+    if (groupChat != nil) {
         NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
         NSString *displayName = SSKEnvironment.shared.profileManager.localProfileName;
         if (displayName == nil) { displayName = @"Anonymous"; }
@@ -1200,7 +1206,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
         LKGroupMessage *groupMessage = [[LKGroupMessage alloc] initWithHexEncodedPublicKey:userHexEncodedPublicKey displayName:displayName body:message.body type:LKGroupChatAPI.publicChatMessageType
          timestamp:message.timestamp quotedMessageTimestamp:quoteID quoteeHexEncodedPublicKey:quoteeHexEncodedPublicKey quotedMessageBody:quote.body quotedMessageServerID:quotedMessageServerID signatureData:nil signatureVersion:0];
-        [[LKGroupChatAPI sendMessage:groupMessage toGroup:LKGroupChatAPI.publicChatServerID onServer:LKGroupChatAPI.publicChatServer]
+        [[LKGroupChatAPI sendMessage:groupMessage toGroup:groupChat.channel onServer:groupChat.server]
         .thenOn(OWSDispatch.sendingQueue, ^(LKGroupMessage *groupMessage) {
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 [message saveGroupChatServerID:groupMessage.serverID in:transaction];

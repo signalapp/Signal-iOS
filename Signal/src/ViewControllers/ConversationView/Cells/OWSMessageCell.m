@@ -7,6 +7,7 @@
 #import "OWSMessageBubbleView.h"
 #import "OWSMessageHeaderView.h"
 #import "Session-Swift.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -298,10 +299,17 @@ NS_ASSUME_NONNULL_BEGIN
     [self.contentView addSubview:self.avatarView];
     
     if (self.viewItem.isGroupThread && !self.viewItem.isRSSFeed) {
-        BOOL isModerator = [LKGroupChatAPI isUserModerator:incomingMessage.authorId forGroup:LKGroupChatAPI.publicChatServerID onServer:LKGroupChatAPI.publicChatServer];
-        UIImage *moderatorIcon = [UIImage imageNamed:@"Crown"];
-        self.moderatorIconImageView.image = moderatorIcon;
-        self.moderatorIconImageView.hidden = !isModerator;
+        __block LKGroupChat *groupChat;
+        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            groupChat = [LKDatabaseUtilities getGroupChatForThreadID:self.viewItem.interaction.uniqueThreadId transaction: transaction];
+        }];
+        
+        if (groupChat != nil) {
+            BOOL isModerator = [LKGroupChatAPI isUserModerator:incomingMessage.authorId forGroup:groupChat.channel onServer:groupChat.server];
+            UIImage *moderatorIcon = [UIImage imageNamed:@"Crown"];
+            self.moderatorIconImageView.image = moderatorIcon;
+            self.moderatorIconImageView.hidden = !isModerator;
+        }
     }
     
     [self.contentView addSubview:self.moderatorIconImageView];

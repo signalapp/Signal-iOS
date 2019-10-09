@@ -535,6 +535,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
 
+    // TODO: Fix this to set display name on all servers
     [[LKGroupChatAPI setDisplayName:localProfileName on:LKGroupChatAPI.publicChatServer]
     .thenOn(dispatch_get_main_queue(), ^() {
         successBlock();

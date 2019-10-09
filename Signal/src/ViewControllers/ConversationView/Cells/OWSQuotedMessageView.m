@@ -553,6 +553,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         
         if (quotedAuthor == self.quotedMessage.authorId) {
             [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                // TODO: Fix this to use dynamic LKGroup variables!
                 NSString *collection = [NSString stringWithFormat:@"%@.%@", LKGroupChatAPI.publicChatServer, @(LKGroupChatAPI.publicChatServerID)];
                 NSString *displayName = [transaction stringForKey:self.quotedMessage.authorId inCollection:collection];
                 if (displayName != nil) { quotedAuthor = displayName; }
