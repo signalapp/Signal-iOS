@@ -22,14 +22,19 @@ extension UIView {
         }
     }
     
-    func pin(_ constraineeEdge: HorizontalEdge, to constrainerEdge: HorizontalEdge, of view: UIView, withInset inset: CGFloat) {
+    func pin(_ constraineeEdge: HorizontalEdge, to constrainerEdge: HorizontalEdge, of view: UIView, withInset inset: CGFloat = 0) {
         translatesAutoresizingMaskIntoConstraints = false
         anchor(from: constraineeEdge).constraint(equalTo: view.anchor(from: constrainerEdge), constant: inset).isActive = true
     }
     
-    func pin(_ constraineeEdge: VerticalEdge, to constrainerEdge: VerticalEdge, of view: UIView, withInset inset: CGFloat) {
+    func pin(_ constraineeEdge: VerticalEdge, to constrainerEdge: VerticalEdge, of view: UIView, withInset inset: CGFloat = 0) {
         translatesAutoresizingMaskIntoConstraints = false
         anchor(from: constraineeEdge).constraint(equalTo: view.anchor(from: constrainerEdge), constant: inset).isActive = true
+    }
+    
+    func pin(to view: UIView) {
+        [ HorizontalEdge.leading, HorizontalEdge.trailing ].forEach { pin($0, to: $0, of: view) }
+        [ VerticalEdge.top, VerticalEdge.bottom ].forEach { pin($0, to: $0, of: view) }
     }
     
     func center(_ direction: Direction, in view: UIView) {

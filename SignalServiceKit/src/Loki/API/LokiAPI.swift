@@ -3,6 +3,7 @@ import PromiseKit
 @objc(LKAPI)
 public final class LokiAPI : NSObject {
     private static var lastDeviceLinkUpdate: [String:Date] = [:] // Hex encoded public key to date
+    @objc static var userIDCache: [String:Set<String>] = [:] // Thread ID to set of user hex encoded public keys
     
     // MARK: Convenience
     internal static let storage = OWSPrimaryStorage.shared()
@@ -14,8 +15,11 @@ public final class LokiAPI : NSObject {
     private static let defaultTimeout: TimeInterval = 20
     private static let longPollingTimeout: TimeInterval = 40
     private static let deviceLinkUpdateInterval: TimeInterval = 8 * 60
-    public static let defaultMessageTTL: UInt64 = 24 * 60 * 60 * 1000
+    private static let receivedMessageHashValuesKey = "receivedMessageHashValuesKey"
+    private static let receivedMessageHashValuesCollection = "receivedMessageHashValuesCollection"
+    private static var userIDScanLimit: UInt = 4096
     internal static var powDifficulty: UInt = 4
+    public static let defaultMessageTTL: UInt64 = 24 * 60 * 60 * 1000
     
     // MARK: Types
     public typealias RawResponse = Any
@@ -260,10 +264,7 @@ public final class LokiAPI : NSObject {
         }
     }
 
-    // MARK: Caching
-    private static let receivedMessageHashValuesKey = "receivedMessageHashValuesKey"
-    private static let receivedMessageHashValuesCollection = "receivedMessageHashValuesCollection"
-
+    // MARK: Message Hash Caching
     private static func getLastMessageHashValue(for target: LokiAPITarget) -> String? {
         var result: String? = nil
         // Uses a read/write connection because getting the last message hash value also removes expired messages as needed
@@ -292,6 +293,63 @@ public final class LokiAPI : NSObject {
         storage.dbReadWriteConnection.readWrite { transaction in
             transaction.setObject(receivedMessageHashValues, forKey: receivedMessageHashValuesKey, inCollection: receivedMessageHashValuesCollection)
         }
+    }
+    
+    // MARK: User ID Caching
+    @objc public static func cache(_ userHexEncodedPublicKey: String, for threadID: String) {
+        if let cache = userIDCache[threadID] {
+            var mutableCache = cache
+            mutableCache.insert(userHexEncodedPublicKey)
+            userIDCache[threadID] = mutableCache
+        } else {
+            userIDCache[threadID] = [ userHexEncodedPublicKey ]
+        }
+    }
+    
+    @objc public static func getUserIDs(for query: String, in threadID: String) -> [String] {
+        // Prepare
+        guard let cache = userIDCache[threadID] else { return [] }
+        var candidates: [(id: String, displayName: String)] = []
+        // Gather candidates
+        storage.dbReadConnection.read { transaction in
+            let collection = "\(LokiGroupChatAPI.publicChatServer).\(LokiGroupChatAPI.publicChatServerID)"
+            candidates = cache.flatMap { id in
+                guard let displayName = transaction.object(forKey: id, inCollection: collection) as! String? else { return nil }
+                return (id: id, displayName: displayName)
+            }
+        }
+        // Sort alphabetically first
+        candidates.sort { $0.displayName < $1.displayName }
+        if query.count >= 2 {
+            // Filter out any non-matching candidates
+            candidates = candidates.filter { $0.displayName.contains(query) }
+            // Sort based on where in the candidate the query occurs
+            candidates.sort { $0.displayName.range(of: query)!.lowerBound < $1.displayName.range(of: query)!.lowerBound }
+        }
+        // Return
+        return candidates.map { $0.id } // Inefficient to do this and then look up the display name again later, but easy to interface with Obj-C
+    }
+    
+    @objc public static func populateUserIDCacheIfNeeded(for threadID: String, in transaction: YapDatabaseReadWriteTransaction? = nil) {
+        guard userIDCache[threadID] == nil else { return }
+        var result: Set<String> = []
+        func populate(in transaction: YapDatabaseReadWriteTransaction) {
+            guard let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return }
+            let interactions = transaction.ext(TSMessageDatabaseViewExtensionName) as! YapDatabaseViewTransaction
+            interactions.enumerateKeysAndObjects(inGroup: threadID) { _, _, object, index, _ in
+                guard let message = object as? TSIncomingMessage, index < userIDScanLimit else { return }
+                result.insert(message.authorId)
+            }
+        }
+        if let transaction = transaction {
+            populate(in: transaction)
+        } else {
+            storage.dbReadWriteConnection.readWrite { transaction in
+                populate(in: transaction)
+            }
+        }
+        result.insert(userHexEncodedPublicKey)
+        userIDCache[threadID] = result
     }
 }
 
