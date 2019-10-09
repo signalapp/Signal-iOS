@@ -750,13 +750,15 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
 
     static func unreadCountInAllThreads(transaction: ReadTransaction) -> UInt {
         do {
-            guard let count = try UInt.fetchOne(transaction.database,
-                                                sql: """
+            let sql = """
                 SELECT COUNT(*)
                 FROM \(InteractionRecord.databaseTableName)
-                WHERE \(interactionColumn: .read) IS 0
-                """,
-                arguments: []) else {
+                WHERE
+            """ + sqlClauseForUnreadInteractionCounts
+        let arguments: StatementArguments = statementArgumentsForUnreadInteractionCounts
+            guard let count = try UInt.fetchOne(transaction.database,
+                                                sql: sql,
+                arguments: arguments) else {
                     owsFailDebug("count was unexpectedly nil")
                     return 0
             }
@@ -914,13 +916,10 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                 SELECT COUNT(*)
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
-                AND \(interactionColumn: .errorType) IS NOT ?
-                AND \(interactionColumn: .messageType) IS NOT ?
-                AND \(interactionColumn: .read) IS 0
-            """
-            let arguments: StatementArguments = [threadUniqueId,
-                                                 TSErrorMessageType.nonBlockingIdentityChange.rawValue,
-                                                 TSInfoMessageType.verificationStateChange.rawValue]
+                AND
+            """ + GRDBInteractionFinderAdapter.sqlClauseForUnreadInteractionCounts
+            let arguments: StatementArguments = [threadUniqueId]
+            + GRDBInteractionFinderAdapter.statementArgumentsForUnreadInteractionCounts
 
             guard let count = try UInt.fetchOne(transaction.database,
                                                 sql: sql,
@@ -957,12 +956,12 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
     func enumerateUnseenInteractions(transaction: GRDBReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
 
         let sql = """
-        SELECT *
-        FROM \(InteractionRecord.databaseTableName)
-        WHERE \(interactionColumn: .threadUniqueId) = ?
-        AND \(interactionColumn: .read) IS 0
-        """
-        let arguments: StatementArguments = [threadUniqueId]
+            SELECT *
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND
+        """ + sqlClauseForAllUnreadInteractions
+        let arguments: StatementArguments = [threadUniqueId] + statementArgumentsForAllUnreadInteractions
         let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
         while let interaction = try cursor.next() {
             var stop: ObjCBool = false
@@ -1125,6 +1124,69 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         let arguments: StatementArguments = [threadUniqueId, SDSRecordType.outgoingMessage.rawValue]
         return try! UInt.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? 0
     }
+
+    // MARK: - Unseen & Unread
+
+    private let sqlClauseForAllUnreadInteractions: String = {
+        // The nomenclature we've inherited from our YDB database views is confusing.
+        //
+        // * "Unseen" refers to "all unread interactions".
+        // * "Unread" refers to "unread interactions which affect unread counts".
+        //
+        // This clause is used for the former case.
+        //
+        // We can either whitelist or blacklist interactions.
+        // It's a lot easier to whitelist.
+        //
+        // POST GRDB TODO: Rename "unseen" and "unread" finder methods.
+        return """
+        (
+            \(interactionColumn: .read) IS 0
+            AND \(interactionColumn: .recordType) IN ( ?, ?, ?, ? )
+        )
+        """
+    }()
+
+    private let statementArgumentsForAllUnreadInteractions: StatementArguments = [
+        SDSRecordType.incomingMessage.rawValue,
+        SDSRecordType.call.rawValue,
+        SDSRecordType.infoMessage.rawValue,
+        SDSRecordType.errorMessage.rawValue
+    ]
+
+    private static let sqlClauseForUnreadInteractionCounts: String = {
+        // The nomenclature we've inherited from our YDB database views is confusing.
+        //
+        // * "Unseen" refers to "all unread interactions".
+        // * "Unread" refers to "unread interactions which affect unread counts".
+        //
+        // This clause is used for the latter case.
+        //
+        // We can either whitelist or blacklist interactions.
+        // It's a lot easier to whitelist.
+        //
+        // POST GRDB TODO: Rename "unseen" and "unread" finder methods.
+        return """
+        (
+            \(interactionColumn: .read) IS 0
+            AND (
+                \(interactionColumn: .recordType) IN ( ?, ? )
+                OR (
+                    \(interactionColumn: .recordType) IS ?
+                    AND \(interactionColumn: .messageType) IS ?
+                )
+            )
+        )
+        """
+    }()
+
+    private static let statementArgumentsForUnreadInteractionCounts: StatementArguments = [
+        SDSRecordType.incomingMessage.rawValue,
+        SDSRecordType.call.rawValue,
+        SDSRecordType.infoMessage.rawValue,
+        TSInfoMessageType.userJoinedSignal.rawValue
+    ]
+
 }
 
 private func assertionError(_ description: String) -> Error {
