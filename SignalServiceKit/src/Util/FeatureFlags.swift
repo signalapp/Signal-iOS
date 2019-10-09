@@ -18,7 +18,8 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .beta
+//let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .beta
+let build: FeatureBuild = .beta
 
 // MARK: -
 
@@ -89,14 +90,15 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static var storageMode: StorageMode {
-        if CurrentAppContext().isRunningTests {
-            // We should be running the tests using both .ydbTests or .grdbTests.
-            return .grdbTests
-        } else if build.includes(.dev) {
-            return .grdbThrowawayIfMigrating
-        } else {
-            return .ydb
-        }
+        return .grdbThrowawayIfMigrating
+//        if CurrentAppContext().isRunningTests {
+//            // We should be running the tests using both .ydbTests or .grdbTests.
+//            return .grdbTests
+//        } else if build.includes(.dev) {
+//            return .grdbThrowawayIfMigrating
+//        } else {
+//            return .ydb
+//        }
     }
 
     // Don't enable this flag in production.
