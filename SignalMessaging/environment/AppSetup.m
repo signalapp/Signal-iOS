@@ -159,6 +159,14 @@ NS_ASSUME_NONNULL_BEGIN
         [NSKeyedUnarchiver setClass:[ExperienceUpgrade class] forClassName:[ExperienceUpgrade collection]];
         [NSKeyedUnarchiver setClass:[ExperienceUpgrade class] forClassName:@"Signal.ExperienceUpgrade"];
 
+        // Prevent device from sleeping during migrations.
+        // This protects long migrations (e.g. the YDB-to-GRDB migration)
+        // from the iOS 13 background crash.
+        //
+        // We can use any object.
+        NSObject *sleepBlockObject = [NSObject new];
+        [DeviceSleepManager.sharedInstance addBlockWithBlockObject:sleepBlockObject];
+
         dispatch_block_t completionBlock = ^{
             [SSKEnvironment.shared warmCaches];
 
@@ -168,7 +176,9 @@ NS_ASSUME_NONNULL_BEGIN
                 // Don't start database migrations until storage is ready.
                 [VersionMigrations performUpdateCheckWithCompletion:^() {
                     OWSAssertIsOnMainThread();
-                    
+
+                    [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:sleepBlockObject];
+
                     migrationCompletion();
 
                     OWSAssertDebug(backgroundTask);
