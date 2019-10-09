@@ -69,7 +69,6 @@ static NSTimeInterval launchStartedAt;
 // Loki
 @property (nonatomic) LKP2PServer *lokiP2PServer;
 @property (nonatomic) LKLongPoller *lokiLongPoller;
-@property (nonatomic) LKGroupChatPoller *lokiPublicChatPoller;
 @property (nonatomic) LKRSSFeedPoller *lokiNewsFeedPoller;
 @property (nonatomic) LKRSSFeedPoller *lokiMessengerUpdatesFeedPoller;
 
@@ -1525,11 +1524,6 @@ static NSTimeInterval launchStartedAt;
     [self.lokiLongPoller stopIfNeeded];
 }
 
-- (LKGroupChat *)lokiPublicChat
-{
-    return [[LKGroupChat alloc] initWithChannel:LKGroupChatAPI.publicChatServerID server:LKGroupChatAPI.publicChatServer displayName:NSLocalizedString(@"Loki Public Chat", @"") isDeletable:true];
-}
-
 - (LKRSSFeed *)lokiNewsFeed
 {
     return [[LKRSSFeed alloc] initWithId:@"loki.network.feed" server:@"https://loki.network/feed/" displayName:NSLocalizedString(@"Loki News", @"") isDeletable:true];
@@ -1542,25 +1536,18 @@ static NSTimeInterval launchStartedAt;
 
 - (void)createGroupChatsIfNeeded
 {
-    LKGroupChat *publicChat = self.lokiPublicChat;
-    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-    NSString *userDefaultsKey = [@"isGroupChatSetUp." stringByAppendingString:publicChat.id];
-    BOOL isChatSetUp = [NSUserDefaults.standardUserDefaults boolForKey:userDefaultsKey];
-    if (!isChatSetUp || !publicChat.isDeletable) {
-        TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:publicChat.displayName memberIds:@[ userHexEncodedPublicKey, publicChat.server ] image:nil groupId:[publicChat.id dataUsingEncoding:NSUTF8StringEncoding]];
-        __block TSGroupThread *thread;
-        [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            thread = [TSGroupThread getOrCreateThreadWithGroupModel:group transaction:transaction];
-            NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
-            NSCalendar *calendar = NSCalendar.currentCalendar;
-            [calendar setTimeZone:timeZone];
-            NSDateComponents *dateComponents = [NSDateComponents new];
-            [dateComponents setYear:999];
-            NSDate *date = [calendar dateByAddingComponents:dateComponents toDate:[NSDate new] options:0];
-            [thread updateWithMutedUntilDate:date transaction:transaction];
-        }];
-        [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
-        [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
+    // Setup our default public chats
+    for (LKGroupChat *chat in LKGroupChat.defaultChats) {
+        NSString *userDefaultsKey = [@"isGroupChatSetUp." stringByAppendingString:chat.id];
+        BOOL isChatSetUp = [NSUserDefaults.standardUserDefaults boolForKey:userDefaultsKey];
+        if (!isChatSetUp || !chat.isDeletable) {
+            [LKPublicChatManager.shared addChatWithServer:chat.server channel:chat.channel name:chat.displayName];
+            [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                TSGroupThread *thread = [TSGroupThread threadWithGroupId:chat.idAsData transaction:transaction];
+                if (thread != nil) { [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread]; }
+            }];
+            [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
+        }
     }
 }
 
@@ -1590,18 +1577,6 @@ static NSTimeInterval launchStartedAt;
     }
 }
 
-- (void)createGroupChatPollersIfNeeded
-{
-    // Only create the group chat pollers if their threads aren't deleted
-    __block TSGroupThread *thread;
-    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        thread = [TSGroupThread threadWithGroupId:[self.lokiPublicChat.id dataUsingEncoding:NSUTF8StringEncoding] transaction:transaction];
-    }];
-    if (thread != nil && self.lokiPublicChatPoller == nil) {
-        self.lokiPublicChatPoller = [[LKGroupChatPoller alloc] initForGroup:self.lokiPublicChat];
-    }
-}
-
 - (void)createRSSFeedPollersIfNeeded
 {
     // Only create the RSS feed pollers if their threads aren't deleted
@@ -1620,8 +1595,7 @@ static NSTimeInterval launchStartedAt;
 
 - (void)startGroupChatPollersIfNeeded
 {
-    [self createGroupChatPollersIfNeeded];
-    if (self.lokiPublicChatPoller != nil) { [self.lokiPublicChatPoller startIfNeeded]; }
+    [LKPublicChatManager.shared startPollersIfNeeded];
 }
 
 - (void)startRSSFeedPollersIfNeeded
@@ -1635,10 +1609,6 @@ static NSTimeInterval launchStartedAt;
     NSDictionary *userInfo = notification.userInfo;
     NSString *threadID = (NSString *)userInfo[@"threadId"];
     if (threadID == nil) { return; }
-    if ([threadID isEqualToString:[TSGroupThread threadIdFromGroupId:[self.lokiPublicChat.id dataUsingEncoding:NSUTF8StringEncoding]]] && self.lokiPublicChatPoller != nil) {
-        [self.lokiPublicChatPoller stop];
-        self.lokiPublicChatPoller = nil;
-    }
     if ([threadID isEqualToString:[TSGroupThread threadIdFromGroupId:[self.lokiNewsFeed.id dataUsingEncoding:NSUTF8StringEncoding]]] && self.lokiNewsFeedPoller != nil) {
         [self.lokiNewsFeedPoller stop];
         self.lokiNewsFeedPoller = nil;

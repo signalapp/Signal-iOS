@@ -13,6 +13,7 @@
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSMessage.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -553,10 +554,12 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         
         if (quotedAuthor == self.quotedMessage.authorId) {
             [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                // TODO: Fix this to use dynamic LKGroup variables!
-                NSString *collection = [NSString stringWithFormat:@"%@.%@", LKGroupChatAPI.publicChatServer, @(LKGroupChatAPI.publicChatServerID)];
-                NSString *displayName = [transaction stringForKey:self.quotedMessage.authorId inCollection:collection];
-                if (displayName != nil) { quotedAuthor = displayName; }
+                LKGroupChat *chat = [LKDatabaseUtilities getGroupChatForThreadID:self.quotedMessage.threadId transaction:transaction];
+                if (chat != nil) {
+                    NSString *collection = [NSString stringWithFormat:@"%@.%@", chat.server, @(chat.channel)];
+                    NSString *displayName = [transaction stringForKey:self.quotedMessage.authorId inCollection:collection];
+                    if (displayName != nil) { quotedAuthor = displayName; }
+                }
             }];
         }
         

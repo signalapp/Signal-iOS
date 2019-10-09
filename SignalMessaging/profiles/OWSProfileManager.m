@@ -535,14 +535,16 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
 
-    // TODO: Fix this to set display name on all servers
-    [[LKGroupChatAPI setDisplayName:localProfileName on:LKGroupChatAPI.publicChatServer]
-    .thenOn(dispatch_get_main_queue(), ^() {
-        successBlock();
-    })
-    .catchOn(dispatch_get_main_queue(), ^(NSError *error) {
-        failureBlock(error);
-    }) retainUntilComplete];
+    __block NSDictionary *chats;
+    [SSKEnvironment.shared.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        chats = [LKDatabaseUtilities getAllGroupChats:transaction];
+    }];
+    
+    for (LKGroupChat *chat in chats.allValues) {
+        [[LKGroupChatAPI setDisplayName:localProfileName on:chat.server] retainUntilComplete];
+    }
+    
+    successBlock();
 }
 
 - (void)fetchLocalUsersProfile

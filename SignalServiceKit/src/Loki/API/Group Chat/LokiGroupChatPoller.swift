@@ -1,6 +1,6 @@
 
 @objc(LKGroupChatPoller)
-public final class GroupChatPoller : NSObject {
+public final class LokiGroupChatPoller : NSObject {
     private let group: LokiGroupChat
     private var pollForNewMessagesTimer: Timer? = nil
     private var pollForDeletedMessagesTimer: Timer? = nil
@@ -50,7 +50,7 @@ public final class GroupChatPoller : NSObject {
             let endIndex = senderHexEncodedPublicKey.endIndex
             let cutoffIndex = senderHexEncodedPublicKey.index(endIndex, offsetBy: -8)
             let senderDisplayName = "\(message.displayName) (...\(senderHexEncodedPublicKey[cutoffIndex..<endIndex]))"
-            let id = group.id.data(using: String.Encoding.utf8)!
+            let id = group.idAsData!
             let groupContext = SSKProtoGroupContext.builder(id: id, type: .deliver)
             groupContext.setName(group.displayName)
             let dataMessage = SSKProtoDataMessage.builder()
@@ -89,7 +89,7 @@ public final class GroupChatPoller : NSObject {
                 isDuplicate = id != nil
             }
             guard !isDuplicate else { return }
-            guard let groupID = group.id.data(using: .utf8) else { return }
+            guard let groupID = group.idAsData else { return }
             let thread = TSGroupThread.getOrCreateThread(withGroupId: groupID)
             let signalQuote: TSQuotedMessage?
             if let quote = message.quote {

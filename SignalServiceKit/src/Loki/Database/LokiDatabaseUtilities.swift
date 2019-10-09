@@ -27,7 +27,7 @@ public final class LokiDatabaseUtilities : NSObject {
     
     @objc(getAllGroupChats:)
     public static func objc_getAllGroupChats(in transaction: YapDatabaseReadTransaction) -> [String: LokiGroupChat] {
-        return OWSPrimaryStorage.shared().getAllGroupChats(in: transaction)
+        return OWSPrimaryStorage.shared().getAllGroupChats(with: transaction)
     }
 
     @objc(getGroupChatForThreadID:transaction:)

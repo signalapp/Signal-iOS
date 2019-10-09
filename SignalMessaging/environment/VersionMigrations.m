@@ -93,6 +93,11 @@ NS_ASSUME_NONNULL_BEGIN
     if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.3.0"] && [self.tsAccountManager isRegistered]) {
         [self clearBloomFilterCache];
     }
+    
+    // Loki
+    if ([self isVersion:previousVersion lessThan:@"1.2.1"] && [self.tsAccountManager isRegistered]) {
+        [self updatePublicChatMapping];
+    }
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [[[OWSDatabaseMigrationRunner alloc] init] runAllOutstandingWithCompletion:completion];
@@ -160,6 +165,21 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         OWSLogDebug(@"No bloom filter cache to remove.");
     }
+}
+
+# pragma mark Loki - Upgrading to public chat manager
+
+// Versions less than or equal to 1.2.0 didn't store group chat mappings
++ (void)updatePublicChatMapping
+{
+    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+        for (LKGroupChat *chat in LKGroupChat.defaultChats) {
+            TSGroupThread *thread = [TSGroupThread threadWithGroupId:chat.idAsData transaction:transaction];
+            if (thread != nil) {
+                [LKDatabaseUtilities setGroupChat:chat threadID:thread.uniqueId transaction:transaction];
+            }
+        }
+    }];
 }
 
 @end

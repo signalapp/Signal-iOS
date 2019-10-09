@@ -9,13 +9,8 @@ public final class LokiGroupChatAPI : LokiDotNetAPI {
     private static let maxRetryCount: UInt = 8
     
     // MARK: Public Chat
-    #if DEBUG
-    @objc public static let publicChatServer = "https://chat-dev.lokinet.org"
-    #else
-    @objc public static let publicChatServer = "https://chat.lokinet.org"
-    #endif
     @objc public static let publicChatMessageType = "network.loki.messenger.publicChat"
-    @objc public static let publicChatServerID: UInt64 = 1
+    @objc private static let channelInfoType = "net.patter-app.settings"
     
     // MARK: Convenience
     private static var userDisplayName: String {
@@ -209,10 +204,27 @@ public final class LokiGroupChatAPI : LokiDotNetAPI {
             let url = URL(string: "\(server)/users/me")!
             let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-            return TSNetworkManager.shared().makePromise(request: request).map { _ in }.recover { error in
+            return TSNetworkManager.shared().makePromise(request: request).retryingIfNeeded(maxRetryCount: 3).map { _ in }.recover { error in
                 print("Couldn't update display name due to error: \(error).")
                 throw error
             }
+        }
+    }
+    
+    public static func getChannelInfo(_ channel: UInt64, on server: String) -> Promise<LokiPublicChannel> {
+        let url = URL(string: "\(server)/channels/\(channel)?include_annotations=1")!
+        let request = TSRequest(url: url)
+        return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
+            guard let json = rawResponse as? JSON,
+                let data = json["data"] as? JSON,
+                let annotations = data["annotations"] as? [JSON],
+                let infoAnnotation = annotations.first,
+                let info = infoAnnotation["value"] as? JSON,
+                let name = info["name"] as? String else {
+                print("[Loki] Couldn't parse info for group chat with ID: \(channel) on server: \(server) from: \(rawResponse).")
+                throw Error.parsingFailed
+            }
+            return LokiPublicChannel(name: name)
         }
     }
     

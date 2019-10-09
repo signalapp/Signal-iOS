@@ -2598,6 +2598,7 @@ typedef enum : NSUInteger {
     __block OWSQuotedReplyModel *quotedReply;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         quotedReply = [OWSQuotedReplyModel quotedReplyForSendingWithConversationViewItem:conversationItem
+                                                                                threadId:conversationItem.interaction.uniqueThreadId
                                                                              transaction:transaction];
     }];
 

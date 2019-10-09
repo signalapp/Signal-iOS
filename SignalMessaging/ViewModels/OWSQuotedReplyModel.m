@@ -31,7 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
                    sourceFilename:(nullable NSString *)sourceFilename
                  attachmentStream:(nullable TSAttachmentStream *)attachmentStream
        thumbnailAttachmentPointer:(nullable TSAttachmentPointer *)thumbnailAttachmentPointer
-          thumbnailDownloadFailed:(BOOL)thumbnailDownloadFailed NS_DESIGNATED_INITIALIZER;
+          thumbnailDownloadFailed:(BOOL)thumbnailDownloadFailed
+                         threadId:(NSString *)threadId NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -50,6 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
                  attachmentStream:(nullable TSAttachmentStream *)attachmentStream
        thumbnailAttachmentPointer:(nullable TSAttachmentPointer *)thumbnailAttachmentPointer
           thumbnailDownloadFailed:(BOOL)thumbnailDownloadFailed
+                         threadId:(NSString *)threadId
 {
     self = [super init];
     if (!self) {
@@ -66,6 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
     _attachmentStream = attachmentStream;
     _thumbnailAttachmentPointer = thumbnailAttachmentPointer;
     _thumbnailDownloadFailed = thumbnailDownloadFailed;
+    _threadId = threadId;
 
     return self;
 }
@@ -73,6 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Factory Methods
 
 + (instancetype)quotedReplyWithQuotedMessage:(TSQuotedMessage *)quotedMessage
+                                    threadId:(NSString *)threadId
                                  transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(quotedMessage.quotedAttachments.count <= 1);
@@ -112,10 +116,12 @@ NS_ASSUME_NONNULL_BEGIN
                             sourceFilename:attachmentInfo.sourceFilename
                           attachmentStream:nil
                 thumbnailAttachmentPointer:attachmentPointer
-                   thumbnailDownloadFailed:thumbnailDownloadFailed];
+                   thumbnailDownloadFailed:thumbnailDownloadFailed
+                                  threadId:threadId];
 }
 
 + (nullable instancetype)quotedReplyForSendingWithConversationViewItem:(id<ConversationViewItem>)conversationItem
+                                                              threadId:(NSString *)threadId
                                                            transaction:(YapDatabaseReadTransaction *)transaction;
 {
     OWSAssertDebug(conversationItem);
@@ -160,7 +166,8 @@ NS_ASSUME_NONNULL_BEGIN
                                 sourceFilename:nil
                               attachmentStream:nil
                     thumbnailAttachmentPointer:nil
-                       thumbnailDownloadFailed:NO];
+                       thumbnailDownloadFailed:NO
+                                      threadId:@""];
     }
 
     NSString *_Nullable quotedText = message.body;
@@ -237,7 +244,8 @@ NS_ASSUME_NONNULL_BEGIN
                             sourceFilename:quotedAttachment.sourceFilename
                           attachmentStream:quotedAttachment
                 thumbnailAttachmentPointer:nil
-                   thumbnailDownloadFailed:NO];
+                   thumbnailDownloadFailed:NO
+                                  threadId:threadId];
 }
 
 #pragma mark - Instance Methods

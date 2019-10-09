@@ -1,9 +1,19 @@
 
 @objc(LKGroupChat)
 public final class LokiGroupChat : NSObject, NSCoding {
-    @objc public var id: String {
-        return "\(server).\(channel)"
+    
+    @objc public static var defaultChats: [LokiGroupChat] {
+        var chats = [LokiGroupChat(channel: UInt64(1), server: "https://chat.lokinet.org", displayName: NSLocalizedString("Loki Public Chat", comment: ""), isDeletable: true)]
+        
+        #if DEBUG
+            chats.append(LokiGroupChat(channel: UInt64(1), server: "https://chat-dev.lokinet.org", displayName: "Loki Dev Chat", isDeletable: true))
+        #endif
+        
+        return chats
     }
+    
+    @objc public var id: String { return "\(server).\(channel)" }
+    @objc public var idAsData: Data? { return id.data(using: .utf8) }
     
     @objc public let channel: UInt64
     @objc public let server: String

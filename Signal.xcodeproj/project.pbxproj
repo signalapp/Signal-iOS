@@ -565,7 +565,6 @@
 		B821F2FA2272CEEE002C88C0 /* SeedVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F92272CEEE002C88C0 /* SeedVC.swift */; };
 		B8258493230FA5E9001B41CB /* ScanQRCodeVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B8258492230FA5E9001B41CB /* ScanQRCodeVC.m */; };
 		B82584A02315024B001B41CB /* RSSFeedPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825849F2315024B001B41CB /* RSSFeedPoller.swift */; };
-		B845B4D4230CD09100D759F0 /* GroupChatPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B845B4D3230CD09000D759F0 /* GroupChatPoller.swift */; };
 		B846365B22B7418B00AF1514 /* Identicon+ObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */; };
 		B86BD08123399883000F5AE3 /* QRCodeModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08023399883000F5AE3 /* QRCodeModal.swift */; };
 		B86BD08423399ACF000F5AE3 /* Modal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08323399ACF000F5AE3 /* Modal.swift */; };
@@ -1374,7 +1373,6 @@
 		B8258491230FA5DA001B41CB /* ScanQRCodeVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScanQRCodeVC.h; sourceTree = "<group>"; };
 		B8258492230FA5E9001B41CB /* ScanQRCodeVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScanQRCodeVC.m; sourceTree = "<group>"; };
 		B825849F2315024B001B41CB /* RSSFeedPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSSFeedPoller.swift; sourceTree = "<group>"; };
-		B845B4D3230CD09000D759F0 /* GroupChatPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupChatPoller.swift; sourceTree = "<group>"; };
 		B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Identicon+ObjC.swift"; sourceTree = "<group>"; };
 		B86BD08023399883000F5AE3 /* QRCodeModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeModal.swift; sourceTree = "<group>"; };
 		B86BD08323399ACF000F5AE3 /* Modal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modal.swift; sourceTree = "<group>"; };
@@ -2699,7 +2697,6 @@
 		B86BD0892339A278000F5AE3 /* Group Chat */ = {
 			isa = PBXGroup;
 			children = (
-				B845B4D3230CD09000D759F0 /* GroupChatPoller.swift */,
 				B825849F2315024B001B41CB /* RSSFeedPoller.swift */,
 			);
 			path = "Group Chat";
@@ -3744,7 +3741,6 @@
 				34A4C62022175C5C0042EF2E /* OnboardingProfileViewController.swift in Sources */,
 				4505C2BF1E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */,
 				EF764C351DB67CC5000D9A87 /* UIViewController+Permissions.m in Sources */,
-				B845B4D4230CD09100D759F0 /* GroupChatPoller.swift in Sources */,
 				45CD81EF1DC030E7004C9430 /* SyncPushTokensJob.swift in Sources */,
 				34D2CCE0206939B400CB1A14 /* DebugUIMessagesAssetLoader.m in Sources */,
 				4CEB78C92178EBAB00F315D2 /* OWSSessionResetJobRecord.m in Sources */,

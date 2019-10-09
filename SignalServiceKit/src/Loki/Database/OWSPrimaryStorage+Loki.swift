@@ -55,7 +55,7 @@ public extension OWSPrimaryStorage {
         return getDeviceLink(for: slaveHexEncodedPublicKey, in: transaction)?.master.hexEncodedPublicKey
     }
     
-    public func getAllGroupChats(in transaction: YapDatabaseReadTransaction) -> [String: LokiGroupChat] {
+    public func getAllGroupChats(with transaction: YapDatabaseReadTransaction) -> [String: LokiGroupChat] {
         var dict = [String: LokiGroupChat]()
         transaction.enumerateKeysAndObjects(inCollection: groupChatCollection) { (threadID, object, _) in
             if let groupChat = object as? LokiGroupChat {
