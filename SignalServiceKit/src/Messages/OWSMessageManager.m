@@ -1412,9 +1412,9 @@ NS_ASSUME_NONNULL_BEGIN
                         (unsigned long)timestamp);
                     return nil;
                 }
-
+                
                 // Loki: Cache the user hex encoded public key (for mentions)
-                [LKAPI populateUserIDCacheIfNeededFor:oldGroupThread.uniqueId];
+                [LKAPI populateUserIDCacheIfNeededFor:oldGroupThread.uniqueId in:transaction];
                 [LKAPI cache:incomingMessage.authorId for:oldGroupThread.uniqueId];
                 
                 [self finalizeIncomingMessage:incomingMessage

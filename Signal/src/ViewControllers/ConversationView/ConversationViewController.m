@@ -524,7 +524,7 @@ typedef enum : NSUInteger {
                                                           userInfo:nil
                                                            repeats:YES];
     
-    [LKAPI populateUserIDCacheIfNeededFor:thread.uniqueId];
+    [LKAPI populateUserIDCacheIfNeededFor:thread.uniqueId in:nil];
 }
 
 - (void)dealloc

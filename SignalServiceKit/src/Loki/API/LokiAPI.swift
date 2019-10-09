@@ -306,15 +306,22 @@ public final class LokiAPI : NSObject {
         }
     }
     
-    @objc public static func populateUserIDCacheIfNeeded(for threadID: String) {
+    @objc public static func populateUserIDCacheIfNeeded(for threadID: String, in transaction: YapDatabaseReadWriteTransaction? = nil) {
         guard userIDCache[threadID] == nil else { return }
         var result: Set<String> = []
-        storage.dbReadWriteConnection.readWrite { transaction in
+        func populate(in transaction: YapDatabaseReadWriteTransaction) {
             guard let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return }
             let interactions = transaction.ext(TSMessageDatabaseViewExtensionName) as! YapDatabaseViewTransaction
             interactions.enumerateKeysAndObjects(inGroup: threadID) { _, _, object, index, _ in
                 guard let message = object as? TSIncomingMessage, index < userIDScanLimit else { return }
                 result.insert(message.authorId)
+            }
+        }
+        if let transaction = transaction {
+            populate(in: transaction)
+        } else {
+            storage.dbReadWriteConnection.readWrite { transaction in
+                populate(in: transaction)
             }
         }
         result.insert(userHexEncodedPublicKey)

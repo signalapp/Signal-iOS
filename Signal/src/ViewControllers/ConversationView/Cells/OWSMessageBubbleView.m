@@ -717,7 +717,16 @@ NS_ASSUME_NONNULL_BEGIN
             NSString *userID = [[text substringWithRange:match1.range] stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
             NSUInteger matchEnd;
             if ([knownUserIDs containsObject:userID]) {
-                NSString *userDisplayName = [Environment.shared.contactsManager attributedContactOrProfileNameForPhoneIdentifier:userID primaryFont:font secondaryFont:font].string;
+                __block NSString *userDisplayName = [Environment.shared.contactsManager attributedContactOrProfileNameForPhoneIdentifier:userID primaryFont:font secondaryFont:font].string;
+                if ([userDisplayName isEqual:userID]) {
+                    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                        NSString *collection = [NSString stringWithFormat:@"%@.%llu", LKGroupChatAPI.publicChatServer, LKGroupChatAPI.publicChatServerID];
+                        NSString *userDisplayNameCandidate = [transaction objectForKey:userID inCollection:collection];
+                        if (userDisplayNameCandidate != nil) {
+                            userDisplayName = userDisplayNameCandidate;
+                        }
+                    }];
+                }
                 text = [text stringByReplacingCharactersInRange:match1.range withString:[NSString stringWithFormat:@"@%@", userDisplayName]];
                 [mentions addObject:[NSValue valueWithRange:NSMakeRange(match1.range.location, userDisplayName.length + 1)]];
                 matchEnd = match1.range.location + userDisplayName.length;
