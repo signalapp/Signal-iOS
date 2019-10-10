@@ -25,12 +25,18 @@ class ThreadFinderPerformanceTest: PerformanceBaseTest {
     }
 
     func enumerateVisibleThreads() {
-        let threadCount = 25
-        let emptyThreads = insertThreads(count: threadCount, threadType: .empty)
-        let hasMessageThreads = insertThreads(count: threadCount, threadType: .hasMessage)
-        let archivedThreads = insertThreads(count: threadCount, threadType: .archived)
-        let unarchivedThreads = insertThreads(count: threadCount, threadType: .unarchived)
-
+        let threadCount = 1
+        var emptyThreads = [TSThread]()
+        var hasMessageThreads = [TSThread]()
+        var archivedThreads = [TSThread]()
+        var unarchivedThreads = [TSThread]()
+        for _ in 0..<threadCount {
+            emptyThreads.append(insertThread(threadType: .empty))
+            hasMessageThreads.append(insertThread(threadType: .hasMessage))
+            archivedThreads.append(insertThread(threadType: .archived))
+            unarchivedThreads.append(insertThread(threadType: .unarchived))
+        }
+        
         XCTAssertEqual(threadCount, emptyThreads.count)
         XCTAssertEqual(threadCount, hasMessageThreads.count)
         XCTAssertEqual(threadCount, archivedThreads.count)
