@@ -1098,6 +1098,7 @@ const CGFloat kMaxTextViewHeight = 98;
     self.userSelectionViewSizeConstraint.constant = 6 + MIN(users.count, 4) * 52;
     [self setNeedsLayout];
     [self layoutIfNeeded];
+    [self.userSelectionView.tableView setContentOffset:CGPointMake(0, -6)]; // TODO: Workaround for content offset bug
 }
 
 - (void)hideUserSelectionView

@@ -8,7 +8,7 @@ final class UserSelectionView : UIView, UITableViewDataSource, UITableViewDelega
     @objc var delegate: UserSelectionViewDelegate?
     
     // MARK: Components
-    private lazy var tableView: UITableView = {
+    @objc lazy var tableView: UITableView = { // TODO: Make this private
         let result = UITableView()
         result.dataSource = self
         result.delegate = self
