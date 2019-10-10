@@ -13,19 +13,37 @@ class ThreadFinderPerformanceTest: PerformanceBaseTest {
     func testYDBPerf_enumerateVisibleThreads() {
         storageCoordinator.useYDBForTests()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
-            enumerateVisibleThreads()
+            enumerateVisibleThreads(isArchived: false)
+        }
+    }
+
+    func testYDBPerf_enumerateVisibleThreads_isArchived() {
+        storageCoordinator.useYDBForTests()
+        measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
+            enumerateVisibleThreads(isArchived: true)
         }
     }
 
     func testGRDBPerf_enumerateVisibleThreads() {
         storageCoordinator.useGRDBForTests()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
-            enumerateVisibleThreads()
+            enumerateVisibleThreads(isArchived: false)
         }
     }
 
-    func enumerateVisibleThreads() {
-        let threadCount = 1
+    func testGRDBPerf_enumerateVisibleThreads_isArchived() {
+        storageCoordinator.useGRDBForTests()
+        measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
+            enumerateVisibleThreads(isArchived: true)
+        }
+    }
+
+    func enumerateVisibleThreads(isArchived: Bool) {
+        // To properly stress YDB and GRDB, we want a large number
+        // of threads with a large number of messages.
+        //
+        // NOTE: the total thread count is 4 x threadCount.
+        let threadCount = 100
         var emptyThreads = [TSThread]()
         var hasMessageThreads = [TSThread]()
         var archivedThreads = [TSThread]()
@@ -36,7 +54,7 @@ class ThreadFinderPerformanceTest: PerformanceBaseTest {
             archivedThreads.append(insertThread(threadType: .archived))
             unarchivedThreads.append(insertThread(threadType: .unarchived))
         }
-        
+
         XCTAssertEqual(threadCount, emptyThreads.count)
         XCTAssertEqual(threadCount, hasMessageThreads.count)
         XCTAssertEqual(threadCount, archivedThreads.count)
@@ -44,28 +62,36 @@ class ThreadFinderPerformanceTest: PerformanceBaseTest {
 
         read { transaction in
             XCTAssertEqual(threadCount * 4, TSThread.anyFetchAll(transaction: transaction).count)
-            XCTAssertEqual(threadCount * 4, TSInteraction.anyFetchAll(transaction: transaction).count)
+
+            let expectedMessageCount = (
+                // .hasMessage
+                (threadCount * self.threadMessageCount) +
+                // .archived
+                (threadCount * self.threadMessageCount) +
+                // .unarchived
+                (threadCount * (self.threadMessageCount + 1))
+                        )
+            XCTAssertEqual(expectedMessageCount, TSInteraction.anyFetchAll(transaction: transaction).count)
         }
 
-        let readCount = 1000
+        // Note that we enumerate _twice_ (archived & non-archived)
+        let readCount = 10
 
         startMeasuring()
         write { transaction in
             for _ in 0..<readCount {
-                var archivedCount = 0
-                var unarchivedCount = 0
+                var observedCount = 0
                 do {
-                    try AnyThreadFinder().enumerateVisibleThreads(isArchived: true, transaction: transaction) { _ in
-                        archivedCount += 1
-                    }
-                    try AnyThreadFinder().enumerateVisibleThreads(isArchived: false, transaction: transaction) { _ in
-                        unarchivedCount += 1
+                    try AnyThreadFinder().enumerateVisibleThreads(isArchived: isArchived, transaction: transaction) { _ in
+                        observedCount += 1
                     }
                 } catch {
                     owsFailDebug("Error: \(error)")
                 }
-                XCTAssertEqual(threadCount * 1, archivedCount)
-                XCTAssertEqual(threadCount * 2, unarchivedCount)
+                let expectedArchivedCount = threadCount * 1
+                let expectedUnarchivedCount = threadCount * 2
+                let expectedCount = isArchived ? expectedArchivedCount : expectedUnarchivedCount
+                XCTAssertEqual(expectedCount, observedCount)
             }
         }
         stopMeasuring()
@@ -94,6 +120,8 @@ class ThreadFinderPerformanceTest: PerformanceBaseTest {
         return result
     }
 
+    private let threadMessageCount = 10
+
     func insertThread(threadType: ThreadType) -> TSThread {
         // .empty
         let contactThread = ContactThreadFactory().create()
@@ -114,8 +142,12 @@ class ThreadFinderPerformanceTest: PerformanceBaseTest {
                 XCTFail("Missing thread.")
             }
 
-            let message = messageFactory.build(transaction: transaction)
-            message.anyInsert(transaction: transaction)
+            // YDB perf suffers with large numbers of messages,
+            // so the larger the value here, the better.
+            for _ in 0..<self.threadMessageCount {
+                let message = messageFactory.build(transaction: transaction)
+                message.anyInsert(transaction: transaction)
+            }
 
             if let latestThread = TSThread.anyFetch(uniqueId: contactThread.uniqueId, transaction: transaction) {
                 XCTAssertTrue(latestThread.shouldThreadBeVisible)
@@ -164,7 +196,7 @@ class ThreadFinderPerformanceTest: PerformanceBaseTest {
 
             if let latestThread = TSThread.anyFetch(uniqueId: contactThread.uniqueId, transaction: transaction) {
                 XCTAssertTrue(latestThread.shouldThreadBeVisible)
-                XCTAssertNil(latestThread.archivedAsOfMessageSortId)
+//                XCTAssertNil(latestThread.archivedAsOfMessageSortId)
             } else {
                 XCTFail("Missing thread.")
             }
