@@ -8,8 +8,6 @@ import SignalServiceKit
 
 class ThreadFinderPerformanceTest: PerformanceBaseTest {
 
-    // MARK: - Insert Messages
-
     func testYDBPerf_enumerateVisibleThreads() {
         storageCoordinator.useYDBForTests()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
