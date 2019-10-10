@@ -89,7 +89,7 @@ public class SDSKeyValueStore: NSObject {
                                               arguments: [key, collection]) ?? 0
                 return count > 0
             } catch {
-                owsFailDebug("Read failed.")
+                owsFailDebug("error: \(error)")
                 return false
             }
         }
@@ -450,7 +450,7 @@ public class SDSKeyValueStore: NSObject {
                                      sql: "SELECT \(self.valueColumn.columnName) FROM \(self.table.tableName) WHERE \(self.keyColumn.columnName) = ? AND \(collectionColumn.columnName) == ?",
                 arguments: [key, collection])
         } catch {
-            owsFailDebug("Read failed.")
+            owsFailDebug("error: \(error)")
             return nil
         }
     }

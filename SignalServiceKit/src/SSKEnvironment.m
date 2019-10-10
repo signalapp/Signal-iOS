@@ -251,7 +251,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 
 - (void)warmCaches
 {
-    // Pre-heat caches to avoid sneaky transactions during the migrations.
+    // Pre-heat caches to avoid sneaky transactions during the YDB->GRDB migrations.
     // We need to warm these caches _before_ the migrations run.
     //
     // We need to do as few writes as possible here, to avoid conflicts
