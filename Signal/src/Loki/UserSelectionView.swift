@@ -3,7 +3,7 @@
 
 @objc(LKUserSelectionView)
 final class UserSelectionView : UIView, UITableViewDataSource, UITableViewDelegate {
-    @objc var users: [String] = [] { didSet { tableView.reloadData() } }
+    @objc var users: [String] = [] { didSet { tableView.reloadData(); tableView.contentOffset = CGPoint.zero } }
     @objc var hasGroupContext = false
     @objc var delegate: UserSelectionViewDelegate?
     
@@ -15,7 +15,7 @@ final class UserSelectionView : UIView, UITableViewDataSource, UITableViewDelega
         result.register(Cell.self, forCellReuseIdentifier: "Cell")
         result.separatorStyle = .none
         result.backgroundColor = .clear
-        result.contentInset = UIEdgeInsets(top: 10, leading: 0, bottom: 0, trailing: 0)
+        result.contentInset = UIEdgeInsets(top: 6, leading: 0, bottom: 0, trailing: 0)
         return result
     }()
     
@@ -101,12 +101,12 @@ private extension UserSelectionView {
             stackView.axis = .horizontal
             stackView.alignment = .center
             stackView.spacing = 16
-            stackView.set(.height, to: 44)
+            stackView.set(.height, to: 36)
             contentView.addSubview(stackView)
             stackView.pin(.leading, to: .leading, of: contentView, withInset: 16)
-            stackView.pin(.top, to: .top, of: contentView, withInset: 4)
+            stackView.pin(.top, to: .top, of: contentView, withInset: 8)
             contentView.pin(.trailing, to: .trailing, of: stackView, withInset: 16)
-            contentView.pin(.bottom, to: .bottom, of: stackView, withInset: 4)
+            contentView.pin(.bottom, to: .bottom, of: stackView, withInset: 8)
             stackView.set(.width, to: UIScreen.main.bounds.width - 2 * 16)
             // Set up the moderator icon image view
             moderatorIconImageView.set(.width, to: 20)

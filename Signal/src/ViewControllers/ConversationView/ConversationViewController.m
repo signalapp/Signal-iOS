@@ -3769,10 +3769,9 @@ typedef enum : NSUInteger {
 
 - (void)textViewDidChange:(UITextView *)textView
 {
-    if (textView.text.length > 0) {
-        [self.typingIndicators didStartTypingOutgoingInputInThread:self.thread];
-    }
-    NSUInteger currentEndIndex = (textView.text.length != 0) ? textView.text.length - 1 : 0;
+    if (textView.text.length == 0) { return; }
+    [self.typingIndicators didStartTypingOutgoingInputInThread:self.thread];
+    NSUInteger currentEndIndex = textView.text.length - 1;
     unichar lastCharacter = [textView.text characterAtIndex:currentEndIndex];
     NSMutableCharacterSet *allowedCharacters = NSMutableCharacterSet.lowercaseLetterCharacterSet;
     [allowedCharacters formUnionWithCharacterSet:NSCharacterSet.uppercaseLetterCharacterSet];

@@ -322,9 +322,11 @@ public final class LokiAPI : NSObject {
         candidates.sort { $0.displayName < $1.displayName }
         if query.count >= 2 {
             // Filter out any non-matching candidates
-            candidates = candidates.filter { $0.displayName.contains(query) }
+            candidates = candidates.filter { $0.displayName.lowercased().contains(query.lowercased()) }
             // Sort based on where in the candidate the query occurs
-            candidates.sort { $0.displayName.range(of: query)!.lowerBound < $1.displayName.range(of: query)!.lowerBound }
+            candidates.sort {
+                $0.displayName.lowercased().range(of: query.lowercased())!.lowerBound < $1.displayName.lowercased().range(of: query.lowercased())!.lowerBound
+            }
         }
         // Return
         return candidates.map { $0.id } // Inefficient to do this and then look up the display name again later, but easy to interface with Obj-C
