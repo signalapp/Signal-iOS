@@ -34,10 +34,11 @@ public class GRDBSchemaMigrator: NSObject {
         var migrator = DatabaseMigrator()
         migrator.registerMigration(MigrationId.createInitialSchema.rawValue) { db in
             Logger.info("importing latest schema")
-
-            // TODO - import the schema.sql file rather than running the actual
-            // migration.
-            try createV1Schema(db: db)
+            guard let sqlFile = Bundle(for: GRDBSchemaMigrator.self).url(forResource: "schema", withExtension: "sql") else {
+                owsFail("sqlFile was unexpectedly nil")
+            }
+            let sql = try String(contentsOf: sqlFile)
+            try db.execute(sql: sql)
         }
 
         // After importing the initial schema, we want to skip the remaining incremental migrations
