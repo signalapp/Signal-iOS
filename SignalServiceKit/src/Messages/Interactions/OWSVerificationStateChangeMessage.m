@@ -49,7 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
@@ -76,7 +77,8 @@ NS_ASSUME_NONNULL_BEGIN
                 recipientAddress:(SignalServiceAddress *)recipientAddress
                verificationState:(OWSVerificationState)verificationState
 {
-    self = [super initWithUniqueId:uniqueId
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
                             sortId:sortId
                          timestamp:timestamp

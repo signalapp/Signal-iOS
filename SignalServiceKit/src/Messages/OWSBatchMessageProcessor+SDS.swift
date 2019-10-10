@@ -12,6 +12,8 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct MessageContentJobRecord: SDSRecord {
+    public weak var delegate: SDSRecordDelegate?
+
     public var tableMetadata: SDSTableMetadata {
         return OWSMessageContentJobSerializer.table
     }
@@ -43,6 +45,14 @@ public struct MessageContentJobRecord: SDSRecord {
 
     public static func columnName(_ column: MessageContentJobRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        delegate.updateRowId(rowID)
     }
 }
 
@@ -98,7 +108,8 @@ extension OWSMessageContentJob {
             let plaintextData: Data? = SDSDeserialization.optionalData(record.plaintextData, name: "plaintextData")
             let wasReceivedByUD: Bool = record.wasReceivedByUD
 
-            return OWSMessageContentJob(uniqueId: uniqueId,
+            return OWSMessageContentJob(grdbId: recordId,
+                                        uniqueId: uniqueId,
                                         createdAt: createdAt,
                                         envelopeData: envelopeData,
                                         plaintextData: plaintextData,
@@ -554,7 +565,8 @@ class OWSMessageContentJobSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        // let id: Int64? = nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .messageContentJob
         let uniqueId: String = model.uniqueId
@@ -565,6 +577,6 @@ class OWSMessageContentJobSerializer: SDSSerializer {
         let plaintextData: Data? = model.plaintextData
         let wasReceivedByUD: Bool = model.wasReceivedByUD
 
-        return MessageContentJobRecord(id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, envelopeData: envelopeData, plaintextData: plaintextData, wasReceivedByUD: wasReceivedByUD)
+        return MessageContentJobRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, envelopeData: envelopeData, plaintextData: plaintextData, wasReceivedByUD: wasReceivedByUD)
     }
 }

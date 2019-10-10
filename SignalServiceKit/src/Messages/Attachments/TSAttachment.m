@@ -212,7 +212,8 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
          attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                   attachmentType:(TSAttachmentType)attachmentType
@@ -225,7 +226,8 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
 {
-    self = [super initWithUniqueId:uniqueId];
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId];
 
     if (!self) {
         return self;

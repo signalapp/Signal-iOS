@@ -25,13 +25,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                     failureCount:(NSUInteger)failureCount
                            label:(NSString *)label
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
                  contactThreadId:(NSString *)contactThreadId
-NS_SWIFT_NAME(init(uniqueId:failureCount:label:sortId:status:contactThreadId:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:failureCount:label:sortId:status:contactThreadId:));
 
 // clang-format on
 

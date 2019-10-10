@@ -12,6 +12,8 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct SignalRecipientRecord: SDSRecord {
+    public weak var delegate: SDSRecordDelegate?
+
     public var tableMetadata: SDSTableMetadata {
         return SignalRecipientSerializer.table
     }
@@ -43,6 +45,14 @@ public struct SignalRecipientRecord: SDSRecord {
 
     public static func columnName(_ column: SignalRecipientRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        delegate.updateRowId(rowID)
     }
 }
 
@@ -98,7 +108,8 @@ extension SignalRecipient {
             let recipientSchemaVersion: UInt = record.recipientSchemaVersion
             let recipientUUID: String? = record.recipientUUID
 
-            return SignalRecipient(uniqueId: uniqueId,
+            return SignalRecipient(grdbId: recordId,
+                                   uniqueId: uniqueId,
                                    devices: devices,
                                    recipientPhoneNumber: recipientPhoneNumber,
                                    recipientSchemaVersion: recipientSchemaVersion,
@@ -554,7 +565,8 @@ class SignalRecipientSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        // let id: Int64? = nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .signalRecipient
         let uniqueId: String = model.uniqueId
@@ -565,6 +577,6 @@ class SignalRecipientSerializer: SDSSerializer {
         let recipientSchemaVersion: UInt = model.recipientSchemaVersion
         let recipientUUID: String? = model.recipientUUID
 
-        return SignalRecipientRecord(id: id, recordType: recordType, uniqueId: uniqueId, devices: devices, recipientPhoneNumber: recipientPhoneNumber, recipientSchemaVersion: recipientSchemaVersion, recipientUUID: recipientUUID)
+        return SignalRecipientRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, devices: devices, recipientPhoneNumber: recipientPhoneNumber, recipientSchemaVersion: recipientSchemaVersion, recipientUUID: recipientUUID)
     }
 }

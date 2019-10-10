@@ -12,6 +12,8 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct ContactQueryRecord: SDSRecord {
+    public weak var delegate: SDSRecordDelegate?
+
     public var tableMetadata: SDSTableMetadata {
         return OWSContactQuerySerializer.table
     }
@@ -39,6 +41,14 @@ public struct ContactQueryRecord: SDSRecord {
 
     public static func columnName(_ column: ContactQueryRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        delegate.updateRowId(rowID)
     }
 }
 
@@ -90,7 +100,8 @@ extension OWSContactQuery {
             let lastQueried: Date = SDSDeserialization.requiredDoubleAsDate(lastQueriedInterval, name: "lastQueried")
             let nonce: Data = record.nonce
 
-            return OWSContactQuery(uniqueId: uniqueId,
+            return OWSContactQuery(grdbId: recordId,
+                                   uniqueId: uniqueId,
                                    lastQueried: lastQueried,
                                    nonce: nonce)
 
@@ -540,7 +551,8 @@ class OWSContactQuerySerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        // let id: Int64? = nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .contactQuery
         let uniqueId: String = model.uniqueId
@@ -549,6 +561,6 @@ class OWSContactQuerySerializer: SDSSerializer {
         let lastQueried: Double = archiveDate(model.lastQueried)
         let nonce: Data = model.nonce
 
-        return ContactQueryRecord(id: id, recordType: recordType, uniqueId: uniqueId, lastQueried: lastQueried, nonce: nonce)
+        return ContactQueryRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, lastQueried: lastQueried, nonce: nonce)
     }
 }

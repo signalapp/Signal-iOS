@@ -86,7 +86,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
          attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                   attachmentType:(TSAttachmentType)attachmentType
@@ -104,7 +105,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
   mostRecentFailureLocalizedText:(nullable NSString *)mostRecentFailureLocalizedText
                      pointerType:(TSAttachmentPointerType)pointerType
                            state:(TSAttachmentPointerState)state
-NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:isDownloaded:serverId:sourceFilename:digest:lazyRestoreFragmentId:mediaSize:mostRecentFailureLocalizedText:pointerType:state:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:isDownloaded:serverId:sourceFilename:digest:lazyRestoreFragmentId:mediaSize:mostRecentFailureLocalizedText:pointerType:state:));
 
 // clang-format on
 

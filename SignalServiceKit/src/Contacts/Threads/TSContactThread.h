@@ -16,12 +16,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                     archivalDate:(nullable NSDate *)archivalDate
        archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
 isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
+           lastInteractionSortId:(int64_t)lastInteractionSortId
                  lastMessageDate:(nullable NSDate *)lastMessageDate
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
@@ -31,7 +33,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
       contactThreadSchemaVersion:(NSUInteger)contactThreadSchemaVersion
                      contactUUID:(nullable NSString *)contactUUID
               hasDismissedOffers:(BOOL)hasDismissedOffers
-NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastMessageDate:messageDraft:mutedUntilDate:rowId:shouldThreadBeVisible:contactPhoneNumber:contactThreadSchemaVersion:contactUUID:hasDismissedOffers:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastInteractionSortId:lastMessageDate:messageDraft:mutedUntilDate:rowId:shouldThreadBeVisible:contactPhoneNumber:contactThreadSchemaVersion:contactUUID:hasDismissedOffers:));
 
 // clang-format on
 

@@ -30,7 +30,8 @@ NSUInteger NSUIntegerMaxValue(void);
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                        dateValue:(nullable NSDate *)dateValue
                      doubleValue:(double)doubleValue
                       floatValue:(float)floatValue
@@ -40,7 +41,7 @@ NSUInteger NSUIntegerMaxValue(void);
         nsNumberValueUsingUInt64:(nullable NSNumber *)nsNumberValueUsingUInt64
                  nsuIntegerValue:(NSUInteger)nsuIntegerValue
                      uint64Value:(uint64_t)uint64Value
-NS_SWIFT_NAME(init(uniqueId:dateValue:doubleValue:floatValue:int64Value:nsIntegerValue:nsNumberValueUsingInt64:nsNumberValueUsingUInt64:nsuIntegerValue:uint64Value:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:dateValue:doubleValue:floatValue:int64Value:nsIntegerValue:nsNumberValueUsingInt64:nsNumberValueUsingUInt64:nsuIntegerValue:uint64Value:));
 
 // clang-format on
 

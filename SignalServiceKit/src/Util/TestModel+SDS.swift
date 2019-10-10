@@ -12,6 +12,8 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct TestModelRecord: SDSRecord {
+    public weak var delegate: SDSRecordDelegate?
+
     public var tableMetadata: SDSTableMetadata {
         return TestModelSerializer.table
     }
@@ -53,6 +55,14 @@ public struct TestModelRecord: SDSRecord {
 
     public static func columnName(_ column: TestModelRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        delegate.updateRowId(rowID)
     }
 }
 
@@ -118,7 +128,8 @@ extension TestModel {
             let nsuIntegerValue: UInt = record.nsuIntegerValue
             let uint64Value: UInt64 = record.uint64Value
 
-            return TestModel(uniqueId: uniqueId,
+            return TestModel(grdbId: recordId,
+                             uniqueId: uniqueId,
                              dateValue: dateValue,
                              doubleValue: doubleValue,
                              floatValue: floatValue,
@@ -589,7 +600,8 @@ class TestModelSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        // let id: Int64? = nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .testModel
         let uniqueId: String = model.uniqueId
@@ -605,6 +617,6 @@ class TestModelSerializer: SDSSerializer {
         let nsuIntegerValue: UInt = model.nsuIntegerValue
         let uint64Value: UInt64 = model.uint64Value
 
-        return TestModelRecord(id: id, recordType: recordType, uniqueId: uniqueId, dateValue: dateValue, doubleValue: doubleValue, floatValue: floatValue, int64Value: int64Value, nsIntegerValue: nsIntegerValue, nsNumberValueUsingInt64: nsNumberValueUsingInt64, nsNumberValueUsingUInt64: nsNumberValueUsingUInt64, nsuIntegerValue: nsuIntegerValue, uint64Value: uint64Value)
+        return TestModelRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, dateValue: dateValue, doubleValue: doubleValue, floatValue: floatValue, int64Value: int64Value, nsIntegerValue: nsIntegerValue, nsNumberValueUsingInt64: nsNumberValueUsingInt64, nsNumberValueUsingUInt64: nsNumberValueUsingUInt64, nsuIntegerValue: nsuIntegerValue, uint64Value: uint64Value)
     }
 }

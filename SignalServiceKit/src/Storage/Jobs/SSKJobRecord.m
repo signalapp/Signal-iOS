@@ -47,13 +47,15 @@ NSErrorDomain const SSKJobRecordErrorDomain = @"SignalServiceKit.JobRecord";
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                     failureCount:(NSUInteger)failureCount
                            label:(NSString *)label
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
 {
-    self = [super initWithUniqueId:uniqueId];
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId];
 
     if (!self) {
         return self;

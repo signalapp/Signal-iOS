@@ -12,6 +12,8 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct AttachmentRecord: SDSRecord {
+    public weak var delegate: SDSRecordDelegate?
+
     public var tableMetadata: SDSTableMetadata {
         return TSAttachmentSerializer.table
     }
@@ -89,6 +91,14 @@ public struct AttachmentRecord: SDSRecord {
 
     public static func columnName(_ column: AttachmentRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        delegate.updateRowId(rowID)
     }
 }
 
@@ -172,7 +182,8 @@ extension TSAttachment {
             let serverId: UInt64 = record.serverId
             let sourceFilename: String? = record.sourceFilename
 
-            return TSAttachment(uniqueId: uniqueId,
+            return TSAttachment(grdbId: recordId,
+                                uniqueId: uniqueId,
                                 albumMessageId: albumMessageId,
                                 attachmentSchemaVersion: attachmentSchemaVersion,
                                 attachmentType: attachmentType,
@@ -211,7 +222,8 @@ extension TSAttachment {
                throw SDSError.missingRequiredField
             }
 
-            return TSAttachmentPointer(uniqueId: uniqueId,
+            return TSAttachmentPointer(grdbId: recordId,
+                                       uniqueId: uniqueId,
                                        albumMessageId: albumMessageId,
                                        attachmentSchemaVersion: attachmentSchemaVersion,
                                        attachmentType: attachmentType,
@@ -258,7 +270,8 @@ extension TSAttachment {
             let localRelativeFilePath: String? = record.localRelativeFilePath
             let shouldAlwaysPad: Bool = try SDSDeserialization.required(record.shouldAlwaysPad, name: "shouldAlwaysPad")
 
-            return TSAttachmentStream(uniqueId: uniqueId,
+            return TSAttachmentStream(grdbId: recordId,
+                                      uniqueId: uniqueId,
                                       albumMessageId: albumMessageId,
                                       attachmentSchemaVersion: attachmentSchemaVersion,
                                       attachmentType: attachmentType,
@@ -782,7 +795,8 @@ class TSAttachmentSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        // let id: Int64? = nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .attachment
         let uniqueId: String = model.uniqueId
@@ -817,6 +831,6 @@ class TSAttachmentSerializer: SDSSerializer {
         let shouldAlwaysPad: Bool? = nil
         let state: TSAttachmentPointerState? = nil
 
-        return AttachmentRecord(id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentSchemaVersion: attachmentSchemaVersion, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, isDownloaded: isDownloaded, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, mostRecentFailureLocalizedText: mostRecentFailureLocalizedText, pointerType: pointerType, shouldAlwaysPad: shouldAlwaysPad, state: state)
+        return AttachmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentSchemaVersion: attachmentSchemaVersion, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, isDownloaded: isDownloaded, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, mostRecentFailureLocalizedText: mostRecentFailureLocalizedText, pointerType: pointerType, shouldAlwaysPad: shouldAlwaysPad, state: state)
     }
 }

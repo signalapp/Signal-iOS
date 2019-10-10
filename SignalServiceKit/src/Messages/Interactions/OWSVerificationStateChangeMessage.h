@@ -28,7 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
@@ -54,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
                    isLocalChange:(BOOL)isLocalChange
                 recipientAddress:(SignalServiceAddress *)recipientAddress
                verificationState:(OWSVerificationState)verificationState
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredAddress:isLocalChange:recipientAddress:verificationState:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredAddress:isLocalChange:recipientAddress:verificationState:));
 
 // clang-format on
 

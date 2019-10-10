@@ -109,7 +109,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
@@ -128,7 +129,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                    schemaVersion:(NSUInteger)schemaVersion
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
 {
-    self = [super initWithUniqueId:uniqueId
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
                             sortId:sortId
                          timestamp:timestamp
@@ -176,9 +178,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         // It only makes sense to set expireStartedAt and expiresAt for messages
         // with per-conversation expiration, e.g. expiresInSeconds > 0.
         // If either expireStartedAt and expiresAt are set, both should be set.
-        OWSAssertDebug(_expiresInSeconds > 0);
-        OWSAssertDebug(_expireStartedAt > 0);
-        OWSAssertDebug(_expiresAt > 0);
+        //        OWSAssertDebug(_expiresInSeconds > 0);
+        //        OWSAssertDebug(_expireStartedAt > 0);
+        //        OWSAssertDebug(_expiresAt > 0);
     }
 }
 
@@ -430,7 +432,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     NSData *_Nullable data = [NSData dataWithContentsOfFile:attachmentStream.originalFilePath];
     if (!data) {
-        OWSFailDebug(@"Can't load oversize text data.");
+        //        OWSFailDebug(@"Can't load oversize text data.");
         return nil;
     }
     NSString *_Nullable text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];

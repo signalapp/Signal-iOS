@@ -78,14 +78,16 @@ NSUInteger const OWSLinkedDeviceReadReceiptSchemaVersion = 1;
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
 linkedDeviceReadReceiptSchemaVersion:(NSUInteger)linkedDeviceReadReceiptSchemaVersion
               messageIdTimestamp:(uint64_t)messageIdTimestamp
                    readTimestamp:(uint64_t)readTimestamp
                senderPhoneNumber:(nullable NSString *)senderPhoneNumber
                       senderUUID:(nullable NSString *)senderUUID
 {
-    self = [super initWithUniqueId:uniqueId];
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId];
 
     if (!self) {
         return self;

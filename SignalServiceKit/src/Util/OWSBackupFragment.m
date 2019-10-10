@@ -15,7 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                     attachmentId:(nullable NSString *)attachmentId
                 downloadFilePath:(nullable NSString *)downloadFilePath
                    encryptionKey:(NSData *)encryptionKey
@@ -23,7 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
                 relativeFilePath:(nullable NSString *)relativeFilePath
           uncompressedDataLength:(nullable NSNumber *)uncompressedDataLength
 {
-    self = [super initWithUniqueId:uniqueId];
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId];
 
     if (!self) {
         return self;

@@ -31,7 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
@@ -57,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
                  protocolVersion:(NSUInteger)protocolVersion
                           sender:(nullable SignalServiceAddress *)sender
 unknownProtocolVersionMessageSchemaVersion:(NSUInteger)unknownProtocolVersionMessageSchemaVersion
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredAddress:protocolVersion:sender:unknownProtocolVersionMessageSchemaVersion:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredAddress:protocolVersion:sender:unknownProtocolVersionMessageSchemaVersion:));
 
 // clang-format on
 

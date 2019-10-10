@@ -41,7 +41,8 @@ NSUInteger NSUIntegerMaxValue(void)
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                        dateValue:(nullable NSDate *)dateValue
                      doubleValue:(double)doubleValue
                       floatValue:(float)floatValue
@@ -52,7 +53,8 @@ NSUInteger NSUIntegerMaxValue(void)
                  nsuIntegerValue:(NSUInteger)nsuIntegerValue
                      uint64Value:(uint64_t)uint64Value
 {
-    self = [super initWithUniqueId:uniqueId];
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId];
 
     if (!self) {
         return self;

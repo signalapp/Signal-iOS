@@ -77,7 +77,8 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
@@ -102,7 +103,8 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                         authorId:(NSString *)authorId
                     envelopeData:(nullable NSData *)envelopeData
 {
-    self = [super initWithUniqueId:uniqueId
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
                             sortId:sortId
                          timestamp:timestamp

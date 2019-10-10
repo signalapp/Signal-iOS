@@ -12,6 +12,8 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct JobRecordRecord: SDSRecord {
+    public weak var delegate: SDSRecordDelegate?
+
     public var tableMetadata: SDSTableMetadata {
         return SSKJobRecordSerializer.table
     }
@@ -57,6 +59,14 @@ public struct JobRecordRecord: SDSRecord {
 
     public static func columnName(_ column: JobRecordRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        delegate.updateRowId(rowID)
     }
 }
 
@@ -119,7 +129,8 @@ extension SSKJobRecord {
             let attachmentIdMapSerialized: Data? = record.attachmentIdMap
             let attachmentIdMap: [String: [String]] = try SDSDeserialization.unarchive(attachmentIdMapSerialized, name: "attachmentIdMap")
 
-            return OWSBroadcastMediaMessageJobRecord(uniqueId: uniqueId,
+            return OWSBroadcastMediaMessageJobRecord(grdbId: recordId,
+                                                     uniqueId: uniqueId,
                                                      failureCount: failureCount,
                                                      label: label,
                                                      sortId: sortId,
@@ -135,7 +146,8 @@ extension SSKJobRecord {
             let status: SSKJobRecordStatus = record.status
             let contactThreadId: String = try SDSDeserialization.required(record.contactThreadId, name: "contactThreadId")
 
-            return OWSSessionResetJobRecord(uniqueId: uniqueId,
+            return OWSSessionResetJobRecord(grdbId: recordId,
+                                            uniqueId: uniqueId,
                                             failureCount: failureCount,
                                             label: label,
                                             sortId: sortId,
@@ -150,7 +162,8 @@ extension SSKJobRecord {
             let sortId: UInt64 = UInt64(recordId)
             let status: SSKJobRecordStatus = record.status
 
-            return SSKJobRecord(uniqueId: uniqueId,
+            return SSKJobRecord(grdbId: recordId,
+                                uniqueId: uniqueId,
                                 failureCount: failureCount,
                                 label: label,
                                 sortId: sortId,
@@ -165,7 +178,8 @@ extension SSKJobRecord {
             let status: SSKJobRecordStatus = record.status
             let envelopeData: Data? = SDSDeserialization.optionalData(record.envelopeData, name: "envelopeData")
 
-            return SSKMessageDecryptJobRecord(uniqueId: uniqueId,
+            return SSKMessageDecryptJobRecord(grdbId: recordId,
+                                              uniqueId: uniqueId,
                                               failureCount: failureCount,
                                               label: label,
                                               sortId: sortId,
@@ -185,7 +199,8 @@ extension SSKJobRecord {
             let removeMessageAfterSending: Bool = try SDSDeserialization.required(record.removeMessageAfterSending, name: "removeMessageAfterSending")
             let threadId: String? = record.threadId
 
-            return SSKMessageSenderJobRecord(uniqueId: uniqueId,
+            return SSKMessageSenderJobRecord(grdbId: recordId,
+                                             uniqueId: uniqueId,
                                              failureCount: failureCount,
                                              label: label,
                                              sortId: sortId,
@@ -670,7 +685,8 @@ class SSKJobRecordSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = model.sortId > 0 ? Int64(model.sortId) : nil
+        // let id: Int64? = model.sortId > 0 ? Int64(model.sortId) : nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .jobRecord
         let uniqueId: String = model.uniqueId
@@ -689,6 +705,6 @@ class SSKJobRecordSerializer: SDSSerializer {
         let removeMessageAfterSending: Bool? = nil
         let threadId: String? = nil
 
-        return JobRecordRecord(id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId)
+        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId)
     }
 }

@@ -23,12 +23,14 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                     archivalDate:(nullable NSDate *)archivalDate
        archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
 isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
+           lastInteractionSortId:(int64_t)lastInteractionSortId
                  lastMessageDate:(nullable NSDate *)lastMessageDate
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
@@ -36,12 +38,14 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
                       groupModel:(TSGroupModel *)groupModel
 {
-    self = [super initWithUniqueId:uniqueId
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId
                       archivalDate:archivalDate
          archivedAsOfMessageSortId:archivedAsOfMessageSortId
              conversationColorName:conversationColorName
                       creationDate:creationDate
 isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
+             lastInteractionSortId:lastInteractionSortId
                    lastMessageDate:lastMessageDate
                       messageDraft:messageDraft
                     mutedUntilDate:mutedUntilDate

@@ -23,10 +23,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                  durationSeconds:(unsigned int)durationSeconds
                          enabled:(BOOL)enabled
-NS_SWIFT_NAME(init(uniqueId:durationSeconds:enabled:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:durationSeconds:enabled:));
 
 // clang-format on
 

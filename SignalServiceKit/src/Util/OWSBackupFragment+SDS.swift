@@ -12,6 +12,8 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct BackupFragmentRecord: SDSRecord {
+    public weak var delegate: SDSRecordDelegate?
+
     public var tableMetadata: SDSTableMetadata {
         return OWSBackupFragmentSerializer.table
     }
@@ -47,6 +49,14 @@ public struct BackupFragmentRecord: SDSRecord {
 
     public static func columnName(_ column: BackupFragmentRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        delegate.updateRowId(rowID)
     }
 }
 
@@ -105,7 +115,8 @@ extension OWSBackupFragment {
             let relativeFilePath: String? = record.relativeFilePath
             let uncompressedDataLength: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.uncompressedDataLength, name: "uncompressedDataLength", conversion: { NSNumber(value: $0) })
 
-            return OWSBackupFragment(uniqueId: uniqueId,
+            return OWSBackupFragment(grdbId: recordId,
+                                     uniqueId: uniqueId,
                                      attachmentId: attachmentId,
                                      downloadFilePath: downloadFilePath,
                                      encryptionKey: encryptionKey,
@@ -567,7 +578,8 @@ class OWSBackupFragmentSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        // let id: Int64? = nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .backupFragment
         let uniqueId: String = model.uniqueId
@@ -580,6 +592,6 @@ class OWSBackupFragmentSerializer: SDSSerializer {
         let relativeFilePath: String? = model.relativeFilePath
         let uncompressedDataLength: UInt64? = archiveOptionalNSNumber(model.uncompressedDataLength, conversion: { $0.uint64Value })
 
-        return BackupFragmentRecord(id: id, recordType: recordType, uniqueId: uniqueId, attachmentId: attachmentId, downloadFilePath: downloadFilePath, encryptionKey: encryptionKey, recordName: recordName, relativeFilePath: relativeFilePath, uncompressedDataLength: uncompressedDataLength)
+        return BackupFragmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, attachmentId: attachmentId, downloadFilePath: downloadFilePath, encryptionKey: encryptionKey, recordName: recordName, relativeFilePath: relativeFilePath, uncompressedDataLength: uncompressedDataLength)
     }
 }

@@ -62,7 +62,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                   avatarFileName:(nullable NSString *)avatarFileName
                    avatarUrlPath:(nullable NSString *)avatarUrlPath
                       profileKey:(nullable OWSAES256Key *)profileKey
@@ -72,7 +73,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
         userProfileSchemaVersion:(NSUInteger)userProfileSchemaVersion
                         username:(nullable NSString *)username
 {
-    self = [super initWithUniqueId:uniqueId];
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId];
 
     if (!self) {
         return self;

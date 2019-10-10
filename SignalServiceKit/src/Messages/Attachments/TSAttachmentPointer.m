@@ -110,7 +110,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
          attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                   attachmentType:(TSAttachmentType)attachmentType
@@ -129,7 +130,8 @@ NS_ASSUME_NONNULL_BEGIN
                      pointerType:(TSAttachmentPointerType)pointerType
                            state:(TSAttachmentPointerState)state
 {
-    self = [super initWithUniqueId:uniqueId
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId
                     albumMessageId:albumMessageId
            attachmentSchemaVersion:attachmentSchemaVersion
                     attachmentType:attachmentType

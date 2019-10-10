@@ -73,7 +73,8 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
@@ -100,7 +101,8 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
                           sender:(nullable SignalServiceAddress *)sender
 unknownProtocolVersionMessageSchemaVersion:(NSUInteger)unknownProtocolVersionMessageSchemaVersion
 {
-    self = [super initWithUniqueId:uniqueId
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
                             sortId:sortId
                          timestamp:timestamp

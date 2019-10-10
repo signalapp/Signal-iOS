@@ -55,7 +55,8 @@ class TSGroupThreadSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        // let id: Int64? = nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .groupThread
         let uniqueId: String = model.uniqueId
@@ -66,6 +67,7 @@ class TSGroupThreadSerializer: SDSSerializer {
         let conversationColorName: String = model.conversationColorName.rawValue
         let creationDate: Double? = archiveOptionalDate(model.creationDate)
         let isArchivedByLegacyTimestampForSorting: Bool = model.isArchivedByLegacyTimestampForSorting
+        let lastInteractionSortId: Int64 = model.lastInteractionSortId
         let lastMessageDate: Double? = archiveOptionalDate(model.lastMessageDate)
         let messageDraft: String? = model.messageDraft
         let mutedUntilDate: Double? = archiveOptionalDate(model.mutedUntilDate)
@@ -78,6 +80,6 @@ class TSGroupThreadSerializer: SDSSerializer {
         let groupModel: Data? = optionalArchive(model.groupModel)
         let hasDismissedOffers: Bool? = nil
 
-        return ThreadRecord(id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, archivedAsOfMessageSortId: archivedAsOfMessageSortId, conversationColorName: conversationColorName, creationDate: creationDate, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactThreadSchemaVersion: contactThreadSchemaVersion, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
+        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, archivedAsOfMessageSortId: archivedAsOfMessageSortId, conversationColorName: conversationColorName, creationDate: creationDate, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastInteractionSortId: lastInteractionSortId, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactThreadSchemaVersion: contactThreadSchemaVersion, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
     }
 }
