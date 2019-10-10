@@ -600,7 +600,6 @@ class TestModelSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        // let id: Int64? = nil
         let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .testModel

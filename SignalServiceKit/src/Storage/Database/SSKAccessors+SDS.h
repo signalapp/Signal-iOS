@@ -10,7 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSThread (SDS)
 
-@property (nonatomic, nullable, readonly) NSNumber *archivedAsOfMessageSortId;
 @property (nonatomic, copy, nullable, readonly) NSString *messageDraft;
 
 @property (nonatomic, nullable, readonly) NSDate *lastMessageDate DEPRECATED_ATTRIBUTE;

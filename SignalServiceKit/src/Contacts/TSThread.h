@@ -41,6 +41,7 @@ extern ConversationColorName const kConversationColorName_Default;
 @property (nonatomic, readonly, nullable) NSDate *creationDate;
 @property (nonatomic, readonly) BOOL isArchivedByLegacyTimestampForSorting;
 @property (nonatomic, readonly) int64_t rowId;
+@property (nonatomic, readonly) BOOL isArchived;
 
 // zero if thread has never had an interaction.
 // The corresponding interaction may have been deleted.
@@ -55,9 +56,9 @@ extern ConversationColorName const kConversationColorName_Default;
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
                     archivalDate:(nullable NSDate *)archivalDate
-       archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
+                      isArchived:(BOOL)isArchived
 isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
            lastInteractionSortId:(int64_t)lastInteractionSortId
                  lastMessageDate:(nullable NSDate *)lastMessageDate
@@ -65,7 +66,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
                            rowId:(int64_t)rowId
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
-NS_SWIFT_NAME(init(grdbId:uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastInteractionSortId:lastMessageDate:messageDraft:mutedUntilDate:rowId:shouldThreadBeVisible:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:archivalDate:conversationColorName:creationDate:isArchived:isArchivedByLegacyTimestampForSorting:lastInteractionSortId:lastMessageDate:messageDraft:mutedUntilDate:rowId:shouldThreadBeVisible:));
 
 // clang-format on
 
@@ -128,14 +129,11 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:archivalDate:archivedAsOfMessageSortId:conver
  *  @param lastMessage Latest Interaction to take into consideration.
  *  @param transaction Database transaction.
  */
-- (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithLastMessage:(TSInteraction *)lastMessage
+           wasMessageInserted:(BOOL)wasMessageInserted
+                  transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark Archival
-
-/**
- * @return YES if no new messages have been sent or received since the thread was last archived.
- */
-- (BOOL)isArchivedWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 /**
  *  Archives a thread

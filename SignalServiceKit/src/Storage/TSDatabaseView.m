@@ -315,7 +315,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
             }
         }
 
-        return [thread isArchivedWithTransaction:transaction.asAnyRead] ? TSArchiveGroup : TSInboxGroup;
+        return thread.isArchived ? TSArchiveGroup : TSInboxGroup;
     }];
 
     YapDatabaseViewSorting *viewSorting = [self threadSorting];

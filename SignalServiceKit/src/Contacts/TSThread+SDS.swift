@@ -29,9 +29,9 @@ public struct ThreadRecord: SDSRecord {
 
     // Base class properties
     public let archivalDate: Double?
-    public let archivedAsOfMessageSortId: UInt64?
     public let conversationColorName: String
     public let creationDate: Double?
+    public let isArchived: Bool
     public let isArchivedByLegacyTimestampForSorting: Bool
     public let lastInteractionSortId: Int64
     public let lastMessageDate: Double?
@@ -51,9 +51,9 @@ public struct ThreadRecord: SDSRecord {
         case recordType
         case uniqueId
         case archivalDate
-        case archivedAsOfMessageSortId
         case conversationColorName
         case creationDate
+        case isArchived
         case isArchivedByLegacyTimestampForSorting
         case lastInteractionSortId
         case lastMessageDate
@@ -92,9 +92,9 @@ public extension ThreadRecord {
         recordType = row[1]
         uniqueId = row[2]
         archivalDate = row[3]
-        archivedAsOfMessageSortId = row[4]
-        conversationColorName = row[5]
-        creationDate = row[6]
+        conversationColorName = row[4]
+        creationDate = row[5]
+        isArchived = row[6]
         isArchivedByLegacyTimestampForSorting = row[7]
         lastInteractionSortId = row[8]
         lastMessageDate = row[9]
@@ -139,10 +139,10 @@ extension TSThread {
             let uniqueId: String = record.uniqueId
             let archivalDateInterval: Double? = record.archivalDate
             let archivalDate: Date? = SDSDeserialization.optionalDoubleAsDate(archivalDateInterval, name: "archivalDate")
-            let archivedAsOfMessageSortId: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.archivedAsOfMessageSortId, name: "archivedAsOfMessageSortId", conversion: { NSNumber(value: $0) })
             let conversationColorName: ConversationColorName = ConversationColorName(rawValue: record.conversationColorName)
             let creationDateInterval: Double? = record.creationDate
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
+            let isArchived: Bool = record.isArchived
             let isArchivedByLegacyTimestampForSorting: Bool = record.isArchivedByLegacyTimestampForSorting
             let lastInteractionSortId: Int64 = record.lastInteractionSortId
             let lastMessageDateInterval: Double? = record.lastMessageDate
@@ -160,9 +160,9 @@ extension TSThread {
             return TSContactThread(grdbId: recordId,
                                    uniqueId: uniqueId,
                                    archivalDate: archivalDate,
-                                   archivedAsOfMessageSortId: archivedAsOfMessageSortId,
                                    conversationColorName: conversationColorName,
                                    creationDate: creationDate,
+                                   isArchived: isArchived,
                                    isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
                                    lastInteractionSortId: lastInteractionSortId,
                                    lastMessageDate: lastMessageDate,
@@ -180,10 +180,10 @@ extension TSThread {
             let uniqueId: String = record.uniqueId
             let archivalDateInterval: Double? = record.archivalDate
             let archivalDate: Date? = SDSDeserialization.optionalDoubleAsDate(archivalDateInterval, name: "archivalDate")
-            let archivedAsOfMessageSortId: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.archivedAsOfMessageSortId, name: "archivedAsOfMessageSortId", conversion: { NSNumber(value: $0) })
             let conversationColorName: ConversationColorName = ConversationColorName(rawValue: record.conversationColorName)
             let creationDateInterval: Double? = record.creationDate
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
+            let isArchived: Bool = record.isArchived
             let isArchivedByLegacyTimestampForSorting: Bool = record.isArchivedByLegacyTimestampForSorting
             let lastInteractionSortId: Int64 = record.lastInteractionSortId
             let lastMessageDateInterval: Double? = record.lastMessageDate
@@ -199,9 +199,9 @@ extension TSThread {
             return TSGroupThread(grdbId: recordId,
                                  uniqueId: uniqueId,
                                  archivalDate: archivalDate,
-                                 archivedAsOfMessageSortId: archivedAsOfMessageSortId,
                                  conversationColorName: conversationColorName,
                                  creationDate: creationDate,
+                                 isArchived: isArchived,
                                  isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
                                  lastInteractionSortId: lastInteractionSortId,
                                  lastMessageDate: lastMessageDate,
@@ -216,10 +216,10 @@ extension TSThread {
             let uniqueId: String = record.uniqueId
             let archivalDateInterval: Double? = record.archivalDate
             let archivalDate: Date? = SDSDeserialization.optionalDoubleAsDate(archivalDateInterval, name: "archivalDate")
-            let archivedAsOfMessageSortId: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.archivedAsOfMessageSortId, name: "archivedAsOfMessageSortId", conversion: { NSNumber(value: $0) })
             let conversationColorName: ConversationColorName = ConversationColorName(rawValue: record.conversationColorName)
             let creationDateInterval: Double? = record.creationDate
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
+            let isArchived: Bool = record.isArchived
             let isArchivedByLegacyTimestampForSorting: Bool = record.isArchivedByLegacyTimestampForSorting
             let lastInteractionSortId: Int64 = record.lastInteractionSortId
             let lastMessageDateInterval: Double? = record.lastMessageDate
@@ -233,9 +233,9 @@ extension TSThread {
             return TSThread(grdbId: recordId,
                             uniqueId: uniqueId,
                             archivalDate: archivalDate,
-                            archivedAsOfMessageSortId: archivedAsOfMessageSortId,
                             conversationColorName: conversationColorName,
                             creationDate: creationDate,
+                            isArchived: isArchived,
                             isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
                             lastInteractionSortId: lastInteractionSortId,
                             lastMessageDate: lastMessageDate,
@@ -294,9 +294,9 @@ extension TSThreadSerializer {
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
     // Base class properties
     static let archivalDateColumn = SDSColumnMetadata(columnName: "archivalDate", columnType: .double, isOptional: true, columnIndex: 3)
-    static let archivedAsOfMessageSortIdColumn = SDSColumnMetadata(columnName: "archivedAsOfMessageSortId", columnType: .int64, isOptional: true, columnIndex: 4)
-    static let conversationColorNameColumn = SDSColumnMetadata(columnName: "conversationColorName", columnType: .unicodeString, columnIndex: 5)
-    static let creationDateColumn = SDSColumnMetadata(columnName: "creationDate", columnType: .double, isOptional: true, columnIndex: 6)
+    static let conversationColorNameColumn = SDSColumnMetadata(columnName: "conversationColorName", columnType: .unicodeString, columnIndex: 4)
+    static let creationDateColumn = SDSColumnMetadata(columnName: "creationDate", columnType: .double, isOptional: true, columnIndex: 5)
+    static let isArchivedColumn = SDSColumnMetadata(columnName: "isArchived", columnType: .int, columnIndex: 6)
     static let isArchivedByLegacyTimestampForSortingColumn = SDSColumnMetadata(columnName: "isArchivedByLegacyTimestampForSorting", columnType: .int, columnIndex: 7)
     static let lastInteractionSortIdColumn = SDSColumnMetadata(columnName: "lastInteractionSortId", columnType: .int64, columnIndex: 8)
     static let lastMessageDateColumn = SDSColumnMetadata(columnName: "lastMessageDate", columnType: .double, isOptional: true, columnIndex: 9)
@@ -319,9 +319,9 @@ extension TSThreadSerializer {
         recordTypeColumn,
         uniqueIdColumn,
         archivalDateColumn,
-        archivedAsOfMessageSortIdColumn,
         conversationColorNameColumn,
         creationDateColumn,
+        isArchivedColumn,
         isArchivedByLegacyTimestampForSortingColumn,
         lastInteractionSortIdColumn,
         lastMessageDateColumn,
@@ -723,7 +723,6 @@ class TSThreadSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        // let id: Int64? = nil
         let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .thread
@@ -731,9 +730,9 @@ class TSThreadSerializer: SDSSerializer {
 
         // Base class properties
         let archivalDate: Double? = archiveOptionalDate(model.archivalDate)
-        let archivedAsOfMessageSortId: UInt64? = archiveOptionalNSNumber(model.archivedAsOfMessageSortId, conversion: { $0.uint64Value })
         let conversationColorName: String = model.conversationColorName.rawValue
         let creationDate: Double? = archiveOptionalDate(model.creationDate)
+        let isArchived: Bool = model.isArchived
         let isArchivedByLegacyTimestampForSorting: Bool = model.isArchivedByLegacyTimestampForSorting
         let lastInteractionSortId: Int64 = model.lastInteractionSortId
         let lastMessageDate: Double? = archiveOptionalDate(model.lastMessageDate)
@@ -748,6 +747,6 @@ class TSThreadSerializer: SDSSerializer {
         let groupModel: Data? = nil
         let hasDismissedOffers: Bool? = nil
 
-        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, archivedAsOfMessageSortId: archivedAsOfMessageSortId, conversationColorName: conversationColorName, creationDate: creationDate, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastInteractionSortId: lastInteractionSortId, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactThreadSchemaVersion: contactThreadSchemaVersion, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
+        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastInteractionSortId: lastInteractionSortId, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactThreadSchemaVersion: contactThreadSchemaVersion, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
     }
 }

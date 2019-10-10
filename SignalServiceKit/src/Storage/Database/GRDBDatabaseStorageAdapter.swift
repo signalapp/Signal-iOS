@@ -213,7 +213,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                 on: ThreadRecord.databaseTableName,
                 columns: [
                     ThreadRecord.columnName(.shouldThreadBeVisible),
-                    ThreadRecord.columnName(.archivedAsOfMessageSortId),
+                    ThreadRecord.columnName(.isArchived),
                     ThreadRecord.columnName(.lastInteractionSortId)
                 ]
             )

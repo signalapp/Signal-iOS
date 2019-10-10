@@ -294,21 +294,22 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 {
     [super anyDidInsertWithTransaction:transaction];
 
-    [self updateLastMessageWithTransaction:transaction];
+    [self updateLastMessageWithTransaction:transaction wasMessageInserted:YES];
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidUpdateWithTransaction:transaction];
 
-    [self updateLastMessageWithTransaction:transaction];
+    [self updateLastMessageWithTransaction:transaction wasMessageInserted:NO];
 }
 
 - (void)updateLastMessageWithTransaction:(SDSAnyWriteTransaction *)transaction
+                      wasMessageInserted:(BOOL)wasMessageInserted
 {
     TSThread *fetchedThread = [self threadWithTransaction:transaction];
 
-    [fetchedThread updateWithLastMessage:self transaction:transaction];
+    [fetchedThread updateWithLastMessage:self wasMessageInserted:wasMessageInserted transaction:transaction];
 }
 
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction

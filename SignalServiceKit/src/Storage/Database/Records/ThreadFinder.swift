@@ -83,14 +83,13 @@ struct GRDBThreadFinder: ThreadFinder {
     static let cn = ThreadRecord.columnName
 
     func visibleThreadCount(isArchived: Bool, transaction: Database) throws -> UInt {
-        let archivedClause = isArchived ? "IS NOT NULL" : "IS NULL"
         let sql = """
             SELECT COUNT(*)
             FROM \(ThreadRecord.databaseTableName)
             WHERE \(threadColumn: .shouldThreadBeVisible) = 1
-            AND \(threadColumn: .archivedAsOfMessageSortId) \(archivedClause)
+            AND \(threadColumn: .isArchived) = ?
         """
-        let arguments: StatementArguments = []
+        let arguments: StatementArguments = [isArchived]
 
         guard let count = try UInt.fetchOne(transaction, sql: sql, arguments: arguments) else {
             owsFailDebug("count was unexpectedly nil")
@@ -101,15 +100,14 @@ struct GRDBThreadFinder: ThreadFinder {
     }
 
     func enumerateVisibleThreads(isArchived: Bool, transaction: Database, block: @escaping (TSThread) -> Void) throws {
-        let archivedClause = isArchived ? "IS NOT NULL" : "IS NULL"
         let sql = """
             SELECT *
             FROM \(ThreadRecord.databaseTableName)
             WHERE \(threadColumn: .shouldThreadBeVisible) = 1
-            AND \(threadColumn: .archivedAsOfMessageSortId) \(archivedClause)
+            AND \(threadColumn: .isArchived) = ?
             ORDER BY \(threadColumn: .lastInteractionSortId) DESC
             """
-        let arguments: StatementArguments = []
+        let arguments: StatementArguments = [isArchived]
 
         try ThreadRecord.fetchCursor(transaction, sql: sql, arguments: arguments).forEach { threadRecord in
             block(try TSThread.fromRecord(threadRecord))

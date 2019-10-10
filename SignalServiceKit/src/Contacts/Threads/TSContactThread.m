@@ -52,9 +52,9 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
                     archivalDate:(nullable NSDate *)archivalDate
-       archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
+                      isArchived:(BOOL)isArchived
 isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
            lastInteractionSortId:(int64_t)lastInteractionSortId
                  lastMessageDate:(nullable NSDate *)lastMessageDate
@@ -70,9 +70,9 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
                       archivalDate:archivalDate
-         archivedAsOfMessageSortId:archivedAsOfMessageSortId
              conversationColorName:conversationColorName
                       creationDate:creationDate
+                        isArchived:isArchived
 isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
              lastInteractionSortId:lastInteractionSortId
                    lastMessageDate:lastMessageDate
