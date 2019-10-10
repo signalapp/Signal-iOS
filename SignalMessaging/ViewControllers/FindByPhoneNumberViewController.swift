@@ -57,8 +57,11 @@ public class FindByPhoneNumberViewController: OWSViewController {
         countryRow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCountryRow)))
         stackView.addArrangedSubview(countryRow)
 
-        countryRowTitleLabel.text = NSLocalizedString("REGISTRATION_DEFAULT_COUNTRY_NAME", comment: "Label for the country code field")
+        countryRowTitleLabel.text = NSLocalizedString("REGISTRATION_DEFAULT_COUNTRY_NAME",
+                                                      comment: "Label for the country code field")
         countryRowTitleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
+        countryRowTitleLabel.accessibilityIdentifier =
+            UIView.accessibilityIdentifier(in: self, name: "countryRowTitleLabel")
 
         countryRow.addSubview(countryRowTitleLabel)
         countryRowTitleLabel.autoPinLeadingToSuperviewMargin()
@@ -67,6 +70,8 @@ public class FindByPhoneNumberViewController: OWSViewController {
         countryCodeLabel.textColor = .ows_materialBlue
         countryCodeLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
         countryCodeLabel.textAlignment = .right
+        countryCodeLabel.accessibilityIdentifier =
+            UIView.accessibilityIdentifier(in: self, name: "countryCodeLabel")
 
         countryRow.addSubview(countryCodeLabel)
         countryCodeLabel.autoPinLeading(toTrailingEdgeOf: countryRowTitleLabel, offset: 10)
@@ -81,6 +86,8 @@ public class FindByPhoneNumberViewController: OWSViewController {
         phoneNumberRowTitleLabel.text = NSLocalizedString("REGISTRATION_PHONENUMBER_BUTTON",
                                                           comment: "Label for the phone number textfield")
         phoneNumberRowTitleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
+        phoneNumberRowTitleLabel.accessibilityIdentifier =
+            UIView.accessibilityIdentifier(in: self, name: "phoneNumberRowTitleLabel")
 
         phoneNumberRow.addSubview(phoneNumberRowTitleLabel)
         phoneNumberRowTitleLabel.autoPinLeadingToSuperviewMargin()
@@ -92,6 +99,9 @@ public class FindByPhoneNumberViewController: OWSViewController {
         phoneNumberTextField.autocapitalizationType = .none
         phoneNumberTextField.placeholder = NSLocalizedString("REGISTRATION_ENTERNUMBER_DEFAULT_TEXT",
                                                              comment: "Placeholder text for the phone number textfield")
+        phoneNumberTextField.accessibilityIdentifier =
+            UIView.accessibilityIdentifier(in: self, name: "phoneNumberTextField")
+
         phoneNumberTextField.textAlignment = .right
         phoneNumberTextField.delegate = self
         phoneNumberTextField.returnKeyType = .done
@@ -124,6 +134,8 @@ public class FindByPhoneNumberViewController: OWSViewController {
         button.setBackgroundColors(upColor: .ows_signalBrandBlue)
         button.addTarget(target: self, selector: #selector(tryToSelectPhoneNumber))
         button.setEnabled(false)
+        button.accessibilityIdentifier =
+            UIView.accessibilityIdentifier(in: self, name: "button")
     }
 
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
