@@ -87,6 +87,12 @@ public extension UIView {
         return view
     }
 
+    class func spacer(matchingHeightOf matchView: UIView, withMultiplier multiplier: CGFloat) -> UIView {
+        let spacer = UIView()
+        spacer.autoMatch(.height, to: .height, of: matchView, withMultiplier: multiplier)
+        return spacer
+    }
+
     class func hStretchingSpacer() -> UIView {
         let view = UIView()
         view.setContentHuggingHorizontalLow()
@@ -94,10 +100,21 @@ public extension UIView {
         return view
     }
 
-    class func vStretchingSpacer() -> UIView {
+    @nonobjc
+    class func vStretchingSpacer(minHeight: CGFloat? = nil, maxHeight: CGFloat? = nil) -> UIView {
         let view = UIView()
         view.setContentHuggingVerticalLow()
         view.setCompressionResistanceVerticalLow()
+
+        if let minHeight = minHeight {
+            view.autoSetDimension(.height, toSize: minHeight, relation: .greaterThanOrEqual)
+        }
+        if let maxHeight = maxHeight {
+            NSLayoutConstraint.autoSetPriority(.defaultLow) {
+                view.autoSetDimension(.height, toSize: maxHeight)
+            }
+        }
+
         return view
     }
 

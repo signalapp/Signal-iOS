@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -14,11 +14,11 @@ public class OWSSignalAddress: NSObject {
     public let recipientId: String
 
     @objc
-    public let deviceId: UInt
+    public let deviceId: UInt32
 
     // MARK: Initializers
 
-    @objc public init(recipientId: String, deviceId: UInt) throws {
+    @objc public init(recipientId: String, deviceId: UInt32) throws {
         guard recipientId.count > 0 else {
             throw OWSSignalAddressError.assertionError(description: "Invalid recipient id: \(deviceId)")
         }

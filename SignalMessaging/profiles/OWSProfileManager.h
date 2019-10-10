@@ -74,7 +74,8 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 // These methods are for debugging.
 - (void)clearProfileWhitelist;
 - (void)logProfileWhitelist;
-- (void)regenerateLocalProfileWithSneakyTransaction;
+- (void)debug_regenerateLocalProfileWithSneakyTransaction;
+- (void)setLocalProfileKey:(OWSAES256Key *)key transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)addThreadToProfileWhitelist:(TSThread *)thread;
 - (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses;

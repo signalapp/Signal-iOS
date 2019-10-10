@@ -125,10 +125,13 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (void)generateNewIdentityKey
 {
     [self.databaseQueue writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self.ownIdentityKeyValueStore setObject:[Curve25519 generateKeyPair]
-                                             key:kIdentityKeyStore_IdentityKey
-                                     transaction:transaction];
+        [self storeIdentityKeyPair:[Curve25519 generateKeyPair] transaction:transaction];
     }];
+}
+
+- (void)storeIdentityKeyPair:(ECKeyPair *)keyPair transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self.ownIdentityKeyValueStore setObject:keyPair key:kIdentityKeyStore_IdentityKey transaction:transaction];
 }
 
 - (NSString *)ensureAccountIdForAddress:(SignalServiceAddress *)address

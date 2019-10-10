@@ -1133,7 +1133,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 OWSFailDebug(@"Sync device message missing destination device id: %@", deviceMessage);
                 continue;
             }
-            if (destinationDeviceId.intValue != OWSDevicePrimaryDeviceId) {
+            if (destinationDeviceId.intValue != self.tsAccountManager.storedDeviceId) {
                 hasDeviceMessages = YES;
                 break;
             }
@@ -1629,7 +1629,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(deviceIds);
 
     if (messageSend.isLocalAddress) {
-        [deviceIds removeObject:@(OWSDevicePrimaryDeviceId)];
+        [deviceIds removeObject:@(self.tsAccountManager.storedDeviceId)];
     }
 
     for (NSNumber *deviceId in deviceIds) {

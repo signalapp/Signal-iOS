@@ -665,18 +665,23 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     return [self.areReadReceiptsEnabledCached boolValue];
 }
 
-- (void)setAreReadReceiptsEnabled:(BOOL)value
+- (void)setAreReadReceiptsEnabledWithSneakyTransactionAndSyncConfiguration:(BOOL)value
 {
     OWSLogInfo(@"setAreReadReceiptsEnabled: %d.", value);
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [OWSReadReceiptManager.keyValueStore setBool:value
-                                                 key:OWSReadReceiptManagerAreReadReceiptsEnabled
-                                         transaction:transaction];
+        [self setAreReadReceiptsEnabled:value transaction:transaction];
     }];
 
     [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
+}
 
+
+- (void)setAreReadReceiptsEnabled:(BOOL)value transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [OWSReadReceiptManager.keyValueStore setBool:value
+                                             key:OWSReadReceiptManagerAreReadReceiptsEnabled
+                                     transaction:transaction];
     self.areReadReceiptsEnabledCached = @(value);
 }
 

@@ -506,9 +506,13 @@
 		4C21D5D8223AC60F00EF8A77 /* PhotoCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C21D5D7223AC60F00EF8A77 /* PhotoCapture.swift */; };
 		4C23A5F2215C4ADE00534937 /* SheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C23A5F1215C4ADE00534937 /* SheetViewController.swift */; };
 		4C295880233AE23000AAB2AA /* Theme+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C29587F233AE23000AAB2AA /* Theme+OWS.swift */; };
+		4C2EBB7F2356B2B900BBC171 /* SecondaryLinkingSetDeviceNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2EBB7E2356B2B900BBC171 /* SecondaryLinkingSetDeviceNameViewController.swift */; };
 		4C2F454F214C00E1004871FF /* AvatarTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2F454E214C00E1004871FF /* AvatarTableViewCell.swift */; };
+		4C30E224234F9F34009558B7 /* SecondaryLinkingPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C30E223234F9F34009558B7 /* SecondaryLinkingPrepViewController.swift */; };
+		4C30E226234FB033009558B7 /* SecondaryLinkingQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C30E225234FB033009558B7 /* SecondaryLinkingQRCodeViewController.swift */; };
 		4C38E500230374D700E464B9 /* UIViewController+Permissions.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C38E4FE230374D700E464B9 /* UIViewController+Permissions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4C38E501230374D700E464B9 /* UIViewController+Permissions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C38E4FF230374D700E464B9 /* UIViewController+Permissions.m */; };
+		4C3A2BC72356620E004B3986 /* ProvisioningController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3A2BC62356620E004B3986 /* ProvisioningController.swift */; };
 		4C3A556F228C7937000E4935 /* PrivateMethodsForMigration.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C3A556E228C7937000E4935 /* PrivateMethodsForMigration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4C3E245C21F29FCE000AE092 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA5F792211E1F06008C2708 /* Toast.swift */; };
 		4C3E245D21F2B395000AE092 /* DirectionalPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4523149F1F7E9E18003A428C /* DirectionalPanGestureRecognizer.swift */; };
@@ -1309,9 +1313,13 @@
 		4C21D5D7223AC60F00EF8A77 /* PhotoCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCapture.swift; sourceTree = "<group>"; };
 		4C23A5F1215C4ADE00534937 /* SheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetViewController.swift; sourceTree = "<group>"; };
 		4C29587F233AE23000AAB2AA /* Theme+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme+OWS.swift"; sourceTree = "<group>"; };
+		4C2EBB7E2356B2B900BBC171 /* SecondaryLinkingSetDeviceNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryLinkingSetDeviceNameViewController.swift; sourceTree = "<group>"; };
 		4C2F454E214C00E1004871FF /* AvatarTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarTableViewCell.swift; sourceTree = "<group>"; };
+		4C30E223234F9F34009558B7 /* SecondaryLinkingPrepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryLinkingPrepViewController.swift; sourceTree = "<group>"; };
+		4C30E225234FB033009558B7 /* SecondaryLinkingQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryLinkingQRCodeViewController.swift; sourceTree = "<group>"; };
 		4C38E4FE230374D700E464B9 /* UIViewController+Permissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+Permissions.h"; sourceTree = "<group>"; };
 		4C38E4FF230374D700E464B9 /* UIViewController+Permissions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Permissions.m"; sourceTree = "<group>"; };
+		4C3A2BC62356620E004B3986 /* ProvisioningController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvisioningController.swift; sourceTree = "<group>"; };
 		4C3A556E228C7937000E4935 /* PrivateMethodsForMigration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrivateMethodsForMigration.h; sourceTree = "<group>"; };
 		4C3EF7FC2107DDEE0007EBF7 /* ParamParserTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParamParserTest.swift; sourceTree = "<group>"; };
 		4C3EF801210918740007EBF7 /* SSKProtoEnvelopeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKProtoEnvelopeTest.swift; sourceTree = "<group>"; };
@@ -1651,6 +1659,7 @@
 		340FC875204DAC8C007AEB0F /* Registration */ = {
 			isa = PBXGroup;
 			children = (
+				4C3A2BC5235661AB004B3986 /* SecondaryLinking */,
 				3441FD9E21A3604F00BB9542 /* BackupRestoreViewController.swift */,
 				349ED98F221B0194008045B0 /* Onboarding2FAViewController.swift */,
 				8810223622DF9C2300A7C44F /* OnboardingAccountLockedViewController.swift */,
@@ -2507,6 +2516,17 @@
 				3412F9BA2350D0840022EDAA /* ThreadPerformanceTest.swift */,
 			);
 			path = PerformanceTests;
+			sourceTree = "<group>";
+		};
+		4C3A2BC5235661AB004B3986 /* SecondaryLinking */ = {
+			isa = PBXGroup;
+			children = (
+				4C30E223234F9F34009558B7 /* SecondaryLinkingPrepViewController.swift */,
+				4C30E225234FB033009558B7 /* SecondaryLinkingQRCodeViewController.swift */,
+				4C2EBB7E2356B2B900BBC171 /* SecondaryLinkingSetDeviceNameViewController.swift */,
+				4C3A2BC62356620E004B3986 /* ProvisioningController.swift */,
+			);
+			path = SecondaryLinking;
 			sourceTree = "<group>";
 		};
 		4C3EF8002109184A0007EBF7 /* SSKTests */ = {
@@ -4054,6 +4074,8 @@
 				45C0DC1E1E69011F00E04C47 /* UIStoryboard+OWS.swift in Sources */,
 				452ECA4D1E087E7200E2F016 /* MessageFetcherJob.swift in Sources */,
 				4556FA681F54AA9500AF40DD /* DebugUIProfile.swift in Sources */,
+				4C2EBB7F2356B2B900BBC171 /* SecondaryLinkingSetDeviceNameViewController.swift in Sources */,
+				4C30E224234F9F34009558B7 /* SecondaryLinkingPrepViewController.swift in Sources */,
 				45A6DAD61EBBF85500893231 /* ReminderView.swift in Sources */,
 				34D1F0881F8678AA0066283D /* ConversationViewLayout.m in Sources */,
 				4CA485BB2232339F004B9E7D /* PhotoCaptureViewController.swift in Sources */,
@@ -4073,6 +4095,7 @@
 				4C21D5D8223AC60F00EF8A77 /* PhotoCapture.swift in Sources */,
 				4C13C9F620E57BA30089A98B /* ColorPickerViewController.swift in Sources */,
 				4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */,
+				4C30E226234FB033009558B7 /* SecondaryLinkingQRCodeViewController.swift in Sources */,
 				3448E16022134C89004B052E /* OnboardingSplashViewController.swift in Sources */,
 				34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */,
 				458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */,
@@ -4084,6 +4107,7 @@
 				3496744D2076768700080B5F /* OWSMessageBubbleView.m in Sources */,
 				34B3F8751E8DF1700035BE1A /* CallViewController.swift in Sources */,
 				4C4AE6A1224AF35700D4AF6F /* SendMediaNavigationController.swift in Sources */,
+				4C3A2BC72356620E004B3986 /* ProvisioningController.swift in Sources */,
 				34D8C0281ED3673300188D7C /* DebugUITableViewController.m in Sources */,
 				45F32C222057297A00A300D5 /* MediaDetailViewController.m in Sources */,
 				34B3F8851E8DF1700035BE1A /* NewGroupViewController.m in Sources */,

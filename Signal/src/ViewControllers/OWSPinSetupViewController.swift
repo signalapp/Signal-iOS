@@ -47,6 +47,7 @@ public class PinSetupViewController: OWSViewController {
     private let completionHandler: () -> Void
 
     init(mode: Mode, initialMode: Mode? = nil, completionHandler: @escaping () -> Void) {
+        assert(TSAccountManager.sharedInstance().isRegisteredPrimaryDevice)
         self.mode = mode
         self.initialMode = initialMode ?? mode
         self.completionHandler = completionHandler
@@ -251,8 +252,7 @@ public class PinSetupViewController: OWSViewController {
         let font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
         let buttonHeight = OWSFlatButton.heightForFont(font)
         let nextButton = OWSFlatButton.button(
-            title: NSLocalizedString("BUTTON_NEXT",
-                                     comment: "Label for the 'next' button."),
+            title: CommonStrings.nextButton,
             font: font,
             titleColor: .white,
             backgroundColor: .ows_signalBlue,
@@ -261,6 +261,7 @@ public class PinSetupViewController: OWSViewController {
         )
         nextButton.autoSetDimension(.height, toSize: buttonHeight)
         nextButton.accessibilityIdentifier = "pinCreation.nextButton"
+        let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton)
 
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
@@ -271,7 +272,7 @@ public class PinSetupViewController: OWSViewController {
             pinStackRow,
             bottomSpacer,
             UIView.spacer(withHeight: 10),
-            nextButton
+            primaryButtonView
         ]
 
         if let topRow = topRow {

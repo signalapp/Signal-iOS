@@ -4,18 +4,6 @@
 
 import Foundation
 
-public struct OWSAssertionError: OperationError {
-    public let isRetryable: Bool = false
-    public let errorCode: Int = OWSErrorCode.assertionFailure.rawValue
-
-    public let description: String
-
-    public init(_ description: String) {
-        owsFailDebug("assertionError: \(description)")
-        self.description = description
-    }
-}
-
 extension NSError {
     @objc
     public func httpResponseCodeObjc() -> NSNumber? {
@@ -61,6 +49,12 @@ public extension OperationError {
 }
 
 extension NSError: OperationError { }
+
+extension OWSAssertionError: OperationError {
+    public var isRetryable: Bool {
+        return false
+    }
+}
 
 /// Swift/ObjC error bridging is a little tricky.
 ///

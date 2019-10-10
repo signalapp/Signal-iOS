@@ -22,6 +22,9 @@ import Foundation
     static public let doneButton = NSLocalizedString("BUTTON_DONE", comment: "Label for generic done button.")
 
     @objc
+    static public let nextButton = NSLocalizedString("BUTTON_NEXT", comment: "Label for the 'next' button.")
+
+    @objc
     static public let retryButton = NSLocalizedString("RETRY_BUTTON_TEXT", comment: "Generic text for button that retries whatever the last action was.")
 
     @objc

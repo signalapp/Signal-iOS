@@ -35,6 +35,7 @@ extern const NSUInteger kStoredIdentityKeyLength;
 + (instancetype)sharedManager;
 
 - (void)generateNewIdentityKey;
+- (void)storeIdentityKeyPair:(ECKeyPair *)keyPair transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (nullable ECKeyPair *)identityKeyPairWithTransaction:(SDSAnyReadTransaction *)transaction;
 

@@ -69,7 +69,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                                object:nil];
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if ([self.tsAccountManager isRegisteredAndReady]) {
+        if ([self.tsAccountManager isRegisteredAndReady] && self.tsAccountManager.isRegisteredPrimaryDevice) {
             OWSAssertDebug(self.contactsManager.isSetup);
 
             // Flush any pending changes.
@@ -159,7 +159,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         return;
     }
 
-    if ([TSAccountManager sharedInstance].isRegisteredAndReady) {
+    if (self.tsAccountManager.isRegisteredAndReady && self.tsAccountManager.isRegisteredPrimaryDevice) {
         [self sendSyncContactsMessageIfNecessary];
     }
 }
@@ -167,6 +167,10 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 - (void)sendConfigurationSyncMessage {
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         if (!self.tsAccountManager.isRegisteredAndReady) {
+            return;
+        }
+
+        if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
             return;
         }
 
@@ -179,7 +183,11 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 - (void)sendConfigurationSyncMessage_AppReady {
     DDLogInfo(@"");
 
-    if (![TSAccountManager sharedInstance].isRegisteredAndReady) {
+    if (!self.tsAccountManager.isRegisteredAndReady) {
+        return;
+    }
+
+    if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
         return;
     }
 
@@ -261,6 +269,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (void)sendSyncContactsMessageIfNecessary
 {
+    OWSAssertDebug(self.tsAccountManager.isRegisteredPrimaryDevice);
     [[self syncContactsForSignalAccounts:self.contactsManager.signalAccounts skipIfRedundant:YES debounce:YES]
         retainUntilComplete];
 }
@@ -286,6 +295,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
         [AppReadiness runNowOrWhenAppDidBecomeReady:^{
             dispatch_async(self.serialQueue, ^{
+                OWSAssertDebug(self.tsAccountManager.isRegisteredPrimaryDevice);
                 if (debounce && self.isRequestInFlight) {
                     // De-bounce.  It's okay if we ignore some new changes;
                     // `sendSyncContactsMessageIfPossible` is called fairly

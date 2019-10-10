@@ -60,14 +60,14 @@ public extension SDSTransactable {
 public extension SDSTransactable {
     @objc
     func writePromise(_ block: @escaping (SDSAnyWriteTransaction) -> Void) -> AnyPromise {
-        return AnyPromise(writePromise(block) as Promise<Void>)
+        return AnyPromise(write(.promise, block) as Promise<Void>)
     }
 
-    func writePromise(_ block: @escaping (SDSAnyWriteTransaction) -> Void) -> Promise<Void> {
+    func write<T>(_: PMKNamespacer, _ block: @escaping (SDSAnyWriteTransaction) -> T) -> Promise<T> {
         return Promise { resolver in
-            self.asyncWrite(block: block,
-                            completionQueue: .global(),
-                            completion: { resolver.fulfill(()) })
+            DispatchQueue.global().async {
+                resolver.fulfill(self.writeReturningResult(block: block))
+            }
         }
     }
 }

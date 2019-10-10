@@ -881,13 +881,21 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     }];
 }
 
-- (void)regenerateLocalProfileWithSneakyTransaction
+- (void)debug_regenerateLocalProfileWithSneakyTransaction
 {
     OWSUserProfile *userProfile = self.localUserProfile;
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [userProfile clearWithProfileKey:[OWSAES256Key generateRandomKey] transaction:transaction completion:nil];
     }];
     [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
+}
+
+- (void)setLocalProfileKey:(OWSAES256Key *)key transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSUserProfile *localUserProfile =
+        [OWSUserProfile getOrBuildUserProfileForAddress:OWSUserProfile.localProfileAddress transaction:transaction];
+
+    [localUserProfile clearWithProfileKey:key transaction:transaction completion:nil];
 }
 
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address

@@ -32,4 +32,16 @@ public extension TSAccountManager {
         }
         return thread
     }
+
+    var isRegisteredPrimaryDevice: Bool {
+        return isRegistered && self.storedDeviceId() == OWSDevicePrimaryDeviceId
+    }
+
+    var storedServerUsername: String? {
+        guard let serviceIdentifier = self.localAddress?.serviceIdentifier else {
+            return nil
+        }
+
+        return isRegisteredPrimaryDevice ? serviceIdentifier : "\(serviceIdentifier).\(storedDeviceId())"
+    }
 }

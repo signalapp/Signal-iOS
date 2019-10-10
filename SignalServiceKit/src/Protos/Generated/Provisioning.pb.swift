@@ -22,9 +22,31 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that your are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+private struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
+}
+
+struct ProvisioningProtos_ProvisioningUuid {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// @required
+  var uuid: String {
+    get {return _uuid ?? String()}
+    set {_uuid = newValue}
+  }
+  /// Returns true if `uuid` has been explicitly set.
+  var hasUuid: Bool {return self._uuid != nil}
+  /// Clears the value of `uuid`. Subsequent reads from it will return its default value.
+  mutating func clearUuid() {self._uuid = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _uuid: String?
 }
 
 struct ProvisioningProtos_ProvisionEnvelope {
@@ -56,8 +78,8 @@ struct ProvisioningProtos_ProvisionEnvelope {
 
   init() {}
 
-  fileprivate var _publicKey: Data? = nil
-  fileprivate var _body: Data? = nil
+  fileprivate var _publicKey: Data?
+  fileprivate var _body: Data?
 }
 
 struct ProvisioningProtos_ProvisionMessage {
@@ -147,25 +169,54 @@ struct ProvisioningProtos_ProvisionMessage {
 
   init() {}
 
-  fileprivate var _identityKeyPublic: Data? = nil
-  fileprivate var _identityKeyPrivate: Data? = nil
-  fileprivate var _number: String? = nil
-  fileprivate var _uuid: String? = nil
-  fileprivate var _provisioningCode: String? = nil
-  fileprivate var _userAgent: String? = nil
-  fileprivate var _profileKey: Data? = nil
-  fileprivate var _readReceipts: Bool? = nil
+  fileprivate var _identityKeyPublic: Data?
+  fileprivate var _identityKeyPrivate: Data?
+  fileprivate var _number: String?
+  fileprivate var _uuid: String?
+  fileprivate var _provisioningCode: String?
+  fileprivate var _userAgent: String?
+  fileprivate var _profileKey: Data?
+  fileprivate var _readReceipts: Bool?
 }
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "ProvisioningProtos"
+private let _protobuf_package = "ProvisioningProtos"
+
+extension ProvisioningProtos_ProvisioningUuid: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".ProvisioningUuid"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "uuid")
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularStringField(value: &self._uuid)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._uuid {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: ProvisioningProtos_ProvisioningUuid, rhs: ProvisioningProtos_ProvisioningUuid) -> Bool {
+    if lhs._uuid != rhs._uuid {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
 
 extension ProvisioningProtos_ProvisionEnvelope: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ProvisionEnvelope"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "publicKey"),
-    2: .same(proto: "body"),
+    2: .same(proto: "body")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -206,7 +257,7 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     4: .same(proto: "provisioningCode"),
     5: .same(proto: "userAgent"),
     6: .same(proto: "profileKey"),
-    7: .same(proto: "readReceipts"),
+    7: .same(proto: "readReceipts")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {

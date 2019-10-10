@@ -11,6 +11,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const OWSUserAgent = @"OWI";
+
 @interface OWSProvisioningMessage ()
 
 @property (nonatomic, readonly) NSData *myPublicKey;
@@ -55,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
         [ProvisioningProtoProvisionMessage builderWithIdentityKeyPublic:self.myPublicKey
                                                      identityKeyPrivate:self.myPrivateKey
                                                        provisioningCode:self.provisioningCode
-                                                              userAgent:@"OWI"
+                                                              userAgent:OWSUserAgent
                                                              profileKey:self.profileKey
                                                            readReceipts:self.areReadReceiptsEnabled];
 

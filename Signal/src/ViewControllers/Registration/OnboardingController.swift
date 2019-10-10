@@ -112,7 +112,12 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        pushPhoneNumberView(viewController: viewController)
+        guard let navigationController = viewController.navigationController else {
+            owsFailDebug("navigationController was unexpectedly nil")
+            return
+        }
+
+        pushStartDeviceRegistrationView(onto: navigationController)
     }
 
     public func onboardingPermissionsDidComplete(viewController: UIViewController) {
@@ -120,14 +125,27 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        pushPhoneNumberView(viewController: viewController)
+        guard let navigationController = viewController.navigationController else {
+            owsFailDebug("navigationController was unexpectedly nil")
+            return
+        }
+
+        pushStartDeviceRegistrationView(onto: navigationController)
     }
 
-    private func pushPhoneNumberView(viewController: UIViewController) {
+    private func pushStartDeviceRegistrationView(onto navigationController: UINavigationController) {
         AssertIsOnMainThread()
 
-        let view = OnboardingPhoneNumberViewController(onboardingController: self)
-        viewController.navigationController?.pushViewController(view, animated: true)
+        let shouldShowSecondaryLinking = UIDevice.current.isIPad
+
+        if shouldShowSecondaryLinking {
+            let provisioningController = ProvisioningController(onboardingController: self)
+            let prepViewController = SecondaryLinkingPrepViewController(provisioningController: provisioningController)
+            navigationController.pushViewController(prepViewController, animated: true)
+        } else {
+            let view = OnboardingPhoneNumberViewController(onboardingController: self)
+            navigationController.pushViewController(view, animated: true)
+        }
     }
 
     public func requestingVerificationDidSucceed(viewController: UIViewController) {
@@ -174,11 +192,15 @@ public class OnboardingController: NSObject {
         // the suggested contact bubble.
         contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
 
-        if tsAccountManager.isReregistering() {
+        if tsAccountManager.isReregistering {
             showProfileView(fromView: view)
         } else {
             checkCanImportBackup(fromView: view)
         }
+    }
+
+    public func linkingDidComplete(from viewController: UIViewController) {
+        showConversationSplitView(view: viewController)
     }
 
     private func showProfileView(fromView view: UIViewController) {

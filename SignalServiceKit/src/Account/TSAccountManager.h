@@ -18,6 +18,7 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 @class SDSKeyValueStore;
 @class SignalServiceAddress;
 @class TSNetworkManager;
+@class TSRequest;
 
 typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
     OWSRegistrationState_Unregistered,
@@ -86,6 +87,9 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
  *  @return server authentication token
  */
 - (nullable NSString *)storedServerAuthToken;
+- (void)setStoredServerAuthToken:(NSString *)authToken
+                        deviceId:(UInt32)deviceId
+                     transaction:(SDSAnyWriteTransaction *)transaction;
 
 /**
  *  The registration ID is unique to an installation of TextSecure, it allows to know if the app was reinstalled
@@ -95,12 +99,16 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 - (uint32_t)getOrGenerateRegistrationId;
 - (uint32_t)getOrGenerateRegistrationIdWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
+- (nullable NSString *)storedDeviceName;
+- (void)setStoredDeviceName:(NSString *)deviceName transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (UInt32)storedDeviceId;
+
 #pragma mark - Register with phone number
 
-- (void)verifyAccountWithCode:(NSString *)verificationCode
-                          pin:(nullable NSString *)pin
-                      success:(void (^)(_Nullable id responseObject))successBlock
-                      failure:(void (^)(NSError *error))failureBlock;
+- (void)verifyAccountWithRequest:(TSRequest *)request
+                         success:(void (^)(_Nullable id responseObject))successBlock
+                         failure:(void (^)(NSError *error))failureBlock;
 
 // Called once registration is complete - meaning the following have succeeded:
 // - obtained signal server credentials
@@ -147,7 +155,7 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 // Returns YES on success.
 - (BOOL)resetForReregistration;
 - (nullable NSString *)reregistrationPhoneNumber;
-- (BOOL)isReregistering;
+@property (nonatomic, readonly) BOOL isReregistering;
 
 #pragma mark - Manual Message Fetch
 

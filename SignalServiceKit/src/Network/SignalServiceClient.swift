@@ -14,6 +14,7 @@ public protocol SignalServiceClientObjC {
 public protocol SignalServiceClient: SignalServiceClientObjC {
     func requestPreauthChallenge(recipientId: String, pushToken: String) -> Promise<Void>
     func requestVerificationCode(recipientId: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void>
+    func verifySecondaryDevice(deviceName: String, verificationCode: String, phoneNumber: String, authKey: String) -> Promise<UInt32>
     func getAvailablePreKeys() -> Promise<Int>
     func registerPreKeys(identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void>
     func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord) -> Promise<Void>
@@ -137,6 +138,26 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
             let password: String = try parser.required(key: "password")
 
             return (username: username, password: password)
+        }
+    }
+
+    public func verifySecondaryDevice(deviceName: String,
+                                      verificationCode: String,
+                                      phoneNumber: String,
+                                      authKey: String) -> Promise<UInt32> {
+
+        let request = OWSRequestFactory.verifySecondaryDeviceRequest(verificationCode: verificationCode,
+                                                                     phoneNumber: phoneNumber,
+                                                                     authKey: authKey,
+                                                                     deviceName: deviceName)
+
+        return networkManager.makePromise(request: request).map { _, responseObject in
+            guard let parser = ParamParser(responseObject: responseObject) else {
+                throw OWSErrorMakeUnableToProcessServerResponseError()
+            }
+
+            let deviceId: UInt32 = try parser.required(key: "deviceId")
+            return deviceId
         }
     }
 

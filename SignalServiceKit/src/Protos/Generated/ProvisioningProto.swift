@@ -11,6 +11,110 @@ public enum ProvisioningProtoError: Error {
     case invalidProtobuf(description: String)
 }
 
+// MARK: - ProvisioningProtoProvisioningUuid
+
+@objc public class ProvisioningProtoProvisioningUuid: NSObject {
+
+    // MARK: - ProvisioningProtoProvisioningUuidBuilder
+
+    @objc public class func builder(uuid: String) -> ProvisioningProtoProvisioningUuidBuilder {
+        return ProvisioningProtoProvisioningUuidBuilder(uuid: uuid)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> ProvisioningProtoProvisioningUuidBuilder {
+        let builder = ProvisioningProtoProvisioningUuidBuilder(uuid: uuid)
+        return builder
+    }
+
+    @objc public class ProvisioningProtoProvisioningUuidBuilder: NSObject {
+
+        private var proto = ProvisioningProtos_ProvisioningUuid()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(uuid: String) {
+            super.init()
+
+            setUuid(uuid)
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.uuid = valueParam
+        }
+
+        public func setUuid(_ valueParam: String) {
+            proto.uuid = valueParam
+        }
+
+        @objc public func build() throws -> ProvisioningProtoProvisioningUuid {
+            return try ProvisioningProtoProvisioningUuid.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try ProvisioningProtoProvisioningUuid.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: ProvisioningProtos_ProvisioningUuid
+
+    @objc public let uuid: String
+
+    private init(proto: ProvisioningProtos_ProvisioningUuid,
+                 uuid: String) {
+        self.proto = proto
+        self.uuid = uuid
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> ProvisioningProtoProvisioningUuid {
+        let proto = try ProvisioningProtos_ProvisioningUuid(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: ProvisioningProtos_ProvisioningUuid) throws -> ProvisioningProtoProvisioningUuid {
+        guard proto.hasUuid else {
+            throw ProvisioningProtoError.invalidProtobuf(description: "\(logTag) missing required field: uuid")
+        }
+        let uuid = proto.uuid
+
+        // MARK: - Begin Validation Logic for ProvisioningProtoProvisioningUuid -
+
+        // MARK: - End Validation Logic for ProvisioningProtoProvisioningUuid -
+
+        let result = ProvisioningProtoProvisioningUuid(proto: proto,
+                                                       uuid: uuid)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension ProvisioningProtoProvisioningUuid {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension ProvisioningProtoProvisioningUuid.ProvisioningProtoProvisioningUuidBuilder {
+    @objc public func buildIgnoringErrors() -> ProvisioningProtoProvisioningUuid? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - ProvisioningProtoProvisionEnvelope
 
 @objc public class ProvisioningProtoProvisionEnvelope: NSObject {

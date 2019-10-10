@@ -1769,6 +1769,11 @@ typedef enum : NSUInteger {
 
 - (BOOL)canCall
 {
+    // MULTIRING TODO
+    if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
+        return NO;
+    }
+
     TSContactThread *_Nullable contactThread;
     if ([self.thread isKindOfClass:[TSContactThread class]]) {
         contactThread = (TSContactThread *)self.thread;

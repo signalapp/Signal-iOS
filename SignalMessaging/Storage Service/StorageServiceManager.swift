@@ -10,6 +10,10 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     @objc
     static let shared = StorageServiceManager()
 
+    var tsAccountManager: TSAccountManager {
+        return SSKEnvironment.shared.tsAccountManager
+    }
+
     override init() {
         super.init()
 
@@ -33,7 +37,7 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     }
 
     @objc private func registrationStateDidChange() {
-        guard TSAccountManager.sharedInstance().isRegisteredAndReady else { return }
+        guard self.tsAccountManager.isRegisteredAndReady else { return }
 
         // Schedule a restore. This will do nothing unless we've never
         // registered a manifest before.

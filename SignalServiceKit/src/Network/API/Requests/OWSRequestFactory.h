@@ -75,10 +75,17 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                                      timeStamp:(uint64_t)timeStamp
                                    udAccessKey:(nullable SMKUDAccessKey *)udAccessKey;
 
-+ (TSRequest *)verifyCodeRequestWithVerificationCode:(NSString *)verificationCode
-                                           forNumber:(NSString *)phoneNumber
-                                                 pin:(nullable NSString *)pin
-                                             authKey:(NSString *)authKey;
++ (TSRequest *)verifyPrimaryDeviceRequestWithVerificationCode:(NSString *)verificationCode
+                                                  phoneNumber:(NSString *)phoneNumber
+                                                      authKey:(NSString *)authKey
+                                                          pin:(nullable NSString *)pin
+    NS_SWIFT_NAME(verifyPrimaryDeviceRequest(verificationCode:phoneNumber:authKey:pin:));
+
++ (TSRequest *)verifySecondaryDeviceRequestWithVerificationCode:(NSString *)verificationCode
+                                                    phoneNumber:(NSString *)phoneNumber
+                                                        authKey:(NSString *)authKey
+                                                     deviceName:(NSString *)deviceName
+    NS_SWIFT_NAME(verifySecondaryDeviceRequest(verificationCode:phoneNumber:authKey:deviceName:));
 
 #pragma mark - Prekeys
 

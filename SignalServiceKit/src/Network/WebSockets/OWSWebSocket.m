@@ -554,12 +554,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
         return;
     }
 
-    BOOL wasScheduled = [self.websocket writeData:messageData error:&error];
-    if (!wasScheduled || error) {
-        OWSFailDebug(@"could not send socket request: %@", error);
-        [socketMessage didFailBeforeSending];
-        return;
-    }
+    [self.websocket writeData:messageData];
     OWSLogInfo(@"making request: %llu, %@: %@, jsonData.length: %zd",
         socketMessage.requestId,
         request.HTTPMethod,
@@ -719,7 +714,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     [self handleSocketFailure];
 }
 
-- (void)websocketDidReceiveDataWithSocket:(id<SSKWebSocket>)websocket data:(NSData *)data
+- (void)websocket:(id<SSKWebSocket>)websocket didReceiveMessage:(WebSocketProtoWebSocketMessage *)message
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(websocket);
@@ -732,19 +727,12 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     // If we receive a response, we know we're not de-registered.
     [self.tsAccountManager setIsDeregistered:NO];
 
-    NSError *error;
-    WebSocketProtoWebSocketMessage *_Nullable wsMessage = [WebSocketProtoWebSocketMessage parseData:data error:&error];
-    if (!wsMessage || error) {
-        OWSFailDebug(@"could not parse proto: %@", error);
-        return;
-    }
-
-    if (!wsMessage.hasType) {
+    if (!message.hasType) {
         OWSFailDebug(@"webSocket:didReceiveMessage: missing type.");
-    } else if (wsMessage.unwrappedType == WebSocketProtoWebSocketMessageTypeRequest) {
-        [self processWebSocketRequestMessage:wsMessage.request];
-    } else if (wsMessage.unwrappedType == WebSocketProtoWebSocketMessageTypeResponse) {
-        [self processWebSocketResponseMessage:wsMessage.response];
+    } else if (message.unwrappedType == WebSocketProtoWebSocketMessageTypeRequest) {
+        [self processWebSocketRequestMessage:message.request];
+    } else if (message.unwrappedType == WebSocketProtoWebSocketMessageTypeResponse) {
+        [self processWebSocketResponseMessage:message.response];
     } else {
         OWSFailDebug(@"webSocket:didReceiveMessage: unknown.");
     }
@@ -833,32 +821,10 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 - (void)sendWebSocketMessageAcknowledgement:(WebSocketProtoWebSocketRequestMessage *)request
 {
     OWSAssertIsOnMainThread();
-
     NSError *error;
-
-    WebSocketProtoWebSocketResponseMessageBuilder *responseBuilder =
-        [WebSocketProtoWebSocketResponseMessage builderWithRequestID:request.requestID status:200];
-    [responseBuilder setMessage:@"OK"];
-    WebSocketProtoWebSocketResponseMessage *_Nullable response = [responseBuilder buildAndReturnError:&error];
-    if (!response || error) {
-        OWSFailDebug(@"could not build proto: %@", error);
-        return;
-    }
-
-    WebSocketProtoWebSocketMessageBuilder *messageBuilder = [WebSocketProtoWebSocketMessage builder];
-    [messageBuilder setType:WebSocketProtoWebSocketMessageTypeResponse];
-    [messageBuilder setResponse:response];
-
-    NSData *_Nullable messageData = [messageBuilder buildSerializedDataAndReturnError:&error];
-    if (!messageData || error) {
-        OWSFailDebug(@"could not serialize proto: %@", error);
-        return;
-    }
-
-    [self.websocket writeData:messageData error:&error];
-    if (error) {
-        OWSLogWarn(@"Error while trying to write on websocket %@", error);
-        [self handleSocketFailure];
+    BOOL didSucceed = [self.websocket sendResponseForRequest:request status:200 message:@"OK" error:&error];
+    if (!didSucceed) {
+        OWSFailDebug(@"failure: %@", error);
     }
 }
 
@@ -894,12 +860,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     OWSAssertIsOnMainThread();
 
     if ([self shouldSocketBeOpen]) {
-        NSError *error;
-        [self.websocket writePingAndReturnError:&error];
-        if (error) {
-            OWSLogWarn(@"Error in websocket heartbeat: %@", error.localizedDescription);
-            [self handleSocketFailure];
-        }
+        [self.websocket writePing];
     } else {
         OWSLogWarn(@"webSocketHeartBeat closing web socket");
         [self closeWebSocket];
@@ -909,9 +870,10 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 
 - (NSString *)webSocketAuthenticationString
 {
-    return [NSString stringWithFormat:@"?login=%@&password=%@",
-                     [TSAccountManager.localAddress.serviceIdentifier stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],
-                     self.tsAccountManager.storedServerAuthToken];
+
+    NSString *login = [self.tsAccountManager.storedServerUsername stringByReplacingOccurrencesOfString:@"+"
+                                                                                            withString:@"%2B"];
+    return [NSString stringWithFormat:@"?login=%@&password=%@", login, self.tsAccountManager.storedServerAuthToken];
 }
 
 #pragma mark - Socket LifeCycle

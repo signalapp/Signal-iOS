@@ -11,10 +11,9 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
     private var webView: WKWebView?
 
     override public func loadView() {
-        super.loadView()
+        view = UIView()
 
         view.backgroundColor = Theme.backgroundColor
-        view.layoutMargins = .zero
 
         let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_CAPTCHA_TITLE", comment: "Title of the 'onboarding Captcha' view."))
         titleLabel.accessibilityIdentifier = "onboarding.captcha." + "titleLabel"
@@ -52,11 +51,9 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
             ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
-        stackView.autoPinWidthToSuperviewMargins()
-        stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+
+        stackView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
         autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
 
         NotificationCenter.default.addObserver(self,

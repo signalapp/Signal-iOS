@@ -270,10 +270,9 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
     }
 
     override public func loadView() {
-        super.loadView()
+        view = UIView()
 
         view.backgroundColor = Theme.backgroundColor
-        view.layoutMargins = .zero
 
         let titleLabel = self.titleLabel(text: "")
         self.titleLabel = titleLabel
@@ -308,7 +307,7 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
 
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
-
+        let compressableBottomMargin = UIView.vStretchingSpacer(minHeight: 16, maxHeight: primaryLayoutMargins.bottom)
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
             UIView.spacer(withHeight: 12),
@@ -318,15 +317,16 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
             UIView.spacer(withHeight: 12),
             errorRow,
             bottomSpacer,
-            codeStateLink
+            codeStateLink,
+            compressableBottomMargin
             ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-        stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
-        stackView.autoPinWidthToSuperview()
-        stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+
+        // Because of the keyboard, vertical spacing can get pretty cramped,
+        // so we have custom spacer logic.
+        stackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
         autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
 
         // Ensure whitespace is balanced, so inputs are vertically centered.

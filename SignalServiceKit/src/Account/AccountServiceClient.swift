@@ -64,4 +64,11 @@ public class AccountServiceClient: NSObject {
     public func getUuid() -> Promise<UUID> {
         return serviceClient.getAccountUuid()
     }
+
+    public func verifySecondaryDevice(deviceName: String,
+                                      verificationCode: String,
+                                      phoneNumber: String,
+                                      authKey: String) -> Promise<UInt32> {
+        return serviceClient.verifySecondaryDevice(deviceName: deviceName, verificationCode: verificationCode, phoneNumber: phoneNumber, authKey: authKey)
+    }
 }

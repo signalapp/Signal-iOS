@@ -10,7 +10,6 @@ public class OnboardingAccountLockedViewController: OnboardingBaseViewController
     override public func loadView() {
         view = UIView()
         view.backgroundColor = Theme.backgroundColor
-        view.layoutMargins = .zero
 
         let titleLabel = self.titleLabel(text:
             NSLocalizedString("ONBOARDING_ACCOUNT_LOCKED_TITLE",
@@ -24,12 +23,13 @@ public class OnboardingAccountLockedViewController: OnboardingBaseViewController
         explanationLabel.textColor = Theme.primaryTextColor
         explanationLabel.accessibilityIdentifier = "onboarding.accountLocked." + "explanationLabel"
 
-        let okayButton = self.button(
+        let okayButton = self.primaryButton(
             title: NSLocalizedString("BUTTON_OKAY",
                                      comment: "Label for the 'okay' button."),
             selector: #selector(okayPressed)
         )
         okayButton.accessibilityIdentifier = "onboarding.accountLocked." + "okayButton"
+        let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: okayButton)
 
         let learnMoreLink = self.linkButton(
             title: NSLocalizedString("ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE",
@@ -43,17 +43,13 @@ public class OnboardingAccountLockedViewController: OnboardingBaseViewController
             UIView.spacer(withHeight: 10),
             explanationLabel,
             UIView.vStretchingSpacer(),
-            okayButton,
+            primaryButtonView,
             learnMoreLink
         ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-        stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
-        stackView.autoPinWidthToSuperview()
-        stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        stackView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        stackView.autoPinEdgesToSuperviewMargins()
     }
 
     // MARK: - Events

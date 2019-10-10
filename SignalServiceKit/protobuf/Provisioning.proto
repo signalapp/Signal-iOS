@@ -13,6 +13,12 @@ package ProvisioningProtos;
 option java_package = "org.whispersystems.signalservice.internal.push";
 option java_outer_classname = "ProvisioningProtos";
 
+message ProvisioningUuid
+{
+    // @required
+    optional string uuid = 1;
+}
+
 message ProvisionEnvelope {
   // @required
   optional bytes publicKey = 1;

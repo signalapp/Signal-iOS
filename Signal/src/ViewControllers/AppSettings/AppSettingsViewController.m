@@ -68,6 +68,20 @@
     return self;
 }
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark - Dependencies
+
+- (TSAccountManager *)tsAccountManager
+{
+    return TSAccountManager.sharedInstance;
+}
+
+#pragma mark - UIViewController
+
 - (void)loadView
 {
     self.tableViewStyle = UITableViewStylePlain;
@@ -99,11 +113,6 @@
     [super viewWillAppear:animated];
 
     [self updateTableContents];
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Table Contents
@@ -206,12 +215,19 @@
                                               actionBlock:^{
                                                   [weakSelf showNotifications];
                                               }]];
-    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"LINKED_DEVICES_TITLE",
-                                                              @"Menu item and navbar title for the device manager")
-                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"linked_devices")
-                                              actionBlock:^{
-                                                  [weakSelf showLinkedDevices];
-                                              }]];
+
+    // There's actually nothing AFAIK preventing linking another linked device from an
+    // existing linked device, but maybe it's not something we want to expose until
+    // after unifying the other experiences between secondary/primary devices.
+    if (self.tsAccountManager.isRegisteredPrimaryDevice) {
+        [section
+            addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"LINKED_DEVICES_TITLE",
+                                                             @"Menu item and navbar title for the device manager")
+                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"linked_devices")
+                                             actionBlock:^{
+                                                 [weakSelf showLinkedDevices];
+                                             }]];
+    }
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"")
                                   accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"advanced")
                                               actionBlock:^{
