@@ -39,7 +39,7 @@ extern ConversationColorName const kConversationColorName_Default;
 
 @property (nonatomic) BOOL shouldThreadBeVisible;
 @property (nonatomic, readonly, nullable) NSDate *creationDate;
-@property (nonatomic, readonly) BOOL isArchivedByLegacyTimestampForSorting;
+@property (nonatomic, readonly) BOOL isArchivedByLegacyTimestampForSorting DEPRECATED_MSG_ATTRIBUTE("this property is only to be used in the sortId migration");
 @property (nonatomic, readonly) int64_t rowId;
 @property (nonatomic, readonly) BOOL isArchived;
 

@@ -532,7 +532,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                 SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalRecipient:signalRecipient];
                 signalAccount.contact = contact;
                 if (signalRecipients.count > 1) {
-                    signalAccount.hasMultipleAccountContact = YES;
                     signalAccount.multipleAccountLabelText =
                         [[self class] accountLabelForContact:contact address:signalRecipient.address];
                 }

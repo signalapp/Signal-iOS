@@ -79,25 +79,18 @@ private func createV1Schema(db: Database) throws {
         table.column("uniqueId", .text)
             .notNull()
             .unique(onConflict: .fail)
-        // GRDB TODO remove this column
-        table.column("archivalDate", .double)
         table.column("conversationColorName", .text)
             .notNull()
         table.column("creationDate", .double)
         table.column("isArchived", .integer)
             .notNull()
-        table.column("isArchivedByLegacyTimestampForSorting", .integer)
-            .notNull()
         table.column("lastInteractionRowId", .integer)
             .notNull()
-        table.column("lastMessageDate", .double)
         table.column("messageDraft", .text)
         table.column("mutedUntilDate", .double)
         table.column("shouldThreadBeVisible", .integer)
             .notNull()
         table.column("contactPhoneNumber", .text)
-        // GRDB TODO remove this column?
-        table.column("contactThreadSchemaVersion", .integer)
         table.column("contactUUID", .text)
         table.column("groupModel", .blob)
         table.column("hasDismissedOffers", .integer)
@@ -122,18 +115,12 @@ private func createV1Schema(db: Database) throws {
         table.column("authorId", .text)
         table.column("authorPhoneNumber", .text)
         table.column("authorUUID", .text)
-        // GRDB TODO remove this column?
-        table.column("beforeInteractionId", .text)
         table.column("body", .text)
-        // GRDB TODO remove this column?
-        table.column("callSchemaVersion", .integer)
         table.column("callType", .integer)
         // GRDB TODO remove this column - userInfo?
         table.column("configurationDurationSeconds", .integer)
         // GRDB TODO remove this column - userInfo?
         table.column("configurationIsEnabled", .integer)
-        // GRDB TODO remove this column - userInfo?
-        table.column("contactId", .text)
         table.column("contactShare", .blob)
         // GRDB TODO remove this column - userInfo?
         table.column("createdByRemoteName", .text)
@@ -143,48 +130,29 @@ private func createV1Schema(db: Database) throws {
         table.column("customMessage", .text)
         // GRDB TODO remove this column - userInfo?
         table.column("envelopeData", .blob)
-        // GRDB TODO remove this column
-        table.column("errorMessageSchemaVersion", .integer)
         table.column("errorType", .integer)
         table.column("expireStartedAt", .integer)
         table.column("expiresAt", .integer)
         table.column("expiresInSeconds", .integer)
         table.column("groupMetaMessage", .integer)
-        // GRDB TODO remove this column?
-        table.column("hasAddToContactsOffer", .integer)
-        // GRDB TODO remove this column?
-        table.column("hasAddToProfileWhitelistOffer", .integer)
-        // GRDB TODO remove this column?
-        table.column("hasBlockOffer", .integer)
-        // GRDB TODO remove this column?
+        // GRDB TODO remove this column? We'd have to migrate the legacy values.
         table.column("hasLegacyMessageState", .integer)
-        // GRDB TODO remove this column?
         table.column("hasSyncedTranscript", .integer)
-        // GRDB TODO remove this column?
-        table.column("incomingMessageSchemaVersion", .integer)
-        // GRDB TODO remove this column?
-        table.column("infoMessageSchemaVersion", .integer)
-        // GRDB TODO - do we really need to persist this? It only affects scroll behavior
-        // when first appearing
         table.column("isFromLinkedDevice", .integer)
         // GRDB TODO remove this column - userInfo?
         table.column("isLocalChange", .integer)
         table.column("isViewOnceComplete", .integer)
         table.column("isViewOnceMessage", .integer)
         table.column("isVoiceMessage", .integer)
-        // GRDB TODO remove this column
         table.column("legacyMessageState", .integer)
-        // GRDB TODO remove this column
         table.column("legacyWasDelivered", .integer)
         table.column("linkPreview", .blob)
-        // GRDB TODO what is messageId?
+        // GRDB TODO remove this column - userInfo?
         table.column("messageId", .text)
         table.column("messageSticker", .blob)
         table.column("messageType", .integer)
         // GRDB TODO remove this column - userInfo?
         table.column("mostRecentFailureText", .text)
-        // GRDB TODO remove this column
-        table.column("outgoingMessageSchemaVersion", .integer)
         // GRDB TODO remove this column - userInfo?
         table.column("preKeyBundle", .blob)
         // GRDB TODO remove this column - userInfo?
@@ -193,16 +161,12 @@ private func createV1Schema(db: Database) throws {
         table.column("read", .integer)
         table.column("recipientAddress", .blob)
         table.column("recipientAddressStates", .blob)
-        // GRDB TODO remove this column
-        table.column("schemaVersion", .integer)
         // GRDB TODO remove this column - userInfo?
         table.column("sender", .blob)
         table.column("serverTimestamp", .integer)
         table.column("sourceDeviceId", .integer)
         table.column("storedMessageState", .integer)
         table.column("storedShouldStartExpireTimer", .integer)
-        // GRDB TODO remove this column
-        table.column("unknownProtocolVersionMessageSchemaVersion", .integer)
         table.column("unregisteredAddress", .blob)
         // GRDB TODO remove this column - userInfo?
         table.column("verificationState", .integer)
@@ -273,9 +237,6 @@ private func createV1Schema(db: Database) throws {
             .notNull()
             .unique(onConflict: .fail)
         table.column("albumMessageId", .text)
-        // GRDB TODO remove this column
-        table.column("attachmentSchemaVersion", .integer)
-            .notNull()
         table.column("attachmentType", .integer)
             .notNull()
         table.column("blurHash", .text)
@@ -285,9 +246,6 @@ private func createV1Schema(db: Database) throws {
         table.column("contentType", .text)
             .notNull()
         table.column("encryptionKey", .blob)
-        // GRDB TODO remove this column? Redundant with TSAttachmentStream vs. pointer?
-        table.column("isDownloaded", .integer)
-            .notNull()
         table.column("serverId", .integer)
             .notNull()
         table.column("sourceFilename", .text)
@@ -299,15 +257,14 @@ private func createV1Schema(db: Database) throws {
         table.column("isUploaded", .integer)
         table.column("isValidImageCached", .integer)
         table.column("isValidVideoCached", .integer)
-        // GRDB TODO remove this column? Add back once we have working restore?
+        // GRDB TODO remove this column? Add back once we have working restore? There are some, ultimately unused,
+        // unused finder methods which references this field.
         table.column("lazyRestoreFragmentId", .text)
         table.column("localRelativeFilePath", .text)
+        // GRDB TODO why do we have mediaSize *and* cachedImageHeight/cachedImageWidth? Seems redundant.
         table.column("mediaSize", .blob)
-        table.column("mostRecentFailureLocalizedText", .text)
-        // GRDB TODO remove this column? Does this need to be persisted?
+        // GRDB TODO remove this column? Add back once we have working restore?
         table.column("pointerType", .integer)
-        // GRDB TODO remove this column? Does this need to be persisted?
-        table.column("shouldAlwaysPad", .integer)
         table.column("state", .integer)
     }
     try db.create(index: "index_model_TSAttachment_on_uniqueId", on: "model_TSAttachment", columns: ["uniqueId"])
@@ -327,7 +284,7 @@ private func createV1Schema(db: Database) throws {
         table.column("status", .integer)
             .notNull()
         table.column("attachmentIdMap", .blob)
-        // GRDB TODO remove this column? redundant with threadId?
+        // GRDB TODO remove this column? Migrate existing data to share "threadId" column used by other jobs
         table.column("contactThreadId", .text)
         table.column("envelopeData", .blob)
         table.column("invisibleMessage", .blob)
@@ -371,9 +328,6 @@ private func createV1Schema(db: Database) throws {
             .notNull()
         table.column("isFirstKnownKey", .integer)
             .notNull()
-        // GRDB TODO remove this column?
-        table.column("recipientIdentitySchemaVersion", .integer)
-            .notNull()
         table.column("verificationState", .integer)
             .notNull()
     }
@@ -416,8 +370,6 @@ private func createV1Schema(db: Database) throws {
         table.column("devices", .blob)
             .notNull()
         table.column("recipientPhoneNumber", .text)
-        table.column("recipientSchemaVersion", .integer)
-            .notNull()
         table.column("recipientUUID", .text)
     }
     try db.create(index: "index_model_SignalRecipient_on_uniqueId", on: "model_SignalRecipient", columns: ["uniqueId"])
@@ -430,12 +382,8 @@ private func createV1Schema(db: Database) throws {
         table.column("uniqueId", .text)
             .notNull()
             .unique(onConflict: .fail)
-        // GRDB TODO remove this column
-        table.column("accountSchemaVersion", .integer)
-            .notNull()
+        // GRDB how big are these serialized contacts?
         table.column("contact", .blob)
-        table.column("hasMultipleAccountContact", .integer)
-            .notNull()
         table.column("multipleAccountLabelText", .text)
             .notNull()
         table.column("recipientPhoneNumber", .text)
@@ -457,9 +405,6 @@ private func createV1Schema(db: Database) throws {
         table.column("profileName", .text)
         table.column("recipientPhoneNumber", .text)
         table.column("recipientUUID", .text)
-        // GRDB TODO remove this column? Does this need to be persisted?
-        table.column("userProfileSchemaVersion", .integer)
-            .notNull()
         table.column("username", .text)
     }
     try db.create(index: "index_model_OWSUserProfile_on_uniqueId", on: "model_OWSUserProfile", columns: ["uniqueId"])
@@ -474,9 +419,6 @@ private func createV1Schema(db: Database) throws {
             .unique(onConflict: .fail)
         table.column("recipientMap", .blob)
             .notNull()
-        // GRDB TODO remove this column? Does this need to be persisted?
-        table.column("recipientReadReceiptSchemaVersion", .integer)
-            .notNull()
         table.column("sentTimestamp", .integer)
             .notNull()
     }
@@ -490,9 +432,6 @@ private func createV1Schema(db: Database) throws {
         table.column("uniqueId", .text)
             .notNull()
             .unique(onConflict: .fail)
-        // GRDB TODO remove this column? Does this need to be persisted?
-        table.column("linkedDeviceReadReceiptSchemaVersion", .integer)
-            .notNull()
         table.column("messageIdTimestamp", .integer)
             .notNull()
         table.column("readTimestamp", .integer)

@@ -325,13 +325,10 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
         return nil;
     }
 
-    BOOL shouldPad = SSKFeatureFlags.shouldPadAllOutgoingAttachments || self.attachmentStream.shouldAlwaysPad;
-
-    NSData *_Nullable encryptedAttachmentData =
-        [Cryptography encryptAttachmentData:attachmentData
-                                  shouldPad:shouldPad
-                                     outKey:&encryptionKey
-                                  outDigest:&digest];
+    NSData *_Nullable encryptedAttachmentData = [Cryptography encryptAttachmentData:attachmentData
+                                                                          shouldPad:YES
+                                                                             outKey:&encryptionKey
+                                                                          outDigest:&digest];
     if (!encryptedAttachmentData) {
         OWSFailDebug(@"could not encrypt attachment data.");
         return nil;

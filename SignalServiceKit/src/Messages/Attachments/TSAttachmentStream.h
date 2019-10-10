@@ -47,8 +47,7 @@ typedef void (^OWSThumbnailFailure)(void);
                           byteCount:(UInt32)byteCount
                      sourceFilename:(nullable NSString *)sourceFilename
                             caption:(nullable NSString *)caption
-                     albumMessageId:(nullable NSString *)albumMessageId
-                    shouldAlwaysPad:(BOOL)shouldAlwaysPad NS_DESIGNATED_INITIALIZER;
+                     albumMessageId:(nullable NSString *)albumMessageId NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithPointer:(TSAttachmentPointer *)pointer
                     transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
@@ -155,10 +154,6 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentSchemaVersion:attach
 
 // This method should only be invoked by OWSThumbnailService.
 - (NSString *)pathForThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints;
-
-// When uploading, always apply adding to this attachment,
-// regardless of feature flags.
-@property (nonatomic, readonly) BOOL shouldAlwaysPad;
 
 #pragma mark - Validation
 

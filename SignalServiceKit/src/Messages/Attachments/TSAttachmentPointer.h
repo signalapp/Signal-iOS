@@ -31,7 +31,6 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
 
 @property (nonatomic) TSAttachmentPointerType pointerType;
 @property (atomic) TSAttachmentPointerState state;
-@property (nullable, atomic) NSString *mostRecentFailureLocalizedText;
 
 // Though now required, `digest` may be null for pre-existing records or from
 // messages received from other clients

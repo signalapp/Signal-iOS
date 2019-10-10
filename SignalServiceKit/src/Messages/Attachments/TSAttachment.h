@@ -31,7 +31,6 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 @property (atomic, readwrite) UInt64 serverId;
 @property (atomic, readwrite, nullable) NSData *encryptionKey;
 @property (nonatomic, readonly) NSString *contentType;
-@property (atomic, readwrite) BOOL isDownloaded;
 @property (nonatomic) TSAttachmentType attachmentType;
 
 // Though now required, may incorrectly be 0 on legacy attachments.

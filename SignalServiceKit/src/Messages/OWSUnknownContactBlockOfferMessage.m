@@ -6,12 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSUnknownContactBlockOfferMessage ()
-
-@property (nonatomic) NSString *contactId;
-
-@end
-
 #pragma mark -
 
 // This is a deprecated class, we're keeping it around to avoid YapDB serialization errors

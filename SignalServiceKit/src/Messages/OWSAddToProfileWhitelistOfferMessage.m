@@ -84,15 +84,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 // --- CODE GENERATION MARKER
 
-+ (instancetype)addToProfileWhitelistOfferMessageWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread
-{
-    return [[OWSAddToProfileWhitelistOfferMessage alloc]
-        initWithTimestamp:timestamp
-                 inThread:thread
-              messageType:(thread.isGroupThread ? TSInfoMessageAddGroupToProfileWhitelistOffer
-                                                : TSInfoMessageAddUserToProfileWhitelistOffer)];
-}
-
 - (BOOL)shouldUseReceiptDateForSorting
 {
     // Use the timestamp, not the "received at" timestamp to sort,

@@ -47,10 +47,6 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueTh
 
 // --- CODE GENERATION MARKER
 
-+ (instancetype)addToProfileWhitelistOfferMessageWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread;
-
-@property (nonatomic, readonly) NSString *contactId;
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -76,7 +76,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                      sourceFilename:(nullable NSString *)sourceFilename
                             caption:(nullable NSString *)caption
                      albumMessageId:(nullable NSString *)albumMessageId
-                  shouldAlwaysPad:(BOOL)shouldAlwaysPad
 {
     self = [super initAttachmentWithContentType:contentType
                                       byteCount:byteCount
@@ -87,14 +86,11 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         return self;
     }
 
-    self.isDownloaded = YES;
     // TSAttachmentStream doesn't have any "incoming vs. outgoing"
     // state, but this constructor is used only for new outgoing
     // attachments which haven't been uploaded yet.
     _isUploaded = NO;
     _creationTimestamp = [NSDate new];
-
-    _shouldAlwaysPad = shouldAlwaysPad;
 
     [self ensureFilePath];
 
@@ -110,7 +106,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     }
 
     _contentType = pointer.contentType;
-    self.isDownloaded = YES;
     // TSAttachmentStream doesn't have any "incoming vs. outgoing"
     // state, but this constructor is used only for new incoming
     // attachments which don't need to be uploaded.
@@ -1105,8 +1100,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                                               byteCount:(uint32_t)thumbnailData.length
                                          sourceFilename:thumbnailName
                                                 caption:nil
-                                         albumMessageId:nil
-                                        shouldAlwaysPad:NO];
+                                         albumMessageId:nil];
 
     NSError *error;
     BOOL success = [thumbnailAttachment writeData:thumbnailData error:&error];
