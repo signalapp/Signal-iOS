@@ -264,6 +264,7 @@ typedef enum : NSUInteger {
     
     _currentMentionStartIndex = -1;
     _mentions = [NSMutableArray new];
+    _oldText = @"";
 }
 
 #pragma mark - Dependencies
@@ -3022,9 +3023,7 @@ typedef enum : NSUInteger {
 {
     [self tryToSendAttachments:attachments messageText:messageText];
     [self.inputToolbar clearTextMessageAnimated:NO];
-    self.oldText = @"";
-    self.currentMentionStartIndex = -1;
-    self.mentions = @[].mutableCopy;
+    [self clearMentions];
 
     // we want to already be at the bottom when the user returns, rather than have to watch
     // the new message scroll into view.
@@ -3834,7 +3833,7 @@ typedef enum : NSUInteger {
     [self.inputToolbar hideUserSelectionView];
 }
 
-- (NSString *)getMessageBody
+- (NSString *)getSendText
 {
     NSString *result = self.inputToolbar.messageText;
     NSUInteger shift = 0;
@@ -3844,6 +3843,13 @@ typedef enum : NSUInteger {
         result = [result stringByReplacingCharactersInRange:range withString:[[NSString alloc] initWithFormat:@"@%@", mention.hexEncodedPublicKey]];
     }
     return result;
+}
+
+- (void)clearMentions
+{
+    self.oldText = @"";
+    self.currentMentionStartIndex = -1;
+    self.mentions = @[].mutableCopy;
 }
 
 - (void)inputTextViewSendMessagePressed
@@ -4094,9 +4100,7 @@ typedef enum : NSUInteger {
 {
     [self tryToSendAttachments:attachments messageText:messageText];
     [self.inputToolbar clearTextMessageAnimated:NO];
-    self.oldText = @"";
-    self.currentMentionStartIndex = -1;
-    self.mentions = @[].mutableCopy;
+    [self clearMentions];
     [self dismissViewControllerAnimated:YES completion:nil];
 
     // We always want to scroll to the bottom of the conversation after the local user
@@ -4467,7 +4471,7 @@ typedef enum : NSUInteger {
     [BenchManager startEventWithTitle:@"Send Message milestone: toggleDefaultKeyboard completed"
                               eventId:@"fromSendUntil_toggleDefaultKeyboard"];
 
-    [self tryToSendTextMessage:[self getMessageBody] updateKeyboardState:YES];
+    [self tryToSendTextMessage:[self getSendText] updateKeyboardState:YES];
 }
 
 - (void)tryToSendTextMessage:(NSString *)text updateKeyboardState:(BOOL)updateKeyboardState
@@ -4525,9 +4529,7 @@ typedef enum : NSUInteger {
     [BenchManager benchWithTitle:@"clearTextMessageAnimated"
                            block:^{
                                [self.inputToolbar clearTextMessageAnimated:YES];
-                               self.oldText = @"";
-                               self.currentMentionStartIndex = -1;
-                               self.mentions = @[].mutableCopy;
+                               [self clearMentions];
                            }];
     [BenchManager completeEventWithEventId:@"fromSendUntil_clearTextMessageAnimated"];
 
