@@ -3,7 +3,7 @@
 
 @objc(LKUserSelectionView)
 final class UserSelectionView : UIView, UITableViewDataSource, UITableViewDelegate {
-    @objc var users: [String] = [] { didSet { tableView.reloadData(); tableView.contentOffset = CGPoint.zero } }
+    @objc var users: [String] = [] { didSet { tableView.reloadData() } }
     @objc var hasGroupContext = false
     @objc var delegate: UserSelectionViewDelegate?
     

@@ -567,6 +567,7 @@
 		B82584A02315024B001B41CB /* RSSFeedPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825849F2315024B001B41CB /* RSSFeedPoller.swift */; };
 		B845B4D4230CD09100D759F0 /* GroupChatPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B845B4D3230CD09000D759F0 /* GroupChatPoller.swift */; };
 		B846365B22B7418B00AF1514 /* Identicon+ObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */; };
+		B84664F3234FE4540083A1CD /* Mention.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84664F2234FE4530083A1CD /* Mention.swift */; };
 		B86BD08123399883000F5AE3 /* QRCodeModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08023399883000F5AE3 /* QRCodeModal.swift */; };
 		B86BD08423399ACF000F5AE3 /* Modal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08323399ACF000F5AE3 /* Modal.swift */; };
 		B86BD08623399CEF000F5AE3 /* SeedModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08523399CEF000F5AE3 /* SeedModal.swift */; };
@@ -1378,6 +1379,7 @@
 		B825849F2315024B001B41CB /* RSSFeedPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSSFeedPoller.swift; sourceTree = "<group>"; };
 		B845B4D3230CD09000D759F0 /* GroupChatPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupChatPoller.swift; sourceTree = "<group>"; };
 		B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Identicon+ObjC.swift"; sourceTree = "<group>"; };
+		B84664F2234FE4530083A1CD /* Mention.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mention.swift; sourceTree = "<group>"; };
 		B86BD08023399883000F5AE3 /* QRCodeModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeModal.swift; sourceTree = "<group>"; };
 		B86BD08323399ACF000F5AE3 /* Modal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modal.swift; sourceTree = "<group>"; };
 		B86BD08523399CEF000F5AE3 /* SeedModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedModal.swift; sourceTree = "<group>"; };
@@ -2652,6 +2654,7 @@
 				B8162F0222891AD600D46544 /* FriendRequestView.swift */,
 				B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */,
 				24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */,
+				B84664F2234FE4530083A1CD /* Mention.swift */,
 				B89841E222B7579F00B1BDC6 /* NewConversationVC.swift */,
 				B8258491230FA5DA001B41CB /* ScanQRCodeVC.h */,
 				B8258492230FA5E9001B41CB /* ScanQRCodeVC.m */,
@@ -3879,6 +3882,7 @@
 				345BC30C2047030700257B7C /* OWS2FASettingsViewController.m in Sources */,
 				340FC8B7204DAC8D007AEB0F /* OWSConversationSettingsViewController.m in Sources */,
 				34BECE2E1F7ABCE000D7438D /* GifPickerViewController.swift in Sources */,
+				B84664F3234FE4540083A1CD /* Mention.swift in Sources */,
 				34D1F0C01F8EC1760066283D /* MessageRecipientStatusUtils.swift in Sources */,
 				45F659731E1BD99C00444429 /* CallKitCallUIAdaptee.swift in Sources */,
 				34277A5E20751BDC006049F2 /* OWSQuotedMessageView.m in Sources */,
