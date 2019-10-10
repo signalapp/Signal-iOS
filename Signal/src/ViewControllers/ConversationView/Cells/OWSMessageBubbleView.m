@@ -709,7 +709,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *text = displayableText.displayText;
     
     NSError *error1;
-    NSRegularExpression *regex1 = [[NSRegularExpression alloc] initWithPattern:@"@\\w*" options:0 error:&error1];
+    NSRegularExpression *regex1 = [[NSRegularExpression alloc] initWithPattern:@"@[0-9a-fA-F]*" options:0 error:&error1];
     OWSAssertDebug(error1 == nil);
     NSSet<NSString *> *knownUserIDs = LKAPI.userIDCache[thread.uniqueId];
     NSMutableArray<NSValue *> *mentions = [NSMutableArray new];

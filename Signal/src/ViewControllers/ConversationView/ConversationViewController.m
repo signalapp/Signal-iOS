@@ -3773,13 +3773,11 @@ typedef enum : NSUInteger {
     [self.typingIndicators didStartTypingOutgoingInputInThread:self.thread];
     NSUInteger currentEndIndex = textView.text.length - 1;
     unichar lastCharacter = [textView.text characterAtIndex:currentEndIndex];
-    NSMutableCharacterSet *allowedCharacters = NSMutableCharacterSet.lowercaseLetterCharacterSet;
-    [allowedCharacters formUnionWithCharacterSet:NSCharacterSet.uppercaseLetterCharacterSet];
     if (lastCharacter == '@') {
         NSArray<NSString *> *userIDs = [LKAPI getUserIDsFor:@"" in:self.thread.uniqueId];
         self.mentionStartIndex = (NSInteger)currentEndIndex + 1;
         [self.inputToolbar showUserSelectionViewFor:userIDs in:self.thread];
-    } else if (![allowedCharacters characterIsMember:lastCharacter]) {
+    } else if ([NSCharacterSet.whitespaceAndNewlineCharacterSet characterIsMember:lastCharacter]) {
         self.mentionStartIndex = -1;
         [self.inputToolbar hideUserSelectionView];
     } else {
