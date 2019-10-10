@@ -52,6 +52,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface TSYapDatabaseObject ()
+
+@property (atomic, nullable) NSNumber *grdbId;
+
+@end
+
+#pragma mark -
+
 @implementation TSYapDatabaseObject
 
 - (instancetype)init
@@ -72,6 +80,25 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Invalid uniqueId.");
         _uniqueId = [[NSUUID UUID] UUIDString];
     }
+
+    return self;
+}
+
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    if (uniqueId.length > 0) {
+        _uniqueId = uniqueId;
+    } else {
+        OWSFailDebug(@"Invalid uniqueId.");
+        _uniqueId = [[NSUUID UUID] UUIDString];
+    }
+
+    _grdbId = @(grdbId);
 
     return self;
 }
@@ -226,6 +253,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     // Do nothing.
+}
+
+#pragma mark - SDSRecordDelegate
+
+- (void)updateRowId:(int64_t)rowId
+{
+    if (self.grdbId != nil) {
+        OWSAssertDebug(self.grdbId.longLongValue == rowId);
+        OWSFailDebug(@"grdbId set more than once.");
+    }
+    self.grdbId = @(rowId);
 }
 
 @end

@@ -14,6 +14,7 @@
 		"TestModel.nsNumberValueUsingUInt64": "UInt64"
 	},
 	"properties_to_ignore": [
+		"TSYapDatabaseObject.grdbId",
 		"OWSDynamicOutgoingMessage.block",
 		"OWSDisappearingMessagesConfiguration.originalDictionaryValue",
 		"OWSDisappearingMessagesConfiguration.newRecord",

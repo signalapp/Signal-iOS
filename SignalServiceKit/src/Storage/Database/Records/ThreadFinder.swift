@@ -83,35 +83,14 @@ struct GRDBThreadFinder: ThreadFinder {
     static let cn = ThreadRecord.columnName
 
     func visibleThreadCount(isArchived: Bool, transaction: Database) throws -> UInt {
+        let archivedClause = isArchived ? "IS NOT NULL" : "IS NULL"
         let sql = """
             SELECT COUNT(*)
-            FROM (
-                SELECT
-                    CASE maxInteractionId <= archivedAsOfMessageSortId
-                        WHEN 1 THEN 1
-                        ELSE 0
-                    END isArchived
-                FROM (
-                    SELECT
-                        archivedAsOfMessageSortId,
-                        (
-                            SELECT id
-                            FROM \(InteractionRecord.databaseTableName)
-                            WHERE \(interactionColumn: .threadUniqueId) = \(threadColumnFullyQualified: .uniqueId)
-                              AND \(interactionColumn: .errorType) IS NOT ?
-                              AND \(interactionColumn: .messageType) IS NOT ?
-                            ORDER BY \(interactionColumn: .id) DESC
-                            LIMIT 1
-                        ) as maxInteractionId
-                    FROM \(ThreadRecord.databaseTableName)
-                    WHERE \(threadColumn: .shouldThreadBeVisible) = 1
-                )
-                WHERE isArchived = ?
-            )
+            FROM \(ThreadRecord.databaseTableName)
+            WHERE \(threadColumn: .shouldThreadBeVisible) = 1
+            AND \(threadColumn: .archivedAsOfMessageSortId) \(archivedClause)
         """
-        let arguments: StatementArguments = [TSErrorMessageType.nonBlockingIdentityChange.rawValue,
-                                             TSInfoMessageType.verificationStateChange.rawValue,
-                                             isArchived]
+        let arguments: StatementArguments = []
 
         guard let count = try UInt.fetchOne(transaction, sql: sql, arguments: arguments) else {
             owsFailDebug("count was unexpectedly nil")
@@ -122,34 +101,15 @@ struct GRDBThreadFinder: ThreadFinder {
     }
 
     func enumerateVisibleThreads(isArchived: Bool, transaction: Database, block: @escaping (TSThread) -> Void) throws {
+        let archivedClause = isArchived ? "IS NOT NULL" : "IS NULL"
         let sql = """
-            SELECT
-                *,
-                CASE maxInteractionId <= archivedAsOfMessageSortId
-                    WHEN 1 THEN 1
-                    ELSE 0
-                END isArchived
-            FROM (
-                SELECT
-                    \(ThreadRecord.databaseTableName).*,
-                    (
-                        SELECT id
-                        FROM \(InteractionRecord.databaseTableName)
-                        WHERE \(interactionColumn: .threadUniqueId) = \(threadColumnFullyQualified: .uniqueId)
-                          AND \(interactionColumn: .errorType) IS NOT ?
-                          AND \(interactionColumn: .messageType) IS NOT ?
-                        ORDER BY \(interactionColumn: .id) DESC
-                        LIMIT 1
-                    ) as maxInteractionId
-                FROM \(ThreadRecord.databaseTableName)
-                WHERE \(threadColumn: .shouldThreadBeVisible) = 1
-            )
-            WHERE isArchived = ?
-            ORDER BY maxInteractionId DESC
+            SELECT *
+            FROM \(ThreadRecord.databaseTableName)
+            WHERE \(threadColumn: .shouldThreadBeVisible) = 1
+            AND \(threadColumn: .archivedAsOfMessageSortId) \(archivedClause)
+            ORDER BY \(threadColumn: .lastInteractionSortId) DESC
             """
-        let arguments: StatementArguments = [TSErrorMessageType.nonBlockingIdentityChange.rawValue,
-                                             TSInfoMessageType.verificationStateChange.rawValue,
-                                             isArchived]
+        let arguments: StatementArguments = []
 
         try ThreadRecord.fetchCursor(transaction, sql: sql, arguments: arguments).forEach { threadRecord in
             block(try TSThread.fromRecord(threadRecord))

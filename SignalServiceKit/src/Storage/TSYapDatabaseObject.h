@@ -11,12 +11,24 @@ NS_ASSUME_NONNULL_BEGIN
 @class YapDatabaseReadTransaction;
 @class YapDatabaseReadWriteTransaction;
 
-@interface TSYapDatabaseObject : MTLModel
+@protocol SDSRecordDelegate
+
+- (void)updateRowId:(int64_t)rowId;
+
+@end
+
+#pragma mark -
+
+
+@interface TSYapDatabaseObject : MTLModel <SDSRecordDelegate>
 
 /**
  *  The unique identifier of the stored object
  */
 @property (nonatomic, readonly) NSString *uniqueId;
+
+// This property should only ever be accesssed within a GRDB write transaction.
+@property (atomic, readonly, nullable) NSNumber *grdbId;
 
 @property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
 @property (class, nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
@@ -31,6 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
  *  @return Initialized object
  */
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
