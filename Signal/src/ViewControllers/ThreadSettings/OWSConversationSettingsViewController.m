@@ -330,37 +330,42 @@ const CGFloat kIconViewLength = 24;
 
     if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing
         && !self.hasExistingContact) {
-        [mainSection
-            addItem:[OWSTableItem
-                        itemWithCustomCellBlock:^{
-                            return [weakSelf
-                                 disclosureCellWithName:
-                                     NSLocalizedString(@"CONVERSATION_SETTINGS_NEW_CONTACT",
-                                         @"Label for 'new contact' button in conversation settings view.")
-                                                   icon:ThemeIconSettingsAddNewContact
-                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                            OWSConversationSettingsViewController, @"new_contact")];
-                        }
-                        actionBlock:^{
-                            [weakSelf presentContactViewController];
-                        }]];
         [mainSection addItem:[OWSTableItem
                                  itemWithCustomCellBlock:^{
                                      return [weakSelf
                                           disclosureCellWithName:
-                                              NSLocalizedString(@"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
-                                                  @"Label for 'new contact' button in conversation settings view.")
-                                                            icon:ThemeIconSettingsAddToExistingContact
+                                              NSLocalizedString(@"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS",
+                                                  @"button in conversation settings view.")
+                                                            icon:ThemeIconSettingsAddToContacts
                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                                      OWSConversationSettingsViewController,
-                                                                     @"add_to_existing_contact")];
+                                                                     @"add_to_system_contacts")];
                                  }
                                  actionBlock:^{
-                                     OWSConversationSettingsViewController *strongSelf = weakSelf;
-                                     OWSCAssertDebug(strongSelf);
-                                     TSContactThread *contactThread = (TSContactThread *)strongSelf.thread;
-                                     [strongSelf
-                                         presentAddToContactViewControllerWithAddress:contactThread.contactAddress];
+                                     UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+
+                                     NSString *createNewTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_NEW_CONTACT",
+                                                                                  @"Label for 'new contact' button in conversation settings view.");
+                                     [actionSheet addAction:[UIAlertAction actionWithTitle:createNewTitle
+                                                                                     style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                                                                                         OWSConversationSettingsViewController *strongSelf = weakSelf;
+                                                                                         OWSCAssertDebug(strongSelf);
+                                                                                         [strongSelf presentContactViewController];
+                                                                                     }]];
+
+                                     NSString *addToExistingTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
+                                                                                      @"Label for 'new contact' button in conversation settings view.");
+                                     [actionSheet addAction:[UIAlertAction actionWithTitle:addToExistingTitle
+                                                                                     style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                                                                                         OWSConversationSettingsViewController *strongSelf = weakSelf;
+                                                                                         OWSCAssertDebug(strongSelf);
+                                                                                         TSContactThread *contactThread = (TSContactThread *)strongSelf.thread;
+                                                                                         [strongSelf
+                                                                                          presentAddToContactViewControllerWithAddress:contactThread.contactAddress];
+
+                                                                                     }]];
+
+                                     [self presentAlert:actionSheet animated:YES];
                                  }]];
     }
 
@@ -453,7 +458,7 @@ const CGFloat kIconViewLength = 24;
                                                   : NSLocalizedString(
                                                       @"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER",
                                                       @"Indicates that user's profile has been shared with a user."))
-                                                   icon:ThemeIconSettingsShareProfile
+                                                   icon:ThemeIconSettingsProfile
                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                             OWSConversationSettingsViewController,
                                                             @"profile_is_shared")];
@@ -473,7 +478,7 @@ const CGFloat kIconViewLength = 24;
                                                  @"Action that shares user profile with a group.")
                                              : NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER",
                                                  @"Action that shares user profile with a user."))
-                                                   icon:ThemeIconSettingsShareProfile
+                                                   icon:ThemeIconSettingsProfile
                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                             OWSConversationSettingsViewController, @"share_profile")];
                             cell.userInteractionEnabled = !strongSelf.hasLeftGroup;

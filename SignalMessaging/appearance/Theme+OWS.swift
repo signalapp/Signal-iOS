@@ -6,8 +6,6 @@ import Foundation
 
 @objc
 public enum ThemeIcon: UInt {
-    case settingsAddNewContact
-    case settingsAddToExistingContact
     case settingsAllMedia
     case settingsBlock
     case settingsColorPalette
@@ -19,10 +17,10 @@ public enum ThemeIcon: UInt {
     case settingsTimer
     case settingsTimerDisabled
     case settingsSearch
-    case settingsShareProfile
     case settingsShowGroup
     case settingsViewSafetyNumber
     case settingsUserInContacts
+    case settingsAddToContacts
 
     case stickerButton
     case cameraButton
@@ -51,12 +49,10 @@ public extension Theme {
 
     class func iconName(_ icon: ThemeIcon) -> String {
         switch icon {
-        case .settingsAddNewContact:
-            // TODO NEEDS_ASSET - waiting on design to provide an updated asset.
-            return "table_ic_new_contact"
-        case .settingsAddToExistingContact:
-            // TODO NEEDS_ASSET - waiting on design to provide an updated asset.
-            return "table_ic_add_to_existing_contact"
+        case .settingsUserInContacts:
+            return isDarkThemeEnabled ? "contact-solid-24" : "contact-outline-24"
+        case .settingsAddToContacts:
+            return "plus-24"
         case .settingsAllMedia:
             return isDarkThemeEnabled ? "photo-album-solid-24" : "photo-album-outline-24"
         case .settingsEditGroup:
@@ -82,13 +78,8 @@ public extension Theme {
         case .settingsColorPalette:
             // TODO NEEDS_ASSET - waiting on design to provide an updated asset.
             return "ic_color_palette"
-        case .settingsShareProfile:
-            // TODO NEEDS_ASSET - waiting on design to provide an updated asset.
-            return "table_ic_share_profile"
         case .settingsSearch:
             return "search-24"
-        case .settingsUserInContacts:
-            return isDarkThemeEnabled ? "profile-circle-solid-24" :  "profile-circle-outline-24"
 
         // Input Toolbar
         case .stickerButton:
