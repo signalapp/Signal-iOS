@@ -337,7 +337,7 @@ const CGFloat kIconViewLength = 24;
                                  disclosureCellWithName:
                                      NSLocalizedString(@"CONVERSATION_SETTINGS_NEW_CONTACT",
                                          @"Label for 'new contact' button in conversation settings view.")
-                                                   icon:ThemeIconSettingsAddNewContact
+                                                   icon:ThemeIconSettingsAddToContacts
                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                             OWSConversationSettingsViewController, @"new_contact")];
                         }
@@ -350,7 +350,7 @@ const CGFloat kIconViewLength = 24;
                                           disclosureCellWithName:
                                               NSLocalizedString(@"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
                                                   @"Label for 'new contact' button in conversation settings view.")
-                                                            icon:ThemeIconSettingsAddToExistingContact
+                                                            icon:ThemeIconSettingsAddToContacts
                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                                      OWSConversationSettingsViewController,
                                                                      @"add_to_existing_contact")];
@@ -453,7 +453,7 @@ const CGFloat kIconViewLength = 24;
                                                   : NSLocalizedString(
                                                       @"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER",
                                                       @"Indicates that user's profile has been shared with a user."))
-                                                   icon:ThemeIconSettingsShareProfile
+                                                   icon:ThemeIconSettingsProfile
                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                             OWSConversationSettingsViewController,
                                                             @"profile_is_shared")];
@@ -473,7 +473,7 @@ const CGFloat kIconViewLength = 24;
                                                  @"Action that shares user profile with a group.")
                                              : NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER",
                                                  @"Action that shares user profile with a user."))
-                                                   icon:ThemeIconSettingsShareProfile
+                                                   icon:ThemeIconSettingsProfile
                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                             OWSConversationSettingsViewController, @"share_profile")];
                             cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
