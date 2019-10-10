@@ -119,6 +119,7 @@ import Foundation
                                      comment: "The label for the 'discard' button in alerts and action sheets."),
             style: .destructive
         ) { _ in discardAction() }
+        discardAction.accessibilityIdentifier = "OWSAlerts.discard"
         alert.addAction(discardAction)
         alert.addAction(OWSAlerts.cancelAction)
 
