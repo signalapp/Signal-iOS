@@ -2547,7 +2547,7 @@
 "Loki Messenger can let you know when you get a message (and who it is from)" = "Loki Messenger can let you know when you get a message (and who it is from)";
 "Create Your Loki Messenger Account" = "Create Your Loki Messenger Account";
 "Enter a name to be shown to your contacts" = "Enter a name to be shown to your contacts";
-"Display Name (Optional)" = "Display Name (Optional)";
+"Display Name" = "Display Name";
 "Type an optional password for added security" = "Type an optional password for added security";
 "Password (Optional)" = "Password (Optional)";
 "Next" = "Next";
@@ -2590,7 +2590,6 @@
 "Your Seed" = "Your Seed";
 "Unlock Loki Messenger's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Loki Messenger's notification settings allow you to customize the information that is displayed." = "Unlock Loki Messenger's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Loki Messenger's notification settings allow you to customize the information that is displayed.";
 "Prevent Loki Messenger previews from appearing in the app switcher." = "Prevent Loki Messenger previews from appearing in the app switcher.";
-"Display Name" = "Display Name";
 "Loki Messenger" = "Loki Messenger";
 "Privacy Policy" = "Privacy Policy";
 "New Conversation" = "New Conversation";
@@ -2636,3 +2635,5 @@
 "Your device has been linked successfully" = "Your device has been linked successfully";
 "Link" = "Link";
 "Anonymous" = "Anonymous";
+"Please pick a shorter display name" = "Please pick a shorter display name";
+"Please pick a display name" = "Please pick a display name";

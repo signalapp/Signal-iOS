@@ -393,12 +393,13 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     __weak ProfileViewController *weakSelf = self;
 
     NSString *normalizedProfileName = [self normalizedProfileName];
+    
+    if (normalizedProfileName.length == 0) {
+        return [OWSAlerts showErrorAlertWithMessage:NSLocalizedString(@"Please pick a display name", @"")];
+    }
+    
     if ([OWSProfileManager.sharedManager isProfileNameTooLong:normalizedProfileName]) {
-        [OWSAlerts
-            showErrorAlertWithMessage:NSLocalizedString(@"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG",
-                                          @"Error message shown when user tries to update profile with a profile name "
-                                          @"that is too long.")];
-        return;
+        return [OWSAlerts showErrorAlertWithMessage:NSLocalizedString(@"Please pick a shorter display name", @"")];
     }
 
     [LKAnalytics.shared track:@"Display Name Updated"];
