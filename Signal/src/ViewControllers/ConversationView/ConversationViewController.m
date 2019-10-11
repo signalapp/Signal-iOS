@@ -3831,6 +3831,7 @@ typedef enum : NSUInteger {
     NSString *newText = [oldText stringByReplacingCharactersInRange:NSMakeRange(mentionStartIndex, oldText.length - mentionStartIndex) withString:[NSString stringWithFormat:@"@%@", displayName]];
     [self.inputToolbar setMessageText:newText animated:NO];
     [self.inputToolbar hideUserSelectionView];
+    self.currentMentionStartIndex = -1;
 }
 
 - (NSString *)getSendText
