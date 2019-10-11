@@ -147,7 +147,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
          attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                   attachmentType:(TSAttachmentType)attachmentType
@@ -170,7 +171,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
            localRelativeFilePath:(nullable NSString *)localRelativeFilePath
                  shouldAlwaysPad:(BOOL)shouldAlwaysPad
 {
-    self = [super initWithUniqueId:uniqueId
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId
                     albumMessageId:albumMessageId
            attachmentSchemaVersion:attachmentSchemaVersion
                     attachmentType:attachmentType

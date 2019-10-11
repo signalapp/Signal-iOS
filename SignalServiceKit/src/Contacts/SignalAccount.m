@@ -72,7 +72,8 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
             accountSchemaVersion:(NSUInteger)accountSchemaVersion
                          contact:(nullable Contact *)contact
        hasMultipleAccountContact:(BOOL)hasMultipleAccountContact
@@ -80,7 +81,8 @@ NSUInteger const SignalAccountSchemaVersion = 1;
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
 {
-    self = [super initWithUniqueId:uniqueId];
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId];
 
     if (!self) {
         return self;

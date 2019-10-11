@@ -43,12 +43,13 @@ typedef NS_CLOSED_ENUM(NSUInteger, SSKJobRecordStatus){
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                     failureCount:(NSUInteger)failureCount
                            label:(NSString *)label
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
-NS_SWIFT_NAME(init(uniqueId:failureCount:label:sortId:status:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:failureCount:label:sortId:status:));
 
 // clang-format on
 

@@ -43,7 +43,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
 @property (nonatomic, nullable) NSDate *creationDate;
 @property (nonatomic) NSString *conversationColorName;
-@property (nonatomic, nullable) NSNumber *archivedAsOfMessageSortId;
+@property (nonatomic) BOOL isArchived;
 @property (nonatomic, copy, nullable) NSString *messageDraft;
 @property (atomic, nullable) NSDate *mutedUntilDate;
 
@@ -52,6 +52,8 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 // migration while testing. Eventually we can safely delete these as they aren't used anywhere.
 @property (nonatomic, nullable) NSDate *lastMessageDate DEPRECATED_ATTRIBUTE;
 @property (nonatomic, nullable) NSDate *archivalDate DEPRECATED_ATTRIBUTE;
+
+@property (nonatomic) int64_t lastInteractionRowId;
 
 @end
 
@@ -102,29 +104,33 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                     archivalDate:(nullable NSDate *)archivalDate
-       archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
+                      isArchived:(BOOL)isArchived
 isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
+            lastInteractionRowId:(int64_t)lastInteractionRowId
                  lastMessageDate:(nullable NSDate *)lastMessageDate
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
                            rowId:(int64_t)rowId
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
 {
-    self = [super initWithUniqueId:uniqueId];
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId];
 
     if (!self) {
         return self;
     }
 
     _archivalDate = archivalDate;
-    _archivedAsOfMessageSortId = archivedAsOfMessageSortId;
     _conversationColorName = conversationColorName;
     _creationDate = creationDate;
+    _isArchived = isArchived;
     _isArchivedByLegacyTimestampForSorting = isArchivedByLegacyTimestampForSorting;
+    _lastInteractionRowId = lastInteractionRowId;
     _lastMessageDate = lastMessageDate;
     _messageDraft = messageDraft;
     _mutedUntilDate = mutedUntilDate;
@@ -181,6 +187,11 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     NSDate *_Nullable archivalDate = [coder decodeObjectOfClass:NSDate.class forKey:@"archivalDate"];
     _isArchivedByLegacyTimestampForSorting =
         [self.class legacyIsArchivedWithLastMessageDate:lastMessageDate archivalDate:archivalDate];
+
+    if ([coder decodeObjectForKey:@"archivedAsOfMessageSortId"] != nil) {
+        OWSAssertDebug(!_isArchived);
+        _isArchived = YES;
+    }
 
     return self;
 }
@@ -422,19 +433,85 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     return YES;
 }
 
-- (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithInsertedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug(lastMessage);
-    OWSAssertDebug(transaction);
+    [self updateWithMessage:message wasMessageInserted:YES transaction:transaction];
+}
 
-    if (![self.class shouldInteractionAppearInInbox:lastMessage]) {
+- (void)updateWithUpdatedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self updateWithMessage:message wasMessageInserted:NO transaction:transaction];
+}
+
+- (void)updateWithMessage:(TSInteraction *)message
+       wasMessageInserted:(BOOL)wasMessageInserted
+              transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(message != nil);
+    OWSAssertDebug(transaction != nil);
+
+    if (![self.class shouldInteractionAppearInInbox:message]) {
         return;
     }
 
-    if (!self.shouldThreadBeVisible) {
+    int64_t messageSortId = 0;
+    if (transaction.transitional_yapWriteTransaction) {
+        messageSortId = message.sortId;
+    } else {
+        if (message.grdbId == nil) {
+            OWSFailDebug(@"Missing messageSortId.");
+        } else if (message.grdbId.unsignedLongLongValue == 0) {
+            OWSFailDebug(@"Invalid messageSortId.");
+        } else {
+            messageSortId = message.grdbId.longLongValue;
+        }
+    }
+    BOOL needsToMarkAsVisible = !self.shouldThreadBeVisible;
+    BOOL needsToClearArchived = self.isArchived && wasMessageInserted;
+    BOOL needsToUpdateLastInteractionRowId = messageSortId > self.lastInteractionRowId;
+    if (needsToMarkAsVisible || needsToClearArchived || needsToUpdateLastInteractionRowId) {
         [self anyUpdateWithTransaction:transaction
                                  block:^(TSThread *thread) {
                                      thread.shouldThreadBeVisible = YES;
+                                     thread.lastInteractionRowId = MAX(thread.lastInteractionRowId, messageSortId);
+                                     if (thread.isArchived && wasMessageInserted) {
+                                         // No longer archived.
+                                         thread.isArchived = NO;
+                                     }
+                                 }];
+    } else {
+        [self.databaseStorage touchThread:self transaction:transaction];
+    }
+}
+
+- (void)updateWithRemovedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(message != nil);
+    OWSAssertDebug(transaction != nil);
+
+    if (![self.class shouldInteractionAppearInInbox:message]) {
+        return;
+    }
+
+    int64_t messageSortId = 0;
+    if (transaction.transitional_yapWriteTransaction) {
+        messageSortId = message.sortId;
+    } else {
+        if (message.grdbId == nil) {
+            OWSFailDebug(@"Missing messageSortId.");
+        } else if (message.grdbId.unsignedLongLongValue == 0) {
+            OWSFailDebug(@"Invalid messageSortId.");
+        } else {
+            messageSortId = message.grdbId.longLongValue;
+        }
+    }
+    BOOL needsToUpdateLastInteractionRowId = messageSortId == self.lastInteractionRowId;
+    if (needsToUpdateLastInteractionRowId) {
+        [self anyUpdateWithTransaction:transaction
+                                 block:^(TSThread *thread) {
+                                     TSInteraction *_Nullable latestInteraction =
+                                         [thread lastInteractionForInboxWithTransaction:transaction];
+                                     thread.lastInteractionRowId = latestInteraction ? latestInteraction.sortId : 0;
                                  }];
     } else {
         [self.databaseStorage touchThread:self transaction:transaction];
@@ -473,17 +550,6 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 
 #pragma mark - Archival
 
-- (BOOL)isArchivedWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    if (!self.archivedAsOfMessageSortId) {
-        return NO;
-    }
-
-    TSInteraction *_Nullable latestInteraction = [self lastInteractionForInboxWithTransaction:transaction];
-    uint64_t latestSortIdForInbox = latestInteraction ? latestInteraction.sortId : 0;
-    return self.archivedAsOfMessageSortId.unsignedLongLongValue >= latestSortIdForInbox;
-}
-
 + (BOOL)legacyIsArchivedWithLastMessageDate:(nullable NSDate *)lastMessageDate
                                archivalDate:(nullable NSDate *)archivalDate
 {
@@ -502,8 +568,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSThread *thread) {
-                                 uint64_t latestId = [InteractionFinder mostRecentSortIdWithTransaction:transaction];
-                                 thread.archivedAsOfMessageSortId = @(latestId);
+                                 thread.isArchived = YES;
                              }];
 
     [self markAllAsReadWithTransaction:transaction];
@@ -513,7 +578,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSThread *thread) {
-                                 thread.archivedAsOfMessageSortId = nil;
+                                 thread.isArchived = NO;
                              }];
 }
 

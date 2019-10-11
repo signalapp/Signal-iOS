@@ -69,7 +69,8 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
@@ -91,7 +92,7 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
                 recipientAddress:(nullable SignalServiceAddress *)recipientAddress
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:errorMessageSchemaVersion:errorType:read:recipientAddress:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:errorMessageSchemaVersion:errorType:read:recipientAddress:));
 
 // clang-format on
 

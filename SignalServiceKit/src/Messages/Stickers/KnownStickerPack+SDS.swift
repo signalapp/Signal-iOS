@@ -12,6 +12,8 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct KnownStickerPackRecord: SDSRecord {
+    public weak var delegate: SDSRecordDelegate?
+
     public var tableMetadata: SDSTableMetadata {
         return KnownStickerPackSerializer.table
     }
@@ -41,6 +43,14 @@ public struct KnownStickerPackRecord: SDSRecord {
 
     public static func columnName(_ column: KnownStickerPackRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        delegate.updateRowId(rowID)
     }
 }
 
@@ -95,7 +105,8 @@ extension KnownStickerPack {
             let info: StickerPackInfo = try SDSDeserialization.unarchive(infoSerialized, name: "info")
             let referenceCount: Int = record.referenceCount
 
-            return KnownStickerPack(uniqueId: uniqueId,
+            return KnownStickerPack(grdbId: recordId,
+                                    uniqueId: uniqueId,
                                     dateCreated: dateCreated,
                                     info: info,
                                     referenceCount: referenceCount)
@@ -548,7 +559,7 @@ class KnownStickerPackSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .knownStickerPack
         let uniqueId: String = model.uniqueId
@@ -558,6 +569,6 @@ class KnownStickerPackSerializer: SDSSerializer {
         let info: Data = requiredArchive(model.info)
         let referenceCount: Int = model.referenceCount
 
-        return KnownStickerPackRecord(id: id, recordType: recordType, uniqueId: uniqueId, dateCreated: dateCreated, info: info, referenceCount: referenceCount)
+        return KnownStickerPackRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, dateCreated: dateCreated, info: info, referenceCount: referenceCount)
     }
 }

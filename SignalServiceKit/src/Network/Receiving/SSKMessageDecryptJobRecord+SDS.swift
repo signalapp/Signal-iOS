@@ -55,7 +55,7 @@ class SSKMessageDecryptJobRecordSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = model.sortId > 0 ? Int64(model.sortId) : nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .messageDecryptJobRecord
         let uniqueId: String = model.uniqueId
@@ -74,6 +74,6 @@ class SSKMessageDecryptJobRecordSerializer: SDSSerializer {
         let removeMessageAfterSending: Bool? = nil
         let threadId: String? = nil
 
-        return JobRecordRecord(id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId)
+        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId)
     }
 }

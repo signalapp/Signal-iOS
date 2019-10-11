@@ -29,10 +29,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                        createdAt:(NSDate *)createdAt
                     envelopeData:(NSData *)envelopeData
-NS_SWIFT_NAME(init(uniqueId:createdAt:envelopeData:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:envelopeData:));
 
 // clang-format on
 

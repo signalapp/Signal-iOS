@@ -12,6 +12,8 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct RecipientReadReceiptRecord: SDSRecord {
+    public weak var delegate: SDSRecordDelegate?
+
     public var tableMetadata: SDSTableMetadata {
         return TSRecipientReadReceiptSerializer.table
     }
@@ -41,6 +43,14 @@ public struct RecipientReadReceiptRecord: SDSRecord {
 
     public static func columnName(_ column: RecipientReadReceiptRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        delegate.updateRowId(rowID)
     }
 }
 
@@ -94,7 +104,8 @@ extension TSRecipientReadReceipt {
             let recipientReadReceiptSchemaVersion: UInt = record.recipientReadReceiptSchemaVersion
             let sentTimestamp: UInt64 = record.sentTimestamp
 
-            return TSRecipientReadReceipt(uniqueId: uniqueId,
+            return TSRecipientReadReceipt(grdbId: recordId,
+                                          uniqueId: uniqueId,
                                           recipientMap: recipientMap,
                                           recipientReadReceiptSchemaVersion: recipientReadReceiptSchemaVersion,
                                           sentTimestamp: sentTimestamp)
@@ -547,7 +558,7 @@ class TSRecipientReadReceiptSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .recipientReadReceipt
         let uniqueId: String = model.uniqueId
@@ -557,6 +568,6 @@ class TSRecipientReadReceiptSerializer: SDSSerializer {
         let recipientReadReceiptSchemaVersion: UInt = model.recipientReadReceiptSchemaVersion
         let sentTimestamp: UInt64 = model.sentTimestamp
 
-        return RecipientReadReceiptRecord(id: id, recordType: recordType, uniqueId: uniqueId, recipientMap: recipientMap, recipientReadReceiptSchemaVersion: recipientReadReceiptSchemaVersion, sentTimestamp: sentTimestamp)
+        return RecipientReadReceiptRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, recipientMap: recipientMap, recipientReadReceiptSchemaVersion: recipientReadReceiptSchemaVersion, sentTimestamp: sentTimestamp)
     }
 }

@@ -12,6 +12,8 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct UserProfileRecord: SDSRecord {
+    public weak var delegate: SDSRecordDelegate?
+
     public var tableMetadata: SDSTableMetadata {
         return OWSUserProfileSerializer.table
     }
@@ -51,6 +53,14 @@ public struct UserProfileRecord: SDSRecord {
 
     public static func columnName(_ column: UserProfileRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        delegate.updateRowId(rowID)
     }
 }
 
@@ -114,7 +124,8 @@ extension OWSUserProfile {
             let userProfileSchemaVersion: UInt = record.userProfileSchemaVersion
             let username: String? = record.username
 
-            return OWSUserProfile(uniqueId: uniqueId,
+            return OWSUserProfile(grdbId: recordId,
+                                  uniqueId: uniqueId,
                                   avatarFileName: avatarFileName,
                                   avatarUrlPath: avatarUrlPath,
                                   profileKey: profileKey,
@@ -582,7 +593,7 @@ class OWSUserProfileSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .userProfile
         let uniqueId: String = model.uniqueId
@@ -597,6 +608,6 @@ class OWSUserProfileSerializer: SDSSerializer {
         let userProfileSchemaVersion: UInt = model.userProfileSchemaVersion
         let username: String? = model.username
 
-        return UserProfileRecord(id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, userProfileSchemaVersion: userProfileSchemaVersion, username: username)
+        return UserProfileRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, userProfileSchemaVersion: userProfileSchemaVersion, username: username)
     }
 }

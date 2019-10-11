@@ -12,6 +12,8 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct ExperienceUpgradeRecord: SDSRecord {
+    public weak var delegate: SDSRecordDelegate?
+
     public var tableMetadata: SDSTableMetadata {
         return ExperienceUpgradeSerializer.table
     }
@@ -33,6 +35,14 @@ public struct ExperienceUpgradeRecord: SDSRecord {
 
     public static func columnName(_ column: ExperienceUpgradeRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        delegate.updateRowId(rowID)
     }
 }
 
@@ -79,7 +89,8 @@ extension ExperienceUpgrade {
 
             let uniqueId: String = record.uniqueId
 
-            return ExperienceUpgrade(uniqueId: uniqueId)
+            return ExperienceUpgrade(grdbId: recordId,
+                                     uniqueId: uniqueId)
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -522,11 +533,11 @@ class ExperienceUpgradeSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .experienceUpgrade
         let uniqueId: String = model.uniqueId
 
-        return ExperienceUpgradeRecord(id: id, recordType: recordType, uniqueId: uniqueId)
+        return ExperienceUpgradeRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId)
     }
 }

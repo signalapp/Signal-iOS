@@ -12,6 +12,8 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct LinkedDeviceReadReceiptRecord: SDSRecord {
+    public weak var delegate: SDSRecordDelegate?
+
     public var tableMetadata: SDSTableMetadata {
         return OWSLinkedDeviceReadReceiptSerializer.table
     }
@@ -45,6 +47,14 @@ public struct LinkedDeviceReadReceiptRecord: SDSRecord {
 
     public static func columnName(_ column: LinkedDeviceReadReceiptRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        delegate.updateRowId(rowID)
     }
 }
 
@@ -101,7 +111,8 @@ extension OWSLinkedDeviceReadReceipt {
             let senderPhoneNumber: String? = record.senderPhoneNumber
             let senderUUID: String? = record.senderUUID
 
-            return OWSLinkedDeviceReadReceipt(uniqueId: uniqueId,
+            return OWSLinkedDeviceReadReceipt(grdbId: recordId,
+                                              uniqueId: uniqueId,
                                               linkedDeviceReadReceiptSchemaVersion: linkedDeviceReadReceiptSchemaVersion,
                                               messageIdTimestamp: messageIdTimestamp,
                                               readTimestamp: readTimestamp,
@@ -560,7 +571,7 @@ class OWSLinkedDeviceReadReceiptSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .linkedDeviceReadReceipt
         let uniqueId: String = model.uniqueId
@@ -572,6 +583,6 @@ class OWSLinkedDeviceReadReceiptSerializer: SDSSerializer {
         let senderPhoneNumber: String? = model.senderPhoneNumber
         let senderUUID: String? = model.senderUUID
 
-        return LinkedDeviceReadReceiptRecord(id: id, recordType: recordType, uniqueId: uniqueId, linkedDeviceReadReceiptSchemaVersion: linkedDeviceReadReceiptSchemaVersion, messageIdTimestamp: messageIdTimestamp, readTimestamp: readTimestamp, senderPhoneNumber: senderPhoneNumber, senderUUID: senderUUID)
+        return LinkedDeviceReadReceiptRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, linkedDeviceReadReceiptSchemaVersion: linkedDeviceReadReceiptSchemaVersion, messageIdTimestamp: messageIdTimestamp, readTimestamp: readTimestamp, senderPhoneNumber: senderPhoneNumber, senderUUID: senderUUID)
     }
 }

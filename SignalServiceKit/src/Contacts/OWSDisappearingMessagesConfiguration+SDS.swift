@@ -12,6 +12,8 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct DisappearingMessagesConfigurationRecord: SDSRecord {
+    public weak var delegate: SDSRecordDelegate?
+
     public var tableMetadata: SDSTableMetadata {
         return OWSDisappearingMessagesConfigurationSerializer.table
     }
@@ -39,6 +41,14 @@ public struct DisappearingMessagesConfigurationRecord: SDSRecord {
 
     public static func columnName(_ column: DisappearingMessagesConfigurationRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        delegate.updateRowId(rowID)
     }
 }
 
@@ -89,7 +99,8 @@ extension OWSDisappearingMessagesConfiguration {
             let durationSeconds: UInt32 = record.durationSeconds
             let enabled: Bool = record.enabled
 
-            return OWSDisappearingMessagesConfiguration(uniqueId: uniqueId,
+            return OWSDisappearingMessagesConfiguration(grdbId: recordId,
+                                                        uniqueId: uniqueId,
                                                         durationSeconds: durationSeconds,
                                                         enabled: enabled)
 
@@ -539,7 +550,7 @@ class OWSDisappearingMessagesConfigurationSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .disappearingMessagesConfiguration
         let uniqueId: String = model.uniqueId
@@ -548,6 +559,6 @@ class OWSDisappearingMessagesConfigurationSerializer: SDSSerializer {
         let durationSeconds: UInt32 = model.durationSeconds
         let enabled: Bool = model.isEnabled
 
-        return DisappearingMessagesConfigurationRecord(id: id, recordType: recordType, uniqueId: uniqueId, durationSeconds: durationSeconds, enabled: enabled)
+        return DisappearingMessagesConfigurationRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, durationSeconds: durationSeconds, enabled: enabled)
     }
 }

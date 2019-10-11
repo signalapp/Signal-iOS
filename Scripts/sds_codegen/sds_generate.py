@@ -748,6 +748,8 @@ import SignalCoreKit
         record_name = remove_prefix_from_class_name(clazz.name) + 'Record'
         swift_body += '''
 public struct %s: SDSRecord {
+    public weak var delegate: SDSRecordDelegate?
+    
     public var tableMetadata: SDSTableMetadata {
         return %sSerializer.table
     }
@@ -817,6 +819,14 @@ public struct %s: SDSRecord {
         swift_body += '''
     public static func columnName(_ column: %s.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+    
+    public func didInsert(with rowID: Int64, for column: String?) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        delegate.updateRowId(rowID)
     }
 }
 ''' % ( record_name, )
@@ -933,13 +943,14 @@ extension %s {
             h_snippet += '''
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
 '''
             for objc_initializer_param in objc_initializer_params[1:]:
                 alignment = max(0, len('- (instancetype)initWithUniqueId') - objc_initializer_param.index(':'))
                 h_snippet += (' ' * alignment) + objc_initializer_param + '\n'
 
-            h_snippet += 'NS_SWIFT_NAME(init(%s:));\n' % ':'.join([str(property.name) for property in deserialize_properties])
+            h_snippet += 'NS_SWIFT_NAME(init(grdbId:%s:));\n' % ':'.join([str(property.name) for property in deserialize_properties])
             h_snippet += '''
 // clang-format on
 '''
@@ -948,7 +959,8 @@ extension %s {
             m_snippet += '''
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
 '''
             for objc_initializer_param in objc_initializer_params[1:]:
                 alignment = max(0, len('- (instancetype)initWithUniqueId') - objc_initializer_param.index(':'))
@@ -959,7 +971,8 @@ extension %s {
             else:
                 suffix = ''
             m_snippet += '''{
-    self = [super initWithUniqueId:uniqueId%s
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId%s
 ''' % (suffix)
             for index, objc_super_initializer_arg in enumerate(objc_super_initializer_args[1:]):
                 alignment = max(0, len('    self = [super initWithUniqueId') - objc_super_initializer_arg.index(':'))
@@ -1007,6 +1020,7 @@ extension %s {
             
             initializer_invocation = '            return %s(' % str(deserialize_class.name)
             swift_body += initializer_invocation
+            initializer_params = ['grdbId: recordId',] + initializer_params
             swift_body += (',\n' + ' ' * len(initializer_invocation)).join(initializer_params)
             swift_body += ')'
             swift_body += '''
@@ -1634,7 +1648,7 @@ class %sSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = %(record_id_source)s
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .%(record_type)s
         let uniqueId: String = model.uniqueId
@@ -1695,7 +1709,7 @@ class %sSerializer: SDSSerializer {
 
     initializer_args = ['%s: %s' % ( arg, arg, ) for arg in initializer_args]
     swift_body += '''
-        return %s(%s)
+        return %s(delegate: model, %s)
     }
 ''' % ( root_record_name, ', '.join(initializer_args), )
 

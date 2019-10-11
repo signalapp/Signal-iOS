@@ -130,13 +130,15 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
 {
-    self = [super initWithUniqueId:uniqueId];
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId];
 
     if (!self) {
         return self;
@@ -292,29 +294,24 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 {
     [super anyDidInsertWithTransaction:transaction];
 
-    [self updateLastMessageWithTransaction:transaction];
+    TSThread *fetchedThread = [self threadWithTransaction:transaction];
+    [fetchedThread updateWithInsertedMessage:self transaction:transaction];
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidUpdateWithTransaction:transaction];
 
-    [self updateLastMessageWithTransaction:transaction];
-}
-
-- (void)updateLastMessageWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
     TSThread *fetchedThread = [self threadWithTransaction:transaction];
-
-    [fetchedThread updateWithLastMessage:self transaction:transaction];
+    [fetchedThread updateWithUpdatedMessage:self transaction:transaction];
 }
 
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidRemoveWithTransaction:transaction];
 
-    TSThread *thread = [self threadWithTransaction:transaction];
-    [self.databaseStorage touchThread:thread transaction:transaction];
+    TSThread *fetchedThread = [self threadWithTransaction:transaction];
+    [fetchedThread updateWithRemovedMessage:self transaction:transaction];
 }
 
 #pragma mark -

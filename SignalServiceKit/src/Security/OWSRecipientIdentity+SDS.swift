@@ -12,6 +12,8 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct RecipientIdentityRecord: SDSRecord {
+    public weak var delegate: SDSRecordDelegate?
+
     public var tableMetadata: SDSTableMetadata {
         return OWSRecipientIdentitySerializer.table
     }
@@ -47,6 +49,14 @@ public struct RecipientIdentityRecord: SDSRecord {
 
     public static func columnName(_ column: RecipientIdentityRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        delegate.updateRowId(rowID)
     }
 }
 
@@ -106,7 +116,8 @@ extension OWSRecipientIdentity {
             let recipientIdentitySchemaVersion: UInt = record.recipientIdentitySchemaVersion
             let verificationState: OWSVerificationState = record.verificationState
 
-            return OWSRecipientIdentity(uniqueId: uniqueId,
+            return OWSRecipientIdentity(grdbId: recordId,
+                                        uniqueId: uniqueId,
                                         accountId: accountId,
                                         createdAt: createdAt,
                                         identityKey: identityKey,
@@ -568,7 +579,7 @@ class OWSRecipientIdentitySerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .recipientIdentity
         let uniqueId: String = model.uniqueId
@@ -581,6 +592,6 @@ class OWSRecipientIdentitySerializer: SDSSerializer {
         let recipientIdentitySchemaVersion: UInt = model.recipientIdentitySchemaVersion
         let verificationState: OWSVerificationState = model.verificationState
 
-        return RecipientIdentityRecord(id: id, recordType: recordType, uniqueId: uniqueId, accountId: accountId, createdAt: createdAt, identityKey: identityKey, isFirstKnownKey: isFirstKnownKey, recipientIdentitySchemaVersion: recipientIdentitySchemaVersion, verificationState: verificationState)
+        return RecipientIdentityRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, accountId: accountId, createdAt: createdAt, identityKey: identityKey, isFirstKnownKey: isFirstKnownKey, recipientIdentitySchemaVersion: recipientIdentitySchemaVersion, verificationState: verificationState)
     }
 }

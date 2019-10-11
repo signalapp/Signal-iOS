@@ -12,6 +12,8 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct MessageDecryptJobRecord: SDSRecord {
+    public weak var delegate: SDSRecordDelegate?
+
     public var tableMetadata: SDSTableMetadata {
         return OWSMessageDecryptJobSerializer.table
     }
@@ -39,6 +41,14 @@ public struct MessageDecryptJobRecord: SDSRecord {
 
     public static func columnName(_ column: MessageDecryptJobRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        delegate.updateRowId(rowID)
     }
 }
 
@@ -90,7 +100,8 @@ extension OWSMessageDecryptJob {
             let createdAt: Date = SDSDeserialization.requiredDoubleAsDate(createdAtInterval, name: "createdAt")
             let envelopeData: Data = record.envelopeData
 
-            return OWSMessageDecryptJob(uniqueId: uniqueId,
+            return OWSMessageDecryptJob(grdbId: recordId,
+                                        uniqueId: uniqueId,
                                         createdAt: createdAt,
                                         envelopeData: envelopeData)
 
@@ -540,7 +551,7 @@ class OWSMessageDecryptJobSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .messageDecryptJob
         let uniqueId: String = model.uniqueId
@@ -549,6 +560,6 @@ class OWSMessageDecryptJobSerializer: SDSSerializer {
         let createdAt: Double = archiveDate(model.createdAt)
         let envelopeData: Data = model.envelopeData
 
-        return MessageDecryptJobRecord(id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, envelopeData: envelopeData)
+        return MessageDecryptJobRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, envelopeData: envelopeData)
     }
 }

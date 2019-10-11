@@ -12,6 +12,8 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct StickerPackRecord: SDSRecord {
+    public weak var delegate: SDSRecordDelegate?
+
     public var tableMetadata: SDSTableMetadata {
         return StickerPackSerializer.table
     }
@@ -49,6 +51,14 @@ public struct StickerPackRecord: SDSRecord {
 
     public static func columnName(_ column: StickerPackRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        delegate.updateRowId(rowID)
     }
 }
 
@@ -113,7 +123,8 @@ extension StickerPack {
             let items: [StickerPackItem] = try SDSDeserialization.unarchive(itemsSerialized, name: "items")
             let title: String? = record.title
 
-            return StickerPack(uniqueId: uniqueId,
+            return StickerPack(grdbId: recordId,
+                               uniqueId: uniqueId,
                                author: author,
                                cover: cover,
                                dateCreated: dateCreated,
@@ -578,7 +589,7 @@ class StickerPackSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .stickerPack
         let uniqueId: String = model.uniqueId
@@ -592,6 +603,6 @@ class StickerPackSerializer: SDSSerializer {
         let items: Data = requiredArchive(model.items)
         let title: String? = model.title
 
-        return StickerPackRecord(id: id, recordType: recordType, uniqueId: uniqueId, author: author, cover: cover, dateCreated: dateCreated, info: info, isInstalled: isInstalled, items: items, title: title)
+        return StickerPackRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, author: author, cover: cover, dateCreated: dateCreated, info: info, isInstalled: isInstalled, items: items, title: title)
     }
 }

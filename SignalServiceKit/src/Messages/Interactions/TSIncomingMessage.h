@@ -73,7 +73,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
@@ -98,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                   sourceDeviceId:(unsigned int)sourceDeviceId
                  wasReceivedByUD:(BOOL)wasReceivedByUD
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:authorPhoneNumber:authorUUID:incomingMessageSchemaVersion:read:serverTimestamp:sourceDeviceId:wasReceivedByUD:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:authorPhoneNumber:authorUUID:incomingMessageSchemaVersion:read:serverTimestamp:sourceDeviceId:wasReceivedByUD:));
 
 // clang-format on
 

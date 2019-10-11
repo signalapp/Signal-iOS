@@ -22,19 +22,21 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                     archivalDate:(nullable NSDate *)archivalDate
-       archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
+                      isArchived:(BOOL)isArchived
 isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
+            lastInteractionRowId:(int64_t)lastInteractionRowId
                  lastMessageDate:(nullable NSDate *)lastMessageDate
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
                            rowId:(int64_t)rowId
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
                       groupModel:(TSGroupModel *)groupModel
-NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastMessageDate:messageDraft:mutedUntilDate:rowId:shouldThreadBeVisible:groupModel:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:archivalDate:conversationColorName:creationDate:isArchived:isArchivedByLegacyTimestampForSorting:lastInteractionRowId:lastMessageDate:messageDraft:mutedUntilDate:rowId:shouldThreadBeVisible:groupModel:));
 
 // clang-format on
 

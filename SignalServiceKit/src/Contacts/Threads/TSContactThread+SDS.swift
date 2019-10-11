@@ -55,17 +55,18 @@ class TSContactThreadSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .contactThread
         let uniqueId: String = model.uniqueId
 
         // Base class properties
         let archivalDate: Double? = archiveOptionalDate(model.archivalDate)
-        let archivedAsOfMessageSortId: UInt64? = archiveOptionalNSNumber(model.archivedAsOfMessageSortId, conversion: { $0.uint64Value })
         let conversationColorName: String = model.conversationColorName.rawValue
         let creationDate: Double? = archiveOptionalDate(model.creationDate)
+        let isArchived: Bool = model.isArchived
         let isArchivedByLegacyTimestampForSorting: Bool = model.isArchivedByLegacyTimestampForSorting
+        let lastInteractionRowId: Int64 = model.lastInteractionRowId
         let lastMessageDate: Double? = archiveOptionalDate(model.lastMessageDate)
         let messageDraft: String? = model.messageDraft
         let mutedUntilDate: Double? = archiveOptionalDate(model.mutedUntilDate)
@@ -78,6 +79,6 @@ class TSContactThreadSerializer: SDSSerializer {
         let groupModel: Data? = nil
         let hasDismissedOffers: Bool? = model.hasDismissedOffers
 
-        return ThreadRecord(id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, archivedAsOfMessageSortId: archivedAsOfMessageSortId, conversationColorName: conversationColorName, creationDate: creationDate, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactThreadSchemaVersion: contactThreadSchemaVersion, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
+        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastInteractionRowId: lastInteractionRowId, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactThreadSchemaVersion: contactThreadSchemaVersion, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
     }
 }

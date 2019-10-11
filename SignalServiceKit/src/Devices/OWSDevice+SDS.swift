@@ -12,6 +12,8 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct DeviceRecord: SDSRecord {
+    public weak var delegate: SDSRecordDelegate?
+
     public var tableMetadata: SDSTableMetadata {
         return OWSDeviceSerializer.table
     }
@@ -43,6 +45,14 @@ public struct DeviceRecord: SDSRecord {
 
     public static func columnName(_ column: DeviceRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        delegate.updateRowId(rowID)
     }
 }
 
@@ -99,7 +109,8 @@ extension OWSDevice {
             let lastSeenAt: Date = SDSDeserialization.requiredDoubleAsDate(lastSeenAtInterval, name: "lastSeenAt")
             let name: String? = record.name
 
-            return OWSDevice(uniqueId: uniqueId,
+            return OWSDevice(grdbId: recordId,
+                             uniqueId: uniqueId,
                              createdAt: createdAt,
                              deviceId: deviceId,
                              lastSeenAt: lastSeenAt,
@@ -555,7 +566,7 @@ class OWSDeviceSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .device
         let uniqueId: String = model.uniqueId
@@ -566,6 +577,6 @@ class OWSDeviceSerializer: SDSSerializer {
         let lastSeenAt: Double = archiveDate(model.lastSeenAt)
         let name: String? = model.name
 
-        return DeviceRecord(id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, deviceId: deviceId, lastSeenAt: lastSeenAt, name: name)
+        return DeviceRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, deviceId: deviceId, lastSeenAt: lastSeenAt, name: name)
     }
 }

@@ -46,14 +46,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                     attachmentId:(nullable NSString *)attachmentId
                 downloadFilePath:(nullable NSString *)downloadFilePath
                    encryptionKey:(NSData *)encryptionKey
                       recordName:(NSString *)recordName
                 relativeFilePath:(nullable NSString *)relativeFilePath
           uncompressedDataLength:(nullable NSNumber *)uncompressedDataLength
-NS_SWIFT_NAME(init(uniqueId:attachmentId:downloadFilePath:encryptionKey:recordName:relativeFilePath:uncompressedDataLength:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:attachmentId:downloadFilePath:encryptionKey:recordName:relativeFilePath:uncompressedDataLength:));
 
 // clang-format on
 

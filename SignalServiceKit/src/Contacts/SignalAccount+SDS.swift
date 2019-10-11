@@ -12,6 +12,8 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct SignalAccountRecord: SDSRecord {
+    public weak var delegate: SDSRecordDelegate?
+
     public var tableMetadata: SDSTableMetadata {
         return SignalAccountSerializer.table
     }
@@ -47,6 +49,14 @@ public struct SignalAccountRecord: SDSRecord {
 
     public static func columnName(_ column: SignalAccountRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        delegate.updateRowId(rowID)
     }
 }
 
@@ -106,7 +116,8 @@ extension SignalAccount {
             let recipientPhoneNumber: String? = record.recipientPhoneNumber
             let recipientUUID: String? = record.recipientUUID
 
-            return SignalAccount(uniqueId: uniqueId,
+            return SignalAccount(grdbId: recordId,
+                                 uniqueId: uniqueId,
                                  accountSchemaVersion: accountSchemaVersion,
                                  contact: contact,
                                  hasMultipleAccountContact: hasMultipleAccountContact,
@@ -568,7 +579,7 @@ class SignalAccountSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .signalAccount
         let uniqueId: String = model.uniqueId
@@ -581,6 +592,6 @@ class SignalAccountSerializer: SDSSerializer {
         let recipientPhoneNumber: String? = model.recipientPhoneNumber
         let recipientUUID: String? = model.recipientUUID
 
-        return SignalAccountRecord(id: id, recordType: recordType, uniqueId: uniqueId, accountSchemaVersion: accountSchemaVersion, contact: contact, hasMultipleAccountContact: hasMultipleAccountContact, multipleAccountLabelText: multipleAccountLabelText, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID)
+        return SignalAccountRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, accountSchemaVersion: accountSchemaVersion, contact: contact, hasMultipleAccountContact: hasMultipleAccountContact, multipleAccountLabelText: multipleAccountLabelText, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID)
     }
 }

@@ -12,6 +12,8 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct InstalledStickerRecord: SDSRecord {
+    public weak var delegate: SDSRecordDelegate?
+
     public var tableMetadata: SDSTableMetadata {
         return InstalledStickerSerializer.table
     }
@@ -39,6 +41,14 @@ public struct InstalledStickerRecord: SDSRecord {
 
     public static func columnName(_ column: InstalledStickerRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+    }
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        delegate.updateRowId(rowID)
     }
 }
 
@@ -90,7 +100,8 @@ extension InstalledSticker {
             let infoSerialized: Data = record.info
             let info: StickerInfo = try SDSDeserialization.unarchive(infoSerialized, name: "info")
 
-            return InstalledSticker(uniqueId: uniqueId,
+            return InstalledSticker(grdbId: recordId,
+                                    uniqueId: uniqueId,
                                     emojiString: emojiString,
                                     info: info)
 
@@ -540,7 +551,7 @@ class InstalledStickerSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = nil
+        let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .installedSticker
         let uniqueId: String = model.uniqueId
@@ -549,6 +560,6 @@ class InstalledStickerSerializer: SDSSerializer {
         let emojiString: String? = model.emojiString
         let info: Data = requiredArchive(model.info)
 
-        return InstalledStickerRecord(id: id, recordType: recordType, uniqueId: uniqueId, emojiString: emojiString, info: info)
+        return InstalledStickerRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, emojiString: emojiString, info: info)
     }
 }

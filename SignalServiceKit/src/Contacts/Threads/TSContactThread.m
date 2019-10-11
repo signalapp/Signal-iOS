@@ -49,12 +49,14 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                     archivalDate:(nullable NSDate *)archivalDate
-       archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
+                      isArchived:(BOOL)isArchived
 isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
+            lastInteractionRowId:(int64_t)lastInteractionRowId
                  lastMessageDate:(nullable NSDate *)lastMessageDate
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
@@ -65,12 +67,14 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
                      contactUUID:(nullable NSString *)contactUUID
               hasDismissedOffers:(BOOL)hasDismissedOffers
 {
-    self = [super initWithUniqueId:uniqueId
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId
                       archivalDate:archivalDate
-         archivedAsOfMessageSortId:archivedAsOfMessageSortId
              conversationColorName:conversationColorName
                       creationDate:creationDate
+                        isArchived:isArchived
 isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
+              lastInteractionRowId:lastInteractionRowId
                    lastMessageDate:lastMessageDate
                       messageDraft:messageDraft
                     mutedUntilDate:mutedUntilDate

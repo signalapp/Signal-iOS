@@ -147,7 +147,8 @@ NSUInteger const RecipientIdentitySchemaVersion = 1;
 
 // clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
                        accountId:(NSString *)accountId
                        createdAt:(NSDate *)createdAt
                      identityKey:(NSData *)identityKey
@@ -155,7 +156,8 @@ NSUInteger const RecipientIdentitySchemaVersion = 1;
   recipientIdentitySchemaVersion:(NSUInteger)recipientIdentitySchemaVersion
                verificationState:(OWSVerificationState)verificationState
 {
-    self = [super initWithUniqueId:uniqueId];
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId];
 
     if (!self) {
         return self;
