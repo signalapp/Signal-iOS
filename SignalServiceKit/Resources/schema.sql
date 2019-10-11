@@ -18,18 +18,14 @@ CREATE
             ,"recordType" INTEGER NOT NULL
             ,"uniqueId" TEXT NOT NULL UNIQUE
                 ON CONFLICT FAIL
-            ,"archivalDate" DOUBLE
             ,"conversationColorName" TEXT NOT NULL
             ,"creationDate" DOUBLE
             ,"isArchived" INTEGER NOT NULL
-            ,"isArchivedByLegacyTimestampForSorting" INTEGER NOT NULL
             ,"lastInteractionRowId" INTEGER NOT NULL
-            ,"lastMessageDate" DOUBLE
             ,"messageDraft" TEXT
             ,"mutedUntilDate" DOUBLE
             ,"shouldThreadBeVisible" INTEGER NOT NULL
             ,"contactPhoneNumber" TEXT
-            ,"contactThreadSchemaVersion" INTEGER
             ,"contactUUID" TEXT
             ,"groupModel" BLOB
             ,"hasDismissedOffers" INTEGER
@@ -56,31 +52,22 @@ CREATE
             ,"authorId" TEXT
             ,"authorPhoneNumber" TEXT
             ,"authorUUID" TEXT
-            ,"beforeInteractionId" TEXT
             ,"body" TEXT
-            ,"callSchemaVersion" INTEGER
             ,"callType" INTEGER
             ,"configurationDurationSeconds" INTEGER
             ,"configurationIsEnabled" INTEGER
-            ,"contactId" TEXT
             ,"contactShare" BLOB
             ,"createdByRemoteName" TEXT
             ,"createdInExistingGroup" INTEGER
             ,"customMessage" TEXT
             ,"envelopeData" BLOB
-            ,"errorMessageSchemaVersion" INTEGER
             ,"errorType" INTEGER
             ,"expireStartedAt" INTEGER
             ,"expiresAt" INTEGER
             ,"expiresInSeconds" INTEGER
             ,"groupMetaMessage" INTEGER
-            ,"hasAddToContactsOffer" INTEGER
-            ,"hasAddToProfileWhitelistOffer" INTEGER
-            ,"hasBlockOffer" INTEGER
             ,"hasLegacyMessageState" INTEGER
             ,"hasSyncedTranscript" INTEGER
-            ,"incomingMessageSchemaVersion" INTEGER
-            ,"infoMessageSchemaVersion" INTEGER
             ,"isFromLinkedDevice" INTEGER
             ,"isLocalChange" INTEGER
             ,"isViewOnceComplete" INTEGER
@@ -93,20 +80,17 @@ CREATE
             ,"messageSticker" BLOB
             ,"messageType" INTEGER
             ,"mostRecentFailureText" TEXT
-            ,"outgoingMessageSchemaVersion" INTEGER
             ,"preKeyBundle" BLOB
             ,"protocolVersion" INTEGER
             ,"quotedMessage" BLOB
             ,"read" INTEGER
             ,"recipientAddress" BLOB
             ,"recipientAddressStates" BLOB
-            ,"schemaVersion" INTEGER
             ,"sender" BLOB
             ,"serverTimestamp" INTEGER
             ,"sourceDeviceId" INTEGER
             ,"storedMessageState" INTEGER
             ,"storedShouldStartExpireTimer" INTEGER
-            ,"unknownProtocolVersionMessageSchemaVersion" INTEGER
             ,"unregisteredAddress" BLOB
             ,"verificationState" INTEGER
             ,"wasReceivedByUD" INTEGER
@@ -187,14 +171,12 @@ CREATE
             ,"uniqueId" TEXT NOT NULL UNIQUE
                 ON CONFLICT FAIL
             ,"albumMessageId" TEXT
-            ,"attachmentSchemaVersion" INTEGER NOT NULL
             ,"attachmentType" INTEGER NOT NULL
             ,"blurHash" TEXT
             ,"byteCount" INTEGER NOT NULL
             ,"caption" TEXT
             ,"contentType" TEXT NOT NULL
             ,"encryptionKey" BLOB
-            ,"isDownloaded" INTEGER NOT NULL
             ,"serverId" INTEGER NOT NULL
             ,"sourceFilename" TEXT
             ,"cachedAudioDurationSeconds" DOUBLE
@@ -208,9 +190,7 @@ CREATE
             ,"lazyRestoreFragmentId" TEXT
             ,"localRelativeFilePath" TEXT
             ,"mediaSize" BLOB
-            ,"mostRecentFailureLocalizedText" TEXT
             ,"pointerType" INTEGER
-            ,"shouldAlwaysPad" INTEGER
             ,"state" INTEGER
         )
 ;
@@ -278,7 +258,6 @@ CREATE
             ,"createdAt" DOUBLE NOT NULL
             ,"identityKey" BLOB NOT NULL
             ,"isFirstKnownKey" INTEGER NOT NULL
-            ,"recipientIdentitySchemaVersion" INTEGER NOT NULL
             ,"verificationState" INTEGER NOT NULL
         )
 ;
@@ -332,7 +311,6 @@ CREATE
                 ON CONFLICT FAIL
             ,"devices" BLOB NOT NULL
             ,"recipientPhoneNumber" TEXT
-            ,"recipientSchemaVersion" INTEGER NOT NULL
             ,"recipientUUID" TEXT
         )
 ;
@@ -350,9 +328,7 @@ CREATE
             ,"recordType" INTEGER NOT NULL
             ,"uniqueId" TEXT NOT NULL UNIQUE
                 ON CONFLICT FAIL
-            ,"accountSchemaVersion" INTEGER NOT NULL
             ,"contact" BLOB
-            ,"hasMultipleAccountContact" INTEGER NOT NULL
             ,"multipleAccountLabelText" TEXT NOT NULL
             ,"recipientPhoneNumber" TEXT
             ,"recipientUUID" TEXT
@@ -378,7 +354,6 @@ CREATE
             ,"profileName" TEXT
             ,"recipientPhoneNumber" TEXT
             ,"recipientUUID" TEXT
-            ,"userProfileSchemaVersion" INTEGER NOT NULL
             ,"username" TEXT
         )
 ;
@@ -397,7 +372,6 @@ CREATE
             ,"uniqueId" TEXT NOT NULL UNIQUE
                 ON CONFLICT FAIL
             ,"recipientMap" BLOB NOT NULL
-            ,"recipientReadReceiptSchemaVersion" INTEGER NOT NULL
             ,"sentTimestamp" INTEGER NOT NULL
         )
 ;
@@ -415,7 +389,6 @@ CREATE
             ,"recordType" INTEGER NOT NULL
             ,"uniqueId" TEXT NOT NULL UNIQUE
                 ON CONFLICT FAIL
-            ,"linkedDeviceReadReceiptSchemaVersion" INTEGER NOT NULL
             ,"messageIdTimestamp" INTEGER NOT NULL
             ,"readTimestamp" INTEGER NOT NULL
             ,"senderPhoneNumber" TEXT
