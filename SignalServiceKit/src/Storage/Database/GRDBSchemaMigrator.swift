@@ -57,22 +57,12 @@ public class GRDBSchemaMigrator: NSObject {
     // to the latest.
     private lazy var incrementalMigrator: DatabaseMigrator = {
         var migrator = DatabaseMigrator()
-        migrator.registerMigration(MigrationId.createInitialSchema.rawValue) { _ in
+        migrator.registerMigration(MigrationId.createInitialSchema.rawValue) { db in
             owsFail("This migration should have already been run by the last YapDB migration.")
             // try createV1Schema(db: db)
         }
         return migrator
     }()
-
-    // Create the v1 schema before running the YDB to GRDB migration.
-    public func runCreateV1SchemaMigration() throws {
-        var migrator = DatabaseMigrator()
-        migrator.registerMigration(MigrationId.createInitialSchema.rawValue) { db in
-            Logger.info("migrating initial schema")
-            try createV1Schema(db: db)
-        }
-        try migrator.migrate(grdbStorage.pool)
-    }
 }
 
 private func createV1Schema(db: Database) throws {
