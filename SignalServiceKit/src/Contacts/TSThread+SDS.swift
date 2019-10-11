@@ -359,6 +359,19 @@ public extension TSThread {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
+    // The class function lets us update the database only without
+    // instantiating a model first.
+    @objc(anyUpdateThreadWithUniqueId:transaction:block:)
+    class func anyUpdateThread(uniqueId: String,
+                               transaction: SDSAnyWriteTransaction, block: (TSThread) -> Void) {
+        guard let dbCopy = anyFetch(uniqueId: uniqueId,
+                                    transaction: transaction) else {
+                                        owsFailDebug("Can't update missing record.")
+                                        return
+        }
+        dbCopy.anyUpdate(transaction: transaction)
+    }
+
     func anyRemove(transaction: SDSAnyWriteTransaction) {
         sdsRemove(transaction: transaction)
     }

@@ -232,6 +232,19 @@ public extension OWSDisappearingMessagesConfiguration {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
+    // The class function lets us update the database only without
+    // instantiating a model first.
+    @objc(anyUpdateDisappearingMessagesConfigurationWithUniqueId:transaction:block:)
+    class func anyUpdateDisappearingMessagesConfiguration(uniqueId: String,
+                               transaction: SDSAnyWriteTransaction, block: (OWSDisappearingMessagesConfiguration) -> Void) {
+        guard let dbCopy = anyFetch(uniqueId: uniqueId,
+                                    transaction: transaction) else {
+                                        owsFailDebug("Can't update missing record.")
+                                        return
+        }
+        dbCopy.anyUpdate(transaction: transaction)
+    }
+
     func anyRemove(transaction: SDSAnyWriteTransaction) {
         sdsRemove(transaction: transaction)
     }

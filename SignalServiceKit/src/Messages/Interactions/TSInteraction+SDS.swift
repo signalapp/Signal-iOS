@@ -1375,6 +1375,19 @@ public extension TSInteraction {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
+    // The class function lets us update the database only without
+    // instantiating a model first.
+    @objc(anyUpdateInteractionWithUniqueId:transaction:block:)
+    class func anyUpdateInteraction(uniqueId: String,
+                               transaction: SDSAnyWriteTransaction, block: (TSInteraction) -> Void) {
+        guard let dbCopy = anyFetch(uniqueId: uniqueId,
+                                    transaction: transaction) else {
+                                        owsFailDebug("Can't update missing record.")
+                                        return
+        }
+        dbCopy.anyUpdate(transaction: transaction)
+    }
+
     func anyRemove(transaction: SDSAnyWriteTransaction) {
         sdsRemove(transaction: transaction)
     }

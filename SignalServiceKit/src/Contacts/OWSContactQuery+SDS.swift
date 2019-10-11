@@ -233,6 +233,19 @@ public extension OWSContactQuery {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
+    // The class function lets us update the database only without
+    // instantiating a model first.
+    @objc(anyUpdateContactQueryWithUniqueId:transaction:block:)
+    class func anyUpdateContactQuery(uniqueId: String,
+                               transaction: SDSAnyWriteTransaction, block: (OWSContactQuery) -> Void) {
+        guard let dbCopy = anyFetch(uniqueId: uniqueId,
+                                    transaction: transaction) else {
+                                        owsFailDebug("Can't update missing record.")
+                                        return
+        }
+        dbCopy.anyUpdate(transaction: transaction)
+    }
+
     func anyRemove(transaction: SDSAnyWriteTransaction) {
         sdsRemove(transaction: transaction)
     }

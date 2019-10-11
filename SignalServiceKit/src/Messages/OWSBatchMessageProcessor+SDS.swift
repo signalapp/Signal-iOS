@@ -247,6 +247,19 @@ public extension OWSMessageContentJob {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
+    // The class function lets us update the database only without
+    // instantiating a model first.
+    @objc(anyUpdateMessageContentJobWithUniqueId:transaction:block:)
+    class func anyUpdateMessageContentJob(uniqueId: String,
+                               transaction: SDSAnyWriteTransaction, block: (OWSMessageContentJob) -> Void) {
+        guard let dbCopy = anyFetch(uniqueId: uniqueId,
+                                    transaction: transaction) else {
+                                        owsFailDebug("Can't update missing record.")
+                                        return
+        }
+        dbCopy.anyUpdate(transaction: transaction)
+    }
+
     func anyRemove(transaction: SDSAnyWriteTransaction) {
         sdsRemove(transaction: transaction)
     }
