@@ -533,7 +533,7 @@ typedef enum : NSUInteger {
                                                           userInfo:nil
                                                            repeats:YES];
     
-    [LKAPI populateUserIDCacheIfNeededFor:thread.uniqueId in:nil];
+    [LKAPI populateUserHexEncodedPublicKeyCacheIfNeededFor:thread.uniqueId in:nil];
 }
 
 - (void)dealloc
@@ -3023,7 +3023,7 @@ typedef enum : NSUInteger {
 {
     [self tryToSendAttachments:attachments messageText:messageText];
     [self.inputToolbar clearTextMessageAnimated:NO];
-    [self clearMentions];
+    [self resetMentions];
 
     // we want to already be at the bottom when the user returns, rather than have to watch
     // the new message scroll into view.
@@ -3785,68 +3785,56 @@ typedef enum : NSUInteger {
     BOOL isBackspace = newText.length < self.oldText.length;
     if (isBackspace) {
         self.currentMentionStartIndex = -1;
+        [self.inputToolbar hideMentionCandidateSelectionView];
         for (LKMention *mention in self.mentions) {
-            BOOL isValid;
-            if (mention.locationInString > (NSUInteger)MAX((NSInteger)newText.length - 1, 0)) {
-                isValid = NO;
-            } else {
-                isValid = [[newText substringFromIndex:mention.locationInString] hasPrefix:[NSString stringWithFormat:@"@%@", mention.displayName]];
-            }
-            if (!isValid) {
+            if (![mention isContainedIn:newText]) {
                 [self.mentions removeObject:mention];
             }
         }
     } else if (newText.length > 0) {
-        NSUInteger currentEndIndex = newText.length - 1;
-        unichar lastCharacter = [newText characterAtIndex:currentEndIndex];
+        NSUInteger lastCharacterIndex = newText.length - 1;
+        unichar lastCharacter = [newText characterAtIndex:lastCharacterIndex];
         if (lastCharacter == '@') {
-            NSArray<NSString *> *userIDs = [LKAPI getUserIDsFor:@"" in:self.thread.uniqueId];
-            self.currentMentionStartIndex = (NSInteger)currentEndIndex;
-            [self.inputToolbar showUserSelectionViewFor:userIDs in:self.thread];
+            NSArray<LKMention *> *mentionCandidates = [LKAPI getMentionCandidatesFor:@"" in:self.thread.uniqueId];
+            self.currentMentionStartIndex = (NSInteger)lastCharacterIndex;
+            [self.inputToolbar showMentionCandidateSelectionViewFor:mentionCandidates in:self.thread];
         } else if ([NSCharacterSet.whitespaceAndNewlineCharacterSet characterIsMember:lastCharacter]) {
             self.currentMentionStartIndex = -1;
-            [self.inputToolbar hideUserSelectionView];
+            [self.inputToolbar hideMentionCandidateSelectionView];
         } else {
             if (self.currentMentionStartIndex != -1) {
                 NSString *query = [newText substringFromIndex:(NSUInteger)self.currentMentionStartIndex + 1]; // + 1 to get rid of the @
-                NSArray<NSString *> *userIDs = [LKAPI getUserIDsFor:query in:self.thread.uniqueId];
-                [self.inputToolbar showUserSelectionViewFor:userIDs in:self.thread];
+                NSArray<LKMention *> *mentionCandidates = [LKAPI getMentionCandidatesFor:query in:self.thread.uniqueId];
+                [self.inputToolbar showMentionCandidateSelectionViewFor:mentionCandidates in:self.thread];
             }
         }
     }
     self.oldText = newText;
 }
 
-- (void)handleUserSelected:(NSString *)hexEncodedPublicKey from:(LKUserSelectionView *)userSelectionView
+- (void)handleMentionCandidateSelected:(LKMention *)mentionCandidate from:(LKMentionCandidateSelectionView *)mentionCandidateSelectionView
 {
     NSUInteger mentionStartIndex = (NSUInteger)self.currentMentionStartIndex;
-    __block NSString *displayName;
-    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        NSString *collection = [NSString stringWithFormat:@"%@.%llu", LKGroupChatAPI.publicChatServer, LKGroupChatAPI.publicChatServerID];
-        displayName = [transaction objectForKey:hexEncodedPublicKey inCollection:collection];
-    }];
-    LKMention *mention = [[LKMention alloc] initWithLocationInString:mentionStartIndex hexEncodedPublicKey:hexEncodedPublicKey displayName:displayName];
-    [self.mentions addObject:mention];
+    [self.mentions addObject:mentionCandidate];
     NSString *oldText = self.inputToolbar.messageText;
-    NSString *newText = [oldText stringByReplacingCharactersInRange:NSMakeRange(mentionStartIndex, oldText.length - mentionStartIndex) withString:[NSString stringWithFormat:@"@%@", displayName]];
+    NSString *newText = [oldText stringByReplacingCharactersInRange:NSMakeRange(mentionStartIndex, oldText.length - mentionStartIndex) withString:[NSString stringWithFormat:@"@%@", mentionCandidate.displayName]];
     [self.inputToolbar setMessageText:newText animated:NO];
-    [self.inputToolbar hideUserSelectionView];
     self.currentMentionStartIndex = -1;
+    [self.inputToolbar hideMentionCandidateSelectionView];
+    self.oldText = newText;
 }
 
 - (NSString *)getSendText
 {
     NSString *result = self.inputToolbar.messageText;
-    NSUInteger shift = 0;
     for (LKMention *mention in self.mentions) {
-        NSRange range = NSMakeRange(mention.locationInString + shift, mention.displayName.length + 1); // + 1 to include the @
-        shift = shift + mention.hexEncodedPublicKey.length - mention.displayName.length;
+        NSRange range = [result rangeOfString:[NSString stringWithFormat:@"@%@", mention.displayName]];
         result = [result stringByReplacingCharactersInRange:range withString:[[NSString alloc] initWithFormat:@"@%@", mention.hexEncodedPublicKey]];
     }
     return result;
 }
 
-- (void)clearMentions
+- (void)resetMentions
 {
     self.oldText = @"";
     self.currentMentionStartIndex = -1;
@@ -4101,7 +4089,7 @@ typedef enum : NSUInteger {
 {
     [self tryToSendAttachments:attachments messageText:messageText];
     [self.inputToolbar clearTextMessageAnimated:NO];
-    [self clearMentions];
+    [self resetMentions];
     [self dismissViewControllerAnimated:YES completion:nil];
 
     // We always want to scroll to the bottom of the conversation after the local user
@@ -4472,6 +4460,7 @@ typedef enum : NSUInteger {
     [BenchManager startEventWithTitle:@"Send Message milestone: toggleDefaultKeyboard completed"
                               eventId:@"fromSendUntil_toggleDefaultKeyboard"];
 
+    [self.inputToolbar hideMentionCandidateSelectionView];
     [self tryToSendTextMessage:[self getSendText] updateKeyboardState:YES];
 }
 
@@ -4530,7 +4519,7 @@ typedef enum : NSUInteger {
     [BenchManager benchWithTitle:@"clearTextMessageAnimated"
                            block:^{
                                [self.inputToolbar clearTextMessageAnimated:YES];
-                               [self clearMentions];
+                               [self resetMentions];
                            }];
     [BenchManager completeEventWithEventId:@"fromSendUntil_clearTextMessageAnimated"];
 

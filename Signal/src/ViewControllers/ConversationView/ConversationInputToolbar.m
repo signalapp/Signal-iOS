@@ -51,7 +51,7 @@ const CGFloat kMaxTextViewHeight = 98;
 @interface ConversationInputToolbar () <ConversationTextViewToolbarDelegate,
     QuotedReplyPreviewDelegate,
     LinkPreviewViewDraftDelegate,
-    LKUserSelectionViewDelegate>
+    LKMentionCandidateSelectionViewDelegate>
 
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
 
@@ -86,8 +86,8 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic, nullable) InputLinkPreview *inputLinkPreview;
 @property (nonatomic) BOOL wasLinkPreviewCancelled;
 @property (nonatomic, nullable, weak) LinkPreviewView *linkPreviewView;
-@property (nonatomic) LKUserSelectionView *userSelectionView;
-@property (nonatomic) NSLayoutConstraint *userSelectionViewSizeConstraint;
+@property (nonatomic) LKMentionCandidateSelectionView *mentionCandidateSelectionView;
+@property (nonatomic) NSLayoutConstraint *mentionCandidateSelectionViewSizeConstraint;
 
 @end
 
@@ -223,12 +223,12 @@ const CGFloat kMaxTextViewHeight = 98;
     [vStackWrapper setCompressionResistanceHorizontalLow];
 
     // User Selection View
-    _userSelectionView = [LKUserSelectionView new];
-    [self addSubview:self.userSelectionView];
-    [self.userSelectionView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [self.userSelectionView autoPinWidthToSuperview];
-    self.userSelectionViewSizeConstraint = [self.userSelectionView autoSetDimension:ALDimensionHeight toSize:0];
-    self.userSelectionView.delegate = self;
+    _mentionCandidateSelectionView = [LKMentionCandidateSelectionView new];
+    [self addSubview:self.mentionCandidateSelectionView];
+    [self.mentionCandidateSelectionView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [self.mentionCandidateSelectionView autoPinWidthToSuperview];
+    self.mentionCandidateSelectionViewSizeConstraint = [self.mentionCandidateSelectionView autoSetDimension:ALDimensionHeight toSize:0];
+    self.mentionCandidateSelectionView.delegate = self;
     
     // H Stack
     _hStack = [[UIStackView alloc]
@@ -240,7 +240,7 @@ const CGFloat kMaxTextViewHeight = 98;
     self.hStack.spacing = 8;
 
     [self addSubview:self.hStack];
-    [self.hStack autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.userSelectionView];
+    [self.hStack autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.mentionCandidateSelectionView];
     [self.hStack autoPinEdgeToSuperviewSafeArea:ALEdgeBottom];
     [self.hStack setContentHuggingHorizontalLow];
     [self.hStack setCompressionResistanceHorizontalLow];
@@ -1089,28 +1089,29 @@ const CGFloat kMaxTextViewHeight = 98;
     self.borderView.hidden = YES;
 }
 
-#pragma mark - User Selection View
+#pragma mark - Mention Candidate Selection View
 
-- (void)showUserSelectionViewFor:(NSArray<NSString *> *)users in:(TSThread *)thread
+- (void)showMentionCandidateSelectionViewFor:(NSArray<LKMention *> *)mentionCandidates in:(TSThread *)thread
 {
-    self.userSelectionView.hasGroupContext = thread.isGroupThread; // Must happen before setting the users
-    self.userSelectionView.users = users;
-    self.userSelectionViewSizeConstraint.constant = 6 + MIN(users.count, 4) * 52;
+    self.mentionCandidateSelectionView.hasGroupContext = thread.isGroupThread; // Must happen before setting the users
+    self.mentionCandidateSelectionView.mentionCandidates = mentionCandidates;
+    self.mentionCandidateSelectionViewSizeConstraint.constant = 6 + MIN(mentionCandidates.count, 4) * 52;
     [self setNeedsLayout];
     [self layoutIfNeeded];
-    [self.userSelectionView.tableView setContentOffset:CGPointMake(0, -6)]; // TODO: Workaround for content offset bug
+    [self.mentionCandidateSelectionView.tableView setContentOffset:CGPointMake(0, -6)]; // TODO: Workaround for content offset bug
 }
 
-- (void)hideUserSelectionView
+- (void)hideMentionCandidateSelectionView
 {
-    self.userSelectionViewSizeConstraint.constant = 0;
+    self.mentionCandidateSelectionViewSizeConstraint.constant = 0;
     [self setNeedsLayout];
     [self layoutIfNeeded];
+    [self.mentionCandidateSelectionView.tableView setContentOffset:CGPointMake(0, 0)];
 }
 
-- (void)handleUserSelected:(NSString *)user from:(LKUserSelectionView *)userSelectionView
+- (void)handleMentionCandidateSelected:(LKMention *)mentionCandidate from:(LKMentionCandidateSelectionView *)mentionCandidateSelectionView
 {
-    [self.inputToolbarDelegate handleUserSelected:user from:userSelectionView];
+    [self.inputToolbarDelegate handleMentionCandidateSelected:mentionCandidate from:mentionCandidateSelectionView];
 }
 
 @end

@@ -11,7 +11,7 @@ public final class MentionUtilities : NSObject {
     @objc public static func highlightMentions(in string: String, isOutgoingMessage: Bool, thread: TSThread, attributes: [NSAttributedString.Key:Any]) -> NSAttributedString {
         var string = string
         let regex = try! NSRegularExpression(pattern: "@[0-9a-fA-F]*", options: [])
-        let knownUserIDs = LokiAPI.userIDCache[thread.uniqueId!] ?? [] // Should always be populated at this point
+        let knownUserIDs = LokiAPI.userHexEncodedPublicKeyCache[thread.uniqueId!] ?? [] // Should always be populated at this point
         var mentions: [NSRange] = []
         var outerMatch = regex.firstMatch(in: string, options: .withoutAnchoringBounds, range: NSRange(location: 0, length: string.count))
         while let match = outerMatch, thread.isGroupThread() {

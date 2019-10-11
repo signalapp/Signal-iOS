@@ -3,7 +3,7 @@ import PromiseKit
 @objc(LKAPI)
 public final class LokiAPI : NSObject {
     private static var lastDeviceLinkUpdate: [String:Date] = [:] // Hex encoded public key to date
-    @objc public static var userIDCache: [String:Set<String>] = [:] // Thread ID to set of user hex encoded public keys
+    @objc public static var userHexEncodedPublicKeyCache: [String:Set<String>] = [:] // Thread ID to set of user hex encoded public keys
     
     // MARK: Convenience
     internal static let storage = OWSPrimaryStorage.shared()
@@ -296,26 +296,25 @@ public final class LokiAPI : NSObject {
     }
     
     // MARK: User ID Caching
-    @objc public static func cache(_ userHexEncodedPublicKey: String, for threadID: String) {
-        if let cache = userIDCache[threadID] {
-            var mutableCache = cache
-            mutableCache.insert(userHexEncodedPublicKey)
-            userIDCache[threadID] = mutableCache
+    @objc public static func cache(_ hexEncodedPublicKey: String, for threadID: String) {
+        if let cache = userHexEncodedPublicKeyCache[threadID] {
+            userHexEncodedPublicKeyCache[threadID] = cache.union([ hexEncodedPublicKey ])
         } else {
-            userIDCache[threadID] = [ userHexEncodedPublicKey ]
+            userHexEncodedPublicKeyCache[threadID] = [ hexEncodedPublicKey ]
         }
     }
     
-    @objc public static func getUserIDs(for query: String, in threadID: String) -> [String] {
+    @objc public static func getMentionCandidates(for query: String, in threadID: String) -> [Mention] {
         // Prepare
-        guard let cache = userIDCache[threadID] else { return [] }
-        var candidates: [(id: String, displayName: String)] = []
+        guard let cache = userHexEncodedPublicKeyCache[threadID] else { return [] }
+        var candidates: [Mention] = []
         // Gather candidates
         storage.dbReadConnection.read { transaction in
             let collection = "\(LokiGroupChatAPI.publicChatServer).\(LokiGroupChatAPI.publicChatServerID)"
-            candidates = cache.flatMap { id in
-                guard let displayName = transaction.object(forKey: id, inCollection: collection) as! String? else { return nil }
-                return (id: id, displayName: displayName)
+            candidates = cache.flatMap { hexEncodedPublicKey in
+                guard let displayName = transaction.object(forKey: hexEncodedPublicKey, inCollection: collection) as! String? else { return nil }
+                guard !displayName.hasPrefix("Anonymous") else { return nil }
+                return Mention(hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName)
             }
         }
         // Sort alphabetically first
@@ -329,11 +328,11 @@ public final class LokiAPI : NSObject {
             }
         }
         // Return
-        return candidates.map { $0.id } // Inefficient to do this and then look up the display name again later, but easy to interface with Obj-C
+        return candidates
     }
     
-    @objc public static func populateUserIDCacheIfNeeded(for threadID: String, in transaction: YapDatabaseReadWriteTransaction? = nil) {
-        guard userIDCache[threadID] == nil else { return }
+    @objc public static func populateUserHexEncodedPublicKeyCacheIfNeeded(for threadID: String, in transaction: YapDatabaseReadWriteTransaction? = nil) {
+        guard userHexEncodedPublicKeyCache[threadID] == nil else { return }
         var result: Set<String> = []
         func populate(in transaction: YapDatabaseReadWriteTransaction) {
             guard let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return }
@@ -351,7 +350,7 @@ public final class LokiAPI : NSObject {
             }
         }
         result.insert(userHexEncodedPublicKey)
-        userIDCache[threadID] = result
+        userHexEncodedPublicKeyCache[threadID] = result
     }
 }
 
