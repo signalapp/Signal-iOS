@@ -3,7 +3,7 @@ import PromiseKit
 @objc(LKAPI)
 public final class LokiAPI : NSObject {
     private static var lastDeviceLinkUpdate: [String:Date] = [:] // Hex encoded public key to date
-    @objc static var userIDCache: [String:Set<String>] = [:] // Thread ID to set of user hex encoded public keys
+    @objc public static var userIDCache: [String:Set<String>] = [:] // Thread ID to set of user hex encoded public keys
     
     // MARK: Convenience
     internal static let storage = OWSPrimaryStorage.shared()

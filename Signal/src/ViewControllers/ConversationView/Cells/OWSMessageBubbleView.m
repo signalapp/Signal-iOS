@@ -19,8 +19,6 @@
 #import "UIColor+OWS.h"
 #import <SignalMessaging/UIView+OWS.h>
 
-// TODO: Reduce code duplication around mention detection
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSMessageBubbleView () <OWSQuotedMessageViewDelegate, OWSContactShareButtonsViewDelegate>
@@ -685,7 +683,7 @@ NS_ASSUME_NONNULL_BEGIN
                               font:self.textMessageFont
                 shouldIgnoreEvents:shouldIgnoreEvents
                             thread:self.viewItem.interaction.thread
-                        isOutgoing:[self.viewItem.interaction isKindOfClass:TSOutgoingMessage.self]];
+                        isOutgoingMessage:[self.viewItem.interaction isKindOfClass:TSOutgoingMessage.self]];
 }
 
 + (void)loadForTextDisplay:(OWSMessageTextView *)textView
@@ -695,7 +693,7 @@ NS_ASSUME_NONNULL_BEGIN
                       font:(UIFont *)font
         shouldIgnoreEvents:(BOOL)shouldIgnoreEvents
                     thread:(TSThread *)thread
-                isOutgoing:(BOOL)isOutgoing
+         isOutgoingMessage:(BOOL)isOutgoingMessage
 {
     textView.hidden = NO;
     textView.textColor = textColor;
@@ -709,57 +707,18 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *text = displayableText.displayText;
     
-    NSError *error1;
-    NSRegularExpression *regex1 = [[NSRegularExpression alloc] initWithPattern:@"@[0-9a-fA-F]*" options:0 error:&error1];
-    OWSAssertDebug(error1 == nil);
-    NSSet<NSString *> *knownUserIDs = LKAPI.userIDCache[thread.uniqueId];
-    NSMutableArray<NSValue *> *mentions = [NSMutableArray new];
-    NSTextCheckingResult *match1 = [regex1 firstMatchInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, text.length)];
-    if (match1 != nil && thread.isGroupThread) {
-        while (YES) {
-            NSString *userID = [[text substringWithRange:match1.range] stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
-            NSUInteger matchEnd;
-            if ([knownUserIDs containsObject:userID]) {
-                __block NSString *userDisplayName;
-                if ([userID isEqual:OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey]) {
-                    userDisplayName = OWSProfileManager.sharedManager.localProfileName;
-                } else {
-                    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                        NSString *collection = [NSString stringWithFormat:@"%@.%llu", LKGroupChatAPI.publicChatServer, LKGroupChatAPI.publicChatServerID];
-                        userDisplayName = [transaction objectForKey:userID inCollection:collection];
-                    }];
-                }
-                if (userDisplayName != nil) {
-                    text = [text stringByReplacingCharactersInRange:match1.range withString:[NSString stringWithFormat:@"@%@", userDisplayName]];
-                    [mentions addObject:[NSValue valueWithRange:NSMakeRange(match1.range.location, userDisplayName.length + 1)]];
-                    matchEnd = match1.range.location + userDisplayName.length;
-                } else {
-                    matchEnd = match1.range.location + match1.range.length;
-                }
-            } else {
-                matchEnd = match1.range.location + match1.range.length;
-            }
-            match1 = [regex1 firstMatchInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(matchEnd, text.length - matchEnd)];
-            if (match1 == nil) { break; }
-        }
-    }
-    NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithString:text attributes:@{ NSFontAttributeName : font, NSForegroundColorAttributeName : textColor }];
-    for (NSValue *mention in mentions) {
-        NSRange range = mention.rangeValue;
-        UIColor *highlightColor = isOutgoing ? UIColor.lokiDarkGray : UIColor.lokiGreen;
-        [attributedText addAttribute:NSBackgroundColorAttributeName value:highlightColor range:range];
-    }
+    NSMutableAttributedString *attributedText = [LKMentionUtilities highlightMentionsIn:text isOutgoingMessage:isOutgoingMessage thread:thread attributes:@{ NSFontAttributeName : font, NSForegroundColorAttributeName : textColor }].mutableCopy;
     
     if (searchText.length >= ConversationSearchController.kMinimumSearchTextLength) {
         NSString *searchableText = [FullTextSearchFinder normalizeWithText:searchText];
-        NSError *error2;
-        NSRegularExpression *regex2 = [[NSRegularExpression alloc] initWithPattern:[NSRegularExpression escapedPatternForString:searchableText] options:NSRegularExpressionCaseInsensitive error:&error2];
-        OWSAssertDebug(error2 == nil);
-        for (NSTextCheckingResult *match2 in
-            [regex2 matchesInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, text.length)]) {
-            OWSAssertDebug(match2.range.length >= ConversationSearchController.kMinimumSearchTextLength);
-            [attributedText addAttribute:NSBackgroundColorAttributeName value:UIColor.yellowColor range:match2.range];
-            [attributedText addAttribute:NSForegroundColorAttributeName value:UIColor.ows_blackColor range:match2.range];
+        NSError *error;
+        NSRegularExpression *regex = [[NSRegularExpression alloc] initWithPattern:[NSRegularExpression escapedPatternForString:searchableText] options:NSRegularExpressionCaseInsensitive error:&error];
+        OWSAssertDebug(error == nil);
+        for (NSTextCheckingResult *match in
+            [regex matchesInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, text.length)]) {
+            OWSAssertDebug(match.range.length >= ConversationSearchController.kMinimumSearchTextLength);
+            [attributedText addAttribute:NSBackgroundColorAttributeName value:UIColor.yellowColor range:match.range];
+            [attributedText addAttribute:NSForegroundColorAttributeName value:UIColor.ows_blackColor range:match.range];
         }
     }
 
@@ -1197,40 +1156,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (DisplayableText *)getDisplayableQuotedText
 {
     if (!self.viewItem.hasQuotedText) { return nil; }
-    NSString *text = self.viewItem.displayableQuotedText.fullText;
+    NSString *rawText = self.viewItem.displayableQuotedText.fullText;
     TSThread *thread = self.viewItem.interaction.thread;
-    NSError *error;
-    NSRegularExpression *regex = [[NSRegularExpression alloc] initWithPattern:@"@[0-9a-fA-F]*" options:0 error:&error];
-    OWSAssertDebug(error == nil);
-    NSSet<NSString *> *knownUserIDs = LKAPI.userIDCache[thread.uniqueId];
-    NSTextCheckingResult *match = [regex firstMatchInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, text.length)];
-    if (match != nil && thread.isGroupThread) {
-        while (YES) {
-            NSString *userID = [[text substringWithRange:match.range] stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
-            NSUInteger matchEnd;
-            if ([knownUserIDs containsObject:userID]) {
-                __block NSString *userDisplayName;
-                if ([userID isEqual:OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey]) {
-                    userDisplayName = OWSProfileManager.sharedManager.localProfileName;
-                } else {
-                    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                        NSString *collection = [NSString stringWithFormat:@"%@.%llu", LKGroupChatAPI.publicChatServer, LKGroupChatAPI.publicChatServerID];
-                        userDisplayName = [transaction objectForKey:userID inCollection:collection];
-                    }];
-                }
-                if (userDisplayName != nil) {
-                    text = [text stringByReplacingCharactersInRange:match.range withString:[NSString stringWithFormat:@"@%@", userDisplayName]];
-                    matchEnd = match.range.location + userDisplayName.length;
-                } else {
-                    matchEnd = match.range.location + match.range.length;
-                }
-            } else {
-                matchEnd = match.range.location + match.range.length;
-            }
-            match = [regex firstMatchInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(matchEnd, text.length - matchEnd)];
-            if (match == nil) { break; }
-        }
-    }
+    NSString *text = [LKMentionUtilities highlightMentionsIn:rawText thread:thread];
     return [DisplayableText displayableText:text];
 }
 
