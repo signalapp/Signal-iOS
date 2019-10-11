@@ -396,8 +396,9 @@ typedef NS_ENUM(NSUInteger, LaunchFailure) {
     self.window = [[OWSWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
     // Show the launch screen
-    self.window.rootViewController =
-        [[UIStoryboard storyboardWithName:@"Launch Screen" bundle:nil] instantiateInitialViewController];
+    UIViewController *viewController = [[UIStoryboard storyboardWithName:@"Launch Screen"
+                                                                  bundle:nil] instantiateInitialViewController];
+    self.window.rootViewController = viewController;
 
     [self.window makeKeyAndVisible];
 
@@ -433,8 +434,7 @@ typedef NS_ENUM(NSUInteger, LaunchFailure) {
                                                     OWSFail(@"exiting after sharing debug logs.");
                                                 }];
                                             }]];
-    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentAlert:alert];
+    [viewController presentAlert:alert];
 }
 
 - (void)startupLogging
