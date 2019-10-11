@@ -1232,7 +1232,24 @@ public extension %s {
             
         dbCopy.anyUpdate(transaction: transaction)
     }
-
+''' % ( ( str(clazz.name), ) * 3 )
+    
+        swift_body += '''
+    // The class function lets us update the database only without
+    // instantiating a model first.
+    @objc(anyUpdate%(class_short_name)sWithUniqueId:transaction:block:)
+    class func anyUpdate%(class_short_name)s(uniqueId: String,
+                               transaction: SDSAnyWriteTransaction, block: (%(class_name)s) -> Void) {
+        guard let dbCopy = anyFetch(uniqueId: uniqueId,
+                                    transaction: transaction) else {
+                                        owsFailDebug("Can't update missing record.")
+                                        return
+        }
+        dbCopy.anyUpdate(transaction: transaction)
+    }
+    ''' % { "class_name": str(clazz.name), "class_short_name": remove_prefix_from_class_name(clazz.name) }
+    
+        swift_body += '''
     func anyRemove(transaction: SDSAnyWriteTransaction) {
         sdsRemove(transaction: transaction)
     }
@@ -1253,7 +1270,7 @@ public extension %s {
     }
 }
 
-''' % ( ( str(clazz.name), ) * 3 )
+''' 
 
 
         # ---- Cursor ----

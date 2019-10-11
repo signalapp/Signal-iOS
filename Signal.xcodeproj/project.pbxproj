@@ -52,6 +52,7 @@
 		340FC8BD204DAC8D007AEB0F /* ShowGroupMembersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8A6204DAC8D007AEB0F /* ShowGroupMembersViewController.m */; };
 		340FC8C5204DE223007AEB0F /* DebugUIBackup.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8C4204DE223007AEB0F /* DebugUIBackup.m */; };
 		34129B8621EF877A005457A8 /* LinkPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34129B8521EF8779005457A8 /* LinkPreviewView.swift */; };
+		3412F9BB2350D0840022EDAA /* ThreadPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3412F9BA2350D0840022EDAA /* ThreadPerformanceTest.swift */; };
 		341341EF2187467A00192D59 /* ConversationViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 341341EE2187467900192D59 /* ConversationViewModel.m */; };
 		3416BCAA227763A500E761B4 /* OWSMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3416BCA8227763A500E761B4 /* OWSMessageView.m */; };
 		3416BCAC227798D100E761B4 /* StickerPackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3416BCAB227798D000E761B4 /* StickerPackViewController.swift */; };
@@ -788,6 +789,7 @@
 		340FC8C3204DE223007AEB0F /* DebugUIBackup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIBackup.h; sourceTree = "<group>"; };
 		340FC8C4204DE223007AEB0F /* DebugUIBackup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIBackup.m; sourceTree = "<group>"; };
 		34129B8521EF8779005457A8 /* LinkPreviewView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkPreviewView.swift; sourceTree = "<group>"; };
+		3412F9BA2350D0840022EDAA /* ThreadPerformanceTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadPerformanceTest.swift; sourceTree = "<group>"; };
 		341341ED2187467900192D59 /* ConversationViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationViewModel.h; sourceTree = "<group>"; };
 		341341EE2187467900192D59 /* ConversationViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationViewModel.m; sourceTree = "<group>"; };
 		341458471FBE11C4005ABCF9 /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = translations/fa.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2502,6 +2504,7 @@
 				4C10B1C8231778880099396B /* PerformanceBaseTest.swift */,
 				4C10B1C623176DD60099396B /* SDSPerformanceTest.swift */,
 				348A9C34234E462D00789068 /* ThreadFinderPerformanceTest.swift */,
+				3412F9BA2350D0840022EDAA /* ThreadPerformanceTest.swift */,
 			);
 			path = PerformanceTests;
 			sourceTree = "<group>";
@@ -3931,6 +3934,7 @@
 				4C10B1C723176DD60099396B /* SDSPerformanceTest.swift in Sources */,
 				4C429610231A1AA400D9D240 /* MessageSendingPerformanceTest.swift in Sources */,
 				4C10B1C9231778880099396B /* PerformanceBaseTest.swift in Sources */,
+				3412F9BB2350D0840022EDAA /* ThreadPerformanceTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

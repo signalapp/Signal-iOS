@@ -90,7 +90,7 @@ public extension Factory {
 @objc
 public class ContactThreadFactory: NSObject, Factory {
 
-    var messageCount: UInt = 0
+    public var messageCount: UInt = 0
 
     // MARK: Factory
 
