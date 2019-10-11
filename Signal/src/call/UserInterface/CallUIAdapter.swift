@@ -82,53 +82,64 @@ extension CallUIAdaptee {
  */
 @objc public class CallUIAdapter: NSObject, CallServiceObserver {
 
-    private let adaptee: CallUIAdaptee
     private let contactsManager: OWSContactsManager
-    internal let audioService: CallAudioService
     internal let callService: CallService
 
-    public required init(callService: CallService, contactsManager: OWSContactsManager, notificationPresenter: NotificationPresenter) {
-        AssertIsOnMainThread()
+    private var notificationPresenter: NotificationPresenter {
+        return AppEnvironment.shared.notificationPresenter
+    }
 
-        self.contactsManager = contactsManager
-        self.callService = callService
+    var preferences: OWSPreferences {
+        return Environment.shared.preferences
+    }
 
+    lazy var adaptee: CallUIAdaptee = {
         if Platform.isSimulator {
             // CallKit doesn't seem entirely supported in simulator.
             // e.g. you can't receive calls in the call screen.
             // So we use the non-CallKit call UI.
             Logger.info("choosing non-callkit adaptee for simulator.")
-            adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationPresenter: notificationPresenter)
+            return NonCallKitCallUIAdaptee(callService: callService, notificationPresenter: notificationPresenter)
         } else if CallUIAdapter.isCallkitDisabledForLocale {
             Logger.info("choosing non-callkit adaptee due to locale.")
-            adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationPresenter: notificationPresenter)
+            return NonCallKitCallUIAdaptee(callService: callService, notificationPresenter: notificationPresenter)
         } else if #available(iOS 11, *) {
             Logger.info("choosing callkit adaptee for iOS11+")
-            let showNames = Environment.shared.preferences.notificationPreviewType() != .noNameNoPreview
-            let useSystemCallLog = Environment.shared.preferences.isSystemCallLogEnabled()
+            let showNames = preferences.notificationPreviewType() != .noNameNoPreview
+            let useSystemCallLog = preferences.isSystemCallLogEnabled()
 
-            adaptee = CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationPresenter: notificationPresenter, showNamesOnCallScreen: showNames, useSystemCallLog: useSystemCallLog)
-        } else if #available(iOS 10.0, *), Environment.shared.preferences.isCallKitEnabled() {
+            return CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationPresenter: notificationPresenter, showNamesOnCallScreen: showNames, useSystemCallLog: useSystemCallLog)
+        } else if #available(iOS 10.0, *), preferences.isCallKitEnabled() {
             Logger.info("choosing callkit adaptee for iOS10")
-            let hideNames = Environment.shared.preferences.isCallKitPrivacyEnabled() || Environment.shared.preferences.notificationPreviewType() == .noNameNoPreview
+            let hideNames = preferences.isCallKitPrivacyEnabled() || preferences.notificationPreviewType() == .noNameNoPreview
             let showNames = !hideNames
 
             // All CallKit calls use the system call log on iOS10
             let useSystemCallLog = true
 
-            adaptee = CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationPresenter: notificationPresenter, showNamesOnCallScreen: showNames, useSystemCallLog: useSystemCallLog)
+            return CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationPresenter: notificationPresenter, showNamesOnCallScreen: showNames, useSystemCallLog: useSystemCallLog)
         } else {
             Logger.info("choosing non-callkit adaptee")
-            adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationPresenter: notificationPresenter)
+            return NonCallKitCallUIAdaptee(callService: callService, notificationPresenter: notificationPresenter)
         }
+    }()
 
-        audioService = CallAudioService(handleRinging: adaptee.hasManualRinger)
+    lazy var audioService: CallAudioService = {
+        return CallAudioService(handleRinging: adaptee.hasManualRinger)
+    }()
+
+    public required init(callService: CallService, contactsManager: OWSContactsManager) {
+        AssertIsOnMainThread()
+
+        self.contactsManager = contactsManager
+        self.callService = callService
 
         super.init()
 
         // We cannot assert singleton here, because this class gets rebuilt when the user changes relevant call settings
-
-        callService.addObserverAndSyncState(observer: self)
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            callService.addObserverAndSyncState(observer: self)
+        }
     }
 
     @objc

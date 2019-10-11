@@ -437,7 +437,7 @@ private class SignalCallData: NSObject {
             self.terminate(callData: self.callData)
         }
 
-        self.callUIAdapter = CallUIAdapter(callService: self, contactsManager: self.contactsManager, notificationPresenter: self.notificationPresenter)
+        self.callUIAdapter = CallUIAdapter(callService: self, contactsManager: self.contactsManager)
     }
 
     // MARK: - Service Actions
@@ -1960,8 +1960,8 @@ private class SignalCallData: NSObject {
         let isRemoteVideoEnabled = callData?.isRemoteVideoEnabled ?? false
         let remoteVideoTrack = isRemoteVideoEnabled ? callData?.remoteVideoTrack : nil
         observer.didUpdateVideoTracks(call: callData?.call,
-                                             localCaptureSession: callData?.localCaptureSession,
-                                             remoteVideoTrack: remoteVideoTrack)
+                                      localCaptureSession: callData?.localCaptureSession,
+                                      remoteVideoTrack: remoteVideoTrack)
     }
 
     // MARK: CallViewController Timer
