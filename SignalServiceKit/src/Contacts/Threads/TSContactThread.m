@@ -56,7 +56,7 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
                     creationDate:(nullable NSDate *)creationDate
                       isArchived:(BOOL)isArchived
 isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
-           lastInteractionSortId:(int64_t)lastInteractionSortId
+            lastInteractionRowId:(int64_t)lastInteractionRowId
                  lastMessageDate:(nullable NSDate *)lastMessageDate
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
@@ -74,7 +74,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
                       creationDate:creationDate
                         isArchived:isArchived
 isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
-             lastInteractionSortId:lastInteractionSortId
+              lastInteractionRowId:lastInteractionRowId
                    lastMessageDate:lastMessageDate
                       messageDraft:messageDraft
                     mutedUntilDate:mutedUntilDate

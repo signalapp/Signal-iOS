@@ -105,7 +105,7 @@ struct GRDBThreadFinder: ThreadFinder {
             FROM \(ThreadRecord.databaseTableName)
             WHERE \(threadColumn: .shouldThreadBeVisible) = 1
             AND \(threadColumn: .isArchived) = ?
-            ORDER BY \(threadColumn: .lastInteractionSortId) DESC
+            ORDER BY \(threadColumn: .lastInteractionRowId) DESC
             """
         let arguments: StatementArguments = [isArchived]
 

@@ -214,7 +214,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                 columns: [
                     ThreadRecord.columnName(.shouldThreadBeVisible),
                     ThreadRecord.columnName(.isArchived),
-                    ThreadRecord.columnName(.lastInteractionSortId)
+                    ThreadRecord.columnName(.lastInteractionRowId)
                 ]
             )
 

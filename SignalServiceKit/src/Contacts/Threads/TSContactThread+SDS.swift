@@ -66,7 +66,7 @@ class TSContactThreadSerializer: SDSSerializer {
         let creationDate: Double? = archiveOptionalDate(model.creationDate)
         let isArchived: Bool = model.isArchived
         let isArchivedByLegacyTimestampForSorting: Bool = model.isArchivedByLegacyTimestampForSorting
-        let lastInteractionSortId: Int64 = model.lastInteractionSortId
+        let lastInteractionRowId: Int64 = model.lastInteractionRowId
         let lastMessageDate: Double? = archiveOptionalDate(model.lastMessageDate)
         let messageDraft: String? = model.messageDraft
         let mutedUntilDate: Double? = archiveOptionalDate(model.mutedUntilDate)
@@ -79,6 +79,6 @@ class TSContactThreadSerializer: SDSSerializer {
         let groupModel: Data? = nil
         let hasDismissedOffers: Bool? = model.hasDismissedOffers
 
-        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastInteractionSortId: lastInteractionSortId, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactThreadSchemaVersion: contactThreadSchemaVersion, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
+        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastInteractionRowId: lastInteractionRowId, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactThreadSchemaVersion: contactThreadSchemaVersion, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
     }
 }

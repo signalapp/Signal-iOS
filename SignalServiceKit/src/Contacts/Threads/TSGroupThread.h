@@ -29,14 +29,14 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
                     creationDate:(nullable NSDate *)creationDate
                       isArchived:(BOOL)isArchived
 isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
-           lastInteractionSortId:(int64_t)lastInteractionSortId
+            lastInteractionRowId:(int64_t)lastInteractionRowId
                  lastMessageDate:(nullable NSDate *)lastMessageDate
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
                            rowId:(int64_t)rowId
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
                       groupModel:(TSGroupModel *)groupModel
-NS_SWIFT_NAME(init(grdbId:uniqueId:archivalDate:conversationColorName:creationDate:isArchived:isArchivedByLegacyTimestampForSorting:lastInteractionSortId:lastMessageDate:messageDraft:mutedUntilDate:rowId:shouldThreadBeVisible:groupModel:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:archivalDate:conversationColorName:creationDate:isArchived:isArchivedByLegacyTimestampForSorting:lastInteractionRowId:lastMessageDate:messageDraft:mutedUntilDate:rowId:shouldThreadBeVisible:groupModel:));
 
 // clang-format on
 

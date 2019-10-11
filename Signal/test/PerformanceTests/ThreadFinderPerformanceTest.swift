@@ -75,7 +75,7 @@ class ThreadFinderPerformanceTest: PerformanceBaseTest {
         // Note that we enumerate _twice_ (archived & non-archived)
         let readCount = 10
 
-        write { transaction in
+        read { transaction in
             self.startMeasuring()
             for _ in 0..<readCount {
                 var observedCount = 0

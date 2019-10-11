@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
                     creationDate:(nullable NSDate *)creationDate
                       isArchived:(BOOL)isArchived
 isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
-           lastInteractionSortId:(int64_t)lastInteractionSortId
+            lastInteractionRowId:(int64_t)lastInteractionRowId
                  lastMessageDate:(nullable NSDate *)lastMessageDate
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
@@ -33,7 +33,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
       contactThreadSchemaVersion:(NSUInteger)contactThreadSchemaVersion
                      contactUUID:(nullable NSString *)contactUUID
               hasDismissedOffers:(BOOL)hasDismissedOffers
-NS_SWIFT_NAME(init(grdbId:uniqueId:archivalDate:conversationColorName:creationDate:isArchived:isArchivedByLegacyTimestampForSorting:lastInteractionSortId:lastMessageDate:messageDraft:mutedUntilDate:rowId:shouldThreadBeVisible:contactPhoneNumber:contactThreadSchemaVersion:contactUUID:hasDismissedOffers:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:archivalDate:conversationColorName:creationDate:isArchived:isArchivedByLegacyTimestampForSorting:lastInteractionRowId:lastMessageDate:messageDraft:mutedUntilDate:rowId:shouldThreadBeVisible:contactPhoneNumber:contactThreadSchemaVersion:contactUUID:hasDismissedOffers:));
 
 // clang-format on
 

@@ -33,7 +33,7 @@ public struct ThreadRecord: SDSRecord {
     public let creationDate: Double?
     public let isArchived: Bool
     public let isArchivedByLegacyTimestampForSorting: Bool
-    public let lastInteractionSortId: Int64
+    public let lastInteractionRowId: Int64
     public let lastMessageDate: Double?
     public let messageDraft: String?
     public let mutedUntilDate: Double?
@@ -55,7 +55,7 @@ public struct ThreadRecord: SDSRecord {
         case creationDate
         case isArchived
         case isArchivedByLegacyTimestampForSorting
-        case lastInteractionSortId
+        case lastInteractionRowId
         case lastMessageDate
         case messageDraft
         case mutedUntilDate
@@ -96,7 +96,7 @@ public extension ThreadRecord {
         creationDate = row[5]
         isArchived = row[6]
         isArchivedByLegacyTimestampForSorting = row[7]
-        lastInteractionSortId = row[8]
+        lastInteractionRowId = row[8]
         lastMessageDate = row[9]
         messageDraft = row[10]
         mutedUntilDate = row[11]
@@ -144,7 +144,7 @@ extension TSThread {
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
             let isArchived: Bool = record.isArchived
             let isArchivedByLegacyTimestampForSorting: Bool = record.isArchivedByLegacyTimestampForSorting
-            let lastInteractionSortId: Int64 = record.lastInteractionSortId
+            let lastInteractionRowId: Int64 = record.lastInteractionRowId
             let lastMessageDateInterval: Double? = record.lastMessageDate
             let lastMessageDate: Date? = SDSDeserialization.optionalDoubleAsDate(lastMessageDateInterval, name: "lastMessageDate")
             let messageDraft: String? = record.messageDraft
@@ -164,7 +164,7 @@ extension TSThread {
                                    creationDate: creationDate,
                                    isArchived: isArchived,
                                    isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
-                                   lastInteractionSortId: lastInteractionSortId,
+                                   lastInteractionRowId: lastInteractionRowId,
                                    lastMessageDate: lastMessageDate,
                                    messageDraft: messageDraft,
                                    mutedUntilDate: mutedUntilDate,
@@ -185,7 +185,7 @@ extension TSThread {
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
             let isArchived: Bool = record.isArchived
             let isArchivedByLegacyTimestampForSorting: Bool = record.isArchivedByLegacyTimestampForSorting
-            let lastInteractionSortId: Int64 = record.lastInteractionSortId
+            let lastInteractionRowId: Int64 = record.lastInteractionRowId
             let lastMessageDateInterval: Double? = record.lastMessageDate
             let lastMessageDate: Date? = SDSDeserialization.optionalDoubleAsDate(lastMessageDateInterval, name: "lastMessageDate")
             let messageDraft: String? = record.messageDraft
@@ -203,7 +203,7 @@ extension TSThread {
                                  creationDate: creationDate,
                                  isArchived: isArchived,
                                  isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
-                                 lastInteractionSortId: lastInteractionSortId,
+                                 lastInteractionRowId: lastInteractionRowId,
                                  lastMessageDate: lastMessageDate,
                                  messageDraft: messageDraft,
                                  mutedUntilDate: mutedUntilDate,
@@ -221,7 +221,7 @@ extension TSThread {
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
             let isArchived: Bool = record.isArchived
             let isArchivedByLegacyTimestampForSorting: Bool = record.isArchivedByLegacyTimestampForSorting
-            let lastInteractionSortId: Int64 = record.lastInteractionSortId
+            let lastInteractionRowId: Int64 = record.lastInteractionRowId
             let lastMessageDateInterval: Double? = record.lastMessageDate
             let lastMessageDate: Date? = SDSDeserialization.optionalDoubleAsDate(lastMessageDateInterval, name: "lastMessageDate")
             let messageDraft: String? = record.messageDraft
@@ -237,7 +237,7 @@ extension TSThread {
                             creationDate: creationDate,
                             isArchived: isArchived,
                             isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
-                            lastInteractionSortId: lastInteractionSortId,
+                            lastInteractionRowId: lastInteractionRowId,
                             lastMessageDate: lastMessageDate,
                             messageDraft: messageDraft,
                             mutedUntilDate: mutedUntilDate,
@@ -298,7 +298,7 @@ extension TSThreadSerializer {
     static let creationDateColumn = SDSColumnMetadata(columnName: "creationDate", columnType: .double, isOptional: true, columnIndex: 5)
     static let isArchivedColumn = SDSColumnMetadata(columnName: "isArchived", columnType: .int, columnIndex: 6)
     static let isArchivedByLegacyTimestampForSortingColumn = SDSColumnMetadata(columnName: "isArchivedByLegacyTimestampForSorting", columnType: .int, columnIndex: 7)
-    static let lastInteractionSortIdColumn = SDSColumnMetadata(columnName: "lastInteractionSortId", columnType: .int64, columnIndex: 8)
+    static let lastInteractionRowIdColumn = SDSColumnMetadata(columnName: "lastInteractionRowId", columnType: .int64, columnIndex: 8)
     static let lastMessageDateColumn = SDSColumnMetadata(columnName: "lastMessageDate", columnType: .double, isOptional: true, columnIndex: 9)
     static let messageDraftColumn = SDSColumnMetadata(columnName: "messageDraft", columnType: .unicodeString, isOptional: true, columnIndex: 10)
     static let mutedUntilDateColumn = SDSColumnMetadata(columnName: "mutedUntilDate", columnType: .double, isOptional: true, columnIndex: 11)
@@ -323,7 +323,7 @@ extension TSThreadSerializer {
         creationDateColumn,
         isArchivedColumn,
         isArchivedByLegacyTimestampForSortingColumn,
-        lastInteractionSortIdColumn,
+        lastInteractionRowIdColumn,
         lastMessageDateColumn,
         messageDraftColumn,
         mutedUntilDateColumn,
@@ -734,7 +734,7 @@ class TSThreadSerializer: SDSSerializer {
         let creationDate: Double? = archiveOptionalDate(model.creationDate)
         let isArchived: Bool = model.isArchived
         let isArchivedByLegacyTimestampForSorting: Bool = model.isArchivedByLegacyTimestampForSorting
-        let lastInteractionSortId: Int64 = model.lastInteractionSortId
+        let lastInteractionRowId: Int64 = model.lastInteractionRowId
         let lastMessageDate: Double? = archiveOptionalDate(model.lastMessageDate)
         let messageDraft: String? = model.messageDraft
         let mutedUntilDate: Double? = archiveOptionalDate(model.mutedUntilDate)
@@ -747,6 +747,6 @@ class TSThreadSerializer: SDSSerializer {
         let groupModel: Data? = nil
         let hasDismissedOffers: Bool? = nil
 
-        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastInteractionSortId: lastInteractionSortId, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactThreadSchemaVersion: contactThreadSchemaVersion, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
+        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastInteractionRowId: lastInteractionRowId, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactThreadSchemaVersion: contactThreadSchemaVersion, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
     }
 }

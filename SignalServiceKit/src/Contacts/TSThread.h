@@ -45,7 +45,7 @@ extern ConversationColorName const kConversationColorName_Default;
 
 // zero if thread has never had an interaction.
 // The corresponding interaction may have been deleted.
-@property (nonatomic, readonly) int64_t lastInteractionSortId;
+@property (nonatomic, readonly) int64_t lastInteractionRowId;
 
 // --- CODE GENERATION MARKER
 
@@ -60,13 +60,13 @@ extern ConversationColorName const kConversationColorName_Default;
                     creationDate:(nullable NSDate *)creationDate
                       isArchived:(BOOL)isArchived
 isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
-           lastInteractionSortId:(int64_t)lastInteractionSortId
+            lastInteractionRowId:(int64_t)lastInteractionRowId
                  lastMessageDate:(nullable NSDate *)lastMessageDate
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
                            rowId:(int64_t)rowId
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
-NS_SWIFT_NAME(init(grdbId:uniqueId:archivalDate:conversationColorName:creationDate:isArchived:isArchivedByLegacyTimestampForSorting:lastInteractionSortId:lastMessageDate:messageDraft:mutedUntilDate:rowId:shouldThreadBeVisible:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:archivalDate:conversationColorName:creationDate:isArchived:isArchivedByLegacyTimestampForSorting:lastInteractionRowId:lastMessageDate:messageDraft:mutedUntilDate:rowId:shouldThreadBeVisible:));
 
 // clang-format on
 
@@ -126,12 +126,12 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:archivalDate:conversationColorName:creationDa
 /**
  *  Updates the thread's caches of the latest interaction.
  *
- *  @param lastMessage Latest Interaction to take into consideration.
+ *  @param message Latest Interaction to take into consideration.
  *  @param transaction Database transaction.
  */
-- (void)updateWithLastMessage:(TSInteraction *)lastMessage
-           wasMessageInserted:(BOOL)wasMessageInserted
-                  transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithInsertedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithUpdatedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithRemovedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark Archival
 
