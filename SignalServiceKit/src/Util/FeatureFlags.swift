@@ -108,7 +108,7 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static var canRevertToYDB: Bool {
-        // Only let developers should be allowed to use YDB after migrating to GRDB.
+        // Only developers should be allowed to use YDB after migrating to GRDB.
         // We don't want to let QA, public beta or production users risk
         // data loss.
         return build == .dev
