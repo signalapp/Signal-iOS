@@ -11,20 +11,20 @@ public final class MentionUtilities : NSObject {
     @objc public static func highlightMentions(in string: String, isOutgoingMessage: Bool, thread: TSThread, attributes: [NSAttributedString.Key:Any]) -> NSAttributedString {
         var string = string
         let regex = try! NSRegularExpression(pattern: "@[0-9a-fA-F]*", options: [])
-        let knownUserIDs = LokiAPI.userHexEncodedPublicKeyCache[thread.uniqueId!] ?? [] // Should always be populated at this point
+        let knownUserHexEncodedPublicKeys = LokiAPI.userHexEncodedPublicKeyCache[thread.uniqueId!] ?? [] // Should always be populated at this point
         var mentions: [NSRange] = []
         var outerMatch = regex.firstMatch(in: string, options: .withoutAnchoringBounds, range: NSRange(location: 0, length: string.count))
         while let match = outerMatch, thread.isGroupThread() {
-            let userID = String((string as NSString).substring(with: match.range).dropFirst()) // Drop the @
+            let hexEncodedPublicKey = String((string as NSString).substring(with: match.range).dropFirst()) // Drop the @
             let matchEnd: Int
-            if knownUserIDs.contains(userID) {
+            if knownUserHexEncodedPublicKeys.contains(hexEncodedPublicKey) {
                 var userDisplayName: String?
-                if userID == OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey {
+                if hexEncodedPublicKey == OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey {
                     userDisplayName = OWSProfileManager.shared().localProfileName()
                 } else {
                     OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
                         let collection = "\(LokiGroupChatAPI.publicChatServer).\(LokiGroupChatAPI.publicChatServerID)"
-                        userDisplayName = transaction.object(forKey: userID, inCollection: collection) as! String?
+                        userDisplayName = transaction.object(forKey: hexEncodedPublicKey, inCollection: collection) as! String?
                     }
                 }
                 if let userDisplayName = userDisplayName {
