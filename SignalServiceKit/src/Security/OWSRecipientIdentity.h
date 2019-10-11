@@ -63,9 +63,8 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithAddress(SignalServiceAddress *
                        createdAt:(NSDate *)createdAt
                      identityKey:(NSData *)identityKey
                  isFirstKnownKey:(BOOL)isFirstKnownKey
-  recipientIdentitySchemaVersion:(NSUInteger)recipientIdentitySchemaVersion
                verificationState:(OWSVerificationState)verificationState
-NS_SWIFT_NAME(init(grdbId:uniqueId:accountId:createdAt:identityKey:isFirstKnownKey:recipientIdentitySchemaVersion:verificationState:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:accountId:createdAt:identityKey:isFirstKnownKey:verificationState:));
 
 // clang-format on
 

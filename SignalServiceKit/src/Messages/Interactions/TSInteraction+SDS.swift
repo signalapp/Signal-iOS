@@ -37,31 +37,22 @@ public struct InteractionRecord: SDSRecord {
     public let authorId: String?
     public let authorPhoneNumber: String?
     public let authorUUID: String?
-    public let beforeInteractionId: String?
     public let body: String?
-    public let callSchemaVersion: UInt?
     public let callType: RPRecentCallType?
     public let configurationDurationSeconds: UInt32?
     public let configurationIsEnabled: Bool?
-    public let contactId: String?
     public let contactShare: Data?
     public let createdByRemoteName: String?
     public let createdInExistingGroup: Bool?
     public let customMessage: String?
     public let envelopeData: Data?
-    public let errorMessageSchemaVersion: UInt?
     public let errorType: TSErrorMessageType?
     public let expireStartedAt: UInt64?
     public let expiresAt: UInt64?
     public let expiresInSeconds: UInt32?
     public let groupMetaMessage: TSGroupMetaMessage?
-    public let hasAddToContactsOffer: Bool?
-    public let hasAddToProfileWhitelistOffer: Bool?
-    public let hasBlockOffer: Bool?
     public let hasLegacyMessageState: Bool?
     public let hasSyncedTranscript: Bool?
-    public let incomingMessageSchemaVersion: UInt?
-    public let infoMessageSchemaVersion: UInt?
     public let isFromLinkedDevice: Bool?
     public let isLocalChange: Bool?
     public let isViewOnceComplete: Bool?
@@ -74,20 +65,17 @@ public struct InteractionRecord: SDSRecord {
     public let messageSticker: Data?
     public let messageType: TSInfoMessageType?
     public let mostRecentFailureText: String?
-    public let outgoingMessageSchemaVersion: UInt?
     public let preKeyBundle: Data?
     public let protocolVersion: UInt?
     public let quotedMessage: Data?
     public let read: Bool?
     public let recipientAddress: Data?
     public let recipientAddressStates: Data?
-    public let schemaVersion: UInt?
     public let sender: Data?
     public let serverTimestamp: UInt64?
     public let sourceDeviceId: UInt32?
     public let storedMessageState: TSOutgoingMessageState?
     public let storedShouldStartExpireTimer: Bool?
-    public let unknownProtocolVersionMessageSchemaVersion: UInt?
     public let unregisteredAddress: Data?
     public let verificationState: OWSVerificationState?
     public let wasReceivedByUD: Bool?
@@ -103,31 +91,22 @@ public struct InteractionRecord: SDSRecord {
         case authorId
         case authorPhoneNumber
         case authorUUID
-        case beforeInteractionId
         case body
-        case callSchemaVersion
         case callType
         case configurationDurationSeconds
         case configurationIsEnabled
-        case contactId
         case contactShare
         case createdByRemoteName
         case createdInExistingGroup
         case customMessage
         case envelopeData
-        case errorMessageSchemaVersion
         case errorType
         case expireStartedAt
         case expiresAt
         case expiresInSeconds
         case groupMetaMessage
-        case hasAddToContactsOffer
-        case hasAddToProfileWhitelistOffer
-        case hasBlockOffer
         case hasLegacyMessageState
         case hasSyncedTranscript
-        case incomingMessageSchemaVersion
-        case infoMessageSchemaVersion
         case isFromLinkedDevice
         case isLocalChange
         case isViewOnceComplete
@@ -140,20 +119,17 @@ public struct InteractionRecord: SDSRecord {
         case messageSticker
         case messageType
         case mostRecentFailureText
-        case outgoingMessageSchemaVersion
         case preKeyBundle
         case protocolVersion
         case quotedMessage
         case read
         case recipientAddress
         case recipientAddressStates
-        case schemaVersion
         case sender
         case serverTimestamp
         case sourceDeviceId
         case storedMessageState
         case storedShouldStartExpireTimer
-        case unknownProtocolVersionMessageSchemaVersion
         case unregisteredAddress
         case verificationState
         case wasReceivedByUD
@@ -190,60 +166,48 @@ public extension InteractionRecord {
         authorId = row[7]
         authorPhoneNumber = row[8]
         authorUUID = row[9]
-        beforeInteractionId = row[10]
-        body = row[11]
-        callSchemaVersion = row[12]
-        callType = row[13]
-        configurationDurationSeconds = row[14]
-        configurationIsEnabled = row[15]
-        contactId = row[16]
-        contactShare = row[17]
-        createdByRemoteName = row[18]
-        createdInExistingGroup = row[19]
-        customMessage = row[20]
-        envelopeData = row[21]
-        errorMessageSchemaVersion = row[22]
-        errorType = row[23]
-        expireStartedAt = row[24]
-        expiresAt = row[25]
-        expiresInSeconds = row[26]
-        groupMetaMessage = row[27]
-        hasAddToContactsOffer = row[28]
-        hasAddToProfileWhitelistOffer = row[29]
-        hasBlockOffer = row[30]
-        hasLegacyMessageState = row[31]
-        hasSyncedTranscript = row[32]
-        incomingMessageSchemaVersion = row[33]
-        infoMessageSchemaVersion = row[34]
-        isFromLinkedDevice = row[35]
-        isLocalChange = row[36]
-        isViewOnceComplete = row[37]
-        isViewOnceMessage = row[38]
-        isVoiceMessage = row[39]
-        legacyMessageState = row[40]
-        legacyWasDelivered = row[41]
-        linkPreview = row[42]
-        messageId = row[43]
-        messageSticker = row[44]
-        messageType = row[45]
-        mostRecentFailureText = row[46]
-        outgoingMessageSchemaVersion = row[47]
-        preKeyBundle = row[48]
-        protocolVersion = row[49]
-        quotedMessage = row[50]
-        read = row[51]
-        recipientAddress = row[52]
-        recipientAddressStates = row[53]
-        schemaVersion = row[54]
-        sender = row[55]
-        serverTimestamp = row[56]
-        sourceDeviceId = row[57]
-        storedMessageState = row[58]
-        storedShouldStartExpireTimer = row[59]
-        unknownProtocolVersionMessageSchemaVersion = row[60]
-        unregisteredAddress = row[61]
-        verificationState = row[62]
-        wasReceivedByUD = row[63]
+        body = row[10]
+        callType = row[11]
+        configurationDurationSeconds = row[12]
+        configurationIsEnabled = row[13]
+        contactShare = row[14]
+        createdByRemoteName = row[15]
+        createdInExistingGroup = row[16]
+        customMessage = row[17]
+        envelopeData = row[18]
+        errorType = row[19]
+        expireStartedAt = row[20]
+        expiresAt = row[21]
+        expiresInSeconds = row[22]
+        groupMetaMessage = row[23]
+        hasLegacyMessageState = row[24]
+        hasSyncedTranscript = row[25]
+        isFromLinkedDevice = row[26]
+        isLocalChange = row[27]
+        isViewOnceComplete = row[28]
+        isViewOnceMessage = row[29]
+        isVoiceMessage = row[30]
+        legacyMessageState = row[31]
+        legacyWasDelivered = row[32]
+        linkPreview = row[33]
+        messageId = row[34]
+        messageSticker = row[35]
+        messageType = row[36]
+        mostRecentFailureText = row[37]
+        preKeyBundle = row[38]
+        protocolVersion = row[39]
+        quotedMessage = row[40]
+        read = row[41]
+        recipientAddress = row[42]
+        recipientAddressStates = row[43]
+        sender = row[44]
+        serverTimestamp = row[45]
+        sourceDeviceId = row[46]
+        storedMessageState = row[47]
+        storedShouldStartExpireTimer = row[48]
+        unregisteredAddress = row[49]
+        verificationState = row[50]
+        wasReceivedByUD = row[51]
     }
 }
 
@@ -295,17 +259,14 @@ extension TSInteraction {
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
-            let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let customMessage: String? = record.customMessage
-            let infoMessageSchemaVersion: UInt = try SDSDeserialization.required(record.infoMessageSchemaVersion, name: "infoMessageSchemaVersion")
             guard let messageType: TSInfoMessageType = record.messageType else {
                throw SDSError.missingRequiredField
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let unregisteredAddressSerialized: Data? = record.unregisteredAddress
             let unregisteredAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(unregisteredAddressSerialized, name: "unregisteredAddress")
-            let contactId: String = try SDSDeserialization.required(record.contactId, name: "contactId")
 
             return OWSAddToContactsOfferMessage(grdbId: recordId,
                                                 uniqueId: uniqueId,
@@ -324,14 +285,11 @@ extension TSInteraction {
                                                 linkPreview: linkPreview,
                                                 messageSticker: messageSticker,
                                                 quotedMessage: quotedMessage,
-                                                schemaVersion: schemaVersion,
                                                 storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                 customMessage: customMessage,
-                                                infoMessageSchemaVersion: infoMessageSchemaVersion,
                                                 messageType: messageType,
                                                 read: read,
-                                                unregisteredAddress: unregisteredAddress,
-                                                contactId: contactId)
+                                                unregisteredAddress: unregisteredAddress)
 
         case .addToProfileWhitelistOfferMessage:
 
@@ -356,17 +314,14 @@ extension TSInteraction {
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
-            let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let customMessage: String? = record.customMessage
-            let infoMessageSchemaVersion: UInt = try SDSDeserialization.required(record.infoMessageSchemaVersion, name: "infoMessageSchemaVersion")
             guard let messageType: TSInfoMessageType = record.messageType else {
                throw SDSError.missingRequiredField
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let unregisteredAddressSerialized: Data? = record.unregisteredAddress
             let unregisteredAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(unregisteredAddressSerialized, name: "unregisteredAddress")
-            let contactId: String = try SDSDeserialization.required(record.contactId, name: "contactId")
 
             return OWSAddToProfileWhitelistOfferMessage(grdbId: recordId,
                                                         uniqueId: uniqueId,
@@ -385,14 +340,11 @@ extension TSInteraction {
                                                         linkPreview: linkPreview,
                                                         messageSticker: messageSticker,
                                                         quotedMessage: quotedMessage,
-                                                        schemaVersion: schemaVersion,
                                                         storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                         customMessage: customMessage,
-                                                        infoMessageSchemaVersion: infoMessageSchemaVersion,
                                                         messageType: messageType,
                                                         read: read,
-                                                        unregisteredAddress: unregisteredAddress,
-                                                        contactId: contactId)
+                                                        unregisteredAddress: unregisteredAddress)
 
         case .contactOffersInteraction:
 
@@ -401,21 +353,13 @@ extension TSInteraction {
             let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
-            let beforeInteractionId: String = try SDSDeserialization.required(record.beforeInteractionId, name: "beforeInteractionId")
-            let hasAddToContactsOffer: Bool = try SDSDeserialization.required(record.hasAddToContactsOffer, name: "hasAddToContactsOffer")
-            let hasAddToProfileWhitelistOffer: Bool = try SDSDeserialization.required(record.hasAddToProfileWhitelistOffer, name: "hasAddToProfileWhitelistOffer")
-            let hasBlockOffer: Bool = try SDSDeserialization.required(record.hasBlockOffer, name: "hasBlockOffer")
 
             return OWSContactOffersInteraction(grdbId: recordId,
                                                uniqueId: uniqueId,
                                                receivedAtTimestamp: receivedAtTimestamp,
                                                sortId: sortId,
                                                timestamp: timestamp,
-                                               uniqueThreadId: uniqueThreadId,
-                                               beforeInteractionId: beforeInteractionId,
-                                               hasAddToContactsOffer: hasAddToContactsOffer,
-                                               hasAddToProfileWhitelistOffer: hasAddToProfileWhitelistOffer,
-                                               hasBlockOffer: hasBlockOffer)
+                                               uniqueThreadId: uniqueThreadId)
 
         case .disappearingConfigurationUpdateInfoMessage:
 
@@ -440,10 +384,8 @@ extension TSInteraction {
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
-            let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let customMessage: String? = record.customMessage
-            let infoMessageSchemaVersion: UInt = try SDSDeserialization.required(record.infoMessageSchemaVersion, name: "infoMessageSchemaVersion")
             guard let messageType: TSInfoMessageType = record.messageType else {
                throw SDSError.missingRequiredField
             }
@@ -472,10 +414,8 @@ extension TSInteraction {
                                                                  linkPreview: linkPreview,
                                                                  messageSticker: messageSticker,
                                                                  quotedMessage: quotedMessage,
-                                                                 schemaVersion: schemaVersion,
                                                                  storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                                  customMessage: customMessage,
-                                                                 infoMessageSchemaVersion: infoMessageSchemaVersion,
                                                                  messageType: messageType,
                                                                  read: read,
                                                                  unregisteredAddress: unregisteredAddress,
@@ -507,16 +447,13 @@ extension TSInteraction {
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
-            let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
-            let errorMessageSchemaVersion: UInt = try SDSDeserialization.required(record.errorMessageSchemaVersion, name: "errorMessageSchemaVersion")
             guard let errorType: TSErrorMessageType = record.errorType else {
                throw SDSError.missingRequiredField
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let recipientAddressSerialized: Data? = record.recipientAddress
             let recipientAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(recipientAddressSerialized, name: "recipientAddress")
-            let contactId: String = try SDSDeserialization.required(record.contactId, name: "contactId")
 
             return OWSUnknownContactBlockOfferMessage(grdbId: recordId,
                                                       uniqueId: uniqueId,
@@ -535,13 +472,10 @@ extension TSInteraction {
                                                       linkPreview: linkPreview,
                                                       messageSticker: messageSticker,
                                                       quotedMessage: quotedMessage,
-                                                      schemaVersion: schemaVersion,
                                                       storedShouldStartExpireTimer: storedShouldStartExpireTimer,
-                                                      errorMessageSchemaVersion: errorMessageSchemaVersion,
                                                       errorType: errorType,
                                                       read: read,
-                                                      recipientAddress: recipientAddress,
-                                                      contactId: contactId)
+                                                      recipientAddress: recipientAddress)
 
         case .unknownProtocolVersionMessage:
 
@@ -566,10 +500,8 @@ extension TSInteraction {
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
-            let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let customMessage: String? = record.customMessage
-            let infoMessageSchemaVersion: UInt = try SDSDeserialization.required(record.infoMessageSchemaVersion, name: "infoMessageSchemaVersion")
             guard let messageType: TSInfoMessageType = record.messageType else {
                throw SDSError.missingRequiredField
             }
@@ -579,7 +511,6 @@ extension TSInteraction {
             let protocolVersion: UInt = try SDSDeserialization.required(record.protocolVersion, name: "protocolVersion")
             let senderSerialized: Data? = record.sender
             let sender: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(senderSerialized, name: "sender")
-            let unknownProtocolVersionMessageSchemaVersion: UInt = try SDSDeserialization.required(record.unknownProtocolVersionMessageSchemaVersion, name: "unknownProtocolVersionMessageSchemaVersion")
 
             return OWSUnknownProtocolVersionMessage(grdbId: recordId,
                                                     uniqueId: uniqueId,
@@ -598,16 +529,13 @@ extension TSInteraction {
                                                     linkPreview: linkPreview,
                                                     messageSticker: messageSticker,
                                                     quotedMessage: quotedMessage,
-                                                    schemaVersion: schemaVersion,
                                                     storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                     customMessage: customMessage,
-                                                    infoMessageSchemaVersion: infoMessageSchemaVersion,
                                                     messageType: messageType,
                                                     read: read,
                                                     unregisteredAddress: unregisteredAddress,
                                                     protocolVersion: protocolVersion,
-                                                    sender: sender,
-                                                    unknownProtocolVersionMessageSchemaVersion: unknownProtocolVersionMessageSchemaVersion)
+                                                    sender: sender)
 
         case .verificationStateChangeMessage:
 
@@ -632,10 +560,8 @@ extension TSInteraction {
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
-            let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let customMessage: String? = record.customMessage
-            let infoMessageSchemaVersion: UInt = try SDSDeserialization.required(record.infoMessageSchemaVersion, name: "infoMessageSchemaVersion")
             guard let messageType: TSInfoMessageType = record.messageType else {
                throw SDSError.missingRequiredField
             }
@@ -666,10 +592,8 @@ extension TSInteraction {
                                                      linkPreview: linkPreview,
                                                      messageSticker: messageSticker,
                                                      quotedMessage: quotedMessage,
-                                                     schemaVersion: schemaVersion,
                                                      storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                      customMessage: customMessage,
-                                                     infoMessageSchemaVersion: infoMessageSchemaVersion,
                                                      messageType: messageType,
                                                      read: read,
                                                      unregisteredAddress: unregisteredAddress,
@@ -684,7 +608,6 @@ extension TSInteraction {
             let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
-            let callSchemaVersion: UInt = try SDSDeserialization.required(record.callSchemaVersion, name: "callSchemaVersion")
             guard let callType: RPRecentCallType = record.callType else {
                throw SDSError.missingRequiredField
             }
@@ -696,7 +619,6 @@ extension TSInteraction {
                           sortId: sortId,
                           timestamp: timestamp,
                           uniqueThreadId: uniqueThreadId,
-                          callSchemaVersion: callSchemaVersion,
                           callType: callType,
                           read: read)
 
@@ -723,9 +645,7 @@ extension TSInteraction {
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
-            let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
-            let errorMessageSchemaVersion: UInt = try SDSDeserialization.required(record.errorMessageSchemaVersion, name: "errorMessageSchemaVersion")
             guard let errorType: TSErrorMessageType = record.errorType else {
                throw SDSError.missingRequiredField
             }
@@ -750,9 +670,7 @@ extension TSInteraction {
                                   linkPreview: linkPreview,
                                   messageSticker: messageSticker,
                                   quotedMessage: quotedMessage,
-                                  schemaVersion: schemaVersion,
                                   storedShouldStartExpireTimer: storedShouldStartExpireTimer,
-                                  errorMessageSchemaVersion: errorMessageSchemaVersion,
                                   errorType: errorType,
                                   read: read,
                                   recipientAddress: recipientAddress)
@@ -780,11 +698,9 @@ extension TSInteraction {
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
-            let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let authorPhoneNumber: String? = record.authorPhoneNumber
             let authorUUID: String? = record.authorUUID
-            let incomingMessageSchemaVersion: UInt = try SDSDeserialization.required(record.incomingMessageSchemaVersion, name: "incomingMessageSchemaVersion")
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let serverTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.serverTimestamp, name: "serverTimestamp", conversion: { NSNumber(value: $0) })
             let sourceDeviceId: UInt32 = try SDSDeserialization.required(record.sourceDeviceId, name: "sourceDeviceId")
@@ -807,11 +723,9 @@ extension TSInteraction {
                                      linkPreview: linkPreview,
                                      messageSticker: messageSticker,
                                      quotedMessage: quotedMessage,
-                                     schemaVersion: schemaVersion,
                                      storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                      authorPhoneNumber: authorPhoneNumber,
                                      authorUUID: authorUUID,
-                                     incomingMessageSchemaVersion: incomingMessageSchemaVersion,
                                      read: read,
                                      serverTimestamp: serverTimestamp,
                                      sourceDeviceId: sourceDeviceId,
@@ -840,10 +754,8 @@ extension TSInteraction {
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
-            let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let customMessage: String? = record.customMessage
-            let infoMessageSchemaVersion: UInt = try SDSDeserialization.required(record.infoMessageSchemaVersion, name: "infoMessageSchemaVersion")
             guard let messageType: TSInfoMessageType = record.messageType else {
                throw SDSError.missingRequiredField
             }
@@ -868,10 +780,8 @@ extension TSInteraction {
                                  linkPreview: linkPreview,
                                  messageSticker: messageSticker,
                                  quotedMessage: quotedMessage,
-                                 schemaVersion: schemaVersion,
                                  storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                  customMessage: customMessage,
-                                 infoMessageSchemaVersion: infoMessageSchemaVersion,
                                  messageType: messageType,
                                  read: read,
                                  unregisteredAddress: unregisteredAddress)
@@ -914,9 +824,7 @@ extension TSInteraction {
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
-            let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
-            let errorMessageSchemaVersion: UInt = try SDSDeserialization.required(record.errorMessageSchemaVersion, name: "errorMessageSchemaVersion")
             guard let errorType: TSErrorMessageType = record.errorType else {
                throw SDSError.missingRequiredField
             }
@@ -941,9 +849,7 @@ extension TSInteraction {
                                                     linkPreview: linkPreview,
                                                     messageSticker: messageSticker,
                                                     quotedMessage: quotedMessage,
-                                                    schemaVersion: schemaVersion,
                                                     storedShouldStartExpireTimer: storedShouldStartExpireTimer,
-                                                    errorMessageSchemaVersion: errorMessageSchemaVersion,
                                                     errorType: errorType,
                                                     read: read,
                                                     recipientAddress: recipientAddress)
@@ -971,9 +877,7 @@ extension TSInteraction {
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
-            let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
-            let errorMessageSchemaVersion: UInt = try SDSDeserialization.required(record.errorMessageSchemaVersion, name: "errorMessageSchemaVersion")
             guard let errorType: TSErrorMessageType = record.errorType else {
                throw SDSError.missingRequiredField
             }
@@ -1000,9 +904,7 @@ extension TSInteraction {
                                                              linkPreview: linkPreview,
                                                              messageSticker: messageSticker,
                                                              quotedMessage: quotedMessage,
-                                                             schemaVersion: schemaVersion,
                                                              storedShouldStartExpireTimer: storedShouldStartExpireTimer,
-                                                             errorMessageSchemaVersion: errorMessageSchemaVersion,
                                                              errorType: errorType,
                                                              read: read,
                                                              recipientAddress: recipientAddress,
@@ -1032,9 +934,7 @@ extension TSInteraction {
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
-            let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
-            let errorMessageSchemaVersion: UInt = try SDSDeserialization.required(record.errorMessageSchemaVersion, name: "errorMessageSchemaVersion")
             guard let errorType: TSErrorMessageType = record.errorType else {
                throw SDSError.missingRequiredField
             }
@@ -1062,9 +962,7 @@ extension TSInteraction {
                                                            linkPreview: linkPreview,
                                                            messageSticker: messageSticker,
                                                            quotedMessage: quotedMessage,
-                                                           schemaVersion: schemaVersion,
                                                            storedShouldStartExpireTimer: storedShouldStartExpireTimer,
-                                                           errorMessageSchemaVersion: errorMessageSchemaVersion,
                                                            errorType: errorType,
                                                            read: read,
                                                            recipientAddress: recipientAddress,
@@ -1094,7 +992,6 @@ extension TSInteraction {
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
-            let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
 
             return TSMessage(grdbId: recordId,
@@ -1114,7 +1011,6 @@ extension TSInteraction {
                              linkPreview: linkPreview,
                              messageSticker: messageSticker,
                              quotedMessage: quotedMessage,
-                             schemaVersion: schemaVersion,
                              storedShouldStartExpireTimer: storedShouldStartExpireTimer)
 
         case .outgoingMessage:
@@ -1140,7 +1036,6 @@ extension TSInteraction {
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
-            let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let customMessage: String? = record.customMessage
             guard let groupMetaMessage: TSGroupMetaMessage = record.groupMetaMessage else {
@@ -1155,7 +1050,6 @@ extension TSInteraction {
             }
             let legacyWasDelivered: Bool = try SDSDeserialization.required(record.legacyWasDelivered, name: "legacyWasDelivered")
             let mostRecentFailureText: String? = record.mostRecentFailureText
-            let outgoingMessageSchemaVersion: UInt = try SDSDeserialization.required(record.outgoingMessageSchemaVersion, name: "outgoingMessageSchemaVersion")
             let recipientAddressStatesSerialized: Data? = record.recipientAddressStates
             let recipientAddressStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]? = try SDSDeserialization.optionalUnarchive(recipientAddressStatesSerialized, name: "recipientAddressStates")
             guard let storedMessageState: TSOutgoingMessageState = record.storedMessageState else {
@@ -1179,7 +1073,6 @@ extension TSInteraction {
                                      linkPreview: linkPreview,
                                      messageSticker: messageSticker,
                                      quotedMessage: quotedMessage,
-                                     schemaVersion: schemaVersion,
                                      storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                      customMessage: customMessage,
                                      groupMetaMessage: groupMetaMessage,
@@ -1190,7 +1083,6 @@ extension TSInteraction {
                                      legacyMessageState: legacyMessageState,
                                      legacyWasDelivered: legacyWasDelivered,
                                      mostRecentFailureText: mostRecentFailureText,
-                                     outgoingMessageSchemaVersion: outgoingMessageSchemaVersion,
                                      recipientAddressStates: recipientAddressStates,
                                      storedMessageState: storedMessageState)
 
@@ -1311,60 +1203,48 @@ extension TSInteractionSerializer {
     static let authorIdColumn = SDSColumnMetadata(columnName: "authorId", columnType: .unicodeString, isOptional: true, columnIndex: 7)
     static let authorPhoneNumberColumn = SDSColumnMetadata(columnName: "authorPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 8)
     static let authorUUIDColumn = SDSColumnMetadata(columnName: "authorUUID", columnType: .unicodeString, isOptional: true, columnIndex: 9)
-    static let beforeInteractionIdColumn = SDSColumnMetadata(columnName: "beforeInteractionId", columnType: .unicodeString, isOptional: true, columnIndex: 10)
-    static let bodyColumn = SDSColumnMetadata(columnName: "body", columnType: .unicodeString, isOptional: true, columnIndex: 11)
-    static let callSchemaVersionColumn = SDSColumnMetadata(columnName: "callSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 12)
-    static let callTypeColumn = SDSColumnMetadata(columnName: "callType", columnType: .int, isOptional: true, columnIndex: 13)
-    static let configurationDurationSecondsColumn = SDSColumnMetadata(columnName: "configurationDurationSeconds", columnType: .int64, isOptional: true, columnIndex: 14)
-    static let configurationIsEnabledColumn = SDSColumnMetadata(columnName: "configurationIsEnabled", columnType: .int, isOptional: true, columnIndex: 15)
-    static let contactIdColumn = SDSColumnMetadata(columnName: "contactId", columnType: .unicodeString, isOptional: true, columnIndex: 16)
-    static let contactShareColumn = SDSColumnMetadata(columnName: "contactShare", columnType: .blob, isOptional: true, columnIndex: 17)
-    static let createdByRemoteNameColumn = SDSColumnMetadata(columnName: "createdByRemoteName", columnType: .unicodeString, isOptional: true, columnIndex: 18)
-    static let createdInExistingGroupColumn = SDSColumnMetadata(columnName: "createdInExistingGroup", columnType: .int, isOptional: true, columnIndex: 19)
-    static let customMessageColumn = SDSColumnMetadata(columnName: "customMessage", columnType: .unicodeString, isOptional: true, columnIndex: 20)
-    static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob, isOptional: true, columnIndex: 21)
-    static let errorMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "errorMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 22)
-    static let errorTypeColumn = SDSColumnMetadata(columnName: "errorType", columnType: .int, isOptional: true, columnIndex: 23)
-    static let expireStartedAtColumn = SDSColumnMetadata(columnName: "expireStartedAt", columnType: .int64, isOptional: true, columnIndex: 24)
-    static let expiresAtColumn = SDSColumnMetadata(columnName: "expiresAt", columnType: .int64, isOptional: true, columnIndex: 25)
-    static let expiresInSecondsColumn = SDSColumnMetadata(columnName: "expiresInSeconds", columnType: .int64, isOptional: true, columnIndex: 26)
-    static let groupMetaMessageColumn = SDSColumnMetadata(columnName: "groupMetaMessage", columnType: .int, isOptional: true, columnIndex: 27)
-    static let hasAddToContactsOfferColumn = SDSColumnMetadata(columnName: "hasAddToContactsOffer", columnType: .int, isOptional: true, columnIndex: 28)
-    static let hasAddToProfileWhitelistOfferColumn = SDSColumnMetadata(columnName: "hasAddToProfileWhitelistOffer", columnType: .int, isOptional: true, columnIndex: 29)
-    static let hasBlockOfferColumn = SDSColumnMetadata(columnName: "hasBlockOffer", columnType: .int, isOptional: true, columnIndex: 30)
-    static let hasLegacyMessageStateColumn = SDSColumnMetadata(columnName: "hasLegacyMessageState", columnType: .int, isOptional: true, columnIndex: 31)
-    static let hasSyncedTranscriptColumn = SDSColumnMetadata(columnName: "hasSyncedTranscript", columnType: .int, isOptional: true, columnIndex: 32)
-    static let incomingMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "incomingMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 33)
-    static let infoMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "infoMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 34)
-    static let isFromLinkedDeviceColumn = SDSColumnMetadata(columnName: "isFromLinkedDevice", columnType: .int, isOptional: true, columnIndex: 35)
-    static let isLocalChangeColumn = SDSColumnMetadata(columnName: "isLocalChange", columnType: .int, isOptional: true, columnIndex: 36)
-    static let isViewOnceCompleteColumn = SDSColumnMetadata(columnName: "isViewOnceComplete", columnType: .int, isOptional: true, columnIndex: 37)
-    static let isViewOnceMessageColumn = SDSColumnMetadata(columnName: "isViewOnceMessage", columnType: .int, isOptional: true, columnIndex: 38)
-    static let isVoiceMessageColumn = SDSColumnMetadata(columnName: "isVoiceMessage", columnType: .int, isOptional: true, columnIndex: 39)
-    static let legacyMessageStateColumn = SDSColumnMetadata(columnName: "legacyMessageState", columnType: .int, isOptional: true, columnIndex: 40)
-    static let legacyWasDeliveredColumn = SDSColumnMetadata(columnName: "legacyWasDelivered", columnType: .int, isOptional: true, columnIndex: 41)
-    static let linkPreviewColumn = SDSColumnMetadata(columnName: "linkPreview", columnType: .blob, isOptional: true, columnIndex: 42)
-    static let messageIdColumn = SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true, columnIndex: 43)
-    static let messageStickerColumn = SDSColumnMetadata(columnName: "messageSticker", columnType: .blob, isOptional: true, columnIndex: 44)
-    static let messageTypeColumn = SDSColumnMetadata(columnName: "messageType", columnType: .int, isOptional: true, columnIndex: 45)
-    static let mostRecentFailureTextColumn = SDSColumnMetadata(columnName: "mostRecentFailureText", columnType: .unicodeString, isOptional: true, columnIndex: 46)
-    static let outgoingMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "outgoingMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 47)
-    static let preKeyBundleColumn = SDSColumnMetadata(columnName: "preKeyBundle", columnType: .blob, isOptional: true, columnIndex: 48)
-    static let protocolVersionColumn = SDSColumnMetadata(columnName: "protocolVersion", columnType: .int64, isOptional: true, columnIndex: 49)
-    static let quotedMessageColumn = SDSColumnMetadata(columnName: "quotedMessage", columnType: .blob, isOptional: true, columnIndex: 50)
-    static let readColumn = SDSColumnMetadata(columnName: "read", columnType: .int, isOptional: true, columnIndex: 51)
-    static let recipientAddressColumn = SDSColumnMetadata(columnName: "recipientAddress", columnType: .blob, isOptional: true, columnIndex: 52)
-    static let recipientAddressStatesColumn = SDSColumnMetadata(columnName: "recipientAddressStates", columnType: .blob, isOptional: true, columnIndex: 53)
-    static let schemaVersionColumn = SDSColumnMetadata(columnName: "schemaVersion", columnType: .int64, isOptional: true, columnIndex: 54)
-    static let senderColumn = SDSColumnMetadata(columnName: "sender", columnType: .blob, isOptional: true, columnIndex: 55)
-    static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true, columnIndex: 56)
-    static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int64, isOptional: true, columnIndex: 57)
-    static let storedMessageStateColumn = SDSColumnMetadata(columnName: "storedMessageState", columnType: .int, isOptional: true, columnIndex: 58)
-    static let storedShouldStartExpireTimerColumn = SDSColumnMetadata(columnName: "storedShouldStartExpireTimer", columnType: .int, isOptional: true, columnIndex: 59)
-    static let unknownProtocolVersionMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "unknownProtocolVersionMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 60)
-    static let unregisteredAddressColumn = SDSColumnMetadata(columnName: "unregisteredAddress", columnType: .blob, isOptional: true, columnIndex: 61)
-    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true, columnIndex: 62)
-    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true, columnIndex: 63)
+    static let bodyColumn = SDSColumnMetadata(columnName: "body", columnType: .unicodeString, isOptional: true, columnIndex: 10)
+    static let callTypeColumn = SDSColumnMetadata(columnName: "callType", columnType: .int, isOptional: true, columnIndex: 11)
+    static let configurationDurationSecondsColumn = SDSColumnMetadata(columnName: "configurationDurationSeconds", columnType: .int64, isOptional: true, columnIndex: 12)
+    static let configurationIsEnabledColumn = SDSColumnMetadata(columnName: "configurationIsEnabled", columnType: .int, isOptional: true, columnIndex: 13)
+    static let contactShareColumn = SDSColumnMetadata(columnName: "contactShare", columnType: .blob, isOptional: true, columnIndex: 14)
+    static let createdByRemoteNameColumn = SDSColumnMetadata(columnName: "createdByRemoteName", columnType: .unicodeString, isOptional: true, columnIndex: 15)
+    static let createdInExistingGroupColumn = SDSColumnMetadata(columnName: "createdInExistingGroup", columnType: .int, isOptional: true, columnIndex: 16)
+    static let customMessageColumn = SDSColumnMetadata(columnName: "customMessage", columnType: .unicodeString, isOptional: true, columnIndex: 17)
+    static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob, isOptional: true, columnIndex: 18)
+    static let errorTypeColumn = SDSColumnMetadata(columnName: "errorType", columnType: .int, isOptional: true, columnIndex: 19)
+    static let expireStartedAtColumn = SDSColumnMetadata(columnName: "expireStartedAt", columnType: .int64, isOptional: true, columnIndex: 20)
+    static let expiresAtColumn = SDSColumnMetadata(columnName: "expiresAt", columnType: .int64, isOptional: true, columnIndex: 21)
+    static let expiresInSecondsColumn = SDSColumnMetadata(columnName: "expiresInSeconds", columnType: .int64, isOptional: true, columnIndex: 22)
+    static let groupMetaMessageColumn = SDSColumnMetadata(columnName: "groupMetaMessage", columnType: .int, isOptional: true, columnIndex: 23)
+    static let hasLegacyMessageStateColumn = SDSColumnMetadata(columnName: "hasLegacyMessageState", columnType: .int, isOptional: true, columnIndex: 24)
+    static let hasSyncedTranscriptColumn = SDSColumnMetadata(columnName: "hasSyncedTranscript", columnType: .int, isOptional: true, columnIndex: 25)
+    static let isFromLinkedDeviceColumn = SDSColumnMetadata(columnName: "isFromLinkedDevice", columnType: .int, isOptional: true, columnIndex: 26)
+    static let isLocalChangeColumn = SDSColumnMetadata(columnName: "isLocalChange", columnType: .int, isOptional: true, columnIndex: 27)
+    static let isViewOnceCompleteColumn = SDSColumnMetadata(columnName: "isViewOnceComplete", columnType: .int, isOptional: true, columnIndex: 28)
+    static let isViewOnceMessageColumn = SDSColumnMetadata(columnName: "isViewOnceMessage", columnType: .int, isOptional: true, columnIndex: 29)
+    static let isVoiceMessageColumn = SDSColumnMetadata(columnName: "isVoiceMessage", columnType: .int, isOptional: true, columnIndex: 30)
+    static let legacyMessageStateColumn = SDSColumnMetadata(columnName: "legacyMessageState", columnType: .int, isOptional: true, columnIndex: 31)
+    static let legacyWasDeliveredColumn = SDSColumnMetadata(columnName: "legacyWasDelivered", columnType: .int, isOptional: true, columnIndex: 32)
+    static let linkPreviewColumn = SDSColumnMetadata(columnName: "linkPreview", columnType: .blob, isOptional: true, columnIndex: 33)
+    static let messageIdColumn = SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true, columnIndex: 34)
+    static let messageStickerColumn = SDSColumnMetadata(columnName: "messageSticker", columnType: .blob, isOptional: true, columnIndex: 35)
+    static let messageTypeColumn = SDSColumnMetadata(columnName: "messageType", columnType: .int, isOptional: true, columnIndex: 36)
+    static let mostRecentFailureTextColumn = SDSColumnMetadata(columnName: "mostRecentFailureText", columnType: .unicodeString, isOptional: true, columnIndex: 37)
+    static let preKeyBundleColumn = SDSColumnMetadata(columnName: "preKeyBundle", columnType: .blob, isOptional: true, columnIndex: 38)
+    static let protocolVersionColumn = SDSColumnMetadata(columnName: "protocolVersion", columnType: .int64, isOptional: true, columnIndex: 39)
+    static let quotedMessageColumn = SDSColumnMetadata(columnName: "quotedMessage", columnType: .blob, isOptional: true, columnIndex: 40)
+    static let readColumn = SDSColumnMetadata(columnName: "read", columnType: .int, isOptional: true, columnIndex: 41)
+    static let recipientAddressColumn = SDSColumnMetadata(columnName: "recipientAddress", columnType: .blob, isOptional: true, columnIndex: 42)
+    static let recipientAddressStatesColumn = SDSColumnMetadata(columnName: "recipientAddressStates", columnType: .blob, isOptional: true, columnIndex: 43)
+    static let senderColumn = SDSColumnMetadata(columnName: "sender", columnType: .blob, isOptional: true, columnIndex: 44)
+    static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true, columnIndex: 45)
+    static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int64, isOptional: true, columnIndex: 46)
+    static let storedMessageStateColumn = SDSColumnMetadata(columnName: "storedMessageState", columnType: .int, isOptional: true, columnIndex: 47)
+    static let storedShouldStartExpireTimerColumn = SDSColumnMetadata(columnName: "storedShouldStartExpireTimer", columnType: .int, isOptional: true, columnIndex: 48)
+    static let unregisteredAddressColumn = SDSColumnMetadata(columnName: "unregisteredAddress", columnType: .blob, isOptional: true, columnIndex: 49)
+    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true, columnIndex: 50)
+    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true, columnIndex: 51)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -1381,31 +1261,22 @@ extension TSInteractionSerializer {
         authorIdColumn,
         authorPhoneNumberColumn,
         authorUUIDColumn,
-        beforeInteractionIdColumn,
         bodyColumn,
-        callSchemaVersionColumn,
         callTypeColumn,
         configurationDurationSecondsColumn,
         configurationIsEnabledColumn,
-        contactIdColumn,
         contactShareColumn,
         createdByRemoteNameColumn,
         createdInExistingGroupColumn,
         customMessageColumn,
         envelopeDataColumn,
-        errorMessageSchemaVersionColumn,
         errorTypeColumn,
         expireStartedAtColumn,
         expiresAtColumn,
         expiresInSecondsColumn,
         groupMetaMessageColumn,
-        hasAddToContactsOfferColumn,
-        hasAddToProfileWhitelistOfferColumn,
-        hasBlockOfferColumn,
         hasLegacyMessageStateColumn,
         hasSyncedTranscriptColumn,
-        incomingMessageSchemaVersionColumn,
-        infoMessageSchemaVersionColumn,
         isFromLinkedDeviceColumn,
         isLocalChangeColumn,
         isViewOnceCompleteColumn,
@@ -1418,20 +1289,17 @@ extension TSInteractionSerializer {
         messageStickerColumn,
         messageTypeColumn,
         mostRecentFailureTextColumn,
-        outgoingMessageSchemaVersionColumn,
         preKeyBundleColumn,
         protocolVersionColumn,
         quotedMessageColumn,
         readColumn,
         recipientAddressColumn,
         recipientAddressStatesColumn,
-        schemaVersionColumn,
         senderColumn,
         serverTimestampColumn,
         sourceDeviceIdColumn,
         storedMessageStateColumn,
         storedShouldStartExpireTimerColumn,
-        unknownProtocolVersionMessageSchemaVersionColumn,
         unregisteredAddressColumn,
         verificationStateColumn,
         wasReceivedByUDColumn
@@ -1840,31 +1708,22 @@ class TSInteractionSerializer: SDSSerializer {
         let authorId: String? = nil
         let authorPhoneNumber: String? = nil
         let authorUUID: String? = nil
-        let beforeInteractionId: String? = nil
         let body: String? = nil
-        let callSchemaVersion: UInt? = nil
         let callType: RPRecentCallType? = nil
         let configurationDurationSeconds: UInt32? = nil
         let configurationIsEnabled: Bool? = nil
-        let contactId: String? = nil
         let contactShare: Data? = nil
         let createdByRemoteName: String? = nil
         let createdInExistingGroup: Bool? = nil
         let customMessage: String? = nil
         let envelopeData: Data? = nil
-        let errorMessageSchemaVersion: UInt? = nil
         let errorType: TSErrorMessageType? = nil
         let expireStartedAt: UInt64? = nil
         let expiresAt: UInt64? = nil
         let expiresInSeconds: UInt32? = nil
         let groupMetaMessage: TSGroupMetaMessage? = nil
-        let hasAddToContactsOffer: Bool? = nil
-        let hasAddToProfileWhitelistOffer: Bool? = nil
-        let hasBlockOffer: Bool? = nil
         let hasLegacyMessageState: Bool? = nil
         let hasSyncedTranscript: Bool? = nil
-        let incomingMessageSchemaVersion: UInt? = nil
-        let infoMessageSchemaVersion: UInt? = nil
         let isFromLinkedDevice: Bool? = nil
         let isLocalChange: Bool? = nil
         let isViewOnceComplete: Bool? = nil
@@ -1877,24 +1736,21 @@ class TSInteractionSerializer: SDSSerializer {
         let messageSticker: Data? = nil
         let messageType: TSInfoMessageType? = nil
         let mostRecentFailureText: String? = nil
-        let outgoingMessageSchemaVersion: UInt? = nil
         let preKeyBundle: Data? = nil
         let protocolVersion: UInt? = nil
         let quotedMessage: Data? = nil
         let read: Bool? = nil
         let recipientAddress: Data? = nil
         let recipientAddressStates: Data? = nil
-        let schemaVersion: UInt? = nil
         let sender: Data? = nil
         let serverTimestamp: UInt64? = nil
         let sourceDeviceId: UInt32? = nil
         let storedMessageState: TSOutgoingMessageState? = nil
         let storedShouldStartExpireTimer: Bool? = nil
-        let unknownProtocolVersionMessageSchemaVersion: UInt? = nil
         let unregisteredAddress: Data? = nil
         let verificationState: OWSVerificationState? = nil
         let wasReceivedByUD: Bool? = nil
 
-        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, beforeInteractionId: beforeInteractionId, body: body, callSchemaVersion: callSchemaVersion, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactId: contactId, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorMessageSchemaVersion: errorMessageSchemaVersion, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasAddToContactsOffer: hasAddToContactsOffer, hasAddToProfileWhitelistOffer: hasAddToProfileWhitelistOffer, hasBlockOffer: hasBlockOffer, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, incomingMessageSchemaVersion: incomingMessageSchemaVersion, infoMessageSchemaVersion: infoMessageSchemaVersion, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, outgoingMessageSchemaVersion: outgoingMessageSchemaVersion, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, schemaVersion: schemaVersion, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unknownProtocolVersionMessageSchemaVersion: unknownProtocolVersionMessageSchemaVersion, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD)
+        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD)
     }
 }

@@ -145,14 +145,12 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
-         attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                   attachmentType:(TSAttachmentType)attachmentType
                         blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
                          caption:(nullable NSString *)caption
                      contentType:(NSString *)contentType
                    encryptionKey:(nullable NSData *)encryptionKey
-                    isDownloaded:(BOOL)isDownloaded
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
       cachedAudioDurationSeconds:(nullable NSNumber *)cachedAudioDurationSeconds
@@ -164,19 +162,16 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
               isValidImageCached:(nullable NSNumber *)isValidImageCached
               isValidVideoCached:(nullable NSNumber *)isValidVideoCached
            localRelativeFilePath:(nullable NSString *)localRelativeFilePath
-                 shouldAlwaysPad:(BOOL)shouldAlwaysPad
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
                     albumMessageId:albumMessageId
-           attachmentSchemaVersion:attachmentSchemaVersion
                     attachmentType:attachmentType
                           blurHash:blurHash
                          byteCount:byteCount
                            caption:caption
                        contentType:contentType
                      encryptionKey:encryptionKey
-                      isDownloaded:isDownloaded
                           serverId:serverId
                     sourceFilename:sourceFilename];
 
@@ -193,7 +188,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     _isValidImageCached = isValidImageCached;
     _isValidVideoCached = isValidVideoCached;
     _localRelativeFilePath = localRelativeFilePath;
-    _shouldAlwaysPad = shouldAlwaysPad;
 
     return self;
 }

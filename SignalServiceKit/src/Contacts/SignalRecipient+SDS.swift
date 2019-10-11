@@ -30,7 +30,6 @@ public struct SignalRecipientRecord: SDSRecord {
     // Base class properties
     public let devices: Data
     public let recipientPhoneNumber: String?
-    public let recipientSchemaVersion: UInt
     public let recipientUUID: String?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
@@ -39,7 +38,6 @@ public struct SignalRecipientRecord: SDSRecord {
         case uniqueId
         case devices
         case recipientPhoneNumber
-        case recipientSchemaVersion
         case recipientUUID
     }
 
@@ -69,8 +67,7 @@ public extension SignalRecipientRecord {
         uniqueId = row[2]
         devices = row[3]
         recipientPhoneNumber = row[4]
-        recipientSchemaVersion = row[5]
-        recipientUUID = row[6]
+        recipientUUID = row[5]
     }
 }
 
@@ -105,14 +102,12 @@ extension SignalRecipient {
             let devicesSerialized: Data = record.devices
             let devices: NSOrderedSet = try SDSDeserialization.unarchive(devicesSerialized, name: "devices")
             let recipientPhoneNumber: String? = record.recipientPhoneNumber
-            let recipientSchemaVersion: UInt = record.recipientSchemaVersion
             let recipientUUID: String? = record.recipientUUID
 
             return SignalRecipient(grdbId: recordId,
                                    uniqueId: uniqueId,
                                    devices: devices,
                                    recipientPhoneNumber: recipientPhoneNumber,
-                                   recipientSchemaVersion: recipientSchemaVersion,
                                    recipientUUID: recipientUUID)
 
         default:
@@ -160,8 +155,7 @@ extension SignalRecipientSerializer {
     // Base class properties
     static let devicesColumn = SDSColumnMetadata(columnName: "devices", columnType: .blob, columnIndex: 3)
     static let recipientPhoneNumberColumn = SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 4)
-    static let recipientSchemaVersionColumn = SDSColumnMetadata(columnName: "recipientSchemaVersion", columnType: .int64, columnIndex: 5)
-    static let recipientUUIDColumn = SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true, columnIndex: 6)
+    static let recipientUUIDColumn = SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true, columnIndex: 5)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -173,7 +167,6 @@ extension SignalRecipientSerializer {
         uniqueIdColumn,
         devicesColumn,
         recipientPhoneNumberColumn,
-        recipientSchemaVersionColumn,
         recipientUUIDColumn
         ])
 }
@@ -573,9 +566,8 @@ class SignalRecipientSerializer: SDSSerializer {
         // Base class properties
         let devices: Data = requiredArchive(model.devices)
         let recipientPhoneNumber: String? = model.recipientPhoneNumber
-        let recipientSchemaVersion: UInt = model.recipientSchemaVersion
         let recipientUUID: String? = model.recipientUUID
 
-        return SignalRecipientRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, devices: devices, recipientPhoneNumber: recipientPhoneNumber, recipientSchemaVersion: recipientSchemaVersion, recipientUUID: recipientUUID)
+        return SignalRecipientRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, devices: devices, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID)
     }
 }

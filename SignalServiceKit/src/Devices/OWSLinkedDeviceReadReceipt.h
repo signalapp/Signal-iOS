@@ -28,12 +28,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-linkedDeviceReadReceiptSchemaVersion:(NSUInteger)linkedDeviceReadReceiptSchemaVersion
               messageIdTimestamp:(uint64_t)messageIdTimestamp
                    readTimestamp:(uint64_t)readTimestamp
                senderPhoneNumber:(nullable NSString *)senderPhoneNumber
                       senderUUID:(nullable NSString *)senderUUID
-NS_SWIFT_NAME(init(grdbId:uniqueId:linkedDeviceReadReceiptSchemaVersion:messageIdTimestamp:readTimestamp:senderPhoneNumber:senderUUID:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:messageIdTimestamp:readTimestamp:senderPhoneNumber:senderUUID:));
 
 // clang-format on
 

@@ -117,11 +117,9 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                   schemaVersion:(NSUInteger)schemaVersion
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
                authorPhoneNumber:(nullable NSString *)authorPhoneNumber
                       authorUUID:(nullable NSString *)authorUUID
-    incomingMessageSchemaVersion:(NSUInteger)incomingMessageSchemaVersion
                             read:(BOOL)read
                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                   sourceDeviceId:(unsigned int)sourceDeviceId
@@ -144,7 +142,6 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                        linkPreview:linkPreview
                     messageSticker:messageSticker
                      quotedMessage:quotedMessage
-                     schemaVersion:schemaVersion
       storedShouldStartExpireTimer:storedShouldStartExpireTimer];
 
     if (!self) {
@@ -153,7 +150,6 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
 
     _authorPhoneNumber = authorPhoneNumber;
     _authorUUID = authorUUID;
-    _incomingMessageSchemaVersion = incomingMessageSchemaVersion;
     _read = read;
     _serverTimestamp = serverTimestamp;
     _sourceDeviceId = sourceDeviceId;

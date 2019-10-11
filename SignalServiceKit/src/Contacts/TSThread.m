@@ -99,13 +99,10 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-                    archivalDate:(nullable NSDate *)archivalDate
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
                       isArchived:(BOOL)isArchived
-isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
             lastInteractionRowId:(int64_t)lastInteractionRowId
-                 lastMessageDate:(nullable NSDate *)lastMessageDate
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
                            rowId:(int64_t)rowId
@@ -118,13 +115,10 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
         return self;
     }
 
-    _archivalDate = archivalDate;
     _conversationColorName = conversationColorName;
     _creationDate = creationDate;
     _isArchived = isArchived;
-    _isArchivedByLegacyTimestampForSorting = isArchivedByLegacyTimestampForSorting;
     _lastInteractionRowId = lastInteractionRowId;
-    _lastMessageDate = lastMessageDate;
     _messageDraft = messageDraft;
     _mutedUntilDate = mutedUntilDate;
     _rowId = rowId;

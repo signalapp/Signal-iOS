@@ -145,7 +145,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                   schemaVersion:(NSUInteger)schemaVersion
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
                    customMessage:(nullable NSString *)customMessage
                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
@@ -156,7 +155,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
               legacyMessageState:(TSOutgoingMessageState)legacyMessageState
               legacyWasDelivered:(BOOL)legacyWasDelivered
            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
-    outgoingMessageSchemaVersion:(NSUInteger)outgoingMessageSchemaVersion
           recipientAddressStates:(nullable NSDictionary<SignalServiceAddress *,TSOutgoingMessageRecipientState *> *)recipientAddressStates
               storedMessageState:(TSOutgoingMessageState)storedMessageState
 {
@@ -177,7 +175,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                        linkPreview:linkPreview
                     messageSticker:messageSticker
                      quotedMessage:quotedMessage
-                     schemaVersion:schemaVersion
       storedShouldStartExpireTimer:storedShouldStartExpireTimer];
 
     if (!self) {
@@ -193,7 +190,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     _legacyMessageState = legacyMessageState;
     _legacyWasDelivered = legacyWasDelivered;
     _mostRecentFailureText = mostRecentFailureText;
-    _outgoingMessageSchemaVersion = outgoingMessageSchemaVersion;
     _recipientAddressStates = recipientAddressStates;
     _storedMessageState = storedMessageState;
 

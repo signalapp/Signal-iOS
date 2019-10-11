@@ -215,14 +215,12 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
-         attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                   attachmentType:(TSAttachmentType)attachmentType
                         blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
                          caption:(nullable NSString *)caption
                      contentType:(NSString *)contentType
                    encryptionKey:(nullable NSData *)encryptionKey
-                    isDownloaded:(BOOL)isDownloaded
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
 {
@@ -234,14 +232,12 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     }
 
     _albumMessageId = albumMessageId;
-    _attachmentSchemaVersion = attachmentSchemaVersion;
     _attachmentType = attachmentType;
     _blurHash = blurHash;
     _byteCount = byteCount;
     _caption = caption;
     _contentType = contentType;
     _encryptionKey = encryptionKey;
-    _isDownloaded = isDownloaded;
     _serverId = serverId;
     _sourceFilename = sourceFilename;
 

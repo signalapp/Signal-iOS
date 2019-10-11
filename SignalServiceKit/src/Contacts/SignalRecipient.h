@@ -39,9 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
                       uniqueId:(NSString *)uniqueId
                          devices:(NSOrderedSet<NSNumber *> *)devices
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
-          recipientSchemaVersion:(NSUInteger)recipientSchemaVersion
                    recipientUUID:(nullable NSString *)recipientUUID
-NS_SWIFT_NAME(init(grdbId:uniqueId:devices:recipientPhoneNumber:recipientSchemaVersion:recipientUUID:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:devices:recipientPhoneNumber:recipientUUID:));
 
 // clang-format on
 

@@ -45,10 +45,9 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
-               callSchemaVersion:(NSUInteger)callSchemaVersion
                         callType:(RPRecentCallType)callType
                             read:(BOOL)read
-NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:callSchemaVersion:callType:read:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:callType:read:));
 
 // clang-format on
 

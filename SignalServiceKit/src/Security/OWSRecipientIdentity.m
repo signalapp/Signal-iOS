@@ -153,7 +153,6 @@ NSUInteger const RecipientIdentitySchemaVersion = 1;
                        createdAt:(NSDate *)createdAt
                      identityKey:(NSData *)identityKey
                  isFirstKnownKey:(BOOL)isFirstKnownKey
-  recipientIdentitySchemaVersion:(NSUInteger)recipientIdentitySchemaVersion
                verificationState:(OWSVerificationState)verificationState
 {
     self = [super initWithGrdbId:grdbId
@@ -167,7 +166,6 @@ NSUInteger const RecipientIdentitySchemaVersion = 1;
     _createdAt = createdAt;
     _identityKey = identityKey;
     _isFirstKnownKey = isFirstKnownKey;
-    _recipientIdentitySchemaVersion = recipientIdentitySchemaVersion;
     _verificationState = verificationState;
 
     return self;

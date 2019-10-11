@@ -126,7 +126,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                   schemaVersion:(NSUInteger)schemaVersion
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
 {
     self = [super initWithGrdbId:grdbId
@@ -151,7 +150,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _linkPreview = linkPreview;
     _messageSticker = messageSticker;
     _quotedMessage = quotedMessage;
-    _schemaVersion = schemaVersion;
     _storedShouldStartExpireTimer = storedShouldStartExpireTimer;
 
     [self sdsFinalizeMessage];
