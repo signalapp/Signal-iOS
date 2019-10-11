@@ -19,6 +19,8 @@
 #import "UIColor+OWS.h"
 #import <SignalMessaging/UIView+OWS.h>
 
+// TODO: Reduce code duplication around mention detection
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSMessageBubbleView () <OWSQuotedMessageViewDelegate, OWSContactShareButtonsViewDelegate>
@@ -239,9 +241,8 @@ NS_ASSUME_NONNULL_BEGIN
             [self.stackView addArrangedSubview:spacerView];
         }
 
-        DisplayableText *_Nullable displayableQuotedText
-            = (self.viewItem.hasQuotedText ? self.viewItem.displayableQuotedText : nil);
-
+        DisplayableText *_Nullable displayableQuotedText = [self getDisplayableQuotedText];
+        
         OWSQuotedMessageView *quotedMessageView =
             [OWSQuotedMessageView quotedMessageViewForConversation:self.viewItem.quotedReply
                                              displayableQuotedText:displayableQuotedText
@@ -1181,9 +1182,8 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    DisplayableText *_Nullable displayableQuotedText
-        = (self.viewItem.hasQuotedText ? self.viewItem.displayableQuotedText : nil);
-
+    DisplayableText *_Nullable displayableQuotedText = [self getDisplayableQuotedText];
+    
     OWSQuotedMessageView *quotedMessageView =
         [OWSQuotedMessageView quotedMessageViewForConversation:self.viewItem.quotedReply
                                          displayableQuotedText:displayableQuotedText
@@ -1192,6 +1192,46 @@ NS_ASSUME_NONNULL_BEGIN
                                                   sharpCorners:self.sharpCornersForQuotedMessage];
     CGSize result = [quotedMessageView sizeForMaxWidth:self.conversationStyle.maxMessageWidth];
     return [NSValue valueWithCGSize:CGSizeCeil(result)];
+}
+
+- (DisplayableText *)getDisplayableQuotedText
+{
+    if (!self.viewItem.hasQuotedText) { return nil; }
+    NSString *text = self.viewItem.displayableQuotedText.fullText;
+    TSThread *thread = self.viewItem.interaction.thread;
+    NSError *error;
+    NSRegularExpression *regex = [[NSRegularExpression alloc] initWithPattern:@"@[0-9a-fA-F]*" options:0 error:&error];
+    OWSAssertDebug(error == nil);
+    NSSet<NSString *> *knownUserIDs = LKAPI.userIDCache[thread.uniqueId];
+    NSTextCheckingResult *match = [regex firstMatchInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, text.length)];
+    if (match != nil && thread.isGroupThread) {
+        while (YES) {
+            NSString *userID = [[text substringWithRange:match.range] stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
+            NSUInteger matchEnd;
+            if ([knownUserIDs containsObject:userID]) {
+                __block NSString *userDisplayName;
+                if ([userID isEqual:OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey]) {
+                    userDisplayName = OWSProfileManager.sharedManager.localProfileName;
+                } else {
+                    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                        NSString *collection = [NSString stringWithFormat:@"%@.%llu", LKGroupChatAPI.publicChatServer, LKGroupChatAPI.publicChatServerID];
+                        userDisplayName = [transaction objectForKey:userID inCollection:collection];
+                    }];
+                }
+                if (userDisplayName != nil) {
+                    text = [text stringByReplacingCharactersInRange:match.range withString:[NSString stringWithFormat:@"@%@", userDisplayName]];
+                    matchEnd = match.range.location + userDisplayName.length;
+                } else {
+                    matchEnd = match.range.location + match.range.length;
+                }
+            } else {
+                matchEnd = match.range.location + match.range.length;
+            }
+            match = [regex firstMatchInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(matchEnd, text.length - matchEnd)];
+            if (match == nil) { break; }
+        }
+    }
+    return [DisplayableText displayableText:text];
 }
 
 - (nullable NSValue *)senderNameSize
