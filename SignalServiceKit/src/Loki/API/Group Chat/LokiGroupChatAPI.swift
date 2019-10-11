@@ -5,7 +5,7 @@ public final class LokiGroupChatAPI : LokiDotNetAPI {
     private static var moderators: [String:[UInt64:Set<String>]] = [:] // Server URL to (channel ID to set of moderator IDs)
     
     // MARK: Settings
-    private static let fallbackBatchCount = 20
+    private static let fallbackBatchCount = 256
     private static let maxRetryCount: UInt = 8
     
     // MARK: Public Chat
