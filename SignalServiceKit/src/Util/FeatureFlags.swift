@@ -107,6 +107,14 @@ public class FeatureFlags: NSObject {
     public static let preserveYdb = true
 
     @objc
+    public static var canRevertToYDB: Bool {
+        // Only let developers should be allowed to use YDB after migrating to GRDB.
+        // We don't want to let QA, public beta or production users risk
+        // data loss.
+        return build == .dev
+    }
+
+    @objc
     public static var audibleErrorLogging = build.includes(.internalPreview)
 
     @objc
