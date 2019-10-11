@@ -38,6 +38,8 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
 @property (class, nonatomic, readonly) BOOL hasYdbFile;
 @property (class, nonatomic, readonly) BOOL hasGrdbFile;
 
+@property (class, nonatomic, readonly) BOOL hasInvalidDatabaseVersion;
+
 - (BOOL)isDatabasePasswordAccessible;
 
 #ifdef TESTABLE_BUILD
