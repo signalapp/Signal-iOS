@@ -16,7 +16,8 @@ then
    usage
    exit 1
 fi
+shift
 
 sqlcipher -cmd "PRAGMA key = \"${PASSPHRASE}\";" \
           -cmd "PRAGMA cipher_plaintext_header_size = 32;" \
-          $DB_PATH
+          $DB_PATH $@

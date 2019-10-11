@@ -69,12 +69,4 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 
 @end
 
-#pragma mark -
-
-@class GRDBWriteTransaction;
-
-@interface GRDBDatabaseMigration : OWSDatabaseMigration
-
-@end
-
 NS_ASSUME_NONNULL_END

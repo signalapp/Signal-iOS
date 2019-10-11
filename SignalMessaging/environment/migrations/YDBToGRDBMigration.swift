@@ -143,6 +143,8 @@ extension YDBToGRDBMigration {
             }
         ]
 
+        GRDBSchemaMigrator().runMigrationsForNewUser()
+
         try self.migrate(migratorGroups: migratorGroups)
 
         removeYdb()

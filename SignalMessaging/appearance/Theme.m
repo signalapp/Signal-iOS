@@ -31,6 +31,11 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
     return SDSDatabaseStorage.shared;
 }
 
+- (StorageCoordinator *)storageCoordinator
+{
+    return SSKEnvironment.shared.storageCoordinator;
+}
+
 #pragma mark -
 
 + (SDSKeyValueStore *)keyValueStore
@@ -97,6 +102,10 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 {
     if (self.cachedCurrentThemeNumber) {
         return self.cachedCurrentThemeNumber.unsignedIntegerValue;
+    }
+
+    if (!self.storageCoordinator.isStorageReady) {
+        return ThemeMode_Light;
     }
 
     __block ThemeMode currentMode;

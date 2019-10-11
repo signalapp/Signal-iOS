@@ -35,7 +35,10 @@ An Objective-C library for communicating with the Signal messaging service.
   s.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC',
                  'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/libwebp/src'   }
 
-  s.resources = ["SignalServiceKit/Resources/Certificates/*"]
+  s.resources = [
+    "SignalServiceKit/Resources/Certificates/*", 
+    "SignalServiceKit/Resources/schema.sql"
+  ]
 
   s.dependency 'Curve25519Kit'
   s.dependency 'CocoaLumberjack'
