@@ -227,7 +227,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         [usernameRow
             addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                          action:@selector(usernameRowTapped:)]];
-        usernameRow.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"nameRow");
+        usernameRow.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"usernameRow");
         [stackView addArrangedSubview:usernameRow];
 
         UILabel *usernameTitleLabel = [UILabel new];

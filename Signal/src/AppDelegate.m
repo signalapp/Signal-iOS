@@ -53,6 +53,12 @@ static NSString *const kURLHostAddStickersPrefix = @"addstickers";
 
 static NSTimeInterval launchStartedAt;
 
+typedef NS_ENUM(NSUInteger, LaunchFailure) {
+    LaunchFailure_None,
+    LaunchFailure_CouldNotLoadDatabase,
+    LaunchFailure_UnknownDatabaseVersion,
+};
+
 @interface AppDelegate () <UNUserNotificationCenterDelegate>
 
 @property (nonatomic) BOOL areVersionMigrationsComplete;
@@ -229,17 +235,21 @@ static NSTimeInterval launchStartedAt;
 
     // We need to do this _after_ we set up logging, when the keychain is unlocked,
     // but before we access YapDatabase, files on disk, or NSUserDefaults
-    NSError *error;
-    if (![YDBLegacyMigration ensureIsYDBReadyForAppExtensions:&error]) {
-        if (error != nil) {
-            [self showLaunchFailureUI:error];
-        }
+    NSError *_Nullable launchError = nil;
+    LaunchFailure launchFailure = LaunchFailure_None;
 
-        // If this method has failed; do nothing.
-        //
-        // ensureIsReadyForAppExtensions will show a failure mode UI that
-        // lets users report this error.
+    BOOL isYdbNotReady = ![YDBLegacyMigration ensureIsYDBReadyForAppExtensions:&launchError];
+    if (isYdbNotReady || launchError != nil) {
+        launchFailure = LaunchFailure_CouldNotLoadDatabase;
+    } else if (StorageCoordinator.hasInvalidDatabaseVersion) {
+        // Prevent:
+        // * Users who have used GRDB revert to using YDB.
+        // * Users with an unknown GRDB schema revert to using an earlier GRDB schema.
+        launchFailure = LaunchFailure_UnknownDatabaseVersion;
+    }
+    if (launchFailure != LaunchFailure_None) {
         OWSLogInfo(@"application: didFinishLaunchingWithOptions failed.");
+        [self showUIForLaunchFailure:launchFailure];
 
         return YES;
     }
@@ -373,7 +383,7 @@ static NSTimeInterval launchStartedAt;
     exit(0);
 }
 
-- (void)showLaunchFailureUI:(NSError *)error
+- (void)showUIForLaunchFailure:(LaunchFailure)launchFailure
 {
     // Disable normal functioning of app.
     self.didAppLaunchFail = YES;
@@ -385,17 +395,36 @@ static NSTimeInterval launchStartedAt;
     self.window = [OWSWindow new];
 
     // Show the launch screen
-    self.window.rootViewController =
-        [[UIStoryboard storyboardWithName:@"Launch Screen" bundle:nil] instantiateInitialViewController];
+    UIViewController *viewController = [[UIStoryboard storyboardWithName:@"Launch Screen"
+                                                                  bundle:nil] instantiateInitialViewController];
+    self.window.rootViewController = viewController;
 
     [self.window makeKeyAndVisible];
 
-    UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"APP_LAUNCH_FAILURE_ALERT_TITLE",
-                                                        @"Title for the 'app launch failed' alert.")
-                                            message:NSLocalizedString(@"APP_LAUNCH_FAILURE_ALERT_MESSAGE",
-                                                        @"Message for the 'app launch failed' alert.")
-                                     preferredStyle:UIAlertControllerStyleAlert];
+    NSString *alertTitle;
+    NSString *alertMessage
+        = NSLocalizedString(@"APP_LAUNCH_FAILURE_ALERT_MESSAGE", @"Message for the 'app launch failed' alert.");
+    switch (launchFailure) {
+        case LaunchFailure_CouldNotLoadDatabase:
+            alertTitle = NSLocalizedString(@"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE",
+                @"Error indicating that the app could not launch because the database could not be loaded.");
+            break;
+        case LaunchFailure_UnknownDatabaseVersion:
+            alertTitle = NSLocalizedString(@"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE",
+                @"Error indicating that the app could not launch without reverting unknown database migrations.");
+            alertMessage = NSLocalizedString(@"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE",
+                @"Error indicating that the app could not launch without reverting unknown database migrations.");
+            break;
+        default:
+            OWSFailDebug(@"Unknown launch failure.");
+            alertTitle
+                = NSLocalizedString(@"APP_LAUNCH_FAILURE_ALERT_TITLE", @"Title for the 'app launch failed' alert.");
+            break;
+    }
+
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:alertTitle
+                                                                   message:alertMessage
+                                                            preferredStyle:UIAlertControllerStyleAlert];
 
     [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", nil)
                                               style:UIAlertActionStyleDefault
@@ -404,8 +433,7 @@ static NSTimeInterval launchStartedAt;
                                                     OWSFail(@"exiting after sharing debug logs.");
                                                 }];
                                             }]];
-    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentAlert:alert];
+    [viewController presentAlert:alert];
 }
 
 - (void)startupLogging
@@ -1008,6 +1036,10 @@ static NSTimeInterval launchStartedAt;
 - (UIInterfaceOrientationMask)application:(UIApplication *)application
     supportedInterfaceOrientationsForWindow:(nullable UIWindow *)window
 {
+    if (self.didAppLaunchFail) {
+        return UIInterfaceOrientationMaskPortrait;
+    }
+
     if (self.hasCall) {
         OWSLogInfo(@"has call");
         // The call-banner window is only suitable for portrait display on iPhone

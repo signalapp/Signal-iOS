@@ -71,6 +71,17 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
     return [OWSFileSystem fileOrFolderExistsAtPath:grdbFilePath];
 }
 
++ (BOOL)hasInvalidDatabaseVersion
+{
+    // A check to avoid trying to revert to YDB when we've already migrated to GRDB.
+    return (SSKFeatureFlags.storageMode == StorageModeYdb && self.hasGrdbFile && [SSKPreferences isYdbMigrated] &&
+        // Allow developers to do this, but not QA, internal,
+        // public beta or production.
+        !SSKFeatureFlags.canRevertToYDB);
+
+    // TODO: also return true if unknown GRDB version.
+}
+
 - (StorageCoordinatorState)storageCoordinatorState
 {
     return self.state;

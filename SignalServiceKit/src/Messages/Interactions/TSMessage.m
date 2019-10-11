@@ -488,15 +488,26 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 
     if (self.isViewOnceMessage) {
-        NSString *label = NSLocalizedString(
-            @"PER_MESSAGE_EXPIRATION_NOTIFICATION", @"Notification for incoming disappearing photo.");
-        if (mediaAttachment != nil) {
-            attachmentDescription = [TSAttachment emojiForMimeType:mediaAttachment.contentType];
-        }
-        if (attachmentDescription.length > 0) {
-            return [[attachmentDescription stringByAppendingString:@" "] stringByAppendingString:label];
+        if ([self isKindOfClass:TSOutgoingMessage.class]) {
+            return NSLocalizedString(@"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE",
+                @"inbox cell and notification text for an already viewed view-once media message.");
         } else {
-            return label;
+            if (mediaAttachment == nil) {
+                return NSLocalizedString(@"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE",
+                    @"inbox cell and notification text for an already viewed view-once media message.");
+            } else {
+                NSString *emoji = [TSAttachment emojiForMimeType:mediaAttachment.contentType];
+                NSString *messageDescription;
+                if (mediaAttachment.isVideo) {
+                    messageDescription = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW",
+                        @"inbox cell and notification text for a view-once video.");
+                } else {
+                    OWSAssertDebug(mediaAttachment.isImage);
+                    messageDescription = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW",
+                        @"inbox cell and notification text for a view-once photo.");
+                }
+                return [[emoji stringByAppendingString:@" "] stringByAppendingString:messageDescription];
+            }
         }
     }
 
