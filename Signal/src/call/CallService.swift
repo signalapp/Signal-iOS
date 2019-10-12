@@ -1900,7 +1900,11 @@ private class SignalCallData: NSObject {
     private func updateIsVideoEnabled() {
         AssertIsOnMainThread()
 
-        guard let callConnection = self.callData?.callConnection else {
+        guard let callData = self.callData else {
+            return
+        }
+
+        guard let callConnection = callData.callConnection else {
             return
         }
 
@@ -1910,7 +1914,9 @@ private class SignalCallData: NSObject {
 
         do {
             try callConnection.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack)
-            try callConnection.sendLocalVideoStatus(enabled: shouldHaveLocalVideoTrack)
+            if callData.call.state == .connected {
+                try callConnection.sendLocalVideoStatus(enabled: shouldHaveLocalVideoTrack)
+            }
         } catch {
             owsFailDebug("error: \(error)")
         }
