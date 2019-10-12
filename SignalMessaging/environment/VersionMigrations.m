@@ -59,11 +59,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (!lastCompletedLaunchAppVersion) {
         OWSLogInfo(@"No previous version found. Probably first launch since install - nothing to migrate.");
-        if (self.databaseStorage.canLoadYdb) {
-            OWSDatabaseMigrationRunner *runner = [[OWSDatabaseMigrationRunner alloc] init];
-            [runner assumeAllExistingMigrationsRun];
-        } else {
+        if (self.databaseStorage.dataStoreForReads == DataStoreGrdb) {
             [grdbSchemaMigrator runMigrationsForNewUser];
+        } else {
+            OWSDatabaseMigrationRunner *runner = [OWSDatabaseMigrationRunner new];
+            [runner assumeAllExistingMigrationsRun];
         }
 
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -102,10 +102,16 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [[[OWSDatabaseMigrationRunner alloc] init] runAllOutstandingWithCompletion:^{
+        if (self.databaseStorage.dataStoreForReads == DataStoreGrdb) {
             [grdbSchemaMigrator runOutstandingMigrationsForExistingUser];
-            completion();
-        }];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion();
+            });
+        } else {
+            [[[OWSDatabaseMigrationRunner alloc] init] runAllOutstandingWithCompletion:^{
+                completion();
+            }];
+        }
     });
 }
 
