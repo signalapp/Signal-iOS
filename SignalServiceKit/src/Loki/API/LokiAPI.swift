@@ -310,7 +310,7 @@ public final class LokiAPI : NSObject {
         var candidates: [Mention] = []
         // Gather candidates
         storage.dbReadConnection.read { transaction in
-            let collection = "\(LokiGroupChatAPI.publicChatServer).\(LokiGroupChatAPI.publicChatServerID)"
+            let collection = "https://chat.lokinet.org.1" // FIXME: Mentions need to work for every kind of chat
             candidates = cache.flatMap { hexEncodedPublicKey in
                 guard let displayName = transaction.object(forKey: hexEncodedPublicKey, inCollection: collection) as! String? else { return nil }
                 guard !displayName.hasPrefix("Anonymous") else { return nil }

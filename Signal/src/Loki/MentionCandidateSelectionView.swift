@@ -121,7 +121,7 @@ private extension MentionCandidateSelectionView {
             displayNameLabel.text = mentionCandidate.displayName
             let profilePicture = OWSContactAvatarBuilder(signalId: mentionCandidate.hexEncodedPublicKey, colorName: .blue, diameter: 36).build()
             profilePictureImageView.image = profilePicture
-            let isUserModerator = LokiGroupChatAPI.isUserModerator(mentionCandidate.hexEncodedPublicKey, for: LokiGroupChatAPI.publicChatServerID, on: LokiGroupChatAPI.publicChatServer)
+            let isUserModerator = LokiGroupChatAPI.isUserModerator(mentionCandidate.hexEncodedPublicKey, for: 1, on: "https://chat.lokinet.org") // FIXME: Mentions need to work for every kind of chat
             moderatorIconImageView.isHidden = !isUserModerator || !hasGroupContext
         }
     }

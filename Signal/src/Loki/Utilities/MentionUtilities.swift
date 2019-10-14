@@ -23,7 +23,7 @@ public final class MentionUtilities : NSObject {
                     userDisplayName = OWSProfileManager.shared().localProfileName()
                 } else {
                     OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
-                        let collection = "\(LokiGroupChatAPI.publicChatServer).\(LokiGroupChatAPI.publicChatServerID)"
+                        let collection = "https://chat.lokinet.org.1" // FIXME: Mentions need to work for every kind of chat
                         userDisplayName = transaction.object(forKey: hexEncodedPublicKey, inCollection: collection) as! String?
                     }
                 }
