@@ -9,6 +9,10 @@ public final class MentionUtilities : NSObject {
     }
     
     @objc public static func highlightMentions(in string: String, isOutgoingMessage: Bool, thread: TSThread, attributes: [NSAttributedString.Key:Any]) -> NSAttributedString {
+        var groupChat: LokiGroupChat?
+        OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
+            groupChat = LokiDatabaseUtilities.objc_getGroupChat(for: thread.uniqueId!, in: transaction)
+        }
         var string = string
         let regex = try! NSRegularExpression(pattern: "@[0-9a-fA-F]*", options: [])
         let knownUserHexEncodedPublicKeys = LokiAPI.userHexEncodedPublicKeyCache[thread.uniqueId!] ?? [] // Should always be populated at this point
@@ -22,9 +26,13 @@ public final class MentionUtilities : NSObject {
                 if hexEncodedPublicKey == OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey {
                     userDisplayName = OWSProfileManager.shared().localProfileName()
                 } else {
-                    OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
-                        let collection = "https://chat.lokinet.org.1" // FIXME: Mentions need to work for every kind of chat
-                        userDisplayName = transaction.object(forKey: hexEncodedPublicKey, inCollection: collection) as! String?
+                    if let groupChat = groupChat {
+                        OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
+                            let collection = "\(groupChat.server).\(groupChat.channel)"
+                            userDisplayName = transaction.object(forKey: hexEncodedPublicKey, inCollection: collection) as! String?
+                        }
+                    } else {
+                        userDisplayName = nil // TODO: Implement
                     }
                 }
                 if let userDisplayName = userDisplayName {
