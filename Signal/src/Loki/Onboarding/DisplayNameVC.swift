@@ -6,7 +6,7 @@ final class DisplayNameVC : OnboardingBaseViewController {
         result.textColor = Theme.primaryColor
         result.font = UIFont.ows_dynamicTypeBodyClamped
         result.textAlignment = .center
-        let placeholder = NSMutableAttributedString(string: NSLocalizedString("Display Name (Optional)", comment: ""))
+        let placeholder = NSMutableAttributedString(string: NSLocalizedString("Display Name", comment: ""))
         placeholder.addAttribute(.foregroundColor, value: Theme.placeholderColor, range: NSRange(location: 0, length: placeholder.length))
         result.attributedPlaceholder = placeholder
         result.tintColor = UIColor.lokiGreen()
@@ -14,11 +14,6 @@ final class DisplayNameVC : OnboardingBaseViewController {
         result.keyboardAppearance = .dark
         return result
     }()
-
-    private var normalizedUserName: String? {
-        let result = userNameTextField.text!.ows_stripped()
-        return !result.isEmpty ? result : nil
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,16 +54,16 @@ final class DisplayNameVC : OnboardingBaseViewController {
     }
     
     @objc private func handleNextButtonPressed() {
-        if let normalizedName = normalizedUserName {
-            guard !OWSProfileManager.shared().isProfileNameTooLong(normalizedName) else {
-                return OWSAlerts.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG", comment: "Error message shown when user tries to update profile with a profile name that is too long"))
-            }
+        let displayName = userNameTextField.text!.ows_stripped()
+        guard !displayName.isEmpty else {
+            return OWSAlerts.showErrorAlert(message: NSLocalizedString("Please pick a display name", comment: ""))
+        }
+        guard !OWSProfileManager.shared().isProfileNameTooLong(displayName) else {
+            return OWSAlerts.showErrorAlert(message: NSLocalizedString("Please pick a shorter display name", comment: ""))
         }
         TSAccountManager.sharedInstance().didRegister()
         UserDefaults.standard.set(true, forKey: "didUpdateForMainnet")
         onboardingController.verificationDidComplete(fromView: self)
-        if let normalizedName = normalizedUserName {
-            OWSProfileManager.shared().updateLocalProfileName(normalizedName, avatarImage: nil, success: { }, failure: { }) // Try to save the user name but ignore the result
-        }
+        OWSProfileManager.shared().updateLocalProfileName(displayName, avatarImage: nil, success: { }, failure: { }) // Try to save the user name but ignore the result
     }
 }

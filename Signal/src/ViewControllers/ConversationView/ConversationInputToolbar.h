@@ -5,7 +5,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class ConversationStyle;
-@class LKUserSelectionView;
+@class LKMention;
+@class LKMentionCandidateSelectionView;
 @class OWSLinkPreviewDraft;
 @class OWSQuotedReplyModel;
 @class SignalAttachment;
@@ -29,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)voiceMemoGestureDidUpdateCancelWithRatioComplete:(CGFloat)cancelAlpha;
 
-- (void)handleUserSelected:(NSString *)user from:(LKUserSelectionView *)userSelectionView;
+- (void)handleMentionCandidateSelected:(LKMention *)mentionCandidate from:(LKMentionCandidateSelectionView *)mentionCandidateSelectionView;
 
 @end
 
@@ -84,11 +85,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)hideInputMethod;
 
-#pragma mark - User Selection View
+#pragma mark - Mention Candidate Selection View
 
-- (void)showUserSelectionViewFor:(NSArray<NSString *> *)users in:(TSThread *)thread;
+- (void)showMentionCandidateSelectionViewFor:(NSArray<LKMention *> *)mentionCandidates in:(TSThread *)thread;
 
-- (void)hideUserSelectionView;
+- (void)hideMentionCandidateSelectionView;
 
 @end
 
