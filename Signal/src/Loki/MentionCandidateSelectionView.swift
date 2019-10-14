@@ -131,7 +131,7 @@ private extension MentionCandidateSelectionView {
             let profilePicture = OWSContactAvatarBuilder(signalId: mentionCandidate.hexEncodedPublicKey, colorName: .blue, diameter: 36).build()
             profilePictureImageView.image = profilePicture
             if let publicChatServer = publicChatServer, let publicChatServerID = publicChatServerID {
-                let isUserModerator = LokiGroupChatAPI.isUserModerator(mentionCandidate.hexEncodedPublicKey, for: publicChatServerID, on: publicChatServer)
+                let isUserModerator = LokiPublicChatAPI.isUserModerator(mentionCandidate.hexEncodedPublicKey, for: publicChatServerID, on: publicChatServer)
                 moderatorIconImageView.isHidden = !isUserModerator
             } else {
                 moderatorIconImageView.isHidden = true

@@ -1537,7 +1537,7 @@ static NSTimeInterval launchStartedAt;
 - (void)createGroupChatsIfNeeded
 {
     // Setup our default public chats
-    for (LKGroupChat *chat in LKGroupChat.defaultChats) {
+    for (LKPublicChat *chat in LKPublicChat.defaultChats) {
         NSString *userDefaultsKey = [@"isGroupChatSetUp." stringByAppendingString:chat.id];
         BOOL isChatSetUp = [NSUserDefaults.standardUserDefaults boolForKey:userDefaultsKey];
         if (!isChatSetUp || !chat.isDeletable) {

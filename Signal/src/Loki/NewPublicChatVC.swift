@@ -88,8 +88,8 @@ final class NewPublicChatVC : OWSViewController {
         let displayName = OWSProfileManager.shared().localProfileName()
         LokiPublicChatManager.shared.addChat(server: urlAsString, channel: channelID)
         .done(on: .main) { [weak self] _ in
-            let _ = LokiGroupChatAPI.getMessages(for: channelID, on: urlAsString)
-            let _ = LokiGroupChatAPI.setDisplayName(to: displayName, on: urlAsString)
+            let _ = LokiPublicChatAPI.getMessages(for: channelID, on: urlAsString)
+            let _ = LokiPublicChatAPI.setDisplayName(to: displayName, on: urlAsString)
             self?.presentingViewController!.dismiss(animated: true, completion: nil)
         }
         .catch(on: .main) { [weak self] _ in

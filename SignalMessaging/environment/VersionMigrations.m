@@ -173,10 +173,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)updatePublicChatMapping
 {
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
-        for (LKGroupChat *chat in LKGroupChat.defaultChats) {
+        for (LKPublicChat *chat in LKPublicChat.defaultChats) {
             TSGroupThread *thread = [TSGroupThread threadWithGroupId:chat.idAsData transaction:transaction];
             if (thread != nil) {
-                [LKDatabaseUtilities setGroupChat:chat threadID:thread.uniqueId transaction:transaction];
+                [LKDatabaseUtilities setPublicChat:chat threadID:thread.uniqueId transaction:transaction];
             }
         }
     }];

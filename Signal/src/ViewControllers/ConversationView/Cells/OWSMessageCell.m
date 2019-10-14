@@ -299,14 +299,16 @@ NS_ASSUME_NONNULL_BEGIN
     [self.contentView addSubview:self.avatarView];
     
     if (self.viewItem.isGroupThread && !self.viewItem.isRSSFeed) {
-        __block LKGroupChat *groupChat;
+        __block LKPublicChat *publicChat;
         [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            groupChat = [LKDatabaseUtilities getGroupChatForThreadID:self.viewItem.interaction.uniqueThreadId transaction: transaction];
+            publicChat = [LKDatabaseUtilities getPublicChatForThreadID:self.viewItem.interaction.uniqueThreadId transaction: transaction];
         }];
-        BOOL isModerator = [LKGroupChatAPI isUserModerator:incomingMessage.authorId forGroup:groupChat.channel onServer:groupChat.server];
-        UIImage *moderatorIcon = [UIImage imageNamed:@"Crown"];
-        self.moderatorIconImageView.image = moderatorIcon;
-        self.moderatorIconImageView.hidden = !isModerator;
+        if (publicChat != nil) {
+            BOOL isModerator = [LKPublicChatAPI isUserModerator:incomingMessage.authorId forGroup:publicChat.channel onServer:publicChat.server];
+            UIImage *moderatorIcon = [UIImage imageNamed:@"Crown"];
+            self.moderatorIconImageView.image = moderatorIcon;
+            self.moderatorIconImageView.hidden = !isModerator;
+        }
     }
     
     [self.contentView addSubview:self.moderatorIconImageView];

@@ -535,15 +535,15 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
 
-    __block NSDictionary *groupChats;
+    __block NSDictionary *publicChats;
     [SSKEnvironment.shared.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        groupChats = [LKDatabaseUtilities getAllGroupChats:transaction];
+        publicChats = [LKDatabaseUtilities getAllPublicChats:transaction];
     }];
     
-    NSSet *servers = [NSSet setWithArray:[groupChats.allValues map:^NSString *(LKGroupChat *groupChat) { return groupChat.server; }]];
+    NSSet *servers = [NSSet setWithArray:[publicChats.allValues map:^NSString *(LKPublicChat *publicChat) { return publicChat.server; }]];
 
     for (NSString *server in servers) {
-        [[LKGroupChatAPI setDisplayName:localProfileName on:server] retainUntilComplete];
+        [[LKPublicChatAPI setDisplayName:localProfileName on:server] retainUntilComplete];
     }
     
     successBlock();

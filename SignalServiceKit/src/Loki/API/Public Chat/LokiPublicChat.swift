@@ -1,6 +1,6 @@
 
-@objc(LKGroupChat)
-public final class LokiGroupChat : NSObject, NSCoding {
+@objc(LKPublicChat)
+public final class LokiPublicChat : NSObject, NSCoding {
     @objc public let id: String
     @objc public let idAsData: Data
     @objc public let channel: UInt64
@@ -8,11 +8,11 @@ public final class LokiGroupChat : NSObject, NSCoding {
     @objc public let displayName: String
     @objc public let isDeletable: Bool
     
-    @objc public static var defaultChats: [LokiGroupChat] {
-        var chats = [LokiGroupChat(channel: UInt64(1), server: "https://chat.lokinet.org", displayName: NSLocalizedString("Loki Public Chat", comment: ""), isDeletable: true)!]
+    @objc public static var defaultChats: [LokiPublicChat] {
+        var chats = [LokiPublicChat(channel: UInt64(1), server: "https://chat.lokinet.org", displayName: NSLocalizedString("Loki Public Chat", comment: ""), isDeletable: true)!]
 
         #if DEBUG
-            chats.append(LokiGroupChat(channel: UInt64(1), server: "https://chat-dev.lokinet.org", displayName: "Loki Dev Chat", isDeletable: true)!)
+            chats.append(LokiPublicChat(channel: UInt64(1), server: "https://chat-dev.lokinet.org", displayName: "Loki Dev Chat", isDeletable: true)!)
         #endif
 
         return chats

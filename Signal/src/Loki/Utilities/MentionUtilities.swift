@@ -9,9 +9,9 @@ public final class MentionUtilities : NSObject {
     }
     
     @objc public static func highlightMentions(in string: String, isOutgoingMessage: Bool, threadID: String, attributes: [NSAttributedString.Key:Any]) -> NSAttributedString {
-        var groupChat: LokiGroupChat?
+        var publicChat: LokiPublicChat?
         OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
-            groupChat = LokiDatabaseUtilities.getGroupChat(for: threadID, in: transaction)
+            publicChat = LokiDatabaseUtilities.getPublicChat(for: threadID, in: transaction)
         }
         var string = string
         let regex = try! NSRegularExpression(pattern: "@[0-9a-fA-F]*", options: [])
@@ -26,8 +26,8 @@ public final class MentionUtilities : NSObject {
                 if hexEncodedPublicKey == OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey {
                     userDisplayName = OWSProfileManager.shared().localProfileName()
                 } else {
-                    if let groupChat = groupChat {
-                        userDisplayName = DisplayNameUtilities.getGroupChatDisplayName(for: hexEncodedPublicKey, in: groupChat.channel, on: groupChat.server)
+                    if let publicChat = publicChat {
+                        userDisplayName = DisplayNameUtilities.getPublicChatDisplayName(for: hexEncodedPublicKey, in: publicChat.channel, on: publicChat.server)
                     } else {
                         userDisplayName = DisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey)
                     }

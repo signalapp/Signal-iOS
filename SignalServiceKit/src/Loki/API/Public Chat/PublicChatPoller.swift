@@ -1,7 +1,7 @@
 
-@objc(LKGroupChatPoller)
+@objc(LKPublicChatPoller)
 public final class GroupChatPoller : NSObject {
-    private let group: LokiGroupChat
+    private let group: LokiPublicChat
     private var pollForNewMessagesTimer: Timer? = nil
     private var pollForDeletedMessagesTimer: Timer? = nil
     private var pollForModeratorsTimer: Timer? = nil
@@ -15,7 +15,7 @@ public final class GroupChatPoller : NSObject {
     
     // MARK: Lifecycle
     @objc(initForGroup:)
-    public init(for group: LokiGroupChat) {
+    public init(for group: LokiPublicChat) {
         self.group = group
         super.init()
     }
@@ -45,7 +45,7 @@ public final class GroupChatPoller : NSObject {
         let group = self.group
         let userHexEncodedPublicKey = self.userHexEncodedPublicKey
         // Processing logic for incoming messages
-        func processIncomingMessage(_ message: LokiGroupMessage) {
+        func processIncomingMessage(_ message: LokiPublicChatMessage) {
             let senderHexEncodedPublicKey = message.hexEncodedPublicKey
             let endIndex = senderHexEncodedPublicKey.endIndex
             let cutoffIndex = senderHexEncodedPublicKey.index(endIndex, offsetBy: -8)
@@ -80,7 +80,7 @@ public final class GroupChatPoller : NSObject {
             }
         }
         // Processing logic for outgoing messages
-        func processOutgoingMessage(_ message: LokiGroupMessage) {
+        func processOutgoingMessage(_ message: LokiPublicChatMessage) {
             guard let messageServerID = message.serverID else { return }
             let storage = OWSPrimaryStorage.shared()
             var isDuplicate = false
@@ -102,7 +102,7 @@ public final class GroupChatPoller : NSObject {
             storage.dbReadWriteConnection.readWrite { transaction in
                 message.update(withSentRecipient: group.server, wasSentByUD: false, transaction: transaction)
                 message.saveGroupChatServerID(messageServerID, in: transaction)
-                guard let messageID = message.uniqueId else { return print("[Loki] Failed to save group message.") }
+                guard let messageID = message.uniqueId else { return print("[Loki] Failed to save public chat message.") }
                 storage.setIDForMessageWithServerID(UInt(messageServerID), to: messageID, in: transaction)
             }
             if let linkPreviewURL = OWSLinkPreview.previewUrl(forMessageBodyText: message.body, selectedRange: nil) {
@@ -110,7 +110,7 @@ public final class GroupChatPoller : NSObject {
             }
         }
         // Poll
-        let _ = LokiGroupChatAPI.getMessages(for: group.channel, on: group.server).done(on: .main) { messages in
+        let _ = LokiPublicChatAPI.getMessages(for: group.channel, on: group.server).done(on: .main) { messages in
             messages.forEach { message in
                 if message.hexEncodedPublicKey != userHexEncodedPublicKey {
                     processIncomingMessage(message)
@@ -123,7 +123,7 @@ public final class GroupChatPoller : NSObject {
     
     private func pollForDeletedMessages() {
         let group = self.group
-        let _ = LokiGroupChatAPI.getDeletedMessageServerIDs(for: group.channel, on: group.server).done { deletedMessageServerIDs in
+        let _ = LokiPublicChatAPI.getDeletedMessageServerIDs(for: group.channel, on: group.server).done { deletedMessageServerIDs in
             let storage = OWSPrimaryStorage.shared()
             storage.dbReadWriteConnection.readWrite { transaction in
                 let deletedMessageIDs = deletedMessageServerIDs.compactMap { storage.getIDForMessage(withServerID: UInt($0), in: transaction) }
@@ -135,6 +135,6 @@ public final class GroupChatPoller : NSObject {
     }
     
     private func pollForModerators() {
-        let _ = LokiGroupChatAPI.getModerators(for: group.channel, on: group.server)
+        let _ = LokiPublicChatAPI.getModerators(for: group.channel, on: group.server)
     }
 }

@@ -20,15 +20,15 @@ public final class DisplayNameUtilities : NSObject {
         }
     }
     
-    @objc public static func getGroupChatDisplayName(for hexEncodedPublicKey: String, in channel: UInt64, on server: String) -> String? {
+    @objc public static func getPublicChatDisplayName(for hexEncodedPublicKey: String, in channel: UInt64, on server: String) -> String? {
         var result: String?
         OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
-            result = getGroupChatDisplayName(for: hexEncodedPublicKey, in: channel, on: server, using: transaction)
+            result = getPublicChatDisplayName(for: hexEncodedPublicKey, in: channel, on: server, using: transaction)
         }
         return result
     }
     
-    @objc public static func getGroupChatDisplayName(for hexEncodedPublicKey: String, in channel: UInt64, on server: String, using transaction: YapDatabaseReadTransaction) -> String? {
+    @objc public static func getPublicChatDisplayName(for hexEncodedPublicKey: String, in channel: UInt64, on server: String, using transaction: YapDatabaseReadTransaction) -> String? {
         if hexEncodedPublicKey == userHexEncodedPublicKey {
             return userDisplayName
         } else {

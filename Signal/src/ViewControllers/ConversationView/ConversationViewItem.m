@@ -1187,15 +1187,15 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         TSMessage *message = (TSMessage *)self.interaction;
         if (!message.isGroupChatMessage) return;
         
-        __block LKGroupChat *groupChat;
+        __block LKPublicChat *publicChat;
         [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            groupChat = [LKDatabaseUtilities getGroupChatForThreadID:groupThread.uniqueId transaction: transaction];
+            publicChat = [LKDatabaseUtilities getPublicChatForThreadID:groupThread.uniqueId transaction: transaction];
         }];
-        if (groupChat == nil) return;
+        if (publicChat == nil) return;
         
         // Delete the message
         BOOL isSentByUser = (interationType == OWSInteractionType_OutgoingMessage);
-        [[LKGroupChatAPI deleteMessageWithID:message.groupChatServerID forGroup:groupChat.channel onServer:groupChat.server isSentByUser:isSentByUser].catch(^(NSError *error) {
+        [[LKPublicChatAPI deleteMessageWithID:message.groupChatServerID forGroup:publicChat.channel onServer:publicChat.server isSentByUser:isSentByUser].catch(^(NSError *error) {
             // Roll back
             [self.interaction save];
         }) retainUntilComplete];
@@ -1263,15 +1263,15 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     if (!message.isGroupChatMessage) return false;
     
     // Ensure we have the details needed to contact the server
-    __block LKGroupChat *groupChat;
+    __block LKPublicChat *publicChat;
     [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        groupChat = [LKDatabaseUtilities getGroupChatForThreadID:groupThread.uniqueId transaction: transaction];
+        publicChat = [LKDatabaseUtilities getPublicChatForThreadID:groupThread.uniqueId transaction: transaction];
     }];
-    if (groupChat == nil) return false;
+    if (publicChat == nil) return false;
     
     // Only allow deletion on incoming messages if the user has moderation permission
     if (interationType == OWSInteractionType_IncomingMessage) {
-        BOOL isModerator = [LKGroupChatAPI isUserModerator:self.userHexEncodedPublicKey forGroup:groupChat.channel onServer:groupChat.server];
+        BOOL isModerator = [LKPublicChatAPI isUserModerator:self.userHexEncodedPublicKey forGroup:publicChat.channel onServer:publicChat.server];
         if (!isModerator) return false;
     }
 
