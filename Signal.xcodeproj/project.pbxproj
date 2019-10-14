@@ -2647,19 +2647,10 @@
 		B8439518228510E9000563FE /* Loki */ = {
 			isa = PBXGroup;
 			children = (
+				B8BFFF392355426100102A27 /* Messaging */,
 				B86BD0872339A1ED000F5AE3 /* Onboarding */,
 				B86BD08223399ABF000F5AE3 /* Settings */,
 				B86BD0882339A253000F5AE3 /* Utilities */,
-				B8162F0222891AD600D46544 /* FriendRequestView.swift */,
-				B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */,
-				24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */,
-				B89841E222B7579F00B1BDC6 /* NewConversationVC.swift */,
-				B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */,
-				B8258491230FA5DA001B41CB /* ScanQRCodeVC.h */,
-				B8258492230FA5E9001B41CB /* ScanQRCodeVC.m */,
-				24BD2608234DA2050008EB0A /* NewPublicChatVC.swift */,
-				B8B26C8E234D629C004ED98C /* MentionCandidateSelectionView.swift */,
-				B8B26C90234D8CBD004ED98C /* MentionCandidateSelectionViewDelegate.swift */,
 			);
 			path = Loki;
 			sourceTree = "<group>";
@@ -2680,9 +2671,9 @@
 			children = (
 				B885D5F3233491AB00EE0D8E /* DeviceLinkingModal.swift */,
 				B894D0702339D6F300B4D94D /* DeviceLinkingModalDelegate.swift */,
+				B894D0742339EDCF00B4D94D /* NukeDataModal.swift */,
 				B86BD08023399883000F5AE3 /* QRCodeModal.swift */,
 				B86BD08523399CEF000F5AE3 /* SeedModal.swift */,
-				B894D0742339EDCF00B4D94D /* NukeDataModal.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -2699,11 +2690,28 @@
 		B86BD0882339A253000F5AE3 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				B84664F4235022F30083A1CD /* MentionUtilities.swift */,
 				B86BD08323399ACF000F5AE3 /* Modal.swift */,
 				B885D5F52334A32100EE0D8E /* UIView+Constraint.swift */,
-				B84664F4235022F30083A1CD /* MentionUtilities.swift */,
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		B8BFFF392355426100102A27 /* Messaging */ = {
+			isa = PBXGroup;
+			children = (
+				B8162F0222891AD600D46544 /* FriendRequestView.swift */,
+				B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */,
+				24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */,
+				B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */,
+				B8B26C8E234D629C004ED98C /* MentionCandidateSelectionView.swift */,
+				B8B26C90234D8CBD004ED98C /* MentionCandidateSelectionViewDelegate.swift */,
+				B89841E222B7579F00B1BDC6 /* NewConversationVC.swift */,
+				24BD2608234DA2050008EB0A /* NewPublicChatVC.swift */,
+				B8258491230FA5DA001B41CB /* ScanQRCodeVC.h */,
+				B8258492230FA5E9001B41CB /* ScanQRCodeVC.m */,
+			);
+			path = Messaging;
 			sourceTree = "<group>";
 		};
 		D221A07E169C9E5E00537ABF = {
