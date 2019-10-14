@@ -707,7 +707,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *text = displayableText.displayText;
     
-    NSMutableAttributedString *attributedText = [LKMentionUtilities highlightMentionsIn:text isOutgoingMessage:isOutgoingMessage thread:thread attributes:@{ NSFontAttributeName : font, NSForegroundColorAttributeName : textColor }].mutableCopy;
+    NSMutableAttributedString *attributedText = [LKMentionUtilities highlightMentionsIn:text isOutgoingMessage:isOutgoingMessage threadID:thread.uniqueId attributes:@{ NSFontAttributeName : font, NSForegroundColorAttributeName : textColor }].mutableCopy;
     
     if (searchText.length >= ConversationSearchController.kMinimumSearchTextLength) {
         NSString *searchableText = [FullTextSearchFinder normalizeWithText:searchText];
@@ -1158,7 +1158,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self.viewItem.hasQuotedText) { return nil; }
     NSString *rawText = self.viewItem.displayableQuotedText.fullText;
     TSThread *thread = self.viewItem.interaction.thread;
-    NSString *text = [LKMentionUtilities highlightMentionsIn:rawText thread:thread];
+    NSString *text = [LKMentionUtilities highlightMentionsIn:rawText threadID:thread.uniqueId];
     return [DisplayableText displayableText:text];
 }
 

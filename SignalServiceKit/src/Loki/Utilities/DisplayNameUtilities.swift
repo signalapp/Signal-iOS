@@ -9,14 +9,14 @@ public final class DisplayNameUtilities : NSObject {
     }
     
     private static var userDisplayName: String? {
-        return OWSProfileManager.shared().localProfileName()
+        return SSKEnvironment.shared.profileManager.localProfileName()!
     }
     
     @objc public static func getPrivateChatDisplayName(for hexEncodedPublicKey: String) -> String? {
         if hexEncodedPublicKey == userHexEncodedPublicKey {
             return userDisplayName
         } else {
-            return OWSProfileManager.shared().profileName(forRecipientId: hexEncodedPublicKey)
+            return SSKEnvironment.shared.profileManager.profileName(forRecipientId: hexEncodedPublicKey)
         }
     }
     

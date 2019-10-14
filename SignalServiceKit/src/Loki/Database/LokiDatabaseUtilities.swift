@@ -26,8 +26,8 @@ public final class LokiDatabaseUtilities : NSObject {
     }
     
     @objc(getAllGroupChats:)
-    public static func objc_getAllGroupChats(in transaction: YapDatabaseReadTransaction) -> [String:LokiGroupChat] {
-        return OWSPrimaryStorage.shared().getAllGroupChats(with: transaction)
+    public static func getAllGroupChats(in transaction: YapDatabaseReadTransaction) -> [String:LokiGroupChat] {
+        return OWSPrimaryStorage.shared().getAllGroupChats(in: transaction)
     }
 
     @objc(getGroupChatForThreadID:transaction:)
@@ -36,12 +36,12 @@ public final class LokiDatabaseUtilities : NSObject {
     }
 
     @objc(setGroupChat:threadID:transaction:)
-    public static func objc_setGroupChat(_ groupChat: LokiGroupChat, for threadID: String, in transaction: YapDatabaseReadWriteTransaction) {
+    public static func setGroupChat(_ groupChat: LokiGroupChat, for threadID: String, in transaction: YapDatabaseReadWriteTransaction) {
        return OWSPrimaryStorage.shared().setGroupChat(groupChat, for: threadID, in: transaction)
     }
 
     @objc(removeGroupChatForThreadID:transaction:)
-    public static func objc_removeGroupChat(for threadID: String, in transaction: YapDatabaseReadWriteTransaction) {
+    public static func removeGroupChat(for threadID: String, in transaction: YapDatabaseReadWriteTransaction) {
        return OWSPrimaryStorage.shared().removeGroupChat(for: threadID, in: transaction)
     }
 }

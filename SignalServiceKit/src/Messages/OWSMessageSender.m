@@ -503,9 +503,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
         [recipientIds addObject:self.tsAccountManager.localNumber];
     } else if (thread.isGroupThread) {
-        [_primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
             LKGroupChat *groupChat = [LKDatabaseUtilities getGroupChatForThreadID:thread.uniqueId transaction:transaction];
-            if (groupChat != nil) { [recipientIds addObject:groupChat.server]; }
+            [recipientIds addObject:groupChat.server];
         }];
     } else if ([thread isKindOfClass:[TSContactThread class]]) {
         NSString *recipientContactId = ((TSContactThread *)thread).contactIdentifier;
@@ -1188,12 +1188,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [self messageSendDidFail:messageSend deviceMessages:deviceMessages statusCode:statusCode error:error responseData:responseData];
     };
     
-    // Get the group chat info if we have it
     __block LKGroupChat *groupChat;
     [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         groupChat = [LKDatabaseUtilities getGroupChatForThreadID:message.uniqueThreadId transaction: transaction];
     }];
-    
     if (groupChat != nil) {
         NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
         NSString *displayName = SSKEnvironment.shared.profileManager.localProfileName;

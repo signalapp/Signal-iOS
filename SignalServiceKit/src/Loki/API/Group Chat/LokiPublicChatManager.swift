@@ -5,6 +5,7 @@ public final class LokiPublicChatManager: NSObject {
     
     // MARK: Error
     public enum Error : Swift.Error {
+        case chatCreationFailed
         case userPublicKeyNotFound
     }
     
@@ -47,21 +48,26 @@ public final class LokiPublicChatManager: NSObject {
     
     public func addChat(server: String, channel: UInt64) -> Promise<LokiGroupChat> {
         if let existingChat = getChat(server: server, channel: channel) {
-            return Promise.value(self.addChat(server: server, channel: channel, name: existingChat.displayName))
+            if let chat = self.addChat(server: server, channel: channel, name: existingChat.displayName) {
+                return Promise.value(chat)
+            } else {
+                return Promise(error: Error.chatCreationFailed)
+            }
         }
         
         return LokiGroupChatAPI.getAuthToken(for: server).then { token in
             return LokiGroupChatAPI.getChannelInfo(channel, on: server)
         }.map { channelInfo -> LokiGroupChat in
-            return self.addChat(server: server, channel: channel, name: channelInfo)
+            guard let chat = self.addChat(server: server, channel: channel, name: channelInfo) else { throw Error.chatCreationFailed }
+            return chat
         }
     }
     
     @discardableResult
     @objc(addChatWithServer:channel:name:)
-    public func addChat(server: String, channel: UInt64, name: String) -> LokiGroupChat {
-        let chat = LokiGroupChat(channel: channel, server: server, displayName: name, isDeletable: true)
-        let model = TSGroupModel(title: chat.displayName, memberIds: [ourHexEncodedPublicKey!, chat.server], image: nil, groupId: chat.idAsData!)
+    public func addChat(server: String, channel: UInt64, name: String) -> LokiGroupChat? {
+        guard let chat = LokiGroupChat(channel: channel, server: server, displayName: name, isDeletable: true) else { return nil }
+        let model = TSGroupModel(title: chat.displayName, memberIds: [ourHexEncodedPublicKey!, chat.server], image: nil, groupId: chat.idAsData)
         
         // Store the group chat mapping
         self.storage.dbReadWriteConnection.readWrite { transaction in
@@ -95,7 +101,7 @@ public final class LokiPublicChatManager: NSObject {
     
     private func refreshChatsAndPollers() {
         storage.dbReadConnection.read { transaction in
-            let newChats = self.storage.getAllGroupChats(with: transaction)
+            let newChats = self.storage.getAllGroupChats(in: transaction)
             
             // Remove any chats that don't exist in the database
             let removedChatThreadIds = self.chats.keys.filter { !newChats.keys.contains($0) }
