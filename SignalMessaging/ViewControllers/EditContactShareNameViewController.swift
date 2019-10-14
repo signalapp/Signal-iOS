@@ -178,10 +178,6 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
         ]
     }
 
-    override public var canBecomeFirstResponder: Bool {
-        return true
-    }
-
     // MARK: - View Lifecycle
 
     override public func viewWillAppear(_ animated: Bool) {

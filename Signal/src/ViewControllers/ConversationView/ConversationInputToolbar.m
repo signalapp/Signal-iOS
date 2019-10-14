@@ -168,8 +168,21 @@ const CGFloat kMaxTextViewHeight = 98;
 
     self.layoutMargins = UIEdgeInsetsZero;
 
+    // When presenting or dismissing the keyboard, there may be a slight
+    // gap between the keyboard and the bottom of the input bar during
+    // the animation. Extend the background below the toolbar's bounds
+    // by this much to mask that extra space.
+    CGFloat backgroundExtension = 100;
+
     if (UIAccessibilityIsReduceTransparencyEnabled()) {
         self.backgroundColor = Theme.toolbarBackgroundColor;
+
+        UIView *extendedBackground = [UIView new];
+        extendedBackground.backgroundColor = Theme.toolbarBackgroundColor;
+        [self addSubview:extendedBackground];
+        [extendedBackground autoPinWidthToSuperview];
+        [extendedBackground autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self];
+        [extendedBackground autoSetDimension:ALDimensionHeight toSize:backgroundExtension];
     } else {
         CGFloat alpha = OWSNavigationBar.backgroundBlurMutingFactor;
         self.backgroundColor = [Theme.toolbarBackgroundColor colorWithAlphaComponent:alpha];
@@ -177,7 +190,9 @@ const CGFloat kMaxTextViewHeight = 98;
         UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:Theme.barBlurEffect];
         blurEffectView.layer.zPosition = -1;
         [self addSubview:blurEffectView];
-        [blurEffectView autoPinEdgesToSuperviewEdges];
+        [blurEffectView autoPinWidthToSuperview];
+        [blurEffectView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+        [blurEffectView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:-backgroundExtension];
     }
 
     self.autoresizingMask = UIViewAutoresizingFlexibleHeight;

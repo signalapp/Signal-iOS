@@ -145,10 +145,6 @@ public class LocationPicker: UIViewController {
         navigationController?.navigationBar.isTranslucent = true
     }
 
-    override public var canBecomeFirstResponder: Bool {
-        return true
-    }
-
     @objc func cancelButtonPressed(_ sender: UIButton) {
         if let navigation = navigationController, navigation.viewControllers.count > 1 {
             navigation.popViewController(animated: true)

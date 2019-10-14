@@ -246,11 +246,6 @@ class ImageEditorCropViewController: OWSViewController {
         return true
     }
 
-    @objc
-    override public var canBecomeFirstResponder: Bool {
-        return true
-    }
-
     private static let desiredCornerSize: CGFloat = 24
     private static let minCropSize: CGFloat = desiredCornerSize * 2
     private var cornerSize = CGSize.zero

@@ -135,7 +135,8 @@ typedef enum : NSUInteger {
     ConversationInputToolbarDelegate,
     ConversationViewModelDelegate,
     MessageRequestDelegate,
-    LocationPickerDelegate>
+    LocationPickerDelegate,
+    InputAccessoryViewPlaceholderDelegate>
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
@@ -143,7 +144,10 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) OWSAudioActivity *recordVoiceNoteAudioActivity;
 @property (nonatomic, readonly) NSTimeInterval viewControllerCreatedAt;
 
-@property (nonatomic, readonly) InputAccessoryViewWrapper *inputWrapper;
+@property (nonatomic, readonly) UIView *bottomBar;
+@property (nonatomic, nullable) NSLayoutConstraint *bottomBarBottomConstraint;
+@property (nonatomic, readonly) InputAccessoryViewPlaceholder *inputAccessoryPlaceholder;
+
 @property (nonatomic, readonly) ConversationInputToolbar *inputToolbar;
 @property (nonatomic, readonly) ConversationCollectionView *collectionView;
 @property (nonatomic, readonly) ConversationViewLayout *layout;
@@ -181,8 +185,6 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) BOOL isUserScrolling;
 
-@property (nonatomic) NSLayoutConstraint *scrollDownButtonButtomConstraint;
-
 @property (nonatomic) ConversationScrollButton *scrollDownButton;
 
 @property (nonatomic) BOOL isViewCompletelyAppeared;
@@ -205,7 +207,6 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL isShowingSearchUI;
 @property (nonatomic, nullable) MenuActionsViewController *menuActionsViewController;
 @property (nonatomic) CGFloat extraContentInsetPadding;
-@property (nonatomic) CGFloat contentInsetBottom;
 @property (nonatomic) CGFloat contentOffsetAdjustment;
 
 @property (nonatomic, nullable) MessageRequestView *messageRequestView;
@@ -383,31 +384,6 @@ typedef enum : NSUInteger {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(profileWhitelistDidChange:)
                                                  name:kNSNotificationName_ProfileWhitelistDidChange
-                                               object:nil];
-    // Keyboard events.
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillShow:)
-                                                 name:UIKeyboardWillShowNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardDidShow:)
-                                                 name:UIKeyboardDidShowNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillHide:)
-                                                 name:UIKeyboardWillHideNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardDidHide:)
-                                                 name:UIKeyboardDidHideNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillChangeFrame:)
-                                                 name:UIKeyboardWillChangeFrameNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardDidChangeFrame:)
-                                                 name:UIKeyboardDidChangeFrameNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(themeDidChange:)
@@ -632,7 +608,13 @@ typedef enum : NSUInteger {
     self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyBoard)];
     [self.collectionView addGestureRecognizer:self.tapGestureRecognizer];
 
-    _inputWrapper = [InputAccessoryViewWrapper new];
+    _bottomBar = [UIView containerView];
+    [self.view addSubview:self.bottomBar];
+    self.bottomBarBottomConstraint = [self.bottomBar autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [self.bottomBar autoPinWidthToSuperview];
+
+    _inputAccessoryPlaceholder = [InputAccessoryViewPlaceholder new];
+    self.inputAccessoryPlaceholder.delegate = self;
 
     self.loadMoreHeader = [UILabel new];
     self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
@@ -651,46 +633,9 @@ typedef enum : NSUInteger {
     }];
 }
 
-- (BOOL)becomeFirstResponder
-{
-    OWSLogDebug(@"");
-
-    BOOL result = [super becomeFirstResponder];
-
-    if (result) {
-        [self.inputToolbar clearDesiredKeyboard];
-    }
-
-    return result;
-}
-
-- (BOOL)resignFirstResponder
-{
-    OWSLogDebug(@"");
-    return [super resignFirstResponder];
-}
-
-- (BOOL)canBecomeFirstResponder
-{
-    return YES;
-}
-
 - (nullable UIView *)inputAccessoryView
 {
-    UIView *inputAccessoryView;
-
-    if (self.messageRequestView) {
-        inputAccessoryView = self.messageRequestView;
-    } else if (self.isShowingSearchUI) {
-        inputAccessoryView = self.searchController.resultsBar;
-    } else {
-        inputAccessoryView = self.inputToolbar;
-    }
-
-    self.inputWrapper.wrappedView = inputAccessoryView;
-    self.inputWrapper.containerWidth = self.view.width;
-
-    return self.inputWrapper;
+    return self.inputAccessoryPlaceholder;
 }
 
 - (nullable NSString *)textInputContextIdentifier
@@ -1245,33 +1190,6 @@ typedef enum : NSUInteger {
     self.viewHasEverAppeared = YES;
     self.shouldAnimateKeyboardChanges = YES;
 
-    // HACK: Because the inputToolbar is the inputAccessoryView, we make some special considertations WRT it's firstResponder status.
-    //
-    // When a view controller is presented, it is first responder. However if we resign first responder
-    // and the view re-appears, without being presented, the inputToolbar can become invisible.
-    // e.g. specifically works around the scenario:
-    // - Present this VC
-    // - Longpress on a message to show edit menu, which entails making the pressed view the first responder.
-    // - Begin presenting another view, e.g. swipe-left for details or swipe-right to go back, but quit part way, so that you remain on the conversation view
-    // - toolbar will be not be visible unless we reaquire first responder.
-    if (!self.isFirstResponder && !self.presentedViewController) {
-
-        // We don't have to worry about the input toolbar being visible if the inputToolbar.textView is first responder
-        // In fact doing so would unnecessarily dismiss the keyboard which is probably not desirable and at least
-        // a distracting animation.
-        BOOL shouldBecomeFirstResponder = NO;
-        if (self.isShowingSearchUI) {
-            shouldBecomeFirstResponder = !self.searchController.uiSearchController.searchBar.isFirstResponder;
-        } else {
-            shouldBecomeFirstResponder = !self.inputToolbar.isInputViewFirstResponder;
-        }
-
-        if (shouldBecomeFirstResponder) {
-            OWSLogDebug(@"reclaiming first responder to ensure toolbar is shown.");
-            [self becomeFirstResponder];
-        }
-    }
-
     switch (self.actionOnOpen) {
         case ConversationViewActionNone:
             break;
@@ -1684,28 +1602,12 @@ typedef enum : NSUInteger {
                                                          completion:(void (^)(BOOL didConfirmIdentity))completionHandler
 {
     return [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithAddresses:self.thread.recipientAddresses
-        confirmationText:confirmationText
-        contactsManager:self.contactsManager
-        completion:^(BOOL didShowAlert) {
-            // Pre iOS-11, the keyboard and inputAccessoryView will obscure the alert if the keyboard is up when the
-            // alert is presented, so after hiding it, we regain first responder here.
-            if (@available(iOS 11.0, *)) {
-                // do nothing
-            } else {
-                [self becomeFirstResponder];
-            }
-            completionHandler(didShowAlert);
-        }
-        beforePresentationHandler:^(void) {
-            if (@available(iOS 11.0, *)) {
-                // do nothing
-            } else {
-                // Pre iOS-11, the keyboard and inputAccessoryView will obscure the alert if the keyboard is up when the
-                // alert is presented.
-                [self dismissKeyBoard];
-                [self resignFirstResponder];
-            }
-        }];
+                                                              confirmationText:confirmationText
+                                                               contactsManager:self.contactsManager
+                                                                    completion:^(BOOL didShowAlert) {
+                                                                        completionHandler(didShowAlert);
+                                                                    }
+                                                     beforePresentationHandler:nil];
 }
 
 - (void)showFingerprintWithAddress:(SignalServiceAddress *)address
@@ -2794,20 +2696,8 @@ typedef enum : NSUInteger {
     [self.scrollDownButton autoSetDimension:ALDimensionHeight toSize:ConversationScrollButton.buttonSize];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _scrollDownButton);
 
-    // The "scroll down" button layout tracks the content inset of the collection view,
-    // so pin to the edge of the collection view.
-    self.scrollDownButtonButtomConstraint =
-        [self.scrollDownButton autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view];
+    [self.scrollDownButton autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.bottomBar];
     [self.scrollDownButton autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
-
-    [self updateScrollDownButtonLayout];
-}
-
-- (void)updateScrollDownButtonLayout
-{
-    CGFloat inset = -(self.collectionView.contentInset.bottom + self.bottomLayoutGuide.length);
-    self.scrollDownButtonButtomConstraint.constant = inset;
-    [self.scrollDownButton.superview setNeedsLayout];
 }
 
 - (void)setHasUnreadMessages:(BOOL)hasUnreadMessages transaction:(SDSAnyReadTransaction *)transaction
@@ -3118,15 +3008,7 @@ typedef enum : NSUInteger {
     // the new message scroll into view.
     [self scrollToBottomAnimated:NO];
 
-    [self dismissViewControllerAnimated:YES
-                             completion:^{
-                                 OWSAssertDebug(self.isFirstResponder);
-                                 if (@available(iOS 10, *)) {
-                                     // do nothing
-                                 } else {
-                                     [self reloadInputViews];
-                                 }
-                             }];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (nullable NSString *)sendMediaNavInitialMessageText:(SendMediaNavigationController *)sendMediaNavigationController
@@ -3813,157 +3695,6 @@ typedef enum : NSUInteger {
     });
 }
 
-- (void)keyboardWillShow:(NSNotification *)notification
-{
-    [self handleKeyboardNotification:notification];
-}
-
-- (void)keyboardDidShow:(NSNotification *)notification
-{
-    [self handleKeyboardNotification:notification];
-}
-
-- (void)keyboardWillHide:(NSNotification *)notification
-{
-    [self handleKeyboardNotification:notification];
-}
-
-- (void)keyboardDidHide:(NSNotification *)notification
-{
-    [self handleKeyboardNotification:notification];
-}
-
-- (void)keyboardWillChangeFrame:(NSNotification *)notification
-{
-    [self handleKeyboardNotification:notification];
-}
-
-- (void)keyboardDidChangeFrame:(NSNotification *)notification
-{
-    [self handleKeyboardNotification:notification];
-}
-
-- (void)handleKeyboardNotification:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    NSDictionary *userInfo = [notification userInfo];
-
-    NSValue *_Nullable keyboardBeginFrameValue = userInfo[UIKeyboardFrameBeginUserInfoKey];
-    if (!keyboardBeginFrameValue) {
-        OWSFailDebug(@"Missing keyboard begin frame");
-        return;
-    }
-
-    NSValue *_Nullable keyboardEndFrameValue = userInfo[UIKeyboardFrameEndUserInfoKey];
-    if (!keyboardEndFrameValue) {
-        OWSFailDebug(@"Missing keyboard end frame");
-        return;
-    }
-    CGRect keyboardEndFrame = [keyboardEndFrameValue CGRectValue];
-    CGRect keyboardEndFrameConverted = [self.view convertRect:keyboardEndFrame fromView:nil];
-
-    UIEdgeInsets oldInsets = self.collectionView.contentInset;
-    UIEdgeInsets newInsets = oldInsets;
-
-    // Measures how far the keyboard "intrudes" into the collection view's content region.
-    // Indicates how large the bottom content inset should be in order to avoid the keyboard
-    // from hiding the conversation content.
-    //
-    // NOTE: we can ignore the "bottomLayoutGuide" (i.e. the notch); this will be accounted
-    // for by the "adjustedContentInset".
-    CGFloat keyboardContentOverlap
-        = MAX(0, self.view.height - self.bottomLayoutGuide.length - keyboardEndFrameConverted.origin.y);
-
-    // For the sake of continuity, we want to maintain the same contentInsetBottom when the
-    // the keyboard/input accessory are hidden, e.g. during dismissal animations, when
-    // presenting popups like the attachment picker, etc.
-    //
-    // Therefore, we only zero out the contentInsetBottom if the inputAccessoryView is nil.
-    if (self.inputAccessoryView == nil || keyboardContentOverlap > 0) {
-        self.contentInsetBottom = keyboardContentOverlap;
-    } else if (!CurrentAppContext().isAppForegroundAndActive) {
-        // If app is not active, we'll dismiss the keyboard
-        // so only reserve enough space for the input accessory
-        // view.  Otherwise, the content will animate into place
-        // when the app returns from the background.
-        //
-        // NOTE: There are two separate cases. If the keyboard is
-        //       dismissed, the inputAccessoryView grows to allow
-        //       space for the notch.  In this case, we need to
-        //       subtract bottomLayoutGuide.  However, if the
-        //       keyboard is presented we don't want to do that.
-        //       I don't see a simple, safe way to distinguish
-        //       these two cases.  Therefore, I'm _always_
-        //       subtracting bottomLayoutGuide.  This will cause
-        //       a slight animation when returning to the app
-        //       but it will "match" the presentation animation
-        //       of the input accessory.
-        self.contentInsetBottom = MAX(0, self.inputAccessoryView.height - self.bottomLayoutGuide.length);
-    }
-
-    newInsets.top = 0 + self.extraContentInsetPadding;
-    newInsets.bottom = self.contentInsetBottom + self.extraContentInsetPadding;
-
-    BOOL wasScrolledToBottom = [self isScrolledToBottom];
-
-    void (^adjustInsets)(void) = ^(void) {
-        // Changing the contentInset can change the contentOffset, so make sure we
-        // stash the current value before making any changes.
-        CGFloat oldYOffset = self.collectionView.contentOffset.y;
-
-        if (!UIEdgeInsetsEqualToEdgeInsets(self.collectionView.contentInset, newInsets)) {
-            self.collectionView.contentInset = newInsets;
-        }
-        self.collectionView.scrollIndicatorInsets = newInsets;
-
-        // Note there is a bug in iOS11.2 which where switching to the emoji keyboard
-        // does not fire a UIKeyboardFrameWillChange notification. In that case, the scroll
-        // down button gets mostly obscured by the keyboard.
-        // RADAR: #36297652
-        [self updateScrollDownButtonLayout];
-
-        // Update the layout of the scroll down button immediately.
-        // This change might be animated by the keyboard notification.
-        [self.scrollDownButton.superview layoutIfNeeded];
-
-        // Adjust content offset to prevent the presented keyboard from obscuring content.
-        if (!self.viewHasEverAppeared) {
-            [self scrollToDefaultPosition:NO];
-        } else if (wasScrolledToBottom) {
-            // If we were scrolled to the bottom, don't do any fancy math. Just stay at the bottom.
-            [self scrollToBottomAnimated:NO];
-        } else if (self.isViewCompletelyAppeared) {
-            // If we were scrolled away from the bottom, shift the content in lockstep with the
-            // keyboard, up to the limits of the content bounds.
-            CGFloat insetChange = newInsets.bottom - oldInsets.bottom;
-
-            // Only update the content offset if the inset has changed.
-            if (insetChange != 0) {
-                // The content offset can go negative, up to the size of the top layout guide.
-                // This accounts for the extended layout under the navigation bar.
-                CGFloat minYOffset = -self.topLayoutGuide.length;
-
-                CGFloat newYOffset = CGFloatClamp(oldYOffset + insetChange, minYOffset, self.safeContentHeight);
-                CGPoint newOffset = CGPointMake(0, newYOffset);
-
-                [self.collectionView setContentOffset:newOffset animated:NO];
-            }
-        }
-    };
-
-    if (self.shouldAnimateKeyboardChanges && CurrentAppContext().isAppForegroundAndActive) {
-        adjustInsets();
-    } else {
-        // Even though we are scrolling without explicitly animating, the notification seems to occur within the context
-        // of a system animation, which is desirable when the view is visible, because the user sees the content rise
-        // in sync with the keyboard. However, when the view hasn't yet been presented, the animation conflicts and the
-        // result is that initial load causes the collection cells to visably "animate" to their final position once the
-        // view appears.
-        [UIView performWithoutAnimation:adjustInsets];
-    }
-}
-
 - (void)applyTheme
 {
     OWSAssertIsOnMainThread();
@@ -3988,6 +3719,7 @@ typedef enum : NSUInteger {
     self.inputToolbar.inputToolbarDelegate = self;
     self.inputToolbar.inputTextViewDelegate = self;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputToolbar);
+    [self reloadBottomBar];
 }
 
 #pragma mark - AttachmentApprovalViewControllerDelegate
@@ -4232,6 +3964,7 @@ typedef enum : NSUInteger {
     // *slightly* taller (44pt -> 56pt)
     self.navigationItem.titleView = searchBar;
     [self updateBarButtonItems];
+    [self reloadBottomBar];
 
     // Hack so that the ResultsBar stays on the screen when dismissing the search field
     // keyboard.
@@ -4283,18 +4016,7 @@ typedef enum : NSUInteger {
     OWSAssertDebug(navBar.stubbedNextResponder == self);
     navBar.stubbedNextResponder = nil;
 
-    // restore first responder to VC
-    [self becomeFirstResponder];
-    if (@available(iOS 10, *)) {
-        [self reloadInputViews];
-    } else {
-        // We want to change the inputAccessoryView from SearchResults -> MessageInput
-        // reloading too soon on an old iOS9 device caused the inputAccessoryView to go from
-        // SearchResults -> MessageInput -> SearchResults
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self reloadInputViews];
-        });
-    }
+    [self reloadBottomBar];
 }
 
 #pragma mark ConversationSearchControllerDelegate
@@ -4934,22 +4656,6 @@ typedef enum : NSUInteger {
     [toastController presentToastViewFromBottomOfView:self.view inset:bottomInset];
 }
 
-#pragma mark -
-
-- (void)presentViewController:(UIViewController *)viewController
-                     animated:(BOOL)animated
-                   completion:(void (^__nullable)(void))completion
-{
-    // Ensure that we are first responder before presenting other views.
-    // This ensures that the input toolbar will be restored after the
-    // presented view is dismissed.
-    if (![self isFirstResponder]) {
-        [self becomeFirstResponder];
-    }
-
-    [super presentViewController:viewController animated:animated completion:completion];
-}
-
 #pragma mark - ConversationViewModelDelegate
 
 - (void)conversationViewModelWillUpdate
@@ -5279,6 +4985,7 @@ typedef enum : NSUInteger {
 {
     [super viewSafeAreaInsetsDidChange];
 
+    [self updateContentInsetsAnimated:NO];
     [self updateInputToolbarLayout];
 }
 
@@ -5289,9 +4996,6 @@ typedef enum : NSUInteger {
         safeAreaInsets = self.view.safeAreaInsets;
     }
     [self.inputToolbar updateLayoutWithSafeAreaInsets:safeAreaInsets];
-
-    // Scroll button layout depends on input toolbar size.
-    [self updateScrollDownButtonLayout];
 }
 
 #pragma mark - Message Request
@@ -5317,6 +5021,7 @@ typedef enum : NSUInteger {
 
     self.messageRequestView = [[MessageRequestView alloc] initWithThread:self.thread];
     self.messageRequestView.delegate = self;
+    [self reloadBottomBar];
 }
 
 - (void)dismissMessageRequestView
@@ -5333,18 +5038,14 @@ typedef enum : NSUInteger {
         bottomInset = self.view.safeAreaInsets.bottom;
     }
 
-    InputAccessoryViewWrapper *dismissingView = [InputAccessoryViewWrapper new];
-    dismissingView.wrappedView = self.messageRequestView;
-    dismissingView.containerWidth = self.view.width;
+    UIView *dismissingView = self.messageRequestView;
     self.messageRequestView = nil;
 
-    [self reloadInputViews];
+    [self reloadBottomBar];
 
-    // Add the view on top of the new input accessory view (if there is one)
-    // or our view, and then slide it off screen to reveal the new input view.
-    UIView *parentView = self.inputAccessoryView ?: self.view;
-
-    [parentView addSubview:dismissingView];
+    // Add the view on top of the new bottom bar (if there is one),
+    // and then slide it off screen to reveal the new input view.
+    [self.view addSubview:dismissingView];
     [dismissingView autoPinWidthToSuperview];
     [dismissingView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
@@ -5448,6 +5149,139 @@ typedef enum : NSUInteger {
     });
 }
 
+#pragma mark - InputAccessoryViewPlaceholderDelegate
+
+- (void)inputAccessoryPlaceholderKeyboardIsDismissingInteractively
+{
+    // No animation, just follow along with the keyboard.
+    [self updateBottomBarPosition];
+}
+
+- (void)inputAccessoryPlaceholderKeyboardIsDismissingWithAnimationDuration:(NSTimeInterval)animationDuration
+{
+    [self handleKeyboardStateChange:animationDuration];
+}
+
+- (void)inputAccessoryPlaceholderKeyboardIsPresentingWithAnimationDuration:(NSTimeInterval)animationDuration
+{
+    [self handleKeyboardStateChange:animationDuration];
+}
+
+- (void)handleKeyboardStateChange:(NSTimeInterval)animationDuration
+{
+    if (self.shouldAnimateKeyboardChanges && animationDuration > 0) {
+        [UIView animateWithDuration:animationDuration
+                         animations:^{
+                             [self updateBottomBarPosition];
+                         }];
+        [self updateContentInsetsAnimated:YES];
+    } else {
+        [self updateBottomBarPosition];
+        [self updateContentInsetsAnimated:NO];
+    }
+}
+
+// MARK: -
+
+- (void)reloadBottomBar
+{
+    UIView *bottomView;
+
+    if (self.messageRequestView) {
+        bottomView = self.messageRequestView;
+    } else if (self.isShowingSearchUI) {
+        bottomView = self.searchController.resultsBar;
+    } else {
+        bottomView = self.inputToolbar;
+    }
+
+    if (bottomView.superview == self.bottomBar && self.viewHasEverAppeared) {
+        // Do nothing, the view has not changed.
+        return;
+    }
+
+    for (UIView *subView in self.bottomBar.subviews) {
+        [subView removeFromSuperview];
+    }
+
+    [self.bottomBar addSubview:bottomView];
+    [bottomView autoPinEdgesToSuperviewEdges];
+
+    [self.bottomBar layoutIfNeeded];
+
+    self.inputAccessoryPlaceholder.desiredHeight = self.bottomBar.height - self.bottomLayoutGuide.length;
+
+
+    [self updateContentInsetsAnimated:self.viewHasEverAppeared];
+}
+
+- (void)updateBottomBarPosition
+{
+    OWSAssertIsOnMainThread();
+
+    self.bottomBarBottomConstraint.constant = -self.inputAccessoryPlaceholder.keyboardOverlap;
+
+    // We always want to apply the new bottom bar position immediately,
+    // as this only happens during animations (interactive or otherwise)
+    [self.bottomBar.superview layoutIfNeeded];
+}
+
+- (void)updateContentInsetsAnimated:(BOOL)animated
+{
+    OWSAssertIsOnMainThread();
+
+    [self.view layoutIfNeeded];
+
+    UIEdgeInsets oldInsets = self.collectionView.contentInset;
+    UIEdgeInsets newInsets = oldInsets;
+
+    newInsets.bottom = self.extraContentInsetPadding + self.inputAccessoryPlaceholder.keyboardOverlap
+        + self.bottomBar.height - self.bottomLayoutGuide.length;
+    newInsets.top = self.extraContentInsetPadding;
+
+    BOOL wasScrolledToBottom = [self isScrolledToBottom];
+
+    // Changing the contentInset can change the contentOffset, so make sure we
+    // stash the current value before making any changes.
+    CGFloat oldYOffset = self.collectionView.contentOffset.y;
+
+    if (!UIEdgeInsetsEqualToEdgeInsets(self.collectionView.contentInset, newInsets)) {
+        self.collectionView.contentInset = newInsets;
+    }
+    self.collectionView.scrollIndicatorInsets = newInsets;
+
+    void (^adjustInsets)(void) = ^(void) {
+        // Adjust content offset to prevent the presented keyboard from obscuring content.
+        if (!self.viewHasEverAppeared) {
+            [self scrollToDefaultPosition:NO];
+        } else if (wasScrolledToBottom) {
+            // If we were scrolled to the bottom, don't do any fancy math. Just stay at the bottom.
+            [self scrollToBottomAnimated:NO];
+        } else if (self.isViewCompletelyAppeared) {
+            // If we were scrolled away from the bottom, shift the content in lockstep with the
+            // keyboard, up to the limits of the content bounds.
+            CGFloat insetChange = newInsets.bottom - oldInsets.bottom;
+
+            // Only update the content offset if the inset has changed.
+            if (insetChange != 0) {
+                // The content offset can go negative, up to the size of the top layout guide.
+                // This accounts for the extended layout under the navigation bar.
+                CGFloat minYOffset = -self.topLayoutGuide.length;
+
+                CGFloat newYOffset = CGFloatClamp(oldYOffset + insetChange, minYOffset, self.safeContentHeight);
+                CGPoint newOffset = CGPointMake(0, newYOffset);
+
+                [self.collectionView setContentOffset:newOffset animated:NO];
+            }
+        }
+    };
+
+    if (animated) {
+        adjustInsets();
+    } else {
+        [UIView performWithoutAnimation:adjustInsets];
+    }
+}
 
 @end
 

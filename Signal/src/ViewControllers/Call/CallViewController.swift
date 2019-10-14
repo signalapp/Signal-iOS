@@ -78,10 +78,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     weak var localCaptureSession: AVCaptureSession?
     weak var remoteVideoTrack: RTCVideoTrack?
 
-    override public var canBecomeFirstResponder: Bool {
-        return true
-    }
-
     var shouldRemoteVideoControlsBeHidden = false {
         didSet {
             updateCallUI(callState: call.state)
@@ -178,14 +174,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         ensureProximityMonitoring()
 
         updateCallUI(callState: call.state)
-
-        self.becomeFirstResponder()
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        self.becomeFirstResponder()
     }
 
     override func loadView() {

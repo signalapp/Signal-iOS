@@ -141,11 +141,6 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     [self.delegate unlockButtonWasTapped];
 }
 
-- (BOOL)canBecomeFirstResponder
-{
-    return YES;
-}
-
 #pragma mark - Orientation
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations

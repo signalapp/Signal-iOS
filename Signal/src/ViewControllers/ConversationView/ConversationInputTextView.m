@@ -153,11 +153,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateTextContainerInset];
 }
 
-- (BOOL)canBecomeFirstResponder
-{
-    return YES;
-}
-
 - (BOOL)becomeFirstResponder
 {
     BOOL result = [super becomeFirstResponder];
