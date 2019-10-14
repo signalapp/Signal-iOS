@@ -605,12 +605,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - KBS
 
-+ (TSRequest *)kbsEnclaveNonceRequestWithEnclaveName:(NSString *)enclaveName
++ (TSRequest *)kbsEnclaveTokenRequestWithEnclaveName:(NSString *)enclaveName
                                         authUsername:(NSString *)authUsername
                                         authPassword:(NSString *)authPassword
                                              cookies:(NSArray<NSHTTPCookie *> *)cookies
 {
-    NSString *path = [NSString stringWithFormat:@"v1/nonce/%@", enclaveName];
+    NSString *path = [NSString stringWithFormat:@"v1/token/%@", enclaveName];
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 

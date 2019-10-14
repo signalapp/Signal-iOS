@@ -24,7 +24,7 @@ message Response {
 message BackupRequest {
   optional bytes  service_id = 1;
   optional bytes  backup_id  = 2;
-  optional bytes  nonce      = 3;
+  optional bytes  token      = 3;
   optional uint64 valid_from = 4;
   optional bytes  data       = 5;
   optional bytes  pin        = 6;
@@ -34,18 +34,18 @@ message BackupRequest {
 message BackupResponse {
   enum Status {
     OK             = 1;
-    NONCE_MISMATCH = 2;
+    ALREADY_EXISTS = 2;
     NOT_YET_VALID  = 3;
   }
 
   optional Status status = 1;
-  optional bytes  nonce  = 2;
+  optional bytes  token  = 2;
 }
 
 message RestoreRequest {
   optional bytes  service_id = 1;
   optional bytes  backup_id  = 2;
-  optional bytes  nonce      = 3;
+  optional bytes  token      = 3;
   optional uint64 valid_from = 4;
   optional bytes  pin        = 5;
 }
@@ -53,14 +53,14 @@ message RestoreRequest {
 message RestoreResponse {
   enum Status {
     OK             = 1;
-    NONCE_MISMATCH = 2;
+    TOKEN_MISMATCH = 2;
     NOT_YET_VALID  = 3;
     MISSING        = 4;
     PIN_MISMATCH   = 5;
   }
 
   optional Status status = 1;
-  optional bytes  nonce  = 2;
+  optional bytes  token  = 2;
   optional bytes  data   = 3;
   optional uint32 tries  = 4;
 }

@@ -19,6 +19,10 @@ public class KeyBackupService: NSObject {
         return TSNetworkManager.shared()
     }
 
+    static var databaseStorage: SDSDatabaseStorage {
+        return .shared
+    }
+
     static var keychainStorage: SSKKeychainStorage {
         return CurrentAppContext().keychainStorage()
     }
@@ -101,11 +105,22 @@ public class KeyBackupService: NSObject {
                     throw KBSError.assertion
                 }
 
+                // As long as the backup exists we should always receive a
+                // new token to use on our next request. Store it now.
+                if status != .missing {
+                    guard let tokenData = response.token else {
+                        owsFailDebug("KBS restore is missing token")
+                        throw KBSError.assertion
+                    }
+
+                    try Token.updateNext(data: tokenData, tries: response.tries)
+                }
+
                 switch status {
-                case .nonceMismatch:
-                    // the given nonce is outdated;
-                    // TODO: the request should be retried with new nonce value
-                    owsFailDebug("attempted restore with expired nonce")
+                case .tokenMismatch:
+                    // the given token has already been spent. we'll use the new token
+                    // on the next attempt.
+                    owsFailDebug("attempted restore with spent token")
                     throw KBSError.assertion
                 case .pinMismatch:
                     throw KBSError.invalidPin(triesRemaining: response.tries)
@@ -137,11 +152,19 @@ public class KeyBackupService: NSObject {
                 throw KBSError.assertion
             }
 
+            guard let tokenData = response.token else {
+                owsFailDebug("KBS restore is missing token")
+                throw KBSError.assertion
+            }
+
+            // We should always receive a new token to use on our next request.
+            try Token.updateNext(data: tokenData)
+
             switch status {
-            case .nonceMismatch:
-                // the given nonce is outdated;
-                // TODO: the request should be retried with new nonce value
-                owsFailDebug("attempted backup with expired nonce")
+            case .alreadyExists:
+                // If we receive already exists, this means our backup has expired and
+                // been replaced. In normal circumstances this should never happen.
+                owsFailDebug("Received ALREADY_EXISTS response from KBS")
                 throw KBSError.assertion
             case .notYetValid:
                 owsFailDebug("the server thinks we provided a `validFrom` in the future")
@@ -196,12 +219,19 @@ public class KeyBackupService: NSObject {
                 throw KBSError.assertion
             }
 
-            switch status {
-            case .nonceMismatch:
-                // the given nonce is outdated;
-                // TODO: the request should be retried with new nonce value
-                owsFailDebug("attempted backup with expired nonce")
+            guard let tokenData = response.token else {
+                owsFailDebug("KBS restore is missing token")
                 throw KBSError.assertion
+            }
+
+            // We should always receive a new token to use on our next request. Store it now.
+            try Token.updateNext(data: tokenData)
+
+            switch status {
+            case .alreadyExists:
+                // the given token has already been spent. we'll use the new token
+                // on the next attempt.
+                owsFailDebug("attempted restore with spent token")
             case .notYetValid:
                 owsFailDebug("the server thinks we provided a `validFrom` in the future")
                 throw KBSError.assertion
@@ -232,7 +262,11 @@ public class KeyBackupService: NSObject {
             // Even if the request to delete our keys from KBS failed,
             // purge them from the keychain.
             clearKeychain()
-        }.asVoid()
+        }.done { _ in
+            // The next token is no longer valid, as it pertains to
+            // a deleted backup. Clear it out so we fetch a fresh one.
+            Token.clearNext()
+        }
     }
 
     // PRAGMA MARK: - Crypto
@@ -403,12 +437,12 @@ public class KeyBackupService: NSObject {
 
     private static func enclaveRequest<RequestType: KBSRequestOption>(
         with auth: RemoteAttestationAuth? = nil,
-        and requestOptionBuilder: @escaping (NonceResponse) throws -> RequestType
+        and requestOptionBuilder: @escaping (Token) throws -> RequestType
     ) -> Promise<RequestType.ResponseOptionType> {
         return RemoteAttestation.makePromise(for: .keyBackup, with: auth).then { remoteAttestation in
-            fetchNonce(for: remoteAttestation).map { ($0, remoteAttestation) }
-        }.map(on: DispatchQueue.global()) { nonce, remoteAttestation -> (TSRequest, RemoteAttestation) in
-            let requestOption = try requestOptionBuilder(nonce)
+            fetchToken(for: remoteAttestation).map { ($0, remoteAttestation) }
+        }.map(on: DispatchQueue.global()) { tokenResponse, remoteAttestation -> (TSRequest, RemoteAttestation) in
+            let requestOption = try requestOptionBuilder(tokenResponse)
             let requestBuilder = KeyBackupProtoRequest.builder()
             requestOption.set(on: requestBuilder)
             let kbRequestData = try requestBuilder.buildSerializedData()
@@ -483,7 +517,7 @@ public class KeyBackupService: NSObject {
     }
 
     private static func backupKeyRequest(stretchedPin: Data, keyData: Data, and auth: RemoteAttestationAuth? = nil) -> Promise<KeyBackupProtoBackupResponse> {
-        return enclaveRequest(with: auth) { nonce -> KeyBackupProtoBackupRequest in
+        return enclaveRequest(with: auth) { token -> KeyBackupProtoBackupRequest in
             guard let kbsAccessKey = deriveKBSAccessKey(from: stretchedPin) else {
                 owsFailDebug("failed to dervive KBS Access key")
                 throw KBSError.assertion
@@ -497,8 +531,8 @@ public class KeyBackupService: NSObject {
             let backupRequestBuilder = KeyBackupProtoBackupRequest.builder()
             backupRequestBuilder.setData(keyData)
             backupRequestBuilder.setPin(kbsAccessKey)
-            backupRequestBuilder.setNonce(nonce.nonce)
-            backupRequestBuilder.setBackupID(nonce.backupId)
+            backupRequestBuilder.setToken(token.data)
+            backupRequestBuilder.setBackupID(token.backupId)
             backupRequestBuilder.setTries(maximumKeyAttempts)
             backupRequestBuilder.setServiceID(serviceId)
 
@@ -516,7 +550,7 @@ public class KeyBackupService: NSObject {
     }
 
     private static func restoreKeyRequest(stretchedPin: Data, with auth: RemoteAttestationAuth? = nil) -> Promise<KeyBackupProtoRestoreResponse> {
-        return enclaveRequest(with: auth) { nonce -> KeyBackupProtoRestoreRequest in
+        return enclaveRequest(with: auth) { token -> KeyBackupProtoRestoreRequest in
             guard let kbsAccessKey = deriveKBSAccessKey(from: stretchedPin) else {
                 owsFailDebug("failed to dervive KBS Access key")
                 throw KBSError.assertion
@@ -529,8 +563,8 @@ public class KeyBackupService: NSObject {
 
             let restoreRequestBuilder = KeyBackupProtoRestoreRequest.builder()
             restoreRequestBuilder.setPin(kbsAccessKey)
-            restoreRequestBuilder.setNonce(nonce.nonce)
-            restoreRequestBuilder.setBackupID(nonce.backupId)
+            restoreRequestBuilder.setToken(token.data)
+            restoreRequestBuilder.setBackupID(token.backupId)
             restoreRequestBuilder.setServiceID(serviceId)
 
             // number of seconds since unix epoch after which this request should be valid
@@ -547,14 +581,14 @@ public class KeyBackupService: NSObject {
     }
 
     private static func deleteKeyRequest() -> Promise<KeyBackupProtoDeleteResponse> {
-        return enclaveRequest { nonce -> KeyBackupProtoDeleteRequest in
+        return enclaveRequest { token -> KeyBackupProtoDeleteRequest in
             guard let serviceId = Data.data(fromHex: keyBackupServiceId) else {
                 owsFailDebug("failed to encode service id")
                 throw KBSError.assertion
             }
 
             let deleteRequestBuilder = KeyBackupProtoDeleteRequest.builder()
-            deleteRequestBuilder.setBackupID(nonce.backupId)
+            deleteRequestBuilder.setBackupID(token.backupId)
             deleteRequestBuilder.setServiceID(serviceId)
 
             do {
@@ -566,48 +600,124 @@ public class KeyBackupService: NSObject {
         }
     }
 
-    // PRAGMA MARK: - Nonce
+    // PRAGMA MARK: - Token
 
-    private struct NonceResponse {
+    private struct Token {
+        private static var keyValueStore: SDSKeyValueStore {
+            return SDSKeyValueStore(collection: "kOWSKeyBackupService_Token")
+        }
+
+        private static let backupIdKey = "backupIdKey"
+        private static let dataKey = "dataKey"
+        private static let triesKey = "triesKey"
+
         let backupId: Data
-        let nonce: Data
-        let tries: Int
+        let data: Data
+        let tries: UInt32
 
-        static func parse(responseObject: Any?) throws -> NonceResponse {
+        private init(backupId: Data, data: Data, tries: UInt32) throws {
+            guard backupId.count == 32 else {
+                owsFailDebug("invalid backupId")
+                throw KBSError.assertion
+            }
+            self.backupId = backupId
 
+            guard data.count == 32 else {
+                owsFailDebug("invalid token data")
+                throw KBSError.assertion
+            }
+            self.data = data
+
+            self.tries = tries
+        }
+
+        /// Update the token to use for the next enclave request.
+        /// If backupId or tries are nil, attempts to use the previously known value.
+        /// If we don't have a cached value (we've never stored a token before), an error is thrown.
+        @discardableResult
+        static func updateNext(backupId: Data? = nil, data: Data, tries: UInt32? = nil) throws -> Token {
+            guard let backupId = backupId ?? databaseStorage.readReturningResult(block: { transaction in
+                keyValueStore.getData(backupIdKey, transaction: transaction)
+            }) else {
+                owsFailDebug("missing backupId")
+                throw KBSError.assertion
+            }
+
+            guard let tries = tries ?? databaseStorage.readReturningResult(block: { transaction in
+                keyValueStore.getUInt32(triesKey, transaction: transaction)
+            }) else {
+                owsFailDebug("missing tries")
+                throw KBSError.assertion
+            }
+
+            let token = try Token(backupId: backupId, data: data, tries: tries)
+            token.recordAsCurrent()
+            return token
+        }
+
+        /// Update the token to use for the next enclave request.
+        @discardableResult
+        static func updateNext(responseObject: Any?) throws -> Token {
             guard let paramParser = ParamParser(responseObject: responseObject) else {
                 owsFailDebug("Unexpectedly missing response object")
                 throw KBSError.assertion
             }
 
             let backupId = try paramParser.requiredBase64EncodedData(key: "backupId")
-            guard backupId.count == 32 else {
-                owsFailDebug("Received invalid backupId")
-                throw KBSError.assertion
-            }
+            let data = try paramParser.requiredBase64EncodedData(key: "token")
+            let tries: UInt32 = try paramParser.required(key: "tries")
 
-            let nonce = try paramParser.requiredBase64EncodedData(key: "nonce")
-            guard nonce.count == 32 else {
-                owsFailDebug("Received invalid nonce")
-                throw KBSError.assertion
-            }
+            let token = try Token(backupId: backupId, data: data, tries: tries)
+            token.recordAsCurrent()
+            return token
+        }
 
-            let tries: Int = try paramParser.required(key: "tries")
-            guard tries >= 0 else {
-                owsFailDebug("Received invalid tries")
-                throw KBSError.assertion
+        static func clearNext() {
+            databaseStorage.write { transaction in
+                keyValueStore.setData(nil, key: backupIdKey, transaction: transaction)
+                keyValueStore.setData(nil, key: dataKey, transaction: transaction)
+                keyValueStore.setObject(nil, key: triesKey, transaction: transaction)
             }
+        }
 
-            return NonceResponse(
-                backupId: backupId,
-                nonce: nonce,
-                tries: tries
-            )
+        /// The token to use when making the next enclave request.
+        static var next: Token? {
+            return databaseStorage.readReturningResult { transaction in
+                guard let backupId = keyValueStore.getData(backupIdKey, transaction: transaction),
+                    let data = keyValueStore.getData(dataKey, transaction: transaction),
+                    let tries = keyValueStore.getUInt32(triesKey, transaction: transaction) else {
+                        return nil
+                }
+
+                do {
+                    return try Token(backupId: backupId, data: data, tries: tries)
+                } catch {
+                    // This should never happen, but if for some reason our stored token gets
+                    // corrupted we'll return nil which will trigger us to fetch a fresh one
+                    // from the enclave.
+                    owsFailDebug("unexpectedly failed to initialize token with error: \(error)")
+                    return nil
+                }
+            }
+        }
+
+        private func recordAsCurrent() {
+            databaseStorage.write { transaction in
+                Token.keyValueStore.setData(self.backupId, key: Token.backupIdKey, transaction: transaction)
+                Token.keyValueStore.setData(self.data, key: Token.dataKey, transaction: transaction)
+                Token.keyValueStore.setUInt32(self.tries, key: Token.triesKey, transaction: transaction)
+            }
         }
     }
 
-    private static func fetchNonce(for remoteAttestation: RemoteAttestation) -> Promise<NonceResponse> {
-        let request = OWSRequestFactory.kbsEnclaveNonceRequest(
+    private static func fetchToken(for remoteAttestation: RemoteAttestation) -> Promise<Token> {
+        // If we already have a token stored, we need to use it before fetching another.
+        // We only stop using this token once the enclave informs us it is spent.
+        if let currentToken = Token.next { return Promise.value(currentToken) }
+
+        // Fetch a new token
+
+        let request = OWSRequestFactory.kbsEnclaveTokenRequest(
             withEnclaveName: remoteAttestation.enclaveName,
             authUsername: remoteAttestation.auth.username,
             authPassword: remoteAttestation.auth.password,
@@ -615,7 +725,7 @@ public class KeyBackupService: NSObject {
         )
 
         return networkManager.makePromise(request: request).map(on: DispatchQueue.global()) { _, responseObject in
-            try NonceResponse.parse(responseObject: responseObject)
+            try Token.updateNext(responseObject: responseObject)
         }
     }
 }
