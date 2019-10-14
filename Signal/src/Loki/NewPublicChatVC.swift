@@ -3,25 +3,21 @@
 final class NewPublicChatVC : OWSViewController {
 
     // MARK: Components
-    private lazy var serverUrlTextField: UITextField = {
+    private lazy var urlTextField: UITextField = {
         let result = UITextField()
         result.textColor = Theme.primaryColor
-        result.font = UIFont.ows_dynamicTypeBodyClamped
-        let placeholder = NSMutableAttributedString(string: NSLocalizedString("Enter a Server URL", comment: ""))
+        result.font = .ows_dynamicTypeBodyClamped
+        let placeholder = NSMutableAttributedString(string: NSLocalizedString("Enter a URL", comment: ""))
         placeholder.addAttribute(.foregroundColor, value: Theme.placeholderColor, range: NSRange(location: 0, length: placeholder.length))
         result.attributedPlaceholder = placeholder
-        result.tintColor = UIColor.lokiGreen()
+        result.tintColor = .lokiGreen()
         result.keyboardAppearance = .dark
+        result.keyboardType = .URL
+        result.autocapitalizationType = .none
         return result
     }()
     
-    private lazy var addButton: OWSFlatButton = {
-        let addButtonFont = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
-        let addButtonHeight = addButtonFont.pointSize * 48 / 17
-        let addButton = OWSFlatButton.button(title: NSLocalizedString("Add", comment: ""), font: addButtonFont, titleColor: .white, backgroundColor: .lokiGreen(), target: self, selector: #selector(handleNextButtonTapped))
-        addButton.autoSetDimension(.height, toSize: addButtonHeight)
-        return addButton
-    }()
+    private lazy var addButton = OWSFlatButton.button(title: NSLocalizedString("Add", comment: ""), font: UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight(), titleColor: .white, backgroundColor: .lokiGreen(), target: self, selector: #selector(handleAddButtonTapped))
     
     // MARK: Lifecycle
     override func viewDidLoad() {
@@ -30,20 +26,24 @@ final class NewPublicChatVC : OWSViewController {
         view.layoutMargins = .zero
         // Navigation bar
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(close))
-        title = NSLocalizedString("Add Public Chat Server", comment: "")
+        title = NSLocalizedString("Add Public Chat", comment: "")
         // Separator
         let separator = UIView()
         separator.autoSetDimension(.height, toSize: 1 / UIScreen.main.scale)
         separator.backgroundColor = Theme.hairlineColor
-        
-        updateButton(enabled: true)
-       
+        // Explanation label
+        let explanationLabel = UILabel()
+        explanationLabel.textColor = Theme.primaryColor
+        explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        explanationLabel.text = NSLocalizedString("Enter the URL of the public chat you'd like to join. The Loki Public Chat URL is https://chat.lokinet.org.", comment: "")
+        explanationLabel.numberOfLines = 0
+        explanationLabel.lineBreakMode = .byWordWrapping
+        // Add button
+        let addButtonHeight = addButton.button.titleLabel!.font.pointSize * 48 / 17
+        addButton.autoSetDimension(.height, toSize: addButtonHeight)
+        updateAddButton(isConnecting: false)
         // Stack view
-        let stackView = UIStackView(arrangedSubviews: [
-            serverUrlTextField,
-            UIView.vStretchingSpacer(),
-            addButton
-        ])
+        let stackView = UIStackView(arrangedSubviews: [ urlTextField, UIView.spacer(withHeight: 8), separator, UIView.spacer(withHeight: 24), explanationLabel, UIView.vStretchingSpacer(), addButton ])
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
@@ -56,7 +56,20 @@ final class NewPublicChatVC : OWSViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        serverUrlTextField.becomeFirstResponder()
+        urlTextField.becomeFirstResponder()
+    }
+    
+    // MARK: Updating
+    private func updateAddButton(isConnecting: Bool) {
+        addButton.setEnabled(!isConnecting)
+        addButton.setTitle(isConnecting ? NSLocalizedString("Connecting...", comment: "") : NSLocalizedString("Add", comment: ""))
+    }
+    
+    // MARK: General
+    private func showError(title: String, message: String = "") {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+        presentAlert(alert)
     }
     
     // MARK: Interaction
@@ -64,34 +77,20 @@ final class NewPublicChatVC : OWSViewController {
         dismiss(animated: true, completion: nil)
     }
     
-    @objc private func handleNextButtonTapped() {
-        let serverURL = (serverUrlTextField.text?.trimmingCharacters(in: .whitespaces) ?? "").lowercased().replacingOccurrences(of: "http://", with: "https://")
-        guard let url = URL(string: serverURL), let scheme = url.scheme, scheme == "https", let _ = url.host else {
-            showAlert(title: NSLocalizedString("Invalid server URL provided", comment: ""), message: NSLocalizedString("Please make sure you have provided the full url", comment: ""))
-            return
+    @objc private func handleAddButtonTapped() {
+        let uncheckedURL = (urlTextField.text?.trimmingCharacters(in: .whitespaces) ?? "").lowercased().replacingOccurrences(of: "http://", with: "https://")
+        guard let url = URL(string: uncheckedURL), let scheme = url.scheme, scheme == "https", url.host != nil else {
+            return showError(title: NSLocalizedString("Invalid URL", comment: ""), message: NSLocalizedString("Please check the URL you entered and try again.", comment: ""))
         }
-        
-        updateButton(enabled: false)
-        
+        updateAddButton(isConnecting: true)
         // TODO: Upon adding we should fetch previous messages
-        LokiPublicChatManager.shared.addChat(server: serverURL, channel: 1)
-        .done(on: .main) { _ in
-            self.presentingViewController!.dismiss(animated: true, completion: nil)
+        LokiPublicChatManager.shared.addChat(server: url.absoluteString, channel: 1)
+        .done(on: .main) { [weak self] _ in
+            self?.presentingViewController!.dismiss(animated: true, completion: nil)
         }
-        .catch(on: .main) { e in
-            self.updateButton(enabled: true)
-            self.showAlert(title: NSLocalizedString("Failed to connect to server", comment: ""))
+        .catch(on: .main) { [weak self] _ in
+            self?.updateAddButton(isConnecting: false)
+            self?.showError(title: NSLocalizedString("Couldn't Connect", comment: ""))
         }
-    }
-    
-    private func showAlert(title: String, message: String = "") {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
-        presentAlert(alert)
-    }
-    
-    private func updateButton(enabled: Bool) {
-        addButton.setEnabled(enabled)
-        addButton.setTitle(enabled ? NSLocalizedString("Add", comment: "") : NSLocalizedString("Connecting to server", comment: ""))
     }
 }

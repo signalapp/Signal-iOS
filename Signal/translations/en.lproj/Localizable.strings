@@ -2640,7 +2640,13 @@
 "Your device has been linked successfully" = "Your device has been linked successfully";
 "Link" = "Link";
 "Anonymous" = "Anonymous";
-"Invalid server URL provided" = "Invalid server URL provided";
-"Please make sure you have provided the full url" = "Please make sure you have provided the full url. E.g https://public-chat-server.url/";
+"Invalid URL" = "Invalid URL";
+"Please check the URL you entered and try again." = "Please check the URL you entered and try again.";
 "Please pick a shorter display name" = "Please pick a shorter display name";
 "Please pick a display name" = "Please pick a display name";
+"Add Public Chat" = "Add Public Chat";
+"Enter a URL" = "Enter a URL";
+"Enter the URL of the public chat you'd like to join. The Loki Public Chat URL is https://chat.lokinet.org." = "Enter the URL of the public chat you'd like to join. The Loki Public Chat URL is https://chat.lokinet.org.";
+"Connecting..." = "Connecting...";
+"Add" = "Add";
+"Couldn't Connect" = "Couldn't Connect";

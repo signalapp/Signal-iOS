@@ -6,11 +6,11 @@ final class NewConversationVC : OWSViewController, OWSQRScannerDelegate {
     private lazy var publicKeyTextField: UITextField = {
         let result = UITextField()
         result.textColor = Theme.primaryColor
-        result.font = UIFont.ows_dynamicTypeBodyClamped
+        result.font = .ows_dynamicTypeBodyClamped
         let placeholder = NSMutableAttributedString(string: NSLocalizedString("Enter a Public Key", comment: ""))
         placeholder.addAttribute(.foregroundColor, value: Theme.placeholderColor, range: NSRange(location: 0, length: placeholder.length))
         result.attributedPlaceholder = placeholder
-        result.tintColor = UIColor.lokiGreen()
+        result.tintColor = .lokiGreen()
         result.keyboardAppearance = .dark
         return result
     }()
