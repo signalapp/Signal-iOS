@@ -64,6 +64,11 @@ final class DisplayNameVC : OnboardingBaseViewController {
         TSAccountManager.sharedInstance().didRegister()
         UserDefaults.standard.set(true, forKey: "didUpdateForMainnet")
         onboardingController.verificationDidComplete(fromView: self)
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        appDelegate.setUpDefaultPublicChatsIfNeeded()
+        appDelegate.createRSSFeedsIfNeeded()
+        LokiPublicChatManager.shared.startPollersIfNeeded()
+        appDelegate.startRSSFeedPollersIfNeeded()
         OWSProfileManager.shared().updateLocalProfileName(displayName, avatarImage: nil, success: { }, failure: { }) // Try to save the user name but ignore the result
     }
 }

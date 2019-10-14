@@ -1,7 +1,7 @@
 import PromiseKit
 
 @objc(LKLongPoller)
-public final class LongPoller : NSObject {
+public final class LokiLongPoller : NSObject {
     private let onMessagesReceived: ([SSKProtoEnvelope]) -> Void
     private let storage = OWSPrimaryStorage.shared()
     private var hasStarted = false

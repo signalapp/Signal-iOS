@@ -1099,7 +1099,7 @@ const CGFloat kMaxTextViewHeight = 98;
     }];
     if (publicChat != nil) {
         self.mentionCandidateSelectionView.publicChatServer = publicChat.server;
-        [self.mentionCandidateSelectionView setPublicChatServerID:publicChat.channel];
+        [self.mentionCandidateSelectionView setPublicChatChannel:publicChat.channel];
     }
     self.mentionCandidateSelectionView.mentionCandidates = mentionCandidates;
     self.mentionCandidateSelectionViewSizeConstraint.constant = 6 + MIN(mentionCandidates.count, 4) * 52;

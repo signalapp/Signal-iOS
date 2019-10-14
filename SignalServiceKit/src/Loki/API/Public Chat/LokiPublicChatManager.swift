@@ -12,7 +12,7 @@ public final class LokiPublicChatManager: NSObject {
     @objc public static let shared = LokiPublicChatManager()
     
     private var chats: [String: LokiPublicChat] = [:]
-    private var pollers: [String: GroupChatPoller] = [:]
+    private var pollers: [String: LokiPublicChatPoller] = [:]
     private var isPolling = false
     
     private let storage = OWSPrimaryStorage.shared()
@@ -33,7 +33,7 @@ public final class LokiPublicChatManager: NSObject {
             if let poller = pollers[threadID] {
                 poller.startIfNeeded()
             } else {
-                let poller = GroupChatPoller(for: publicChat)
+                let poller = LokiPublicChatPoller(for: publicChat)
                 poller.startIfNeeded()
                 pollers[threadID] = poller
             }
@@ -124,7 +124,7 @@ public final class LokiPublicChatManager: NSObject {
         
         // Reset the last message cache
         if let chat = self.chats[threadId] {
-            LokiPublicChatAPI.resetLastMessageCache(for: chat.channel, on: chat.server)
+            LokiPublicChatAPI.clearCaches(for: chat.channel, on: chat.server)
         }
         
         // Remove the chat from the db

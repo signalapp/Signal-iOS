@@ -169,11 +169,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 # pragma mark Loki - Upgrading to Public Chat Manager
 
-// Versions less than or equal to 1.2.0 didn't store group chat mappings
+// Versions less than or equal to 1.2.0 didn't store public chat mappings
 + (void)updatePublicChatMapping
 {
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
-        for (LKPublicChat *chat in LKPublicChat.defaultChats) {
+        for (LKPublicChat *chat in LKPublicChatAPI.defaultChats) {
             TSGroupThread *thread = [TSGroupThread threadWithGroupId:chat.idAsData transaction:transaction];
             if (thread != nil) {
                 [LKDatabaseUtilities setPublicChat:chat threadID:thread.uniqueId transaction:transaction];

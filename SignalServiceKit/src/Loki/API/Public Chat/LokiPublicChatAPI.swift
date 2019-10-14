@@ -12,6 +12,15 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     @objc private static let channelInfoType = "net.patter-app.settings"
     @objc public static let publicChatMessageType = "network.loki.messenger.publicChat"
     
+    @objc public static let defaultChats: [LokiPublicChat] = {
+        var result: [LokiPublicChat] = []
+        result.append(LokiPublicChat(channel: 1, server: "https://chat.lokinet.org", displayName: NSLocalizedString("Loki Public Chat", comment: ""), isDeletable: true)!)
+        #if DEBUG
+            result.append(LokiPublicChat(channel: 1, server: "https://chat-dev.lokinet.org", displayName: "Loki Dev Chat", isDeletable: true)!)
+        #endif
+        return result
+    }()
+    
     // MARK: Convenience
     private static var userDisplayName: String {
         return SSKEnvironment.shared.contactsManager.displayName(forPhoneIdentifier: userHexEncodedPublicKey) ?? "Anonymous"
@@ -240,9 +249,9 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         }
     }
     
-    public static func resetLastMessageCache(for group: UInt64, on server: String) {
-        removeLastMessageServerID(for: group, on: server)
-        removeLastDeletionServerID(for: group, on: server)
+    public static func clearCaches(for channel: UInt64, on server: String) {
+        removeLastMessageServerID(for: channel, on: server)
+        removeLastDeletionServerID(for: channel, on: server)
     }
     
     // MARK: Public API (Obj-C)

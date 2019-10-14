@@ -5,13 +5,13 @@
 final class MentionCandidateSelectionView : UIView, UITableViewDataSource, UITableViewDelegate {
     @objc var mentionCandidates: [Mention] = [] { didSet { tableView.reloadData() } }
     @objc var publicChatServer: String?
-    var publicChatServerID: UInt64?
+    var publicChatChannel: UInt64?
     @objc var delegate: MentionCandidateSelectionViewDelegate?
     
     // MARK: Convenience
-    @objc(setPublicChatServerID:)
-    func setPublicChatServerID(to publicChatServerID: UInt64) {
-        self.publicChatServerID = publicChatServerID != 0 ? publicChatServerID : nil
+    @objc(setPublicChatChannel:)
+    func setPublicChatChannel(to publicChatChannel: UInt64) {
+        self.publicChatChannel = publicChatChannel != 0 ? publicChatChannel : nil
     }
     
     // MARK: Components
@@ -52,7 +52,7 @@ final class MentionCandidateSelectionView : UIView, UITableViewDataSource, UITab
         let mentionCandidate = mentionCandidates[indexPath.row]
         cell.mentionCandidate = mentionCandidate
         cell.publicChatServer = publicChatServer
-        cell.publicChatServerID = publicChatServerID
+        cell.publicChatChannel = publicChatChannel
         return cell
     }
     
@@ -70,7 +70,7 @@ private extension MentionCandidateSelectionView {
     final class Cell : UITableViewCell {
         var mentionCandidate = Mention(hexEncodedPublicKey: "", displayName: "") { didSet { update() } }
         var publicChatServer: String?
-        var publicChatServerID: UInt64?
+        var publicChatChannel: UInt64?
         
         // MARK: Components
         private lazy var profilePictureImageView = AvatarImageView()
@@ -130,8 +130,8 @@ private extension MentionCandidateSelectionView {
             displayNameLabel.text = mentionCandidate.displayName
             let profilePicture = OWSContactAvatarBuilder(signalId: mentionCandidate.hexEncodedPublicKey, colorName: .blue, diameter: 36).build()
             profilePictureImageView.image = profilePicture
-            if let publicChatServer = publicChatServer, let publicChatServerID = publicChatServerID {
-                let isUserModerator = LokiPublicChatAPI.isUserModerator(mentionCandidate.hexEncodedPublicKey, for: publicChatServerID, on: publicChatServer)
+            if let server = publicChatServer, let channel = publicChatChannel {
+                let isUserModerator = LokiPublicChatAPI.isUserModerator(mentionCandidate.hexEncodedPublicKey, for: channel, on: server)
                 moderatorIconImageView.isHidden = !isUserModerator
             } else {
                 moderatorIconImageView.isHidden = true

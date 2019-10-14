@@ -1534,11 +1534,10 @@ static NSTimeInterval launchStartedAt;
     return [[LKRSSFeed alloc] initWithId:@"loki.network.messenger-updates.feed" server:@"https://loki.network/category/messenger-updates/feed/" displayName:NSLocalizedString(@"Loki Messenger Updates", @"") isDeletable:false];
 }
 
-- (void)createGroupChatsIfNeeded
+- (void)setUpDefaultPublicChatsIfNeeded
 {
-    // Setup our default public chats
-    for (LKPublicChat *chat in LKPublicChat.defaultChats) {
-        NSString *userDefaultsKey = [@"isGroupChatSetUp." stringByAppendingString:chat.id];
+    for (LKPublicChat *chat in LKPublicChatAPI.defaultChats) {
+        NSString *userDefaultsKey = [@"isGroupChatSetUp." stringByAppendingString:chat.id]; // Should ideally be isPublicChatSetUp
         BOOL isChatSetUp = [NSUserDefaults.standardUserDefaults boolForKey:userDefaultsKey];
         if (!isChatSetUp || !chat.isDeletable) {
             [LKPublicChatManager.shared addChatWithServer:chat.server channel:chat.channel name:chat.displayName];
@@ -1591,11 +1590,6 @@ static NSTimeInterval launchStartedAt;
     if (self.lokiMessengerUpdatesFeedPoller == nil) {
         self.lokiMessengerUpdatesFeedPoller = [[LKRSSFeedPoller alloc] initForFeed:self.lokiMessengerUpdatesFeed];
     }
-}
-
-- (void)startGroupChatPollersIfNeeded
-{
-    [LKPublicChatManager.shared startPollersIfNeeded];
 }
 
 - (void)startRSSFeedPollersIfNeeded

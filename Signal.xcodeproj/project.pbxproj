@@ -565,7 +565,7 @@
 		B821F2F82272CED3002C88C0 /* DisplayNameVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F72272CED3002C88C0 /* DisplayNameVC.swift */; };
 		B821F2FA2272CEEE002C88C0 /* SeedVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F92272CEEE002C88C0 /* SeedVC.swift */; };
 		B8258493230FA5E9001B41CB /* ScanQRCodeVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B8258492230FA5E9001B41CB /* ScanQRCodeVC.m */; };
-		B82584A02315024B001B41CB /* RSSFeedPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825849F2315024B001B41CB /* RSSFeedPoller.swift */; };
+		B82584A02315024B001B41CB /* LokiRSSFeedPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */; };
 		B846365B22B7418B00AF1514 /* Identicon+ObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */; };
 		B84664F5235022F30083A1CD /* MentionUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84664F4235022F30083A1CD /* MentionUtilities.swift */; };
 		B86BD08123399883000F5AE3 /* QRCodeModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08023399883000F5AE3 /* QRCodeModal.swift */; };
@@ -1377,7 +1377,7 @@
 		B821F2F92272CEEE002C88C0 /* SeedVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedVC.swift; sourceTree = "<group>"; };
 		B8258491230FA5DA001B41CB /* ScanQRCodeVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScanQRCodeVC.h; sourceTree = "<group>"; };
 		B8258492230FA5E9001B41CB /* ScanQRCodeVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScanQRCodeVC.m; sourceTree = "<group>"; };
-		B825849F2315024B001B41CB /* RSSFeedPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSSFeedPoller.swift; sourceTree = "<group>"; };
+		B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokiRSSFeedPoller.swift; sourceTree = "<group>"; };
 		B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Identicon+ObjC.swift"; sourceTree = "<group>"; };
 		B84664F4235022F30083A1CD /* MentionUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionUtilities.swift; sourceTree = "<group>"; };
 		B86BD08023399883000F5AE3 /* QRCodeModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeModal.swift; sourceTree = "<group>"; };
@@ -2647,7 +2647,6 @@
 		B8439518228510E9000563FE /* Loki */ = {
 			isa = PBXGroup;
 			children = (
-				B86BD0892339A278000F5AE3 /* Group Chat */,
 				B86BD0872339A1ED000F5AE3 /* Onboarding */,
 				B86BD08223399ABF000F5AE3 /* Settings */,
 				B86BD0882339A253000F5AE3 /* Utilities */,
@@ -2655,6 +2654,7 @@
 				B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */,
 				24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */,
 				B89841E222B7579F00B1BDC6 /* NewConversationVC.swift */,
+				B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */,
 				B8258491230FA5DA001B41CB /* ScanQRCodeVC.h */,
 				B8258492230FA5E9001B41CB /* ScanQRCodeVC.m */,
 				24BD2608234DA2050008EB0A /* NewPublicChatVC.swift */,
@@ -2704,14 +2704,6 @@
 				B84664F4235022F30083A1CD /* MentionUtilities.swift */,
 			);
 			path = Utilities;
-			sourceTree = "<group>";
-		};
-		B86BD0892339A278000F5AE3 /* Group Chat */ = {
-			isa = PBXGroup;
-			children = (
-				B825849F2315024B001B41CB /* RSSFeedPoller.swift */,
-			);
-			path = "Group Chat";
 			sourceTree = "<group>";
 		};
 		D221A07E169C9E5E00537ABF = {
@@ -3786,7 +3778,7 @@
 				4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */,
 				4CB5F26720F6E1E2004D1B42 /* MenuActionsViewController.swift in Sources */,
 				3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */,
-				B82584A02315024B001B41CB /* RSSFeedPoller.swift in Sources */,
+				B82584A02315024B001B41CB /* LokiRSSFeedPoller.swift in Sources */,
 				24A830A22293CD0100F4CAC0 /* LokiP2PServer.swift in Sources */,
 				349ED990221B0194008045B0 /* Onboarding2FAViewController.swift in Sources */,
 				45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */,

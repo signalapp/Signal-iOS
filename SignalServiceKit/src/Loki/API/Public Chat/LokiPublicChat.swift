@@ -8,16 +8,6 @@ public final class LokiPublicChat : NSObject, NSCoding {
     @objc public let displayName: String
     @objc public let isDeletable: Bool
     
-    @objc public static var defaultChats: [LokiPublicChat] {
-        var chats = [LokiPublicChat(channel: UInt64(1), server: "https://chat.lokinet.org", displayName: NSLocalizedString("Loki Public Chat", comment: ""), isDeletable: true)!]
-
-        #if DEBUG
-            chats.append(LokiPublicChat(channel: UInt64(1), server: "https://chat-dev.lokinet.org", displayName: "Loki Dev Chat", isDeletable: true)!)
-        #endif
-
-        return chats
-    }
-    
     @objc public init?(channel: UInt64, server: String, displayName: String, isDeletable: Bool) {
         let id = "\(server).\(channel)"
         self.id = id
