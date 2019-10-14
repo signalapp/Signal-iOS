@@ -223,7 +223,7 @@ public final class LokiGroupChatAPI : LokiDotNetAPI {
         }
     }
     
-    public static func getChannelInfo(_ channel: UInt64, on server: String) -> Promise<LokiPublicChannel> {
+    public static func getChannelInfo(_ channel: UInt64, on server: String) -> Promise<String> {
         let url = URL(string: "\(server)/channels/\(channel)?include_annotations=1")!
         let request = TSRequest(url: url)
         return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
@@ -236,7 +236,7 @@ public final class LokiGroupChatAPI : LokiDotNetAPI {
                 print("[Loki] Couldn't parse info for group chat with ID: \(channel) on server: \(server) from: \(rawResponse).")
                 throw Error.parsingFailed
             }
-            return LokiPublicChannel(name: name)
+            return name
         }
     }
     

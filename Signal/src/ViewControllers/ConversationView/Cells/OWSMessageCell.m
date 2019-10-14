@@ -303,13 +303,10 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             groupChat = [LKDatabaseUtilities getGroupChatForThreadID:self.viewItem.interaction.uniqueThreadId transaction: transaction];
         }];
-        
-        if (groupChat != nil) {
-            BOOL isModerator = [LKGroupChatAPI isUserModerator:incomingMessage.authorId forGroup:groupChat.channel onServer:groupChat.server];
-            UIImage *moderatorIcon = [UIImage imageNamed:@"Crown"];
-            self.moderatorIconImageView.image = moderatorIcon;
-            self.moderatorIconImageView.hidden = !isModerator;
-        }
+        BOOL isModerator = [LKGroupChatAPI isUserModerator:incomingMessage.authorId forGroup:groupChat.channel onServer:groupChat.server];
+        UIImage *moderatorIcon = [UIImage imageNamed:@"Crown"];
+        self.moderatorIconImageView.image = moderatorIcon;
+        self.moderatorIconImageView.hidden = !isModerator;
     }
     
     [self.contentView addSubview:self.moderatorIconImageView];

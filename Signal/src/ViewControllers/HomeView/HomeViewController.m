@@ -787,21 +787,15 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     self.navigationItem.leftBarButtonItem = settingsButton;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, settingsButton);
 
-    UIBarButtonItem *newConversation = [[UIBarButtonItem alloc]
+    UIBarButtonItem *newPrivateChatButton = [[UIBarButtonItem alloc]
                                         initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
                                                              target:self
-                                                             action:@selector(showNewConversationView)
+                                                             action:@selector(showNewConversationVC)
                                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"compose")];
     
-    UIBarButtonItem *newServer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                                                                                     target:self
-                                                                                     action:@selector(showNewPublicChatView)
-                                                                    accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"addServer")];
+    UIBarButtonItem *newGroupChatButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"group-avatar"] style:UIBarButtonItemStylePlain target:self action:@selector(showNewPublicChatVC)];
     
-    self.navigationItem.rightBarButtonItems = @[
-        newConversation,
-        newServer,
-    ];
+    self.navigationItem.rightBarButtonItems = @[ newPrivateChatButton, newGroupChatButton ];
 }
 
 - (void)settingsButtonPressed:(id)sender
@@ -843,7 +837,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     [self.navigationController pushViewController:vc animated:NO];
 }
 
-- (void)showNewConversationView
+- (void)showNewConversationVC
 {
     LKNewConversationVC *newConversationVC = [LKNewConversationVC new];
     OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:newConversationVC];
@@ -871,7 +865,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
      */
 }
 
-- (void)showNewPublicChatView
+- (void)showNewPublicChatVC
 {
     LKNewPublicChatVC *newPublicChatVC = [LKNewPublicChatVC new];
     OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:newPublicChatVC];

@@ -11,7 +11,7 @@ public final class LokiPublicChatManager: NSObject {
     @objc public static let shared = LokiPublicChatManager()
     
     private var chats: [String: LokiGroupChat] = [:]
-    private var pollers: [String: LokiGroupChatPoller] = [:]
+    private var pollers: [String: GroupChatPoller] = [:]
     private var isPolling = false
     
     private let storage = OWSPrimaryStorage.shared()
@@ -32,7 +32,7 @@ public final class LokiPublicChatManager: NSObject {
             if let poller = pollers[threadID] {
                 poller.startIfNeeded()
             } else {
-                let poller = LokiGroupChatPoller(for: groupChat)
+                let poller = GroupChatPoller(for: groupChat)
                 poller.startIfNeeded()
                 pollers[threadID] = poller
             }
@@ -53,7 +53,7 @@ public final class LokiPublicChatManager: NSObject {
         return LokiGroupChatAPI.getAuthToken(for: server).then { token in
             return LokiGroupChatAPI.getChannelInfo(channel, on: server)
         }.map { channelInfo -> LokiGroupChat in
-            return self.addChat(server: server, channel: channel, name: channelInfo.name)
+            return self.addChat(server: server, channel: channel, name: channelInfo)
         }
     }
     

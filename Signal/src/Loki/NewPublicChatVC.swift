@@ -83,11 +83,12 @@ final class NewPublicChatVC : OWSViewController {
             return showError(title: NSLocalizedString("Invalid URL", comment: ""), message: NSLocalizedString("Please check the URL you entered and try again.", comment: ""))
         }
         updateAddButton(isConnecting: true)
+        let channelID: UInt64 = 1
         let urlAsString = url.absoluteString
         let displayName = OWSProfileManager.shared().localProfileName()
-        LokiPublicChatManager.shared.addChat(server: urlAsString, channel: 1)
+        LokiPublicChatManager.shared.addChat(server: urlAsString, channel: channelID)
         .done(on: .main) { [weak self] _ in
-            let _ = LokiGroupChatAPI.getMessages(for: 1, on: urlAsString)
+            let _ = LokiGroupChatAPI.getMessages(for: channelID, on: urlAsString)
             let _ = LokiGroupChatAPI.setDisplayName(to: displayName, on: urlAsString)
             self?.presentingViewController!.dismiss(animated: true, completion: nil)
         }

@@ -309,10 +309,19 @@ public final class LokiAPI : NSObject {
         guard let cache = userHexEncodedPublicKeyCache[threadID] else { return [] }
         var candidates: [Mention] = []
         // Gather candidates
+        var groupChat: LokiGroupChat?
+        OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
+            groupChat = LokiDatabaseUtilities.getGroupChat(for: threadID, in: transaction)
+        }
         storage.dbReadConnection.read { transaction in
-            let collection = "https://chat.lokinet.org.1" // FIXME: Mentions need to work for every kind of chat
             candidates = cache.flatMap { hexEncodedPublicKey in
-                guard let displayName = transaction.object(forKey: hexEncodedPublicKey, inCollection: collection) as! String? else { return nil }
+                let uncheckedDisplayName: String?
+                if let groupChat = groupChat {
+                    uncheckedDisplayName = DisplayNameUtilities.getGroupChatDisplayName(for: hexEncodedPublicKey, in: groupChat.channel, on: groupChat.server)
+                } else {
+                    uncheckedDisplayName = DisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey)
+                }
+                guard let displayName = uncheckedDisplayName else { return nil }
                 guard !displayName.hasPrefix("Anonymous") else { return nil }
                 return Mention(hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName)
             }

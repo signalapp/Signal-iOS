@@ -51,9 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (TSQuotedMessage *)buildQuotedMessageForSending;
 
 // Loki
-
 @property (nonatomic, readonly) NSString *threadId;
-
 
 @end
 

@@ -2552,7 +2552,6 @@
 "Password (Optional)" = "Password (Optional)";
 "Next" = "Next";
 "Add" = "Add";
-"Connecting to server" = "Connecting to server...";
 "Please save the seed below in a safe location. It can be used to restore your account if you lose access, or to migrate to a new device." = "Please save the seed below in a safe location. It can be used to restore your account if you lose access, or to migrate to a new device.";
 "Restore your account by entering your seed below." = "Restore your account by entering your seed below.";
 "Copy" = "Copy";
@@ -2571,7 +2570,6 @@
 "Start a Conversation" = "Start a Conversation";
 "Invalid public key" = "Invalid public key";
 "No search results" = "No search results";
-"Failed to connect to server" = "Failed to connect to server";
 "Calculating proof of work" = "Calculating proof of work";
 "Failed to calculate proof of work." = "Failed to calculate proof of work.";
 "Share Public Key" = "Share Public Key";
@@ -2648,5 +2646,4 @@
 "Enter a URL" = "Enter a URL";
 "Enter the URL of the public chat you'd like to join. The Loki Public Chat URL is https://chat.lokinet.org." = "Enter the URL of the public chat you'd like to join. The Loki Public Chat URL is https://chat.lokinet.org.";
 "Connecting..." = "Connecting...";
-"Add" = "Add";
 "Couldn't Connect" = "Couldn't Connect";

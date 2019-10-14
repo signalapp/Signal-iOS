@@ -1262,7 +1262,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     TSMessage *message = (TSMessage *)self.interaction;
     if (!message.isGroupChatMessage) return false;
     
-    // Make sure we have the details to contact the server
+    // Ensure we have the details needed to contact the server
     __block LKGroupChat *groupChat;
     [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         groupChat = [LKDatabaseUtilities getGroupChatForThreadID:groupThread.uniqueId transaction: transaction];

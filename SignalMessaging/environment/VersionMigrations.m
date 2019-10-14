@@ -167,7 +167,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-# pragma mark Loki - Upgrading to public chat manager
+# pragma mark Loki - Upgrading to Public Chat Manager
 
 // Versions less than or equal to 1.2.0 didn't store group chat mappings
 + (void)updatePublicChatMapping

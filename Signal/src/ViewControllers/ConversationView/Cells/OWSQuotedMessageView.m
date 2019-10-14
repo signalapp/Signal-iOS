@@ -554,11 +554,11 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         
         if (quotedAuthor == self.quotedMessage.authorId) {
             [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                LKGroupChat *chat = [LKDatabaseUtilities getGroupChatForThreadID:self.quotedMessage.threadId transaction:transaction];
-                if (chat != nil) {
-                    NSString *collection = [NSString stringWithFormat:@"%@.%@", chat.server, @(chat.channel)];
-                    NSString *displayName = [transaction stringForKey:self.quotedMessage.authorId inCollection:collection];
-                    if (displayName != nil) { quotedAuthor = displayName; }
+                LKGroupChat *groupChat = [LKDatabaseUtilities getGroupChatForThreadID:self.quotedMessage.threadId transaction:transaction];
+                if (groupChat != nil) {
+                    quotedAuthor = [LKDisplayNameUtilities getGroupChatDisplayNameFor:self.quotedMessage.authorId in:groupChat.channel on:groupChat.server using:transaction];;
+                } else {
+                    quotedAuthor = [LKDisplayNameUtilities getPrivateChatDisplayNameFor:self.quotedMessage.authorId];
                 }
             }];
         }

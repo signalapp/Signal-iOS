@@ -2016,7 +2016,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      transaction:transaction
                                                                conversationStyle:conversationStyle];
                 quotedMessage = [
-                                 [OWSQuotedReplyModel quotedReplyForSendingWithConversationViewItem:viewItem threadId:viewItem.interaction.uniqueThreadId transaction:transaction]
+                    [OWSQuotedReplyModel quotedReplyForSendingWithConversationViewItem:viewItem threadId:viewItem.interaction.uniqueThreadId transaction:transaction]
                     buildQuotedMessageForSending];
             } else {
                 TSOutgoingMessage *_Nullable messageToQuote = [self createFakeOutgoingMessage:thread

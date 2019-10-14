@@ -568,6 +568,7 @@
 		B82584A02315024B001B41CB /* RSSFeedPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825849F2315024B001B41CB /* RSSFeedPoller.swift */; };
 		B846365B22B7418B00AF1514 /* Identicon+ObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */; };
 		B84664F5235022F30083A1CD /* MentionUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84664F4235022F30083A1CD /* MentionUtilities.swift */; };
+		B84664F923541F070083A1CD /* DisplayNameUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84664F823541F070083A1CD /* DisplayNameUtilities.swift */; };
 		B86BD08123399883000F5AE3 /* QRCodeModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08023399883000F5AE3 /* QRCodeModal.swift */; };
 		B86BD08423399ACF000F5AE3 /* Modal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08323399ACF000F5AE3 /* Modal.swift */; };
 		B86BD08623399CEF000F5AE3 /* SeedModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08523399CEF000F5AE3 /* SeedModal.swift */; };
@@ -1380,6 +1381,7 @@
 		B825849F2315024B001B41CB /* RSSFeedPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSSFeedPoller.swift; sourceTree = "<group>"; };
 		B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Identicon+ObjC.swift"; sourceTree = "<group>"; };
 		B84664F4235022F30083A1CD /* MentionUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionUtilities.swift; sourceTree = "<group>"; };
+		B84664F823541F070083A1CD /* DisplayNameUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayNameUtilities.swift; sourceTree = "<group>"; };
 		B86BD08023399883000F5AE3 /* QRCodeModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeModal.swift; sourceTree = "<group>"; };
 		B86BD08323399ACF000F5AE3 /* Modal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modal.swift; sourceTree = "<group>"; };
 		B86BD08523399CEF000F5AE3 /* SeedModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedModal.swift; sourceTree = "<group>"; };
@@ -2671,6 +2673,7 @@
 				B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */,
 				241C6312231F5F1D00B4198E /* CGFloat+Rounding.swift */,
 				241C6310231F5C4400B4198E /* UIColor+Helper.swift */,
+				B84664F823541F070083A1CD /* DisplayNameUtilities.swift */,
 			);
 			path = Loki;
 			sourceTree = "<group>";
@@ -3575,6 +3578,7 @@
 				450998681FD8C0FF00D89EB3 /* AttachmentSharing.m in Sources */,
 				347850711FDAEB17007B8332 /* OWSUserProfile.m in Sources */,
 				346129F81FD5F31400532771 /* OWS100RemoveTSRecipientsMigration.m in Sources */,
+				B84664F923541F070083A1CD /* DisplayNameUtilities.swift in Sources */,
 				34AC09DF211B39B100997B47 /* OWSNavigationController.m in Sources */,
 				34074F61203D0CBE004596AE /* OWSSounds.m in Sources */,
 				34BEDB1721C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m in Sources */,
