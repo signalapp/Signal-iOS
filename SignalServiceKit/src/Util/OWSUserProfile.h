@@ -95,6 +95,10 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:profileKey:profi
                  transaction:(SDSAnyWriteTransaction *)transaction
                   completion:(nullable OWSUserProfileCompletion)completion;
 
+- (void)updateWithProfileName:(nullable NSString *)profileName
+                  transaction:(SDSAnyWriteTransaction *)transaction
+                   completion:(nullable OWSUserProfileCompletion)completion;
+
 - (void)clearWithProfileKey:(OWSAES256Key *)profileKey
                 transaction:(SDSAnyWriteTransaction *)transaction
                  completion:(nullable OWSUserProfileCompletion)completion;

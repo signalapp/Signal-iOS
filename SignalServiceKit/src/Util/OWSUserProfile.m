@@ -446,6 +446,19 @@ NSUInteger const kUserProfileSchemaVersion = 1;
           completion:completion];
 }
 
+- (void)updateWithProfileName:(nullable NSString *)profileName
+                  transaction:(SDSAnyWriteTransaction *)transaction
+                   completion:(nullable OWSUserProfileCompletion)completion
+{
+    [self
+        applyChanges:^(OWSUserProfile *userProfile) {
+            [userProfile setProfileName:profileName];
+        }
+        functionName:__PRETTY_FUNCTION__
+         transaction:transaction
+          completion:completion];
+}
+
 - (void)updateWithUsername:(nullable NSString *)username transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(username == nil || username.length > 0);

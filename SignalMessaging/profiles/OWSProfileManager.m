@@ -971,6 +971,83 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     }];
 }
 
+- (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address
+{
+    OWSAssertDebug(address.isValid);
+
+    [self removeUsersFromProfileWhitelist:@[ address ]];
+}
+
+- (void)removeUsersFromProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
+{
+    OWSAssertDebug(addresses);
+
+    // Try to avoid opening a write transaction.
+    [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction *readTransaction) {
+        NSMutableSet<SignalServiceAddress *> *removedAddresses = [NSMutableSet new];
+        for (SignalServiceAddress *address in addresses) {
+
+            // We want to remove both the UUID and the phone number from the white list.
+            // It's possible we white listed one but not both, so we check each.
+
+            BOOL shouldRemove = NO;
+            if (address.uuidString) {
+                BOOL currentlyWhitelisted = [self.whitelistedUUIDsStore hasValueForKey:address.uuidString
+                                                                           transaction:readTransaction];
+                if (currentlyWhitelisted) {
+                    shouldRemove = YES;
+                }
+            }
+
+            if (address.phoneNumber) {
+                BOOL currentlyWhitelisted = [self.whitelistedPhoneNumbersStore hasValueForKey:address.phoneNumber
+                                                                                  transaction:readTransaction];
+                if (currentlyWhitelisted) {
+                    shouldRemove = YES;
+                }
+            }
+
+            if (shouldRemove) {
+                [removedAddresses addObject:address];
+            }
+        }
+
+        if (removedAddresses.count < 1) {
+            return;
+        }
+
+        [self.databaseStorage
+            asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
+                for (SignalServiceAddress *address in removedAddresses) {
+                    if (address.uuidString) {
+                        [self.whitelistedUUIDsStore removeValueForKey:address.uuidString transaction:writeTransaction];
+                    }
+
+                    if (address.phoneNumber) {
+                        [self.whitelistedPhoneNumbersStore removeValueForKey:address.phoneNumber
+                                                                 transaction:writeTransaction];
+                    }
+                }
+            }
+            completion:^{
+                // Mark the removed whitelisted addresses for update
+                if (removedAddresses.count > 0) {
+                    [OWSStorageServiceManager.shared
+                        recordPendingUpdatesWithUpdatedAddresses:removedAddresses.allObjects];
+                }
+
+                for (SignalServiceAddress *address in removedAddresses) {
+                    [[NSNotificationCenter defaultCenter]
+                        postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+                                           object:nil
+                                         userInfo:@ {
+                                             kNSNotificationKey_ProfileAddress : address,
+                                         }];
+                }
+            }];
+    }];
+}
+
 - (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
@@ -1129,6 +1206,16 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                          [self fetchProfileForAddress:address];
                      });
                  }];
+}
+
+- (void)setProfileName:(nullable NSString *)profileName
+            forAddress:(SignalServiceAddress *)address
+           transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(address.isValid);
+
+    OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:transaction];
+    [userProfile updateWithProfileName:profileName transaction:transaction completion:nil];
 }
 
 - (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address
