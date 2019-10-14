@@ -1,7 +1,6 @@
 
 public extension OWSPrimaryStorage {
     
-    // MARK: Device Links
     private func getDeviceLinkCollection(for primaryDevice: String) -> String {
         return "LokiDeviceLinkCollection-\(primaryDevice)"
     }
@@ -51,31 +50,5 @@ public extension OWSPrimaryStorage {
     
     public func getMasterHexEncodedPublicKey(for slaveHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> String? {
         return getDeviceLink(for: slaveHexEncodedPublicKey, in: transaction)?.master.hexEncodedPublicKey
-    }
-    
-    // MARK: Group Chats
-    private var groupChatCollection: String {
-        return "LokiGroupChatCollection"
-    }
-    
-    public func getAllGroupChats(in transaction: YapDatabaseReadTransaction) -> [String:LokiGroupChat] {
-        var result = [String:LokiGroupChat]()
-        transaction.enumerateKeysAndObjects(inCollection: groupChatCollection) { threadID, object, _ in
-            guard let groupChat = object as? LokiGroupChat else { return }
-            result[threadID] = groupChat
-        }
-        return result
-    }
-    
-    public func getGroupChat(for threadID: String, in transaction: YapDatabaseReadTransaction) -> LokiGroupChat? {
-        return transaction.object(forKey: threadID, inCollection: groupChatCollection) as? LokiGroupChat
-    }
-    
-    public func setGroupChat(_ groupChat: LokiGroupChat, for threadID: String, in transaction: YapDatabaseReadWriteTransaction) {
-        transaction.setObject(groupChat, forKey: threadID, inCollection: groupChatCollection)
-    }
-    
-    public func removeGroupChat(for threadID: String, in transaction: YapDatabaseReadWriteTransaction) {
-        transaction.removeObject(forKey: threadID, inCollection: groupChatCollection)
     }
 }

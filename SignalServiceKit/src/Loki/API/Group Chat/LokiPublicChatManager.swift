@@ -85,7 +85,7 @@ public final class LokiPublicChatManager: NSObject {
             }
            
             // Save the group chat
-            self.storage.setGroupChat(chat, for: thread.uniqueId!, in: transaction)
+            LokiDatabaseUtilities.setGroupChat(chat, for: thread.uniqueId!, in: transaction)
         }
         
         // Update chats and pollers
@@ -101,7 +101,7 @@ public final class LokiPublicChatManager: NSObject {
     
     private func refreshChatsAndPollers() {
         storage.dbReadConnection.read { transaction in
-            let newChats = self.storage.getAllGroupChats(in: transaction)
+            let newChats = LokiDatabaseUtilities.getAllGroupChats(in: transaction)
             
             // Remove any chats that don't exist in the database
             let removedChatThreadIds = self.chats.keys.filter { !newChats.keys.contains($0) }
@@ -129,7 +129,7 @@ public final class LokiPublicChatManager: NSObject {
         
         // Remove the chat from the db
         storage.dbReadWriteConnection.readWrite { transaction in
-            self.storage.removeGroupChat(for: threadId, in: transaction)
+            LokiDatabaseUtilities.removeGroupChat(for: threadId, in: transaction)
         }
 
         refreshChatsAndPollers()

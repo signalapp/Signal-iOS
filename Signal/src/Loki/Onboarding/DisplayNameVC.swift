@@ -4,12 +4,12 @@ final class DisplayNameVC : OnboardingBaseViewController {
     private lazy var userNameTextField: UITextField = {
         let result = UITextField()
         result.textColor = Theme.primaryColor
-        result.font = UIFont.ows_dynamicTypeBodyClamped
+        result.font = .ows_dynamicTypeBodyClamped
         result.textAlignment = .center
         let placeholder = NSMutableAttributedString(string: NSLocalizedString("Display Name", comment: ""))
         placeholder.addAttribute(.foregroundColor, value: Theme.placeholderColor, range: NSRange(location: 0, length: placeholder.length))
         result.attributedPlaceholder = placeholder
-        result.tintColor = UIColor.lokiGreen()
+        result.tintColor = .lokiGreen()
         result.accessibilityIdentifier = "onboarding.accountDetailsStep.userNameTextField"
         result.keyboardAppearance = .dark
         return result

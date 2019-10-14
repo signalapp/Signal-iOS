@@ -503,7 +503,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
         [recipientIds addObject:self.tsAccountManager.localNumber];
     } else if (thread.isGroupThread) {
-        [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             LKGroupChat *groupChat = [LKDatabaseUtilities getGroupChatForThreadID:thread.uniqueId transaction:transaction];
             [recipientIds addObject:groupChat.server];
         }];

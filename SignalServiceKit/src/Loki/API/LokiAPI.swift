@@ -310,7 +310,7 @@ public final class LokiAPI : NSObject {
         var candidates: [Mention] = []
         // Gather candidates
         var groupChat: LokiGroupChat?
-        OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
+        storage.dbReadConnection.read { transaction in
             groupChat = LokiDatabaseUtilities.getGroupChat(for: threadID, in: transaction)
         }
         storage.dbReadConnection.read { transaction in
