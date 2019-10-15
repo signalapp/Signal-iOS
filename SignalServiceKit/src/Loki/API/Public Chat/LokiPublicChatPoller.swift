@@ -1,7 +1,7 @@
 
-@objc(LKGroupChatPoller)
-public final class GroupChatPoller : NSObject {
-    private let group: LokiGroupChat
+@objc(LKPublicChatPoller)
+public final class LokiPublicChatPoller : NSObject {
+    private let publicChat: LokiPublicChat
     private var pollForNewMessagesTimer: Timer? = nil
     private var pollForDeletedMessagesTimer: Timer? = nil
     private var pollForModeratorsTimer: Timer? = nil
@@ -14,9 +14,9 @@ public final class GroupChatPoller : NSObject {
     private let pollForModeratorsInterval: TimeInterval = 10 * 60
     
     // MARK: Lifecycle
-    @objc(initForGroup:)
-    public init(for group: LokiGroupChat) {
-        self.group = group
+    @objc(initForPublicChat:)
+    public init(for publicChat: LokiPublicChat) {
+        self.publicChat = publicChat
         super.init()
     }
     
@@ -42,17 +42,17 @@ public final class GroupChatPoller : NSObject {
     // MARK: Polling
     private func pollForNewMessages() {
         // Prepare
-        let group = self.group
+        let publicChat = self.publicChat
         let userHexEncodedPublicKey = self.userHexEncodedPublicKey
         // Processing logic for incoming messages
-        func processIncomingMessage(_ message: LokiGroupMessage) {
+        func processIncomingMessage(_ message: LokiPublicChatMessage) {
             let senderHexEncodedPublicKey = message.hexEncodedPublicKey
             let endIndex = senderHexEncodedPublicKey.endIndex
             let cutoffIndex = senderHexEncodedPublicKey.index(endIndex, offsetBy: -8)
             let senderDisplayName = "\(message.displayName) (...\(senderHexEncodedPublicKey[cutoffIndex..<endIndex]))"
-            let id = group.id.data(using: String.Encoding.utf8)!
+            let id = publicChat.idAsData
             let groupContext = SSKProtoGroupContext.builder(id: id, type: .deliver)
-            groupContext.setName(group.displayName)
+            groupContext.setName(publicChat.displayName)
             let dataMessage = SSKProtoDataMessage.builder()
             dataMessage.setTimestamp(message.timestamp)
             dataMessage.setGroup(try! groupContext.build())
@@ -75,12 +75,12 @@ public final class GroupChatPoller : NSObject {
             envelope.setContent(try! content.build().serializedData())
             let storage = OWSPrimaryStorage.shared()
             storage.dbReadWriteConnection.readWrite { transaction in
-                transaction.setObject(senderDisplayName, forKey: senderHexEncodedPublicKey, inCollection: group.id)
+                transaction.setObject(senderDisplayName, forKey: senderHexEncodedPublicKey, inCollection: publicChat.id)
                 SSKEnvironment.shared.messageManager.throws_processEnvelope(try! envelope.build(), plaintextData: try! content.build().serializedData(), wasReceivedByUD: false, transaction: transaction)
             }
         }
         // Processing logic for outgoing messages
-        func processOutgoingMessage(_ message: LokiGroupMessage) {
+        func processOutgoingMessage(_ message: LokiPublicChatMessage) {
             guard let messageServerID = message.serverID else { return }
             let storage = OWSPrimaryStorage.shared()
             var isDuplicate = false
@@ -89,7 +89,7 @@ public final class GroupChatPoller : NSObject {
                 isDuplicate = id != nil
             }
             guard !isDuplicate else { return }
-            guard let groupID = group.id.data(using: .utf8) else { return }
+            let groupID = publicChat.idAsData
             let thread = TSGroupThread.getOrCreateThread(withGroupId: groupID)
             let signalQuote: TSQuotedMessage?
             if let quote = message.quote {
@@ -100,9 +100,9 @@ public final class GroupChatPoller : NSObject {
             let message = TSOutgoingMessage(outgoingMessageWithTimestamp: message.timestamp, in: thread, messageBody: message.body, attachmentIds: [], expiresInSeconds: 0,
                 expireStartedAt: 0, isVoiceMessage: false, groupMetaMessage: .deliver, quotedMessage: signalQuote, contactShare: nil, linkPreview: nil)
             storage.dbReadWriteConnection.readWrite { transaction in
-                message.update(withSentRecipient: group.server, wasSentByUD: false, transaction: transaction)
+                message.update(withSentRecipient: publicChat.server, wasSentByUD: false, transaction: transaction)
                 message.saveGroupChatServerID(messageServerID, in: transaction)
-                guard let messageID = message.uniqueId else { return print("[Loki] Failed to save group message.") }
+                guard let messageID = message.uniqueId else { return print("[Loki] Failed to save public chat message.") }
                 storage.setIDForMessageWithServerID(UInt(messageServerID), to: messageID, in: transaction)
             }
             if let linkPreviewURL = OWSLinkPreview.previewUrl(forMessageBodyText: message.body, selectedRange: nil) {
@@ -110,7 +110,7 @@ public final class GroupChatPoller : NSObject {
             }
         }
         // Poll
-        let _ = LokiGroupChatAPI.getMessages(for: group.serverID, on: group.server).done(on: .main) { messages in
+        let _ = LokiPublicChatAPI.getMessages(for: publicChat.channel, on: publicChat.server).done(on: .main) { messages in
             messages.forEach { message in
                 if message.hexEncodedPublicKey != userHexEncodedPublicKey {
                     processIncomingMessage(message)
@@ -122,8 +122,8 @@ public final class GroupChatPoller : NSObject {
     }
     
     private func pollForDeletedMessages() {
-        let group = self.group
-        let _ = LokiGroupChatAPI.getDeletedMessageServerIDs(for: group.serverID, on: group.server).done { deletedMessageServerIDs in
+        let publicChat = self.publicChat
+        let _ = LokiPublicChatAPI.getDeletedMessageServerIDs(for: publicChat.channel, on: publicChat.server).done { deletedMessageServerIDs in
             let storage = OWSPrimaryStorage.shared()
             storage.dbReadWriteConnection.readWrite { transaction in
                 let deletedMessageIDs = deletedMessageServerIDs.compactMap { storage.getIDForMessage(withServerID: UInt($0), in: transaction) }
@@ -135,6 +135,6 @@ public final class GroupChatPoller : NSObject {
     }
     
     private func pollForModerators() {
-        let _ = LokiGroupChatAPI.getModerators(for: group.serverID, on: group.server)
+        let _ = LokiPublicChatAPI.getModerators(for: publicChat.channel, on: publicChat.server)
     }
 }

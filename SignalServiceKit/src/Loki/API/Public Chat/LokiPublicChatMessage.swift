@@ -1,7 +1,7 @@
 import PromiseKit
 
 @objc(LKGroupMessage)
-public final class LokiGroupMessage : NSObject {
+public final class LokiPublicChatMessage : NSObject {
     public let serverID: UInt64?
     public let hexEncodedPublicKey: String
     public let displayName: String
@@ -62,18 +62,18 @@ public final class LokiGroupMessage : NSObject {
     }
     
     // MARK: Crypto
-    internal func sign(with privateKey: Data) -> LokiGroupMessage? {
+    internal func sign(with privateKey: Data) -> LokiPublicChatMessage? {
         guard let data = getValidationData(for: signatureVersion) else {
-            print("[Loki] Failed to sign group chat message.")
+            print("[Loki] Failed to sign public chat message.")
             return nil
         }
         let userKeyPair = OWSIdentityManager.shared().identityKeyPair()!
         guard let signatureData = try? Ed25519.sign(data, with: userKeyPair) else {
-            print("[Loki] Failed to sign group chat message.")
+            print("[Loki] Failed to sign public chat message.")
             return nil
         }
         let signature = Signature(data: signatureData, version: signatureVersion)
-        return LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: type, timestamp: timestamp, quote: quote, signature: signature)
+        return LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: type, timestamp: timestamp, quote: quote, signature: signature)
     }
     
     internal func hasValidSignature() -> Bool {

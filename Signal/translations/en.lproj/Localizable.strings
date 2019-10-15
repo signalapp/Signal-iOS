@@ -2551,6 +2551,7 @@
 "Type an optional password for added security" = "Type an optional password for added security";
 "Password (Optional)" = "Password (Optional)";
 "Next" = "Next";
+"Add" = "Add";
 "Please save the seed below in a safe location. It can be used to restore your account if you lose access, or to migrate to a new device." = "Please save the seed below in a safe location. It can be used to restore your account if you lose access, or to migrate to a new device.";
 "Restore your account by entering your seed below." = "Restore your account by entering your seed below.";
 "Copy" = "Copy";
@@ -2593,7 +2594,9 @@
 "Loki Messenger" = "Loki Messenger";
 "Privacy Policy" = "Privacy Policy";
 "New Conversation" = "New Conversation";
+"Add Public Chat Server" = "Add Public Chat Server";
 "Enter a Public Key" = "Enter a Public Key";
+"Enter a Server URL" = "Enter a Server URL";
 "For example: 059abcf223aa8c10e3dc2d623688b75dd25896794717e4a9c486772664fc95e41e." = "For example: 059abcf223aa8c10e3dc2d623688b75dd25896794717e4a9c486772664fc95e41e.";
 "Invalid Public Key" = "Invalid Public Key";
 "Please check the public key you entered and try again." = "Please check the public key you entered and try again.";
@@ -2635,5 +2638,12 @@
 "Your device has been linked successfully" = "Your device has been linked successfully";
 "Link" = "Link";
 "Anonymous" = "Anonymous";
+"Invalid URL" = "Invalid URL";
+"Please check the URL you entered and try again." = "Please check the URL you entered and try again.";
 "Please pick a shorter display name" = "Please pick a shorter display name";
 "Please pick a display name" = "Please pick a display name";
+"Add Public Chat" = "Add Public Chat";
+"Enter a URL" = "Enter a URL";
+"Enter the URL of the public chat you'd like to join. The Loki Public Chat URL is https://chat.lokinet.org." = "Enter the URL of the public chat you'd like to join. The Loki Public Chat URL is https://chat.lokinet.org.";
+"Connecting..." = "Connecting...";
+"Couldn't Connect" = "Couldn't Connect";

@@ -1093,7 +1093,14 @@ const CGFloat kMaxTextViewHeight = 98;
 
 - (void)showMentionCandidateSelectionViewFor:(NSArray<LKMention *> *)mentionCandidates in:(TSThread *)thread
 {
-    self.mentionCandidateSelectionView.hasGroupContext = thread.isGroupThread; // Must happen before setting the users
+    __block LKPublicChat *publicChat;
+    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        publicChat = [LKDatabaseUtilities getPublicChatForThreadID:thread.uniqueId transaction:transaction];
+    }];
+    if (publicChat != nil) {
+        self.mentionCandidateSelectionView.publicChatServer = publicChat.server;
+        [self.mentionCandidateSelectionView setPublicChatChannel:publicChat.channel];
+    }
     self.mentionCandidateSelectionView.mentionCandidates = mentionCandidates;
     self.mentionCandidateSelectionViewSizeConstraint.constant = 6 + MIN(mentionCandidates.count, 4) * 52;
     [self setNeedsLayout];

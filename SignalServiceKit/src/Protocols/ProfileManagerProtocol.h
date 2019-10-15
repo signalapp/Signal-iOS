@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (OWSAES256Key *)localProfileKey;
 
 - (nullable NSString *)localProfileName;
+- (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId;
 
 - (nullable NSData *)profileKeyDataForRecipientId:(NSString *)recipientId;
 - (void)setProfileKeyData:(NSData *)profileKeyData forRecipientId:(NSString *)recipientId;

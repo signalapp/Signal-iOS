@@ -4,8 +4,15 @@
 @objc(LKMentionCandidateSelectionView)
 final class MentionCandidateSelectionView : UIView, UITableViewDataSource, UITableViewDelegate {
     @objc var mentionCandidates: [Mention] = [] { didSet { tableView.reloadData() } }
-    @objc var hasGroupContext = false
+    @objc var publicChatServer: String?
+    var publicChatChannel: UInt64?
     @objc var delegate: MentionCandidateSelectionViewDelegate?
+    
+    // MARK: Convenience
+    @objc(setPublicChatChannel:)
+    func setPublicChatChannel(to publicChatChannel: UInt64) {
+        self.publicChatChannel = publicChatChannel != 0 ? publicChatChannel : nil
+    }
     
     // MARK: Components
     @objc lazy var tableView: UITableView = { // TODO: Make this private
@@ -44,7 +51,8 @@ final class MentionCandidateSelectionView : UIView, UITableViewDataSource, UITab
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") as! Cell
         let mentionCandidate = mentionCandidates[indexPath.row]
         cell.mentionCandidate = mentionCandidate
-        cell.hasGroupContext = hasGroupContext
+        cell.publicChatServer = publicChatServer
+        cell.publicChatChannel = publicChatChannel
         return cell
     }
     
@@ -61,7 +69,8 @@ private extension MentionCandidateSelectionView {
     
     final class Cell : UITableViewCell {
         var mentionCandidate = Mention(hexEncodedPublicKey: "", displayName: "") { didSet { update() } }
-        var hasGroupContext = false
+        var publicChatServer: String?
+        var publicChatChannel: UInt64?
         
         // MARK: Components
         private lazy var profilePictureImageView = AvatarImageView()
@@ -121,8 +130,12 @@ private extension MentionCandidateSelectionView {
             displayNameLabel.text = mentionCandidate.displayName
             let profilePicture = OWSContactAvatarBuilder(signalId: mentionCandidate.hexEncodedPublicKey, colorName: .blue, diameter: 36).build()
             profilePictureImageView.image = profilePicture
-            let isUserModerator = LokiGroupChatAPI.isUserModerator(mentionCandidate.hexEncodedPublicKey, for: LokiGroupChatAPI.publicChatServerID, on: LokiGroupChatAPI.publicChatServer)
-            moderatorIconImageView.isHidden = !isUserModerator || !hasGroupContext
+            if let server = publicChatServer, let channel = publicChatChannel {
+                let isUserModerator = LokiPublicChatAPI.isUserModerator(mentionCandidate.hexEncodedPublicKey, for: channel, on: server)
+                moderatorIconImageView.isHidden = !isUserModerator
+            } else {
+                moderatorIconImageView.isHidden = true
+            }
         }
     }
 }

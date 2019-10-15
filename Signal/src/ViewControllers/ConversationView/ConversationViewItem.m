@@ -620,7 +620,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     // since that logic may exit early.
     if (message.quotedMessage) {
         self.quotedReply =
-            [OWSQuotedReplyModel quotedReplyWithQuotedMessage:message.quotedMessage transaction:transaction];
+            [OWSQuotedReplyModel quotedReplyWithQuotedMessage:message.quotedMessage threadId:message.uniqueThreadId transaction:transaction];
 
         if (self.quotedReply.body.length > 0) {
             self.displayableQuotedText =
@@ -1187,9 +1187,15 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         TSMessage *message = (TSMessage *)self.interaction;
         if (!message.isGroupChatMessage) return;
         
+        __block LKPublicChat *publicChat;
+        [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            publicChat = [LKDatabaseUtilities getPublicChatForThreadID:groupThread.uniqueId transaction: transaction];
+        }];
+        if (publicChat == nil) return;
+        
         // Delete the message
         BOOL isSentByUser = (interationType == OWSInteractionType_OutgoingMessage);
-        [[LKGroupChatAPI deleteMessageWithID:message.groupChatServerID forGroup:LKGroupChatAPI.publicChatServerID onServer:LKGroupChatAPI.publicChatServer isSentByUser:isSentByUser].catch(^(NSError *error) {
+        [[LKPublicChatAPI deleteMessageWithID:message.groupChatServerID forGroup:publicChat.channel onServer:publicChat.server isSentByUser:isSentByUser].catch(^(NSError *error) {
             // Roll back
             [self.interaction save];
         }) retainUntilComplete];
@@ -1256,9 +1262,16 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     TSMessage *message = (TSMessage *)self.interaction;
     if (!message.isGroupChatMessage) return false;
     
+    // Ensure we have the details needed to contact the server
+    __block LKPublicChat *publicChat;
+    [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        publicChat = [LKDatabaseUtilities getPublicChatForThreadID:groupThread.uniqueId transaction: transaction];
+    }];
+    if (publicChat == nil) return false;
+    
     // Only allow deletion on incoming messages if the user has moderation permission
     if (interationType == OWSInteractionType_IncomingMessage) {
-        BOOL isModerator = [LKGroupChatAPI isUserModerator:self.userHexEncodedPublicKey forGroup:LKGroupChatAPI.publicChatServerID onServer: LKGroupChatAPI.publicChatServer];
+        BOOL isModerator = [LKPublicChatAPI isUserModerator:self.userHexEncodedPublicKey forGroup:publicChat.channel onServer:publicChat.server];
         if (!isModerator) return false;
     }
 

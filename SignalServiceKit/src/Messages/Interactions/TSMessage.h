@@ -46,8 +46,8 @@ typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
 @property (nonatomic, readonly) BOOL hasFriendRequestStatusMessage;
 @property (nonatomic) BOOL isP2P;
 // Group chat
-@property (nonatomic) uint64_t groupChatServerID;
-@property (nonatomic, readonly) BOOL isGroupChatMessage;
+@property (nonatomic) uint64_t groupChatServerID; // Should ideally be publicChatServerID
+@property (nonatomic, readonly) BOOL isGroupChatMessage; // Should ideally be isPublicChatMessage
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 

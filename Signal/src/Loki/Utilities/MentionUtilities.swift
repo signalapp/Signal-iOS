@@ -4,17 +4,21 @@ public final class MentionUtilities : NSObject {
     
     override private init() { }
     
-    @objc public static func highlightMentions(in string: String, thread: TSThread) -> String {
-        return highlightMentions(in: string, isOutgoingMessage: false, thread: thread, attributes: [:]).string // isOutgoingMessage and attributes are irrelevant
+    @objc public static func highlightMentions(in string: String, threadID: String) -> String {
+        return highlightMentions(in: string, isOutgoingMessage: false, threadID: threadID, attributes: [:]).string // isOutgoingMessage and attributes are irrelevant
     }
     
-    @objc public static func highlightMentions(in string: String, isOutgoingMessage: Bool, thread: TSThread, attributes: [NSAttributedString.Key:Any]) -> NSAttributedString {
+    @objc public static func highlightMentions(in string: String, isOutgoingMessage: Bool, threadID: String, attributes: [NSAttributedString.Key:Any]) -> NSAttributedString {
+        var publicChat: LokiPublicChat?
+        OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
+            publicChat = LokiDatabaseUtilities.getPublicChat(for: threadID, in: transaction)
+        }
         var string = string
         let regex = try! NSRegularExpression(pattern: "@[0-9a-fA-F]*", options: [])
-        let knownUserHexEncodedPublicKeys = LokiAPI.userHexEncodedPublicKeyCache[thread.uniqueId!] ?? [] // Should always be populated at this point
+        let knownUserHexEncodedPublicKeys = LokiAPI.userHexEncodedPublicKeyCache[threadID] ?? [] // Should always be populated at this point
         var mentions: [NSRange] = []
         var outerMatch = regex.firstMatch(in: string, options: .withoutAnchoringBounds, range: NSRange(location: 0, length: string.count))
-        while let match = outerMatch, thread.isGroupThread() {
+        while let match = outerMatch {
             let hexEncodedPublicKey = String((string as NSString).substring(with: match.range).dropFirst()) // Drop the @
             let matchEnd: Int
             if knownUserHexEncodedPublicKeys.contains(hexEncodedPublicKey) {
@@ -22,9 +26,10 @@ public final class MentionUtilities : NSObject {
                 if hexEncodedPublicKey == OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey {
                     userDisplayName = OWSProfileManager.shared().localProfileName()
                 } else {
-                    OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
-                        let collection = "\(LokiGroupChatAPI.publicChatServer).\(LokiGroupChatAPI.publicChatServerID)"
-                        userDisplayName = transaction.object(forKey: hexEncodedPublicKey, inCollection: collection) as! String?
+                    if let publicChat = publicChat {
+                        userDisplayName = DisplayNameUtilities.getPublicChatDisplayName(for: hexEncodedPublicKey, in: publicChat.channel, on: publicChat.server)
+                    } else {
+                        userDisplayName = DisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey)
                     }
                 }
                 if let userDisplayName = userDisplayName {

@@ -40,14 +40,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Used for persisted quoted replies, both incoming and outgoing.
 + (instancetype)quotedReplyWithQuotedMessage:(TSQuotedMessage *)quotedMessage
+                                    threadId:(NSString *)threadId
                                  transaction:(YapDatabaseReadTransaction *)transaction;
 
 // Builds a not-yet-sent QuotedReplyModel
 + (nullable instancetype)quotedReplyForSendingWithConversationViewItem:(id<ConversationViewItem>)conversationItem
+                                                              threadId:(NSString *)threadId
                                                            transaction:(YapDatabaseReadTransaction *)transaction;
 
 - (TSQuotedMessage *)buildQuotedMessageForSending;
 
+// Loki
+@property (nonatomic, readonly) NSString *threadId;
 
 @end
 

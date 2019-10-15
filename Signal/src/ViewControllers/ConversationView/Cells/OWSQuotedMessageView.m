@@ -13,6 +13,7 @@
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSMessage.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -553,9 +554,12 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         
         if (quotedAuthor == self.quotedMessage.authorId) {
             [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                NSString *collection = [NSString stringWithFormat:@"%@.%@", LKGroupChatAPI.publicChatServer, @(LKGroupChatAPI.publicChatServerID)];
-                NSString *displayName = [transaction stringForKey:self.quotedMessage.authorId inCollection:collection];
-                if (displayName != nil) { quotedAuthor = displayName; }
+                LKPublicChat *publicChat = [LKDatabaseUtilities getPublicChatForThreadID:self.quotedMessage.threadId transaction:transaction];
+                if (publicChat != nil) {
+                    quotedAuthor = [LKDisplayNameUtilities getPublicChatDisplayNameFor:self.quotedMessage.authorId in:publicChat.channel on:publicChat.server using:transaction];
+                } else {
+                    quotedAuthor = [LKDisplayNameUtilities getPrivateChatDisplayNameFor:self.quotedMessage.authorId];
+                }
             }];
         }
         

@@ -535,13 +535,18 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
 
-    [[LKGroupChatAPI setDisplayName:localProfileName on:LKGroupChatAPI.publicChatServer]
-    .thenOn(dispatch_get_main_queue(), ^() {
-        successBlock();
-    })
-    .catchOn(dispatch_get_main_queue(), ^(NSError *error) {
-        failureBlock(error);
-    }) retainUntilComplete];
+    __block NSDictionary *publicChats;
+    [SSKEnvironment.shared.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        publicChats = [LKDatabaseUtilities getAllPublicChats:transaction];
+    }];
+    
+    NSSet *servers = [NSSet setWithArray:[publicChats.allValues map:^NSString *(LKPublicChat *publicChat) { return publicChat.server; }]];
+
+    for (NSString *server in servers) {
+        [[LKPublicChatAPI setDisplayName:localProfileName on:server] retainUntilComplete];
+    }
+    
+    successBlock();
 }
 
 - (void)fetchLocalUsersProfile

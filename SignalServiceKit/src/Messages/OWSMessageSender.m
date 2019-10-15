@@ -503,7 +503,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
         [recipientIds addObject:self.tsAccountManager.localNumber];
     } else if (thread.isGroupThread) {
-        [recipientIds addObject:LKGroupChatAPI.publicChatServer];
+        [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            LKPublicChat *publicChat = [LKDatabaseUtilities getPublicChatForThreadID:thread.uniqueId transaction:transaction];
+            if (publicChat != nil) {
+                [recipientIds addObject:publicChat.server];
+            } else {
+                // TODO: Handle
+            }
+        }];
     } else if ([thread isKindOfClass:[TSContactThread class]]) {
         NSString *recipientContactId = ((TSContactThread *)thread).contactIdentifier;
 
@@ -1185,7 +1192,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [self messageSendDidFail:messageSend deviceMessages:deviceMessages statusCode:statusCode error:error responseData:responseData];
     };
     
-    if ([recipient.recipientId isEqualToString:LKGroupChatAPI.publicChatServer]) {
+    __block LKPublicChat *publicChat;
+    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        publicChat = [LKDatabaseUtilities getPublicChatForThreadID:message.uniqueThreadId transaction: transaction];
+    }];
+    if (publicChat != nil) {
         NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
         NSString *displayName = SSKEnvironment.shared.profileManager.localProfileName;
         if (displayName == nil) { displayName = @"Anonymous"; }
@@ -1198,9 +1209,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 quotedMessageServerID = [LKDatabaseUtilities getServerIDForQuoteWithID:quoteID quoteeHexEncodedPublicKey:quoteeHexEncodedPublicKey threadID:messageSend.thread.uniqueId transaction:transaction];
             }];
         }
-        LKGroupMessage *groupMessage = [[LKGroupMessage alloc] initWithHexEncodedPublicKey:userHexEncodedPublicKey displayName:displayName body:message.body type:LKGroupChatAPI.publicChatMessageType
+        LKGroupMessage *groupMessage = [[LKGroupMessage alloc] initWithHexEncodedPublicKey:userHexEncodedPublicKey displayName:displayName body:message.body type:LKPublicChatAPI.publicChatMessageType
          timestamp:message.timestamp quotedMessageTimestamp:quoteID quoteeHexEncodedPublicKey:quoteeHexEncodedPublicKey quotedMessageBody:quote.body quotedMessageServerID:quotedMessageServerID signatureData:nil signatureVersion:0];
-        [[LKGroupChatAPI sendMessage:groupMessage toGroup:LKGroupChatAPI.publicChatServerID onServer:LKGroupChatAPI.publicChatServer]
+        [[LKPublicChatAPI sendMessage:groupMessage toGroup:publicChat.channel onServer:publicChat.server]
         .thenOn(OWSDispatch.sendingQueue, ^(LKGroupMessage *groupMessage) {
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 [message saveGroupChatServerID:groupMessage.serverID in:transaction];
