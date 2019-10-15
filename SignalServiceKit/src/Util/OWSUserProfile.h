@@ -47,9 +47,8 @@ extern NSString *const kNSNotificationKey_ProfileGroupId;
                      profileName:(nullable NSString *)profileName
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
-        userProfileSchemaVersion:(NSUInteger)userProfileSchemaVersion
                         username:(nullable NSString *)username
-NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:recipientPhoneNumber:recipientUUID:userProfileSchemaVersion:username:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:recipientPhoneNumber:recipientUUID:username:));
 
 // clang-format on
 

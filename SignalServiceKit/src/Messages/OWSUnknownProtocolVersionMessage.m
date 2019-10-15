@@ -90,16 +90,13 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                   schemaVersion:(NSUInteger)schemaVersion
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
                    customMessage:(nullable NSString *)customMessage
-        infoMessageSchemaVersion:(NSUInteger)infoMessageSchemaVersion
                      messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
                  protocolVersion:(NSUInteger)protocolVersion
                           sender:(nullable SignalServiceAddress *)sender
-unknownProtocolVersionMessageSchemaVersion:(NSUInteger)unknownProtocolVersionMessageSchemaVersion
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
@@ -118,10 +115,8 @@ unknownProtocolVersionMessageSchemaVersion:(NSUInteger)unknownProtocolVersionMes
                        linkPreview:linkPreview
                     messageSticker:messageSticker
                      quotedMessage:quotedMessage
-                     schemaVersion:schemaVersion
       storedShouldStartExpireTimer:storedShouldStartExpireTimer
                      customMessage:customMessage
-          infoMessageSchemaVersion:infoMessageSchemaVersion
                        messageType:messageType
                               read:read
                unregisteredAddress:unregisteredAddress];
@@ -132,7 +127,6 @@ unknownProtocolVersionMessageSchemaVersion:(NSUInteger)unknownProtocolVersionMes
 
     _protocolVersion = protocolVersion;
     _sender = sender;
-    _unknownProtocolVersionMessageSchemaVersion = unknownProtocolVersionMessageSchemaVersion;
 
     return self;
 }

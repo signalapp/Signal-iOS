@@ -46,13 +46,6 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 @property (nonatomic) BOOL isArchived;
 @property (nonatomic, copy, nullable) NSString *messageDraft;
 @property (atomic, nullable) NSDate *mutedUntilDate;
-
-// DEPRECATED - not used since migrating to sortId
-// but keeping these properties around to ease any pain in the back-forth
-// migration while testing. Eventually we can safely delete these as they aren't used anywhere.
-@property (nonatomic, nullable) NSDate *lastMessageDate DEPRECATED_ATTRIBUTE;
-@property (nonatomic, nullable) NSDate *archivalDate DEPRECATED_ATTRIBUTE;
-
 @property (nonatomic) int64_t lastInteractionRowId;
 
 @end
@@ -106,13 +99,10 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-                    archivalDate:(nullable NSDate *)archivalDate
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
                       isArchived:(BOOL)isArchived
-isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
             lastInteractionRowId:(int64_t)lastInteractionRowId
-                 lastMessageDate:(nullable NSDate *)lastMessageDate
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
                            rowId:(int64_t)rowId
@@ -125,13 +115,10 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
         return self;
     }
 
-    _archivalDate = archivalDate;
     _conversationColorName = conversationColorName;
     _creationDate = creationDate;
     _isArchived = isArchived;
-    _isArchivedByLegacyTimestampForSorting = isArchivedByLegacyTimestampForSorting;
     _lastInteractionRowId = lastInteractionRowId;
-    _lastMessageDate = lastMessageDate;
     _messageDraft = messageDraft;
     _mutedUntilDate = mutedUntilDate;
     _rowId = rowId;

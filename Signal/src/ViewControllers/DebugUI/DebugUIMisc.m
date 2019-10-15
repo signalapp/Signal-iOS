@@ -527,8 +527,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                byteCount:1024
                                           sourceFilename:nil
                                                  caption:nil
-                                          albumMessageId:nil
-                                         shouldAlwaysPad:YES] anyInsertWithTransaction:transaction];
+                                          albumMessageId:nil] anyInsertWithTransaction:transaction];
 
         // ExperienceUpgrade
         //

@@ -471,8 +471,7 @@ public class AttachmentStreamFactory: NSObject, Factory {
                                                   byteCount: byteCountBuilder(),
                                                   sourceFilename: sourceFilenameBuilder(),
                                                   caption: captionBuilder(),
-                                                  albumMessageId: albumMessageIdBuilder(),
-                                                  shouldAlwaysPad: false)
+                                                  albumMessageId: albumMessageIdBuilder())
 
         return attachmentStream
     }

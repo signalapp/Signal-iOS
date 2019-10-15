@@ -135,7 +135,6 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
                       uniqueId:(NSString *)uniqueId
                          devices:(NSOrderedSet<NSNumber *> *)devices
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
-          recipientSchemaVersion:(NSUInteger)recipientSchemaVersion
                    recipientUUID:(nullable NSString *)recipientUUID
 {
     self = [super initWithGrdbId:grdbId
@@ -147,7 +146,6 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 
     _devices = devices;
     _recipientPhoneNumber = recipientPhoneNumber;
-    _recipientSchemaVersion = recipientSchemaVersion;
     _recipientUUID = recipientUUID;
 
     return self;

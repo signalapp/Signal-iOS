@@ -161,7 +161,7 @@ public class MessageSticker: MTLModel {
         do {
             let dataSource = try DataSourcePath.dataSource(withFilePath: filePath, shouldDeleteOnDeallocation: false)
             let contentType = dataProto.contentType ?? OWSMimeTypeImageWebp
-            let attachment = TSAttachmentStream(contentType: contentType, byteCount: fileSize.uint32Value, sourceFilename: nil, caption: nil, albumMessageId: nil, shouldAlwaysPad: false)
+            let attachment = TSAttachmentStream(contentType: contentType, byteCount: fileSize.uint32Value, sourceFilename: nil, caption: nil, albumMessageId: nil)
             try attachment.writeCopyingDataSource(dataSource)
             attachment.anyInsert(transaction: transaction)
             return attachment
@@ -197,7 +197,7 @@ public class MessageSticker: MTLModel {
         let fileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: fileExtension)
         try stickerData.write(to: fileUrl)
         let dataSource = try DataSourcePath.dataSource(with: fileUrl, shouldDeleteOnDeallocation: true)
-        let attachment = TSAttachmentStream(contentType: contentType, byteCount: UInt32(fileSize), sourceFilename: nil, caption: nil, albumMessageId: nil, shouldAlwaysPad: true)
+        let attachment = TSAttachmentStream(contentType: contentType, byteCount: UInt32(fileSize), sourceFilename: nil, caption: nil, albumMessageId: nil)
         try attachment.writeConsumingDataSource(dataSource)
 
         attachment.anyInsert(transaction: transaction)

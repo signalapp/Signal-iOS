@@ -404,8 +404,6 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                     }
                     [attachmentPointer anyUpdateAttachmentPointerWithTransaction:transaction
                                                                            block:^(TSAttachmentPointer *attachment) {
-                                                                               attachment.mostRecentFailureLocalizedText
-                                                                                   = error.localizedDescription;
                                                                                attachment.state
                                                                                    = TSAttachmentPointerStateFailed;
                                                                            }];

@@ -81,7 +81,6 @@ NSUInteger const TSRecipientReadReceiptSchemaVersion = 1;
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
                     recipientMap:(NSDictionary<SignalServiceAddress *,NSNumber *> *)recipientMap
-recipientReadReceiptSchemaVersion:(NSUInteger)recipientReadReceiptSchemaVersion
                    sentTimestamp:(uint64_t)sentTimestamp
 {
     self = [super initWithGrdbId:grdbId
@@ -92,7 +91,6 @@ recipientReadReceiptSchemaVersion:(NSUInteger)recipientReadReceiptSchemaVersion
     }
 
     _recipientMap = recipientMap;
-    _recipientReadReceiptSchemaVersion = recipientReadReceiptSchemaVersion;
     _sentTimestamp = sentTimestamp;
 
     return self;

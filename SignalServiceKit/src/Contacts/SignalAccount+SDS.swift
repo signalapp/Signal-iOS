@@ -28,9 +28,7 @@ public struct SignalAccountRecord: SDSRecord {
     public let uniqueId: String
 
     // Base class properties
-    public let accountSchemaVersion: UInt
     public let contact: Data?
-    public let hasMultipleAccountContact: Bool
     public let multipleAccountLabelText: String
     public let recipientPhoneNumber: String?
     public let recipientUUID: String?
@@ -39,9 +37,7 @@ public struct SignalAccountRecord: SDSRecord {
         case id
         case recordType
         case uniqueId
-        case accountSchemaVersion
         case contact
-        case hasMultipleAccountContact
         case multipleAccountLabelText
         case recipientPhoneNumber
         case recipientUUID
@@ -71,12 +67,10 @@ public extension SignalAccountRecord {
         id = row[0]
         recordType = row[1]
         uniqueId = row[2]
-        accountSchemaVersion = row[3]
-        contact = row[4]
-        hasMultipleAccountContact = row[5]
-        multipleAccountLabelText = row[6]
-        recipientPhoneNumber = row[7]
-        recipientUUID = row[8]
+        contact = row[3]
+        multipleAccountLabelText = row[4]
+        recipientPhoneNumber = row[5]
+        recipientUUID = row[6]
     }
 }
 
@@ -108,19 +102,15 @@ extension SignalAccount {
         case .signalAccount:
 
             let uniqueId: String = record.uniqueId
-            let accountSchemaVersion: UInt = record.accountSchemaVersion
             let contactSerialized: Data? = record.contact
             let contact: Contact? = try SDSDeserialization.optionalUnarchive(contactSerialized, name: "contact")
-            let hasMultipleAccountContact: Bool = record.hasMultipleAccountContact
             let multipleAccountLabelText: String = record.multipleAccountLabelText
             let recipientPhoneNumber: String? = record.recipientPhoneNumber
             let recipientUUID: String? = record.recipientUUID
 
             return SignalAccount(grdbId: recordId,
                                  uniqueId: uniqueId,
-                                 accountSchemaVersion: accountSchemaVersion,
                                  contact: contact,
-                                 hasMultipleAccountContact: hasMultipleAccountContact,
                                  multipleAccountLabelText: multipleAccountLabelText,
                                  recipientPhoneNumber: recipientPhoneNumber,
                                  recipientUUID: recipientUUID)
@@ -168,12 +158,10 @@ extension SignalAccountSerializer {
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
     // Base class properties
-    static let accountSchemaVersionColumn = SDSColumnMetadata(columnName: "accountSchemaVersion", columnType: .int64, columnIndex: 3)
-    static let contactColumn = SDSColumnMetadata(columnName: "contact", columnType: .blob, isOptional: true, columnIndex: 4)
-    static let hasMultipleAccountContactColumn = SDSColumnMetadata(columnName: "hasMultipleAccountContact", columnType: .int, columnIndex: 5)
-    static let multipleAccountLabelTextColumn = SDSColumnMetadata(columnName: "multipleAccountLabelText", columnType: .unicodeString, columnIndex: 6)
-    static let recipientPhoneNumberColumn = SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 7)
-    static let recipientUUIDColumn = SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true, columnIndex: 8)
+    static let contactColumn = SDSColumnMetadata(columnName: "contact", columnType: .blob, isOptional: true, columnIndex: 3)
+    static let multipleAccountLabelTextColumn = SDSColumnMetadata(columnName: "multipleAccountLabelText", columnType: .unicodeString, columnIndex: 4)
+    static let recipientPhoneNumberColumn = SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 5)
+    static let recipientUUIDColumn = SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true, columnIndex: 6)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -183,9 +171,7 @@ extension SignalAccountSerializer {
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
-        accountSchemaVersionColumn,
         contactColumn,
-        hasMultipleAccountContactColumn,
         multipleAccountLabelTextColumn,
         recipientPhoneNumberColumn,
         recipientUUIDColumn
@@ -585,13 +571,11 @@ class SignalAccountSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Base class properties
-        let accountSchemaVersion: UInt = model.accountSchemaVersion
         let contact: Data? = optionalArchive(model.contact)
-        let hasMultipleAccountContact: Bool = model.hasMultipleAccountContact
         let multipleAccountLabelText: String = model.multipleAccountLabelText
         let recipientPhoneNumber: String? = model.recipientPhoneNumber
         let recipientUUID: String? = model.recipientUUID
 
-        return SignalAccountRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, accountSchemaVersion: accountSchemaVersion, contact: contact, hasMultipleAccountContact: hasMultipleAccountContact, multipleAccountLabelText: multipleAccountLabelText, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID)
+        return SignalAccountRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, contact: contact, multipleAccountLabelText: multipleAccountLabelText, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID)
     }
 }

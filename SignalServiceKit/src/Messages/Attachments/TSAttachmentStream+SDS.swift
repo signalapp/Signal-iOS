@@ -62,14 +62,12 @@ class TSAttachmentStreamSerializer: SDSSerializer {
 
         // Base class properties
         let albumMessageId: String? = model.albumMessageId
-        let attachmentSchemaVersion: UInt = model.attachmentSchemaVersion
         let attachmentType: TSAttachmentType = model.attachmentType
         let blurHash: String? = model.blurHash
         let byteCount: UInt32 = model.byteCount
         let caption: String? = model.caption
         let contentType: String = model.contentType
         let encryptionKey: Data? = model.encryptionKey
-        let isDownloaded: Bool = model.isDownloaded
         let serverId: UInt64 = model.serverId
         let sourceFilename: String? = model.sourceFilename
 
@@ -85,11 +83,9 @@ class TSAttachmentStreamSerializer: SDSSerializer {
         let lazyRestoreFragmentId: String? = nil
         let localRelativeFilePath: String? = model.localRelativeFilePath
         let mediaSize: Data? = nil
-        let mostRecentFailureLocalizedText: String? = nil
         let pointerType: TSAttachmentPointerType? = nil
-        let shouldAlwaysPad: Bool? = model.shouldAlwaysPad
         let state: TSAttachmentPointerState? = nil
 
-        return AttachmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentSchemaVersion: attachmentSchemaVersion, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, isDownloaded: isDownloaded, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, mostRecentFailureLocalizedText: mostRecentFailureLocalizedText, pointerType: pointerType, shouldAlwaysPad: shouldAlwaysPad, state: state)
+        return AttachmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, pointerType: pointerType, state: state)
     }
 }

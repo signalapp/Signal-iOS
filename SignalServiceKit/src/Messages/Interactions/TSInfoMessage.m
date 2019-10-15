@@ -129,10 +129,8 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                   schemaVersion:(NSUInteger)schemaVersion
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
                    customMessage:(nullable NSString *)customMessage
-        infoMessageSchemaVersion:(NSUInteger)infoMessageSchemaVersion
                      messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
@@ -154,7 +152,6 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                        linkPreview:linkPreview
                     messageSticker:messageSticker
                      quotedMessage:quotedMessage
-                     schemaVersion:schemaVersion
       storedShouldStartExpireTimer:storedShouldStartExpireTimer];
 
     if (!self) {
@@ -162,7 +159,6 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     }
 
     _customMessage = customMessage;
-    _infoMessageSchemaVersion = infoMessageSchemaVersion;
     _messageType = messageType;
     _read = read;
     _unregisteredAddress = unregisteredAddress;

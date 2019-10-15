@@ -113,34 +113,29 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
-         attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                   attachmentType:(TSAttachmentType)attachmentType
                         blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
                          caption:(nullable NSString *)caption
                      contentType:(NSString *)contentType
                    encryptionKey:(nullable NSData *)encryptionKey
-                    isDownloaded:(BOOL)isDownloaded
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
                           digest:(nullable NSData *)digest
            lazyRestoreFragmentId:(nullable NSString *)lazyRestoreFragmentId
                        mediaSize:(CGSize)mediaSize
-  mostRecentFailureLocalizedText:(nullable NSString *)mostRecentFailureLocalizedText
                      pointerType:(TSAttachmentPointerType)pointerType
                            state:(TSAttachmentPointerState)state
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
                     albumMessageId:albumMessageId
-           attachmentSchemaVersion:attachmentSchemaVersion
                     attachmentType:attachmentType
                           blurHash:blurHash
                          byteCount:byteCount
                            caption:caption
                        contentType:contentType
                      encryptionKey:encryptionKey
-                      isDownloaded:isDownloaded
                           serverId:serverId
                     sourceFilename:sourceFilename];
 
@@ -151,7 +146,6 @@ NS_ASSUME_NONNULL_BEGIN
     _digest = digest;
     _lazyRestoreFragmentId = lazyRestoreFragmentId;
     _mediaSize = mediaSize;
-    _mostRecentFailureLocalizedText = mostRecentFailureLocalizedText;
     _pointerType = pointerType;
     _state = state;
 

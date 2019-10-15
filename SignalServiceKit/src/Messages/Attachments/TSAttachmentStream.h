@@ -47,8 +47,7 @@ typedef void (^OWSThumbnailFailure)(void);
                           byteCount:(UInt32)byteCount
                      sourceFilename:(nullable NSString *)sourceFilename
                             caption:(nullable NSString *)caption
-                     albumMessageId:(nullable NSString *)albumMessageId
-                    shouldAlwaysPad:(BOOL)shouldAlwaysPad NS_DESIGNATED_INITIALIZER;
+                     albumMessageId:(nullable NSString *)albumMessageId NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithPointer:(TSAttachmentPointer *)pointer
                     transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
@@ -64,14 +63,12 @@ typedef void (^OWSThumbnailFailure)(void);
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
-         attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                   attachmentType:(TSAttachmentType)attachmentType
                         blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
                          caption:(nullable NSString *)caption
                      contentType:(NSString *)contentType
                    encryptionKey:(nullable NSData *)encryptionKey
-                    isDownloaded:(BOOL)isDownloaded
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
       cachedAudioDurationSeconds:(nullable NSNumber *)cachedAudioDurationSeconds
@@ -83,8 +80,7 @@ typedef void (^OWSThumbnailFailure)(void);
               isValidImageCached:(nullable NSNumber *)isValidImageCached
               isValidVideoCached:(nullable NSNumber *)isValidVideoCached
            localRelativeFilePath:(nullable NSString *)localRelativeFilePath
-                 shouldAlwaysPad:(BOOL)shouldAlwaysPad
-NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:isDownloaded:serverId:sourceFilename:cachedAudioDurationSeconds:cachedImageHeight:cachedImageWidth:creationTimestamp:digest:isUploaded:isValidImageCached:isValidVideoCached:localRelativeFilePath:shouldAlwaysPad:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:serverId:sourceFilename:cachedAudioDurationSeconds:cachedImageHeight:cachedImageWidth:creationTimestamp:digest:isUploaded:isValidImageCached:isValidVideoCached:localRelativeFilePath:));
 
 // clang-format on
 
@@ -155,10 +151,6 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentSchemaVersion:attach
 
 // This method should only be invoked by OWSThumbnailService.
 - (NSString *)pathForThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints;
-
-// When uploading, always apply adding to this attachment,
-// regardless of feature flags.
-@property (nonatomic, readonly) BOOL shouldAlwaysPad;
 
 #pragma mark - Validation
 

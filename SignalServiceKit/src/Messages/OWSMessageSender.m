@@ -111,8 +111,7 @@ void AssertIsOnSendingQueue()
                                               byteCount:(UInt32)self.dataSource.dataLength
                                          sourceFilename:self.sourceFilename
                                                 caption:self.caption
-                                         albumMessageId:self.albumMessageId
-                                        shouldAlwaysPad:NO];
+                                         albumMessageId:self.albumMessageId];
 
     if (isVoiceMessage) {
         attachmentStream.attachmentType = TSAttachmentTypeVoiceMessage;

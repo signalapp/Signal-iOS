@@ -80,7 +80,6 @@ NSUInteger const OWSLinkedDeviceReadReceiptSchemaVersion = 1;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-linkedDeviceReadReceiptSchemaVersion:(NSUInteger)linkedDeviceReadReceiptSchemaVersion
               messageIdTimestamp:(uint64_t)messageIdTimestamp
                    readTimestamp:(uint64_t)readTimestamp
                senderPhoneNumber:(nullable NSString *)senderPhoneNumber
@@ -93,7 +92,6 @@ linkedDeviceReadReceiptSchemaVersion:(NSUInteger)linkedDeviceReadReceiptSchemaVe
         return self;
     }
 
-    _linkedDeviceReadReceiptSchemaVersion = linkedDeviceReadReceiptSchemaVersion;
     _messageIdTimestamp = messageIdTimestamp;
     _readTimestamp = readTimestamp;
     _senderPhoneNumber = senderPhoneNumber;

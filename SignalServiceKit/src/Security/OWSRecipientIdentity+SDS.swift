@@ -32,7 +32,6 @@ public struct RecipientIdentityRecord: SDSRecord {
     public let createdAt: Double
     public let identityKey: Data
     public let isFirstKnownKey: Bool
-    public let recipientIdentitySchemaVersion: UInt
     public let verificationState: OWSVerificationState
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
@@ -43,7 +42,6 @@ public struct RecipientIdentityRecord: SDSRecord {
         case createdAt
         case identityKey
         case isFirstKnownKey
-        case recipientIdentitySchemaVersion
         case verificationState
     }
 
@@ -75,8 +73,7 @@ public extension RecipientIdentityRecord {
         createdAt = row[4]
         identityKey = row[5]
         isFirstKnownKey = row[6]
-        recipientIdentitySchemaVersion = row[7]
-        verificationState = row[8]
+        verificationState = row[7]
     }
 }
 
@@ -113,7 +110,6 @@ extension OWSRecipientIdentity {
             let createdAt: Date = SDSDeserialization.requiredDoubleAsDate(createdAtInterval, name: "createdAt")
             let identityKey: Data = record.identityKey
             let isFirstKnownKey: Bool = record.isFirstKnownKey
-            let recipientIdentitySchemaVersion: UInt = record.recipientIdentitySchemaVersion
             let verificationState: OWSVerificationState = record.verificationState
 
             return OWSRecipientIdentity(grdbId: recordId,
@@ -122,7 +118,6 @@ extension OWSRecipientIdentity {
                                         createdAt: createdAt,
                                         identityKey: identityKey,
                                         isFirstKnownKey: isFirstKnownKey,
-                                        recipientIdentitySchemaVersion: recipientIdentitySchemaVersion,
                                         verificationState: verificationState)
 
         default:
@@ -172,8 +167,7 @@ extension OWSRecipientIdentitySerializer {
     static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .double, columnIndex: 4)
     static let identityKeyColumn = SDSColumnMetadata(columnName: "identityKey", columnType: .blob, columnIndex: 5)
     static let isFirstKnownKeyColumn = SDSColumnMetadata(columnName: "isFirstKnownKey", columnType: .int, columnIndex: 6)
-    static let recipientIdentitySchemaVersionColumn = SDSColumnMetadata(columnName: "recipientIdentitySchemaVersion", columnType: .int64, columnIndex: 7)
-    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, columnIndex: 8)
+    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, columnIndex: 7)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -187,7 +181,6 @@ extension OWSRecipientIdentitySerializer {
         createdAtColumn,
         identityKeyColumn,
         isFirstKnownKeyColumn,
-        recipientIdentitySchemaVersionColumn,
         verificationStateColumn
         ])
 }
@@ -589,9 +582,8 @@ class OWSRecipientIdentitySerializer: SDSSerializer {
         let createdAt: Double = archiveDate(model.createdAt)
         let identityKey: Data = model.identityKey
         let isFirstKnownKey: Bool = model.isFirstKnownKey
-        let recipientIdentitySchemaVersion: UInt = model.recipientIdentitySchemaVersion
         let verificationState: OWSVerificationState = model.verificationState
 
-        return RecipientIdentityRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, accountId: accountId, createdAt: createdAt, identityKey: identityKey, isFirstKnownKey: isFirstKnownKey, recipientIdentitySchemaVersion: recipientIdentitySchemaVersion, verificationState: verificationState)
+        return RecipientIdentityRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, accountId: accountId, createdAt: createdAt, identityKey: identityKey, isFirstKnownKey: isFirstKnownKey, verificationState: verificationState)
     }
 }

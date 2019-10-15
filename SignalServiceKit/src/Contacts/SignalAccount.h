@@ -31,8 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 // non-contact account.
 @property (nonatomic, nullable) Contact *contact;
 
-@property (nonatomic) BOOL hasMultipleAccountContact;
-
 // For contacts with more than one signal account,
 // this is a label for the account.
 @property (nonatomic) NSString *multipleAccountLabelText;
@@ -54,13 +52,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-            accountSchemaVersion:(NSUInteger)accountSchemaVersion
                          contact:(nullable Contact *)contact
-       hasMultipleAccountContact:(BOOL)hasMultipleAccountContact
         multipleAccountLabelText:(NSString *)multipleAccountLabelText
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
-NS_SWIFT_NAME(init(grdbId:uniqueId:accountSchemaVersion:contact:hasMultipleAccountContact:multipleAccountLabelText:recipientPhoneNumber:recipientUUID:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:contact:multipleAccountLabelText:recipientPhoneNumber:recipientUUID:));
 
 // clang-format on
 

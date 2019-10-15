@@ -70,7 +70,6 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                      profileName:(nullable NSString *)profileName
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
-        userProfileSchemaVersion:(NSUInteger)userProfileSchemaVersion
                         username:(nullable NSString *)username
 {
     self = [super initWithGrdbId:grdbId
@@ -86,7 +85,6 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     _profileName = profileName;
     _recipientPhoneNumber = recipientPhoneNumber;
     _recipientUUID = recipientUUID;
-    _userProfileSchemaVersion = userProfileSchemaVersion;
     _username = username;
 
     return self;

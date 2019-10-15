@@ -498,8 +498,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
                                                                                  byteCount:(UInt32)imageData.length
                                                                             sourceFilename:nil
                                                                                    caption:nil
-                                                                            albumMessageId:nil
-                                                                         shouldAlwaysPad:NO];
+                                                                            albumMessageId:nil];
 
     NSError *error;
     BOOL success = [attachmentStream writeData:imageData error:&error];

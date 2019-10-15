@@ -222,7 +222,7 @@ public class OWSLinkPreview: MTLModel {
         do {
             try imageData.write(to: fileUrl)
             let dataSource = try DataSourcePath.dataSource(with: fileUrl, shouldDeleteOnDeallocation: true)
-            let attachment = TSAttachmentStream(contentType: contentType, byteCount: UInt32(fileSize), sourceFilename: nil, caption: nil, albumMessageId: nil, shouldAlwaysPad: false)
+            let attachment = TSAttachmentStream(contentType: contentType, byteCount: UInt32(fileSize), sourceFilename: nil, caption: nil, albumMessageId: nil)
             try attachment.writeConsumingDataSource(dataSource)
             attachment.anyInsert(transaction: transaction)
 
