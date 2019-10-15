@@ -1,22 +1,22 @@
 import PromiseKit
 
 @objc(LKPublicChatManager)
-public final class LokiPublicChatManager: NSObject {
+public final class LokiPublicChatManager : NSObject {
+    private let storage = OWSPrimaryStorage.shared()
+    private var chats: [String:LokiPublicChat] = [:]
+    private var pollers: [String:LokiPublicChatPoller] = [:]
+    private var isPolling = false
     
-    // MARK: Error
+    private var userHexEncodedPublicKey: String? {
+        return OWSIdentityManager.shared().identityKeyPair()?.hexEncodedPublicKey
+    }
+    
     public enum Error : Swift.Error {
         case chatCreationFailed
         case userPublicKeyNotFound
     }
     
     @objc public static let shared = LokiPublicChatManager()
-    
-    private var chats: [String: LokiPublicChat] = [:]
-    private var pollers: [String: LokiPublicChatPoller] = [:]
-    private var isPolling = false
-    
-    private let storage = OWSPrimaryStorage.shared()
-    private var ourHexEncodedPublicKey: String? { return OWSIdentityManager.shared().identityKeyPair()?.hexEncodedPublicKey }
     
     private override init() {
         super.init()
@@ -48,13 +48,12 @@ public final class LokiPublicChatManager: NSObject {
     
     public func addChat(server: String, channel: UInt64) -> Promise<LokiPublicChat> {
         if let existingChat = getChat(server: server, channel: channel) {
-            if let chat = self.addChat(server: server, channel: channel, name: existingChat.displayName) {
-                return Promise.value(chat)
+            if let newChat = self.addChat(server: server, channel: channel, name: existingChat.displayName) {
+                return Promise.value(newChat)
             } else {
                 return Promise(error: Error.chatCreationFailed)
             }
         }
-        
         return LokiPublicChatAPI.getAuthToken(for: server).then { token in
             return LokiPublicChatAPI.getInfo(for: channel, on: server)
         }.map { channelInfo -> LokiPublicChat in
@@ -67,7 +66,7 @@ public final class LokiPublicChatManager: NSObject {
     @objc(addChatWithServer:channel:name:)
     public func addChat(server: String, channel: UInt64, name: String) -> LokiPublicChat? {
         guard let chat = LokiPublicChat(channel: channel, server: server, displayName: name, isDeletable: true) else { return nil }
-        let model = TSGroupModel(title: chat.displayName, memberIds: [ourHexEncodedPublicKey!, chat.server], image: nil, groupId: chat.idAsData)
+        let model = TSGroupModel(title: chat.displayName, memberIds: [userHexEncodedPublicKey!, chat.server], image: nil, groupId: chat.idAsData)
         
         // Store the group chat mapping
         self.storage.dbReadWriteConnection.readWrite { transaction in
