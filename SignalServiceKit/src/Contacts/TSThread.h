@@ -55,17 +55,15 @@ extern ConversationColorName const kConversationColorName_Default;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-                    archivalDate:(nullable NSDate *)archivalDate
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
                       isArchived:(BOOL)isArchived
             lastInteractionRowId:(int64_t)lastInteractionRowId
-                 lastMessageDate:(nullable NSDate *)lastMessageDate
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
                            rowId:(int64_t)rowId
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
-NS_SWIFT_NAME(init(grdbId:uniqueId:archivalDate:conversationColorName:creationDate:isArchived:lastInteractionRowId:lastMessageDate:messageDraft:mutedUntilDate:rowId:shouldThreadBeVisible:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:lastInteractionRowId:messageDraft:mutedUntilDate:rowId:shouldThreadBeVisible:));
 
 // clang-format on
 

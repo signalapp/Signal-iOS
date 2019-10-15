@@ -75,7 +75,6 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
                          contact:(nullable Contact *)contact
-       hasMultipleAccountContact:(BOOL)hasMultipleAccountContact
         multipleAccountLabelText:(NSString *)multipleAccountLabelText
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
@@ -88,7 +87,6 @@ NSUInteger const SignalAccountSchemaVersion = 1;
     }
 
     _contact = contact;
-    _hasMultipleAccountContact = hasMultipleAccountContact;
     _multipleAccountLabelText = multipleAccountLabelText;
     _recipientPhoneNumber = recipientPhoneNumber;
     _recipientUUID = recipientUUID;

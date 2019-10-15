@@ -68,7 +68,6 @@ class TSAttachmentPointerSerializer: SDSSerializer {
         let caption: String? = model.caption
         let contentType: String = model.contentType
         let encryptionKey: Data? = model.encryptionKey
-        let isDownloaded: Bool = model.isDownloaded
         let serverId: UInt64 = model.serverId
         let sourceFilename: String? = model.sourceFilename
 
@@ -84,11 +83,9 @@ class TSAttachmentPointerSerializer: SDSSerializer {
         let lazyRestoreFragmentId: String? = model.lazyRestoreFragmentId
         let localRelativeFilePath: String? = nil
         let mediaSize: Data? = optionalArchive(model.mediaSize)
-        let mostRecentFailureLocalizedText: String? = model.mostRecentFailureLocalizedText
         let pointerType: TSAttachmentPointerType? = model.pointerType
-        let shouldAlwaysPad: Bool? = nil
         let state: TSAttachmentPointerState? = model.state
 
-        return AttachmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, isDownloaded: isDownloaded, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, mostRecentFailureLocalizedText: mostRecentFailureLocalizedText, pointerType: pointerType, shouldAlwaysPad: shouldAlwaysPad, state: state)
+        return AttachmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, pointerType: pointerType, state: state)
     }
 }

@@ -61,12 +61,10 @@ class TSGroupThreadSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Base class properties
-        let archivalDate: Double? = archiveOptionalDate(model.archivalDate)
         let conversationColorName: String = model.conversationColorName.rawValue
         let creationDate: Double? = archiveOptionalDate(model.creationDate)
         let isArchived: Bool = model.isArchived
         let lastInteractionRowId: Int64 = model.lastInteractionRowId
-        let lastMessageDate: Double? = archiveOptionalDate(model.lastMessageDate)
         let messageDraft: String? = model.messageDraft
         let mutedUntilDate: Double? = archiveOptionalDate(model.mutedUntilDate)
         let shouldThreadBeVisible: Bool = model.shouldThreadBeVisible
@@ -77,6 +75,6 @@ class TSGroupThreadSerializer: SDSSerializer {
         let groupModel: Data? = optionalArchive(model.groupModel)
         let hasDismissedOffers: Bool? = nil
 
-        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
+        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
     }
 }

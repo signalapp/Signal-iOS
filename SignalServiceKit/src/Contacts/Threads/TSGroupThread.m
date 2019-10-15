@@ -25,12 +25,10 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-                    archivalDate:(nullable NSDate *)archivalDate
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
                       isArchived:(BOOL)isArchived
             lastInteractionRowId:(int64_t)lastInteractionRowId
-                 lastMessageDate:(nullable NSDate *)lastMessageDate
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
                            rowId:(int64_t)rowId
@@ -39,12 +37,10 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
-                      archivalDate:archivalDate
              conversationColorName:conversationColorName
                       creationDate:creationDate
                         isArchived:isArchived
               lastInteractionRowId:lastInteractionRowId
-                   lastMessageDate:lastMessageDate
                       messageDraft:messageDraft
                     mutedUntilDate:mutedUntilDate
                              rowId:rowId
