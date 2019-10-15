@@ -326,6 +326,7 @@ public final class LokiAPI : NSObject {
                 return Mention(hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName)
             }
         }
+        candidates = candidates.filter { $0.hexEncodedPublicKey != userHexEncodedPublicKey }
         // Sort alphabetically first
         candidates.sort { $0.displayName < $1.displayName }
         if query.count >= 2 {
