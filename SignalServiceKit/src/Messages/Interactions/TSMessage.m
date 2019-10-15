@@ -710,7 +710,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                     }];
 }
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 
 // This method is for testing purposes only.
 - (void)updateWithMessageBody:(nullable NSString *)messageBody transaction:(SDSAnyWriteTransaction *)transaction

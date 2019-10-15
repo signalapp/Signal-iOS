@@ -268,6 +268,20 @@ public extension OWSUserProfile {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
+    // The class function lets us update the database only without
+    // instantiating a model twice. anyUpdate() will instantiate
+    // the model once.
+    @objc(anyUpdateUserProfileWithUniqueId:transaction:block:)
+    class func anyUpdateUserProfile(uniqueId: String,
+                               transaction: SDSAnyWriteTransaction, block: (OWSUserProfile) -> Void) {
+        guard let dbCopy = anyFetch(uniqueId: uniqueId,
+                                    transaction: transaction) else {
+                                        owsFailDebug("Can't update missing record.")
+                                        return
+        }
+        dbCopy.anyUpdate(transaction: transaction)
+    }
+
     func anyRemove(transaction: SDSAnyWriteTransaction) {
         sdsRemove(transaction: transaction)
     }

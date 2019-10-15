@@ -116,7 +116,7 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueTh
 
 - (void)updateWithMessageSticker:(MessageSticker *)messageSticker transaction:(SDSAnyWriteTransaction *)transaction;
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 
 // This method is for testing purposes only.
 - (void)updateWithMessageBody:(nullable NSString *)messageBody transaction:(SDSAnyWriteTransaction *)transaction;

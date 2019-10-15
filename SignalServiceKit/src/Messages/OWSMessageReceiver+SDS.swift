@@ -233,6 +233,20 @@ public extension OWSMessageDecryptJob {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
+    // The class function lets us update the database only without
+    // instantiating a model twice. anyUpdate() will instantiate
+    // the model once.
+    @objc(anyUpdateMessageDecryptJobWithUniqueId:transaction:block:)
+    class func anyUpdateMessageDecryptJob(uniqueId: String,
+                               transaction: SDSAnyWriteTransaction, block: (OWSMessageDecryptJob) -> Void) {
+        guard let dbCopy = anyFetch(uniqueId: uniqueId,
+                                    transaction: transaction) else {
+                                        owsFailDebug("Can't update missing record.")
+                                        return
+        }
+        dbCopy.anyUpdate(transaction: transaction)
+    }
+
     func anyRemove(transaction: SDSAnyWriteTransaction) {
         sdsRemove(transaction: transaction)
     }

@@ -367,6 +367,20 @@ public extension SSKJobRecord {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
+    // The class function lets us update the database only without
+    // instantiating a model twice. anyUpdate() will instantiate
+    // the model once.
+    @objc(anyUpdateJobRecordWithUniqueId:transaction:block:)
+    class func anyUpdateJobRecord(uniqueId: String,
+                               transaction: SDSAnyWriteTransaction, block: (SSKJobRecord) -> Void) {
+        guard let dbCopy = anyFetch(uniqueId: uniqueId,
+                                    transaction: transaction) else {
+                                        owsFailDebug("Can't update missing record.")
+                                        return
+        }
+        dbCopy.anyUpdate(transaction: transaction)
+    }
+
     func anyRemove(transaction: SDSAnyWriteTransaction) {
         sdsRemove(transaction: transaction)
     }
