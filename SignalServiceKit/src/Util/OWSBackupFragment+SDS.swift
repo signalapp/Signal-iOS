@@ -261,7 +261,8 @@ public extension OWSBackupFragment {
     }
 
     // The class function lets us update the database only without
-    // instantiating a model first.
+    // instantiating a model twice. anyUpdate() will instantiate
+    // the model once.
     @objc(anyUpdateBackupFragmentWithUniqueId:transaction:block:)
     class func anyUpdateBackupFragment(uniqueId: String,
                                transaction: SDSAnyWriteTransaction, block: (OWSBackupFragment) -> Void) {

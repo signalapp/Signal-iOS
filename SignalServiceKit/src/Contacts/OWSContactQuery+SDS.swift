@@ -234,7 +234,8 @@ public extension OWSContactQuery {
     }
 
     // The class function lets us update the database only without
-    // instantiating a model first.
+    // instantiating a model twice. anyUpdate() will instantiate
+    // the model once.
     @objc(anyUpdateContactQueryWithUniqueId:transaction:block:)
     class func anyUpdateContactQuery(uniqueId: String,
                                transaction: SDSAnyWriteTransaction, block: (OWSContactQuery) -> Void) {

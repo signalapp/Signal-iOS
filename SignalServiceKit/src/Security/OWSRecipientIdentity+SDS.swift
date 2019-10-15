@@ -255,7 +255,8 @@ public extension OWSRecipientIdentity {
     }
 
     // The class function lets us update the database only without
-    // instantiating a model first.
+    // instantiating a model twice. anyUpdate() will instantiate
+    // the model once.
     @objc(anyUpdateRecipientIdentityWithUniqueId:transaction:block:)
     class func anyUpdateRecipientIdentity(uniqueId: String,
                                transaction: SDSAnyWriteTransaction, block: (OWSRecipientIdentity) -> Void) {

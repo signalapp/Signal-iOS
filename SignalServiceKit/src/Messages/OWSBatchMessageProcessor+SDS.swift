@@ -248,7 +248,8 @@ public extension OWSMessageContentJob {
     }
 
     // The class function lets us update the database only without
-    // instantiating a model first.
+    // instantiating a model twice. anyUpdate() will instantiate
+    // the model once.
     @objc(anyUpdateMessageContentJobWithUniqueId:transaction:block:)
     class func anyUpdateMessageContentJob(uniqueId: String,
                                transaction: SDSAnyWriteTransaction, block: (OWSMessageContentJob) -> Void) {

@@ -234,7 +234,8 @@ public extension OWSMessageDecryptJob {
     }
 
     // The class function lets us update the database only without
-    // instantiating a model first.
+    // instantiating a model twice. anyUpdate() will instantiate
+    // the model once.
     @objc(anyUpdateMessageDecryptJobWithUniqueId:transaction:block:)
     class func anyUpdateMessageDecryptJob(uniqueId: String,
                                transaction: SDSAnyWriteTransaction, block: (OWSMessageDecryptJob) -> Void) {

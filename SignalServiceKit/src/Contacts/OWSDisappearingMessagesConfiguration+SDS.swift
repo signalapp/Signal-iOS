@@ -233,7 +233,8 @@ public extension OWSDisappearingMessagesConfiguration {
     }
 
     // The class function lets us update the database only without
-    // instantiating a model first.
+    // instantiating a model twice. anyUpdate() will instantiate
+    // the model once.
     @objc(anyUpdateDisappearingMessagesConfigurationWithUniqueId:transaction:block:)
     class func anyUpdateDisappearingMessagesConfiguration(uniqueId: String,
                                transaction: SDSAnyWriteTransaction, block: (OWSDisappearingMessagesConfiguration) -> Void) {

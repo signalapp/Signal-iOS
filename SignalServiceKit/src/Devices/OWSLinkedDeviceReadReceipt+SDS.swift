@@ -247,7 +247,8 @@ public extension OWSLinkedDeviceReadReceipt {
     }
 
     // The class function lets us update the database only without
-    // instantiating a model first.
+    // instantiating a model twice. anyUpdate() will instantiate
+    // the model once.
     @objc(anyUpdateLinkedDeviceReadReceiptWithUniqueId:transaction:block:)
     class func anyUpdateLinkedDeviceReadReceipt(uniqueId: String,
                                transaction: SDSAnyWriteTransaction, block: (OWSLinkedDeviceReadReceipt) -> Void) {

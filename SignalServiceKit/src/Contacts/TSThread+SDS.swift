@@ -28,10 +28,12 @@ public struct ThreadRecord: SDSRecord {
     public let uniqueId: String
 
     // Base class properties
+    public let archivalDate: Double?
     public let conversationColorName: String
     public let creationDate: Double?
     public let isArchived: Bool
     public let lastInteractionRowId: Int64
+    public let lastMessageDate: Double?
     public let messageDraft: String?
     public let mutedUntilDate: Double?
     public let shouldThreadBeVisible: Bool
@@ -46,10 +48,12 @@ public struct ThreadRecord: SDSRecord {
         case id
         case recordType
         case uniqueId
+        case archivalDate
         case conversationColorName
         case creationDate
         case isArchived
         case lastInteractionRowId
+        case lastMessageDate
         case messageDraft
         case mutedUntilDate
         case shouldThreadBeVisible
@@ -83,17 +87,19 @@ public extension ThreadRecord {
         id = row[0]
         recordType = row[1]
         uniqueId = row[2]
-        conversationColorName = row[3]
-        creationDate = row[4]
-        isArchived = row[5]
-        lastInteractionRowId = row[6]
-        messageDraft = row[7]
-        mutedUntilDate = row[8]
-        shouldThreadBeVisible = row[9]
-        contactPhoneNumber = row[10]
-        contactUUID = row[11]
-        groupModel = row[12]
-        hasDismissedOffers = row[13]
+        archivalDate = row[3]
+        conversationColorName = row[4]
+        creationDate = row[5]
+        isArchived = row[6]
+        lastInteractionRowId = row[7]
+        lastMessageDate = row[8]
+        messageDraft = row[9]
+        mutedUntilDate = row[10]
+        shouldThreadBeVisible = row[11]
+        contactPhoneNumber = row[12]
+        contactUUID = row[13]
+        groupModel = row[14]
+        hasDismissedOffers = row[15]
     }
 }
 
@@ -125,11 +131,15 @@ extension TSThread {
         case .contactThread:
 
             let uniqueId: String = record.uniqueId
+            let archivalDateInterval: Double? = record.archivalDate
+            let archivalDate: Date? = SDSDeserialization.optionalDoubleAsDate(archivalDateInterval, name: "archivalDate")
             let conversationColorName: ConversationColorName = ConversationColorName(rawValue: record.conversationColorName)
             let creationDateInterval: Double? = record.creationDate
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
             let isArchived: Bool = record.isArchived
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
+            let lastMessageDateInterval: Double? = record.lastMessageDate
+            let lastMessageDate: Date? = SDSDeserialization.optionalDoubleAsDate(lastMessageDateInterval, name: "lastMessageDate")
             let messageDraft: String? = record.messageDraft
             let mutedUntilDateInterval: Double? = record.mutedUntilDate
             let mutedUntilDate: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateInterval, name: "mutedUntilDate")
@@ -141,10 +151,12 @@ extension TSThread {
 
             return TSContactThread(grdbId: recordId,
                                    uniqueId: uniqueId,
+                                   archivalDate: archivalDate,
                                    conversationColorName: conversationColorName,
                                    creationDate: creationDate,
                                    isArchived: isArchived,
                                    lastInteractionRowId: lastInteractionRowId,
+                                   lastMessageDate: lastMessageDate,
                                    messageDraft: messageDraft,
                                    mutedUntilDate: mutedUntilDate,
                                    rowId: rowId,
@@ -156,11 +168,15 @@ extension TSThread {
         case .groupThread:
 
             let uniqueId: String = record.uniqueId
+            let archivalDateInterval: Double? = record.archivalDate
+            let archivalDate: Date? = SDSDeserialization.optionalDoubleAsDate(archivalDateInterval, name: "archivalDate")
             let conversationColorName: ConversationColorName = ConversationColorName(rawValue: record.conversationColorName)
             let creationDateInterval: Double? = record.creationDate
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
             let isArchived: Bool = record.isArchived
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
+            let lastMessageDateInterval: Double? = record.lastMessageDate
+            let lastMessageDate: Date? = SDSDeserialization.optionalDoubleAsDate(lastMessageDateInterval, name: "lastMessageDate")
             let messageDraft: String? = record.messageDraft
             let mutedUntilDateInterval: Double? = record.mutedUntilDate
             let mutedUntilDate: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateInterval, name: "mutedUntilDate")
@@ -171,10 +187,12 @@ extension TSThread {
 
             return TSGroupThread(grdbId: recordId,
                                  uniqueId: uniqueId,
+                                 archivalDate: archivalDate,
                                  conversationColorName: conversationColorName,
                                  creationDate: creationDate,
                                  isArchived: isArchived,
                                  lastInteractionRowId: lastInteractionRowId,
+                                 lastMessageDate: lastMessageDate,
                                  messageDraft: messageDraft,
                                  mutedUntilDate: mutedUntilDate,
                                  rowId: rowId,
@@ -184,11 +202,15 @@ extension TSThread {
         case .thread:
 
             let uniqueId: String = record.uniqueId
+            let archivalDateInterval: Double? = record.archivalDate
+            let archivalDate: Date? = SDSDeserialization.optionalDoubleAsDate(archivalDateInterval, name: "archivalDate")
             let conversationColorName: ConversationColorName = ConversationColorName(rawValue: record.conversationColorName)
             let creationDateInterval: Double? = record.creationDate
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
             let isArchived: Bool = record.isArchived
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
+            let lastMessageDateInterval: Double? = record.lastMessageDate
+            let lastMessageDate: Date? = SDSDeserialization.optionalDoubleAsDate(lastMessageDateInterval, name: "lastMessageDate")
             let messageDraft: String? = record.messageDraft
             let mutedUntilDateInterval: Double? = record.mutedUntilDate
             let mutedUntilDate: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateInterval, name: "mutedUntilDate")
@@ -197,10 +219,12 @@ extension TSThread {
 
             return TSThread(grdbId: recordId,
                             uniqueId: uniqueId,
+                            archivalDate: archivalDate,
                             conversationColorName: conversationColorName,
                             creationDate: creationDate,
                             isArchived: isArchived,
                             lastInteractionRowId: lastInteractionRowId,
+                            lastMessageDate: lastMessageDate,
                             messageDraft: messageDraft,
                             mutedUntilDate: mutedUntilDate,
                             rowId: rowId,
@@ -255,18 +279,20 @@ extension TSThreadSerializer {
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
     // Base class properties
-    static let conversationColorNameColumn = SDSColumnMetadata(columnName: "conversationColorName", columnType: .unicodeString, columnIndex: 3)
-    static let creationDateColumn = SDSColumnMetadata(columnName: "creationDate", columnType: .double, isOptional: true, columnIndex: 4)
-    static let isArchivedColumn = SDSColumnMetadata(columnName: "isArchived", columnType: .int, columnIndex: 5)
-    static let lastInteractionRowIdColumn = SDSColumnMetadata(columnName: "lastInteractionRowId", columnType: .int64, columnIndex: 6)
-    static let messageDraftColumn = SDSColumnMetadata(columnName: "messageDraft", columnType: .unicodeString, isOptional: true, columnIndex: 7)
-    static let mutedUntilDateColumn = SDSColumnMetadata(columnName: "mutedUntilDate", columnType: .double, isOptional: true, columnIndex: 8)
-    static let shouldThreadBeVisibleColumn = SDSColumnMetadata(columnName: "shouldThreadBeVisible", columnType: .int, columnIndex: 9)
+    static let archivalDateColumn = SDSColumnMetadata(columnName: "archivalDate", columnType: .double, isOptional: true, columnIndex: 3)
+    static let conversationColorNameColumn = SDSColumnMetadata(columnName: "conversationColorName", columnType: .unicodeString, columnIndex: 4)
+    static let creationDateColumn = SDSColumnMetadata(columnName: "creationDate", columnType: .double, isOptional: true, columnIndex: 5)
+    static let isArchivedColumn = SDSColumnMetadata(columnName: "isArchived", columnType: .int, columnIndex: 6)
+    static let lastInteractionRowIdColumn = SDSColumnMetadata(columnName: "lastInteractionRowId", columnType: .int64, columnIndex: 7)
+    static let lastMessageDateColumn = SDSColumnMetadata(columnName: "lastMessageDate", columnType: .double, isOptional: true, columnIndex: 8)
+    static let messageDraftColumn = SDSColumnMetadata(columnName: "messageDraft", columnType: .unicodeString, isOptional: true, columnIndex: 9)
+    static let mutedUntilDateColumn = SDSColumnMetadata(columnName: "mutedUntilDate", columnType: .double, isOptional: true, columnIndex: 10)
+    static let shouldThreadBeVisibleColumn = SDSColumnMetadata(columnName: "shouldThreadBeVisible", columnType: .int, columnIndex: 11)
     // Subclass properties
-    static let contactPhoneNumberColumn = SDSColumnMetadata(columnName: "contactPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 10)
-    static let contactUUIDColumn = SDSColumnMetadata(columnName: "contactUUID", columnType: .unicodeString, isOptional: true, columnIndex: 11)
-    static let groupModelColumn = SDSColumnMetadata(columnName: "groupModel", columnType: .blob, isOptional: true, columnIndex: 12)
-    static let hasDismissedOffersColumn = SDSColumnMetadata(columnName: "hasDismissedOffers", columnType: .int, isOptional: true, columnIndex: 13)
+    static let contactPhoneNumberColumn = SDSColumnMetadata(columnName: "contactPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 12)
+    static let contactUUIDColumn = SDSColumnMetadata(columnName: "contactUUID", columnType: .unicodeString, isOptional: true, columnIndex: 13)
+    static let groupModelColumn = SDSColumnMetadata(columnName: "groupModel", columnType: .blob, isOptional: true, columnIndex: 14)
+    static let hasDismissedOffersColumn = SDSColumnMetadata(columnName: "hasDismissedOffers", columnType: .int, isOptional: true, columnIndex: 15)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -276,10 +302,12 @@ extension TSThreadSerializer {
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
+        archivalDateColumn,
         conversationColorNameColumn,
         creationDateColumn,
         isArchivedColumn,
         lastInteractionRowIdColumn,
+        lastMessageDateColumn,
         messageDraftColumn,
         mutedUntilDateColumn,
         shouldThreadBeVisibleColumn,
@@ -360,7 +388,8 @@ public extension TSThread {
     }
 
     // The class function lets us update the database only without
-    // instantiating a model first.
+    // instantiating a model twice. anyUpdate() will instantiate
+    // the model once.
     @objc(anyUpdateThreadWithUniqueId:transaction:block:)
     class func anyUpdateThread(uniqueId: String,
                                transaction: SDSAnyWriteTransaction, block: (TSThread) -> Void) {
@@ -696,10 +725,12 @@ class TSThreadSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Base class properties
+        let archivalDate: Double? = archiveOptionalDate(model.archivalDate)
         let conversationColorName: String = model.conversationColorName.rawValue
         let creationDate: Double? = archiveOptionalDate(model.creationDate)
         let isArchived: Bool = model.isArchived
         let lastInteractionRowId: Int64 = model.lastInteractionRowId
+        let lastMessageDate: Double? = archiveOptionalDate(model.lastMessageDate)
         let messageDraft: String? = model.messageDraft
         let mutedUntilDate: Double? = archiveOptionalDate(model.mutedUntilDate)
         let shouldThreadBeVisible: Bool = model.shouldThreadBeVisible
@@ -710,6 +741,6 @@ class TSThreadSerializer: SDSSerializer {
         let groupModel: Data? = nil
         let hasDismissedOffers: Bool? = nil
 
-        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
+        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
     }
 }

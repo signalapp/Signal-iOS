@@ -221,6 +221,7 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
                          caption:(nullable NSString *)caption
                      contentType:(NSString *)contentType
                    encryptionKey:(nullable NSData *)encryptionKey
+                    isDownloaded:(BOOL)isDownloaded
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
 {
@@ -238,6 +239,7 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     _caption = caption;
     _contentType = contentType;
     _encryptionKey = encryptionKey;
+    _isDownloaded = isDownloaded;
     _serverId = serverId;
     _sourceFilename = sourceFilename;
 

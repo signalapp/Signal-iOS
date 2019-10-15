@@ -241,7 +241,8 @@ public extension SignalRecipient {
     }
 
     // The class function lets us update the database only without
-    // instantiating a model first.
+    // instantiating a model twice. anyUpdate() will instantiate
+    // the model once.
     @objc(anyUpdateSignalRecipientWithUniqueId:transaction:block:)
     class func anyUpdateSignalRecipient(uniqueId: String,
                                transaction: SDSAnyWriteTransaction, block: (SignalRecipient) -> Void) {

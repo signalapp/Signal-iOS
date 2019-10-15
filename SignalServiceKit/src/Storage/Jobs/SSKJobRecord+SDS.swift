@@ -368,7 +368,8 @@ public extension SSKJobRecord {
     }
 
     // The class function lets us update the database only without
-    // instantiating a model first.
+    // instantiating a model twice. anyUpdate() will instantiate
+    // the model once.
     @objc(anyUpdateJobRecordWithUniqueId:transaction:block:)
     class func anyUpdateJobRecord(uniqueId: String,
                                transaction: SDSAnyWriteTransaction, block: (SSKJobRecord) -> Void) {

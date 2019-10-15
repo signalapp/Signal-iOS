@@ -269,7 +269,8 @@ public extension OWSUserProfile {
     }
 
     // The class function lets us update the database only without
-    // instantiating a model first.
+    // instantiating a model twice. anyUpdate() will instantiate
+    // the model once.
     @objc(anyUpdateUserProfileWithUniqueId:transaction:block:)
     class func anyUpdateUserProfile(uniqueId: String,
                                transaction: SDSAnyWriteTransaction, block: (OWSUserProfile) -> Void) {

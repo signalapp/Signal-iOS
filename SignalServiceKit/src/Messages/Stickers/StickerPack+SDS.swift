@@ -272,7 +272,8 @@ public extension StickerPack {
     }
 
     // The class function lets us update the database only without
-    // instantiating a model first.
+    // instantiating a model twice. anyUpdate() will instantiate
+    // the model once.
     @objc(anyUpdateStickerPackWithUniqueId:transaction:block:)
     class func anyUpdateStickerPack(uniqueId: String,
                                transaction: SDSAnyWriteTransaction, block: (StickerPack) -> Void) {

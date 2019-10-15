@@ -216,7 +216,8 @@ public extension ExperienceUpgrade {
     }
 
     // The class function lets us update the database only without
-    // instantiating a model first.
+    // instantiating a model twice. anyUpdate() will instantiate
+    // the model once.
     @objc(anyUpdateExperienceUpgradeWithUniqueId:transaction:block:)
     class func anyUpdateExperienceUpgrade(uniqueId: String,
                                transaction: SDSAnyWriteTransaction, block: (ExperienceUpgrade) -> Void) {

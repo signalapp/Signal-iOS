@@ -249,7 +249,8 @@ public extension OWSDevice {
     }
 
     // The class function lets us update the database only without
-    // instantiating a model first.
+    // instantiating a model twice. anyUpdate() will instantiate
+    // the model once.
     @objc(anyUpdateDeviceWithUniqueId:transaction:block:)
     class func anyUpdateDevice(uniqueId: String,
                                transaction: SDSAnyWriteTransaction, block: (OWSDevice) -> Void) {

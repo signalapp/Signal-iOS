@@ -1236,7 +1236,8 @@ public extension %s {
     
         swift_body += '''
     // The class function lets us update the database only without
-    // instantiating a model first.
+    // instantiating a model twice. anyUpdate() will instantiate
+    // the model once.
     @objc(anyUpdate%(class_short_name)sWithUniqueId:transaction:block:)
     class func anyUpdate%(class_short_name)s(uniqueId: String,
                                transaction: SDSAnyWriteTransaction, block: (%(class_name)s) -> Void) {

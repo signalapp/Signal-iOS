@@ -29,6 +29,7 @@ public struct SignalAccountRecord: SDSRecord {
 
     // Base class properties
     public let contact: Data?
+    public let hasMultipleAccountContact: Bool
     public let multipleAccountLabelText: String
     public let recipientPhoneNumber: String?
     public let recipientUUID: String?
@@ -38,6 +39,7 @@ public struct SignalAccountRecord: SDSRecord {
         case recordType
         case uniqueId
         case contact
+        case hasMultipleAccountContact
         case multipleAccountLabelText
         case recipientPhoneNumber
         case recipientUUID
@@ -68,9 +70,10 @@ public extension SignalAccountRecord {
         recordType = row[1]
         uniqueId = row[2]
         contact = row[3]
-        multipleAccountLabelText = row[4]
-        recipientPhoneNumber = row[5]
-        recipientUUID = row[6]
+        hasMultipleAccountContact = row[4]
+        multipleAccountLabelText = row[5]
+        recipientPhoneNumber = row[6]
+        recipientUUID = row[7]
     }
 }
 
@@ -104,6 +107,7 @@ extension SignalAccount {
             let uniqueId: String = record.uniqueId
             let contactSerialized: Data? = record.contact
             let contact: Contact? = try SDSDeserialization.optionalUnarchive(contactSerialized, name: "contact")
+            let hasMultipleAccountContact: Bool = record.hasMultipleAccountContact
             let multipleAccountLabelText: String = record.multipleAccountLabelText
             let recipientPhoneNumber: String? = record.recipientPhoneNumber
             let recipientUUID: String? = record.recipientUUID
@@ -111,6 +115,7 @@ extension SignalAccount {
             return SignalAccount(grdbId: recordId,
                                  uniqueId: uniqueId,
                                  contact: contact,
+                                 hasMultipleAccountContact: hasMultipleAccountContact,
                                  multipleAccountLabelText: multipleAccountLabelText,
                                  recipientPhoneNumber: recipientPhoneNumber,
                                  recipientUUID: recipientUUID)
@@ -159,9 +164,10 @@ extension SignalAccountSerializer {
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
     // Base class properties
     static let contactColumn = SDSColumnMetadata(columnName: "contact", columnType: .blob, isOptional: true, columnIndex: 3)
-    static let multipleAccountLabelTextColumn = SDSColumnMetadata(columnName: "multipleAccountLabelText", columnType: .unicodeString, columnIndex: 4)
-    static let recipientPhoneNumberColumn = SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 5)
-    static let recipientUUIDColumn = SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true, columnIndex: 6)
+    static let hasMultipleAccountContactColumn = SDSColumnMetadata(columnName: "hasMultipleAccountContact", columnType: .int, columnIndex: 4)
+    static let multipleAccountLabelTextColumn = SDSColumnMetadata(columnName: "multipleAccountLabelText", columnType: .unicodeString, columnIndex: 5)
+    static let recipientPhoneNumberColumn = SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 6)
+    static let recipientUUIDColumn = SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true, columnIndex: 7)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -172,6 +178,7 @@ extension SignalAccountSerializer {
         recordTypeColumn,
         uniqueIdColumn,
         contactColumn,
+        hasMultipleAccountContactColumn,
         multipleAccountLabelTextColumn,
         recipientPhoneNumberColumn,
         recipientUUIDColumn
@@ -248,7 +255,8 @@ public extension SignalAccount {
     }
 
     // The class function lets us update the database only without
-    // instantiating a model first.
+    // instantiating a model twice. anyUpdate() will instantiate
+    // the model once.
     @objc(anyUpdateSignalAccountWithUniqueId:transaction:block:)
     class func anyUpdateSignalAccount(uniqueId: String,
                                transaction: SDSAnyWriteTransaction, block: (SignalAccount) -> Void) {
@@ -585,10 +593,11 @@ class SignalAccountSerializer: SDSSerializer {
 
         // Base class properties
         let contact: Data? = optionalArchive(model.contact)
+        let hasMultipleAccountContact: Bool = model.hasMultipleAccountContact
         let multipleAccountLabelText: String = model.multipleAccountLabelText
         let recipientPhoneNumber: String? = model.recipientPhoneNumber
         let recipientUUID: String? = model.recipientUUID
 
-        return SignalAccountRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, contact: contact, multipleAccountLabelText: multipleAccountLabelText, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID)
+        return SignalAccountRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, contact: contact, hasMultipleAccountContact: hasMultipleAccountContact, multipleAccountLabelText: multipleAccountLabelText, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID)
     }
 }
