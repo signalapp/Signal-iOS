@@ -1122,6 +1122,10 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     return dataProto;
 }
 
+- (SSKProtoContentBuilder *)prepareCustomContentBuilder:(SignalRecipient *)recipient {
+    return SSKProtoContent.builder;
+}
+
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
     NSError *error;
@@ -1131,7 +1135,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         return nil;
     }
 
-    SSKProtoContentBuilder *contentBuilder = [self prepareCustomContentBuilder:recipient] ?: SSKProtoContent.builder;
+    SSKProtoContentBuilder *contentBuilder = [self prepareCustomContentBuilder:recipient];
     
     [contentBuilder setDataMessage:dataMessage];
     NSData *_Nullable contentData = [contentBuilder buildSerializedDataAndReturnError:&error];
