@@ -3787,12 +3787,13 @@ typedef enum : NSUInteger {
     if (isBackspace) {
         self.currentMentionStartIndex = -1;
         [self.inputToolbar hideMentionCandidateSelectionView];
-        for (LKMention *mention in self.mentions) {
-            if (![mention isContainedIn:newText]) {
-                [self.mentions removeObject:mention];
-            }
-        }
-    } else if (newText.length > 0) {
+        NSArray *mentionsToRemove = [self.mentions filtered:^BOOL(NSObject *object) {
+            LKMention *mention = (LKMention *)object;
+            return ![mention isContainedIn:newText];
+        }];
+        [self.mentions removeObjectsInArray:mentionsToRemove];
+    }
+    if (newText.length > 0) {
         NSUInteger lastCharacterIndex = newText.length - 1;
         unichar lastCharacter = [newText characterAtIndex:lastCharacterIndex];
         if (lastCharacter == '@') {
