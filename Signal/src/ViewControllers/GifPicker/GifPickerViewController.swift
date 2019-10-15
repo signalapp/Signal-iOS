@@ -72,6 +72,10 @@ extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDel
     public func attachmentApprovalBackButtonTitle() -> String {
         return CommonStrings.backButton
     }
+
+    public var attachmentApprovalTextInputContextIdentifier: String? {
+        return approvalDelegate?.attachmentApprovalTextInputContextIdentifier
+    }
 }
 
 protocol GifPickerViewControllerDelegate: class {

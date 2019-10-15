@@ -694,6 +694,11 @@ typedef enum : NSUInteger {
     return self.inputWrapper;
 }
 
+- (nullable NSString *)textInputContextIdentifier
+{
+    return self.thread.uniqueId;
+}
+
 - (void)registerCellClasses
 {
     [self.collectionView registerClass:[OWSSystemMessageCell class]
@@ -3141,6 +3146,11 @@ typedef enum : NSUInteger {
     return YES;
 }
 
+- (nullable NSString *)sendMediaNavTextInputContextIdentifier
+{
+    return self.textInputContextIdentifier;
+}
+
 #pragma mark -
 
 - (void)sendContactShare:(ContactShareViewModel *)contactShare
@@ -4005,6 +4015,11 @@ typedef enum : NSUInteger {
       didChangeMessageText:(nullable NSString *)newMessageText
 {
     [self.inputToolbar setMessageText:newMessageText animated:NO];
+}
+
+- (nullable NSString *)attachmentApprovalTextInputContextIdentifier
+{
+    return self.textInputContextIdentifier;
 }
 
 #pragma mark -

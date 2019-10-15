@@ -35,6 +35,8 @@ public protocol AttachmentApprovalViewControllerDelegate: class {
 
     @objc
     optional func attachmentApprovalBackButtonTitle() -> String
+
+    @objc var attachmentApprovalTextInputContextIdentifier: String? { get }
 }
 
 // MARK: -
@@ -258,6 +260,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     override public var inputAccessoryView: UIView? {
         bottomToolView.layoutIfNeeded()
         return bottomToolView
+    }
+
+    public override var textInputContextIdentifier: String? {
+        return approvalDelegate?.attachmentApprovalTextInputContextIdentifier
     }
 
     override public var canBecomeFirstResponder: Bool {

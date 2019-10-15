@@ -61,6 +61,10 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
     var sendMediaNavCanSaveAttachments: Bool {
         return true
     }
+
+    var sendMediaNavTextInputContextIdentifier: String? {
+        return nil
+    }
 }
 
 extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {

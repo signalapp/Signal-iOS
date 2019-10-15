@@ -15,6 +15,7 @@ protocol SendMediaNavDelegate: AnyObject {
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageText newMessageText: String?)
     var sendMediaNavApprovalButtonImageName: String { get }
     var sendMediaNavCanSaveAttachments: Bool { get }
+    var sendMediaNavTextInputContextIdentifier: String? { get }
 }
 
 @objc
@@ -588,6 +589,10 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
         isInBatchSelectMode = true
 
         popViewController(animated: true)
+    }
+
+    var attachmentApprovalTextInputContextIdentifier: String? {
+        return sendMediaNavDelegate?.sendMediaNavTextInputContextIdentifier
     }
 }
 
