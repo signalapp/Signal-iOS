@@ -418,7 +418,7 @@ public class GroupThreadFactory: NSObject, Factory {
 
     @objc
     public var memberAddressesBuilder: () -> [SignalServiceAddress] = {
-        let groupSize = arc4random_uniform(10)
+        let groupSize = arc4random_uniform(10) + 1
         return (0..<groupSize).map { _ in  CommonGenerator.address(hasPhoneNumber: Bool.random()) }
     }
 }
