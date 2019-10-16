@@ -55,7 +55,7 @@ class TSIncomingMessageSerializer: SDSSerializer {
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = model.grdbId?.int64Value
+        let id: Int64? = model.sortId > 0 ? Int64(model.sortId) : model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .incomingMessage
         let uniqueId: String = model.uniqueId

@@ -1659,15 +1659,18 @@ class %sSerializer: SDSSerializer {
     root_class = clazz.table_superclass()
     root_record_name = remove_prefix_from_class_name(root_class.name) + 'Record'
     
-    record_id_source = "nil"
+    record_id_source = "model.grdbId?.int64Value"
     if root_class.record_id_source() is not None:
-        record_id_source = "model.%(source)s > 0 ? Int64(model.%(source)s) : nil" % { "source": root_class.record_id_source() }
+        record_id_source = "model.%(source)s > 0 ? Int64(model.%(source)s) : %(default_source)s" % { 
+            "source": root_class.record_id_source(),
+            "default_source": record_id_source,
+        }
 
     swift_body += '''
     // MARK: - Record
 
     func asRecord() throws -> SDSRecord {
-        let id: Int64? = model.grdbId?.int64Value
+        let id: Int64? = %(record_id_source)s
 
         let recordType: SDSRecordType = .%(record_type)s
         let uniqueId: String = model.uniqueId
