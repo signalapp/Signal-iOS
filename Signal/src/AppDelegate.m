@@ -59,6 +59,18 @@ typedef NS_ENUM(NSUInteger, LaunchFailure) {
     LaunchFailure_UnknownDatabaseVersion,
 };
 
+NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
+{
+    switch (launchFailure) {
+        case LaunchFailure_None:
+            return @"LaunchFailure_None";
+        case LaunchFailure_CouldNotLoadDatabase:
+            return @"LaunchFailure_CouldNotLoadDatabase";
+        case LaunchFailure_UnknownDatabaseVersion:
+            return @"LaunchFailure_UnknownDatabaseVersion";
+    }
+}
+
 @interface AppDelegate () <UNUserNotificationCenterDelegate>
 
 @property (nonatomic) BOOL areVersionMigrationsComplete;
@@ -385,6 +397,8 @@ typedef NS_ENUM(NSUInteger, LaunchFailure) {
 
 - (void)showUIForLaunchFailure:(LaunchFailure)launchFailure
 {
+    OWSLogInfo(@"launchFailure: %@", NSStringForLaunchFailure(launchFailure));
+
     // Disable normal functioning of app.
     self.didAppLaunchFail = YES;
 
