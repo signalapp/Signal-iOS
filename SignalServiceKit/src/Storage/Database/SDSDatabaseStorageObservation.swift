@@ -138,10 +138,7 @@ class SDSDatabaseStorageObservation {
     }
 
     private func addYDBObservers() {
-        // GRDB TODO: Fix
-        guard ![.grdbForAll,
-                .grdbForLegacy,
-                .grdbThrowawayIfMigrating ].contains(FeatureFlags.storageMode) else {
+        guard StorageCoordinator.dataStoreForUI != .grdb else {
             return
         }
 

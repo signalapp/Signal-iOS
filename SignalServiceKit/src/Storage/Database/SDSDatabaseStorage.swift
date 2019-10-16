@@ -424,11 +424,6 @@ public class SDSDatabaseStorage: SDSTransactable {
 // MARK: - Coordination
 
 extension SDSDatabaseStorage {
-    @objc
-    public enum DataStore: Int {
-        case ydb
-        case grdb
-    }
 
     private var storageCoordinatorState: StorageCoordinatorState {
         guard let delegate = delegate else {
@@ -478,19 +473,7 @@ extension SDSDatabaseStorage {
     }
 
     var dataStoreForReporting: DataStore {
-        switch storageCoordinatorState {
-        case .YDB:
-            return .ydb
-        case .beforeYDBToGRDBMigration, .duringYDBToGRDBMigration, .GRDB:
-            return .grdb
-        case .ydbTests:
-            return .ydb
-        case .grdbTests:
-            return .grdb
-        @unknown default:
-            owsFailDebug("Unknown state: \(storageCoordinatorState)")
-            return .grdb
-        }
+        return StorageCoordinator.dataStoreForUI
     }
 
     @objc

@@ -8,6 +8,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const StorageIsReadyNotification;
 
+typedef NS_ENUM(NSUInteger, DataStore) {
+    DataStoreYdb,
+    DataStoreGrdb,
+};
+
 typedef NS_ENUM(NSUInteger, StorageCoordinatorState) {
     // GRDB TODO: Remove .ydb and ydbTests once we ship GRDB to production.
     StorageCoordinatorStateYDB,
@@ -39,6 +44,10 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
 @property (class, nonatomic, readonly) BOOL hasGrdbFile;
 
 @property (class, nonatomic, readonly) BOOL hasInvalidDatabaseVersion;
+
+// The data store that will be used once the app is ready.
+// This data store may not be available before then.
+@property (class, nonatomic, readonly) DataStore dataStoreForUI;
 
 - (BOOL)isDatabasePasswordAccessible;
 

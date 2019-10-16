@@ -13,6 +13,7 @@
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/StorageCoordinator.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 
@@ -29,8 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
         // * Successfully completed launch process at least once in the post-GRDB world.
         [OWSPreferences setIsYdbReadyForAppExtensions];
 
-        if (self.databaseStorage.dataStoreForReads == DataStoreGrdb
-            && !SSKFeatureFlags.storageMode == StorageModeGrdbThrowawayIfMigrating) {
+        if (StorageCoordinator.dataStoreForUI == DataStoreGrdb
+            && SSKFeatureFlags.storageMode != StorageModeGrdbThrowawayIfMigrating) {
             [OWSPreferences setIsGrdbReadyForAppExtensions];
         }
     }

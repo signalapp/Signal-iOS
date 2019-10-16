@@ -32,8 +32,10 @@ public enum StorageMode: Int {
     //
     // Supercedes grdbMigratesFreshDBEveryLaunch.
     case grdbThrowawayIfMigrating
+    // Use GRDB under certain conditions.
+    case grdbForLegacyUsersOnly
+    case grdbForNewUsersOnly
     // Use GRDB, migrating once if necessary.
-    case grdbForLegacy
     case grdbForAll
     // These modes can be used while running tests.
     // They are more permissive than the release modes.
@@ -53,15 +55,17 @@ extension StorageMode: CustomStringConvertible {
             return ".ydbForAll"
         case .grdbThrowawayIfMigrating:
             return ".grdbThrowawayIfMigrating"
-        case .grdbForLegacy:
-            return ".grdbForLegacy"
+        case .grdbForLegacyUsersOnly:
+            return ".grdbForLegacyUsersOnly"
+        case .grdbForNewUsersOnly:
+            return ".grdbForNewUsersOnly"
         case .grdbForAll:
             return ".grdbForAll"
         case .ydbTests:
             return ".ydbTests"
         case .grdbTests:
             return ".grdbTests"
-        default:
+        @unknown default:
             owsFailDebug("unexpected StorageMode: \(self)")
             return ".unknown"
         }
