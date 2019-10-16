@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+    if (self.databaseStorage.dataStoreForReads == DataStoreYdb) {
         NSString *grouping = TSInboxGroup;
 
         self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ grouping ]
@@ -115,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _shouldObserveDBModifications = shouldObserveDBModifications;
 
-    if (SSKFeatureFlags.storageMode != StorageModeYdb) {
+    if (self.databaseStorage.dataStoreForReads == DataStoreGrdb) {
         if (shouldObserveDBModifications) {
             [self updateThreads];
         }
@@ -223,7 +223,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateThreads
 {
-    if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+    if (self.databaseStorage.dataStoreForReads == DataStoreYdb) {
         [self updateThreadsYDB];
     } else {
         [self updateThreadsGRDB];

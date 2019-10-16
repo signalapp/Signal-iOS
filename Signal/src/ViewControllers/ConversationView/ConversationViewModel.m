@@ -348,7 +348,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     self.typingIndicatorsSender = [self.typingIndicators typingAddressForThread:self.thread];
     self.collapseCutoffDate = [NSDate new];
 
-    if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+    if (self.databaseStorage.dataStoreForReads == DataStoreYdb) {
         [self.primaryStorage updateUIDatabaseConnectionToLatest];
     }
 
@@ -360,7 +360,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         }
     }];
 
-    if (SSKFeatureFlags.storageMode != StorageModeYdb) {
+    if (self.databaseStorage.dataStoreForReads == DataStoreGrdb) {
         [self.databaseStorage.grdbStorage.conversationViewDatabaseObserver appendSnapshotDelegate:self];
     } else {
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -391,7 +391,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
 - (void)touchDbAsync
 {
-    if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+    if (self.databaseStorage.dataStoreForWrites == DataStoreYdb) {
         // See comments in primaryStorage.touchDbAsync.
         [self.primaryStorage touchDbAsync];
     }
@@ -446,7 +446,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             // loadNMoreMessages calls resetMapping which calls ensureDynamicInteractions,
             // which may move the unread indicator, and for scrollToUnreadIndicatorAnimated
             // to work properly, the view items need to be updated to reflect that change.
-            if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+            if (self.databaseStorage.dataStoreForReads == DataStoreYdb) {
                 [self.primaryStorage updateUIDatabaseConnectionToLatest];
             }
 
@@ -1417,7 +1417,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     // Flag to ensure that we only increment once per launch.
     if (hasError) {
         OWSLogWarn(@"incrementing version of: %@", TSMessageDatabaseViewExtensionName);
-        if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+        if (self.databaseStorage.dataStoreForReads == DataStoreYdb) {
             [OWSPrimaryStorage incrementVersionOfDatabaseExtension:TSMessageDatabaseViewExtensionName];
         }
     }

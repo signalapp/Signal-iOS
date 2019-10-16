@@ -658,7 +658,7 @@ class MediaGallery: MediaGalleryDataSource {
     }
 
     func setupDatabaseObservation() {
-        if FeatureFlags.storageMode != .ydb {
+        if databaseStorage.dataStoreForReads == DataStoreGrdb {
             guard let mediaGalleryDatabaseObserver = databaseStorage.grdbStorage.mediaGalleryDatabaseObserver else {
                 owsFailDebug("observer was unexpectedly nil")
                 return

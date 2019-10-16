@@ -161,7 +161,7 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem
                          itemWithTitle:@"Increment Database Extension Versions"
                            actionBlock:^() {
-                               if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+                               if (DebugUIMisc.databaseStorage.dataStoreForReads == DataStoreYdb) {
                                    for (NSString *extensionName in OWSPrimaryStorage.shared.registeredExtensionNames) {
                                        [OWSStorage incrementVersionOfDatabaseExtension:extensionName];
                                    }
