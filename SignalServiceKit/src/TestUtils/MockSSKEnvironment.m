@@ -146,13 +146,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configure
 {
-    if (self.databaseStorage.canLoadYdb) {
         __block dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-        [OWSStorage registerExtensionsWithCompletionBlock:^() {
-            [self.storageCoordinator markStorageSetupAsComplete];
+        [[self configureYdb]
+                .then(^{
+                    OWSAssertIsOnMainThread();
 
-            dispatch_semaphore_signal(semaphore);
-        }];
+                    return [self configureGrdb];
+                })
+                .then(^{
+                    OWSAssertIsOnMainThread();
+
+                    dispatch_semaphore_signal(semaphore);
+                }) retainUntilComplete];
 
         // Registering extensions is a complicated process than can move
         // on and off the main thread.  While we wait for it to complete,
@@ -170,7 +175,32 @@ NS_ASSUME_NONNULL_BEGIN
             // Process a single "source" (e.g. item) on the default run loop.
             CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.0, false);
         }
+}
+
+- (AnyPromise *)configureYdb
+{
+    if (!self.databaseStorage.canLoadYdb) {
+        return [AnyPromise promiseWithValue:@(1)];
     }
+    AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+        [OWSStorage registerExtensionsWithCompletionBlock:^() {
+            [self.storageCoordinator markStorageSetupAsComplete];
+
+            // The value doesn't matter, we just need any non-NSError value.
+            resolve(@(1));
+        }];
+    }];
+    return promise;
+}
+
+- (AnyPromise *)configureGrdb
+{
+    OWSAssertIsOnMainThread();
+
+    GRDBSchemaMigrator *grdbSchemaMigrator = [GRDBSchemaMigrator new];
+    [grdbSchemaMigrator runMigrationsForNewUser];
+
+    return [AnyPromise promiseWithValue:@(1)];
 }
 
 @end

@@ -336,6 +336,9 @@ class GRDBFullTextSearchFinder: NSObject {
         let ftsContent = AnySearchIndexer.indexContent(object: model, transaction: transaction.asAnyRead) ?? ""
 
         let shouldSkipUpdate: Bool = serialQueue.sync {
+            guard !CurrentAppContext().isRunningTests else {
+                return false
+            }
             let cacheKey = self.cacheKey(collection: collection, uniqueId: uniqueId)
             if let cachedValue = ftsCache.object(forKey: cacheKey as NSString),
                 (cachedValue as String) == ftsContent {

@@ -18,7 +18,7 @@ class SearcherTest: SignalBaseTest {
     let stinkingLizaveta = TestCharacter(name: "Stinking Lizaveta", description: "object of pity", phoneNumber: "+13235555555")
     let regularLizaveta = TestCharacter(name: "Lizaveta", description: "", phoneNumber: "1 (415) 555-5555")
 
-    let indexer = { (character: TestCharacter) in
+    let indexer = { (character: TestCharacter, transaction: SDSAnyReadTransaction) in
         return "\(character.name) \(character.description) \(character.phoneNumber ?? "")"
     }
 
@@ -37,44 +37,52 @@ class SearcherTest: SignalBaseTest {
     }
 
     func testSimple() {
-        XCTAssert(searcher.matches(item: smerdyakov, query: "Pavel"))
-        XCTAssert(searcher.matches(item: smerdyakov, query: "pavel"))
-        XCTAssertFalse(searcher.matches(item: smerdyakov, query: "asdf"))
-        XCTAssertFalse(searcher.matches(item: smerdyakov, query: ""))
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "Pity"))
+        read { transaction in
+            XCTAssert(self.searcher.matches(item: self.smerdyakov, query: "Pavel", transaction: transaction))
+            XCTAssert(self.searcher.matches(item: self.smerdyakov, query: "pavel", transaction: transaction))
+            XCTAssertFalse(self.searcher.matches(item: self.smerdyakov, query: "asdf", transaction: transaction))
+            XCTAssertFalse(self.searcher.matches(item: self.smerdyakov, query: "", transaction: transaction))
+            XCTAssert(self.searcher.matches(item: self.stinkingLizaveta, query: "Pity", transaction: transaction))
+        }
     }
 
     func testRepeats() {
-        XCTAssert(searcher.matches(item: smerdyakov, query: "pavel pavel"))
-        XCTAssertFalse(searcher.matches(item: smerdyakov, query: "pavelpavel"))
+        read { transaction in
+            XCTAssert(self.searcher.matches(item: self.smerdyakov, query: "pavel pavel", transaction: transaction))
+            XCTAssertFalse(self.searcher.matches(item: self.smerdyakov, query: "pavelpavel", transaction: transaction))
+        }
     }
 
     func testSplitWords() {
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "Lizaveta"))
-        XCTAssert(searcher.matches(item: regularLizaveta, query: "Lizaveta"))
+        read { transaction in
+            XCTAssert(self.searcher.matches(item: self.stinkingLizaveta, query: "Lizaveta", transaction: transaction))
+            XCTAssert(self.searcher.matches(item: self.regularLizaveta, query: "Lizaveta", transaction: transaction))
 
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "Stinking Lizaveta"))
-        XCTAssertFalse(searcher.matches(item: regularLizaveta, query: "Stinking Lizaveta"))
+            XCTAssert(self.searcher.matches(item: self.stinkingLizaveta, query: "Stinking Lizaveta", transaction: transaction))
+            XCTAssertFalse(self.searcher.matches(item: self.regularLizaveta, query: "Stinking Lizaveta", transaction: transaction))
 
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "Lizaveta Stinking"))
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "Lizaveta St"))
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "  Lizaveta St "))
+            XCTAssert(self.searcher.matches(item: self.stinkingLizaveta, query: "Lizaveta Stinking", transaction: transaction))
+            XCTAssert(self.searcher.matches(item: self.stinkingLizaveta, query: "Lizaveta St", transaction: transaction))
+            XCTAssert(self.searcher.matches(item: self.stinkingLizaveta, query: "  Lizaveta St ", transaction: transaction))
+        }
     }
 
     func testFormattingChars() {
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "323"))
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "1-323-555-5555"))
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "13235555555"))
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "+1-323"))
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "Liza +1-323"))
+        read { transaction in
+            XCTAssert(self.searcher.matches(item: self.stinkingLizaveta, query: "323", transaction: transaction))
+            XCTAssert(self.searcher.matches(item: self.stinkingLizaveta, query: "1-323-555-5555", transaction: transaction))
+            XCTAssert(self.searcher.matches(item: self.stinkingLizaveta, query: "13235555555", transaction: transaction))
+            XCTAssert(self.searcher.matches(item: self.stinkingLizaveta, query: "+1-323", transaction: transaction))
+            XCTAssert(self.searcher.matches(item: self.stinkingLizaveta, query: "Liza +1-323", transaction: transaction))
 
-        // Sanity check, match both by names
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "Liza"))
-        XCTAssert(searcher.matches(item: regularLizaveta, query: "Liza"))
+            // Sanity check, match both by names
+            XCTAssert(self.searcher.matches(item: self.stinkingLizaveta, query: "Liza", transaction: transaction))
+            XCTAssert(self.searcher.matches(item: self.regularLizaveta, query: "Liza", transaction: transaction))
 
-        // Disambiguate the two Liza's by area code
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "Liza 323"))
-        XCTAssertFalse(searcher.matches(item: regularLizaveta, query: "Liza 323"))
+            // Disambiguate the two Liza's by area code
+            XCTAssert(self.searcher.matches(item: self.stinkingLizaveta, query: "Liza 323", transaction: transaction))
+            XCTAssertFalse(self.searcher.matches(item: self.regularLizaveta, query: "Liza 323", transaction: transaction))
+        }
     }
 
     func testSearchQuery() {
