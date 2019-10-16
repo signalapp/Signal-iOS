@@ -244,6 +244,7 @@ public extension TSRecipientReadReceipt {
                                         owsFailDebug("Can't update missing record.")
                                         return
         }
+        block(dbCopy)
         dbCopy.anyUpdate(transaction: transaction)
     }
 
