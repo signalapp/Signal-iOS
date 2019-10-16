@@ -26,14 +26,15 @@ let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .beta
 public enum StorageMode: Int {
     // Only use YDB.  This should be used in production until we ship
     // the YDB-to-GRDB migration.
-    case ydb
+    case ydbForAll
     // Use GRDB, migrating if possible on every launch.
     // If no YDB database exists, a throwaway db is not used.
     //
     // Supercedes grdbMigratesFreshDBEveryLaunch.
     case grdbThrowawayIfMigrating
     // Use GRDB, migrating once if necessary.
-    case grdb
+    case grdbForLegacy
+    case grdbForAll
     // These modes can be used while running tests.
     // They are more permissive than the release modes.
     //
@@ -48,12 +49,14 @@ public enum StorageMode: Int {
 extension StorageMode: CustomStringConvertible {
     public var description: String {
         switch self {
-        case .ydb:
-            return ".ydb"
+        case .ydbForAll:
+            return ".ydbForAll"
         case .grdbThrowawayIfMigrating:
             return ".grdbThrowawayIfMigrating"
-        case .grdb:
-            return ".grdb"
+        case .grdbForLegacy:
+            return ".grdbForLegacy"
+        case .grdbForAll:
+            return ".grdbForAll"
         case .ydbTests:
             return ".ydbTests"
         case .grdbTests:
@@ -95,7 +98,7 @@ public class FeatureFlags: NSObject {
         } else if build.includes(.dev) {
             return .grdbThrowawayIfMigrating
         } else {
-            return .ydb
+            return .ydbForAll
         }
     }
 
