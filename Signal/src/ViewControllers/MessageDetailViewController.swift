@@ -662,20 +662,23 @@ class MessageDetailViewController: OWSViewController {
 extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
 
     func didTapImageViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream, imageView: UIView) {
-        let galleryVC = MediaGalleryNavigationController.showingDetailView(thread: thread,
-                                                                           mediaAttachment: attachmentStream,
-                                                                           options: [])
-
-        galleryVC.mediaGallery.addDataSourceDelegate(self)
-        present(galleryVC, animated: true)
+        let mediaPageVC = MediaPageViewController(
+            initialMediaAttachment: attachmentStream,
+            thread: thread,
+            showingSingleMessage: true
+        )
+        mediaPageVC.mediaGallery.addDelegate(self)
+        present(mediaPageVC, animated: true)
     }
 
     func didTapVideoViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream, imageView: UIView) {
-        let galleryVC = MediaGalleryNavigationController.showingDetailView(thread: thread,
-                                                                           mediaAttachment: attachmentStream,
-                                                                           options: [])
-        galleryVC.mediaGallery.addDataSourceDelegate(self)
-        present(galleryVC, animated: true)
+        let mediaPageVC = MediaPageViewController(
+            initialMediaAttachment: attachmentStream,
+            thread: thread,
+            showingSingleMessage: true
+        )
+        mediaPageVC.mediaGallery.addDelegate(self)
+        present(mediaPageVC, animated: true)
     }
 
     func didTapContactShare(_ viewItem: ConversationViewItem) {
@@ -787,9 +790,9 @@ extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
     }
 }
 
-extension MessageDetailViewController: MediaGalleryDataSourceDelegate {
+extension MessageDetailViewController: MediaGalleryDelegate {
 
-    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject) {
+    func mediaGallery(_ mediaGallery: MediaGallery, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject) {
         Logger.info("")
 
         guard (items.map({ $0.message }) == [self.message]) else {
@@ -801,7 +804,7 @@ extension MessageDetailViewController: MediaGalleryDataSourceDelegate {
         self.wasDeleted = true
     }
 
-    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, deletedSections: IndexSet, deletedItems: [IndexPath]) {
+    func mediaGallery(_ mediaGallery: MediaGallery, deletedSections: IndexSet, deletedItems: [IndexPath]) {
         self.dismiss(animated: true) {
             self.navigationController?.popViewController(animated: true)
         }

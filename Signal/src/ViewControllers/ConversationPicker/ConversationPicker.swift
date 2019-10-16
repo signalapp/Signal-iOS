@@ -388,7 +388,7 @@ extension ConversationPickerViewController: UITableViewDataSource {
             return 0
         }
 
-        return DarkThemeHeaderView.desiredHeight
+        return ThemeHeaderView.desiredHeight
     }
 }
 

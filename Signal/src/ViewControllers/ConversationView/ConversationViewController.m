@@ -2407,13 +2407,10 @@ typedef enum : NSUInteger {
 
     [self dismissKeyBoard];
 
-    MediaGalleryOption options = MediaGalleryOptionSliderEnabled | MediaGalleryOptionShowAllMediaButton;
-    MediaGalleryNavigationController *mediaGallery =
-        [MediaGalleryNavigationController showingDetailViewWithThread:self.thread
-                                                      mediaAttachment:attachmentStream
-                                                              options:options];
+    MediaPageViewController *pageVC = [[MediaPageViewController alloc] initWithInitialMediaAttachment:attachmentStream
+                                                                                               thread:self.thread];
 
-    [self presentViewController:mediaGallery animated:YES completion:nil];
+    [self presentViewController:pageVC animated:YES completion:nil];
 }
 
 - (void)didTapVideoViewItem:(id<ConversationViewItem>)viewItem
@@ -2426,13 +2423,10 @@ typedef enum : NSUInteger {
 
     [self dismissKeyBoard];
 
-    MediaGalleryOption options = MediaGalleryOptionSliderEnabled | MediaGalleryOptionShowAllMediaButton;
-    MediaGalleryNavigationController *mediaGallery =
-        [MediaGalleryNavigationController showingDetailViewWithThread:self.thread
-                                                      mediaAttachment:attachmentStream
-                                                              options:options];
+    MediaPageViewController *pageVC = [[MediaPageViewController alloc] initWithInitialMediaAttachment:attachmentStream
+                                                                                               thread:self.thread];
 
-    [self presentViewController:mediaGallery animated:YES completion:nil];
+    [self presentViewController:pageVC animated:YES completion:nil];
 }
 
 - (void)didTapAudioViewItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream
