@@ -441,21 +441,6 @@ public extension TSAttachment {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
-    // The class function lets us update the database only without
-    // instantiating a model twice. anyUpdate() will instantiate
-    // the model once.
-    @objc(anyUpdateAttachmentWithUniqueId:transaction:block:)
-    class func anyUpdateAttachment(uniqueId: String,
-                               transaction: SDSAnyWriteTransaction, block: (TSAttachment) -> Void) {
-        guard let dbCopy = anyFetch(uniqueId: uniqueId,
-                                    transaction: transaction) else {
-                                        owsFailDebug("Can't update missing record.")
-                                        return
-        }
-        block(dbCopy)
-        dbCopy.anyUpdate(transaction: transaction)
-    }
-
     func anyRemove(transaction: SDSAnyWriteTransaction) {
         sdsRemove(transaction: transaction)
     }

@@ -260,21 +260,6 @@ public extension OWSBackupFragment {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
-    // The class function lets us update the database only without
-    // instantiating a model twice. anyUpdate() will instantiate
-    // the model once.
-    @objc(anyUpdateBackupFragmentWithUniqueId:transaction:block:)
-    class func anyUpdateBackupFragment(uniqueId: String,
-                               transaction: SDSAnyWriteTransaction, block: (OWSBackupFragment) -> Void) {
-        guard let dbCopy = anyFetch(uniqueId: uniqueId,
-                                    transaction: transaction) else {
-                                        owsFailDebug("Can't update missing record.")
-                                        return
-        }
-        block(dbCopy)
-        dbCopy.anyUpdate(transaction: transaction)
-    }
-
     func anyRemove(transaction: SDSAnyWriteTransaction) {
         sdsRemove(transaction: transaction)
     }
