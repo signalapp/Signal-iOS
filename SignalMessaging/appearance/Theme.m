@@ -56,6 +56,30 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
     return instance;
 }
 
+- (instancetype)initDefault
+{
+    self = [super init];
+
+    if (!self) {
+        return self;
+    }
+
+    OWSSingletonAssert();
+
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        [self notifyIfDarkThemeEnabled];
+    }];
+
+    return self;
+}
+
+- (void)notifyIfDarkThemeEnabled
+{
+    if (self.isDarkThemeEnabled) {
+        [self themeDidChange];
+    }
+}
+
 #pragma mark -
 
 + (BOOL)isDarkThemeEnabled
@@ -66,6 +90,11 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 - (BOOL)isDarkThemeEnabled
 {
     OWSAssertIsOnMainThread();
+
+    if (!self.storageCoordinator.isStorageReady) {
+        // Don't cache this value until it reflects the data store.
+        return NO;
+    }
 
     if (self.isDarkThemeEnabledNumber == nil) {
         BOOL isDarkThemeEnabled;
