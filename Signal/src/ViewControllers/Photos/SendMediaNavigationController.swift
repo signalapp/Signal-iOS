@@ -192,13 +192,13 @@ class SendMediaNavigationController: OWSNavigationController {
 
     // MARK: State
 
-    private var attachmentDraftCollection: AttachmentDraftCollection = .empty
+    private lazy var attachmentDraftCollection = AttachmentDraftCollection.empty // Lazy to avoid https://bugs.swift.org/browse/SR-6657
 
     private var attachments: [SignalAttachment] {
         return attachmentDraftCollection.attachmentDrafts.map { $0.attachment }
     }
 
-    private let mediaLibrarySelections: OrderedDictionary<PHAsset, MediaLibrarySelection> = OrderedDictionary()
+    private lazy var mediaLibrarySelections = OrderedDictionary<PHAsset, MediaLibrarySelection>() // Lazy to avoid https://bugs.swift.org/browse/SR-6657
 
     // MARK: Child VC's
 
@@ -463,13 +463,17 @@ private extension AttachmentDraft {
     }
 }
 
-private struct AttachmentDraftCollection {
-    private(set) var attachmentDrafts: [AttachmentDraft]
+private final class AttachmentDraftCollection {
+    lazy var attachmentDrafts = [AttachmentDraft]() // Lazy to avoid https://bugs.swift.org/browse/SR-6657
 
     static var empty: AttachmentDraftCollection {
         return AttachmentDraftCollection(attachmentDrafts: [])
     }
-
+    
+    init(attachmentDrafts: [AttachmentDraft]) {
+        self.attachmentDrafts = attachmentDrafts
+    }
+    
     // MARK: -
 
     var count: Int {
@@ -498,15 +502,15 @@ private struct AttachmentDraftCollection {
         }
     }
 
-    mutating func append(_ element: AttachmentDraft) {
+    func append(_ element: AttachmentDraft) {
         attachmentDrafts.append(element)
     }
 
-    mutating func remove(attachment: SignalAttachment) {
-        attachmentDrafts = attachmentDrafts.filter { $0.attachment != attachment }
+    func remove(attachment: SignalAttachment) {
+        attachmentDrafts.removeAll { $0.attachment == attachment }
     }
 
-    mutating func selectedFromPicker(attachments: [MediaLibraryAttachment]) {
+    func selectedFromPicker(attachments: [MediaLibraryAttachment]) {
         let pickedAttachments: Set<MediaLibraryAttachment> = Set(attachments)
         let oldPickerAttachments: Set<MediaLibraryAttachment> = Set(self.pickerAttachments)
 
