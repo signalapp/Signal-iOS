@@ -1246,6 +1246,7 @@ public extension %s {
                                         owsFailDebug("Can't update missing record.")
                                         return
         }
+        block(dbCopy)
         dbCopy.anyUpdate(transaction: transaction)
     }
     ''' % { "class_name": str(clazz.name), "class_short_name": remove_prefix_from_class_name(clazz.name) }

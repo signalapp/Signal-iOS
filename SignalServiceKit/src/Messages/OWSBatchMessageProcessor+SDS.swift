@@ -258,6 +258,7 @@ public extension OWSMessageContentJob {
                                         owsFailDebug("Can't update missing record.")
                                         return
         }
+        block(dbCopy)
         dbCopy.anyUpdate(transaction: transaction)
     }
 

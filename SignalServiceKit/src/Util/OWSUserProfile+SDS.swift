@@ -279,6 +279,7 @@ public extension OWSUserProfile {
                                         owsFailDebug("Can't update missing record.")
                                         return
         }
+        block(dbCopy)
         dbCopy.anyUpdate(transaction: transaction)
     }
 
