@@ -155,6 +155,9 @@ public class SDSDatabaseStorage: SDSTransactable {
         if FeatureFlags.storageMode == .ydbForAll {
             owsFailDebug("Unexpected storage mode: \(FeatureFlags.storageModeDescription)")
         }
+        if StorageCoordinator.dataStoreForUI == .ydb {
+            owsFailDebug("Unexpected data store.")
+        }
 
         // crash if we can't read the DB.
         do {
@@ -472,7 +475,7 @@ extension SDSDatabaseStorage {
         }
     }
 
-    var dataStoreForReporting: DataStore {
+    private var dataStoreForReporting: DataStore {
         return StorageCoordinator.dataStoreForUI
     }
 

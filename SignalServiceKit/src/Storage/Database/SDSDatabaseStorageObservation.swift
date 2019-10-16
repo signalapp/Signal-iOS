@@ -151,7 +151,7 @@ class SDSDatabaseStorageObservation {
     }
 
     func set(grdbStorage: GRDBDatabaseStorageAdapter) {
-        guard ![.ydbForAll ].contains(FeatureFlags.storageMode) else {
+        guard StorageCoordinator.dataStoreForUI != .ydb else {
             return
         }
         guard let genericDatabaseObserver = grdbStorage.genericDatabaseObserver else {

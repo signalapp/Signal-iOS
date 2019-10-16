@@ -94,13 +94,21 @@ NSString *NSStringForDataStore(DataStore value)
 
 + (BOOL)hasInvalidDatabaseVersion
 {
+    BOOL prefersYdb = SSKFeatureFlags.storageMode == StorageModeYdbForAll;
+    BOOL willUseYdb = StorageCoordinator.dataStoreForUI == DataStoreYdb;
+    BOOL hasValidGrdb = self.hasGrdbFile && [SSKPreferences isYdbMigrated];
+
     // A check to avoid trying to revert to YDB when we've already migrated to GRDB.
-    return (SSKFeatureFlags.storageMode == StorageModeYdbForAll && self.hasGrdbFile && [SSKPreferences isYdbMigrated] &&
+    if ((prefersYdb || willUseYdb) && hasValidGrdb &&
         // Allow developers to do this, but not QA, internal,
         // public beta or production.
-        !SSKFeatureFlags.canRevertToYDB);
+        !SSKFeatureFlags.canRevertToYDB) {
+        return YES;
+    }
 
     // TODO: also return true if unknown GRDB version.
+
+    return NO;
 }
 
 - (StorageCoordinatorState)storageCoordinatorState
@@ -136,19 +144,20 @@ NSString *NSStringForDataStore(DataStore value)
     BOOL hasYdbFile = self.hasYdbFile;
     BOOL hasGrdbFile = self.hasGrdbFile;
     BOOL hasUnmigratedYdbFile = (hasYdbFile && ![SSKPreferences isYdbMigrated]);
+    BOOL isNewUser = !hasYdbFile && !hasGrdbFile;
 
     switch (SSKFeatureFlags.storageMode) {
         case StorageModeYdbForAll:
             return DataStoreYdb;
         case StorageModeGrdbForLegacyUsersOnly:
-            if (!hasYdbFile && !hasGrdbFile) {
+            if (isNewUser) {
                 // New users should use YDB.
                 return DataStoreYdb;
             } else {
                 return DataStoreGrdb;
             }
         case StorageModeGrdbForNewUsersOnly:
-            if (!hasYdbFile && !hasGrdbFile) {
+            if (isNewUser) {
                 // New users should use GRDB.
                 return DataStoreGrdb;
             } else if (hasUnmigratedYdbFile) {

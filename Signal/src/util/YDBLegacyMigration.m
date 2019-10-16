@@ -30,8 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
         // * Successfully completed launch process at least once in the post-GRDB world.
         [OWSPreferences setIsYdbReadyForAppExtensions];
 
-        if (StorageCoordinator.dataStoreForUI == DataStoreGrdb
-            && SSKFeatureFlags.storageMode != StorageModeGrdbThrowawayIfMigrating) {
+        if (StorageCoordinator.dataStoreForUI == DataStoreGrdb) {
             [OWSPreferences setIsGrdbReadyForAppExtensions];
         }
     }
