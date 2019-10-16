@@ -168,6 +168,7 @@ NSString *const OWSPreferencesKeyIsViewOnceMessagesEnabled = @"OWSPreferencesKey
 
 + (BOOL)isReadyForAppExtensions
 {
+    // GRDB TODO: Fix
     if (SSKFeatureFlags.storageMode == StorageModeGrdb && !self.isGrdbReadyForAppExtensions) {
         return NO;
     }

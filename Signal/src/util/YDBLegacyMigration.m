@@ -28,7 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
         // * Successfully completed launch process at least once in the post-SAE world.
         // * Successfully completed launch process at least once in the post-GRDB world.
         [OWSPreferences setIsYdbReadyForAppExtensions];
-        if (SSKFeatureFlags.storageMode == StorageModeGrdb) {
+
+        if (self.databaseStorage.dataStoreForReads == DataStoreGrdb
+            && !SSKFeatureFlags.storageMode == StorageModeGrdbThrowawayIfMigrating) {
             [OWSPreferences setIsGrdbReadyForAppExtensions];
         }
     }

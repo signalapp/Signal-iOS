@@ -74,7 +74,7 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
 + (BOOL)hasInvalidDatabaseVersion
 {
     // A check to avoid trying to revert to YDB when we've already migrated to GRDB.
-    return (SSKFeatureFlags.storageMode == StorageModeYdb && self.hasGrdbFile && [SSKPreferences isYdbMigrated] &&
+    return (SSKFeatureFlags.storageMode == StorageModeYdbForAll && self.hasGrdbFile && [SSKPreferences isYdbMigrated] &&
         // Allow developers to do this, but not QA, internal,
         // public beta or production.
         !SSKFeatureFlags.canRevertToYDB);
@@ -107,6 +107,7 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
     BOOL hasGrdbFile = self.class.hasGrdbFile;
     OWSLogVerbose(@"hasGrdbFile: %d", hasGrdbFile);
 
+    // GRDB TODO: Fix
     switch (SSKFeatureFlags.storageMode) {
         case StorageModeYdb:
             self.state = StorageCoordinatorStateYDB;
