@@ -316,19 +316,6 @@ public extension TSThread {
         sdsSave(saveMode: isInserting ? .insert : .update, transaction: transaction)
     }
 
-    // This method is an alternative to the "updateWith..." methods.
-    // We should usually use "updateWith...".  There are cases where
-    // this doesn't make sense, e.g. perf hotspots where we know
-    // we've just loaded the model in the same transaction.  In
-    // these cases it is both safe and advantageous to an "overwriting"
-    // update.
-    func anyOverwritingUpdate(transaction: SDSAnyWriteTransaction, block: (TSThread) -> Void) {
-
-        block(self)
-
-        anyUpdate(transaction: transaction)
-    }
-
     // This method is used by "updateWith..." methods.
     //
     // This model may be updated from many threads. We don't want to save
@@ -359,7 +346,7 @@ public extension TSThread {
 
         guard let dbCopy = type(of: self).anyFetch(uniqueId: uniqueId,
                                                    transaction: transaction) else {
-                                                    return
+            return
         }
 
         // Don't apply the block twice to the same instance.
@@ -370,6 +357,19 @@ public extension TSThread {
         }
 
         dbCopy.anyUpdate(transaction: transaction)
+    }
+
+    // This method is an alternative to the "updateWith..." methods.
+    // We should usually use "updateWith...".  There are cases where
+    // this doesn't make sense, e.g. perf hotspots where we know
+    // we've just loaded the model in the same transaction.  In
+    // these cases it is both safe and advantageous to an "overwriting"
+    // update.
+    func anyOverwritingUpdate(transaction: SDSAnyWriteTransaction, block: (TSThread) -> Void) {
+
+        block(self)
+
+        anyUpdate(transaction: transaction)
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
