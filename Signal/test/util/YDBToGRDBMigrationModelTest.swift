@@ -7,6 +7,26 @@ import SignalServiceKit
 @testable import Signal
 @testable import SignalMessaging
 
+extension AnyThreadFinder {
+    func visibleThreadUniqueIds(isArchived: Bool, transaction: SDSAnyReadTransaction) throws -> [String] {
+        var result = [String]()
+        try enumerateVisibleThreads(isArchived: isArchived, transaction: transaction) { thread in
+            result.append(thread.uniqueId)
+        }
+        return result
+    }
+}
+
+extension InteractionFinder {
+    func allInteractionIds(transaction: SDSAnyReadTransaction) throws -> [String] {
+        var result = [String]()
+        try enumerateInteractionIds(transaction: transaction) { (uniqueId, _) in
+            result.append(uniqueId)
+        }
+        return result
+    }
+}
+
 class YDBToGRDBMigrationModelTest: SignalBaseTest {
 
     // MARK: - Dependencies
@@ -526,6 +546,140 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             XCTAssertEqual([outgoingMessage1, outgoingMessage2, outgoingMessage3].compactMap { $0.body }.sorted(), TSInteraction.anyFetchAll(transaction: transaction).compactMap { ($0 as! TSMessage).body }.sorted())
             XCTAssertEqual(2, TSAttachment.anyCount(transaction: transaction))
             XCTAssertEqual([attachment1.uniqueId, attachment2.uniqueId].sorted(), TSAttachment.anyAllUniqueIds(transaction: transaction).sorted())
+        }
+    }
+
+    func testThreadAndInteractionOrdering() {
+        storageCoordinator.useGRDBForTests()
+
+        self.yapRead { transaction in
+            XCTAssertEqual(0, TSThread.anyCount(transaction: transaction.asAnyRead))
+            XCTAssertEqual(0, TSInteraction.anyCount(transaction: transaction.asAnyRead))
+            XCTAssertEqual(0, TSAttachment.anyCount(transaction: transaction.asAnyRead))
+        }
+        self.read { transaction in
+            XCTAssertEqual(0, TSThread.anyCount(transaction: transaction))
+            XCTAssertEqual(0, TSInteraction.anyCount(transaction: transaction))
+            XCTAssertEqual(0, TSAttachment.anyCount(transaction: transaction))
+        }
+
+        // Threads
+        let contactThreadFactory = ContactThreadFactory()
+        let groupThreadFactory = GroupThreadFactory()
+        var thread1: TSThread!
+        var thread2: TSThread!
+        var thread3: TSThread!
+        var thread4: TSThread!
+
+        var message1: TSInteraction!
+        var message2: TSInteraction!
+        var message3: TSInteraction!
+        var message4: TSInteraction!
+        var message5: TSInteraction!
+        var message6: TSInteraction!
+        var message7: TSInteraction!
+        var message8: TSInteraction!
+        self.yapWrite { transaction in
+            thread1 = contactThreadFactory.create(transaction: transaction.asAnyWrite)
+            thread2 = groupThreadFactory.create(transaction: transaction.asAnyWrite)
+            thread3 = contactThreadFactory.create(transaction: transaction.asAnyWrite)
+            thread4 = groupThreadFactory.create(transaction: transaction.asAnyWrite)
+
+            let messageFactory = IncomingMessageFactory()
+
+            // We deliberately interleave message order across different
+            // threads.
+
+            messageFactory.threadCreator = { _ in return thread1 }
+            message1 = messageFactory.create(transaction: transaction.asAnyWrite)
+
+            messageFactory.threadCreator = { _ in return thread2 }
+            message2 = messageFactory.create(transaction: transaction.asAnyWrite)
+
+            messageFactory.threadCreator = { _ in return thread3 }
+            message3 = messageFactory.create(transaction: transaction.asAnyWrite)
+
+            messageFactory.threadCreator = { _ in return thread4 }
+            message4 = messageFactory.create(transaction: transaction.asAnyWrite)
+
+            messageFactory.threadCreator = { _ in return thread1 }
+            message5 = messageFactory.create(transaction: transaction.asAnyWrite)
+
+            messageFactory.threadCreator = { _ in return thread2 }
+            message6 = messageFactory.create(transaction: transaction.asAnyWrite)
+
+            messageFactory.threadCreator = { _ in return thread3 }
+            message7 = messageFactory.create(transaction: transaction.asAnyWrite)
+
+            messageFactory.threadCreator = { _ in return thread4 }
+            message8 = messageFactory.create(transaction: transaction.asAnyWrite)
+        }
+
+        self.yapRead { transaction in
+            XCTAssertEqual(4, TSThread.anyCount(transaction: transaction.asAnyRead))
+            XCTAssertEqual(8, TSInteraction.anyCount(transaction: transaction.asAnyRead))
+            XCTAssertEqual(0, TSAttachment.anyCount(transaction: transaction.asAnyRead))
+
+            XCTAssertEqual(2, InteractionFinder(threadUniqueId: thread1.uniqueId).count(transaction: transaction.asAnyRead))
+            XCTAssertEqual(2, InteractionFinder(threadUniqueId: thread2.uniqueId).count(transaction: transaction.asAnyRead))
+            XCTAssertEqual(2, InteractionFinder(threadUniqueId: thread3.uniqueId).count(transaction: transaction.asAnyRead))
+            XCTAssertEqual(2, InteractionFinder(threadUniqueId: thread4.uniqueId).count(transaction: transaction.asAnyRead))
+        }
+        self.read { transaction in
+            XCTAssertEqual(0, TSThread.anyCount(transaction: transaction))
+            XCTAssertEqual(0, TSInteraction.anyCount(transaction: transaction))
+            XCTAssertEqual(0, TSAttachment.anyCount(transaction: transaction))
+        }
+
+        let migratorGroups = [
+            GRDBMigratorGroup { ydbTransaction in
+                return [
+                    GRDBUnorderedRecordMigrator<TSAttachment>(label: "attachments", ydbTransaction: ydbTransaction),
+                    GRDBUnorderedRecordMigrator<TSThread>(label: "threads", ydbTransaction: ydbTransaction)
+                ]
+            },
+            GRDBMigratorGroup { ydbTransaction in
+                return [
+                    GRDBInteractionMigrator(ydbTransaction: ydbTransaction)
+                ]
+            }
+        ]
+
+        try! YDBToGRDBMigration().migrate(migratorGroups: migratorGroups)
+
+        self.yapRead { transaction in
+            XCTAssertEqual(4, TSThread.anyCount(transaction: transaction.asAnyRead))
+            XCTAssertEqual(8, TSInteraction.anyCount(transaction: transaction.asAnyRead))
+            XCTAssertEqual(0, TSAttachment.anyCount(transaction: transaction.asAnyRead))
+
+            XCTAssertEqual(2, InteractionFinder(threadUniqueId: thread1.uniqueId).count(transaction: transaction.asAnyRead))
+            XCTAssertEqual(2, InteractionFinder(threadUniqueId: thread2.uniqueId).count(transaction: transaction.asAnyRead))
+            XCTAssertEqual(2, InteractionFinder(threadUniqueId: thread3.uniqueId).count(transaction: transaction.asAnyRead))
+            XCTAssertEqual(2, InteractionFinder(threadUniqueId: thread4.uniqueId).count(transaction: transaction.asAnyRead))
+
+            XCTAssertEqual(4, try! AnyThreadFinder().visibleThreadCount(isArchived: false, transaction: transaction.asAnyRead))
+            XCTAssertEqual([thread4.uniqueId, thread3.uniqueId, thread2.uniqueId, thread1.uniqueId ], try! AnyThreadFinder().visibleThreadUniqueIds(isArchived: false, transaction: transaction.asAnyRead))
+            XCTAssertEqual([message5.uniqueId, message1.uniqueId ], try! InteractionFinder(threadUniqueId: thread1.uniqueId).allInteractionIds(transaction: transaction.asAnyRead))
+            XCTAssertEqual([message6.uniqueId, message2.uniqueId ], try! InteractionFinder(threadUniqueId: thread2.uniqueId).allInteractionIds(transaction: transaction.asAnyRead))
+            XCTAssertEqual([message7.uniqueId, message3.uniqueId ], try! InteractionFinder(threadUniqueId: thread3.uniqueId).allInteractionIds(transaction: transaction.asAnyRead))
+            XCTAssertEqual([message8.uniqueId, message4.uniqueId ], try! InteractionFinder(threadUniqueId: thread4.uniqueId).allInteractionIds(transaction: transaction.asAnyRead))
+        }
+        self.read { transaction in
+            XCTAssertEqual(4, TSThread.anyCount(transaction: transaction))
+            XCTAssertEqual(8, TSInteraction.anyCount(transaction: transaction))
+            XCTAssertEqual(0, TSAttachment.anyCount(transaction: transaction))
+
+            XCTAssertEqual(2, InteractionFinder(threadUniqueId: thread1.uniqueId).count(transaction: transaction))
+            XCTAssertEqual(2, InteractionFinder(threadUniqueId: thread2.uniqueId).count(transaction: transaction))
+            XCTAssertEqual(2, InteractionFinder(threadUniqueId: thread3.uniqueId).count(transaction: transaction))
+            XCTAssertEqual(2, InteractionFinder(threadUniqueId: thread4.uniqueId).count(transaction: transaction))
+
+            XCTAssertEqual(4, try! AnyThreadFinder().visibleThreadCount(isArchived: false, transaction: transaction))
+            XCTAssertEqual([thread4.uniqueId, thread3.uniqueId, thread2.uniqueId, thread1.uniqueId ], try! AnyThreadFinder().visibleThreadUniqueIds(isArchived: false, transaction: transaction))
+            XCTAssertEqual([message5.uniqueId, message1.uniqueId ], try! InteractionFinder(threadUniqueId: thread1.uniqueId).allInteractionIds(transaction: transaction))
+            XCTAssertEqual([message6.uniqueId, message2.uniqueId ], try! InteractionFinder(threadUniqueId: thread2.uniqueId).allInteractionIds(transaction: transaction))
+            XCTAssertEqual([message7.uniqueId, message3.uniqueId ], try! InteractionFinder(threadUniqueId: thread3.uniqueId).allInteractionIds(transaction: transaction))
+            XCTAssertEqual([message8.uniqueId, message4.uniqueId ], try! InteractionFinder(threadUniqueId: thread4.uniqueId).allInteractionIds(transaction: transaction))
         }
     }
 }
