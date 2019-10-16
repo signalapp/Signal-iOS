@@ -457,15 +457,16 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     BOOL needsToClearArchived = self.isArchived && wasMessageInserted;
     BOOL needsToUpdateLastInteractionRowId = messageSortId > self.lastInteractionRowId;
     if (needsToMarkAsVisible || needsToClearArchived || needsToUpdateLastInteractionRowId) {
-        [self anyUpdateWithTransaction:transaction
-                                 block:^(TSThread *thread) {
-                                     thread.shouldThreadBeVisible = YES;
-                                     thread.lastInteractionRowId = MAX(thread.lastInteractionRowId, messageSortId);
-                                     if (thread.isArchived && wasMessageInserted) {
-                                         // No longer archived.
-                                         thread.isArchived = NO;
-                                     }
-                                 }];
+        [self anyOverwritingUpdateWithTransaction:transaction
+                                            block:^(TSThread *thread) {
+                                                thread.shouldThreadBeVisible = YES;
+                                                thread.lastInteractionRowId
+                                                    = MAX(thread.lastInteractionRowId, messageSortId);
+                                                if (thread.isArchived && wasMessageInserted) {
+                                                    // No longer archived.
+                                                    thread.isArchived = NO;
+                                                }
+                                            }];
     } else {
         [self.databaseStorage touchThread:self transaction:transaction];
     }
@@ -494,12 +495,13 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     }
     BOOL needsToUpdateLastInteractionRowId = messageSortId == self.lastInteractionRowId;
     if (needsToUpdateLastInteractionRowId) {
-        [self anyUpdateWithTransaction:transaction
-                                 block:^(TSThread *thread) {
-                                     TSInteraction *_Nullable latestInteraction =
-                                         [thread lastInteractionForInboxWithTransaction:transaction];
-                                     thread.lastInteractionRowId = latestInteraction ? latestInteraction.sortId : 0;
-                                 }];
+        [self anyOverwritingUpdateWithTransaction:transaction
+                                            block:^(TSThread *thread) {
+                                                TSInteraction *_Nullable latestInteraction =
+                                                    [thread lastInteractionForInboxWithTransaction:transaction];
+                                                thread.lastInteractionRowId
+                                                    = latestInteraction ? latestInteraction.sortId : 0;
+                                            }];
     } else {
         [self.databaseStorage touchThread:self transaction:transaction];
     }
