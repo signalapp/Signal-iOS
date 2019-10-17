@@ -12,7 +12,6 @@ __attribute__((deprecated)) @interface OWSAddToContactsOfferMessage : TSInfoMess
 
 // --- CODE GENERATION MARKER
 
-
 // --- CODE GENERATION MARKER
 
 @end

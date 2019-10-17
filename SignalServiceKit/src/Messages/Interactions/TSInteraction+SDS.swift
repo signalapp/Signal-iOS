@@ -1375,19 +1375,17 @@ public extension TSInteraction {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
-    // The class function lets us update the database only without
-    // instantiating a model twice. anyUpdate() will instantiate
-    // the model once.
-    @objc(anyUpdateInteractionWithUniqueId:transaction:block:)
-    class func anyUpdateInteraction(uniqueId: String,
-                               transaction: SDSAnyWriteTransaction, block: (TSInteraction) -> Void) {
-        guard let dbCopy = anyFetch(uniqueId: uniqueId,
-                                    transaction: transaction) else {
-                                        owsFailDebug("Can't update missing record.")
-                                        return
-        }
-        block(dbCopy)
-        dbCopy.anyUpdate(transaction: transaction)
+    // This method is an alternative to the "updateWith..." methods.
+    // We should usually use "updateWith...".  There are cases where
+    // this doesn't make sense, e.g. perf hotspots where we know
+    // we've just loaded the model in the same transaction.  In
+    // these cases it is both safe and advantageous to an "overwriting"
+    // update.
+    func anyOverwritingUpdate(transaction: SDSAnyWriteTransaction, block: (TSInteraction) -> Void) {
+
+        block(self)
+
+        anyUpdate(transaction: transaction)
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
