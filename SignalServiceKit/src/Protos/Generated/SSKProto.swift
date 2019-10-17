@@ -3328,6 +3328,9 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
         if let _value = displayName {
             builder.setDisplayName(_value)
         }
+        if let _value = profilePicture {
+            builder.setProfilePicture(_value)
+        }
         return builder
     }
 
@@ -3339,6 +3342,10 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
 
         @objc public func setDisplayName(_ valueParam: String) {
             proto.displayName = valueParam
+        }
+
+        @objc public func setProfilePicture(_ valueParam: String) {
+            proto.profilePicture = valueParam
         }
 
         @objc public func build() throws -> SSKProtoDataMessageLokiProfile {
@@ -3360,6 +3367,16 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
     }
     @objc public var hasDisplayName: Bool {
         return proto.hasDisplayName
+    }
+
+    @objc public var profilePicture: String? {
+        guard proto.hasProfilePicture else {
+            return nil
+        }
+        return proto.profilePicture
+    }
+    @objc public var hasProfilePicture: Bool {
+        return proto.hasProfilePicture
     }
 
     private init(proto: SignalServiceProtos_DataMessage.LokiProfile) {

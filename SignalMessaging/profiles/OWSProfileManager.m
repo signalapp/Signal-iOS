@@ -340,6 +340,11 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     }
 }
 
+- (nullable NSString *)profilePictureURL
+{
+    return self.localUserProfile.avatarUrlPath;
+}
+
 - (void)writeAvatarToDisk:(UIImage *)avatar
                   success:(void (^)(NSData *data, NSString *fileName))successBlock
                   failure:(ProfileManagerFailureBlock)failureBlock {
@@ -1187,8 +1192,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             NSURLResponse *_Nonnull response, NSURL *_Nullable filePathParam, NSError *_Nullable error) {
             // Ensure disk IO and decryption occurs off the main thread.
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                NSData *_Nullable encryptedData = (error ? nil : [NSData dataWithContentsOfFile:tempFilePath]);
-                NSData *_Nullable decryptedData = [self decryptProfileData:encryptedData profileKey:profileKeyAtStart];
+                NSData *_Nullable encryptedData = [NSData dataWithContentsOfFile:tempFilePath];
+                NSData *_Nullable decryptedData = encryptedData;
                 UIImage *_Nullable image = nil;
                 if (decryptedData) {
                     BOOL success = [decryptedData writeToFile:filePath atomically:YES];
@@ -1244,11 +1249,11 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             });
         };
 
-        NSURL *avatarUrl = [NSURL URLWithString:userProfile.avatarUrlPath relativeToURL:self.avatarHTTPManager.baseURL];
+        NSString *profilePictureURL = userProfile.avatarUrlPath;
         NSError *serializationError;
         NSMutableURLRequest *request =
             [self.avatarHTTPManager.requestSerializer requestWithMethod:@"GET"
-                                                              URLString:avatarUrl.absoluteString
+                                                              URLString:profilePictureURL
                                                              parameters:nil
                                                                   error:&serializationError];
         if (serializationError) {
@@ -1256,7 +1261,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             return;
         }
 
-        __block NSURLSessionDownloadTask *downloadTask = [self.avatarHTTPManager downloadTaskWithRequest:request
+        __block  *downloadTask = [self.avatarHTTPManager downloadTaskWithRequest:request
             progress:^(NSProgress *_Nonnull downloadProgress) {
                 OWSLogVerbose(
                     @"Downloading avatar for %@ %f", userProfile.recipientId, downloadProgress.fractionCompleted);
@@ -1325,10 +1330,14 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     });
 }
 
-- (void)setDisplayNameForContactWithID:(NSString *)contactID to:(NSString *)displayName with:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateProfileForContactWithID:(NSString *)contactID displayName:(NSString *)displayName profilePictureURL:(NSString *)profilePictureURL with:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForRecipientId:contactID transaction:transaction];
-    [userProfile updateWithProfileName:displayName avatarUrlPath:@"" avatarFileName:@"" transaction:transaction completion:nil];
+    NSString *oldProfilePictureURL = userProfile.avatarUrlPath;
+    [userProfile updateWithProfileName:displayName avatarUrlPath:profilePictureURL avatarFileName:@"" transaction:transaction completion:nil];
+    if (![oldProfilePictureURL isEqual:profilePictureURL]) {
+        [self downloadAvatarForUserProfile:userProfile];
+    }
 }
 
 - (BOOL)isNullableDataEqual:(NSData *_Nullable)left toData:(NSData *_Nullable)right

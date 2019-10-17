@@ -1507,11 +1507,21 @@ struct SignalServiceProtos_DataMessage {
     /// Clears the value of `displayName`. Subsequent reads from it will return its default value.
     mutating func clearDisplayName() {self._displayName = nil}
 
+    var profilePicture: String {
+      get {return _profilePicture ?? String()}
+      set {_profilePicture = newValue}
+    }
+    /// Returns true if `profilePicture` has been explicitly set.
+    var hasProfilePicture: Bool {return self._profilePicture != nil}
+    /// Clears the value of `profilePicture`. Subsequent reads from it will return its default value.
+    mutating func clearProfilePicture() {self._profilePicture = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
 
     fileprivate var _displayName: String? = nil
+    fileprivate var _profilePicture: String? = nil
   }
 
   init() {}
@@ -4102,12 +4112,14 @@ extension SignalServiceProtos_DataMessage.LokiProfile: SwiftProtobuf.Message, Sw
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".LokiProfile"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "displayName"),
+    2: .same(proto: "profilePicture"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
       case 1: try decoder.decodeSingularStringField(value: &self._displayName)
+      case 2: try decoder.decodeSingularStringField(value: &self._profilePicture)
       default: break
       }
     }
@@ -4117,11 +4129,15 @@ extension SignalServiceProtos_DataMessage.LokiProfile: SwiftProtobuf.Message, Sw
     if let v = self._displayName {
       try visitor.visitSingularStringField(value: v, fieldNumber: 1)
     }
+    if let v = self._profilePicture {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_DataMessage.LokiProfile, rhs: SignalServiceProtos_DataMessage.LokiProfile) -> Bool {
     if lhs._displayName != rhs._displayName {return false}
+    if lhs._profilePicture != rhs._profilePicture {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

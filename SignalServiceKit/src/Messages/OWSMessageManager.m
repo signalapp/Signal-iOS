@@ -1525,15 +1525,18 @@ NS_ASSUME_NONNULL_BEGIN
                                                             linkPreview:linkPreview
                                                         serverTimestamp:serverTimestamp
                                                         wasReceivedByUD:wasReceivedByUD];
-
-        // Loki: Handle display name update if needed
+        
         NSString *rawDisplayName = dataMessage.profile.displayName;
+        NSString *displayName = nil;
         if (rawDisplayName != nil && rawDisplayName.length > 0) {
-            NSString *displayName = [NSString stringWithFormat:@"%@ (...%@)", rawDisplayName, [incomingMessage.authorId substringFromIndex:incomingMessage.authorId.length - 8]];
-            [self.profileManager setDisplayNameForContactWithID:masterThread.contactIdentifier to:displayName with:transaction];
-        } else {
-            [self.profileManager setDisplayNameForContactWithID:masterThread.contactIdentifier to:nil with:transaction];
+            displayName = [NSString stringWithFormat:@"%@ (...%@)", rawDisplayName, [incomingMessage.authorId substringFromIndex:incomingMessage.authorId.length - 8]];
         }
+        NSString *rawProfilePictureURL = dataMessage.profile.profilePicture;
+        NSString *profilePictureURL = nil;
+        if (rawProfilePictureURL != nil && rawProfilePictureURL.length > 0) {
+            profilePictureURL = rawProfilePictureURL;
+        }
+        [self.profileManager updateProfileForContactWithID:thread.contactIdentifier displayName:displayName profilePictureURL:profilePictureURL with:transaction];
         
         // Loki: Parse Loki specific properties if needed
         if (envelope.isPtpMessage) { incomingMessage.isP2P = YES; }
