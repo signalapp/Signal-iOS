@@ -5378,6 +5378,9 @@ extension SSKProtoSyncMessage.SSKProtoSyncMessageBuilder {
         if let _value = caption {
             builder.setCaption(_value)
         }
+        if let _value = url {
+            builder.setUrl(_value)
+        }
         return builder
     }
 
@@ -5435,6 +5438,10 @@ extension SSKProtoSyncMessage.SSKProtoSyncMessageBuilder {
 
         @objc public func setCaption(_ valueParam: String) {
             proto.caption = valueParam
+        }
+
+        @objc public func setUrl(_ valueParam: String) {
+            proto.url = valueParam
         }
 
         @objc public func build() throws -> SSKProtoAttachmentPointer {
@@ -5536,6 +5543,16 @@ extension SSKProtoSyncMessage.SSKProtoSyncMessageBuilder {
     }
     @objc public var hasCaption: Bool {
         return proto.hasCaption
+    }
+
+    @objc public var url: String? {
+        guard proto.hasURL else {
+            return nil
+        }
+        return proto.url
+    }
+    @objc public var hasURL: Bool {
+        return proto.hasURL
     }
 
     private init(proto: SignalServiceProtos_AttachmentPointer,

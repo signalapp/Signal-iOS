@@ -869,6 +869,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
             }
         }
     }
+    
+    builder.url = self.downloadURL;
 
     NSError *error;
     SSKProtoAttachmentPointer *_Nullable attachmentProto = [builder buildAndReturnError:&error];
