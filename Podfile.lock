@@ -302,7 +302,7 @@ CHECKOUT OPTIONS:
     :commit: e2b1540fc24867c83971045542483b91a46eb115
     :git: https://github.com/signalapp/blurhash
   Curve25519Kit:
-    :commit: 3d09b9480f60e4f95ecbbc6f83d9449c6833d95e
+    :commit: 877c48f4bc46feccb952f198de743c8525aa8e94
     :git: https://github.com/signalapp/Curve25519Kit
   GRKOpenSSLFramework:
     :commit: 4d9944de35ed56a95879c5a8a1b410ae03f71d57
@@ -314,10 +314,10 @@ CHECKOUT OPTIONS:
     :commit: b72c2d1e6132501db906de2cffa8ded7803c54f4
     :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
-    :commit: 7996f4764c0f11c29c9f02e49dfab553f61117c9
+    :commit: 2794df474414736d9deca3ff1011b7841850c4a0
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
-    :commit: ad13dd470c635bb0c3b7853618215cad96395f8c
+    :commit: b572f728d015d40cdb1e50ed790fb36c972dec0c
     :git: "git@github.com:signalapp/SignalMetadataKit"
   Starscream:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
