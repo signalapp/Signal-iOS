@@ -272,6 +272,8 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
             Logger.error("storageMode: \(FeatureFlags.storageModeDescription).")
             Logger.error(
                 "StorageCoordinatorState: \(NSStringFromStorageCoordinatorState(storageCoordinator.state)).")
+            Logger.error(
+                "dataStoreForUI: \(NSStringForDataStore(StorageCoordinator.dataStoreForUI)).")
 
             switch FeatureFlags.storageModeStrictness {
             case .fail:
@@ -332,6 +334,8 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
             Logger.error("storageMode: \(FeatureFlags.storageModeDescription).")
             Logger.error(
                 "StorageCoordinatorState: \(NSStringFromStorageCoordinatorState(storageCoordinator.state)).")
+            Logger.error(
+                "dataStoreForUI: \(NSStringForDataStore(StorageCoordinator.dataStoreForUI)).")
 
             switch FeatureFlags.storageModeStrictness {
             case .fail:

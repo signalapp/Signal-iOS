@@ -65,6 +65,7 @@ NSString *NSStringForDataStore(DataStore value)
     OWSSingletonAssert();
 
     _dataStoreForUI = [StorageCoordinator computeDataStoreForUI];
+
     OWSLogInfo(@"dataStoreForUI: %@", NSStringForDataStore(self.dataStoreForUI));
 
     _databaseStorage = [[SDSDatabaseStorage alloc] initWithDelegate:self];

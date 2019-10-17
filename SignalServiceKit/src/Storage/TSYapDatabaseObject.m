@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogError(@"storageMode: %@.", SSKFeatureFlags.storageModeDescription);                                  \
             OWSLogError(                                                                                               \
                 @"StorageCoordinatorState: %@.", NSStringFromStorageCoordinatorState(self.storageCoordinator.state));  \
+            OWSLogError(@"dataStoreForUI: %@.", NSStringForDataStore(StorageCoordinator.dataStoreForUI));              \
             switch (SSKFeatureFlags.storageModeStrictness) {                                                           \
                 case StorageModeStrictnessFail:                                                                        \
                     OWSFail(@"Unexpected YDB read.");                                                                  \
@@ -36,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogError(@"storageMode: %@.", SSKFeatureFlags.storageModeDescription);                                  \
             OWSLogError(                                                                                               \
                 @"StorageCoordinatorState: %@.", NSStringFromStorageCoordinatorState(self.storageCoordinator.state));  \
+            OWSLogError(@"dataStoreForUI: %@.", NSStringForDataStore(StorageCoordinator.dataStoreForUI));              \
             switch (SSKFeatureFlags.storageModeStrictness) {                                                           \
                 case StorageModeStrictnessFail:                                                                        \
                     OWSFail(@"Unexpected YDB write.");                                                                 \

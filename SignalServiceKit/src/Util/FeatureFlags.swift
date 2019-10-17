@@ -65,9 +65,6 @@ extension StorageMode: CustomStringConvertible {
             return ".ydbTests"
         case .grdbTests:
             return ".grdbTests"
-        @unknown default:
-            owsFailDebug("unexpected StorageMode: \(self)")
-            return ".unknown"
         }
     }
 }

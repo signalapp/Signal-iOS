@@ -554,8 +554,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         OWSFailDebug(@"Unexpectedly large message.");
     }
 
-    if (self.storageCoordinator.state == StorageCoordinatorStateYDB
-        || self.storageCoordinator.state == StorageCoordinatorStateYDBTests) {
+    if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
         [self.yapProcessingQueue enqueueEnvelopeData:envelopeData];
         [self.yapProcessingQueue drainQueue];
     } else {

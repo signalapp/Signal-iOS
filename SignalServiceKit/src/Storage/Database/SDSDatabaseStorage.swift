@@ -71,29 +71,23 @@ public class SDSDatabaseStorage: SDSTransactable {
     }
 
     private func addObservers() {
-
-        // Cross process writes
-        switch storageCoordinatorState {
-        case .YDB:
-            // YDB uses a different mechanism for cross process writes.
-            break
-        case .GRDB, .beforeYDBToGRDBMigration, .duringYDBToGRDBMigration:
-            crossProcess.callback = { [weak self] in
-                DispatchQueue.main.async {
-                    self?.handleCrossProcessWrite()
-                }
-            }
-
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(didBecomeActive),
-                                                   name: UIApplication.didBecomeActiveNotification,
-                                                   object: nil)
-        case .ydbTests, .grdbTests:
-             // No need to listen for cross process writes during tests.
-            break
-        @unknown default:
-            owsFailDebug("Unknown state: \(storageCoordinatorState)")
+        guard !CurrentAppContext().isRunningTests else {
+            return
         }
+        guard StorageCoordinator.dataStoreForUI == .grdb else {
+            // YDB uses a different mechanism for cross process writes.
+            return
+        }
+        // Cross process writes
+        crossProcess.callback = { [weak self] in
+            DispatchQueue.main.async {
+                self?.handleCrossProcessWrite()
+            }
+        }
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(didBecomeActive),
+                                               name: UIApplication.didBecomeActiveNotification,
+                                               object: nil)
     }
 
     deinit {
@@ -141,6 +135,8 @@ public class SDSDatabaseStorage: SDSTransactable {
             Logger.error("storageMode: \(FeatureFlags.storageModeDescription).")
             Logger.error(
                 "StorageCoordinatorState: \(storageCoordinatorStateDescription).")
+            Logger.error(
+                "dataStoreForUI: \(NSStringForDataStore(StorageCoordinator.dataStoreForUI)).")
 
             switch FeatureFlags.storageModeStrictness {
             case .fail:
@@ -185,6 +181,8 @@ public class SDSDatabaseStorage: SDSTransactable {
             Logger.error("storageMode: \(FeatureFlags.storageModeDescription).")
             Logger.error(
                 "StorageCoordinatorState: \(storageCoordinatorStateDescription).")
+            Logger.error(
+                "dataStoreForUI: \(NSStringForDataStore(StorageCoordinator.dataStoreForUI)).")
 
             switch FeatureFlags.storageModeStrictness {
             case .fail:
@@ -217,8 +215,6 @@ public class SDSDatabaseStorage: SDSTransactable {
         case .ydbTests, .grdbTests, .beforeYDBToGRDBMigration, .duringYDBToGRDBMigration:
             yapDatabaseQueue = yapStorage.newDatabaseQueue()
             grdbDatabaseQueue = grdbStorage.newDatabaseQueue()
-        @unknown default:
-            owsFailDebug("Unknown state: \(storageCoordinatorState)")
         }
 
         return SDSAnyDatabaseQueue(yapDatabaseQueue: yapDatabaseQueue,
@@ -451,9 +447,6 @@ extension SDSDatabaseStorage {
             return .ydb
         case .grdbTests:
             return .grdb
-        @unknown default:
-            owsFailDebug("Unknown state: \(storageCoordinatorState)")
-            return .grdb
         }
     }
 
@@ -468,9 +461,6 @@ extension SDSDatabaseStorage {
         case .ydbTests:
             return .ydb
         case .grdbTests:
-            return .grdb
-        @unknown default:
-            owsFailDebug("Unknown state: \(storageCoordinatorState)")
             return .grdb
         }
     }
@@ -488,9 +478,6 @@ extension SDSDatabaseStorage {
             return false
         case .ydbTests, .grdbTests:
             return true
-        @unknown default:
-            owsFailDebug("Unknown state: \(storageCoordinatorState)")
-            return true
         }
     }
 
@@ -503,9 +490,6 @@ extension SDSDatabaseStorage {
         case .GRDB:
             return false
         case .ydbTests, .grdbTests:
-            return true
-        @unknown default:
-            owsFailDebug("Unknown state: \(storageCoordinatorState)")
             return true
         }
     }
@@ -520,9 +504,6 @@ extension SDSDatabaseStorage {
             return false
         case .ydbTests, .grdbTests:
             return true
-        @unknown default:
-            owsFailDebug("Unknown state: \(storageCoordinatorState)")
-            return true
         }
     }
 
@@ -534,9 +515,6 @@ extension SDSDatabaseStorage {
         case .beforeYDBToGRDBMigration, .duringYDBToGRDBMigration, .GRDB:
             return true
         case .ydbTests, .grdbTests:
-            return true
-        @unknown default:
-            owsFailDebug("Unknown state: \(storageCoordinatorState)")
             return true
         }
     }
@@ -551,9 +529,6 @@ extension SDSDatabaseStorage {
             return true
         case .ydbTests, .grdbTests:
             return true
-        @unknown default:
-            owsFailDebug("Unknown state: \(storageCoordinatorState)")
-            return true
         }
     }
 
@@ -566,9 +541,6 @@ extension SDSDatabaseStorage {
         case .duringYDBToGRDBMigration, .GRDB:
             return true
         case .ydbTests, .grdbTests:
-            return true
-        @unknown default:
-            owsFailDebug("Unknown state: \(storageCoordinatorState)")
             return true
         }
     }

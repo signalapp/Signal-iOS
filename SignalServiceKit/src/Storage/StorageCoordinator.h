@@ -8,12 +8,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const StorageIsReadyNotification;
 
-typedef NS_ENUM(NSUInteger, DataStore) {
+typedef NS_CLOSED_ENUM(NSUInteger, DataStore) {
     DataStoreYdb,
     DataStoreGrdb,
 };
+NSString *NSStringForDataStore(DataStore value);
 
-typedef NS_ENUM(NSUInteger, StorageCoordinatorState) {
+typedef NS_CLOSED_ENUM(NSUInteger, StorageCoordinatorState) {
     // GRDB TODO: Remove .ydb and ydbTests once we ship GRDB to production.
     StorageCoordinatorStateYDB,
     StorageCoordinatorStateBeforeYDBToGRDBMigration,
