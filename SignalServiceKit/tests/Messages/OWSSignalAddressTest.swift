@@ -20,7 +20,7 @@ class OWSSignalAddressTest: SSKBaseTestSwift {
 
     func testInitializer() {
         let recipientId = "+13213214321"
-        let deviceId: UInt32 = OWSPrimaryDeviceId
+        let deviceId: UInt32 = OWSDevicePrimaryDeviceId
         let address = try! OWSSignalAddress(recipientId: recipientId, deviceId: deviceId)
         XCTAssertEqual(address.recipientId, recipientId)
         XCTAssertEqual(address.deviceId, deviceId)
@@ -28,7 +28,7 @@ class OWSSignalAddressTest: SSKBaseTestSwift {
 
     func testInitializer_badRecipientId() {
         let recipientId = ""
-        let deviceId: UInt32 = OWSPrimaryDeviceId
+        let deviceId: UInt32 = OWSDevicePrimaryDeviceId
         XCTAssertThrowsError(try OWSSignalAddress(recipientId: recipientId, deviceId: deviceId))
     }
 
