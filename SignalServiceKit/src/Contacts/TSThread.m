@@ -430,6 +430,22 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     [self updateWithMessage:message wasMessageInserted:NO transaction:transaction];
 }
 
+- (int64_t)messageSortIdForMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (transaction.transitional_yapWriteTransaction) {
+        return message.sortId;
+    } else {
+        if (message.grdbId == nil) {
+            OWSFailDebug(@"Missing messageSortId.");
+        } else if (message.grdbId.unsignedLongLongValue == 0) {
+            OWSFailDebug(@"Invalid messageSortId.");
+        } else {
+            return message.grdbId.longLongValue;
+        }
+    }
+    return 0;
+}
+
 - (void)updateWithMessage:(TSInteraction *)message
        wasMessageInserted:(BOOL)wasMessageInserted
               transaction:(SDSAnyWriteTransaction *)transaction
@@ -441,18 +457,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
         return;
     }
 
-    int64_t messageSortId = 0;
-    if (transaction.transitional_yapWriteTransaction) {
-        messageSortId = message.sortId;
-    } else {
-        if (message.grdbId == nil) {
-            OWSFailDebug(@"Missing messageSortId.");
-        } else if (message.grdbId.unsignedLongLongValue == 0) {
-            OWSFailDebug(@"Invalid messageSortId.");
-        } else {
-            messageSortId = message.grdbId.longLongValue;
-        }
-    }
+    int64_t messageSortId = [self messageSortIdForMessage:message transaction:transaction];
     BOOL needsToMarkAsVisible = !self.shouldThreadBeVisible;
     BOOL needsToClearArchived = self.isArchived && wasMessageInserted;
     BOOL needsToUpdateLastInteractionRowId = messageSortId > self.lastInteractionRowId;
@@ -481,18 +486,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
         return;
     }
 
-    int64_t messageSortId = 0;
-    if (transaction.transitional_yapWriteTransaction) {
-        messageSortId = message.sortId;
-    } else {
-        if (message.grdbId == nil) {
-            OWSFailDebug(@"Missing messageSortId.");
-        } else if (message.grdbId.unsignedLongLongValue == 0) {
-            OWSFailDebug(@"Invalid messageSortId.");
-        } else {
-            messageSortId = message.grdbId.longLongValue;
-        }
-    }
+    int64_t messageSortId = [self messageSortIdForMessage:message transaction:transaction];
     BOOL needsToUpdateLastInteractionRowId = messageSortId == self.lastInteractionRowId;
     if (needsToUpdateLastInteractionRowId) {
         [self anyOverwritingUpdateWithTransaction:transaction
