@@ -669,7 +669,8 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     private func senderName(message: TSMessage) -> String {
         switch message {
         case let incomingMessage as TSIncomingMessage:
-            return self.contactsManager.displayName(forPhoneIdentifier: incomingMessage.authorId)
+            let hexEncodedPublicKey = incomingMessage.authorId
+            return DisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? hexEncodedPublicKey // TODO: Public chats
         case is TSOutgoingMessage:
             return NSLocalizedString("MEDIA_GALLERY_SENDER_NAME_YOU", comment: "Short sender label for media sent by you")
         default:
