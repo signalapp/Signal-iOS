@@ -10,10 +10,9 @@ import Contacts
 public class OnboardingPermissionsViewController: OnboardingBaseViewController {
 
     override public func loadView() {
-        super.loadView()
+        view = UIView()
 
         view.backgroundColor = Theme.backgroundColor
-        view.layoutMargins = .zero
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("NAVIGATION_ITEM_SKIP_BUTTON", comment: "A button to skip a view."),
                                                             style: .plain,
@@ -27,10 +26,11 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
                                                                                   comment: "Explanation in the 'onboarding permissions' view."))
         explanationLabel.accessibilityIdentifier = "onboarding.permissions." + "explanationLabel"
 
-        let giveAccessButton = self.button(title: NSLocalizedString("ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON",
+        let giveAccessButton = self.primaryButton(title: NSLocalizedString("ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON",
                                                                     comment: "Label for the 'give access' button in the 'onboarding permissions' view."),
                                            selector: #selector(giveAccessPressed))
         giveAccessButton.accessibilityIdentifier = "onboarding.permissions." + "giveAccessButton"
+        let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: giveAccessButton)
 
         let notNowButton = self.linkButton(title: NSLocalizedString("ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON",
                                                                     comment: "Label for the 'not now' button in the 'onboarding permissions' view."),
@@ -44,16 +44,13 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
             UIView.vStretchingSpacer(),
             notNowButton,
             UIView.spacer(withHeight: 12),
-            giveAccessButton
+            primaryButtonView
             ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: 32, left: 32, bottom: 32, right: 32)
-        stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
-        stackView.autoPinWidthToSuperview()
-        stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        stackView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+
+        stackView.autoPinEdgesToSuperviewMargins()
     }
 
     // MARK: Request Access

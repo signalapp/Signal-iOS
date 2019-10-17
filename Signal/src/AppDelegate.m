@@ -871,6 +871,12 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
                 return;
             }
 
+            // MULTIRING TODO
+            if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
+                OWSLogInfo(@"Ignoring unsupported activity.");
+                return;
+            }
+
             SignalServiceAddress *_Nullable address = [self addressForIntentHandle:handle];
             if (!address.isValid) {
                 OWSLogWarn(@"ignoring attempt to initiate video call to unknown user.");
@@ -930,6 +936,12 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
                 return;
             }
 
+            // MULTIRING TODO
+            if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
+                OWSLogInfo(@"Ignoring unsupported activity.");
+                return;
+            }
+
             SignalServiceAddress *_Nullable address = [self addressForIntentHandle:handle];
             if (!address.isValid) {
                 OWSLogWarn(@"ignoring attempt to initiate audio call to unknown user.");
@@ -976,6 +988,12 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
         [AppReadiness runNowOrWhenAppDidBecomeReady:^{
             if (![self.tsAccountManager isRegisteredAndReady]) {
                 OWSLogInfo(@"Ignoring user activity; app not ready.");
+                return;
+            }
+
+            // MULTIRING TODO
+            if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
+                OWSLogInfo(@"Ignoring unsupported activity.");
                 return;
             }
 
@@ -1377,16 +1395,10 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             [ExperienceUpgradeFinder.sharedManager markAllAsSeenWithTransaction:transaction];
         }];
+
         // Start running the disappearing messages job in case the newly registered user
         // enables this feature
-
         [self.disappearingMessagesJob startIfNecessary];
-
-        // TODO: This is probably superfluous and can be removed.
-        [[self.syncManager syncLocalContact] retainUntilComplete];
-
-        // For non-legacy users, read receipts are on by default.
-        [self.readReceiptManager setAreReadReceiptsEnabled:YES];
     }
 }
 

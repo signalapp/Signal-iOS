@@ -9,11 +9,18 @@ import SafariServices
 @objc
 public class OnboardingSplashViewController: OnboardingBaseViewController {
 
+    override var primaryLayoutMargins: UIEdgeInsets {
+        var defaultMargins = super.primaryLayoutMargins
+        // we want the hero image a bit closer to the top than most
+        // onboarding content
+        defaultMargins.top = 16
+        return defaultMargins
+    }
+
     override public func loadView() {
-        super.loadView()
+        view = UIView()
 
         view.backgroundColor = Theme.backgroundColor
-        view.layoutMargins = .zero
 
         let heroImage = UIImage(named: "onboarding_splash_hero")
         let heroImageView = UIImageView(image: heroImage)
@@ -26,7 +33,6 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
 
         let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_SPLASH_TITLE", comment: "Title of the 'onboarding splash' view."))
         view.addSubview(titleLabel)
-        titleLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
         titleLabel.accessibilityIdentifier = "onboarding.splash." + "titleLabel"
 
         let explanationLabel = UILabel()
@@ -41,11 +47,11 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         explanationLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(explanationLabelTapped)))
         explanationLabel.accessibilityIdentifier = "onboarding.splash." + "explanationLabel"
 
-        let continueButton = self.button(title: NSLocalizedString("BUTTON_CONTINUE",
+        let continueButton = self.primaryButton(title: NSLocalizedString("BUTTON_CONTINUE",
                                                                  comment: "Label for 'continue' button."),
                                                     selector: #selector(continuePressed))
-        view.addSubview(continueButton)
         continueButton.accessibilityIdentifier = "onboarding.splash." + "continueButton"
+        let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: continueButton)
 
         let stackView = UIStackView(arrangedSubviews: [
             heroImageView,
@@ -54,19 +60,16 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
             UIView.spacer(withHeight: 92),
             explanationLabel,
             UIView.spacer(withHeight: 24),
-            continueButton
+            primaryButtonView
             ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: 32, left: 32, bottom: 32, right: 32)
-        stackView.isLayoutMarginsRelativeArrangement = true
+
         view.addSubview(stackView)
-        stackView.autoPinWidthToSuperview()
-        stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        stackView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        stackView.autoPinEdgesToSuperviewMargins()
     }
 
-     // MARK: - Events
+    // MARK: - Events
 
     @objc func explanationLabelTapped(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else {

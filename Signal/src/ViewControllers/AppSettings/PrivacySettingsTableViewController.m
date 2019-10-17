@@ -489,7 +489,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 {
     BOOL enabled = sender.isOn;
     OWSLogInfo(@"toggled areReadReceiptsEnabled: %@", enabled ? @"ON" : @"OFF");
-    [self.readReceiptManager setAreReadReceiptsEnabled:enabled];
+    [self.readReceiptManager setAreReadReceiptsEnabledWithSneakyTransactionAndSyncConfiguration:enabled];
 }
 
 - (void)didToggleTypingIndicatorsSwitch:(UISwitch *)sender

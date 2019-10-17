@@ -49,7 +49,18 @@ public class OnboardingBaseViewController: OWSViewController {
         return explanationLabel
     }
 
-    func button(title: String, selector: Selector) -> OWSFlatButton {
+    var primaryLayoutMargins: UIEdgeInsets {
+        switch traitCollection.horizontalSizeClass {
+        case .unspecified, .compact:
+            return UIEdgeInsets(top: 32, leading: 32, bottom: 32, trailing: 32)
+        case .regular:
+            return UIEdgeInsets(top: 112, leading: 112, bottom: 112, trailing: 112)
+        @unknown default:
+            return UIEdgeInsets(top: 32, leading: 32, bottom: 32, trailing: 32)
+        }
+    }
+
+    func primaryButton(title: String, selector: Selector) -> OWSFlatButton {
         return button(title: title, selector: selector, titleColor: .white, backgroundColor: .ows_signalBlue)
     }
 
@@ -70,6 +81,23 @@ public class OnboardingBaseViewController: OWSViewController {
         return button
     }
 
+    public class func horizontallyWrap(primaryButton: UIView) -> UIView {
+        primaryButton.autoSetDimension(.width, toSize: 280)
+
+        let buttonWrapper = UIView()
+        buttonWrapper.addSubview(primaryButton)
+
+        primaryButton.autoPinEdge(toSuperviewEdge: .top)
+        primaryButton.autoPinEdge(toSuperviewEdge: .bottom)
+        primaryButton.autoHCenterInSuperview()
+        NSLayoutConstraint.autoSetPriority(.defaultLow) {
+            primaryButton.autoPinEdge(toSuperviewEdge: .leading)
+            primaryButton.autoPinEdge(toSuperviewEdge: .trailing)
+        }
+
+        return buttonWrapper
+    }
+
     // MARK: - View Lifecycle
 
     public override func viewDidLoad() {
@@ -84,8 +112,6 @@ public class OnboardingBaseViewController: OWSViewController {
         self.navigationController?.isNavigationBarHidden = true
         // Disable "back" gesture.
         self.navigationController?.navigationItem.backBarButtonItem?.isEnabled = false
-
-        view.layoutIfNeeded()
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -94,6 +120,11 @@ public class OnboardingBaseViewController: OWSViewController {
         self.navigationController?.isNavigationBarHidden = true
         // Disable "back" gesture.
         self.navigationController?.navigationItem.backBarButtonItem?.isEnabled = false
+    }
+
+    override public func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        view.layoutMargins = primaryLayoutMargins
     }
 
     // MARK: - Orientation

@@ -176,7 +176,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         });
     };
 
-    uint32_t localDeviceId = OWSDevicePrimaryDeviceId;
+    uint32_t localDeviceId = self.tsAccountManager.storedDeviceId;
     DecryptSuccessBlock successBlock = ^(OWSMessageDecryptResult *result, SDSAnyWriteTransaction *transaction) {
         // Ensure all blocked messages are discarded.
         if ([self isEnvelopeSenderBlocked:envelope]) {
@@ -460,7 +460,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         [[SMKCertificateDefaultValidator alloc] initWithTrustRoot:self.udManager.trustRoot];
 
     SignalServiceAddress *localAddress = self.tsAccountManager.localAddress;
-    uint32_t localDeviceId = OWSDevicePrimaryDeviceId;
+    uint32_t localDeviceId = self.tsAccountManager.storedDeviceId;
 
     [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
         NSError *cipherError;

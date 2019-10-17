@@ -74,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
         layer.opacity = 0.5f;
     }];
     [self.view addSubview:maskingView];
-    [maskingView ows_autoPinToSuperviewEdges];
+    [maskingView autoPinEdgesToSuperviewEdges];
 }
 
 - (void)viewWillAppear:(BOOL)animated

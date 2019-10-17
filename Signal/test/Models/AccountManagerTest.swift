@@ -26,10 +26,8 @@ class FailingTSAccountManager: TSAccountManager {
         self.phoneNumberAwaitingVerification = "+13235555555"
     }
 
-    override func verifyAccount(withCode: String,
-                                pin: String?,
-                                success: @escaping (Any?) -> Void, failure: @escaping (Error) -> Void) {
-        failure(VerificationFailedError())
+    override func verifyAccount(with request: TSRequest, success successBlock: @escaping (Any?) -> Void, failure failureBlock: @escaping (Error) -> Void) {
+        failureBlock(VerificationFailedError())
     }
 
     override func registerForPushNotifications(pushToken: String, voipToken: String, success successHandler: @escaping () -> Void, failure failureHandler: @escaping (Error) -> Void) {
@@ -42,10 +40,8 @@ class FailingTSAccountManager: TSAccountManager {
 }
 
 class VerifyingTSAccountManager: FailingTSAccountManager {
-    override func verifyAccount(withCode: String,
-                                pin: String?,
-                                success: @escaping (Any?) -> Void, failure: @escaping (Error) -> Void) {
-        success(nil)
+    override func verifyAccount(with request: TSRequest, success successBlock: @escaping (Any?) -> Void, failure failureBlock: @escaping (Error) -> Void) {
+        successBlock(nil)
     }
 
     override func performUpdateAccountAttributes() -> AnyPromise {

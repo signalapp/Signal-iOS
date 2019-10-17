@@ -39,10 +39,9 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
     }
 
     override public func loadView() {
-        super.loadView()
+        view = UIView()
 
         view.backgroundColor = Theme.backgroundColor
-        view.layoutMargins = .zero
 
         let titleText: String
         let explanationText: String
@@ -106,13 +105,14 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         pinStack.autoSetDimension(.width, toSize: 227)
         pinStackRow.setContentHuggingVerticalHigh()
 
-        let nextButton = self.button(title: NSLocalizedString("BUTTON_NEXT",
-                                                              comment: "Label for the 'next' button."),
+        let nextButton = self.primaryButton(title: CommonStrings.nextButton,
                                      selector: #selector(nextPressed))
         nextButton.accessibilityIdentifier = "onboarding.2fa." + "nextButton"
+        let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton)
 
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
+        let compressableBottomMargin = UIView.vStretchingSpacer(minHeight: 16, maxHeight: primaryLayoutMargins.bottom)
 
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
@@ -121,15 +121,16 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             topSpacer,
             pinStackRow,
             bottomSpacer,
-            nextButton
+            primaryButtonView,
+            compressableBottomMargin
         ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-        stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
-        stackView.autoPinWidthToSuperview()
-        stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+
+        // Because of the keyboard, vertical spacing can get pretty cramped,
+        // so we have custom spacer logic.
+        stackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
         autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
 
         // Ensure whitespace is balanced, so inputs are vertically centered.

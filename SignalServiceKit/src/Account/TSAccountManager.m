@@ -42,6 +42,9 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 NSString *const TSAccountManager_ManualMessageFetchKey = @"TSAccountManager_ManualMessageFetchKey";
 NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountManager_NeedsAccountAttributesUpdateKey";
 
+NSString *const TSAccountManager_DeviceName = @"TSAccountManager_DeviceName";
+NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
+
 // A cache of frequently-accessed database state.
 //
 // * Instances of TSAccountState are immutable.
@@ -59,10 +62,12 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 @property (nonatomic, readonly) BOOL isRegistered;
 @property (nonatomic, readonly) BOOL isDeregistered;
-@property (nonatomic, readonly) BOOL isReregistering;
 
 @property (nonatomic, readonly, nullable) NSString *serverSignalingKey;
 @property (nonatomic, readonly, nullable) NSString *serverAuthToken;
+
+@property (nonatomic, readonly, nullable) NSString *deviceName;
+@property (nonatomic, readonly) UInt32 deviceId;
 
 @end
 
@@ -92,6 +97,10 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     _serverSignalingKey = [keyValueStore getString:TSAccountManager_ServerSignalingKey transaction:transaction];
     _serverAuthToken = [keyValueStore getString:TSAccountManager_ServerAuthToken transaction:transaction];
 
+    _deviceName = [keyValueStore getString:TSAccountManager_DeviceName transaction:transaction];
+    _deviceId = [keyValueStore getUInt32:TSAccountManager_DeviceId
+                            defaultValue:1 // lazily migrate legacy primary devices
+                             transaction:transaction];
     return self;
 }
 
@@ -324,7 +333,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (void)didRegister
 {
-    OWSLogInfo(@"didRegister");
+    OWSLogInfo(@"");
     NSString *phoneNumber;
     NSUUID *uuid;
     @synchronized(self) {
@@ -553,25 +562,10 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         }];
 }
 
-- (void)verifyAccountWithCode:(NSString *)verificationCode
-                          pin:(nullable NSString *)pin
-                      success:(void (^)(_Nullable id responseObject))successBlock
-                      failure:(void (^)(NSError *error))failureBlock
+- (void)verifyAccountWithRequest:(TSRequest *)request
+                         success:(void (^)(_Nullable id responseObject))successBlock
+                         failure:(void (^)(NSError *error))failureBlock
 {
-    NSString *authToken = [[self class] generateNewAccountAuthenticationToken];
-    NSString *phoneNumber;
-    @synchronized(self) {
-        phoneNumber = self.phoneNumberAwaitingVerification;
-    }
-
-    OWSAssertDebug(authToken);
-    OWSAssertDebug(phoneNumber);
-
-    TSRequest *request = [OWSRequestFactory verifyCodeRequestWithVerificationCode:verificationCode
-                                                                        forNumber:phoneNumber
-                                                                              pin:pin
-                                                                          authKey:authToken];
-
     [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
             NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
@@ -581,10 +575,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                 case 200:
                 case 204: {
                     OWSLogInfo(@"Verification code accepted.");
-
-                    [self setStoredServerAuthToken:authToken];
                     successBlock(responseObject);
-
                     break;
                 }
                 default: {
@@ -672,12 +663,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 #pragma mark Server keying material
 
-+ (NSString *)generateNewAccountAuthenticationToken {
-    NSData *authToken = [Randomness generateRandomBytes:16];
-    NSString *authTokenPrint = [[NSData dataWithData:authToken] hexadecimalString];
-    return authTokenPrint;
-}
-
 // NOTE: We no longer set this for new accounts.
 - (nullable NSString *)storedSignalingKey
 {
@@ -689,15 +674,35 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     return [self getOrLoadAccountStateWithSneakyTransaction].serverAuthToken;
 }
 
-- (void)setStoredServerAuthToken:(NSString *)authToken
+- (nullable NSString *)storedDeviceName
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        @synchronized(self) {
-            [self.keyValueStore setString:authToken key:TSAccountManager_ServerAuthToken transaction:transaction];
+    return [self getOrLoadAccountStateWithSneakyTransaction].deviceName;
+}
 
-            [self loadAccountStateWithTransaction:transaction];
-        }
-    }];
+- (UInt32)storedDeviceId
+{
+    return [self getOrLoadAccountStateWithSneakyTransaction].deviceId;
+}
+
+- (void)setStoredServerAuthToken:(NSString *)authToken
+                        deviceId:(UInt32)deviceId
+                     transaction:(SDSAnyWriteTransaction *)transaction
+{
+    @synchronized(self) {
+        [self.keyValueStore setString:authToken key:TSAccountManager_ServerAuthToken transaction:transaction];
+        [self.keyValueStore setUInt32:deviceId key:TSAccountManager_DeviceId transaction:transaction];
+
+        [self loadAccountStateWithTransaction:transaction];
+    }
+}
+
+- (void)setStoredDeviceName:(NSString *)deviceName transaction:(SDSAnyWriteTransaction *)transaction
+{
+    @synchronized(self) {
+        [self.keyValueStore setString:deviceName key:TSAccountManager_DeviceName transaction:transaction];
+
+        [self loadAccountStateWithTransaction:transaction];
+    }
 }
 
 + (void)unregisterTextSecureWithSuccess:(void (^)(void))success failure:(void (^)(NSError *error))failureBlock

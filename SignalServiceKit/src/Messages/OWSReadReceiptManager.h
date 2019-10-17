@@ -109,7 +109,11 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:recipientMap:sentTimestamp:));
 - (void)prepareCachedValues;
 
 - (BOOL)areReadReceiptsEnabled;
-- (void)setAreReadReceiptsEnabled:(BOOL)value;
+
+- (void)setAreReadReceiptsEnabledWithSneakyTransactionAndSyncConfiguration:(BOOL)value;
+
+- (void)setAreReadReceiptsEnabled:(BOOL)value transaction:(SDSAnyWriteTransaction *)transaction;
+
 
 @end
 
