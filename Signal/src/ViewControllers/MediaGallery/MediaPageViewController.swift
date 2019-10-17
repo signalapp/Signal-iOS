@@ -138,7 +138,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }
 
     override var prefersStatusBarHidden: Bool {
-        return shouldHideToolbars
+        return shouldHideStatusBar
     }
 
     override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
@@ -238,6 +238,11 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         view.addGestureRecognizer(verticalSwipe)
     }
 
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        setNeedsStatusBarAppearanceUpdate()
+    }
+
     override func didReceiveMemoryWarning() {
         Logger.info("")
         super.didReceiveMemoryWarning()
@@ -300,6 +305,12 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             bottomContainer.isHidden = shouldHideToolbars
             topContainer.isHidden = shouldHideToolbars
         }
+    }
+
+    private var shouldHideStatusBar: Bool {
+        guard !UIDevice.current.isIPad else { return shouldHideToolbars }
+
+        return shouldHideToolbars || CurrentAppContext().interfaceOrientation.isLandscape
     }
 
     // MARK: Bar Buttons
