@@ -188,15 +188,15 @@ NSString *NSStringForDataStore(DataStore value)
     //       to the "shared container" should be complete, so
     //       we can ignore the "legacy" database files.
     BOOL hasYdbFile = self.class.hasYdbFile;
-    OWSLogVerbose(@"hasYdbFile: %d", hasYdbFile);
+    OWSLogInfo(@"hasYdbFile: %d", hasYdbFile);
 
     BOOL hasGrdbFile = self.class.hasGrdbFile;
-    OWSLogVerbose(@"hasGrdbFile: %d", hasGrdbFile);
+    OWSLogInfo(@"hasGrdbFile: %d", hasGrdbFile);
 
     BOOL hasUnmigratedYdbFile = (hasYdbFile && ![SSKPreferences isYdbMigrated]);
-    OWSLogVerbose(@"hasUnmigratedYdbFile: %d", hasUnmigratedYdbFile);
+    OWSLogInfo(@"hasUnmigratedYdbFile: %d", hasUnmigratedYdbFile);
 
-    OWSLogVerbose(@"didEverUseYdb: %d", SSKPreferences.didEverUseYdb);
+    OWSLogInfo(@"didEverUseYdb: %d", SSKPreferences.didEverUseYdb);
 
     switch (SSKFeatureFlags.storageMode) {
         case StorageModeYdbForAll:
