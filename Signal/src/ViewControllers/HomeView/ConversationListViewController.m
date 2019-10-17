@@ -988,11 +988,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self updateShouldObserveDBModifications];
 }
 
-- (BOOL)canBecomeFirstResponder
-{
-    return YES;
-}
-
 #pragma mark - startup
 
 - (NSArray<ExperienceUpgrade *> *)unseenUpgradeExperiences
@@ -1351,9 +1346,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     [self.searchBar resignFirstResponder];
     OWSAssertDebug(!self.searchBar.isFirstResponder);
-
-    // If we have a visible conversation, restore its first responder status so the input toolbar renders.
-    [self.conversationSplitViewController.selectedConversationViewController becomeFirstResponder];
 }
 
 #pragma mark - UIScrollViewDelegate

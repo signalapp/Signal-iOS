@@ -123,11 +123,6 @@ public class ImageEditorBrushViewController: OWSViewController {
         return true
     }
 
-    @objc
-    override public var canBecomeFirstResponder: Bool {
-        return true
-    }
-
     // MARK: - Actions
 
     @objc func didTapUndo(sender: UIButton) {

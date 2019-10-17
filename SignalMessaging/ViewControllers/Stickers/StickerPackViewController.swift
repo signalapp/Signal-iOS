@@ -300,22 +300,6 @@ public class StickerPackViewController: OWSViewController {
         StickerManager.refreshContents()
     }
 
-    override public func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        self.becomeFirstResponder()
-    }
-
-    override public func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        self.becomeFirstResponder()
-    }
-
-    override public var canBecomeFirstResponder: Bool {
-        return true
-    }
-
     override public var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }

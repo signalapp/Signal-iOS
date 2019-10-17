@@ -192,29 +192,6 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
                 if let toMediaContext = toMediaContext {
                     toContextProvider.mediaDidDismiss(toContext: toMediaContext)
                 }
-            }.done {
-                // HACK: First Responder Juggling
-                //
-                // First responder status is relinquished to the toVC upon the
-                // *start* of the dismissal. This is surprisng for two reasons:
-                // 1. I'd expect the input toolbar to be dismissed interactively, since we're in
-                //    an interactive transition.
-                // 2. I'd expect cancelling the transition to restore first responder to the
-                //    fromVC.
-                //
-                // Scenario 1: Cancelled dismissal causes CVC input toolbar over the media view.
-                //
-                // Scenario 2: Cancelling dismissal, followed by an actual dismissal to CVC,
-                // results in a non-visible input toolbar.
-                //
-                // A known bug with this approach is that the *first* time you start to dismiss
-                // you'll see the input toolbar enter the screen. It will dismiss itself if you
-                // cancel the transition.
-                let firstResponderVC = transitionContext.transitionWasCancelled ? fromVC : toVC
-                if !firstResponderVC.isFirstResponder {
-                    Logger.verbose("regaining first responder")
-                    firstResponderVC.becomeFirstResponder()
-                }
             }
         }
 

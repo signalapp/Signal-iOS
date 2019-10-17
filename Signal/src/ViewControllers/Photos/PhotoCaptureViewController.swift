@@ -119,14 +119,6 @@ class PhotoCaptureViewController: OWSViewController {
         }
     }
 
-    // HACK: Though we don't have an input accessory view, the VC we are presented above (ConversationVC) does.
-    // If the app is backgrounded and then foregrounded, when OWSWindowManager calls mainWindow.makeKeyAndVisible
-    // the ConversationVC's inputAccessoryView will appear *above* us unless we'd previously become first responder.
-    override public var canBecomeFirstResponder: Bool {
-        Logger.debug("")
-        return true
-    }
-
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return .portrait
     }

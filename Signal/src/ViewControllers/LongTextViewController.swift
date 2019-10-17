@@ -66,10 +66,6 @@ public class LongTextViewController: OWSViewController {
         databaseStorage.add(databaseStorageObserver: self)
     }
 
-    override public var canBecomeFirstResponder: Bool {
-        return true
-    }
-
     // MARK: -
 
     private func refreshContent() {

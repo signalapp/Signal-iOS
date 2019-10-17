@@ -91,11 +91,6 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 @implementation OWSWindowRootViewController
 
-- (BOOL)canBecomeFirstResponder
-{
-    return YES;
-}
-
 #pragma mark - Orientation
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations

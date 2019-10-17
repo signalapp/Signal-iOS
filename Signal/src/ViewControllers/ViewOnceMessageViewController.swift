@@ -383,20 +383,9 @@ class ViewOnceMessageViewController: OWSViewController {
                                                object: nil)
     }
 
-    public override var canBecomeFirstResponder: Bool {
-        return true
-    }
-
-    public override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        self.becomeFirstResponder()
-    }
-
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        self.becomeFirstResponder()
         self.videoPlayer?.play()
     }
 
