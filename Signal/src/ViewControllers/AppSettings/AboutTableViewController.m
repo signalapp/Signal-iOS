@@ -101,7 +101,15 @@
     helpSection.customFooterView = copyrightLabel;
     helpSection.customFooterHeight = @(60.f);
 
-#ifdef DEBUG
+    if (SSKFeatureFlags.verboseAboutView) {
+        [self addVerboseContents:contents];
+    }
+
+    self.contents = contents;
+}
+
+- (void)addVerboseContents:(OWSTableContents *)contents
+{
     __block NSUInteger threadCount;
     __block NSUInteger messageCount;
     __block NSUInteger attachmentCount;
@@ -147,6 +155,18 @@
     [debugSection
         addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Database SHM size: %@", dbSHMSize]]];
 
+    [debugSection
+        addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"dataStoreForUI: %@",
+                                                          NSStringForDataStore(StorageCoordinator.dataStoreForUI)]]];
+    [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"hasYdbFile: %d",
+                                                                    StorageCoordinator.hasYdbFile]]];
+    [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"hasGrdbFile: %d",
+                                                                    StorageCoordinator.hasGrdbFile]]];
+    [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"hasUnmigratedYdbFile: %d",
+                                                                    StorageCoordinator.hasUnmigratedYdbFile]]];
+    [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"didEverUseYdb: %d",
+                                                                    SSKPreferences.didEverUseYdb]]];
+
     [contents addSection:debugSection];
 
     OWSPreferences *preferences = Environment.shared.preferences;
@@ -163,9 +183,6 @@
                                                                           withString:@""];
     [debugSection
         addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Audio Category: %@", audioCategory]]];
-#endif
-
-    self.contents = contents;
 }
 
 - (void)crashApp
