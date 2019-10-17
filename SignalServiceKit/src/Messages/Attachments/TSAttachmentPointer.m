@@ -167,6 +167,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   albumMessageId:albumMessageId
                                                                   attachmentType:attachmentType
                                                                        mediaSize:mediaSize];
+    
+    pointer.downloadURL = attachmentProto.url; // Loki
+    
     return pointer;
 }
 
