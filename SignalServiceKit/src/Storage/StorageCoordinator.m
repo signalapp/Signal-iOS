@@ -113,10 +113,14 @@ NSString *NSStringForDataStore(DataStore value)
         // Allow developers to do this, but not QA, internal,
         // public beta or production.
         !SSKFeatureFlags.canRevertToYDB) {
+        OWSFailDebug(@"Reverting to YDB.");
         return YES;
     }
 
-    // TODO: also return true if unknown GRDB version.
+    if (SSKPreferences.hasUnknownGRDBSchema) {
+        OWSFailDebug(@"Unknown GRDB schema.");
+        return YES;
+    }
 
     return NO;
 }

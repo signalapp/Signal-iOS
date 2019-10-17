@@ -107,4 +107,49 @@ public class SSKPreferences: NSObject {
         appUserDefaults.set(value, forKey: didEverUseYdbKey)
         appUserDefaults.synchronize()
     }
+
+    // MARK: -
+
+    @objc
+    public static let grdbSchemaVersionDefault: UInt = 0
+    public static let grdbSchemaVersionLatest: UInt = 1
+
+    private static let grdbSchemaVersionKey = "grdbSchemaVersion"
+
+    private static func grdbSchemaVersion() -> UInt {
+        let appUserDefaults = CurrentAppContext().appUserDefaults()
+        guard let preference = appUserDefaults.object(forKey: grdbSchemaVersionKey) as? NSNumber else {
+            return grdbSchemaVersionDefault
+        }
+        return preference.uintValue
+    }
+
+    private static func setGrdbSchemaVersion(_ value: UInt) {
+        let lastKnownGrdbSchemaVersion = grdbSchemaVersion()
+        guard value != lastKnownGrdbSchemaVersion else {
+            return
+        }
+        Logger.verbose("Schema version: \(value)")
+        guard value > lastKnownGrdbSchemaVersion else {
+            owsFailDebug("Reverting to earlier schema version: \(value)")
+            return
+        }
+        let appUserDefaults = CurrentAppContext().appUserDefaults()
+        appUserDefaults.set(value, forKey: grdbSchemaVersionKey)
+        appUserDefaults.synchronize()
+    }
+
+    @objc
+    public static func markGRDBSchemaAsLatest() {
+        setGrdbSchemaVersion(grdbSchemaVersionLatest)
+    }
+
+    @objc
+    public static func hasUnknownGRDBSchema() -> Bool {
+        guard grdbSchemaVersion() <= grdbSchemaVersionLatest else {
+            owsFailDebug("grdbSchemaVersion: \(grdbSchemaVersion()), grdbSchemaVersionLatest: \(grdbSchemaVersionLatest)")
+            return true
+        }
+        return false
+    }
 }
