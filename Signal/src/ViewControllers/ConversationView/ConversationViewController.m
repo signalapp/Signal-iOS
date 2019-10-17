@@ -590,7 +590,6 @@ typedef enum : NSUInteger {
     [self updateLeftBarItem];
 
     [self addNotificationListeners];
-    [self loadDraftInCompose];
     [self applyTheme];
     [self.conversationViewModel viewDidLoad];
 }
@@ -3653,14 +3652,15 @@ typedef enum : NSUInteger {
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         draft = [self.thread currentDraftWithTransaction:transaction];
     }];
+    OWSAssertDebug(self.inputToolbar != nil);
     [self.inputToolbar setMessageText:draft animated:NO];
 }
 
 - (void)saveDraft
 {
     if (!self.inputToolbar.hidden) {
-        __block TSThread *thread = _thread;
-        __block NSString *currentDraft = [self.inputToolbar messageText];
+        TSThread *thread = _thread;
+        NSString *currentDraft = [self.inputToolbar messageText];
 
         [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
             [thread updateWithDraft:currentDraft transaction:transaction];
@@ -3984,6 +3984,7 @@ typedef enum : NSUInteger {
 - (void)createInputToolbar
 {
     _inputToolbar = [[ConversationInputToolbar alloc] initWithConversationStyle:self.conversationStyle];
+    [self loadDraftInCompose];
     self.inputToolbar.inputToolbarDelegate = self;
     self.inputToolbar.inputTextViewDelegate = self;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputToolbar);
