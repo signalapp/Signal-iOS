@@ -19,6 +19,7 @@ extern NSString *const kAttachmentUploadAttachmentIDKey;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithAttachmentId:(NSString *)attachmentId
+                            threadID:(NSString *)threadID
                         dbConnection:(YapDatabaseConnection *)dbConnection NS_DESIGNATED_INITIALIZER;
 
 @end
