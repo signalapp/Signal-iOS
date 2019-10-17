@@ -93,13 +93,18 @@ NSString *NSStringForDataStore(DataStore value)
     return [OWSFileSystem fileOrFolderExistsAtPath:grdbFilePath];
 }
 
++ (BOOL)hasUnmigratedYdbFile
+{
+    return self.hasYdbFile && ![SSKPreferences isYdbMigrated];
+}
+
 + (BOOL)hasInvalidDatabaseVersion
 {
     BOOL prefersYdb = SSKFeatureFlags.storageMode == StorageModeYdbForAll;
     BOOL willUseYdb = StorageCoordinator.dataStoreForUI == DataStoreYdb;
 
     BOOL hasValidGrdb = self.hasGrdbFile;
-    if (self.hasYdbFile && ![SSKPreferences isYdbMigrated]) {
+    if (self.hasUnmigratedYdbFile) {
         hasValidGrdb = NO;
     }
 
@@ -148,7 +153,7 @@ NSString *NSStringForDataStore(DataStore value)
     //       we can ignore the "legacy" database files.
     BOOL hasYdbFile = self.hasYdbFile;
     BOOL hasGrdbFile = self.hasGrdbFile;
-    BOOL hasUnmigratedYdbFile = (hasYdbFile && ![SSKPreferences isYdbMigrated]);
+    BOOL hasUnmigratedYdbFile = self.hasUnmigratedYdbFile;
     BOOL isNewUser = !hasYdbFile && !hasGrdbFile;
 
     // In the GRDB-possible modes, avoid migrations in certain cases.
@@ -220,7 +225,7 @@ NSString *NSStringForDataStore(DataStore value)
     BOOL hasGrdbFile = self.class.hasGrdbFile;
     OWSLogInfo(@"hasGrdbFile: %d", hasGrdbFile);
 
-    BOOL hasUnmigratedYdbFile = (hasYdbFile && ![SSKPreferences isYdbMigrated]);
+    BOOL hasUnmigratedYdbFile = self.class.hasUnmigratedYdbFile;
     OWSLogInfo(@"hasUnmigratedYdbFile: %d", hasUnmigratedYdbFile);
 
     OWSLogInfo(@"didEverUseYdb: %d", SSKPreferences.didEverUseYdb);

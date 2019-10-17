@@ -213,4 +213,7 @@ public class FeatureFlags: NSObject {
     // This can be used to shut down various background operations.
     @objc
     public static let suppressBackgroundActivity = false
+
+    @objc
+    public static let verboseAboutView = build.includes(.qa)
 }
