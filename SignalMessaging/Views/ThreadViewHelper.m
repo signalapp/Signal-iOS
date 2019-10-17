@@ -8,6 +8,7 @@
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/StorageCoordinator.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSThread.h>
 #import <YapDatabase/YapDatabase.h>
@@ -64,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+    if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
         NSString *grouping = TSInboxGroup;
 
         self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ grouping ]
@@ -115,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _shouldObserveDBModifications = shouldObserveDBModifications;
 
-    if (SSKFeatureFlags.storageMode != StorageModeYdb) {
+    if (StorageCoordinator.dataStoreForUI == DataStoreGrdb) {
         if (shouldObserveDBModifications) {
             [self updateThreads];
         }
@@ -223,7 +224,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateThreads
 {
-    if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+    if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
         [self updateThreadsYDB];
     } else {
         [self updateThreadsGRDB];

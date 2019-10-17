@@ -9,6 +9,7 @@
 #import <SignalServiceKit/OWSSyncManagerProtocol.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/StorageCoordinator.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -168,7 +169,7 @@ NSString *const OWSPreferencesKeyIsViewOnceMessagesEnabled = @"OWSPreferencesKey
 
 + (BOOL)isReadyForAppExtensions
 {
-    if (SSKFeatureFlags.storageMode == StorageModeGrdb && !self.isGrdbReadyForAppExtensions) {
+    if (StorageCoordinator.dataStoreForUI == DataStoreGrdb && !self.isGrdbReadyForAppExtensions) {
         return NO;
     }
     return self.isYdbReadyForAppExtensions;

@@ -154,19 +154,18 @@ extension YDBToGRDBMigration {
     }
 
     func removeYdb() {
+        guard FeatureFlags.storageMode != .grdbThrowawayIfMigrating else {
+            return
+        }
+
         // Don't set this flag for "throwaway" migrations.
         //
         // It's critical that we do this _before_ deleting the YDB contents,
         // since the GRDB database is considered disposable until this flag
         // is set if there are YDB files.
-        if FeatureFlags.storageMode == .grdb {
-            SSKPreferences.setIsYdbMigrated(true)
-        }
+        SSKPreferences.setIsYdbMigrated(true)
 
         guard !FeatureFlags.preserveYdb else {
-            return
-        }
-        guard FeatureFlags.storageMode != .grdbThrowawayIfMigrating else {
             return
         }
 

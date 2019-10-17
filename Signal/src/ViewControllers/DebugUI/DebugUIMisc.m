@@ -161,7 +161,7 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem
                          itemWithTitle:@"Increment Database Extension Versions"
                            actionBlock:^() {
-                               if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+                               if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
                                    for (NSString *extensionName in OWSPrimaryStorage.shared.registeredExtensionNames) {
                                        [OWSStorage incrementVersionOfDatabaseExtension:extensionName];
                                    }
@@ -494,8 +494,7 @@ NS_ASSUME_NONNULL_BEGIN
         // OWSMessageDecryptJob
         //
         // TODO: Generate real envelope data.
-        if (self.storageCoordinator.state == StorageCoordinatorStateYDB
-            || self.storageCoordinator.state == StorageCoordinatorStateYDBTests) {
+        if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
             [[[OWSMessageDecryptJob alloc] initWithEnvelopeData:[Randomness generateRandomBytes:16]]
                 anyInsertWithTransaction:transaction];
         }

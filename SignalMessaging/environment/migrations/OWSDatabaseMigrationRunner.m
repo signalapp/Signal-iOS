@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
         [OWS115EnsureProfileAvatars new]
     ];
 
-    if (SSKFeatureFlags.storageMode != StorageModeYdb) {
+    if (StorageCoordinator.dataStoreForUI == DataStoreGrdb) {
         return [prodMigrations arrayByAddingObjectsFromArray:@ [[OWS1XXGRDBMigration new]]];
     } else {
         return prodMigrations;

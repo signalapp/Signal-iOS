@@ -53,6 +53,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
             OWSLogError(@"storageMode: %@.", SSKFeatureFlags.storageModeDescription);                                  \
             OWSLogError(                                                                                               \
                 @"StorageCoordinatorState: %@.", NSStringFromStorageCoordinatorState(self.storageCoordinator.state));  \
+            OWSLogError(@"dataStoreForUI: %@.", NSStringForDataStore(StorageCoordinator.dataStoreForUI));              \
             switch (SSKFeatureFlags.storageModeStrictness) {                                                           \
                 case StorageModeStrictnessFail:                                                                        \
                     OWSFail(@"Unexpected YDB read.");                                                                  \
@@ -78,6 +79,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
             OWSLogError(@"storageMode: %@.", SSKFeatureFlags.storageModeDescription);                                  \
             OWSLogError(                                                                                               \
                 @"StorageCoordinatorState: %@.", NSStringFromStorageCoordinatorState(self.storageCoordinator.state));  \
+            OWSLogError(@"dataStoreForUI: %@.", NSStringForDataStore(StorageCoordinator.dataStoreForUI));              \
             switch (SSKFeatureFlags.storageModeStrictness) {                                                           \
                 case StorageModeStrictnessFail:                                                                        \
                     OWSFail(@"Unexpected YDB write.");                                                                 \
@@ -924,13 +926,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         // * The keychain has become corrupt.
         BOOL doesDBExist = [NSFileManager.defaultManager fileExistsAtPath:[self databaseFilePath]];
         if (doesDBExist) {
-            if (SSKFeatureFlags.storageMode == StorageModeYdb) {
-                OWSFail(@"Could not load database metadata");
-            } else if (SSKFeatureFlags.storageMode == StorageModeGrdb && ![SSKPreferences isYdbMigrated]) {
-                OWSFail(@"Could not load database metadata");
-            } else {
-                OWSFailDebug(@"Could not load database metadata");
-            }
+            OWSFail(@"Could not load database metadata");
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
         }
 

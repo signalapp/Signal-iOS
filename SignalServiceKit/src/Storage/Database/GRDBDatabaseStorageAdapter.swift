@@ -269,9 +269,11 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     private func assertCanRead() {
         if !databaseStorage.canReadFromGrdb {
-            Logger.error("storageMode: \(FeatureFlags.storageMode).")
+            Logger.error("storageMode: \(FeatureFlags.storageModeDescription).")
             Logger.error(
                 "StorageCoordinatorState: \(NSStringFromStorageCoordinatorState(storageCoordinator.state)).")
+            Logger.error(
+                "dataStoreForUI: \(NSStringForDataStore(StorageCoordinator.dataStoreForUI)).")
 
             switch FeatureFlags.storageModeStrictness {
             case .fail:
@@ -329,9 +331,11 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     @objc
     public func write(block: @escaping (GRDBWriteTransaction) -> Void) throws {
         if !databaseStorage.canWriteToGrdb {
-            Logger.error("storageMode: \(FeatureFlags.storageMode).")
+            Logger.error("storageMode: \(FeatureFlags.storageModeDescription).")
             Logger.error(
                 "StorageCoordinatorState: \(NSStringFromStorageCoordinatorState(storageCoordinator.state)).")
+            Logger.error(
+                "dataStoreForUI: \(NSStringForDataStore(StorageCoordinator.dataStoreForUI)).")
 
             switch FeatureFlags.storageModeStrictness {
             case .fail:

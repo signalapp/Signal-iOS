@@ -1342,7 +1342,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 
     [self.udManager setup];
 
-    if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+    if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
         [self.primaryStorage touchDbAsync];
     }
 

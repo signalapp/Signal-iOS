@@ -13,6 +13,7 @@
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/StorageCoordinator.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 
@@ -28,7 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
         // * Successfully completed launch process at least once in the post-SAE world.
         // * Successfully completed launch process at least once in the post-GRDB world.
         [OWSPreferences setIsYdbReadyForAppExtensions];
-        if (SSKFeatureFlags.storageMode == StorageModeGrdb) {
+
+        if (StorageCoordinator.dataStoreForUI == DataStoreGrdb) {
             [OWSPreferences setIsGrdbReadyForAppExtensions];
         }
     }

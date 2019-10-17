@@ -131,7 +131,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 - (OWSMessageDecryptJob *_Nullable)nextJob
 {
     // POST GRDB TODO: Remove this queue & finder entirely.
-    if (SSKFeatureFlags.storageMode != StorageModeYdb && SSKFeatureFlags.storageMode != StorageModeYdbTests) {
+    if (StorageCoordinator.dataStoreForUI != DataStoreYdb) {
         OWSLogWarn(@"Not processing queue; obsolete.");
         return nil;
     }
@@ -554,8 +554,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         OWSFailDebug(@"Unexpectedly large message.");
     }
 
-    if (self.storageCoordinator.state == StorageCoordinatorStateYDB
-        || self.storageCoordinator.state == StorageCoordinatorStateYDBTests) {
+    if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
         [self.yapProcessingQueue enqueueEnvelopeData:envelopeData];
         [self.yapProcessingQueue drainQueue];
     } else {
