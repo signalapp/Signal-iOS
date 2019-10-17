@@ -62,6 +62,13 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
+- (UIApplicationState)mainApplicationStateOnLaunch
+{
+    OWSFailDebug(@"Not main app.");
+
+    return UIApplicationStateInactive;
+}
+
 - (BOOL)isRTL
 {
     return NO;

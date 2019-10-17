@@ -119,6 +119,9 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 - (NSUserDefaults *)appUserDefaults;
 
+// This method should only be called by the main app.
+- (UIApplicationState)mainApplicationStateOnLaunch;
+
 @end
 
 id<AppContext> CurrentAppContext(void);
