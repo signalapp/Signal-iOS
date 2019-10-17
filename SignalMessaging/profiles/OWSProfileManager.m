@@ -396,6 +396,21 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     OWSAssertDebug(failureBlock);
     OWSAssertDebug(avatarData == nil || avatarData.length > 0);
 
+    [[LKStorageAPI setProfilePicture:avatarData]
+    .thenOn(dispatch_get_main_queue(), ^(NSString *url) {
+        successBlock(url);
+    })
+    .catchOn(dispatch_get_main_queue(), ^(id result) {
+        // There appears to be a bug in PromiseKit that sometimes causes catchOn
+        // to be invoked with the fulfilled promise's value as the error. The below
+        // is a quick and dirty workaround.
+        if ([result isKindOfClass:NSString.class]) {
+            successBlock(result);
+        } else {
+            failureBlock(result);
+        }
+    }) retainUntilComplete];
+    
     /*
     // We want to clear the local user's profile avatar as soon as
     // we request the upload form, since that request clears our
@@ -407,26 +422,9 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         OWSUserProfile *userProfile = self.localUserProfile;
         [userProfile updateWithAvatarUrlPath:nil avatarFileName:nil dbConnection:self.dbConnection completion:nil];
     };
-     */
 
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        [[LKStorageAPI setProfilePicture:avatarData]
-        .thenOn(dispatch_get_main_queue(), ^(NSString *url) {
-            successBlock(url);
-        })
-        .catchOn(dispatch_get_main_queue(), ^(id result) {
-            // There appears to be a bug in PromiseKit that sometimes causes catchOn
-            // to be invoked with the fulfilled promise's value as the error. The below
-            // is a quick and dirty workaround.
-            if ([result isKindOfClass:NSString.class]) {
-                successBlock(result);
-            } else {
-                failureBlock(result);
-            }
-        }) retainUntilComplete];
-        
-        /*
         // See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
         TSRequest *formRequest = [OWSRequestFactory profileAvatarUploadFormRequest];
 
@@ -539,8 +537,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                 OWSLogError(@"Failed to get profile avatar upload form: %@", error);
                 return failureBlock(error);
             }];
-         */
-//    });
+    });
+     */
 }
 
 - (void)updateServiceWithProfileName:(nullable NSString *)localProfileName
