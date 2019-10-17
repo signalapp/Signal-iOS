@@ -375,9 +375,21 @@ private struct GRDBStorage {
         var configuration = Configuration()
         configuration.readonly = false
         configuration.foreignKeysEnabled = true // Default is already true
-        configuration.trace = {
+        configuration.trace = { logString in
             if SDSDatabaseStorage.shouldLogDBQueries {
-                print($0)  // Prints all SQL statements
+                func filter(_ input: String) -> String {
+                    var result = input
+
+                    while let matchRange = result.range(of: "x'[0-9a-f\n]*'", options: .regularExpression) {
+                        let charCount = input.distance(from: matchRange.lowerBound, to: matchRange.upperBound)
+                        let byteCount = Int64(charCount) / 2
+                        let formattedByteCount = ByteCountFormatter.string(fromByteCount: byteCount, countStyle: .memory)
+                        result = result.replacingCharacters(in: matchRange, with: "x'<\(formattedByteCount)>'")
+                    }
+
+                    return result
+                }
+                print(filter(logString))
             }
         }
         configuration.label = "Modern (GRDB) Storage"      // Useful when your app opens multiple databases
