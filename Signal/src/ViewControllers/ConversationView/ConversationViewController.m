@@ -3032,7 +3032,7 @@ typedef enum : NSUInteger {
 
     [self dismissViewControllerAnimated:YES
                              completion:^{
-                                 OWSAssertDebug(self.isFirstResponder);
+//                                 OWSAssertDebug(self.isFirstResponder);
                                  if (@available(iOS 10, *)) {
                                      // do nothing
                                  } else {
@@ -3509,6 +3509,7 @@ typedef enum : NSUInteger {
     [gifAction setValue:gifImage forKey:@"image"];
     [actionSheet addAction:gifAction];
 
+    /*
     UIAlertAction *chooseDocumentAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(@"MEDIA_FROM_DOCUMENT_PICKER_BUTTON",
                                            @"action sheet button title when choosing attachment type")
@@ -3536,6 +3537,7 @@ typedef enum : NSUInteger {
         [chooseContactAction setValue:chooseContactImage forKey:@"image"];
         [actionSheet addAction:chooseContactAction];
     }
+     */
 
     [self dismissKeyBoard];
     [self presentAlert:actionSheet];

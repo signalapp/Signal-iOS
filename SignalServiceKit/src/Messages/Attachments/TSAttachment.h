@@ -32,6 +32,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 @property (nonatomic, readonly) NSString *contentType;
 @property (atomic, readwrite) BOOL isDownloaded;
 @property (nonatomic) TSAttachmentType attachmentType;
+@property (nonatomic) NSString *downloadURL;
 
 // Though now required, may incorrectly be 0 on legacy attachments.
 @property (nonatomic, readonly) UInt32 byteCount;

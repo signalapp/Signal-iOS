@@ -370,66 +370,19 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
         });
     };
 
-    if (attachmentPointer.serverId < 100) {
-        OWSLogError(@"Suspicious attachment id: %llu", (unsigned long long)attachmentPointer.serverId);
-    }
-    TSRequest *request = [OWSRequestFactory attachmentRequestWithAttachmentId:attachmentPointer.serverId];
-
-    [self.networkManager makeRequest:request
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-            if (![responseObject isKindOfClass:[NSDictionary class]]) {
-                OWSLogError(@"Failed retrieval of attachment. Response had unexpected format.");
-                NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
-                return markAndHandleFailure(error);
+    dispatch_async([OWSDispatch attachmentsQueue], ^{
+        [self downloadFromLocation:attachmentPointer.downloadURL
+            job:job
+            success:^(NSString *encryptedDataFilePath) {
+                [self decryptAttachmentPath:encryptedDataFilePath
+                          attachmentPointer:attachmentPointer
+                                    success:markAndHandleSuccess
+                                    failure:markAndHandleFailure];
             }
-            NSString *location = [(NSDictionary *)responseObject objectForKey:@"location"];
-            if (!location) {
-                OWSLogError(@"Failed retrieval of attachment. Response had no location.");
-                NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
-                return markAndHandleFailure(error);
-            }
-
-            dispatch_async([OWSDispatch attachmentsQueue], ^{
-                [self downloadFromLocation:location
-                    job:job
-                    success:^(NSString *encryptedDataFilePath) {
-                        [self decryptAttachmentPath:encryptedDataFilePath
-                                  attachmentPointer:attachmentPointer
-                                            success:markAndHandleSuccess
-                                            failure:markAndHandleFailure];
-                    }
-                    failure:^(NSURLSessionTask *_Nullable task, NSError *error) {
-                        if (attachmentPointer.serverId < 100) {
-                            // This looks like the symptom of the "frequent 404
-                            // downloading attachments with low server ids".
-                            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
-                            NSInteger statusCode = [httpResponse statusCode];
-                            OWSFailDebug(@"%d Failure with suspicious attachment id: %llu, %@",
-                                (int)statusCode,
-                                (unsigned long long)attachmentPointer.serverId,
-                                error);
-                        }
-                        markAndHandleFailure(error);
-                    }];
-            });
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-            if (!IsNSErrorNetworkFailure(error)) {
-                OWSProdError([OWSAnalyticsEvents errorAttachmentRequestFailed]);
-            }
-            OWSLogError(@"Failed retrieval of attachment with error: %@", error);
-            if (attachmentPointer.serverId < 100) {
-                // This _shouldn't_ be the symptom of the "frequent 404
-                // downloading attachments with low server ids".
-                NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
-                NSInteger statusCode = [httpResponse statusCode];
-                OWSFailDebug(@"%d Failure with suspicious attachment id: %llu, %@",
-                    (int)statusCode,
-                    (unsigned long long)attachmentPointer.serverId,
-                    error);
-            }
-            return markAndHandleFailure(error);
-        }];
+            failure:^(NSURLSessionTask *_Nullable task, NSError *error) {
+                markAndHandleFailure(error);
+            }];
+    });
 }
 
 - (void)decryptAttachmentPath:(NSString *)encryptedDataFilePath
@@ -530,7 +483,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     manager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 
     // We want to avoid large downloads from a compromised or buggy service.
-    const long kMaxDownloadSize = 150 * 1024 * 1024;
+    const long kMaxDownloadSize = 12 * 1024 * 1024;
     __block BOOL hasCheckedContentLength = NO;
 
     NSString *tempFilePath =

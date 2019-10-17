@@ -384,7 +384,7 @@ dispatch_queue_t NetworkManagerQueue()
 {
     OWSAssertDebug(failureBlock);
     OWSAssertDebug(request);
-    OWSAssertDebug(task);
+    // OWSAssertDebug(task);
     OWSAssertDebug(networkError);
 
     NSInteger statusCode = [task statusCode];

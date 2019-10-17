@@ -9,7 +9,7 @@ public class LokiDotNetAPI : NSObject {
 
     // MARK: Error
     public enum Error : Swift.Error {
-        case parsingFailed, decryptionFailed, signingFailed
+        case generic, parsingFailed, encryptionFailed, decryptionFailed, signingFailed
     }
 
     // MARK: Database
