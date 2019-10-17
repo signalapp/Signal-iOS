@@ -1515,11 +1515,8 @@ const CGFloat kIconViewLength = 24;
 {
     OWSLogDebug(@"");
 
-    MediaGalleryNavigationController *mediaGallery =
-        [MediaGalleryNavigationController showingTileViewWithThread:self.thread
-                                                            options:MediaGalleryOptionSliderEnabled];
-
-    [self presentViewController:mediaGallery animated:YES completion:nil];
+    MediaTileViewController *tileVC = [[MediaTileViewController alloc] initWithThread:self.thread];
+    [self.navigationController pushViewController:tileVC animated:YES];
 }
 
 - (void)tappedConversationSearch

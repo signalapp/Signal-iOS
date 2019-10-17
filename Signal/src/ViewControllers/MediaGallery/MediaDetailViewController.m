@@ -249,8 +249,9 @@ NS_ASSUME_NONNULL_BEGIN
         self.videoProgressBar = videoProgressBar;
         [self.view addSubview:videoProgressBar];
         [videoProgressBar autoPinWidthToSuperview];
-        [videoProgressBar autoPinToTopLayoutGuideOfViewController:self withInset:0];
+
         CGFloat kVideoProgressBarHeight = 44;
+        [videoProgressBar autoPinToTopLayoutGuideOfViewController:self withInset:kVideoProgressBarHeight];
         [videoProgressBar autoSetDimension:ALDimensionHeight toSize:kVideoProgressBarHeight];
 
         UIButton *playVideoButton = [UIButton new];

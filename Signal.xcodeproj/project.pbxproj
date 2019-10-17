@@ -375,7 +375,7 @@
 		452B999020A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452B998F20A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift */; };
 		452C468F1E427E200087B011 /* OutboundCallInitiator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452C468E1E427E200087B011 /* OutboundCallInitiator.swift */; };
 		452D1AF12081059C00A67F7F /* StringAdditionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452D1AF02081059C00A67F7F /* StringAdditionsTest.swift */; };
-		452EC6DF205E9E30000E787C /* MediaGalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EC6DE205E9E30000E787C /* MediaGalleryViewController.swift */; };
+		452EC6DF205E9E30000E787C /* MediaGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EC6DE205E9E30000E787C /* MediaGallery.swift */; };
 		452ECA4D1E087E7200E2F016 /* MessageFetcherJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452ECA4C1E087E7200E2F016 /* MessageFetcherJob.swift */; };
 		4535186B1FC635DD00210559 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4535186A1FC635DD00210559 /* ShareViewController.swift */; };
 		4535186E1FC635DD00210559 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4535186C1FC635DD00210559 /* MainInterface.storyboard */; };
@@ -531,7 +531,7 @@
 		4C586926224FAB83003FD070 /* AVAudioSession+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C586925224FAB83003FD070 /* AVAudioSession+OWS.m */; };
 		4C618199219DF03A009BD6B5 /* OWSButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C618198219DF03A009BD6B5 /* OWSButton.swift */; };
 		4C63550022F15A1E00A8ECE6 /* ConversationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6354FF22F15A1E00A8ECE6 /* ConversationItem.swift */; };
-		4C63550222F15A6700A8ECE6 /* DarkThemeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C63550122F15A6700A8ECE6 /* DarkThemeHeaderView.swift */; };
+		4C63550222F15A6700A8ECE6 /* ThemeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C63550122F15A6700A8ECE6 /* ThemeHeaderView.swift */; };
 		4C63CC00210A620B003AE45C /* SignalTSan.supp in Resources */ = {isa = PBXBuildFile; fileRef = 4C63CBFF210A620B003AE45C /* SignalTSan.supp */; };
 		4C6E446922AEDDEE007982E6 /* NewAccountDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6E446822AEDDEE007982E6 /* NewAccountDiscovery.swift */; };
 		4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */ = {isa = PBXBuildFile; fileRef = 4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */; };
@@ -1178,7 +1178,7 @@
 		452B998F20A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddContactShareToExistingContactViewController.swift; sourceTree = "<group>"; };
 		452C468E1E427E200087B011 /* OutboundCallInitiator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutboundCallInitiator.swift; sourceTree = "<group>"; };
 		452D1AF02081059C00A67F7F /* StringAdditionsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringAdditionsTest.swift; sourceTree = "<group>"; };
-		452EC6DE205E9E30000E787C /* MediaGalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryViewController.swift; sourceTree = "<group>"; };
+		452EC6DE205E9E30000E787C /* MediaGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGallery.swift; sourceTree = "<group>"; };
 		452ECA4C1E087E7200E2F016 /* MessageFetcherJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageFetcherJob.swift; sourceTree = "<group>"; };
 		453518681FC635DD00210559 /* SignalShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SignalShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		4535186A1FC635DD00210559 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
@@ -1337,7 +1337,7 @@
 		4C586925224FAB83003FD070 /* AVAudioSession+OWS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "AVAudioSession+OWS.m"; path = "util/UI Categories/AVAudioSession+OWS.m"; sourceTree = "<group>"; };
 		4C618198219DF03A009BD6B5 /* OWSButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSButton.swift; sourceTree = "<group>"; };
 		4C6354FF22F15A1E00A8ECE6 /* ConversationItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationItem.swift; sourceTree = "<group>"; };
-		4C63550122F15A6700A8ECE6 /* DarkThemeHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DarkThemeHeaderView.swift; sourceTree = "<group>"; };
+		4C63550122F15A6700A8ECE6 /* ThemeHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeHeaderView.swift; sourceTree = "<group>"; };
 		4C63CBFF210A620B003AE45C /* SignalTSan.supp */ = {isa = PBXFileReference; lastKnownFileType = text; path = SignalTSan.supp; sourceTree = "<group>"; };
 		4C6E446822AEDDEE007982E6 /* NewAccountDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAccountDiscovery.swift; sourceTree = "<group>"; };
 		4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */ = {isa = PBXFileReference; lastKnownFileType = text; path = SignalUBSan.supp; sourceTree = "<group>"; };
@@ -2543,7 +2543,7 @@
 			children = (
 				45B9EE9A200E91FB005D2F2D /* MediaDetailViewController.h */,
 				45B9EE9B200E91FB005D2F2D /* MediaDetailViewController.m */,
-				452EC6DE205E9E30000E787C /* MediaGalleryViewController.swift */,
+				452EC6DE205E9E30000E787C /* MediaGallery.swift */,
 				45F32C1D205718B000A300D5 /* MediaPageViewController.swift */,
 				454A84032059C787008B8C75 /* MediaTileViewController.swift */,
 				4CD675BF22E7BE47008010D2 /* Transitions */,
@@ -2684,7 +2684,7 @@
 				450D19121F85236600970622 /* RemoteVideoView.m */,
 				34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */,
 				4C043929220A9EC800BAEA63 /* VoiceNoteLock.swift */,
-				4C63550122F15A6700A8ECE6 /* DarkThemeHeaderView.swift */,
+				4C63550122F15A6700A8ECE6 /* ThemeHeaderView.swift */,
 			);
 			name = Views;
 			path = views;
@@ -3967,7 +3967,7 @@
 				8835DE03230DEC6A00DC6B66 /* AddToBlockListViewController.swift in Sources */,
 				34D1F0BD1F8D108C0066283D /* AttachmentUploadView.m in Sources */,
 				4C8A6DFE22E54AFA00469AE7 /* MediaInteractiveDismiss.swift in Sources */,
-				452EC6DF205E9E30000E787C /* MediaGalleryViewController.swift in Sources */,
+				452EC6DF205E9E30000E787C /* MediaGallery.swift in Sources */,
 				88D1D40622EF8F1100F472C5 /* ThreadDetailsCell.swift in Sources */,
 				34386A52207D0C01009F5D9C /* ConversationListCell.m in Sources */,
 				34DC9BD921543E0C00FDDCEC /* DebugContactsUtils.m in Sources */,
@@ -4070,7 +4070,7 @@
 				3496957121A301A100DCFE74 /* OWSBackupImportJob.m in Sources */,
 				34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */,
 				343A65951FC47D5E000477A1 /* DebugUISyncMessages.m in Sources */,
-				4C63550222F15A6700A8ECE6 /* DarkThemeHeaderView.swift in Sources */,
+				4C63550222F15A6700A8ECE6 /* ThemeHeaderView.swift in Sources */,
 				45C0DC1E1E69011F00E04C47 /* UIStoryboard+OWS.swift in Sources */,
 				452ECA4D1E087E7200E2F016 /* MessageFetcherJob.swift in Sources */,
 				4556FA681F54AA9500AF40DD /* DebugUIProfile.swift in Sources */,

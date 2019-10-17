@@ -4,7 +4,7 @@
 
 import Foundation
 
-public class DarkThemeHeaderView: UIView {
+public class ThemeHeaderView: UIView {
     // HACK: scrollbar incorrectly appears *behind* section headers
     // in collection view on iOS11 =(
     private class AlwaysOnTopLayer: CALayer {
@@ -41,20 +41,21 @@ public class DarkThemeHeaderView: UIView {
         return labelFont.pointSize / 17 * 28
     }
 
-    override init(frame: CGRect) {
+    init(alwaysDark: Bool = false) {
         label = UILabel()
-        label.textColor = Theme.darkThemeSecondaryTextAndIconColor
+        label.textColor = alwaysDark ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
         label.font = type(of: self).labelFont
 
-        let blurEffect = Theme.darkThemeBarBlurEffect
+        let blurEffect = alwaysDark ? Theme.darkThemeBarBlurEffect : Theme.barBlurEffect
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
 
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
-        super.init(frame: frame)
+        super.init(frame: .zero)
         self.preservesSuperviewLayoutMargins = true
 
-        self.backgroundColor = Theme.darkThemeNavbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
+        self.backgroundColor = (alwaysDark ? Theme.darkThemeNavbarBackgroundColor : Theme.navbarBackgroundColor)
+            .withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
 
         self.addSubview(blurEffectView)
         self.addSubview(label)
@@ -79,12 +80,12 @@ public class DarkThemeHeaderView: UIView {
     }
 }
 
-public class DarkThemeCollectionViewSectionHeader: UICollectionReusableView {
-    public static let reuseIdentifier = "DarkThemeCollectionViewSectionHeader"
+public class ThemeCollectionViewSectionHeader: UICollectionReusableView {
+    public class var reuseIdentifier: String { return "ThemeCollectionViewSectionHeader" }
 
-    private let headerView: DarkThemeHeaderView
+    fileprivate lazy var headerView = buildHeaderView()
+
     public override init(frame: CGRect) {
-        self.headerView = DarkThemeHeaderView(frame: frame)
         super.init(frame: frame)
         preservesSuperviewLayoutMargins = true
         addSubview(headerView)
@@ -103,14 +104,26 @@ public class DarkThemeCollectionViewSectionHeader: UICollectionReusableView {
     public func configure(title: String) {
         headerView.configure(title: title)
     }
+
+    fileprivate func buildHeaderView() -> ThemeHeaderView {
+        return ThemeHeaderView()
+    }
+}
+
+public class DarkThemeCollectionViewSectionHeader: ThemeCollectionViewSectionHeader {
+    public override class var reuseIdentifier: String { return "DarkThemeCollectionViewSectionHeader" }
+
+    override func buildHeaderView() -> ThemeHeaderView {
+        return ThemeHeaderView(alwaysDark: true)
+    }
 }
 
 public class DarkThemeTableSectionHeader: UITableViewHeaderFooterView {
     public static let reuseIdentifier = "DarkThemeTableSectionHeader"
-    private let headerView: DarkThemeHeaderView
+    private let headerView: ThemeHeaderView
 
     public override init(reuseIdentifier: String?) {
-        self.headerView = DarkThemeHeaderView(forAutoLayout: ())
+        self.headerView = ThemeHeaderView(alwaysDark: true)
         super.init(reuseIdentifier: reuseIdentifier)
         preservesSuperviewLayoutMargins = true
         contentView.addSubview(headerView)
