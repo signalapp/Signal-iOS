@@ -320,7 +320,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                                           // We populate an initial (empty) profile on launch of a new install, but
                                           // until we have a registered account, syncing will fail (and there could not
                                           // be any linked device to sync to at this point anyway).
-                                          if ([self.tsAccountManager isRegistered] && CurrentAppContext().isMainApp) {
+                                          if (self.tsAccountManager.isRegisteredPrimaryDevice
+                                              && CurrentAppContext().isMainApp) {
                                               [[self.syncManager syncLocalContact] retainUntilComplete];
                                           }
 
