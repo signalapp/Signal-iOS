@@ -151,6 +151,33 @@ NSString *NSStringForDataStore(DataStore value)
     BOOL hasUnmigratedYdbFile = (hasYdbFile && ![SSKPreferences isYdbMigrated]);
     BOOL isNewUser = !hasYdbFile && !hasGrdbFile;
 
+    // In the GRDB-possible modes, avoid migrations in certain cases.
+    switch (SSKFeatureFlags.storageMode) {
+        case StorageModeYdbForAll:
+            break;
+        case StorageModeGrdbForLegacyUsersOnly:
+        case StorageModeGrdbForNewUsersOnly:
+        case StorageModeGrdbForAll:
+        case StorageModeGrdbThrowawayIfMigrating:
+            if (hasUnmigratedYdbFile && !CurrentAppContext().isRunningTests) {
+                if (!CurrentAppContext().isMainApp) {
+                    // Don't migrate the database in an app extension.
+                    OWSLogInfo(@"Avoiding YDB-to-GRDB migration in app extension.");
+                    return DataStoreYdb;
+                }
+                if (CurrentAppContext().mainApplicationStateOnLaunch == UIApplicationStateBackground) {
+                    // Don't migrate the database if the app was launched into the background;
+                    // long migrations might prevent the user from receiving notifications and/or calls.
+                    OWSLogInfo(@"Avoiding YDB-to-GRDB migration in background.");
+                    return DataStoreYdb;
+                }
+            }
+            break;
+        case StorageModeYdbTests:
+        case StorageModeGrdbTests:
+            break;
+    }
+
     switch (SSKFeatureFlags.storageMode) {
         case StorageModeYdbForAll:
             return DataStoreYdb;

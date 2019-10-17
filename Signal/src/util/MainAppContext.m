@@ -21,6 +21,8 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 // POST GRDB TODO: Remove this
 @property (nonatomic) NSUUID *disposableDatabaseUUID;
 
+@property (nonatomic, readonly) UIApplicationState mainApplicationStateOnLaunch;
+
 @end
 
 #pragma mark -
@@ -44,6 +46,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
     _appLaunchTime = [NSDate new];
     _disposableDatabaseUUID = [NSUUID UUID];
+    _mainApplicationStateOnLaunch = [UIApplication sharedApplication].applicationState;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationWillEnterForeground:)
