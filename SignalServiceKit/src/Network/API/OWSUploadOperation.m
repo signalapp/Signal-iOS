@@ -15,6 +15,7 @@
 #import "TSNetworkManager.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <YapDatabase/YapDatabaseConnection.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -82,31 +83,13 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
     
     [self fireNotificationWithProgress:0];
 
-    OWSLogDebug(@"alloc attachment: %@", self.attachmentId);
-    TSRequest *request = [OWSRequestFactory allocAttachmentRequest];
-    [self.networkManager makeRequest:request
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-            if (![responseObject isKindOfClass:[NSDictionary class]]) {
-                OWSLogError(@"unexpected response from server: %@", responseObject);
-                NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
-                error.isRetryable = YES;
-                [self reportError:error];
-                return;
-            }
-
-            NSDictionary *responseDict = (NSDictionary *)responseObject;
-            UInt64 serverId = ((NSDecimalNumber *)[responseDict objectForKey:@"id"]).unsignedLongLongValue;
-            NSString *location = [responseDict objectForKey:@"location"];
-
-            dispatch_async([OWSDispatch attachmentsQueue], ^{
-                [self uploadWithServerId:serverId location:location attachmentStream:attachmentStream];
-            });
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-            OWSLogError(@"Failed to allocate attachment with error: %@", error);
-            error.isRetryable = YES;
-            [self reportError:error];
-        }];
+    [[LKStorageAPI uploadAttachment:attachmentStream withID:self.attachmentId]
+    .thenOn(dispatch_get_main_queue(), ^() {
+        [self reportSuccess];
+    })
+    .catchOn(dispatch_get_main_queue(), ^(NSError *error) {
+        [self reportError:error];
+    }) retainUntilComplete];
 }
 
 - (void)uploadWithServerId:(UInt64)serverId

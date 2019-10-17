@@ -3032,7 +3032,7 @@ typedef enum : NSUInteger {
 
     [self dismissViewControllerAnimated:YES
                              completion:^{
-                                 OWSAssertDebug(self.isFirstResponder);
+//                                 OWSAssertDebug(self.isFirstResponder);
                                  if (@available(iOS 10, *)) {
                                      // do nothing
                                  } else {
