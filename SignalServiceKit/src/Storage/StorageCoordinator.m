@@ -96,7 +96,11 @@ NSString *NSStringForDataStore(DataStore value)
 {
     BOOL prefersYdb = SSKFeatureFlags.storageMode == StorageModeYdbForAll;
     BOOL willUseYdb = StorageCoordinator.dataStoreForUI == DataStoreYdb;
-    BOOL hasValidGrdb = self.hasGrdbFile && [SSKPreferences isYdbMigrated];
+
+    BOOL hasValidGrdb = self.hasGrdbFile;
+    if (self.hasYdbFile && ![SSKPreferences isYdbMigrated]) {
+        hasValidGrdb = NO;
+    }
 
     // A check to avoid trying to revert to YDB when we've already migrated to GRDB.
     if ((prefersYdb || willUseYdb) && hasValidGrdb &&
