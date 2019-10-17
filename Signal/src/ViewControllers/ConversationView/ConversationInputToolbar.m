@@ -1214,6 +1214,17 @@ const CGFloat kMaxTextViewHeight = 98;
 
 #pragma mark - ConversationTextViewToolbarDelegate
 
+- (void)setBounds:(CGRect)bounds
+{
+    CGFloat oldHeight = self.bounds.size.height;
+
+    [super setBounds:bounds];
+
+    if (oldHeight != bounds.size.height) {
+        [self.inputToolbarDelegate updateToolbarHeight];
+    }
+}
+
 - (void)textViewDidChange:(UITextView *)textView
 {
     OWSAssertDebug(self.inputToolbarDelegate);

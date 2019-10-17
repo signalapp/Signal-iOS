@@ -633,6 +633,32 @@ typedef enum : NSUInteger {
     }];
 }
 
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+- (BOOL)becomeFirstResponder
+{
+    BOOL result = [super becomeFirstResponder];
+
+    // If we become the first responder, it means that the
+    // input toolbar is not the first responder. As such,
+    // we should clear out the desired keyboard since an
+    // interactive dismissal may have just occured and we
+    // need to update the UI to reflect that fact. We don't
+    // actually ever want to be the first responder, so resign
+    // immediately. We just want to know when the responder
+    // state of our children changed and that information is
+    // conveniently bubbled up the responder chain.
+    if (result) {
+        [self resignFirstResponder];
+        [self.inputToolbar clearDesiredKeyboard];
+    }
+
+    return result;
+}
+
 - (nullable UIView *)inputAccessoryView
 {
     return self.inputAccessoryPlaceholder;
@@ -1604,9 +1630,7 @@ typedef enum : NSUInteger {
     return [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithAddresses:self.thread.recipientAddresses
                                                               confirmationText:confirmationText
                                                                contactsManager:self.contactsManager
-                                                                    completion:^(BOOL didShowAlert) {
-                                                                        completionHandler(didShowAlert);
-                                                                    }
+                                                                    completion:completionHandler
                                                      beforePresentationHandler:nil];
 }
 
@@ -4196,6 +4220,20 @@ typedef enum : NSUInteger {
     [self presentFormSheetViewController:navigationController animated:YES completion:nil];
 }
 
+- (void)updateToolbarHeight
+{
+    [self updateInputAccessoryPlaceholderHeight];
+
+    // Normally, the keyboard frame change triggered by updating
+    // the bottom bar height will cause the content insets to reload.
+    // However, if the toolbar updates while it's not the first
+    // responder (e.g. dismissing a quoted reply) we need to preserve
+    // our constraints here.
+    if (!self.inputToolbar.isInputViewFirstResponder) {
+        [self updateContentInsetsAnimated:NO];
+    }
+}
+
 - (void)voiceMemoGestureDidStart
 {
     OWSAssertIsOnMainThread();
@@ -5158,22 +5196,30 @@ typedef enum : NSUInteger {
 }
 
 - (void)inputAccessoryPlaceholderKeyboardIsDismissingWithAnimationDuration:(NSTimeInterval)animationDuration
+                                                            animationCurve:(UIViewAnimationCurve)animationCurve
 {
-    [self handleKeyboardStateChange:animationDuration];
+    [self handleKeyboardStateChange:animationDuration animationCurve:animationCurve];
 }
 
 - (void)inputAccessoryPlaceholderKeyboardIsPresentingWithAnimationDuration:(NSTimeInterval)animationDuration
+                                                            animationCurve:(UIViewAnimationCurve)animationCurve
 {
-    [self handleKeyboardStateChange:animationDuration];
+    [self handleKeyboardStateChange:animationDuration animationCurve:animationCurve];
 }
 
-- (void)handleKeyboardStateChange:(NSTimeInterval)animationDuration
+- (void)handleKeyboardStateChange:(NSTimeInterval)animationDuration animationCurve:(UIViewAnimationCurve)animationCurve
 {
     if (self.shouldAnimateKeyboardChanges && animationDuration > 0) {
-        [UIView animateWithDuration:animationDuration
-                         animations:^{
-                             [self updateBottomBarPosition];
-                         }];
+        // The animation curve provided by the keyboard notifications
+        // is a private value not represented in UIViewAnimationOptions.
+        // We don't use a block based animation here because it's not
+        // possible to pass a curve directly to block animations.
+        [UIView beginAnimations:@"keyboardStateChange" context:nil];
+        [UIView setAnimationBeginsFromCurrentState:YES];
+        [UIView setAnimationCurve:animationCurve];
+        [UIView setAnimationDuration:animationDuration];
+        [self updateBottomBarPosition];
+        [UIView commitAnimations];
         [self updateContentInsetsAnimated:YES];
     } else {
         [self updateBottomBarPosition];
@@ -5207,12 +5253,18 @@ typedef enum : NSUInteger {
     [self.bottomBar addSubview:bottomView];
     [bottomView autoPinEdgesToSuperviewEdges];
 
-    [self.bottomBar layoutIfNeeded];
-
-    self.inputAccessoryPlaceholder.desiredHeight = self.bottomBar.height - self.bottomLayoutGuide.length;
-
-
+    [self updateInputAccessoryPlaceholderHeight];
     [self updateContentInsetsAnimated:self.viewHasEverAppeared];
+}
+
+- (void)updateInputAccessoryPlaceholderHeight
+{
+    OWSAssertIsOnMainThread();
+
+    // Apply any pending layout changes to ensure we're measuring the up-to-date height.
+    [self.bottomBar.superview layoutIfNeeded];
+
+    self.inputAccessoryPlaceholder.desiredHeight = self.bottomBar.height;
 }
 
 - (void)updateBottomBarPosition
@@ -5229,6 +5281,15 @@ typedef enum : NSUInteger {
 - (void)updateContentInsetsAnimated:(BOOL)animated
 {
     OWSAssertIsOnMainThread();
+
+    // Don't update the collection view insets if an interactive pop is in progress.
+    switch (self.navigationController.interactivePopGestureRecognizer.state) {
+        case UIGestureRecognizerStatePossible:
+        case UIGestureRecognizerStateFailed:
+            break;
+        default:
+            return;
+    }
 
     [self.view layoutIfNeeded];
 

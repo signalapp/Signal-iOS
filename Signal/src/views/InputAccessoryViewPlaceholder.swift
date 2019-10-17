@@ -6,8 +6,8 @@ import Foundation
 
 @objc
 protocol InputAccessoryViewPlaceholderDelegate: class {
-    func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval)
-    func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval)
+    func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve)
+    func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve)
     func inputAccessoryPlaceholderKeyboardIsDismissingInteractively()
 }
 
@@ -23,9 +23,9 @@ class InputAccessoryViewPlaceholder: UIView {
     @objc
     var keyboardOverlap: CGFloat {
         // Subtract our own height as this view is not actually
-        // visible, but is represnted in the keyboard.
+        // visible, but is represented in the keyboard.
 
-        let ownHeight = superview != nil ? frame.height : 0
+        let ownHeight = superview != nil ? desiredHeight : 0
 
         return max(0, visibleKeyboardHeight - ownHeight)
     }
@@ -65,12 +65,20 @@ class InputAccessoryViewPlaceholder: UIView {
     /// dismissals.
     @objc var desiredHeight: CGFloat {
         set {
-            frame.size.height = newValue
+            guard newValue != desiredHeight else { return }
+            heightConstraint.constant = newValue
         }
         get {
-            return frame.size.height
+            return heightConstraint.constant
         }
     }
+
+    private lazy var heightConstraint: NSLayoutConstraint = {
+        let view = UIView()
+        addSubview(view)
+        view.autoPinHeightToSuperview()
+        return view.autoSetDimension(.height, toSize: 0)
+    }()
 
     private enum KeyboardState {
         case dismissed
@@ -86,6 +94,7 @@ class InputAccessoryViewPlaceholder: UIView {
         // Disable user interaction, the accessory view
         // should never actually contain any UI.
         isUserInteractionEnabled = false
+        autoresizingMask = .flexibleHeight
 
         NotificationCenter.default.addObserver(
             self,
@@ -115,6 +124,10 @@ class InputAccessoryViewPlaceholder: UIView {
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override var intrinsicContentSize: CGSize {
+        return .zero
     }
 
     override func willMove(toSuperview newSuperview: UIView?) {
@@ -155,17 +168,21 @@ class InputAccessoryViewPlaceholder: UIView {
 
     @objc
     private func keyboardWillPresent(_ notification: Notification) {
-        // We could theoretically get the animation curve from the userInfo as well,
-        // but iOS 12+ uses a private value of 7 that is not associated with any
-        // public curves. We could technically translate this to an animation
-        // option without knowing the curve, but the default curve looks fine.
         guard let userInfo = notification.userInfo,
+            let beginFrame = userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? CGRect,
             let endFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
-            let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else { return }
+            let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval,
+            let rawAnimationCurve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int,
+            let animationCurve = UIView.AnimationCurve(rawValue: rawAnimationCurve) else {
+                return owsFailDebug("keyboard notification missing expected userInfo properties")
+        }
+
+        // Do nothing unless the height changed.
+        guard beginFrame.height != endFrame.height else { return }
 
         keyboardState = .presenting(height: endFrame.height)
 
-        delegate?.inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: animationDuration)
+        delegate?.inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: animationDuration, animationCurve: animationCurve)
     }
 
     @objc
@@ -176,11 +193,15 @@ class InputAccessoryViewPlaceholder: UIView {
     @objc
     private func keyboardWillDismiss(_ notification: Notification) {
         guard let userInfo = notification.userInfo,
-            let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else { return }
+            let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval,
+            let rawAnimationCurve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int,
+            let animationCurve = UIView.AnimationCurve(rawValue: rawAnimationCurve) else {
+                return owsFailDebug("keyboard notification missing expected userInfo properties")
+        }
 
         keyboardState = .dismissing
 
-        delegate?.inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: animationDuration)
+        delegate?.inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: animationDuration, animationCurve: animationCurve)
     }
 
     @objc
