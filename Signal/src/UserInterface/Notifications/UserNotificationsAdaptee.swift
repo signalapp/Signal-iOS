@@ -213,7 +213,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         }
 
         // Show notifications for any *other* thread than the currently selected thread
-        return conversationSplitVC.selectedThread?.uniqueId != notificationThreadId
+        return conversationSplitVC.visibleThread?.uniqueId != notificationThreadId
     }
 }
 

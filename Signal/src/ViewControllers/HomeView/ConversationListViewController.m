@@ -1400,7 +1400,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)deleteThread:(TSThread *)thread
 {
-    // If this conversation is currently visible, close it.
+    // If this conversation is currently selected, close it.
     if ([self.conversationSplitViewController.selectedThread.uniqueId isEqualToString:thread.uniqueId]) {
         [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
     }
@@ -1431,7 +1431,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     TSThread *thread = [self threadForIndexPath:indexPath];
 
-    // If this conversation is currently visible, close it.
+    // If this conversation is currently selected, close it.
     if ([self.conversationSplitViewController.selectedThread.uniqueId isEqualToString:thread.uniqueId]) {
         [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
     }
