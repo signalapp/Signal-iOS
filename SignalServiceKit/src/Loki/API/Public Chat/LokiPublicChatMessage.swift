@@ -29,6 +29,7 @@ public final class LokiPublicChatMessage : NSObject {
     }
     
     public struct Attachment {
+        public let serverID: UInt64
         public let kind: Kind
         public let width: UInt
         public let height: UInt
@@ -121,9 +122,9 @@ public final class LokiPublicChatMessage : NSObject {
     }
     
     // MARK: Convenience
-    @objc public func addAttachment(kind: String, width: UInt, height: UInt, caption: String, url: String, server: String, serverDisplayName: String) {
+    @objc public func addAttachment(serverID: UInt64, kind: String, width: UInt, height: UInt, caption: String, url: String, server: String, serverDisplayName: String) {
         guard let kind = Attachment.Kind(rawValue: kind) else { preconditionFailure() }
-        let attachment = Attachment(kind: kind, width: width, height: height, caption: caption, url: url, server: server, serverDisplayName: serverDisplayName)
+        let attachment = Attachment(serverID: serverID, kind: kind, width: width, height: height, caption: caption, url: url, server: server, serverDisplayName: serverDisplayName)
         attachments.append(attachment)
     }
     
@@ -135,6 +136,7 @@ public final class LokiPublicChatMessage : NSObject {
                 string += "\(quotedMessageServerID)"
             }
         }
+        string += attachments.map { "\($0.serverID)" }.joined(separator: "")
         string += "\(signatureVersion)"
         return string.data(using: String.Encoding.utf8)
     }
