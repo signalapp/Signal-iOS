@@ -1214,7 +1214,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             TSAttachmentStream *attachment = [TSAttachmentStream fetchObjectWithUniqueID:attachmentID];
             if (attachment == nil) { continue; }
             // TODO: Videos
-            [groupMessage addAttachmentWithServerID:attachment.serverId kind:@"photo" width:@(attachment.imageSize.width).unsignedIntValue height:@(attachment.imageSize.height).unsignedIntValue caption:attachment.caption url:attachment.downloadURL server:publicChat.server serverDisplayName:publicChat.displayName];
+            [groupMessage addAttachmentWithServerID:attachment.serverId kind:@"photo" width:@(attachment.imageSize.width).unsignedIntegerValue height:@(attachment.imageSize.height).unsignedIntegerValue caption:attachment.caption url:attachment.downloadURL server:publicChat.server serverDisplayName:publicChat.displayName];
         }
         [[LKPublicChatAPI sendMessage:groupMessage toGroup:publicChat.channel onServer:publicChat.server]
         .thenOn(OWSDispatch.sendingQueue, ^(LKGroupMessage *groupMessage) {

@@ -33,7 +33,7 @@ public final class LokiPublicChatMessage : NSObject {
         public let kind: Kind
         public let width: UInt
         public let height: UInt
-        public let caption: String
+        public let caption: String?
         public let url: String
         public let server: String
         public let serverDisplayName: String
@@ -47,7 +47,7 @@ public final class LokiPublicChatMessage : NSObject {
     }
     
     // MARK: Initialization
-    public init(serverID: UInt64?, hexEncodedPublicKey: String, displayName: String, body: String, type: String, timestamp: UInt64, quote: Quote?, signature: Signature?) {
+    public init(serverID: UInt64?, hexEncodedPublicKey: String, displayName: String, body: String, type: String, timestamp: UInt64, quote: Quote?, attachments: [Attachment], signature: Signature?) {
         self.serverID = serverID
         self.hexEncodedPublicKey = hexEncodedPublicKey
         self.displayName = displayName
@@ -55,6 +55,7 @@ public final class LokiPublicChatMessage : NSObject {
         self.type = type
         self.timestamp = timestamp
         self.quote = quote
+        self.attachments = attachments
         self.signature = signature
         super.init()
     }
@@ -73,7 +74,7 @@ public final class LokiPublicChatMessage : NSObject {
         } else {
             signature = nil
         }
-        self.init(serverID: nil, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: type, timestamp: timestamp, quote: quote, signature: signature)
+        self.init(serverID: nil, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: type, timestamp: timestamp, quote: quote, attachments: [], signature: signature)
     }
     
     // MARK: Crypto
@@ -88,7 +89,7 @@ public final class LokiPublicChatMessage : NSObject {
             return nil
         }
         let signature = Signature(data: signatureData, version: signatureVersion)
-        return LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: type, timestamp: timestamp, quote: quote, signature: signature)
+        return LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: type, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature)
     }
     
     internal func hasValidSignature() -> Bool {
@@ -109,9 +110,12 @@ public final class LokiPublicChatMessage : NSObject {
             value["sigver"] = signature.version
         }
         let annotation: JSON = [ "type" : type, "value" : value ]
-        let attachmentAnnotations: [JSON] = self.attachments.map { attachment in
-            let attachmentValue: JSON = [ "version" : 1, "type" : attachment.kind.rawValue, "width" : attachment.width, "height" : attachment.height,
-                "title" : attachment.caption, "url" : attachment.url, "provider_name" : attachment.serverDisplayName, "provider_url" : attachment.server ]
+        let attachmentAnnotations: [JSON] = attachments.map { attachment in
+            var attachmentValue: JSON = [ "version" : 1, "type" : attachment.kind.rawValue, "width" : attachment.width, "height" : attachment.height,
+                "url" : attachment.url, "provider_name" : attachment.serverDisplayName, "provider_url" : attachment.server ]
+            if let caption = attachment.caption {
+                attachmentValue["title"] = attachment.caption
+            }
             return [ "type" : attachmentType, "value" : attachmentValue ]
         }
         var result: JSON = [ "text" : body, "annotations": [ annotation ] + attachmentAnnotations ]
@@ -122,7 +126,7 @@ public final class LokiPublicChatMessage : NSObject {
     }
     
     // MARK: Convenience
-    @objc public func addAttachment(serverID: UInt64, kind: String, width: UInt, height: UInt, caption: String, url: String, server: String, serverDisplayName: String) {
+    @objc public func addAttachment(serverID: UInt64, kind: String, width: UInt, height: UInt, caption: String?, url: String, server: String, serverDisplayName: String) {
         guard let kind = Attachment.Kind(rawValue: kind) else { preconditionFailure() }
         let attachment = Attachment(serverID: serverID, kind: kind, width: width, height: height, caption: caption, url: url, server: server, serverDisplayName: serverDisplayName)
         attachments.append(attachment)
