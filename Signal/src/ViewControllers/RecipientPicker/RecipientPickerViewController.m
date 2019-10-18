@@ -1058,8 +1058,10 @@ const NSUInteger kMinimumSearchLength = 2;
     __block ComposeScreenSearchResultSet *searchResults;
     [self.databaseStorage
         asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-            searchResults = [self.fullTextSearcher searchForComposeScreenWithSearchText:searchText
-                                                                            transaction:transaction];
+            searchResults =
+                [self.fullTextSearcher searchForComposeScreenWithSearchText:searchText
+                                                                 maxResults:FullTextSearcher.kDefaultMaxResults
+                                                                transaction:transaction];
         }
         completion:^{
             __typeof(self) strongSelf = weakSelf;
