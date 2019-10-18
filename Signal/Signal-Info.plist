@@ -7,7 +7,7 @@
 		<key>CarthageVersion</key>
 		<string>0.33.0</string>
 		<key>OSXVersion</key>
-		<string>10.15</string>
+		<string>10.14.6</string>
 		<key>WebRTCCommit</key>
 		<string>221d40f3c38b2aacc04aa2f912c3000ff381971d Production build of v0.1.4</string>
 	</dict>

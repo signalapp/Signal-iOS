@@ -126,6 +126,14 @@ NSUInteger const SignalAccountSchemaVersion = 1;
         [NSObject isNullableObject:self.multipleAccountLabelText equalTo:otherSignalAccount.multipleAccountLabelText]);
 }
 
+- (NSUInteger)hash
+{
+    OWSFailDebug(@"We should never hash instances of this class.");
+
+    return (self.recipientPhoneNumber.hash ^ self.recipientUUID.hash ^ self.contact.hash
+        ^ self.multipleAccountLabelText.hash);
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
