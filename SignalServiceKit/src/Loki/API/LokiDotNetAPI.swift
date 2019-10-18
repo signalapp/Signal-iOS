@@ -38,27 +38,34 @@ public class LokiDotNetAPI : NSObject {
 
     // MARK: Attachments (Public API)
     public static func uploadAttachment(_ attachment: TSAttachmentStream, with attachmentID: String, to server: String) -> Promise<Void> {
+        let isEncryptionRequired = (server == LokiStorageAPI.server)
         return Promise<Void>() { seal in
             getAuthToken(for: server).done { token in
-                // Encrypt the attachment
+                let data: Data
                 guard let unencryptedAttachmentData = try? attachment.readDataFromFile() else {
                     print("[Loki] Couldn't read attachment data from disk.")
                     return seal.reject(Error.generic)
                 }
-                var encryptionKey = NSData()
-                var digest = NSData()
-                guard let encryptedAttachmentData = Cryptography.encryptAttachmentData(unencryptedAttachmentData, outKey: &encryptionKey, outDigest: &digest) else {
-                    print("[Loki] Couldn't encrypt attachment.")
-                    return seal.reject(Error.encryptionFailed)
+                // Encrypt the attachment if needed
+                if isEncryptionRequired {
+                    var encryptionKey = NSData()
+                    var digest = NSData()
+                    guard let encryptedAttachmentData = Cryptography.encryptAttachmentData(unencryptedAttachmentData, outKey: &encryptionKey, outDigest: &digest) else {
+                        print("[Loki] Couldn't encrypt attachment.")
+                        return seal.reject(Error.encryptionFailed)
+                    }
+                    attachment.encryptionKey = encryptionKey as Data
+                    attachment.digest = digest as Data
+                    data = encryptedAttachmentData
+                } else {
+                    data = unencryptedAttachmentData
                 }
-                attachment.encryptionKey = encryptionKey as Data
-                attachment.digest = digest as Data
                 // Create the request
                 let url = "\(server)/files"
                 let parameters: JSON = [ "type" : attachmentType, "Content-Type" : "application/binary" ]
                 var error: NSError?
                 var request = AFHTTPRequestSerializer().multipartFormRequest(withMethod: "POST", urlString: url, parameters: parameters, constructingBodyWith: { formData in
-                    formData.appendPart(withFileData: encryptedAttachmentData, name: "content", fileName: UUID().uuidString, mimeType: "application/binary")
+                    formData.appendPart(withFileData: data, name: "content", fileName: UUID().uuidString, mimeType: "application/binary")
                 }, error: &error)
                 request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
                 if let error = error {
