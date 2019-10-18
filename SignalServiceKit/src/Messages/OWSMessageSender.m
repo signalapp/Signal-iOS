@@ -480,6 +480,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             [message anyRemoveWithTransaction:transaction];
+            [message removeTemporaryAttachmentsWithTransaction:transaction];
         }];
     };
 
@@ -490,6 +491,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             [message anyRemoveWithTransaction:transaction];
+            [message removeTemporaryAttachmentsWithTransaction:transaction];
         }];
     };
 

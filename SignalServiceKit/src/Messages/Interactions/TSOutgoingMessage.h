@@ -170,6 +170,8 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueTh
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                        expiresInSeconds:(uint32_t)expiresInSeconds;
 
+- (void)removeTemporaryAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction;
+
 @property (nonatomic, readonly) TSOutgoingMessageState messageState;
 
 @property (nonatomic, readonly) BOOL wasDeliveredToAnyRecipient;
