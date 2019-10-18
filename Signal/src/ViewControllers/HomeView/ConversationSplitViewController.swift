@@ -103,10 +103,6 @@ class ConversationSplitViewController: UISplitViewController {
         // can maintain its scroll position when navigating back.
         conversationListVC.lastViewedThread = thread
 
-        // Close any currently open conversation so we don't end up
-        // with multiple conversations in the nav stack.
-        closeSelectedConversation(animated: animated)
-
         let vc = ConversationViewController()
         vc.configure(for: thread, action: action, focusMessageId: focusMessageId)
 
@@ -124,6 +120,31 @@ class ConversationSplitViewController: UISplitViewController {
         } else {
             UIView.performWithoutAnimation { showDetailViewController(detailVC, sender: self) }
         }
+    }
+
+    // The stock implementation of `showDetailViewController` will in some cases,
+    // particularly when launching a conversation from another window, fail to
+    // recognize the right context to present the view controller. When this happens,
+    // it presents the view modally instead of within the split view controller.
+    // We never want this to happen, so we implement a version that knows the
+    // correct context is always the split view controller.
+    private weak var currentDetailViewController: UIViewController?
+    override func showDetailViewController(_ vc: UIViewController, sender: Any?) {
+        if isCollapsed {
+            var viewControllersToDisplay = primaryNavController.viewControllers
+            // If we already have a detail VC displayed, we want to replace it.
+            // The normal behavior of `showDetailViewController` pushes on
+            // top of it in collapsed mode.
+            if let currentDetailVC = currentDetailViewController,
+                let detailVCIndex = viewControllersToDisplay.firstIndex(of: currentDetailVC) {
+                viewControllersToDisplay = Array(viewControllersToDisplay[0..<detailVCIndex])
+            }
+            viewControllersToDisplay.append(vc)
+            primaryNavController.setViewControllers(viewControllersToDisplay, animated: true)
+        } else {
+            viewControllers[1] = vc
+        }
+        currentDetailViewController = vc
     }
 }
 
