@@ -127,6 +127,27 @@ public class ManageStickersViewController: OWSTableViewController {
         updateMapWithOldSources(&oldInstalledSources, installedStickerPackSources)
         updateMapWithOldSources(&oldInstalledSources, availableBuiltInStickerPackSources)
         updateMapWithOldSources(&oldTransientSources, knownStickerPackSources)
+
+        var installedStickerPacks = [StickerPack]()
+        var availableBuiltInStickerPacks = [StickerPack]()
+        var availableKnownStickerPacks = [KnownStickerPack]()
+        self.databaseStorage.read { (transaction) in
+            let allPacks = StickerManager.allStickerPacks(transaction: transaction)
+            let allPackInfos = allPacks.map { $0.info }
+
+            // Only show packs with installed covers.
+            let packsWithCovers = allPacks.filter {
+                StickerManager.isStickerInstalled(stickerInfo: $0.coverInfo,
+                                                  transaction: transaction)
+            }
+            // Sort sticker packs by "date saved, descending" so that we feature
+            // packs that the user has just learned about.
+            installedStickerPacks = packsWithCovers.filter { $0.isInstalled }
+            availableBuiltInStickerPacks = packsWithCovers.filter { !$0.isInstalled && StickerManager.isDefaultStickerPack($0.info) }
+            let allKnownStickerPacks = StickerManager.allKnownStickerPacks(transaction: transaction)
+            availableKnownStickerPacks = allKnownStickerPacks.filter { !allPackInfos.contains($0.info) }
+        }
+
         let installedSource = { (info: StickerPackInfo) -> StickerPackDataSource in
             if let source = oldInstalledSources[info] {
                 return source
@@ -145,37 +166,20 @@ public class ManageStickersViewController: OWSTableViewController {
             source.add(delegate: self)
             return source
         }
-
-        self.databaseStorage.read { (transaction) in
-            let allPacks = StickerManager.allStickerPacks(transaction: transaction)
-            let allPackInfos = allPacks.map { $0.info }
-
-            // Only show packs with installed covers.
-            let packsWithCovers = allPacks.filter {
-                StickerManager.isStickerInstalled(stickerInfo: $0.coverInfo,
-                                                  transaction: transaction)
-            }
-            // Sort sticker packs by "date saved, descending" so that we feature
-            // packs that the user has just learned about.
-            let installedStickerPacks = packsWithCovers.filter { $0.isInstalled }
-            let availableBuiltInStickerPacks = packsWithCovers.filter { !$0.isInstalled && StickerManager.isDefaultStickerPack($0.info) }
-            self.installedStickerPackSources = installedStickerPacks.sorted {
-                $0.dateCreated > $1.dateCreated
-                }.map { installedSource($0.info) }
-            let sortAvailablePacks = { (pack0: StickerPack, pack1: StickerPack) -> Bool in
-                return pack0.dateCreated > pack1.dateCreated
-            }
-            self.availableBuiltInStickerPackSources = availableBuiltInStickerPacks.sorted(by: sortAvailablePacks)
-            .map { installedSource($0.info) }
-
-            let sortKnownPacks = { (pack0: KnownStickerPack, pack1: KnownStickerPack) -> Bool in
-                return pack0.dateCreated > pack1.dateCreated
-            }
-            let allKnownStickerPacks = StickerManager.allKnownStickerPacks(transaction: transaction)
-            let availableKnownStickerPacks = allKnownStickerPacks.filter { !allPackInfos.contains($0.info) }
-            self.knownStickerPackSources = availableKnownStickerPacks.sorted(by: sortKnownPacks)
-                .map { transientSource($0.info) }
+        let sortAvailablePacks = { (pack0: StickerPack, pack1: StickerPack) -> Bool in
+            return pack0.dateCreated > pack1.dateCreated
         }
+        let sortKnownPacks = { (pack0: KnownStickerPack, pack1: KnownStickerPack) -> Bool in
+            return pack0.dateCreated > pack1.dateCreated
+        }
+
+        self.installedStickerPackSources = installedStickerPacks.sorted {
+            $0.dateCreated > $1.dateCreated
+            }.map { installedSource($0.info) }
+        self.availableBuiltInStickerPackSources = availableBuiltInStickerPacks.sorted(by: sortAvailablePacks)
+            .map { installedSource($0.info) }
+        self.knownStickerPackSources = availableKnownStickerPacks.sorted(by: sortKnownPacks)
+            .map { transientSource($0.info) }
 
         updateTableContents()
     }
