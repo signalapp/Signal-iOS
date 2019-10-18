@@ -21,7 +21,7 @@ public class SDSDatabaseStorage: SDSTransactable {
 
     private weak var delegate: SDSDatabaseStorageDelegate?
 
-    static public var shouldLogDBQueries: Bool = true
+    static public var shouldLogDBQueries: Bool = FeatureFlags.logSQLQueries
 
     private var hasPendingCrossProcessWrite = false
 

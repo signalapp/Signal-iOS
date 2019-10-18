@@ -389,7 +389,7 @@ private struct GRDBStorage {
 
                     return result
                 }
-                print(filter(logString))
+                Logger.info(filter(logString))
             }
         }
         configuration.label = "Modern (GRDB) Storage"      // Useful when your app opens multiple databases
