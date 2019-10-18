@@ -1210,6 +1210,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
         LKGroupMessage *groupMessage = [[LKGroupMessage alloc] initWithHexEncodedPublicKey:userHexEncodedPublicKey displayName:displayName body:message.body type:LKPublicChatAPI.publicChatMessageType
          timestamp:message.timestamp quotedMessageTimestamp:quoteID quoteeHexEncodedPublicKey:quoteeHexEncodedPublicKey quotedMessageBody:quote.body quotedMessageServerID:quotedMessageServerID signatureData:nil signatureVersion:0];
+        for (NSString *attachmentID in message.attachmentIds) {
+            TSAttachmentStream *attachment = [TSAttachmentStream fetchObjectWithUniqueID:attachmentID];
+            if (attachment == nil) { continue; }
+            // TODO: Videos
+            [groupMessage addAttachmentWithKind:@"photo" width:@(attachment.imageSize.width).unsignedIntValue height:@(attachment.imageSize.height).unsignedIntValue caption:attachment.caption url:attachment.downloadURL server:publicChat.server serverDisplayName:publicChat.displayName];
+        }
         [[LKPublicChatAPI sendMessage:groupMessage toGroup:publicChat.channel onServer:publicChat.server]
         .thenOn(OWSDispatch.sendingQueue, ^(LKGroupMessage *groupMessage) {
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {

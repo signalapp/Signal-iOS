@@ -10,6 +10,7 @@ public final class LokiPublicChatMessage : NSObject {
     public let timestamp: UInt64
     public let type: String
     public let quote: Quote?
+    public var attachments: [Attachment] = []
     public let signature: Signature?
     
     @objc(serverID)
@@ -17,6 +18,7 @@ public final class LokiPublicChatMessage : NSObject {
     
     // MARK: Settings
     private let signatureVersion: UInt64 = 1
+    private let attachmentType = "net.app.core.oembed"
     
     // MARK: Types
     public struct Quote {
@@ -24,6 +26,18 @@ public final class LokiPublicChatMessage : NSObject {
         public let quoteeHexEncodedPublicKey: String
         public let quotedMessageBody: String
         public let quotedMessageServerID: UInt64?
+    }
+    
+    public struct Attachment {
+        public let kind: Kind
+        public let width: UInt
+        public let height: UInt
+        public let caption: String
+        public let url: String
+        public let server: String
+        public let serverDisplayName: String
+        
+        public enum Kind : String { case photo, video }
     }
     
     public struct Signature {
@@ -94,7 +108,12 @@ public final class LokiPublicChatMessage : NSObject {
             value["sigver"] = signature.version
         }
         let annotation: JSON = [ "type" : type, "value" : value ]
-        var result: JSON = [ "text" : body, "annotations": [ annotation ] ]
+        let attachmentAnnotations: [JSON] = self.attachments.map { attachment in
+            let attachmentValue: JSON = [ "version" : 1, "type" : attachment.kind.rawValue, "width" : attachment.width, "height" : attachment.height,
+                "title" : attachment.caption, "url" : attachment.url, "provider_name" : attachment.serverDisplayName, "provider_url" : attachment.server ]
+            return [ "type" : attachmentType, "value" : attachmentValue ]
+        }
+        var result: JSON = [ "text" : body, "annotations": [ annotation ] + attachmentAnnotations ]
         if let quotedMessageServerID = quote?.quotedMessageServerID {
             result["reply_to"] = quotedMessageServerID
         }
@@ -102,6 +121,12 @@ public final class LokiPublicChatMessage : NSObject {
     }
     
     // MARK: Convenience
+    @objc public func addAttachment(kind: String, width: UInt, height: UInt, caption: String, url: String, server: String, serverDisplayName: String) {
+        guard let kind = Attachment.Kind(rawValue: kind) else { preconditionFailure() }
+        let attachment = Attachment(kind: kind, width: width, height: height, caption: caption, url: url, server: server, serverDisplayName: serverDisplayName)
+        attachments.append(attachment)
+    }
+    
     private func getValidationData(for signatureVersion: UInt64) -> Data? {
         var string = "\(body.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines))\(timestamp)"
         if let quote = quote {
