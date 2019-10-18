@@ -113,6 +113,19 @@ NSUInteger const SignalAccountSchemaVersion = 1;
     return [[SignalServiceAddress alloc] initWithUuidString:self.recipientUUID phoneNumber:self.recipientPhoneNumber];
 }
 
+- (BOOL)isEqual:(id)other
+{
+    if (![other isKindOfClass:[SignalAccount class]]) {
+        return NO;
+    }
+
+    SignalAccount *otherSignalAccount = (SignalAccount *)other;
+    return ([NSObject isNullableObject:self.recipientPhoneNumber equalTo:otherSignalAccount.recipientPhoneNumber] &&
+        [NSObject isNullableObject:self.recipientUUID equalTo:otherSignalAccount.recipientUUID] &&
+        [NSObject isNullableObject:self.contact equalTo:otherSignalAccount.contact] &&
+        [NSObject isNullableObject:self.multipleAccountLabelText equalTo:otherSignalAccount.multipleAccountLabelText]);
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

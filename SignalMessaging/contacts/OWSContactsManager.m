@@ -539,20 +539,20 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             }
         }
 
-        NSMutableDictionary<NSString *, SignalAccount *> *oldSignalAccounts = [NSMutableDictionary new];
+        NSMutableDictionary<SignalServiceAddress *, SignalAccount *> *oldSignalAccounts = [NSMutableDictionary new];
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             [SignalAccount anyEnumerateWithTransaction:transaction
                                                  block:^(SignalAccount *signalAccount, BOOL *stop) {
-                                                     oldSignalAccounts[signalAccount.uniqueId] = signalAccount;
+                                                     oldSignalAccounts[signalAccount.recipientAddress] = signalAccount;
                                                  }];
         }];
 
-        NSMutableArray *accountsToSave = [NSMutableArray new];
+        NSMutableArray<SignalAccount *> *accountsToSave = [NSMutableArray new];
         for (SignalAccount *signalAccount in signalAccounts) {
-            SignalAccount *_Nullable oldSignalAccount = oldSignalAccounts[signalAccount.uniqueId];
+            SignalAccount *_Nullable oldSignalAccount = oldSignalAccounts[signalAccount.recipientAddress];
 
             // keep track of which accounts are still relevant, so we can clean up orphans
-            [oldSignalAccounts removeObjectForKey:signalAccount.uniqueId];
+            [oldSignalAccounts removeObjectForKey:signalAccount.recipientAddress];
 
             if (oldSignalAccount == nil) {
                 // new Signal Account
@@ -588,7 +588,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                 }
             } else {
                 // In theory we want to remove SignalAccounts if the user deletes the corresponding system contact.
-                // However, as of iOS11.2 CNContactStore occasionally gives us only a subset of the system contacts.
+                // However, as of iOS 11.2 CNContactStore occasionally gives us only a subset of the system contacts.
                 // Because of that, it's not safe to clear orphaned accounts.
                 // Because we still want to give users a way to clear their stale accounts, if they pull-to-refresh
                 // their contacts we'll clear the cached ones.
