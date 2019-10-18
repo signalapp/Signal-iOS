@@ -141,8 +141,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     DispatchMainThreadSafe(^{
-        if (self.conversationSplitViewController.selectedThread) {
-            if ([self.conversationSplitViewController.selectedThread.uniqueId isEqualToString:thread.uniqueId]) {
+        if (self.conversationSplitViewController.visibleThread) {
+            if ([self.conversationSplitViewController.visibleThread.uniqueId isEqualToString:thread.uniqueId]) {
                 [self.conversationSplitViewController.selectedConversationViewController popKeyBoard];
                 return;
             }
@@ -173,8 +173,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     DispatchMainThreadSafe(^{
-        if (self.conversationSplitViewController.selectedThread) {
-            if ([self.conversationSplitViewController.selectedThread.uniqueId isEqualToString:thread.uniqueId]) {
+        if (self.conversationSplitViewController.visibleThread) {
+            if ([self.conversationSplitViewController.visibleThread.uniqueId isEqualToString:thread.uniqueId]) {
                 [self.conversationSplitViewController.selectedConversationViewController
                     scrollToFirstUnreadMessage:isAnimated];
                 return;
