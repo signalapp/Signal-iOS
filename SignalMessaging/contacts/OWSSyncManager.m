@@ -292,10 +292,13 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                               skipIfRedundant:(BOOL)skipIfRedundant
                                      debounce:(BOOL)debounce
 {
+    if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
+        return [AnyPromise promiseWithValue:OWSErrorMakeAssertionError(@"should not sync from secondary device")];
+    }
+
     AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
         [AppReadiness runNowOrWhenAppDidBecomeReady:^{
             dispatch_async(self.serialQueue, ^{
-                OWSAssertDebug(self.tsAccountManager.isRegisteredPrimaryDevice);
                 if (debounce && self.isRequestInFlight) {
                     // De-bounce.  It's okay if we ignore some new changes;
                     // `sendSyncContactsMessageIfPossible` is called fairly
