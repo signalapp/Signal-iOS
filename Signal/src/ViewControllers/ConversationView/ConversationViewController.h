@@ -33,6 +33,15 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 - (void)peekSetup;
 - (void)popped;
 
+#pragma mark - Keyboard Shortcuts
+
+- (void)showConversationSettings;
+- (void)focusInputToolbar;
+- (void)openAllMedia;
+- (void)openStickerKeyboard;
+- (void)openAttachmentKeyboard;
+- (void)openGifSearch;
+
 @end
 
 #pragma mark - Internal Methods. Used in extensions

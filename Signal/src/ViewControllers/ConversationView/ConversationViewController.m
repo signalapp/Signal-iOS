@@ -1748,7 +1748,42 @@ typedef enum : NSUInteger {
     settingsVC.conversationSettingsViewDelegate = self;
     [settingsVC configureWithThread:self.thread];
     settingsVC.showVerificationOnAppear = showVerification;
-    [self.navigationController pushViewController:settingsVC animated:YES];
+
+    [self.navigationController setViewControllers:[self.viewControllersUpToSelf arrayByAddingObject:settingsVC]
+                                         animated:YES];
+}
+
+- (void)showConversationSettingsAndShowAllMedia
+{
+    OWSConversationSettingsViewController *settingsVC = [OWSConversationSettingsViewController new];
+    settingsVC.conversationSettingsViewDelegate = self;
+    [settingsVC configureWithThread:self.thread];
+
+    MediaTileViewController *allMedia = [[MediaTileViewController alloc] initWithThread:self.thread];
+
+    [self.navigationController
+        setViewControllers:[self.viewControllersUpToSelf arrayByAddingObjectsFromArray:@[ settingsVC, allMedia ]]
+                  animated:YES];
+}
+
+- (NSArray<UIViewController *> *)viewControllersUpToSelf
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(self.navigationController);
+
+    if (self.navigationController.topViewController == self) {
+        return self.navigationController.viewControllers;
+    }
+
+    NSArray *viewControllers = self.navigationController.viewControllers;
+    NSUInteger index = [viewControllers indexOfObject:self];
+
+    if (index == NSNotFound) {
+        OWSFailDebug(@"Unexpectedly missing from view hierarhy");
+        return viewControllers;
+    }
+
+    return [viewControllers subarrayWithRange:NSMakeRange(0, index + 1)];
 }
 
 #pragma mark - DisappearingTimerConfigurationViewDelegate
@@ -5336,6 +5371,44 @@ typedef enum : NSUInteger {
     } else {
         [UIView performWithoutAnimation:adjustInsets];
     }
+}
+
+#pragma mark - Keyboard Shortcuts
+
+- (void)focusInputToolbar
+{
+    OWSAssertIsOnMainThread();
+
+    [self.inputToolbar clearDesiredKeyboard];
+    [self popKeyBoard];
+}
+
+- (void)openAllMedia
+{
+    OWSAssertIsOnMainThread();
+
+    [self showConversationSettingsAndShowAllMedia];
+}
+
+- (void)openStickerKeyboard
+{
+    OWSAssertIsOnMainThread();
+
+    [self.inputToolbar showStickerKeyboard];
+}
+
+- (void)openAttachmentKeyboard
+{
+    OWSAssertIsOnMainThread();
+
+    [self.inputToolbar showAttachmentKeyboard];
+}
+
+- (void)openGifSearch
+{
+    OWSAssertIsOnMainThread();
+
+    [self showGifPicker];
 }
 
 @end

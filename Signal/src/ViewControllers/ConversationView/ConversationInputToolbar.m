@@ -1212,6 +1212,24 @@ const CGFloat kMaxTextViewHeight = 98;
     }
 }
 
+- (void)showStickerKeyboard
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.desiredKeyboardType != KeyboardType_Sticker) {
+        [self toggleKeyboardType:KeyboardType_Sticker];
+    }
+}
+
+- (void)showAttachmentKeyboard
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.desiredKeyboardType != KeyboardType_Attachment) {
+        [self toggleKeyboardType:KeyboardType_Attachment];
+    }
+}
+
 #pragma mark - ConversationTextViewToolbarDelegate
 
 - (void)setBounds:(CGRect)bounds

@@ -751,9 +751,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         OWSAssertDebug(avatarImage);
 
         UIButton *avatarButton = [AvatarImageButton buttonWithType:UIButtonTypeCustom];
-        [avatarButton addTarget:self
-                         action:@selector(settingsButtonPressed:)
-               forControlEvents:UIControlEventTouchUpInside];
+        [avatarButton addTarget:self action:@selector(showAppSettings) forControlEvents:UIControlEventTouchUpInside];
         [avatarButton setImage:avatarImage forState:UIControlStateNormal];
         [avatarButton autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
         [avatarButton autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
@@ -766,7 +764,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         settingsButton = [[UIBarButtonItem alloc] initWithImage:image
                                                           style:UIBarButtonItemStylePlain
                                                          target:self
-                                                         action:@selector(settingsButtonPressed:)
+                                                         action:@selector(showAppSettings)
                                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"settings")];
     }
     settingsButton.accessibilityLabel = CommonStrings.openSettingsButton;
@@ -790,12 +788,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     } else {
         self.navigationItem.rightBarButtonItems = @[ compose ];
     }
-}
-
-- (void)settingsButtonPressed:(id)sender
-{
-    OWSNavigationController *navigationController = [AppSettingsViewController inModalNavigationController];
-    [self presentFormSheetViewController:navigationController animated:YES completion:nil];
 }
 
 - (nullable UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
@@ -851,6 +843,143 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         OWSNavigationController *modal = [[OWSNavigationController alloc] initWithRootViewController:viewController];
         [self.navigationController presentFormSheetViewController:modal animated:YES completion:nil];
     }];
+}
+
+- (void)showNewGroupView
+{
+    OWSAssertIsOnMainThread();
+
+    OWSLogInfo(@"");
+
+    NewGroupViewController *viewController = [NewGroupViewController new];
+
+    [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
+        if (error) {
+            OWSLogError(@"Error when requesting contacts: %@", error);
+        }
+        // Even if there is an error fetching contacts we proceed to the next screen.
+        // As the compose view will present the proper thing depending on contact access.
+        //
+        // We just want to make sure contact access is *complete* before showing the compose
+        // screen to avoid flicker.
+        OWSNavigationController *modal = [[OWSNavigationController alloc] initWithRootViewController:viewController];
+        [self.navigationController presentFormSheetViewController:modal animated:YES completion:nil];
+    }];
+}
+
+- (void)showAppSettings
+{
+    OWSAssertIsOnMainThread();
+
+    OWSLogInfo(@"");
+
+    OWSNavigationController *navigationController = [AppSettingsViewController inModalNavigationController];
+    [self presentFormSheetViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)focusSearch
+{
+    OWSAssertIsOnMainThread();
+
+    OWSLogInfo(@"");
+
+    // If we have presented a conversation list (the archive) search there instead.
+    if (self.presentedConversationListViewController) {
+        [self.presentedConversationListViewController focusSearch];
+        return;
+    }
+
+    [self.searchBar becomeFirstResponder];
+}
+
+- (void)selectPreviousConversation
+{
+    OWSAssertIsOnMainThread();
+
+    OWSLogInfo(@"");
+
+    // If we have presented a conversation list (the archive) navigate through that instead.
+    if (self.presentedConversationListViewController) {
+        [self.presentedConversationListViewController selectPreviousConversation];
+        return;
+    }
+
+    TSThread *_Nullable currentThread = self.conversationSplitViewController.selectedThread;
+    NSIndexPath *_Nullable previousIndexPath = [self.threadMapping indexPathBeforeThread:currentThread];
+    if (previousIndexPath) {
+        [self presentThread:[self threadForIndexPath:previousIndexPath] action:ConversationViewActionNone animated:YES];
+        [self.tableView selectRowAtIndexPath:previousIndexPath
+                                    animated:YES
+                              scrollPosition:UITableViewScrollPositionNone];
+    }
+}
+
+- (void)selectNextConversation
+{
+    OWSAssertIsOnMainThread();
+
+    OWSLogInfo(@"");
+
+    // If we have presented a conversation list (the archive) navigate through that instead.
+    if (self.presentedConversationListViewController) {
+        [self.presentedConversationListViewController selectNextConversation];
+        return;
+    }
+
+    TSThread *_Nullable currentThread = self.conversationSplitViewController.selectedThread;
+    NSIndexPath *_Nullable nextIndexPath = [self.threadMapping indexPathAfterThread:currentThread];
+    if (nextIndexPath) {
+        [self presentThread:[self threadForIndexPath:nextIndexPath] action:ConversationViewActionNone animated:YES];
+        [self.tableView selectRowAtIndexPath:nextIndexPath animated:YES scrollPosition:UITableViewScrollPositionNone];
+    }
+}
+
+- (void)archiveSelectedConversation
+{
+    OWSAssertIsOnMainThread();
+
+    OWSLogInfo(@"");
+
+    TSThread *_Nullable selectedThread = self.conversationSplitViewController.selectedThread;
+
+    if (!selectedThread) {
+        return;
+    }
+
+    if (selectedThread.isArchived) {
+        return;
+    }
+
+    [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
+
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [selectedThread archiveThreadWithTransaction:transaction];
+    }];
+    [self updateViewState];
+}
+
+- (void)unarchiveSelectedConversation
+{
+    OWSAssertIsOnMainThread();
+
+    OWSLogInfo(@"");
+
+    TSThread *_Nullable selectedThread = self.conversationSplitViewController.selectedThread;
+
+    if (!selectedThread) {
+        return;
+    }
+
+    if (!selectedThread.isArchived) {
+        return;
+    }
+
+    [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
+
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [selectedThread unarchiveThreadWithTransaction:transaction];
+    }];
+    [self updateViewState];
 }
 
 - (void)showCameraView
@@ -1506,6 +1635,20 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     ConversationListViewController *conversationList = [ConversationListViewController new];
     conversationList.conversationListMode = ConversationListMode_Archive;
     [self showViewController:conversationList sender:self];
+}
+
+- (nullable ConversationListViewController *)presentedConversationListViewController
+{
+    UIViewController *_Nullable topViewController = self.navigationController.topViewController;
+    if (topViewController == self) {
+        return nil;
+    }
+
+    if (![topViewController isKindOfClass:[ConversationListViewController class]]) {
+        return nil;
+    }
+
+    return (ConversationListViewController *)topViewController;
 }
 
 - (NSString *)currentGrouping

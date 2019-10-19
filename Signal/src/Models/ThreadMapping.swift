@@ -124,6 +124,38 @@ class ThreadMapping: NSObject {
         return threads[indexPath.item]
     }
 
+    @objc(indexPathAfterThread:)
+    func indexPath(after thread: TSThread?) -> IndexPath? {
+        guard !threads.isEmpty else { return nil }
+
+        let firstIndexPath = IndexPath(item: 0, section: kSection)
+
+        guard let thread = thread else { return firstIndexPath }
+        guard let index = threads.firstIndex(where: { $0.uniqueId == thread.uniqueId}) else { return firstIndexPath }
+
+        if index < (threads.count - 1) {
+            return IndexPath(item: index + 1, section: kSection)
+        } else {
+            return firstIndexPath
+        }
+    }
+
+    @objc(indexPathBeforeThread:)
+    func indexPath(before thread: TSThread?) -> IndexPath? {
+        guard !threads.isEmpty else { return nil }
+
+        let lastIndexPath = IndexPath(item: threads.count - 1, section: kSection)
+
+        guard let thread = thread else { return lastIndexPath }
+        guard let index = threads.firstIndex(where: { $0.uniqueId == thread.uniqueId}) else { return lastIndexPath }
+
+        if index > 0 {
+            return IndexPath(item: index - 1, section: kSection)
+        } else {
+            return lastIndexPath
+        }
+    }
+
     let threadFinder = AnyThreadFinder()
 
     @objc
