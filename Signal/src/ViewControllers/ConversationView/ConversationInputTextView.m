@@ -226,41 +226,41 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSArray<UIKeyCommand *> *)keyCommands
 {
-    // We're permissive about what modifier key we accept for the "send message" hotkey.
-    // We accept command-return, option-return.
-    //
-    // We don't support control-return because it doesn't work.
-    //
-    // We don't support shift-return because it is often used for "newline" in other
-    // messaging apps.
+    // We don't define discoverability title for these key commands as they're
+    // considered "default" functionality and shouldn't clutter the shortcut
+    // list that is rendered when you hold down the command key.
+
     return @[
-        [self keyCommandWithInput:@"\r"
-                    modifierFlags:UIKeyModifierCommand
-                           action:@selector(modifiedReturnPressed:)
-             discoverabilityTitle:@"Send Message"],
-        // "Alternate" is option.
-        [self keyCommandWithInput:@"\r"
-                    modifierFlags:UIKeyModifierAlternate
-                           action:@selector(modifiedReturnPressed:)
-             discoverabilityTitle:@"Send Message"],
+        // An unmodified return can only be sent by a hardware keyboard,
+        // return on the software keyboard will not trigger this command.
+        // Return, send message
+        [UIKeyCommand keyCommandWithInput:@"\r" modifierFlags:0 action:@selector(unmodifedReturnPressed:)],
+        // Alt + Return, inserts a new line
+        [UIKeyCommand keyCommandWithInput:@"\r"
+                            modifierFlags:UIKeyModifierAlternate
+                                   action:@selector(modifiedReturnPressed:)],
+        // Shift + Return, inserts a new line
+        [UIKeyCommand keyCommandWithInput:@"\r"
+                            modifierFlags:UIKeyModifierShift
+                                   action:@selector(modifiedReturnPressed:)],
     ];
 }
 
-- (UIKeyCommand *)keyCommandWithInput:(NSString *)input
-                        modifierFlags:(UIKeyModifierFlags)modifierFlags
-                               action:(SEL)action
-                 discoverabilityTitle:(NSString *)discoverabilityTitle
+- (void)unmodifedReturnPressed:(UIKeyCommand *)sender
 {
-    return [UIKeyCommand keyCommandWithInput:input
-                               modifierFlags:modifierFlags
-                                      action:action
-                        discoverabilityTitle:discoverabilityTitle];
+    OWSLogInfo(@"unmodifedReturnPressed: %@", sender.input);
+
+    [self.inputTextViewDelegate inputTextViewSendMessagePressed];
 }
 
 - (void)modifiedReturnPressed:(UIKeyCommand *)sender
 {
     OWSLogInfo(@"modifiedReturnPressed: %@", sender.input);
-    [self.inputTextViewDelegate inputTextViewSendMessagePressed];
+
+    self.text = [self.text stringByAppendingString:@"\n"];
+
+    [self.inputTextViewDelegate textViewDidChange:self];
+    [self.textViewToolbarDelegate textViewDidChange:self];
 }
 
 @end

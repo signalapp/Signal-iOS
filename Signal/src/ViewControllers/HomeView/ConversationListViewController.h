@@ -25,8 +25,15 @@ typedef NS_ENUM(NSInteger, ConversationListViewControllerSection) {
        focusMessageId:(nullable NSString *)focusMessageId
              animated:(BOOL)isAnimated;
 
-// Used by force-touch Springboard icon shortcut
+// Used by force-touch Springboard icon shortcut and key commands
 - (void)showNewConversationView;
+- (void)showNewGroupView;
+- (void)showAppSettings;
+- (void)focusSearch;
+- (void)selectPreviousConversation;
+- (void)selectNextConversation;
+- (void)archiveSelectedConversation;
+- (void)unarchiveSelectedConversation;
 
 @property (nonatomic) TSThread *lastViewedThread;
 

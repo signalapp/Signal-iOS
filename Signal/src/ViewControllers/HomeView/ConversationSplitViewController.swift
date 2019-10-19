@@ -68,11 +68,6 @@ class ConversationSplitViewController: UISplitViewController {
         return Theme.isDarkThemeEnabled ? .lightContent : .default
     }
 
-    @objc
-    func showNewConversationView() {
-        conversationListVC.showNewConversationView()
-    }
-
     @objc(closeSelectedConversationAnimated:)
     func closeSelectedConversation(animated: Bool) {
         guard let selectedConversationViewController = selectedConversationViewController else { return }
@@ -152,6 +147,235 @@ class ConversationSplitViewController: UISplitViewController {
             viewControllers[1] = vc
         }
         currentDetailViewController = vc
+    }
+
+    // MARK: - Keyboard Shortcuts
+
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
+
+    let globalKeyCommands = [
+        UIKeyCommand(
+            input: "n",
+            modifierFlags: .command,
+            action: #selector(showNewConversationView),
+            discoverabilityTitle: NSLocalizedString(
+                "KEY_COMMAND_NEW_MESSAGE",
+                comment: "A keyboard command to present the new message dialog."
+            )
+        ),
+        UIKeyCommand(
+            input: "g",
+            modifierFlags: .command,
+            action: #selector(showNewGroupView),
+            discoverabilityTitle: NSLocalizedString(
+                "KEY_COMMAND_NEW_GROUP",
+                comment: "A keyboard command to present the new group dialog."
+            )
+        ),
+        UIKeyCommand(
+            input: ",",
+            modifierFlags: .command,
+            action: #selector(showAppSettings),
+            discoverabilityTitle: NSLocalizedString(
+                "KEY_COMMAND_SETTINGS",
+                comment: "A keyboard command to present the application settings dialog."
+            )
+        ),
+        UIKeyCommand(
+            input: "f",
+            modifierFlags: .command,
+            action: #selector(focusSearch),
+            discoverabilityTitle: NSLocalizedString(
+                "KEY_COMMAND_SEARCH",
+                comment: "A keyboard command to begin a search on the conversation list."
+            )
+        ),
+        UIKeyCommand(
+            input: UIKeyCommand.inputUpArrow,
+            modifierFlags: .alternate,
+            action: #selector(selectPreviousConversation),
+            discoverabilityTitle: NSLocalizedString(
+                "KEY_COMMAND_PREVIOUS_CONVERSATION",
+                comment: "A keyboard command to jump to the previous conversation in the list."
+            )
+        ),
+        UIKeyCommand(
+            input: UIKeyCommand.inputDownArrow,
+            modifierFlags: .alternate,
+            action: #selector(selectNextConversation),
+            discoverabilityTitle: NSLocalizedString(
+                "KEY_COMMAND_NEXT_CONVERSATION",
+                comment: "A keyboard command to jump to the next conversation in the list."
+            )
+        )
+    ]
+
+    let selectedConversationKeyCommands = [
+        UIKeyCommand(
+            input: "i",
+            modifierFlags: [.command, .shift],
+            action: #selector(openConversationSettings),
+            discoverabilityTitle: NSLocalizedString(
+                "KEY_COMMAND_CONVERSATION_INFO",
+                comment: "A keyboard command to open the current conversation's settings."
+            )
+        ),
+        UIKeyCommand(
+            input: "m",
+            modifierFlags: [.command, .shift],
+            action: #selector(openAllMedia),
+            discoverabilityTitle: NSLocalizedString(
+                "KEY_COMMAND_ALL_MEDIA",
+                comment: "A keyboard command to open the current conversation's all media view."
+            )
+        ),
+        UIKeyCommand(
+            input: "g",
+            modifierFlags: [.command, .shift],
+            action: #selector(openGifSearch),
+            discoverabilityTitle: NSLocalizedString(
+                "KEY_COMMAND_GIF_SEARCH",
+                comment: "A keyboard command to open the current conversations GIF picker."
+            )
+        ),
+        UIKeyCommand(
+            input: "u",
+            modifierFlags: .command,
+            action: #selector(openAttachmentKeyboard),
+            discoverabilityTitle: NSLocalizedString(
+                "KEY_COMMAND_ATTACHMENTS",
+                comment: "A keyboard command to open the current conversation's attachment picker."
+            )
+        ),
+        UIKeyCommand(
+            input: "s",
+            modifierFlags: [.command, .shift],
+            action: #selector(openStickerKeyboard),
+            discoverabilityTitle: NSLocalizedString(
+                "KEY_COMMAND_STICKERS",
+                comment: "A keyboard command to open the current conversation's sticker picker."
+            )
+        ),
+        UIKeyCommand(
+            input: "a",
+            modifierFlags: [.command, .shift],
+            action: #selector(archiveSelectedConversation),
+            discoverabilityTitle: NSLocalizedString(
+                "KEY_COMMAND_ARCHIVE",
+                comment: "A keyboard command to archive the current coversation."
+            )
+        ),
+        UIKeyCommand(
+            input: "u",
+            modifierFlags: [.command, .shift],
+            action: #selector(unarchiveSelectedConversation),
+            discoverabilityTitle: NSLocalizedString(
+                "KEY_COMMAND_UNARCHIVE",
+                comment: "A keyboard command to unarchive the current coversation."
+            )
+        ),
+        UIKeyCommand(
+            input: "t",
+            modifierFlags: [.command, .shift],
+            action: #selector(focusInputToolbar),
+            discoverabilityTitle: NSLocalizedString(
+                "KEY_COMMAND_FOCUS_COMPOSER",
+                comment: "A keyboard command to focus the current conversation's input field."
+            )
+        )
+    ]
+
+    override var keyCommands: [UIKeyCommand]? {
+        // If there is a modal presented over us, or another window above us, don't respond to keyboard commands.
+        guard presentedViewController == nil || view.window?.isKeyWindow != true else { return nil }
+
+        if selectedThread != nil {
+            return selectedConversationKeyCommands + globalKeyCommands
+        } else {
+            return globalKeyCommands
+        }
+    }
+
+    @objc func showNewConversationView() {
+        conversationListVC.showNewConversationView()
+    }
+
+    @objc func showNewGroupView() {
+        conversationListVC.showNewGroupView()
+    }
+
+    @objc func showAppSettings() {
+        conversationListVC.showAppSettings()
+    }
+
+    @objc func focusSearch() {
+        conversationListVC.focusSearch()
+    }
+
+    @objc func selectPreviousConversation() {
+        conversationListVC.selectPreviousConversation()
+    }
+
+    @objc func selectNextConversation(_ sender: UIKeyCommand) {
+        conversationListVC.selectNextConversation()
+    }
+
+    @objc func archiveSelectedConversation() {
+        conversationListVC.archiveSelectedConversation()
+    }
+
+    @objc func unarchiveSelectedConversation() {
+        conversationListVC.unarchiveSelectedConversation()
+    }
+
+    @objc func openConversationSettings() {
+        guard let selectedConversationViewController = selectedConversationViewController else {
+            return owsFailDebug("unexpectedly missing selected conversation")
+        }
+
+        selectedConversationViewController.showConversationSettings()
+    }
+
+    @objc func focusInputToolbar() {
+        guard let selectedConversationViewController = selectedConversationViewController else {
+            return owsFailDebug("unexpectedly missing selected conversation")
+        }
+
+        selectedConversationViewController.focusInputToolbar()
+    }
+
+    @objc func openAllMedia() {
+        guard let selectedConversationViewController = selectedConversationViewController else {
+            return owsFailDebug("unexpectedly missing selected conversation")
+        }
+
+        selectedConversationViewController.openAllMedia()
+    }
+
+    @objc func openStickerKeyboard() {
+        guard let selectedConversationViewController = selectedConversationViewController else {
+            return owsFailDebug("unexpectedly missing selected conversation")
+        }
+
+        selectedConversationViewController.openStickerKeyboard()
+    }
+
+    @objc func openAttachmentKeyboard() {
+        guard let selectedConversationViewController = selectedConversationViewController else {
+            return owsFailDebug("unexpectedly missing selected conversation")
+        }
+
+        selectedConversationViewController.openAttachmentKeyboard()
+    }
+
+    @objc func openGifSearch() {
+        guard let selectedConversationViewController = selectedConversationViewController else {
+            return owsFailDebug("unexpectedly missing selected conversation")
+        }
+
+        selectedConversationViewController.openGifSearch()
     }
 }
 
