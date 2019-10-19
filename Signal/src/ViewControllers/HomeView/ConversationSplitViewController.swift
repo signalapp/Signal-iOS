@@ -13,6 +13,9 @@ class ConversationSplitViewController: UISplitViewController {
     private lazy var detailNavController = OWSNavigationController()
 
     @objc private(set) weak var selectedConversationViewController: ConversationViewController?
+
+    /// The thread, if any, that is currently presented in the view hieararchy. It may be currently
+    /// covered by a modal presentation or a pushed view controller.
     @objc var selectedThread: TSThread? {
         // If the placeholder view is in the view hierarchy, there is no selected thread.
         guard detailPlaceholderVC.view.superview == nil else { return nil }
@@ -24,6 +27,14 @@ class ConversationSplitViewController: UISplitViewController {
         guard !isCollapsed || primaryNavController.viewControllers.contains(selectedConversationViewController) else { return nil }
 
         return selectedConversationViewController.thread
+    }
+
+    /// Returns the currently selected thread if it is visible on screen, otherwise
+    /// returns nil.
+    @objc var visibleThread: TSThread? {
+        guard view.window?.isKeyWindow == true else { return nil }
+        guard selectedConversationViewController?.isViewVisible == true else { return nil }
+        return selectedThread
     }
 
     @objc var topViewController: UIViewController? {

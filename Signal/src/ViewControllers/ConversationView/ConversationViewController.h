@@ -55,6 +55,7 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 @property (nonatomic, readonly) ConversationCollectionView *collectionView;
 @property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
 @property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
+@property (nonatomic, readonly) BOOL isViewVisible;
 
 @end
 
