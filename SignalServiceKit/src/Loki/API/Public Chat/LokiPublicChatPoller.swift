@@ -54,6 +54,21 @@ public final class LokiPublicChatPoller : NSObject {
             let groupContext = SSKProtoGroupContext.builder(id: id, type: .deliver)
             groupContext.setName(publicChat.displayName)
             let dataMessage = SSKProtoDataMessage.builder()
+            let attachments: [SSKProtoAttachmentPointer] = message.attachments.map { attachment in
+                let result = SSKProtoAttachmentPointer.builder(id: attachment.serverID)
+                result.setContentType(attachment.contentType)
+                result.setSize(UInt32(attachment.size))
+                result.setFileName(attachment.fileName)
+                result.setFlags(UInt32(attachment.flags))
+                result.setWidth(UInt32(attachment.width))
+                result.setHeight(UInt32(attachment.height))
+                if let caption = attachment.caption {
+                    result.setCaption(caption)
+                }
+                result.setUrl(attachment.url)
+                return try! result.build()
+            }
+            dataMessage.setAttachments(attachments)
             dataMessage.setTimestamp(message.timestamp)
             dataMessage.setGroup(try! groupContext.build())
             if let quote = message.quote {
@@ -61,7 +76,8 @@ public final class LokiPublicChatPoller : NSObject {
                 signalQuote.setText(quote.quotedMessageBody)
                 dataMessage.setQuote(try! signalQuote.build())
             }
-            dataMessage.setBody(message.body)
+            let body = (message.body == message.timestamp.description) ? "" : message.body // Workaround for the fact that the back-end doesn't accept messages without a body
+            dataMessage.setBody(body)
             if let messageServerID = message.serverID {
                 let publicChatInfo = SSKProtoPublicChatInfo.builder()
                 publicChatInfo.setServerID(messageServerID)
@@ -97,7 +113,8 @@ public final class LokiPublicChatPoller : NSObject {
             } else {
                 signalQuote = nil
             }
-            let message = TSOutgoingMessage(outgoingMessageWithTimestamp: message.timestamp, in: thread, messageBody: message.body, attachmentIds: [], expiresInSeconds: 0,
+            let body = (message.body == message.timestamp.description) ? "" : message.body // Workaround for the fact that the back-end doesn't accept messages without a body
+            let message = TSOutgoingMessage(outgoingMessageWithTimestamp: message.timestamp, in: thread, messageBody: body, attachmentIds: [], expiresInSeconds: 0,
                 expireStartedAt: 0, isVoiceMessage: false, groupMetaMessage: .deliver, quotedMessage: signalQuote, contactShare: nil, linkPreview: nil)
             storage.dbReadWriteConnection.readWrite { transaction in
                 message.update(withSentRecipient: publicChat.server, wasSentByUD: false, transaction: transaction)

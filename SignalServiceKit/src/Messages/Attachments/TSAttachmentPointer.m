@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithServerId:(UInt64)serverId
-                             key:(NSData *)key
+                             key:(nullable NSData *)key
                           digest:(nullable NSData *)digest
                        byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType
@@ -112,10 +112,12 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Invalid attachment id.");
         return nil;
     }
+    /*
     if (attachmentProto.key.length < 1) {
         OWSFailDebug(@"Invalid attachment key.");
         return nil;
     }
+     */
     NSString *_Nullable fileName = attachmentProto.fileName;
     NSString *_Nullable contentType = attachmentProto.contentType;
     if (contentType.length < 1) {

@@ -10,6 +10,7 @@ public final class LokiPublicChatMessage : NSObject {
     public let timestamp: UInt64
     public let type: String
     public let quote: Quote?
+    public var attachments: [Attachment] = []
     public let signature: Signature?
     
     @objc(serverID)
@@ -17,6 +18,7 @@ public final class LokiPublicChatMessage : NSObject {
     
     // MARK: Settings
     private let signatureVersion: UInt64 = 1
+    private let attachmentType = "net.app.core.oembed"
     
     // MARK: Types
     public struct Quote {
@@ -26,13 +28,28 @@ public final class LokiPublicChatMessage : NSObject {
         public let quotedMessageServerID: UInt64?
     }
     
+    public struct Attachment {
+        public let server: String
+        public let serverID: UInt64
+        public let contentType: String
+        public let size: UInt
+        public let fileName: String
+        public let flags: UInt
+        public let width: UInt
+        public let height: UInt
+        public let caption: String?
+        public let url: String
+        
+        public enum Kind : String { case photo, video }
+    }
+    
     public struct Signature {
         public let data: Data
         public let version: UInt64
     }
     
     // MARK: Initialization
-    public init(serverID: UInt64?, hexEncodedPublicKey: String, displayName: String, body: String, type: String, timestamp: UInt64, quote: Quote?, signature: Signature?) {
+    public init(serverID: UInt64?, hexEncodedPublicKey: String, displayName: String, body: String, type: String, timestamp: UInt64, quote: Quote?, attachments: [Attachment], signature: Signature?) {
         self.serverID = serverID
         self.hexEncodedPublicKey = hexEncodedPublicKey
         self.displayName = displayName
@@ -40,6 +57,7 @@ public final class LokiPublicChatMessage : NSObject {
         self.type = type
         self.timestamp = timestamp
         self.quote = quote
+        self.attachments = attachments
         self.signature = signature
         super.init()
     }
@@ -58,7 +76,7 @@ public final class LokiPublicChatMessage : NSObject {
         } else {
             signature = nil
         }
-        self.init(serverID: nil, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: type, timestamp: timestamp, quote: quote, signature: signature)
+        self.init(serverID: nil, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: type, timestamp: timestamp, quote: quote, attachments: [], signature: signature)
     }
     
     // MARK: Crypto
@@ -73,7 +91,7 @@ public final class LokiPublicChatMessage : NSObject {
             return nil
         }
         let signature = Signature(data: signatureData, version: signatureVersion)
-        return LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: type, timestamp: timestamp, quote: quote, signature: signature)
+        return LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: type, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature)
     }
     
     internal func hasValidSignature() -> Bool {
@@ -94,7 +112,20 @@ public final class LokiPublicChatMessage : NSObject {
             value["sigver"] = signature.version
         }
         let annotation: JSON = [ "type" : type, "value" : value ]
-        var result: JSON = [ "text" : body, "annotations": [ annotation ] ]
+        let attachmentAnnotations: [JSON] = attachments.map { attachment in
+            let type = attachment.contentType.hasPrefix("image") ? "photo" : "video" // TODO: We should do better than this
+            var attachmentValue: JSON = [
+                // Field required by the .NET API
+                "version" : 1, "type" : type,
+                // Custom fields
+                "server" : attachment.server, "id" : attachment.serverID, "contentType" : attachment.contentType, "size" : attachment.size, "fileName" : attachment.fileName, "flags" : attachment.flags, "width" : attachment.width, "height" : attachment.height, "url" : attachment.url
+            ]
+            if let caption = attachment.caption {
+                attachmentValue["caption"] = attachment.caption
+            }
+            return [ "type" : attachmentType, "value" : attachmentValue ]
+        }
+        var result: JSON = [ "text" : body, "annotations": [ annotation ] + attachmentAnnotations ]
         if let quotedMessageServerID = quote?.quotedMessageServerID {
             result["reply_to"] = quotedMessageServerID
         }
@@ -102,6 +133,11 @@ public final class LokiPublicChatMessage : NSObject {
     }
     
     // MARK: Convenience
+    @objc public func addAttachment(server: String, serverID: UInt64, contentType: String, size: UInt, fileName: String, flags: UInt, width: UInt, height: UInt, caption: String?, url: String) {
+        let attachment = Attachment(server: server, serverID: serverID, contentType: contentType, size: size, fileName: fileName, flags: flags, width: width, height: height, caption: caption, url: url)
+        attachments.append(attachment)
+    }
+    
     private func getValidationData(for signatureVersion: UInt64) -> Data? {
         var string = "\(body.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines))\(timestamp)"
         if let quote = quote {
@@ -110,6 +146,7 @@ public final class LokiPublicChatMessage : NSObject {
                 string += "\(quotedMessageServerID)"
             }
         }
+        string += attachments.map { "\($0.serverID)" }.joined(separator: "")
         string += "\(signatureVersion)"
         return string.data(using: String.Encoding.utf8)
     }

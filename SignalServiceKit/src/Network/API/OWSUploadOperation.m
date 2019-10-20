@@ -30,6 +30,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 @interface OWSUploadOperation ()
 
 @property (readonly, nonatomic) NSString *attachmentId;
+@property (readonly, nonatomic) NSString *threadID;
 @property (readonly, nonatomic) YapDatabaseConnection *dbConnection;
 
 @end
@@ -39,6 +40,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 @implementation OWSUploadOperation
 
 - (instancetype)initWithAttachmentId:(NSString *)attachmentId
+                            threadID:(NSString *)threadID
                         dbConnection:(YapDatabaseConnection *)dbConnection
 {
     self = [super init];
@@ -49,6 +51,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
     self.remainingRetries = 4;
 
     _attachmentId = attachmentId;
+    _threadID = threadID;
     _dbConnection = dbConnection;
 
     return self;
@@ -82,8 +85,14 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
     }
     
     [self fireNotificationWithProgress:0];
-
-    [[LKStorageAPI uploadAttachment:attachmentStream withID:self.attachmentId]
+    
+    __block LKPublicChat *publicChat;
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        publicChat = [LKDatabaseUtilities getPublicChatForThreadID:self.threadID transaction:transaction];
+    }];
+    NSString *server = (publicChat != nil) ? publicChat.server : LKStorageAPI.server;
+    
+    [[LKStorageAPI uploadAttachment:attachmentStream withID:self.attachmentId toServer:server]
     .thenOn(dispatch_get_main_queue(), ^() {
         [self reportSuccess];
     })
