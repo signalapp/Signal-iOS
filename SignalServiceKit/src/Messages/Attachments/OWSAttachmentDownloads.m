@@ -433,7 +433,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                                        unpaddedSize:attachmentPointer.byteCount
                                               error:&decryptError];
     } else {
-        plaintext = cipherText;
+        plaintext = cipherText; // Loki: Public chat attachments are unencrypted
     }
 
     if (decryptError) {

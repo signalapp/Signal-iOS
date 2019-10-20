@@ -670,7 +670,19 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         switch message {
         case let incomingMessage as TSIncomingMessage:
             let hexEncodedPublicKey = incomingMessage.authorId
-            return DisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? hexEncodedPublicKey // TODO: Public chats
+            if incomingMessage.thread.isGroupThread() {
+                var publicChat: LokiPublicChat?
+                OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
+                    publicChat = LokiDatabaseUtilities.getPublicChat(for: incomingMessage.thread.uniqueId!, in: transaction)
+                }
+                if let publicChat = publicChat {
+                    return DisplayNameUtilities.getPublicChatDisplayName(for: hexEncodedPublicKey, in: publicChat.channel, on: publicChat.server) ?? hexEncodedPublicKey
+                } else {
+                    return hexEncodedPublicKey
+                }
+            } else {
+                return DisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? hexEncodedPublicKey
+            }
         case is TSOutgoingMessage:
             return NSLocalizedString("MEDIA_GALLERY_SENDER_NAME_YOU", comment: "Short sender label for media sent by you")
         default:

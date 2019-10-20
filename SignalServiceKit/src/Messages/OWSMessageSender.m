@@ -1208,12 +1208,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 quotedMessageServerID = [LKDatabaseUtilities getServerIDForQuoteWithID:quoteID quoteeHexEncodedPublicKey:quoteeHexEncodedPublicKey threadID:messageSend.thread.uniqueId transaction:transaction];
             }];
         }
-        LKGroupMessage *groupMessage = [[LKGroupMessage alloc] initWithHexEncodedPublicKey:userHexEncodedPublicKey displayName:displayName body:@"Test" type:LKPublicChatAPI.publicChatMessageType
+        NSString *body = (message.body != nil && message.body.length > 0) ? message.body : [NSString stringWithFormat:@"%@", @(message.timestamp)]; // Workaround for the fact that the back-end doesn't accept messages without a body
+        LKGroupMessage *groupMessage = [[LKGroupMessage alloc] initWithHexEncodedPublicKey:userHexEncodedPublicKey displayName:displayName body:body type:LKPublicChatAPI.publicChatMessageType
          timestamp:message.timestamp quotedMessageTimestamp:quoteID quoteeHexEncodedPublicKey:quoteeHexEncodedPublicKey quotedMessageBody:quote.body quotedMessageServerID:quotedMessageServerID signatureData:nil signatureVersion:0];
         for (NSString *attachmentID in message.attachmentIds) {
             TSAttachmentStream *attachment = [TSAttachmentStream fetchObjectWithUniqueID:attachmentID];
             if (attachment == nil) { continue; }
-            // TODO: Videos
             [groupMessage addAttachmentWithServer:publicChat.server serverID:attachment.serverId contentType:attachment.contentType size:attachment.byteCount fileName:attachment.sourceFilename flags:0 width:@(attachment.imageSize.width).unsignedIntegerValue height:@(attachment.imageSize.height).unsignedIntegerValue caption:attachment.caption url:attachment.downloadURL];
         }
         [[LKPublicChatAPI sendMessage:groupMessage toGroup:publicChat.channel onServer:publicChat.server]

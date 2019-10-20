@@ -138,7 +138,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 {
     if (!pointer.lazyRestoreFragment) {
         OWSAssertDebug(pointer.serverId > 0);
-        // OWSAssertDebug(pointer.encryptionKey.length > 0);
+//        OWSAssertDebug(pointer.encryptionKey.length > 0);
         if (pointer.byteCount <= 0) {
             // This will fail with legacy iOS clients which don't upload attachment size.
             OWSLogWarn(@"Missing pointer.byteCount for attachment with serverId: %lld", pointer.serverId);

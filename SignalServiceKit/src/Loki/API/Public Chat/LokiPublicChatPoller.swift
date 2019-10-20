@@ -76,7 +76,8 @@ public final class LokiPublicChatPoller : NSObject {
                 signalQuote.setText(quote.quotedMessageBody)
                 dataMessage.setQuote(try! signalQuote.build())
             }
-            dataMessage.setBody(message.body)
+            let body = (message.body == message.timestamp.description) ? "" : message.body // Workaround for the fact that the back-end doesn't accept messages without a body
+            dataMessage.setBody(body)
             if let messageServerID = message.serverID {
                 let publicChatInfo = SSKProtoPublicChatInfo.builder()
                 publicChatInfo.setServerID(messageServerID)
@@ -112,7 +113,8 @@ public final class LokiPublicChatPoller : NSObject {
             } else {
                 signalQuote = nil
             }
-            let message = TSOutgoingMessage(outgoingMessageWithTimestamp: message.timestamp, in: thread, messageBody: message.body, attachmentIds: [], expiresInSeconds: 0,
+            let body = (message.body == message.timestamp.description) ? "" : message.body // Workaround for the fact that the back-end doesn't accept messages without a body
+            let message = TSOutgoingMessage(outgoingMessageWithTimestamp: message.timestamp, in: thread, messageBody: body, attachmentIds: [], expiresInSeconds: 0,
                 expireStartedAt: 0, isVoiceMessage: false, groupMetaMessage: .deliver, quotedMessage: signalQuote, contactShare: nil, linkPreview: nil)
             storage.dbReadWriteConnection.readWrite { transaction in
                 message.update(withSentRecipient: publicChat.server, wasSentByUD: false, transaction: transaction)
