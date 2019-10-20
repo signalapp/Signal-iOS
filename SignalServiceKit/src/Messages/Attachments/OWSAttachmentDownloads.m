@@ -425,11 +425,16 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     OWSAssertDebug(attachmentPointer);
 
     NSError *decryptError;
-    NSData *_Nullable plaintext = [Cryptography decryptAttachment:cipherText
-                                                          withKey:attachmentPointer.encryptionKey
-                                                           digest:attachmentPointer.digest
-                                                     unpaddedSize:attachmentPointer.byteCount
-                                                            error:&decryptError];
+    NSData *_Nullable plaintext;
+    if (attachmentPointer.encryptionKey != nil) {
+        plaintext = [Cryptography decryptAttachment:cipherText
+                                            withKey:attachmentPointer.encryptionKey
+                                             digest:attachmentPointer.digest
+                                       unpaddedSize:attachmentPointer.byteCount
+                                              error:&decryptError];
+    } else {
+        plaintext = cipherText;
+    }
 
     if (decryptError) {
         OWSLogError(@"failed to decrypt with error: %@", decryptError);

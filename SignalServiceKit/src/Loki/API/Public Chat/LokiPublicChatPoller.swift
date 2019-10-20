@@ -54,6 +54,21 @@ public final class LokiPublicChatPoller : NSObject {
             let groupContext = SSKProtoGroupContext.builder(id: id, type: .deliver)
             groupContext.setName(publicChat.displayName)
             let dataMessage = SSKProtoDataMessage.builder()
+            let attachments: [SSKProtoAttachmentPointer] = message.attachments.map { attachment in
+                let result = SSKProtoAttachmentPointer.builder(id: attachment.serverID)
+                result.setContentType(attachment.contentType)
+                result.setSize(UInt32(attachment.size))
+                result.setFileName(attachment.fileName)
+                result.setFlags(UInt32(attachment.flags))
+                result.setWidth(UInt32(attachment.width))
+                result.setHeight(UInt32(attachment.height))
+                if let caption = attachment.caption {
+                    result.setCaption(caption)
+                }
+                result.setUrl(attachment.url)
+                return try! result.build()
+            }
+            dataMessage.setAttachments(attachments)
             dataMessage.setTimestamp(message.timestamp)
             dataMessage.setGroup(try! groupContext.build())
             if let quote = message.quote {

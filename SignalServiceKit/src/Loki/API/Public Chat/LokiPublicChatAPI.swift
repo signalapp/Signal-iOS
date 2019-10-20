@@ -9,7 +9,8 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     private static let maxRetryCount: UInt = 8
     
     // MARK: Public Chat
-    @objc private static let channelInfoType = "net.patter-app.settings"
+    private static let channelInfoType = "net.patter-app.settings"
+    private static let attachmentType = "net.app.core.oembed"
     @objc public static let publicChatMessageType = "network.loki.messenger.publicChat"
     
     @objc public static let defaultChats: [LokiPublicChat] = {
@@ -90,7 +91,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
             return rawMessages.flatMap { message in
                 let isDeleted = (message["is_deleted"] as? Int == 1)
                 guard !isDeleted else { return nil }
-                guard let annotations = message["annotations"] as? [JSON], let annotation = annotations.first, let value = annotation["value"] as? JSON,
+                guard let annotations = message["annotations"] as? [JSON], let annotation = annotations.first(where: { $0["type"] as? String == publicChatMessageType }), let value = annotation["value"] as? JSON,
                     let serverID = message["id"] as? UInt64, let hexEncodedSignatureData = value["sig"] as? String, let signatureVersion = value["sigver"] as? UInt64,
                     let body = message["text"] as? String, let user = message["user"] as? JSON, let hexEncodedPublicKey = user["username"] as? String,
                     let timestamp = value["timestamp"] as? UInt64 else {
@@ -108,7 +109,13 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                     quote = nil
                 }
                 let signature = LokiPublicChatMessage.Signature(data: Data(hex: hexEncodedSignatureData), version: signatureVersion)
-                let result = LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, attachments: [], signature: signature)
+                let attachmentsAsJSON = annotations.filter { $0["type"] as? String == attachmentType }
+                let attachments: [LokiPublicChatMessage.Attachment] = attachmentsAsJSON.compactMap { attachmentAsJSON in
+                    guard let value = attachmentAsJSON["value"] as? JSON, let server = value["server"] as? String, let serverID = value["id"] as? UInt64, let contentType = value["contentType"] as? String, let size = value["size"] as? UInt, let fileName = value["fileName"] as? String, let flags = value["flags"] as? UInt, let width = value["width"] as? UInt, let height = value["height"] as? UInt, let url = value["url"] as? String else { return nil }
+                    let caption = value["caption"] as? String
+                    return LokiPublicChatMessage.Attachment(server: server, serverID: serverID, contentType: contentType, size: size, fileName: fileName, flags: flags, width: width, height: height, caption: caption, url: url)
+                }
+                let result = LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature)
                 guard result.hasValidSignature() else {
                     print("[Loki] Ignoring public chat message with invalid signature.")
                     return nil

@@ -57,7 +57,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 // This constructor is used for new instances of TSAttachmentPointer,
 // i.e. undownloaded incoming attachments.
 - (instancetype)initWithServerId:(UInt64)serverId
-                   encryptionKey:(NSData *)encryptionKey
+                   encryptionKey:(nullable NSData *)encryptionKey
                        byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType
                   sourceFilename:(nullable NSString *)sourceFilename

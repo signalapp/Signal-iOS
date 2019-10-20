@@ -29,14 +29,16 @@ public final class LokiPublicChatMessage : NSObject {
     }
     
     public struct Attachment {
+        public let server: String
         public let serverID: UInt64
-        public let kind: Kind
+        public let contentType: String
+        public let size: UInt
+        public let fileName: String
+        public let flags: UInt
         public let width: UInt
         public let height: UInt
         public let caption: String?
         public let url: String
-        public let server: String
-        public let serverDisplayName: String
         
         public enum Kind : String { case photo, video }
     }
@@ -111,10 +113,15 @@ public final class LokiPublicChatMessage : NSObject {
         }
         let annotation: JSON = [ "type" : type, "value" : value ]
         let attachmentAnnotations: [JSON] = attachments.map { attachment in
-            var attachmentValue: JSON = [ "version" : 1, "type" : attachment.kind.rawValue, "width" : attachment.width, "height" : attachment.height,
-                "url" : attachment.url, "provider_name" : attachment.serverDisplayName, "provider_url" : attachment.server ]
+            let type = attachment.contentType.hasPrefix("image") ? "photo" : "video" // TODO: We should do better than this
+            var attachmentValue: JSON = [
+                // Field required by the .NET API
+                "version" : 1, "type" : type,
+                // Custom fields
+                "server" : attachment.server, "id" : attachment.serverID, "contentType" : attachment.contentType, "size" : attachment.size, "fileName" : attachment.fileName, "flags" : attachment.flags, "width" : attachment.width, "height" : attachment.height, "url" : attachment.url
+            ]
             if let caption = attachment.caption {
-                attachmentValue["title"] = attachment.caption
+                attachmentValue["caption"] = attachment.caption
             }
             return [ "type" : attachmentType, "value" : attachmentValue ]
         }
@@ -126,9 +133,8 @@ public final class LokiPublicChatMessage : NSObject {
     }
     
     // MARK: Convenience
-    @objc public func addAttachment(serverID: UInt64, kind: String, width: UInt, height: UInt, caption: String?, url: String, server: String, serverDisplayName: String) {
-        guard let kind = Attachment.Kind(rawValue: kind) else { preconditionFailure() }
-        let attachment = Attachment(serverID: serverID, kind: kind, width: width, height: height, caption: caption, url: url, server: server, serverDisplayName: serverDisplayName)
+    @objc public func addAttachment(server: String, serverID: UInt64, contentType: String, size: UInt, fileName: String, flags: UInt, width: UInt, height: UInt, caption: String?, url: String) {
+        let attachment = Attachment(server: server, serverID: serverID, contentType: contentType, size: size, fileName: fileName, flags: flags, width: width, height: height, caption: caption, url: url)
         attachments.append(attachment)
     }
     
