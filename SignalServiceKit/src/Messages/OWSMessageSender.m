@@ -1211,10 +1211,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         NSString *body = (message.body != nil && message.body.length > 0) ? message.body : [NSString stringWithFormat:@"%@", @(message.timestamp)]; // Workaround for the fact that the back-end doesn't accept messages without a body
         LKGroupMessage *groupMessage = [[LKGroupMessage alloc] initWithHexEncodedPublicKey:userHexEncodedPublicKey displayName:displayName body:body type:LKPublicChatAPI.publicChatMessageType
          timestamp:message.timestamp quotedMessageTimestamp:quoteID quoteeHexEncodedPublicKey:quoteeHexEncodedPublicKey quotedMessageBody:quote.body quotedMessageServerID:quotedMessageServerID signatureData:nil signatureVersion:0];
+        OWSLinkPreview *linkPreview = message.linkPreview;
+        if (linkPreview != nil) {
+            TSAttachmentStream *attachment = [TSAttachmentStream fetchObjectWithUniqueID:linkPreview.imageAttachmentId];
+            if (attachment != nil) {
+                [groupMessage addAttachmentWithKind:@"preview" server:publicChat.server serverID:attachment.serverId contentType:attachment.contentType size:attachment.byteCount fileName:attachment.sourceFilename flags:0 width:@(attachment.imageSize.width).unsignedIntegerValue height:@(attachment.imageSize.height).unsignedIntegerValue caption:attachment.caption url:attachment.downloadURL linkPreviewURL:linkPreview.urlString linkPreviewTitle:linkPreview.title];
+            }
+        }
         for (NSString *attachmentID in message.attachmentIds) {
             TSAttachmentStream *attachment = [TSAttachmentStream fetchObjectWithUniqueID:attachmentID];
             if (attachment == nil) { continue; }
-            [groupMessage addAttachmentWithServer:publicChat.server serverID:attachment.serverId contentType:attachment.contentType size:attachment.byteCount fileName:attachment.sourceFilename flags:0 width:@(attachment.imageSize.width).unsignedIntegerValue height:@(attachment.imageSize.height).unsignedIntegerValue caption:attachment.caption url:attachment.downloadURL];
+            [groupMessage addAttachmentWithKind:@"attachment" server:publicChat.server serverID:attachment.serverId contentType:attachment.contentType size:attachment.byteCount fileName:attachment.sourceFilename flags:0 width:@(attachment.imageSize.width).unsignedIntegerValue height:@(attachment.imageSize.height).unsignedIntegerValue caption:attachment.caption url:attachment.downloadURL linkPreviewURL:nil linkPreviewTitle:nil];
         }
         [[LKPublicChatAPI sendMessage:groupMessage toGroup:publicChat.channel onServer:publicChat.server]
         .thenOn(OWSDispatch.sendingQueue, ^(LKGroupMessage *groupMessage) {
@@ -2090,7 +2097,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }
 
-    /*
     if (message.linkPreview.imageAttachmentId != nil) {
         TSAttachment *attachment =
             [TSAttachment fetchObjectWithUniqueID:message.linkPreview.imageAttachmentId transaction:transaction];
@@ -2100,7 +2106,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             OWSFailDebug(@"unexpected attachment: %@", attachment);
         }
     }
-     */
 
     // All outgoing messages should be saved at the time they are enqueued.
     [message saveWithTransaction:transaction];

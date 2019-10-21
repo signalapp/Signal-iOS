@@ -54,7 +54,8 @@ public final class LokiPublicChatPoller : NSObject {
             let groupContext = SSKProtoGroupContext.builder(id: id, type: .deliver)
             groupContext.setName(publicChat.displayName)
             let dataMessage = SSKProtoDataMessage.builder()
-            let attachments: [SSKProtoAttachmentPointer] = message.attachments.map { attachment in
+            let attachments: [SSKProtoAttachmentPointer] = message.attachments.compactMap { attachment in
+                guard attachment.kind == .attachment else { return nil }
                 let result = SSKProtoAttachmentPointer.builder(id: attachment.serverID)
                 result.setContentType(attachment.contentType)
                 result.setSize(UInt32(attachment.size))
@@ -69,6 +70,23 @@ public final class LokiPublicChatPoller : NSObject {
                 return try! result.build()
             }
             dataMessage.setAttachments(attachments)
+            if let linkPreview = message.attachments.first(where: { $0.kind == .linkPreview }) {
+                let signalLinkPreview = SSKProtoDataMessagePreview.builder(url: linkPreview.linkPreviewURL!)
+                signalLinkPreview.setTitle(linkPreview.linkPreviewTitle!)
+                let attachment = SSKProtoAttachmentPointer.builder(id: linkPreview.serverID)
+                attachment.setContentType(linkPreview.contentType)
+                attachment.setSize(UInt32(linkPreview.size))
+                attachment.setFileName(linkPreview.fileName)
+                attachment.setFlags(UInt32(linkPreview.flags))
+                attachment.setWidth(UInt32(linkPreview.width))
+                attachment.setHeight(UInt32(linkPreview.height))
+                if let caption = linkPreview.caption {
+                    attachment.setCaption(caption)
+                }
+                attachment.setUrl(linkPreview.url)
+                signalLinkPreview.setImage(try! attachment.build())
+                dataMessage.setPreview([ try! signalLinkPreview.build() ])
+            }
             dataMessage.setTimestamp(message.timestamp)
             dataMessage.setGroup(try! groupContext.build())
             if let quote = message.quote {

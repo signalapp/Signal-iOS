@@ -111,9 +111,14 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                 let signature = LokiPublicChatMessage.Signature(data: Data(hex: hexEncodedSignatureData), version: signatureVersion)
                 let attachmentsAsJSON = annotations.filter { $0["type"] as? String == attachmentType }
                 let attachments: [LokiPublicChatMessage.Attachment] = attachmentsAsJSON.compactMap { attachmentAsJSON in
-                    guard let value = attachmentAsJSON["value"] as? JSON, let server = value["server"] as? String, let serverID = value["id"] as? UInt64, let contentType = value["contentType"] as? String, let size = value["size"] as? UInt, let fileName = value["fileName"] as? String, let flags = value["flags"] as? UInt, let width = value["width"] as? UInt, let height = value["height"] as? UInt, let url = value["url"] as? String else { return nil }
+                    guard let value = attachmentAsJSON["value"] as? JSON, let kindAsString = value["lokiType"] as? String, let kind = LokiPublicChatMessage.Attachment.Kind(rawValue: kindAsString), let serverID = value["id"] as? UInt64, let contentType = value["contentType"] as? String, let size = value["size"] as? UInt, let fileName = value["fileName"] as? String, let flags = value["flags"] as? UInt, let width = value["width"] as? UInt, let height = value["height"] as? UInt, let url = value["url"] as? String else { return nil }
                     let caption = value["caption"] as? String
-                    return LokiPublicChatMessage.Attachment(server: server, serverID: serverID, contentType: contentType, size: size, fileName: fileName, flags: flags, width: width, height: height, caption: caption, url: url)
+                    let linkPreviewURL = value["linkPreviewUrl"] as? String
+                    let linkPreviewTitle = value["linkPreviewTitle"] as? String
+                    if kind == .linkPreview {
+                        guard linkPreviewURL != nil && linkPreviewTitle != nil else { return nil }
+                    }
+                    return LokiPublicChatMessage.Attachment(kind: kind, server: server, serverID: serverID, contentType: contentType, size: size, fileName: fileName, flags: flags, width: width, height: height, caption: caption, url: url, linkPreviewURL: linkPreviewURL, linkPreviewTitle: linkPreviewTitle)
                 }
                 let result = LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature)
                 guard result.hasValidSignature() else {

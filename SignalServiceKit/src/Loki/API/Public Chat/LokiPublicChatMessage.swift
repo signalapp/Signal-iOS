@@ -29,6 +29,7 @@ public final class LokiPublicChatMessage : NSObject {
     }
     
     public struct Attachment {
+        public let kind: Kind
         public let server: String
         public let serverID: UInt64
         public let contentType: String
@@ -39,8 +40,12 @@ public final class LokiPublicChatMessage : NSObject {
         public let height: UInt
         public let caption: String?
         public let url: String
+        /// Guaranteed to be non-`nil` if `kind` is `linkPreview`
+        public let linkPreviewURL: String?
+        /// Guaranteed to be non-`nil` if `kind` is `linkPreview`
+        public let linkPreviewTitle: String?
         
-        public enum Kind : String { case photo, video }
+        public enum Kind : String { case attachment, linkPreview = "preview" }
     }
     
     public struct Signature {
@@ -118,10 +123,16 @@ public final class LokiPublicChatMessage : NSObject {
                 // Field required by the .NET API
                 "version" : 1, "type" : type,
                 // Custom fields
-                "server" : attachment.server, "id" : attachment.serverID, "contentType" : attachment.contentType, "size" : attachment.size, "fileName" : attachment.fileName, "flags" : attachment.flags, "width" : attachment.width, "height" : attachment.height, "url" : attachment.url
+                "lokiType" : attachment.kind.rawValue, "server" : attachment.server, "id" : attachment.serverID, "contentType" : attachment.contentType, "size" : attachment.size, "fileName" : attachment.fileName, "flags" : attachment.flags, "width" : attachment.width, "height" : attachment.height, "url" : attachment.url
             ]
             if let caption = attachment.caption {
                 attachmentValue["caption"] = attachment.caption
+            }
+            if let linkPreviewURL = attachment.linkPreviewURL {
+                attachmentValue["linkPreviewUrl"] = linkPreviewURL
+            }
+            if let linkPreviewTitle = attachment.linkPreviewTitle {
+                attachmentValue["linkPreviewTitle"] = linkPreviewTitle
             }
             return [ "type" : attachmentType, "value" : attachmentValue ]
         }
@@ -133,8 +144,9 @@ public final class LokiPublicChatMessage : NSObject {
     }
     
     // MARK: Convenience
-    @objc public func addAttachment(server: String, serverID: UInt64, contentType: String, size: UInt, fileName: String, flags: UInt, width: UInt, height: UInt, caption: String?, url: String) {
-        let attachment = Attachment(server: server, serverID: serverID, contentType: contentType, size: size, fileName: fileName, flags: flags, width: width, height: height, caption: caption, url: url)
+    @objc public func addAttachment(kind: String, server: String, serverID: UInt64, contentType: String, size: UInt, fileName: String, flags: UInt, width: UInt, height: UInt, caption: String?, url: String, linkPreviewURL: String?, linkPreviewTitle: String?) {
+        guard let kind = Attachment.Kind(rawValue: kind) else { preconditionFailure() }
+        let attachment = Attachment(kind: kind, server: server, serverID: serverID, contentType: contentType, size: size, fileName: fileName, flags: flags, width: width, height: height, caption: caption, url: url, linkPreviewURL: linkPreviewURL, linkPreviewTitle: linkPreviewTitle)
         attachments.append(attachment)
     }
     
@@ -146,7 +158,7 @@ public final class LokiPublicChatMessage : NSObject {
                 string += "\(quotedMessageServerID)"
             }
         }
-        string += attachments.map { "\($0.serverID)" }.joined(separator: "")
+        string += attachments.sorted { $0.serverID < $1.serverID }.map { "\($0.serverID)" }.joined(separator: "")
         string += "\(signatureVersion)"
         return string.data(using: String.Encoding.utf8)
     }
