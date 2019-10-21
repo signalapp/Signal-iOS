@@ -930,6 +930,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     BOOL isAppForegroundAndActive = CurrentAppContext().isAppForegroundAndActive;
     self.shouldObserveDBModifications = self.isViewVisible && isAppForegroundAndActive;
+
+    OWSLogInfo(@"----- shouldObserveDBModifications: %d, isViewVisible: %d, isAppForegroundAndActive: %d",
+        self.shouldObserveDBModifications,
+        self.isViewVisible,
+        isAppForegroundAndActive);
 }
 
 - (void)setShouldObserveDBModifications:(BOOL)shouldObserveDBModifications
@@ -960,6 +965,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                    [self.threadMapping updateSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
                                                                                       transaction:transaction];
                                }];
+
+                               [self logMapping];
 
                                [self updateHasArchivedThreadsRow];
                                [self reloadTableViewData];
@@ -1541,6 +1548,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     OWSAssertIsOnMainThread();
     OWSAssertDebug(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
 
+    OWSLogInfo(@"----- shouldObserveDBModifications: %d", self.shouldObserveDBModifications);
+
     if (!self.shouldObserveDBModifications) {
         return;
     }
@@ -1613,6 +1622,22 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [BenchManager startEventWithTitle:@"uiDatabaseUpdate" eventId:@"uiDatabaseUpdate"];
 }
 
+- (void)logMapping
+{
+    if ([self.threadMapping numberOfItemsInSection:0] > 0) {
+        ThreadViewModel *thread =
+            [self threadViewModelForIndexPath:[NSIndexPath
+                                                  indexPathForItem:0
+                                                         inSection:ConversationListViewControllerSectionConversations]];
+        OWSLogInfo(@"----- first thread: %@, lastMessageForInbox: %@, lastMessageText: %@",
+            thread.threadRecord.uniqueId,
+            thread.lastMessageForInbox.uniqueId,
+            thread.lastMessageText);
+    } else {
+        OWSLogInfo(@"----- no first thread");
+    }
+}
+
 - (void)anyUIDBDidUpdateWithUpdatedThreadIds:(NSSet<NSString *> *)updatedItemIds
 {
     OWSAssertIsOnMainThread();
@@ -1629,14 +1654,22 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     // So we run it before the early return
     [self updateViewState];
 
+    [self logMapping];
+
     if (mappingDiff.sectionChanges.count == 0 && mappingDiff.rowChanges.count == 0) {
+        OWSLogInfo(@"----- no changes");
         return;
     }
 
     if ([self updateHasArchivedThreadsRow]) {
+        OWSLogInfo(@"----- updateHasArchivedThreadsRow");
         [self.tableView reloadData];
         return;
     }
+
+    OWSLogInfo(@"----- sectionChanges: %d, rowChanges: %d, ",
+        (int)mappingDiff.sectionChanges.count == 0,
+        (int)mappingDiff.rowChanges.count == 0);
 
     [self.tableView beginUpdates];
 

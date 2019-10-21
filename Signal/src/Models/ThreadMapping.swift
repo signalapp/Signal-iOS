@@ -145,6 +145,8 @@ class ThreadMapping: NSObject {
             }
             threads = newThreads
         }
+        let firstThread: TSThread? = threads.first
+        Logger.info("---- firstThread: \(firstThread?.uniqueId)")
     }
 
     @objc
