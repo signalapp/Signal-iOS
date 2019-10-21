@@ -554,7 +554,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         NSMutableArray<SignalAccount *> *signalAccountsToUpsert = [NSMutableArray new];
         for (SignalAccount *signalAccount in signalAccounts) {
             if ([newSignalAccountMap objectForKey:signalAccount.recipientAddress] != nil) {
-                OWSFailDebug(@"Ignoring redundant signal account: %@", signalAccount.recipientAddress.description);
+                OWSFailDebug(@"Ignoring redundant signal account: %@", signalAccount.recipientAddress);
                 continue;
             }
 
