@@ -446,44 +446,21 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     return 0;
 }
 
-- (void)updateWithMessage:(TSInteraction *)interaction
+- (void)updateWithMessage:(TSInteraction *)message
        wasMessageInserted:(BOOL)wasMessageInserted
               transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug(interaction != nil);
+    OWSAssertDebug(message != nil);
     OWSAssertDebug(transaction != nil);
 
-    NSString *_Nullable body;
-    if ([interaction isKindOfClass:[TSInteraction class]]) {
-        TSMessage *message = (TSMessage *)interaction;
-        body = message.body;
-    }
-
-    if (![self.class shouldInteractionAppearInInbox:interaction]) {
-        OWSLogInfo(@"----- !shouldInteractionAppearInInbox, wasMessageInserted: %d, thread: %@, message: %@, body: %@",
-            wasMessageInserted,
-            self.uniqueId,
-            interaction.uniqueId,
-            body);
+    if (![self.class shouldInteractionAppearInInbox:message]) {
         return;
     }
 
-    int64_t messageSortId = [self messageSortIdForMessage:interaction transaction:transaction];
+    int64_t messageSortId = [self messageSortIdForMessage:message transaction:transaction];
     BOOL needsToMarkAsVisible = !self.shouldThreadBeVisible;
     BOOL needsToClearArchived = self.isArchived && wasMessageInserted;
     BOOL needsToUpdateLastInteractionRowId = messageSortId > self.lastInteractionRowId;
-
-    OWSLogInfo(@"----- wasMessageInserted: %d, needsToMarkAsVisible: %d, needsToClearArchived: %d, "
-               @"needsToUpdateLastInteractionRowId: %d, messageSortId: %lld, thread: %@, message: %@, body: %@",
-        wasMessageInserted,
-        needsToMarkAsVisible,
-        needsToClearArchived,
-        needsToUpdateLastInteractionRowId,
-        messageSortId,
-        self.uniqueId,
-        interaction.uniqueId,
-        body);
-
     if (needsToMarkAsVisible || needsToClearArchived || needsToUpdateLastInteractionRowId) {
         [self anyOverwritingUpdateWithTransaction:transaction
                                             block:^(TSThread *thread) {
@@ -494,48 +471,23 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
                                                     // No longer archived.
                                                     thread.isArchived = NO;
                                                 }
-                                                OWSLogInfo(@"----- shouldThreadBeVisible: %d, lastInteractionRowId: "
-                                                           @"%lld, isArchived: %d, thread: %@, message: %@",
-                                                    thread.shouldThreadBeVisible,
-                                                    thread.lastInteractionRowId,
-                                                    thread.isArchived,
-                                                    thread.uniqueId,
-                                                    interaction.uniqueId);
                                             }];
     } else {
         [self.databaseStorage touchThread:self transaction:transaction];
     }
 }
 
-- (void)updateWithRemovedMessage:(TSInteraction *)interaction transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithRemovedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug(interaction != nil);
+    OWSAssertDebug(message != nil);
     OWSAssertDebug(transaction != nil);
 
-    NSString *_Nullable body;
-    if ([interaction isKindOfClass:[TSInteraction class]]) {
-        TSMessage *message = (TSMessage *)interaction;
-        body = message.body;
-    }
-
-    if (![self.class shouldInteractionAppearInInbox:interaction]) {
-        OWSLogInfo(@"----- !shouldInteractionAppearInInbox, thread: %@, message: %@, body: %@",
-            self.uniqueId,
-            interaction.uniqueId,
-            body);
+    if (![self.class shouldInteractionAppearInInbox:message]) {
         return;
     }
 
-    int64_t messageSortId = [self messageSortIdForMessage:interaction transaction:transaction];
+    int64_t messageSortId = [self messageSortIdForMessage:message transaction:transaction];
     BOOL needsToUpdateLastInteractionRowId = messageSortId == self.lastInteractionRowId;
-
-    OWSLogInfo(@"----- needsToUpdateLastInteractionRowId: %d, messageSortId: %lld, thread: %@, message: %@, body: %@",
-        needsToUpdateLastInteractionRowId,
-        messageSortId,
-        self.uniqueId,
-        interaction.uniqueId,
-        body);
-
     if (needsToUpdateLastInteractionRowId) {
         [self anyOverwritingUpdateWithTransaction:transaction
                                             block:^(TSThread *thread) {
@@ -543,10 +495,6 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
                                                     [thread lastInteractionForInboxWithTransaction:transaction];
                                                 thread.lastInteractionRowId
                                                     = latestInteraction ? latestInteraction.sortId : 0;
-                                                OWSLogInfo(@"----- lastInteractionRowId: %lld, thread: %@, message: %@",
-                                                    thread.lastInteractionRowId,
-                                                    thread.uniqueId,
-                                                    interaction.uniqueId);
                                             }];
     } else {
         [self.databaseStorage touchThread:self transaction:transaction];
