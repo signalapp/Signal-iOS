@@ -2162,7 +2162,7 @@ typedef enum : NSUInteger {
 
     NSValue *_Nullable contentOffset = [self contentOffsetForMenuActionInteraction];
     if (contentOffset == nil) {
-        // OWSFailDebug(@"Missing contentOffset.");
+//        OWSFailDebug(@"Missing contentOffset.");
         return;
     }
     [self.collectionView setContentOffset:contentOffset.CGPointValue animated:animated];
@@ -2192,7 +2192,7 @@ typedef enum : NSUInteger {
     UICollectionViewLayoutAttributes *_Nullable layoutAttributes =
         [self.layout layoutAttributesForItemAtIndexPath:indexPath];
     if (layoutAttributes == nil) {
-        // OWSFailDebug(@"Missing layoutAttributes.");
+//        OWSFailDebug(@"Missing layoutAttributes.");
         return nil;
     }
     CGRect cellFrame = layoutAttributes.frame;

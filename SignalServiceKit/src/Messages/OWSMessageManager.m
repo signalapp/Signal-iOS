@@ -1427,14 +1427,6 @@ NS_ASSUME_NONNULL_BEGIN
                     [self.primaryStorage setIDForMessageWithServerID:dataMessage.publicChatInfo.serverID to:incomingMessage.uniqueId in:transaction];
                 }
 
-                // Loki: Generate a link preview if needed
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    NSString *linkPreviewURL = [OWSLinkPreview previewURLForRawBodyText:incomingMessage.body];
-                    if (linkPreviewURL != nil) {
-                        [incomingMessage generateLinkPreviewIfNeededFromURL:linkPreviewURL];
-                    }
-                });
-
                 return incomingMessage;
             }
             default: {
@@ -1528,18 +1520,6 @@ NS_ASSUME_NONNULL_BEGIN
                                thread:thread
                              envelope:envelope
                           transaction:transaction];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            NSString *linkPreviewURL;
-            if (linkPreview != nil) {
-                linkPreviewURL = linkPreview.urlString;
-            } else {
-                linkPreviewURL = [OWSLinkPreview previewURLForRawBodyText:incomingMessage.body];
-            }
-            if (linkPreviewURL != nil) {
-                [incomingMessage generateLinkPreviewIfNeededFromURL:linkPreviewURL];
-            }
-        });
         
         return incomingMessage;
     }

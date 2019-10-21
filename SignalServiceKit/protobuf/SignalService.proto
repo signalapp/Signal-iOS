@@ -58,14 +58,14 @@ message TypingMessage {
 }
 
 message Content {
-  optional DataMessage              dataMessage         = 1;
-  optional SyncMessage              syncMessage         = 2;
-  optional CallMessage              callMessage         = 3;
-  optional NullMessage              nullMessage         = 4;
-  optional ReceiptMessage           receiptMessage      = 5;
-  optional TypingMessage            typingMessage       = 6;
-  optional PrekeyBundleMessage      prekeyBundleMessage = 101; // Loki
-  optional LokiAddressMessage       lokiAddressMessage  = 102; // Loki
+  optional DataMessage              dataMessage           = 1;
+  optional SyncMessage              syncMessage           = 2;
+  optional CallMessage              callMessage           = 3;
+  optional NullMessage              nullMessage           = 4;
+  optional ReceiptMessage           receiptMessage        = 5;
+  optional TypingMessage            typingMessage         = 6;
+  optional PrekeyBundleMessage      prekeyBundleMessage   = 101; // Loki
+  optional LokiAddressMessage       lokiAddressMessage    = 102; // Loki
   optional LokiDeviceLinkMessage    lokiDeviceLinkMessage = 103; // Loki
 }
 
@@ -311,7 +311,7 @@ message SyncMessage {
     optional AttachmentPointer blob       = 1;
     // Signal-iOS renamed this property.
     optional bool              isComplete = 2 [default = false];
-    optional bytes             data     = 101; // Loki
+    optional bytes             data       = 101; // Loki
   }
 
   message Groups {

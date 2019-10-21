@@ -172,7 +172,6 @@ public class OWSLinkPreview: MTLModel {
             }
         }
         
-        /*
         var imageAttachmentId: String?
         if let imageProto = previewProto.image {
             if let imageAttachmentPointer = TSAttachmentPointer(fromProto: imageProto, albumMessage: nil) {
@@ -183,9 +182,8 @@ public class OWSLinkPreview: MTLModel {
                 throw LinkPreviewError.invalidInput
             }
         }
-         */
 
-        let linkPreview = OWSLinkPreview(urlString: urlString, title: title, imageAttachmentId: nil)
+        let linkPreview = OWSLinkPreview(urlString: urlString, title: title, imageAttachmentId: imageAttachmentId)
 
         guard linkPreview.isValid() else {
             Logger.error("Preview has neither title nor image.")
