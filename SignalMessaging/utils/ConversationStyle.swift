@@ -274,6 +274,6 @@ public class ConversationStyle: NSObject {
     @objc
     public func quotedReplyAttachmentColor() -> UIColor {
         // TODO:
-        return Theme.middleGrayColor
+        return UIColor.white
     }
 }

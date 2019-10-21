@@ -208,7 +208,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (body.length == 0 && !hasAttachment) {
-        OWSFailDebug(@"quoted message has neither text nor attachment");
+//        OWSFailDebug(@"quoted message has neither text nor attachment");
         return nil;
     }
 
