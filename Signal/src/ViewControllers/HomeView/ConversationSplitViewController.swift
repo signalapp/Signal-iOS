@@ -440,6 +440,49 @@ extension ConversationSplitViewController: UINavigationControllerDelegate {
 }
 
 private class NoSelectedConversationViewController: OWSViewController {
+    let titleLabel = UILabel()
+    let bodyLabel = UILabel()
+
+    override func loadView() {
+        view = UIView()
+
+        let logoContainer = UIView()
+        logoContainer.layoutMargins = UIEdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
+
+        let logoBackground = UIView()
+        logoBackground.backgroundColor = .ows_signalBlue
+        logoBackground.layer.cornerRadius = 9.34
+        logoBackground.autoSetDimensions(to: CGSize(square: 96))
+        logoContainer.addSubview(logoBackground)
+        logoBackground.autoPinHeightToSuperviewMargins()
+        logoBackground.autoHCenterInSuperview()
+
+        let logoImageView = UIImageView(image: #imageLiteral(resourceName: "logoSignal"))
+        logoImageView.contentMode = .scaleAspectFit
+        logoContainer.addSubview(logoImageView)
+        logoImageView.autoCenterInSuperview()
+        logoImageView.autoSetDimension(.height, toSize: 72)
+
+        titleLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold()
+        titleLabel.textAlignment = .center
+        titleLabel.numberOfLines = 0
+        titleLabel.lineBreakMode = .byWordWrapping
+        titleLabel.text = "Welcome to Signal"
+
+        bodyLabel.font = .ows_dynamicTypeBody
+        bodyLabel.textAlignment = .center
+        bodyLabel.numberOfLines = 0
+        bodyLabel.lineBreakMode = .byWordWrapping
+        bodyLabel.text = "Select a contact or group to start chatting."
+
+        let centerStackView = UIStackView(arrangedSubviews: [logoContainer, titleLabel, bodyLabel])
+        centerStackView.axis = .vertical
+        centerStackView.spacing = 4
+        view.addSubview(centerStackView)
+        centerStackView.autoVCenterInSuperview()
+        centerStackView.autoPinWidthToSuperview()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -450,5 +493,7 @@ private class NoSelectedConversationViewController: OWSViewController {
 
     @objc func applyTheme() {
         view.backgroundColor = Theme.backgroundColor
+        titleLabel.textColor = Theme.primaryTextColor
+        bodyLabel.textColor = Theme.secondaryTextAndIconColor
     }
 }
