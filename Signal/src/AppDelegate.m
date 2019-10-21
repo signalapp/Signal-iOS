@@ -344,6 +344,8 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 
     OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
 
+    OWSLogInfo(@"launchOptions: %@.", launchOptions);
+
     [OWSAnalytics appLaunchDidBegin];
 
     return YES;
