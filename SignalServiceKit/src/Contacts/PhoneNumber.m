@@ -52,6 +52,10 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
         return nil;
     }
 
+    if (![phoneUtil.nbPhoneNumberUtil isPossibleNumber:number]) {
+        return nil;
+    }
+
     NSError *toE164Error;
     NSString *e164 = [phoneUtil format:number numberFormat:NBEPhoneNumberFormatE164 error:&toE164Error];
     if (toE164Error) {
