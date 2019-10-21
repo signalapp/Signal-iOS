@@ -216,5 +216,5 @@ public class FeatureFlags: NSObject {
     public static let verboseAboutView = build.includes(.qa)
 
     @objc
-    public static let logSQLQueries = build.includes(.qa)
+    public static let logSQLQueries = build.includes(.dev)
 }
