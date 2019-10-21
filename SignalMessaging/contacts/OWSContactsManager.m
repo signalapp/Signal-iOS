@@ -399,10 +399,32 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                                           key:OWSContactsManagerKeyLastKnownContactPhoneNumbers
                                   transaction:transaction];
 
-                // Don't do a full intersection more often than once every 6 hours.
-                const NSTimeInterval kMinFullIntersectionInterval = 6 * kHourInterval;
-                NSDate *nextFullIntersectionDate = [NSDate
-                    dateWithTimeIntervalSince1970:[NSDate new].timeIntervalSince1970 + kMinFullIntersectionInterval];
+                const NSUInteger contactCount = phoneNumbersForIntersection.count;
+
+                const NSUInteger minIntersectionsPerDay = 1;
+                const NSUInteger maxIntersectionsPerDay = 4;
+                // Try to target half the known limit, reserving some capacity for manual refreshes
+                // and manual lookup-by-phonenumber.
+                const NSUInteger maxContactsPerDay = 10000;
+                NSUInteger fullIntersectionsPerDay;
+                if (contactCount > 0) {
+                    fullIntersectionsPerDay = maxContactsPerDay / contactCount;
+                    fullIntersectionsPerDay = MAX(minIntersectionsPerDay, fullIntersectionsPerDay);
+                    fullIntersectionsPerDay = MIN(maxIntersectionsPerDay, fullIntersectionsPerDay);
+                } else {
+                    fullIntersectionsPerDay = maxIntersectionsPerDay;
+                }
+                const NSTimeInterval nextFullIntersectionInterval = kDayInterval / fullIntersectionsPerDay;
+
+                NSDate *nextFullIntersectionDate = [NSDate dateWithTimeIntervalSinceNow:nextFullIntersectionInterval];
+                OWSLogDebug(@"contactCount: %lu, fullIntersectionsPerDay: %lu, nextFullIntersectionInterval: %lu, "
+                            @"currentDate: %@, nextFullIntersectionDate: %@",
+                    (unsigned long)contactCount,
+                    (unsigned long)fullIntersectionsPerDay,
+                    (unsigned long)nextFullIntersectionInterval,
+                    [NSDate new],
+                    nextFullIntersectionDate);
+
                 [self.keyValueStore setDate:nextFullIntersectionDate
                                         key:OWSContactsManagerKeyNextFullIntersectionDate
                                 transaction:transaction];
