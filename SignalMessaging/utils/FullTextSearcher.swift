@@ -223,7 +223,7 @@ public class ConversationScreenSearchResultSet: NSObject {
 public class FullTextSearcher: NSObject {
 
     @objc
-    public static let kDefaultMaxResults: UInt = 1000
+    public static let kDefaultMaxResults: UInt = 500
 
     // MARK: - Dependencies
 
