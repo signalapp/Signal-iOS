@@ -120,7 +120,7 @@ public final class LokiPublicChatMessage : NSObject {
         let attachmentAnnotations: [JSON] = attachments.map { attachment in
             let type = attachment.contentType.hasPrefix("image") ? "photo" : "video" // TODO: We should do better than this
             var attachmentValue: JSON = [
-                // Field required by the .NET API
+                // Fields required by the .NET API
                 "version" : 1, "type" : type,
                 // Custom fields
                 "lokiType" : attachment.kind.rawValue, "server" : attachment.server, "id" : attachment.serverID, "contentType" : attachment.contentType, "size" : attachment.size, "fileName" : attachment.fileName, "flags" : attachment.flags, "width" : attachment.width, "height" : attachment.height, "url" : attachment.url

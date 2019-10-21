@@ -58,6 +58,9 @@ final class DisplayNameVC : OnboardingBaseViewController {
         guard !displayName.isEmpty else {
             return OWSAlerts.showErrorAlert(message: NSLocalizedString("Please pick a display name", comment: ""))
         }
+        guard displayName.allSatisfy({ "0"..."9" ~= $0 || "a"..."z" ~= $0 || "A"..."Z" ~= $0 || $0 == "_" }) else {
+            return OWSAlerts.showErrorAlert(message: NSLocalizedString("Please pick a display name that consists of only a-z, A-Z, 0-9 and _ characters", comment: ""))
+        }
         guard !OWSProfileManager.shared().isProfileNameTooLong(displayName) else {
             return OWSAlerts.showErrorAlert(message: NSLocalizedString("Please pick a shorter display name", comment: ""))
         }

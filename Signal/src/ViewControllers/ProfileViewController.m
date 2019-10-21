@@ -398,6 +398,11 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         return [OWSAlerts showErrorAlertWithMessage:NSLocalizedString(@"Please pick a display name", @"")];
     }
     
+    NSCharacterSet *allowedCharacters = [NSCharacterSet characterSetWithCharactersInString:@"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"];
+    if ([normalizedProfileName rangeOfCharacterFromSet:allowedCharacters.invertedSet].location != NSNotFound) {
+        return [OWSAlerts showErrorAlertWithMessage:NSLocalizedString(@"Please pick a display name that consists of only a-z, A-Z, 0-9 and _ characters", @"")];
+    }
+    
     if ([OWSProfileManager.sharedManager isProfileNameTooLong:normalizedProfileName]) {
         return [OWSAlerts showErrorAlertWithMessage:NSLocalizedString(@"Please pick a shorter display name", @"")];
     }
