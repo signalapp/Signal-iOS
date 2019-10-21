@@ -105,7 +105,8 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 
 - (NSString *)multipleAccountLabelText
 {
-    return _multipleAccountLabelText.filterStringForDisplay;
+    NSString *_Nullable result = _multipleAccountLabelText.filterStringForDisplay;
+    return result != nil ? result : @"";
 }
 
 - (SignalServiceAddress *)recipientAddress
