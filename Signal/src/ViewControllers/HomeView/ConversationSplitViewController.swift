@@ -53,11 +53,7 @@ class ConversationSplitViewController: UISplitViewController {
 
         primaryNavController.delegate = self
         delegate = self
-
-        // If this is not an iPad we want to always show the collapsed mode, even
-        // if the size class is regular (portrait mode on large phones). On iPad,
-        // if there is space we want to always show the conversation list.
-        preferredDisplayMode = UIDevice.current.isIPad ? .allVisible : .primaryHidden
+        preferredDisplayMode = .allVisible
     }
 
     required init?(coder aDecoder: NSCoder) {
