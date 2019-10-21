@@ -519,11 +519,11 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     } else if (self.contactShare) {
         return [[self.contactShare.name.displayName stringByAppendingString:@" "] stringByAppendingString:@"👤"];
     } else if (self.messageSticker) {
-        return NSLocalizedString(@"STICKER_MESSAGE_PREVIEW",
-            @"Preview text shown in notifications and conversation list for sticker messages.");
+        return NSLocalizedString(
+            @"STICKER_MESSAGE_PREVIEW", @"Preview text shown in notifications and home view for sticker messages.");
     } else {
-        // This can happen when initially saving outgoing messages
-        // with camera first capture over the conversation list.
+        // This can happen when initially saving outgoing messages with camera first capture
+        // over the homeview.
         return @"";
     }
 }

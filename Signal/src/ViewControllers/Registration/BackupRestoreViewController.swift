@@ -123,7 +123,7 @@ public class BackupRestoreViewController: OWSTableViewController {
 
         backup.setHasPendingRestoreDecision(false)
 
-        showConversationSplitView()
+        showHomeView()
     }
 
     @objc
@@ -135,16 +135,16 @@ public class BackupRestoreViewController: OWSTableViewController {
         backup.tryToImport()
     }
 
-    private func showConversationSplitView() {
+    private func showHomeView() {
         // In production, this view will never be presented in a modal.
         // During testing (debug UI, etc.), it may be a modal.
         let isModal = navigationController?.presentingViewController != nil
         if isModal {
             dismiss(animated: true, completion: {
-                SignalApp.shared().showConversationSplitView()
+                SignalApp.shared().showHomeView()
             })
         } else {
-            SignalApp.shared().showConversationSplitView()
+            SignalApp.shared().showHomeView()
         }
 
         NotificationCenter.default.removeObserver(self)
@@ -161,7 +161,7 @@ public class BackupRestoreViewController: OWSTableViewController {
         if backup.backupImportState == .succeeded {
             backup.setHasPendingRestoreDecision(false)
 
-            showConversationSplitView()
+            showHomeView()
         } else {
             updateTableContents()
         }

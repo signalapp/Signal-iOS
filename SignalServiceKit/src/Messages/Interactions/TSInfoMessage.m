@@ -267,7 +267,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         case TSInfoMessageUnknownProtocolVersion:
             return NO;
         case TSInfoMessageUserJoinedSignal:
-            // In the conversation list, we want conversations with an unread "new user" notification to
+            // In the home view, we want conversations with an unread "new user" notification to
             // be badged and bolded, like they received a message.
             return YES;
     }

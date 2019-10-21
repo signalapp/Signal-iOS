@@ -102,7 +102,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     public private(set) var uiDatabaseObserver: UIDatabaseObserver?
 
     @objc
-    public private(set) var conversationListDatabaseObserver: ConversationListDatabaseObserver?
+    public private(set) var homeViewDatabaseObserver: HomeViewDatabaseObserver?
 
     @objc
     public private(set) var conversationViewDatabaseObserver: ConversationViewDatabaseObserver?
@@ -121,12 +121,12 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         let uiDatabaseObserver = try UIDatabaseObserver(pool: pool)
         self.uiDatabaseObserver = uiDatabaseObserver
 
-        // ConversationListDatabaseObserver is built on top of UIDatabaseObserver
+        // HomeViewDatabaseObserver is built on top of UIDatabaseObserver
         // but includes the details necessary for rendering collection view
         // batch updates.
-        let conversationListDatabaseObserver = ConversationListDatabaseObserver()
-        self.conversationListDatabaseObserver = conversationListDatabaseObserver
-        uiDatabaseObserver.appendSnapshotDelegate(conversationListDatabaseObserver)
+        let homeViewDatabaseObserver = HomeViewDatabaseObserver()
+        self.homeViewDatabaseObserver = homeViewDatabaseObserver
+        uiDatabaseObserver.appendSnapshotDelegate(homeViewDatabaseObserver)
 
         // ConversationViewDatabaseObserver is built on top of UIDatabaseObserver
         // but includes the details necessary for rendering collection view
@@ -158,7 +158,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         // are notified when things change, but are not given any specific details
         // about the changes.
         self.uiDatabaseObserver = nil
-        self.conversationListDatabaseObserver = nil
+        self.homeViewDatabaseObserver = nil
         self.conversationViewDatabaseObserver = nil
         self.mediaGalleryDatabaseObserver = nil
         self.genericDatabaseObserver = nil

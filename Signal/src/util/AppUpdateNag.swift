@@ -113,7 +113,7 @@ class AppUpdateNag: NSObject {
             }
         }
 
-        // Only show nag if we are "at rest" in the conversation split or registration view without any
+        // Only show nag if we are "at rest" in the home view or registration view without any
         // alerts or dialogs showing.
         guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
             owsFailDebug("frontmostViewController was unexpectedly nil")
@@ -121,7 +121,7 @@ class AppUpdateNag: NSObject {
         }
 
         switch frontmostViewController {
-        case is ConversationSplitViewController, is OnboardingSplashViewController:
+        case is HomeViewController, is OnboardingSplashViewController:
             self.setLastNagDate(Date())
             self.clearFirstHeardOfNewVersionDate()
             presentUpgradeNag(appStoreRecord: appStoreRecord)

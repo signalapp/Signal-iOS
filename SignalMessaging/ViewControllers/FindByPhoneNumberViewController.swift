@@ -224,7 +224,7 @@ extension FindByPhoneNumberViewController: CountryCodeViewControllerDelegate {
     @objc func didTapCountryRow() {
         let countryCodeController = CountryCodeViewController()
         countryCodeController.countryCodeDelegate = self
-        presentFormSheet(OWSNavigationController(rootViewController: countryCodeController), animated: true)
+        present(OWSNavigationController(rootViewController: countryCodeController), animated: true)
     }
 
     func populateDefaultCountryCode() {

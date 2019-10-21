@@ -112,6 +112,15 @@ public class OnboardingBaseViewController: OWSViewController {
         self.navigationController?.isNavigationBarHidden = true
         // Disable "back" gesture.
         self.navigationController?.navigationItem.backBarButtonItem?.isEnabled = false
+
+        // TODO: Is there a better way to do this?
+        if let navigationController = self.navigationController as? OWSNavigationController {
+            SignalApp.shared().signUpFlowNavigationController = navigationController
+        } else {
+            owsFailDebug("Missing or invalid navigationController")
+        }
+
+        view.layoutIfNeeded()
     }
 
     public override func viewDidAppear(_ animated: Bool) {

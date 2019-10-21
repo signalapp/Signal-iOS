@@ -6,10 +6,21 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AccountManager;
+@class CallService;
+@class CallUIAdapter;
+@class HomeViewController;
+@class OWSMessageFetcherJob;
+@class OWSNavigationController;
+@class OWSWebRTCCallMessageHandler;
+@class OutboundCallInitiator;
 @class SignalServiceAddress;
 @class TSThread;
 
 @interface SignalApp : NSObject
+
+@property (nonatomic, nullable, weak) HomeViewController *homeViewController;
+@property (nonatomic, nullable, weak) OWSNavigationController *signUpFlowNavigationController;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -18,8 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setup;
 
 #pragma mark - Conversation Presentation
-
-- (void)showNewConversationView;
 
 - (void)presentConversationForAddress:(SignalServiceAddress *)address animated:(BOOL)isAnimated;
 
@@ -44,10 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)resetAppData;
 
-- (void)showOnboardingView;
-- (void)showConversationSplitView;
-- (void)ensureRootViewController:(NSTimeInterval)launchStartedAt;
-- (BOOL)receivedVerificationCode:(NSString *)verificationCode;
+- (void)showHomeView;
 
 @end
 

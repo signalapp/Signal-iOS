@@ -8,15 +8,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSInteger, ConversationListViewControllerSection) {
-    ConversationListViewControllerSectionReminders,
-    ConversationListViewControllerSectionConversations,
-    ConversationListViewControllerSectionArchiveButton,
+typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
+    HomeViewControllerSectionReminders,
+    HomeViewControllerSectionConversations,
+    HomeViewControllerSectionArchiveButton,
 };
 
 @class TSThread;
 
-@interface ConversationListViewController : OWSViewController
+@interface HomeViewController : OWSViewController
 
 - (void)presentThread:(TSThread *)thread action:(ConversationViewAction)action animated:(BOOL)isAnimated;
 
@@ -27,8 +27,6 @@ typedef NS_ENUM(NSInteger, ConversationListViewControllerSection) {
 
 // Used by force-touch Springboard icon shortcut
 - (void)showNewConversationView;
-
-@property (nonatomic) TSThread *lastViewedThread;
 
 @end
 

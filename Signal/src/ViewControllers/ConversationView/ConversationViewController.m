@@ -143,7 +143,6 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) OWSAudioActivity *recordVoiceNoteAudioActivity;
 @property (nonatomic, readonly) NSTimeInterval viewControllerCreatedAt;
 
-@property (nonatomic, readonly) InputAccessoryViewWrapper *inputWrapper;
 @property (nonatomic, readonly) ConversationInputToolbar *inputToolbar;
 @property (nonatomic, readonly) ConversationCollectionView *collectionView;
 @property (nonatomic, readonly) ConversationViewLayout *layout;
@@ -409,10 +408,6 @@ typedef enum : NSUInteger {
                                              selector:@selector(keyboardDidChangeFrame:)
                                                  name:UIKeyboardDidChangeFrameNotification
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(themeDidChange:)
-                                                 name:ThemeDidChangeNotification
-                                               object:nil];
 }
 
 - (BOOL)isGroupConversation
@@ -474,11 +469,6 @@ typedef enum : NSUInteger {
 
     [self updateNavigationBarSubtitleLabel];
     [self ensureBannerState];
-}
-
-- (void)themeDidChange:(NSNotification *)notification
-{
-    [self applyTheme];
 }
 
 - (void)peekSetup
@@ -587,7 +577,14 @@ typedef enum : NSUInteger {
     [self createConversationScrollButtons];
     [self createHeaderViews];
 
-    [self updateLeftBarItem];
+    if (@available(iOS 11, *)) {
+        // We use the default back button from home view, which animates nicely with interactive transitions like the
+        // interactive pop gesture and the "slide left" for info.
+    } else {
+        // On iOS9/10 the default back button is too wide, so we use a custom back button. This doesn't animate nicely
+        // with interactive transitions, but has the appropriate width.
+        [self createBackButton];
+    }
 
     [self addNotificationListeners];
     [self applyTheme];
@@ -632,7 +629,10 @@ typedef enum : NSUInteger {
     self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyBoard)];
     [self.collectionView addGestureRecognizer:self.tapGestureRecognizer];
 
-    _inputWrapper = [InputAccessoryViewWrapper new];
+    _inputToolbar = [[ConversationInputToolbar alloc] initWithConversationStyle:self.conversationStyle];
+    self.inputToolbar.inputToolbarDelegate = self;
+    self.inputToolbar.inputTextViewDelegate = self;
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputToolbar);
 
     self.loadMoreHeader = [UILabel new];
     self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
@@ -677,20 +677,13 @@ typedef enum : NSUInteger {
 
 - (nullable UIView *)inputAccessoryView
 {
-    UIView *inputAccessoryView;
-
     if (self.messageRequestView) {
-        inputAccessoryView = self.messageRequestView;
+        return self.messageRequestView;
     } else if (self.isShowingSearchUI) {
-        inputAccessoryView = self.searchController.resultsBar;
+        return self.searchController.resultsBar;
     } else {
-        inputAccessoryView = self.inputToolbar;
+        return self.inputToolbar;
     }
-
-    self.inputWrapper.wrappedView = inputAccessoryView;
-    self.inputWrapper.containerWidth = self.view.width;
-
-    return self.inputWrapper;
 }
 
 - (nullable NSString *)textInputContextIdentifier
@@ -770,7 +763,7 @@ typedef enum : NSUInteger {
     self.isViewVisible = YES;
 
     // We should have already requested contact access at this point, so this should be a no-op
-    // unless it ever becomes possible to load this VC without going via the ConversationListViewController.
+    // unless it ever becomes possible to load this VC without going via the HomeViewController.
     [self.contactsManager requestSystemContactsOnce];
 
     [self updateDisappearingMessagesConfigurationWithSneakyTransaction];
@@ -1254,8 +1247,8 @@ typedef enum : NSUInteger {
     // - Longpress on a message to show edit menu, which entails making the pressed view the first responder.
     // - Begin presenting another view, e.g. swipe-left for details or swipe-right to go back, but quit part way, so that you remain on the conversation view
     // - toolbar will be not be visible unless we reaquire first responder.
-    if (!self.isFirstResponder && !self.presentedViewController) {
-
+    if (!self.isFirstResponder) {
+        
         // We don't have to worry about the input toolbar being visible if the inputToolbar.textView is first responder
         // In fact doing so would unnecessarily dismiss the keyboard which is probably not desirable and at least
         // a distracting animation.
@@ -1406,9 +1399,7 @@ typedef enum : NSUInteger {
     self.headerView.titleIcon = icon;
 
     if (name && !attributedName) {
-        attributedName =
-            [[NSAttributedString alloc] initWithString:name
-                                            attributes:@{ NSForegroundColorAttributeName : Theme.primaryTextColor }];
+        attributedName = [[NSAttributedString alloc] initWithString:name];
     }
 
     if ([attributedName isEqual:self.headerView.attributedTitle]) {
@@ -1457,39 +1448,8 @@ typedef enum : NSUInteger {
     return 16;
 }
 
-- (void)updateLeftBarItem
-{
-    // Show the close button if the split view is not collapsed.
-    if (!self.conversationSplitViewController.isCollapsed) {
-        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
-            initWithTitle:NSLocalizedString(
-                              @"CLOSE_BUTTON", @"A string indicating that the user can close the current conversation")
-                    style:UIBarButtonItemStyleDone
-                   target:self
-                   action:@selector(closeButtonPressed)];
-        return;
-    }
-
-    // Otherwise, show the back button.
-
-    if (@available(iOS 11, *)) {
-        // We use the default back button from conversation list, which animates nicely with interactive transitions
-        // like the interactive pop gesture and the "slide left" for info.
-        self.navigationItem.leftBarButtonItem = nil;
-    } else {
-        // On iOS9/10 the default back button is too wide, so we use a custom back button. This doesn't animate nicely
-        // with interactive transitions, but has the appropriate width.
-        [self createBackButton];
-    }
-}
-
 - (void)createBackButton
 {
-    if (self.navigationController.viewControllers.count == 1) {
-        // There's nowhere to go back to, do nothing.
-        return;
-    }
-
     UIBarButtonItem *backItem = [self createOWSBackButton];
     self.customBackButton = backItem;
     if (backItem.customView) {
@@ -1517,11 +1477,6 @@ typedef enum : NSUInteger {
     }
 
     self.navigationItem.leftBarButtonItem = backItem;
-}
-
-- (void)closeButtonPressed
-{
-    [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
 }
 
 - (void)windowManagerCallDidChange:(NSNotification *)notification
@@ -2594,7 +2549,7 @@ typedef enum : NSUInteger {
     }
 
     StickerPackViewController *packView = [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
-    [self presentFormSheetViewController:packView animated:YES completion:nil];
+    [self presentViewController:packView animated:YES completion:nil];
 }
 
 - (void)didTapFailedIncomingAttachment:(id<ConversationViewItem>)viewItem
@@ -2735,7 +2690,7 @@ typedef enum : NSUInteger {
     }
 
     StickerPackViewController *packView = [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
-    [self presentFormSheetViewController:packView animated:YES completion:nil];
+    [self presentViewController:packView animated:YES completion:nil];
 }
 
 #pragma mark - OWSMessageViewOnceViewDelegate
@@ -2896,7 +2851,7 @@ typedef enum : NSUInteger {
     OWSNavigationController *navigationController =
         [[OWSNavigationController alloc] initWithRootViewController:contactsPicker];
     [self dismissKeyBoard];
-    [self presentFormSheetViewController:navigationController animated:YES completion:nil];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 #pragma mark - Attachment Picking: Documents
@@ -2935,7 +2890,7 @@ typedef enum : NSUInteger {
     GifPickerNavigationViewController *gifModal = [GifPickerNavigationViewController new];
     gifModal.approvalDelegate = self;
     [self dismissKeyBoard];
-    [self presentFormSheetViewController:gifModal animated:YES completion:nil];
+    [self presentViewController:gifModal animated:YES completion:nil];
 }
 
 - (void)messageWasSent:(TSOutgoingMessage *)message
@@ -2962,7 +2917,7 @@ typedef enum : NSUInteger {
     documentPicker.delegate = self;
 
     [self dismissKeyBoard];
-    [self presentFormSheetViewController:documentPicker animated:YES completion:nil];
+    [self presentViewController:documentPicker animated:YES completion:nil];
 }
 
 #pragma mark UIDocumentPickerDelegate
@@ -3461,7 +3416,7 @@ typedef enum : NSUInteger {
     OWSNavigationController *navigationController =
         [[OWSNavigationController alloc] initWithRootViewController:locationPicker];
     [self dismissKeyBoard];
-    [self presentFormSheetViewController:navigationController animated:YES completion:nil];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)didSelectRecentPhotoWithAsset:(PHAsset *)asset attachment:(SignalAttachment *)attachment
@@ -3972,22 +3927,7 @@ typedef enum : NSUInteger {
     self.view.backgroundColor = Theme.toolbarBackgroundColor;
     self.collectionView.backgroundColor = Theme.backgroundColor;
 
-    [self updateNavigationTitle];
     [self updateNavigationBarSubtitleLabel];
-
-    [self createInputToolbar];
-    [self updateInputToolbarLayout];
-
-    [self.collectionView reloadData];
-}
-
-- (void)createInputToolbar
-{
-    _inputToolbar = [[ConversationInputToolbar alloc] initWithConversationStyle:self.conversationStyle];
-    [self loadDraftInCompose];
-    self.inputToolbar.inputToolbarDelegate = self;
-    self.inputToolbar.inputTextViewDelegate = self;
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputToolbar);
 }
 
 #pragma mark - AttachmentApprovalViewControllerDelegate
@@ -4471,7 +4411,7 @@ typedef enum : NSUInteger {
     ManageStickersViewController *manageStickersView = [ManageStickersViewController new];
     OWSNavigationController *navigationController =
         [[OWSNavigationController alloc] initWithRootViewController:manageStickersView];
-    [self presentFormSheetViewController:navigationController animated:YES completion:nil];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)voiceMemoGestureDidStart
@@ -5250,9 +5190,9 @@ typedef enum : NSUInteger {
 {
     [super traitCollectionDidChange:previousTraitCollection];
 
+    [self updateNavigationBarSubtitleLabel];
     [self ensureBannerState];
     [self updateBarButtonItems];
-    [self updateNavigationBarSubtitleLabel];
 }
 
 - (void)resetForSizeOrOrientationChange
@@ -5272,7 +5212,6 @@ typedef enum : NSUInteger {
     }
     [self updateInputToolbarLayout];
     [self updateHeaderViewFrame];
-    [self updateLeftBarItem];
 }
 
 - (void)viewSafeAreaInsetsDidChange
@@ -5333,9 +5272,7 @@ typedef enum : NSUInteger {
         bottomInset = self.view.safeAreaInsets.bottom;
     }
 
-    InputAccessoryViewWrapper *dismissingView = [InputAccessoryViewWrapper new];
-    dismissingView.wrappedView = self.messageRequestView;
-    dismissingView.containerWidth = self.view.width;
+    MessageRequestView *dismissingView = self.messageRequestView;
     self.messageRequestView = nil;
 
     [self reloadInputViews];
@@ -5390,7 +5327,7 @@ typedef enum : NSUInteger {
         [self.thread softDeleteThreadWithTransaction:transaction];
 
         [transaction addCompletionWithBlock:^{
-            [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
+            [self.navigationController popViewControllerAnimated:YES];
         }];
     }];
 }

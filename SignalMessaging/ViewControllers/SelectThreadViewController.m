@@ -203,7 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
                             OWSCAssertDebug(strongSelf);
 
                             // To be consistent with the threads (above), we use ContactTableViewCell
-                            // instead of ConversationListCell to present contacts and threads.
+                            // instead of HomeViewCell to present contacts and threads.
                             ContactTableViewCell *cell = [ContactTableViewCell new];
 
                             BOOL isBlocked = [helper isThreadBlocked:thread];

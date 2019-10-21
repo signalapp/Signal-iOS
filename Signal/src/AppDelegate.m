@@ -3,8 +3,8 @@
 //
 
 #import "AppDelegate.h"
-#import "ConversationListViewController.h"
 #import "DebugLogger.h"
+#import "HomeViewController.h"
 #import "MainAppContext.h"
 #import "OWS2FASettingsViewController.h"
 #import "OWSBackup.h"
@@ -73,6 +73,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate>
 
+@property (nonatomic) BOOL hasInitialRootViewController;
 @property (nonatomic) BOOL areVersionMigrationsComplete;
 @property (nonatomic) BOOL didAppLaunchFail;
 
@@ -553,7 +554,21 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 
     if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
         if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![self.tsAccountManager isRegistered]) {
-            return [SignalApp.sharedApp receivedVerificationCode:[url.path substringFromIndex:1]];
+            id signupController = SignalApp.sharedApp.signUpFlowNavigationController;
+            if ([signupController isKindOfClass:[OWSNavigationController class]]) {
+                OWSNavigationController *navController = (OWSNavigationController *)signupController;
+                UIViewController *controller = [navController.childViewControllers lastObject];
+                if ([controller isKindOfClass:[OnboardingVerificationViewController class]]) {
+                    OnboardingVerificationViewController *verificationView
+                        = (OnboardingVerificationViewController *)controller;
+                    NSString *verificationCode           = [url.path substringFromIndex:1];
+                    [verificationView setVerificationCodeAndTryToVerify:verificationCode];
+                    return YES;
+                } else {
+                    OWSLogWarn(@"Not the verification view controller we expected. Got %@ instead",
+                        NSStringFromClass(controller.class));
+                }
+            }
         } else if ([url.host hasPrefix:kURLHostAddStickersPrefix] && [self.tsAccountManager isRegistered]) {
             if (!SSKFeatureFlags.stickerAutoEnable && !SSKFeatureFlags.stickerSend) {
                 return NO;
@@ -566,6 +581,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
             StickerPackViewController *packView =
                 [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
             UIViewController *rootViewController = self.window.rootViewController;
+            OWSAssertDebug([rootViewController isKindOfClass:[OWSNavigationController class]]);
             if (rootViewController.presentedViewController) {
                 [rootViewController dismissViewControllerAnimated:NO
                                                        completion:^{
@@ -619,7 +635,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
         return;
     }
 
-    [SignalApp.sharedApp ensureRootViewController:launchStartedAt];
+    [self ensureRootViewController];
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [self handleActivation];
@@ -817,7 +833,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
             return;
         }
 
-        [SignalApp.sharedApp showNewConversationView];
+        [SignalApp.sharedApp.homeViewController showNewConversationView];
 
         completionHandler(YES);
     }];
@@ -1356,7 +1372,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
     [self.profileManager fetchLocalUsersProfile];
     [self.readReceiptManager prepareCachedValues];
 
-    [SignalApp.sharedApp ensureRootViewController:launchStartedAt];
+    [self ensureRootViewController];
 
     [self.messageManager startObserving];
 
@@ -1407,6 +1423,43 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 - (void)registrationLockDidChange:(NSNotification *)notification
 {
     [self enableBackgroundRefreshIfNecessary];
+}
+
+- (void)ensureRootViewController
+{
+    OWSAssertIsOnMainThread();
+
+    OWSLogInfo(@"ensureRootViewController");
+
+    if (!AppReadiness.isAppReady || self.hasInitialRootViewController) {
+        return;
+    }
+    self.hasInitialRootViewController = YES;
+
+    NSTimeInterval startupDuration = CACurrentMediaTime() - launchStartedAt;
+    OWSLogInfo(@"Presenting app %.2f seconds after launch started.", startupDuration);
+
+    UIViewController *rootViewController;
+    BOOL navigationBarHidden = NO;
+    if ([self.tsAccountManager isRegistered]) {
+        if (self.backup.hasPendingRestoreDecision) {
+            rootViewController = [BackupRestoreViewController new];
+        } else {
+            rootViewController = [HomeViewController new];
+        }
+    } else {
+        rootViewController = [[OnboardingController new] initialViewController];
+        navigationBarHidden = YES;
+    }
+    OWSAssertDebug(rootViewController);
+    OWSNavigationController *navigationController =
+        [[OWSNavigationController alloc] initWithRootViewController:rootViewController];
+    navigationController.navigationBarHidden = navigationBarHidden;
+    self.window.rootViewController = navigationController;
+
+    [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
+
+    [UIViewController attemptRotationToDeviceOrientation];
 }
 
 #pragma mark - status bar touches

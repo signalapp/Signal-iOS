@@ -73,7 +73,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         tableView.separatorColor = Theme.cellSeparatorColor
 
         tableView.register(EmptySearchResultCell.self, forCellReuseIdentifier: EmptySearchResultCell.reuseIdentifier)
-        tableView.register(ConversationListCell.self, forCellReuseIdentifier: ConversationListCell.cellReuseIdentifier())
+        tableView.register(HomeViewCell.self, forCellReuseIdentifier: HomeViewCell.cellReuseIdentifier())
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier())
 
         databaseStorage.add(databaseStorageObserver: self)
@@ -219,7 +219,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
             cell.configure(searchText: searchText)
             return cell
         case .conversations:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.cellReuseIdentifier()) as? ConversationListCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.cellReuseIdentifier()) as? HomeViewCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
@@ -243,7 +243,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
             cell.configure(withRecipientAddress: searchResult.signalAccount.recipientAddress)
             return cell
         case .messages:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.cellReuseIdentifier()) as? ConversationListCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.cellReuseIdentifier()) as? HomeViewCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
@@ -263,7 +263,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 }
 
                 // Note that we only use the snippet for message results,
-                // not conversation results. CoversationListCell will generate
+                // not conversation results.  HomeViewCell will generate
                 // a snippet for conversations that reflects the latest
                 // contents.
                 if let messageSnippet = searchResult.snippet {

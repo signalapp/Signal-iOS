@@ -476,9 +476,6 @@
 /* The label for the 'restore backup' button. */
 "CHECK_FOR_BACKUP_RESTORE" = "Restore";
 
-/* A string indicating that the user can close the current conversation */
-"CLOSE_BUTTON" = "Close";
-
 /* Error indicating that the app could not determine that user's iCloud account status */
 "CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
 
@@ -1185,10 +1182,10 @@
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No results found for '%@'";
 
-/* Title for the conversation list's 'archive' mode. */
+/* Title for the home view's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Archive";
 
-/* Title for the conversation list's default mode. */
+/* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
@@ -1215,7 +1212,7 @@
 /* Label reminding the user that they are in archive mode. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived and will only appear in the Inbox if new messages are received.";
 
-/* Message shown in the conversation list when the inbox is empty. */
+/* Message shown in the home view when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Give your inbox something to write home about. Get started by messaging a friend.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
@@ -2675,7 +2672,7 @@
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "None";
 
-/* Preview text shown in notifications and conversation list for sticker messages. */
+/* Preview text shown in notifications and home view for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Sticker Message";
 
 /* Tooltip indicating that a sticker pack was installed. */

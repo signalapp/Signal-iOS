@@ -13,8 +13,6 @@
 #import "ContactCellView.h"
 #import "ContactTableViewCell.h"
 #import "ConversationCollectionView.h"
-#import "ConversationListCell.h"
-#import "ConversationListViewController.h"
 #import "ConversationViewCell.h"
 #import "ConversationViewController.h"
 #import "ConversationViewItem.h"
@@ -24,6 +22,8 @@
 #import "DebugUIPage.h"
 #import "DebugUITableViewController.h"
 #import "FingerprintViewController.h"
+#import "HomeViewCell.h"
+#import "HomeViewController.h"
 #import "MediaDetailViewController.h"
 #import "NewGroupViewController.h"
 #import "NotificationSettingsViewController.h"
@@ -53,7 +53,6 @@
 #import "RecipientPickerViewController.h"
 #import "RemoteVideoView.h"
 #import "SignalApp.h"
-#import "SignalsNavigationController.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <PureLayout/PureLayout.h>

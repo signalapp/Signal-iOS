@@ -32,7 +32,6 @@ public class ConversationHeaderView: UIStackView {
         }
         set {
             self.titleIconView.image = newValue
-            self.titleIconView.tintColor = Theme.secondaryTextAndIconColor
             self.titleIconView.isHidden = newValue == nil
         }
     }
@@ -84,6 +83,7 @@ public class ConversationHeaderView: UIStackView {
         titleLabel.setContentHuggingHigh()
 
         titleIconView = UIImageView()
+        titleIconView.tintColor = Theme.secondaryTextAndIconColor
         titleIconView.contentMode = .scaleAspectFit
         titleIconView.setCompressionResistanceHigh()
 

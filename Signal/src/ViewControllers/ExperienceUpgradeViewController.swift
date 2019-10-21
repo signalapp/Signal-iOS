@@ -346,7 +346,7 @@ public class ExperienceUpgradeViewController: OWSViewController {
 
     func markAsSeen() {
         // Blocking write before dismiss, to be sure they're marked as complete
-        // before ConversationList.didAppear is re-fired.
+        // before HomeView.didAppear is re-fired.
         databaseStorage.write { transaction in
             Logger.info("marking all upgrades as seen.")
             ExperienceUpgradeFinder.shared.markAsSeen(experienceUpgrade: self.experienceUpgrade,

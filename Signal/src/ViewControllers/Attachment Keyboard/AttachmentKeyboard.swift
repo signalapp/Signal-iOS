@@ -60,7 +60,7 @@ class AttachmentKeyboard: CustomKeyboard {
 
         contentView.addSubview(mainStackView)
         mainStackView.autoPinWidthToSuperview()
-        mainStackView.autoPinEdge(toSuperviewEdge: .top, withInset: UIDevice.current.isIPad ? 8 : 0)
+        mainStackView.autoPinEdge(toSuperviewEdge: .top)
         mainStackView.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 8)
 
         setupRecentPhotos()

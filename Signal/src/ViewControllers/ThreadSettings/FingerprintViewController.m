@@ -117,7 +117,7 @@ typedef void (^CustomLayoutBlock)(void);
     [fingerprintViewController configureWithAddress:address];
     OWSNavigationController *navigationController =
         [[OWSNavigationController alloc] initWithRootViewController:fingerprintViewController];
-    [viewController presentFormSheetViewController:navigationController animated:YES completion:nil];
+    [viewController presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (instancetype)init
@@ -266,7 +266,6 @@ typedef void (^CustomLayoutBlock)(void);
     UILabel *fingerprintLabel = [UILabel new];
     fingerprintLabel.text = self.fingerprint.displayableText;
     fingerprintLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:ScaleFromIPhone5To7Plus(20.f, 23.f)];
-    fingerprintLabel.textAlignment = NSTextAlignmentCenter;
     fingerprintLabel.textColor = Theme.secondaryTextAndIconColor;
     fingerprintLabel.numberOfLines = 3;
     fingerprintLabel.lineBreakMode = NSLineBreakByTruncatingTail;

@@ -6,24 +6,24 @@ import Foundation
 import GRDB
 
 @objc
-public protocol ConversationListDatabaseSnapshotDelegate: AnyObject {
-    func conversationListDatabaseSnapshotWillUpdate()
-    func conversationListDatabaseSnapshotDidUpdate(updatedThreadIds: Set<String>)
-    func conversationListDatabaseSnapshotDidUpdateExternally()
-    func conversationListDatabaseSnapshotDidReset()
+public protocol HomeViewDatabaseSnapshotDelegate: AnyObject {
+    func homeViewDatabaseSnapshotWillUpdate()
+    func homeViewDatabaseSnapshotDidUpdate(updatedThreadIds: Set<String>)
+    func homeViewDatabaseSnapshotDidUpdateExternally()
+    func homeViewDatabaseSnapshotDidReset()
 }
 
 @objc
-public class ConversationListDatabaseObserver: NSObject {
+public class HomeViewDatabaseObserver: NSObject {
 
-    private var _snapshotDelegates: [Weak<ConversationListDatabaseSnapshotDelegate>] = []
-    private var snapshotDelegates: [ConversationListDatabaseSnapshotDelegate] {
+    private var _snapshotDelegates: [Weak<HomeViewDatabaseSnapshotDelegate>] = []
+    private var snapshotDelegates: [HomeViewDatabaseSnapshotDelegate] {
         AssertIsOnMainThread()
         return _snapshotDelegates.compactMap { $0.value }
     }
 
     @objc
-    public func appendSnapshotDelegate(_ snapshotDelegate: ConversationListDatabaseSnapshotDelegate) {
+    public func appendSnapshotDelegate(_ snapshotDelegate: HomeViewDatabaseSnapshotDelegate) {
         AssertIsOnMainThread()
         _snapshotDelegates = _snapshotDelegates.filter { $0.value != nil} + [Weak(value: snapshotDelegate)]
     }
@@ -111,7 +111,7 @@ public class ConversationListDatabaseObserver: NSObject {
     }
 }
 
-extension ConversationListDatabaseObserver: DatabaseSnapshotDelegate {
+extension HomeViewDatabaseObserver: DatabaseSnapshotDelegate {
 
     // MARK: - Transaction Lifecycle
 
@@ -150,7 +150,7 @@ extension ConversationListDatabaseObserver: DatabaseSnapshotDelegate {
     public func databaseSnapshotWillUpdate() {
         AssertIsOnMainThread()
         for delegate in snapshotDelegates {
-            delegate.conversationListDatabaseSnapshotWillUpdate()
+            delegate.homeViewDatabaseSnapshotWillUpdate()
         }
     }
 
@@ -163,16 +163,16 @@ extension ConversationListDatabaseObserver: DatabaseSnapshotDelegate {
             self.committedThreadChanges = nil
 
             for delegate in snapshotDelegates {
-                delegate.conversationListDatabaseSnapshotDidUpdate(updatedThreadIds: commitedThreadChanges)
+                delegate.homeViewDatabaseSnapshotDidUpdate(updatedThreadIds: commitedThreadChanges)
             }
         } catch DatabaseObserverError.changeTooLarge {
             for delegate in snapshotDelegates {
-                delegate.conversationListDatabaseSnapshotDidReset()
+                delegate.homeViewDatabaseSnapshotDidReset()
             }
         } catch {
             owsFailDebug("unknown error: \(error)")
             for delegate in snapshotDelegates {
-                delegate.conversationListDatabaseSnapshotDidReset()
+                delegate.homeViewDatabaseSnapshotDidReset()
             }
         }
     }
@@ -180,7 +180,7 @@ extension ConversationListDatabaseObserver: DatabaseSnapshotDelegate {
     public func databaseSnapshotDidUpdateExternally() {
         AssertIsOnMainThread()
         for delegate in snapshotDelegates {
-            delegate.conversationListDatabaseSnapshotDidUpdateExternally()
+            delegate.homeViewDatabaseSnapshotDidUpdateExternally()
         }
     }
 }

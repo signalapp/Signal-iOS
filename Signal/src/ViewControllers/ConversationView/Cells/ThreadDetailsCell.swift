@@ -50,6 +50,7 @@ public class ThreadDetailsCell: ConversationViewCell {
         avatarContainer.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: avatarBottomInset, trailing: 0)
 
         titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_semibold()
+        titleLabel.textColor = Theme.primaryTextColor
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
@@ -57,6 +58,7 @@ public class ThreadDetailsCell: ConversationViewCell {
         titleLabel.setCompressionResistanceHigh()
 
         detailsLabel.font = .ows_dynamicTypeSubheadline
+        detailsLabel.textColor = Theme.secondaryTextAndIconColor
         detailsLabel.numberOfLines = 0
         detailsLabel.lineBreakMode = .byWordWrapping
         detailsLabel.textAlignment = .center
@@ -68,6 +70,7 @@ public class ThreadDetailsCell: ConversationViewCell {
         mutualGroupsLabel.autoPinEdgesToSuperviewMargins()
 
         mutualGroupsLabel.font = .ows_dynamicTypeSubheadline
+        mutualGroupsLabel.textColor = Theme.secondaryTextAndIconColor
         mutualGroupsLabel.numberOfLines = 0
         mutualGroupsLabel.lineBreakMode = .byWordWrapping
         mutualGroupsLabel.textAlignment = .center
@@ -95,10 +98,6 @@ public class ThreadDetailsCell: ConversationViewCell {
         configureTitleLabel()
         configureDetailsLabel()
         configureMutualGroupsLabel()
-
-        titleLabel.textColor = Theme.primaryTextColor
-        detailsLabel.textColor = Theme.secondaryTextAndIconColor
-        mutualGroupsLabel.textColor = Theme.secondaryTextAndIconColor
     }
 
     private func configureAvatarView() {

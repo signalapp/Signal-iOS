@@ -224,7 +224,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     [Environment.shared.preferences unsetRecordedAPNSTokens];
 
-    [SignalApp.sharedApp showOnboardingView];
+    UIViewController *viewController = [[OnboardingController new] initialViewController];
+    OWSNavigationController *navigationController =
+        [[OWSNavigationController alloc] initWithRootViewController:viewController];
+    navigationController.navigationBarHidden = YES;
+
+    [UIApplication sharedApplication].delegate.window.rootViewController = navigationController;
 }
 
 + (void)setManualCensorshipCircumventionEnabled:(BOOL)isEnabled
