@@ -59,6 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setPlaceholderText:(NSString *)placeholderText;
 - (void)clearTextMessageAnimated:(BOOL)isAnimated;
 - (void)toggleDefaultKeyboard;
+- (void)setAttachmentButtonHidden:(BOOL)isHidden;
 
 - (void)updateFontSizes;
 

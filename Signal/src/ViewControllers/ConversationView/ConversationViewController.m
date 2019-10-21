@@ -1646,6 +1646,8 @@ typedef enum : NSUInteger {
     [self.inputToolbar setUserInteractionEnabled:!hasPendingFriendRequest];
     NSString *placeholderText = hasPendingFriendRequest ? NSLocalizedString(@"Pending Friend Request...", "") : NSLocalizedString(@"New Message", "");
     [self.inputToolbar setPlaceholderText:placeholderText];
+    BOOL isContactFriend = self.thread.isContactFriend;
+    [self.inputToolbar setAttachmentButtonHidden:!isContactFriend];
 }
 
 #pragma mark - Identity

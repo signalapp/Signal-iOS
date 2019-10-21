@@ -362,6 +362,11 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.inputTextView reloadInputViews];
 }
 
+- (void)setAttachmentButtonHidden:(BOOL)isHidden
+{
+    [self.attachmentButton setHidden:isHidden];
+}
+
 - (void)setQuotedReply:(nullable OWSQuotedReplyModel *)quotedReply
 {
     if (quotedReply == _quotedReply) {
