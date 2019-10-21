@@ -530,6 +530,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
+    OWSLogInfo(@"----- thread: %@, message: %@, body: %@", self.uniqueThreadId, self.uniqueId, self.body);
+
     [super anyWillInsertWithTransaction:transaction];
 
     // StickerManager does reference counting of "known" sticker packs.
@@ -596,6 +598,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
+    OWSLogInfo(@"----- thread: %@, message: %@, body: %@", self.uniqueThreadId, self.uniqueId, self.body);
+
     [super anyWillRemoveWithTransaction:transaction];
 
     // StickerManager does reference counting of "known" sticker packs.
