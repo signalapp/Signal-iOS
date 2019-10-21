@@ -62,6 +62,8 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:contact:multipleAccountLabelText:recipientPho
 
 // --- CODE GENERATION MARKER
 
+- (BOOL)hasSameContent:(SignalAccount *)other;
+
 @end
 
 NS_ASSUME_NONNULL_END

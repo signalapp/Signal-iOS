@@ -114,25 +114,14 @@ NSUInteger const SignalAccountSchemaVersion = 1;
     return [[SignalServiceAddress alloc] initWithUuidString:self.recipientUUID phoneNumber:self.recipientPhoneNumber];
 }
 
-- (BOOL)isEqual:(id)other
+- (BOOL)hasSameContent:(SignalAccount *)other
 {
-    if (![other isKindOfClass:[SignalAccount class]]) {
-        return NO;
-    }
+    OWSAssertDebug(other != nil);
 
-    SignalAccount *otherSignalAccount = (SignalAccount *)other;
-    return ([NSObject isNullableObject:self.recipientPhoneNumber equalTo:otherSignalAccount.recipientPhoneNumber] &&
-        [NSObject isNullableObject:self.recipientUUID equalTo:otherSignalAccount.recipientUUID] &&
-        [NSObject isNullableObject:self.contact equalTo:otherSignalAccount.contact] &&
-        [NSObject isNullableObject:self.multipleAccountLabelText equalTo:otherSignalAccount.multipleAccountLabelText]);
-}
-
-- (NSUInteger)hash
-{
-    OWSFailDebug(@"We should never hash instances of this class.");
-
-    return (self.recipientPhoneNumber.hash ^ self.recipientUUID.hash ^ self.contact.hash
-        ^ self.multipleAccountLabelText.hash);
+    return ([NSObject isNullableObject:self.recipientPhoneNumber equalTo:other.recipientPhoneNumber] &&
+        [NSObject isNullableObject:self.recipientUUID equalTo:other.recipientUUID] &&
+        [NSObject isNullableObject:self.contact equalTo:other.contact] &&
+        [NSObject isNullableObject:self.multipleAccountLabelText equalTo:other.multipleAccountLabelText]);
 }
 
 @end
