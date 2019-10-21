@@ -131,9 +131,19 @@ public final class LokiPublicChatPoller : NSObject {
             } else {
                 signalQuote = nil
             }
+            var attachmentIDs: [String] = []
+            // TODO: Restore attachments
+            let signalLinkPreview: OWSLinkPreview?
+            if let linkPreview = message.attachments.first(where: { $0.kind == .linkPreview }) {
+                let attachment = TSAttachmentPointer(serverId: linkPreview.serverID, encryptionKey: nil, byteCount: UInt32(linkPreview.size), contentType: linkPreview.contentType, sourceFilename: linkPreview.fileName, caption: linkPreview.caption, albumMessageId: nil)
+                attachment.save()
+                signalLinkPreview = OWSLinkPreview(urlString: linkPreview.linkPreviewURL!, title: linkPreview.linkPreviewTitle!, imageAttachmentId: attachment.uniqueId!, isDirectAttachment: false)
+            } else {
+                signalLinkPreview = nil
+            }
             let body = (message.body == message.timestamp.description) ? "" : message.body // Workaround for the fact that the back-end doesn't accept messages without a body
-            let message = TSOutgoingMessage(outgoingMessageWithTimestamp: message.timestamp, in: thread, messageBody: body, attachmentIds: [], expiresInSeconds: 0,
-                expireStartedAt: 0, isVoiceMessage: false, groupMetaMessage: .deliver, quotedMessage: signalQuote, contactShare: nil, linkPreview: nil)
+            let message = TSOutgoingMessage(outgoingMessageWithTimestamp: message.timestamp, in: thread, messageBody: body, attachmentIds: NSMutableArray(array: attachmentIDs), expiresInSeconds: 0,
+                expireStartedAt: 0, isVoiceMessage: false, groupMetaMessage: .deliver, quotedMessage: signalQuote, contactShare: nil, linkPreview: signalLinkPreview)
             storage.dbReadWriteConnection.readWrite { transaction in
                 message.update(withSentRecipient: publicChat.server, wasSentByUD: false, transaction: transaction)
                 message.saveGroupChatServerID(messageServerID, in: transaction)
