@@ -21,7 +21,7 @@ public class PerformanceBaseTest: XCTestCase {
     }
 
     public override func tearDown() {
-        SDSDatabaseStorage.shouldLogDBQueries = true
+        SDSDatabaseStorage.shouldLogDBQueries = FeatureFlags.logSQLQueries
         super.tearDown()
     }
 

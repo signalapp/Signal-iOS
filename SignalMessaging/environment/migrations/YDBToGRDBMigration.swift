@@ -237,7 +237,7 @@ extension YDBToGRDBMigration {
             }
         }
 
-        SDSDatabaseStorage.shouldLogDBQueries = true
+        SDSDatabaseStorage.shouldLogDBQueries = FeatureFlags.logSQLQueries
     }
 
     private func allKeyValueMigrators(ydbTransaction: YapDatabaseReadTransaction) -> [GRDBMigrator] {
