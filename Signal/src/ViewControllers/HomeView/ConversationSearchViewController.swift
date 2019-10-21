@@ -395,7 +395,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
             return
         }
         guard lastSearchText != searchText else {
-            Logger.verbose("---- Ignoring redundant search: \(searchText).")
+            // Ignoring redundant search.
             return
         }
 

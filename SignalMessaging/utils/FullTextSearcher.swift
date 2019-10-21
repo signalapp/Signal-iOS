@@ -21,7 +21,13 @@ public struct ConversationSortKey: Comparable {
             return true
         }
 
-        return lhs.lastInteractionRowId < rhs.lastInteractionRowId
+        if lhs.lastInteractionRowId != rhs.lastInteractionRowId {
+            return lhs.lastInteractionRowId < rhs.lastInteractionRowId
+        }
+        let longAgo = Date(timeIntervalSince1970: 0)
+        let lhsDate = lhs.creationDate ?? longAgo
+        let rhsDate = rhs.creationDate ?? longAgo
+        return lhsDate < rhsDate
     }
 }
 
