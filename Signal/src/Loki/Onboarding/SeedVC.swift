@@ -50,7 +50,7 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
     }()
     
     private lazy var linkButton1: OWSFlatButton = {
-        let result = createLinkButton(title: NSLocalizedString("Link Device", comment: ""), selector: #selector(handleSwitchModeButton2Tapped))
+        let result = createLinkButton(title: NSLocalizedString("Link Device (Coming Soon)", comment: ""), selector: #selector(handleSwitchModeButton2Tapped))
         result.accessibilityIdentifier = "onboarding.keyPairStep.linkButton1"
         result.setBackgroundColors(upColor: .clear, downColor: .clear)
         return result
@@ -111,7 +111,7 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
     }()
     
     private lazy var linkButton2: OWSFlatButton = {
-        let result = createLinkButton(title: NSLocalizedString("Link Device", comment: ""), selector: #selector(handleSwitchModeButton2Tapped))
+        let result = createLinkButton(title: NSLocalizedString("Link Device (Coming Soon)", comment: ""), selector: #selector(handleSwitchModeButton2Tapped))
         result.accessibilityIdentifier = "onboarding.keyPairStep.linkButton2"
         result.setBackgroundColors(upColor: .clear, downColor: .clear)
         return result
@@ -224,6 +224,11 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
         restoreStackView.autoVCenterInSuperview()
         linkStackView.autoPinWidthToSuperview()
         linkStackView.autoVCenterInSuperview()
+        // TODO: Enable this again later
+        linkButton1.isUserInteractionEnabled = false
+        linkButton1.alpha = 0.24
+        linkButton2.isUserInteractionEnabled = false
+        linkButton2.alpha = 0.24
     }
     
     // MARK: General
