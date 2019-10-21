@@ -50,7 +50,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
     static dispatch_once_t onceToken;
     static Theme *instance;
     dispatch_once(&onceToken, ^{
-        instance = [Theme new];
+        instance = [[self alloc] initDefault];
     });
 
     return instance;
