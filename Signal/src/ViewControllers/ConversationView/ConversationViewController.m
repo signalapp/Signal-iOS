@@ -1403,14 +1403,9 @@ typedef enum : NSUInteger {
 
 - (void)updateLeftBarItem
 {
-    // Show the close button if the split view is not collapsed.
+    // No left button when the view is not collapsed, there's nowhere to go.
     if (!self.conversationSplitViewController.isCollapsed) {
-        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
-            initWithTitle:NSLocalizedString(
-                              @"CLOSE_BUTTON", @"A string indicating that the user can close the current conversation")
-                    style:UIBarButtonItemStyleDone
-                   target:self
-                   action:@selector(closeButtonPressed)];
+        self.navigationItem.leftBarButtonItem = nil;
         return;
     }
 
@@ -1461,11 +1456,6 @@ typedef enum : NSUInteger {
     }
 
     self.navigationItem.leftBarButtonItem = backItem;
-}
-
-- (void)closeButtonPressed
-{
-    [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
 }
 
 - (void)windowManagerCallDidChange:(NSNotification *)notification
