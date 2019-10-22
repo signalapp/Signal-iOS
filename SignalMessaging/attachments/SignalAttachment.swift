@@ -806,8 +806,8 @@ public class SignalAttachment: NSObject {
         var maxSizeRect = CGRect.zero
         maxSizeRect.size = CGSize(width: maxSize, height: maxSize)
         let newSize = AVMakeRect(aspectRatio: scrSize, insideRect: maxSizeRect).size
-        assert(newSize.width <= maxSize)
-        assert(newSize.height <= maxSize)
+//        assert(newSize.width <= maxSize)
+//        assert(newSize.height <= maxSize)
 
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         let bitmapInfo: CGBitmapInfo = [

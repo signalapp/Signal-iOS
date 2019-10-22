@@ -123,7 +123,7 @@ public final class LokiPublicChatMessage : NSObject {
                 // Fields required by the .NET API
                 "version" : 1, "type" : type,
                 // Custom fields
-                "lokiType" : attachment.kind.rawValue, "server" : attachment.server, "id" : attachment.serverID, "contentType" : attachment.contentType, "size" : attachment.size, "fileName" : attachment.fileName, "flags" : attachment.flags, "width" : attachment.width, "height" : attachment.height, "url" : attachment.url
+                "lokiType" : attachment.kind.rawValue, "server" : attachment.server, "id" : attachment.serverID, "contentType" : attachment.contentType, "size" : attachment.size, "fileName" : attachment.fileName, "width" : attachment.width, "height" : attachment.height, "url" : attachment.url
             ]
             if let caption = attachment.caption {
                 attachmentValue["caption"] = attachment.caption
