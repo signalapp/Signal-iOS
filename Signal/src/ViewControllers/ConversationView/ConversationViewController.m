@@ -2857,7 +2857,7 @@ typedef enum : NSUInteger {
     GifPickerNavigationViewController *gifModal = [GifPickerNavigationViewController new];
     gifModal.approvalDelegate = self;
     [self dismissKeyBoard];
-    [self presentFormSheetViewController:gifModal animated:YES completion:nil];
+    [self presentViewController:gifModal animated:YES completion:nil];
 }
 
 - (void)messageWasSent:(TSOutgoingMessage *)message
