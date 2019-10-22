@@ -1012,6 +1012,7 @@ typedef enum : NSUInteger {
         return;
     }
 
+    /*
     if ([ThreadUtil shouldShowGroupProfileBannerInThread:self.thread blockingManager:self.blockingManager]) {
         [self createBannerWithTitle:
                   NSLocalizedString(@"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER",
@@ -1020,6 +1021,7 @@ typedef enum : NSUInteger {
                         tapSelector:@selector(groupProfileWhitelistBannerWasTapped:)];
         return;
     }
+     */
 }
 
 - (void)createBannerWithTitle:(NSString *)title bannerColor:(UIColor *)bannerColor tapSelector:(SEL)tapSelector
