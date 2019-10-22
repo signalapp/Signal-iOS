@@ -135,7 +135,8 @@ typedef enum : NSUInteger {
     ConversationViewModelDelegate,
     MessageRequestDelegate,
     LocationPickerDelegate,
-    InputAccessoryViewPlaceholderDelegate>
+    InputAccessoryViewPlaceholderDelegate,
+    ForwardMessageDelegate>
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
@@ -2045,6 +2046,17 @@ typedef enum : NSUInteger {
 - (void)messageActionsReplyToItem:(id<ConversationViewItem>)conversationViewItem
 {
     [self populateReplyForViewItem:conversationViewItem];
+}
+
+- (void)messageActionsForwardItem:(id<ConversationViewItem>)conversationViewItem
+{
+    OWSAssertDebug(conversationViewItem);
+
+    ForwardMessageNavigationController *modal =
+        [[ForwardMessageNavigationController alloc] initWithConversationViewItem:conversationViewItem];
+    modal.forwardMessageDelegate = self;
+
+    [self presentFullScreenViewController:modal animated:YES completion:nil];
 }
 
 #pragma mark - MessageDetailViewDelegate
@@ -5388,6 +5400,33 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     [self showGifPicker];
+}
+
+#pragma mark - ForwardMessageDelegate
+
+- (void)forwardMessageFlowDidComplete:(NSArray<TSThread *> *)threads
+{
+    __weak ConversationViewController *weakSelf = self;
+    [self dismissViewControllerAnimated:true
+                             completion:^{
+                                 ConversationViewController *_Nullable strongSelf = weakSelf;
+                                 if (strongSelf == nil) {
+                                     return;
+                                 }
+                                 if (threads.count > 1) {
+                                     return;
+                                 }
+                                 TSThread *thread = threads.firstObject;
+                                 if ([thread.uniqueId isEqualToString:strongSelf.thread.uniqueId]) {
+                                     return;
+                                 }
+                                 [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
+                             }];
+}
+
+- (void)forwardMessageFlowDidCancel
+{
+    [self dismissViewControllerAnimated:true completion:nil];
 }
 
 @end

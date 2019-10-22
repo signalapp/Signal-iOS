@@ -424,7 +424,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
         return
     }
 
-    func forwardMessageAction() {
+    func forwardMessageAction(delegate: MessageActionsDelegate) {
         owsFailDebug("unexpected invocation")
         return
     }

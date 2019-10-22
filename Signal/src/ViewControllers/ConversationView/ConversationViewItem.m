@@ -1493,8 +1493,10 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         case OWSMessageCellType_Unknown:
             return NO;
         case OWSMessageCellType_TextOnlyMessage:
-        case OWSMessageCellType_ContactShare:
             return YES;
+        case OWSMessageCellType_ContactShare:
+            // TODO:
+            return NO;
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_GenericAttachment:
             return self.attachmentStream != nil;
@@ -1507,38 +1509,22 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     }
 }
 
-- (void)forwardMessageAction
-{
-    if (!self.canForwardMessage) {
-        OWSFailDebug(@"Can't forward message");
-        return;
-    }
-    //    switch (self.messageCellType) {
-    //        case OWSMessageCellType_Unknown:
-    //        case OWSMessageCellType_TextOnlyMessage:
-    //        case OWSMessageCellType_ContactShare:
-    //            OWSFailDebug(@"Cannot save text data.");
-    //            break;
-    //        case OWSMessageCellType_Audio:
-    //            OWSFailDebug(@"Cannot save media data.");
-    //            break;
-    //        case OWSMessageCellType_GenericAttachment:
-    //            OWSFailDebug(@"Cannot save media data.");
-    //            break;
-    //        case OWSMessageCellType_MediaMessage: {
-    //            [self saveMediaAlbumItems];
-    //            break;
-    //        }
-    //        case OWSMessageCellType_OversizeTextDownloading:
-    //            OWSFailDebug(@"Can't save not-yet-downloaded attachment");
-    //            return;
-    //        case OWSMessageCellType_StickerMessage:
-    //            return [self saveSticker];
-    //        case OWSMessageCellType_ViewOnce:
-    //            OWSFailDebug(@"Can't save view once message");
-    //            return;
-    //    }
-}
+//- (void)forwardMessageAction:(id<MessageActionsDelegate>)delegate
+//{
+//    if (!self.canForwardMessage) {
+//        OWSFailDebug(@"Can't forward message.");
+//        return;
+//    }
+//    if (![self.interaction isKindOfClass:TSMessage.class]) {
+//        OWSFailDebug(@"Invalid interaction.");
+//        return;
+//    }
+//    TSMessage *message = (TSMessage*)self.interaction;
+//    ForwardMessageAction *messageAction = [[ForwardMessageAction alloc] initWithDelegate:delegate
+//                                                                                 message:message
+//                                                                         messageCellType:self.messageCellType];
+//    [messageAction showUI];
+//}
 
 - (void)deleteAction
 {
