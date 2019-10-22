@@ -19,14 +19,14 @@ protocol SendMediaNavDelegate: AnyObject {
 }
 
 @objc
-class CaptureFirstCaptureNavigationController: SendMediaNavigationController {
+class CameraFirstCaptureNavigationController: SendMediaNavigationController {
 
     @objc
     private(set) var cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow!
 
     @objc
-    public class func captureFirstCameraModal() -> CaptureFirstCaptureNavigationController {
-        let navController = CaptureFirstCaptureNavigationController()
+    public class func cameraFirstModal() -> CameraFirstCaptureNavigationController {
+        let navController = CameraFirstCaptureNavigationController()
         navController.setViewControllers([navController.captureViewController], animated: false)
 
         let cameraFirstCaptureSendFlow = CameraFirstCaptureSendFlow()
