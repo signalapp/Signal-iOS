@@ -20,7 +20,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ShowGroupMembersViewController () <ContactsViewHelperDelegate, ContactEditingDelegate>
+@interface ShowGroupMembersViewController () <ContactsViewHelperDelegate>
 
 @property (nonatomic, readonly) TSGroupThread *thread;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
@@ -400,7 +400,16 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(address.isValid);
 
-    [self.contactsViewHelper presentContactViewControllerForAddress:address fromViewController:self editImmediately:NO];
+    CNContactViewController *_Nullable contactVC = [self.contactsViewHelper contactViewControllerForAddress:address
+                                                                                            editImmediately:NO];
+
+    if (!contactVC) {
+        OWSFailDebug(@"Unexpectedly missing contact VC");
+        return;
+    }
+
+    contactVC.delegate = self;
+    [self.navigationController pushViewController:contactVC animated:YES];
 }
 
 - (void)showConversationViewForAddress:(SignalServiceAddress *)address
@@ -434,21 +443,13 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-#pragma mark - ContactEditingDelegate
-
-- (void)didFinishEditingContact
-{
-    OWSLogDebug(@"");
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
 #pragma mark - CNContactViewControllerDelegate
 
 - (void)contactViewController:(CNContactViewController *)viewController
        didCompleteWithContact:(nullable CNContact *)contact
 {
     OWSLogDebug(@"done editing contact.");
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self.navigationController popToViewController:self animated:YES];
 }
 
 #pragma mark - Notifications
