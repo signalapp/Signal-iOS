@@ -54,6 +54,10 @@ class ConversationSplitViewController: UISplitViewController {
         primaryNavController.delegate = self
         delegate = self
         preferredDisplayMode = .allVisible
+
+        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .ThemeDidChange, object: nil)
+
+        applyTheme()
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -62,6 +66,33 @@ class ConversationSplitViewController: UISplitViewController {
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return Theme.isDarkThemeEnabled ? .lightContent : .default
+    }
+
+    @objc func applyTheme() {
+        view.backgroundColor = Theme.secondaryBackgroundColor
+        applyNavBarStyle(collapsed: isCollapsed)
+    }
+
+    func applyNavBarStyle(collapsed: Bool) {
+        guard let owsNavBar = primaryNavController.navigationBar as? OWSNavigationBar else {
+            return owsFailDebug("unexpected nav bar")
+        }
+        owsNavBar.overrideTheme(type: collapsed ? .removeOverride : .secondaryBar)
+    }
+
+    private var hasHiddenExtraSubivew = false
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+
+        // HACK: UISplitViewController adds an extra subview behind the navigation
+        // bar area that extends across both views. As far as I can tell, it's not
+        // possible to adjust the color of this view. It gets reset constantly.
+        // Without this fix, the space between the primary and detail view has a
+        // hairline of the wrong color, most apparent in dark mode.
+        guard !hasHiddenExtraSubivew, let firstSubview = view.subviews.first,
+            !viewControllers.map({ $0.view }).contains(firstSubview) else { return }
+        hasHiddenExtraSubivew = true
+        firstSubview.isHidden = true
     }
 
     @objc(closeSelectedConversationAnimated:)
@@ -377,6 +408,8 @@ class ConversationSplitViewController: UISplitViewController {
 
 extension ConversationSplitViewController: UISplitViewControllerDelegate {
     func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController: UIViewController, onto primaryViewController: UIViewController) -> Bool {
+        applyNavBarStyle(collapsed: true)
+
         // If we're currently showing the placeholder view, we want to do nothing with in
         // when collapsing into a signle nav controller without a side panel.
         guard secondaryViewController != detailPlaceholderVC else { return true }
@@ -391,6 +424,8 @@ extension ConversationSplitViewController: UISplitViewControllerDelegate {
 
     func splitViewController(_ splitViewController: UISplitViewController, separateSecondaryFrom primaryViewController: UIViewController) -> UIViewController? {
         assert(primaryViewController == primaryNavController)
+
+        applyNavBarStyle(collapsed: false)
 
         // See if the current conversation is currently in the view hierarchy. If not,
         // show the placeholder view as no conversation is selected. The conversation
@@ -451,7 +486,7 @@ private class NoSelectedConversationViewController: OWSViewController {
 
         let logoBackground = UIView()
         logoBackground.backgroundColor = .ows_signalBlue
-        logoBackground.layer.cornerRadius = 9.34
+        logoBackground.layer.cornerRadius = 0.2237 * 96
         logoBackground.autoSetDimensions(to: CGSize(square: 96))
         logoContainer.addSubview(logoBackground)
         logoBackground.autoPinHeightToSuperviewMargins()

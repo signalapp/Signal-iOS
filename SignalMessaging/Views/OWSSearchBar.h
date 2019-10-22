@@ -4,9 +4,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSUInteger, OWSSearchBarThemeOverride) {
+    OWSSearchBarThemeOverride_None,
+    OWSSearchBarThemeOverride_SecondaryBar
+};
+
 @interface OWSSearchBar : UISearchBar
 
 + (void)applyThemeToSearchBar:(UISearchBar *)searchBar;
++ (void)applyThemeToSearchBar:(UISearchBar *)searchBar override:(OWSSearchBarThemeOverride)type;
+
+- (void)overrideTheme:(OWSSearchBarThemeOverride)type;
 
 @end
 
