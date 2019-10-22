@@ -18,11 +18,13 @@ class SecondaryLinkingSetDeviceNameViewController: OnboardingBaseViewController 
 
     override public func loadView() {
         view = UIView()
+        view.addSubview(primaryView)
+        primaryView.autoPinEdgesToSuperviewEdges()
 
         view.backgroundColor = Theme.backgroundColor
 
         let titleLabel = self.titleLabel(text: NSLocalizedString("SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME", comment: "header text when this device is being added as a secondary"))
-        view.addSubview(titleLabel)
+        primaryView.addSubview(titleLabel)
         titleLabel.accessibilityIdentifier = "linking.deviceName.titleLabel"
         titleLabel.setContentHuggingHigh()
 
@@ -76,7 +78,7 @@ class SecondaryLinkingSetDeviceNameViewController: OnboardingBaseViewController 
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.spacing = 12
-        view.addSubview(stackView)
+        primaryView.addSubview(stackView)
 
         // Because of the keyboard, vertical spacing can get pretty cramped,
         // so we have custom spacer logic.
