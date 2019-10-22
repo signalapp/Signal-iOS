@@ -477,25 +477,18 @@ extension ConversationSplitViewController: UINavigationControllerDelegate {
 private class NoSelectedConversationViewController: OWSViewController {
     let titleLabel = UILabel()
     let bodyLabel = UILabel()
+    let logoImageView = UIImageView()
 
     override func loadView() {
         view = UIView()
 
-        let logoContainer = UIView()
-        logoContainer.layoutMargins = UIEdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
-
-        let logoBackground = UIView()
-        logoBackground.backgroundColor = .ows_signalBlue
-        logoBackground.layer.cornerRadius = 0.2237 * 96
-        logoBackground.autoSetDimensions(to: CGSize(square: 96))
-        logoContainer.addSubview(logoBackground)
-        logoBackground.autoPinHeightToSuperviewMargins()
-        logoBackground.autoHCenterInSuperview()
-
-        let logoImageView = UIImageView(image: #imageLiteral(resourceName: "logoSignal"))
+        let logoContainer = UIView.container()
+        logoImageView.image = #imageLiteral(resourceName: "logoSignal").withRenderingMode(.alwaysTemplate)
         logoImageView.contentMode = .scaleAspectFit
         logoContainer.addSubview(logoImageView)
-        logoImageView.autoCenterInSuperview()
+        logoImageView.autoPinTopToSuperviewMargin()
+        logoImageView.autoPinBottomToSuperviewMargin(withInset: 8)
+        logoImageView.autoHCenterInSuperview()
         logoImageView.autoSetDimension(.height, toSize: 72)
 
         titleLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold()
@@ -514,7 +507,8 @@ private class NoSelectedConversationViewController: OWSViewController {
         centerStackView.axis = .vertical
         centerStackView.spacing = 4
         view.addSubview(centerStackView)
-        centerStackView.autoVCenterInSuperview()
+        // Slightly offset from center to better optically center
+        centerStackView.autoAlignAxis(.horizontal, toSameAxisOf: view, withMultiplier: 0.88)
         centerStackView.autoPinWidthToSuperview()
     }
 
@@ -530,5 +524,6 @@ private class NoSelectedConversationViewController: OWSViewController {
         view.backgroundColor = Theme.backgroundColor
         titleLabel.textColor = Theme.primaryTextColor
         bodyLabel.textColor = Theme.secondaryTextAndIconColor
+        logoImageView.tintColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray65
     }
 }
