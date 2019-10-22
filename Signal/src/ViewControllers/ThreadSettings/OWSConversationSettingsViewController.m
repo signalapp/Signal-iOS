@@ -39,8 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 const CGFloat kIconViewLength = 24;
 
-@interface OWSConversationSettingsViewController () <ContactEditingDelegate,
-    ContactsViewHelperDelegate,
+@interface OWSConversationSettingsViewController () <ContactsViewHelperDelegate,
 #ifdef SHOW_COLOR_PICKER
     ColorPickerDelegate,
 #endif
@@ -208,23 +207,6 @@ const CGFloat kIconViewLength = 24;
         self.title = NSLocalizedString(
             @"CONVERSATION_SETTINGS_GROUP_INFO_TITLE", @"Navbar title when viewing settings for a group thread");
     }
-
-    [self updateEditButton];
-}
-
-- (void)updateEditButton
-{
-    OWSAssertDebug(self.thread);
-
-    if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing
-        && self.hasExistingContact) {
-        self.navigationItem.rightBarButtonItem =
-            [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"EDIT_TXT", nil)
-                                             style:UIBarButtonItemStylePlain
-                                            target:self
-                                            action:@selector(didTapEditButton)
-                           accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"edit")];
-    }
 }
 
 - (BOOL)hasExistingContact
@@ -235,33 +217,13 @@ const CGFloat kIconViewLength = 24;
     return [self.contactsManager hasSignalAccountForAddress:recipientAddress];
 }
 
-#pragma mark - ContactEditingDelegate
-
-- (void)didFinishEditingContact
-{
-    [self updateTableContents];
-
-    OWSLogDebug(@"");
-    [self dismissViewControllerAnimated:NO completion:nil];
-}
-
 #pragma mark - CNContactViewControllerDelegate
 
 - (void)contactViewController:(CNContactViewController *)viewController
        didCompleteWithContact:(nullable CNContact *)contact
 {
     [self updateTableContents];
-
-    if (contact) {
-        // Saving normally returns you to the "Show Contact" view
-        // which we're not interested in, so we skip it here. There is
-        // an unfortunate blip of the "Show Contact" view on slower devices.
-        OWSLogDebug(@"completed editing contact.");
-        [self dismissViewControllerAnimated:NO completion:nil];
-    } else {
-        OWSLogDebug(@"canceled editing contact.");
-        [self dismissViewControllerAnimated:YES completion:nil];
-    }
+    [self.navigationController popToViewController:self animated:YES];
 }
 
 #pragma mark - ContactsViewHelperDelegate
@@ -418,19 +380,24 @@ const CGFloat kIconViewLength = 24;
     // Indicate if the user is in the system contacts
     if (!isNoteToSelf && !self.isGroupThread && self.hasExistingContact) {
         [mainSection
-         addItem:[OWSTableItem
-                  itemWithCustomCellBlock:^{
-                      OWSConversationSettingsViewController *strongSelf = weakSelf;
-                      OWSCAssertDebug(strongSelf);
+            addItem:[OWSTableItem
+                        itemWithCustomCellBlock:^{
+                            OWSConversationSettingsViewController *strongSelf = weakSelf;
+                            OWSCAssertDebug(strongSelf);
 
-                      return [strongSelf
-                                labelCellWithName:NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT",
-                                                      @"Indicates that user is in the system contacts list.")
-                                             icon:ThemeIconSettingsUserInContacts
-                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                      OWSConversationSettingsViewController, @"is_in_contacts")];
-                  }
-                  actionBlock:nil]];
+                            return [strongSelf
+                                 disclosureCellWithName:NSLocalizedString(
+                                                            @"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT",
+                                                            @"Indicates that user is in the system contacts list.")
+                                                   icon:ThemeIconSettingsUserInContacts
+                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                            OWSConversationSettingsViewController, @"is_in_contacts")];
+                        }
+                        actionBlock:^{
+                            if (weakSelf.contactsManager.supportsContactEditing) {
+                                [weakSelf presentContactViewController];
+                            }
+                        }]];
     }
 
     // Show profile status and allow sharing your profile for threads that are not in the whitelist.
@@ -1217,9 +1184,17 @@ const CGFloat kIconViewLength = 24;
     }
 
     TSContactThread *contactThread = (TSContactThread *)self.thread;
-    [self.contactsViewHelper presentContactViewControllerForAddress:contactThread.contactAddress
-                                                 fromViewController:self
-                                                    editImmediately:YES];
+
+    CNContactViewController *_Nullable contactViewController =
+        [self.contactsViewHelper contactViewControllerForAddress:contactThread.contactAddress editImmediately:YES];
+
+    if (!contactViewController) {
+        OWSFailDebug(@"Unexpectedly missing contact VC");
+        return;
+    }
+
+    contactViewController.delegate = self;
+    [self.navigationController pushViewController:contactViewController animated:YES];
 }
 
 - (void)presentAddToContactViewControllerWithAddress:(SignalServiceAddress *)address
@@ -1238,11 +1213,6 @@ const CGFloat kIconViewLength = 24;
     OWSAddToContactViewController *viewController = [OWSAddToContactViewController new];
     [viewController configureWithAddress:address];
     [self.navigationController pushViewController:viewController animated:YES];
-}
-
-- (void)didTapEditButton
-{
-    [self presentContactViewController];
 }
 
 - (void)didTapLeaveGroup

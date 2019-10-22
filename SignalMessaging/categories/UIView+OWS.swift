@@ -193,7 +193,12 @@ public extension UIViewController {
 
     @objc(presentFormSheetViewController:animated:completion:)
     func presentFormSheet(_ viewControllerToPresent: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
-        viewControllerToPresent.modalPresentationStyle = .formSheet
+        // Presenting form sheet on iPhone should always use the default presentation style.
+        // We get this for free, except on phones with the regular width size class (big phones
+        // in landscape, XR, XS Max, 8+, etc.)
+        if UIDevice.current.isIPad {
+            viewControllerToPresent.modalPresentationStyle = .formSheet
+        }
         present(viewControllerToPresent, animated: animated, completion: completion)
     }
 }

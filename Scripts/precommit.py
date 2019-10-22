@@ -433,10 +433,6 @@ def check_diff_for_keywords():
         print("⚠️  keywords detected in diff:")
         print(output)
 
-def disable_universal_device_support():
-    command_line = git_repo_path + '/Scripts/disableUniversalDeviceSupport'
-    subprocess.call(command_line, shell=True)
-
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description='Precommit script.')
@@ -444,10 +440,6 @@ if __name__ == "__main__":
     parser.add_argument('--path', help='used to specify a path to process.')
     args = parser.parse_args()
 
-    # TODO iPad: Once we are ready to commit universal device support,
-    # remove this check and commit the relevant project changes.
-    disable_universal_device_support()
-    
     if args.all:
         for rootdir, dirnames, filenames in os.walk(git_repo_path):
             for filename in filenames:

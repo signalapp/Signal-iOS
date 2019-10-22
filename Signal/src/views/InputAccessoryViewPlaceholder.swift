@@ -177,8 +177,10 @@ class InputAccessoryViewPlaceholder: UIView {
                 return owsFailDebug("keyboard notification missing expected userInfo properties")
         }
 
-        // Do nothing unless the height changed.
-        guard beginFrame.height != endFrame.height else { return }
+        // We only want to do an animated presentation if eitther a) the height changed or b) the view is
+        // starting from off the bottom of the screen (a full presentation). This provides the best experience
+        // when canceling an interactive dismissal or changing orientations.
+        guard beginFrame.height != endFrame.height || beginFrame.minY == UIScreen.main.bounds.height else { return }
 
         keyboardState = .presenting(height: endFrame.height)
 

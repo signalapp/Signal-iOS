@@ -9,6 +9,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface OWSSearchBar ()
+
+@property (nonatomic) OWSSearchBarThemeOverride currentOverride;
+
+@end
+
 @implementation OWSSearchBar
 
 - (instancetype)init
@@ -40,6 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)ows_configure
 {
+    _currentOverride = OWSSearchBarThemeOverride_None;
+
     [self ows_applyTheme];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -55,16 +63,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)ows_applyTheme
 {
-    [self.class applyThemeToSearchBar:self];
+    [self.class applyThemeToSearchBar:self override:self.currentOverride];
 }
 
 + (void)applyThemeToSearchBar:(UISearchBar *)searchBar
 {
+    [self applyThemeToSearchBar:searchBar override:OWSSearchBarThemeOverride_None];
+}
+
++ (void)applyThemeToSearchBar:(UISearchBar *)searchBar override:(OWSSearchBarThemeOverride)type
+{
     OWSAssertIsOnMainThread();
 
-    UIColor *foregroundColor = Theme.placeholderColor;
+    UIColor *foregroundColor = Theme.secondaryTextAndIconColor;
     searchBar.barTintColor = Theme.backgroundColor;
-    searchBar.tintColor = Theme.primaryTextColor;
+    searchBar.tintColor = Theme.secondaryTextAndIconColor;
     searchBar.barStyle = Theme.barStyle;
 
     // Hide searchBar border.
@@ -89,14 +102,25 @@ NS_ASSUME_NONNULL_BEGIN
         [searchBar setImage:nil forSearchBarIcon:UISearchBarIconSearch state:UIControlStateNormal];
     }
 
+    UIColor *searchFieldBackgroundColor = Theme.searchFieldBackgroundColor;
+    if (type == OWSSearchBarThemeOverride_SecondaryBar) {
+        searchFieldBackgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray95Color : UIColor.ows_gray05Color;
+    }
+
     [searchBar traverseViewHierarchyWithVisitor:^(UIView *view) {
         if ([view isKindOfClass:[UITextField class]]) {
             UITextField *textField = (UITextField *)view;
-            textField.backgroundColor = Theme.searchFieldBackgroundColor;
+            textField.backgroundColor = searchFieldBackgroundColor;
             textField.textColor = Theme.primaryTextColor;
             textField.keyboardAppearance = Theme.keyboardAppearance;
         }
     }];
+}
+
+- (void)overrideTheme:(OWSSearchBarThemeOverride)type
+{
+    self.currentOverride = type;
+    [self ows_applyTheme];
 }
 
 - (void)themeDidChange:(NSNotification *)notification
