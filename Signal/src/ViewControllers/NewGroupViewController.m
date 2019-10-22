@@ -241,6 +241,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Methods
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+
+    if (self.navigationController.viewControllers.count == 1) {
+        self.navigationItem.leftBarButtonItem =
+            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
+                                                          target:self
+                                                          action:@selector(dismissPressed)];
+    }
+}
+
+- (void)dismissPressed
+{
+    [self.groupNameTextField resignFirstResponder];
+
+    if (!self.hasUnsavedChanges) {
+        // If user made no changes, dismiss.
+        [self dismissViewControllerAnimated:YES completion:nil];
+        return;
+    }
+
+    __weak NewGroupViewController *weakSelf = self;
+    [OWSAlerts showPendingChangesAlertWithDiscardAction:^{
+        [weakSelf dismissViewControllerAnimated:YES completion:nil];
+    }];
+}
+
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
