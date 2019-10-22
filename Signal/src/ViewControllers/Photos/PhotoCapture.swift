@@ -34,24 +34,20 @@ protocol PhotoCaptureDelegate: AnyObject {
 class PhotoCapture: NSObject {
 
     weak var delegate: PhotoCaptureDelegate?
-    var flashMode: AVCaptureDevice.FlashMode {
-        return captureOutput.flashMode
-    }
-    let session: AVCaptureSession
 
     // There can only ever be one `CapturePreviewView` per AVCaptureSession
     lazy private(set) var previewView = CapturePreviewView(session: session)
 
-    let sessionQueue = DispatchQueue(label: "PhotoCapture.sessionQueue")
+    private let sessionQueue = DispatchQueue(label: "PhotoCapture.sessionQueue")
 
     private var currentCaptureInput: AVCaptureDeviceInput?
     private let captureOutput: CaptureOutput
-    var captureDevice: AVCaptureDevice? {
+    private var captureDevice: AVCaptureDevice? {
         return currentCaptureInput?.device
     }
     private(set) var desiredPosition: AVCaptureDevice.Position = .back
 
-    let recordingAudioActivity = AudioActivity(audioDescription: "PhotoCapture", behavior: .playAndRecord)
+    private let recordingAudioActivity = AudioActivity(audioDescription: "PhotoCapture", behavior: .playAndRecord)
 
     override init() {
         self.session = AVCaptureSession()
@@ -60,14 +56,21 @@ class PhotoCapture: NSObject {
 
     // MARK: - Dependencies
 
-    var audioSession: OWSAudioSession {
+    private var audioSession: OWSAudioSession {
         return Environment.shared.audioSession
     }
 
-    // MARK: -
+    private var audioDeviceInput: AVCaptureDeviceInput?
 
-    var audioDeviceInput: AVCaptureDeviceInput?
-    func startAudioCapture() throws {
+    // MARK: - Public
+
+    public var flashMode: AVCaptureDevice.FlashMode {
+        return captureOutput.flashMode
+    }
+
+    public let session: AVCaptureSession
+
+    public func startAudioCapture() throws {
         assertIsOnSessionQueue()
 
         guard audioSession.startAudioActivity(recordingAudioActivity) else {
@@ -89,7 +92,7 @@ class PhotoCapture: NSObject {
         }
     }
 
-    func stopAudioCapture() {
+    public func stopAudioCapture() {
         assertIsOnSessionQueue()
 
         self.session.beginConfiguration()
@@ -104,7 +107,7 @@ class PhotoCapture: NSObject {
         audioSession.endAudioActivity(recordingAudioActivity)
     }
 
-    func startVideoCapture() -> Promise<Void> {
+    public func startVideoCapture() -> Promise<Void> {
         // If the session is already running, no need to do anything.
         guard !self.session.isRunning else { return Promise.value(()) }
 
@@ -159,17 +162,17 @@ class PhotoCapture: NSObject {
         }
     }
 
-    func stopCapture() -> Guarantee<Void> {
+    public func stopCapture() -> Guarantee<Void> {
         return sessionQueue.async(.promise) {
             self.session.stopRunning()
         }
     }
 
-    func assertIsOnSessionQueue() {
+    public func assertIsOnSessionQueue() {
         assertOnQueue(sessionQueue)
     }
 
-    func switchCamera() -> Promise<Void> {
+    public func switchCamera() -> Promise<Void> {
         AssertIsOnMainThread()
         let newPosition: AVCaptureDevice.Position
         switch desiredPosition {
@@ -197,7 +200,7 @@ class PhotoCapture: NSObject {
 
     // This method should be called on the serial queue,
     // and between calls to session.beginConfiguration/commitConfiguration
-    func updateCurrentInput(position: AVCaptureDevice.Position) throws {
+    public func updateCurrentInput(position: AVCaptureDevice.Position) throws {
         assertIsOnSessionQueue()
 
         guard let device = captureOutput.videoDevice(position: position) else {
@@ -218,7 +221,7 @@ class PhotoCapture: NSObject {
         resetFocusAndExposure()
     }
 
-    func switchFlashMode() -> Guarantee<Void> {
+    public func switchFlashMode() -> Guarantee<Void> {
         return sessionQueue.async(.promise) {
             switch self.captureOutput.flashMode {
             case .auto:
@@ -237,7 +240,7 @@ class PhotoCapture: NSObject {
         }
     }
 
-    func focus(with focusMode: AVCaptureDevice.FocusMode,
+    public func focus(with focusMode: AVCaptureDevice.FocusMode,
                exposureMode: AVCaptureDevice.ExposureMode,
                at devicePoint: CGPoint,
                monitorSubjectAreaChange: Bool) {
@@ -270,23 +273,23 @@ class PhotoCapture: NSObject {
         }
     }
 
-    func resetFocusAndExposure() {
+    public func resetFocusAndExposure() {
         let devicePoint = CGPoint(x: 0.5, y: 0.5)
         focus(with: .continuousAutoFocus, exposureMode: .continuousAutoExposure, at: devicePoint, monitorSubjectAreaChange: false)
     }
 
     @objc
-    func subjectAreaDidChange(notification: NSNotification) {
+    private func subjectAreaDidChange(notification: NSNotification) {
         resetFocusAndExposure()
     }
 
     // MARK: - Zoom
 
-    let minimumZoom: CGFloat = 1.0
-    let maximumZoom: CGFloat = 3.0
-    var previousZoomFactor: CGFloat = 1.0
+    private let minimumZoom: CGFloat = 1.0
+    private let maximumZoom: CGFloat = 3.0
+    private var previousZoomFactor: CGFloat = 1.0
 
-    func updateZoom(alpha: CGFloat) {
+    public func updateZoom(alpha: CGFloat) {
         assert(alpha >= 0 && alpha <= 1)
         sessionQueue.async {
             guard let captureDevice = self.captureDevice else {
@@ -301,7 +304,7 @@ class PhotoCapture: NSObject {
         }
     }
 
-    func updateZoom(scaleFromPreviousZoomFactor scale: CGFloat) {
+    public func updateZoom(scaleFromPreviousZoomFactor scale: CGFloat) {
         sessionQueue.async {
             guard let captureDevice = self.captureDevice else {
                 owsFailDebug("captureDevice was unexpectedly nil")
@@ -313,7 +316,7 @@ class PhotoCapture: NSObject {
         }
     }
 
-    func completeZoom(scaleFromPreviousZoomFactor scale: CGFloat) {
+    public func completeZoom(scaleFromPreviousZoomFactor scale: CGFloat) {
         sessionQueue.async {
             guard let captureDevice = self.captureDevice else {
                 owsFailDebug("captureDevice was unexpectedly nil")

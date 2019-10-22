@@ -295,7 +295,7 @@ class PhotoCaptureViewController: OWSViewController {
 
         let updateOrientation = {
             self.flashModeControl.button.transform = transformFromOrientation
-            self.switchCameraControl.button.transform   = transformFromOrientation.concatenating(tranformFromCameraType)
+            self.switchCameraControl.button.transform = transformFromOrientation.concatenating(tranformFromCameraType)
         }
 
         if isAnimated {
