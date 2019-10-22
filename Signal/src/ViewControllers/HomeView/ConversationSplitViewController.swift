@@ -495,13 +495,13 @@ private class NoSelectedConversationViewController: OWSViewController {
         titleLabel.textAlignment = .center
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.text = "Welcome to Signal"
+        titleLabel.text = NSLocalizedString("NO_SELECTED_CONVERSATION_TITLE", comment: "Title welcoming to the app")
 
         bodyLabel.font = .ows_dynamicTypeBody
         bodyLabel.textAlignment = .center
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byWordWrapping
-        bodyLabel.text = "Select a contact or group to start chatting."
+        bodyLabel.text = NSLocalizedString("NO_SELECTED_CONVERSATION_DESCRIPTION", comment: "Explanation of how to see a conversation.")
 
         let centerStackView = UIStackView(arrangedSubviews: [logoContainer, titleLabel, bodyLabel])
         centerStackView.axis = .vertical
