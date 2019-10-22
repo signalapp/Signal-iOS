@@ -75,7 +75,11 @@ public class OWSNavigationBar: UINavigationBar {
             return
         }
 
-        if UIAccessibility.isReduceTransparencyEnabled {
+        if currentOverride == .secondaryBar {
+            let color = Theme.secondaryBackgroundColor
+            let backgroundImage = UIImage(color: color)
+            self.setBackgroundImage(backgroundImage, for: .default)
+        } else if UIAccessibility.isReduceTransparencyEnabled {
             blurEffectView?.isHidden = true
             let color = Theme.navbarBackgroundColor
             let backgroundImage = UIImage(color: color)
@@ -235,8 +239,10 @@ public class OWSNavigationBar: UINavigationBar {
 
     @objc
     public enum NavigationBarThemeOverride: Int {
-        case clear, alwaysDark, removeOverride
+        case clear, alwaysDark, removeOverride, secondaryBar
     }
+
+    private var currentOverride: NavigationBarThemeOverride?
 
     @objc
     public func overrideTheme(type: NavigationBarThemeOverride) {
@@ -272,19 +278,40 @@ public class OWSNavigationBar: UINavigationBar {
             self.shadowImage = nil
         }
 
+        let applySecondaryBarOverride = {
+            self.blurEffectView?.isHidden = true
+            self.shadowImage = UIImage()
+        }
+
+        let removeSecondaryBarOverride = {
+            self.blurEffectView?.isHidden = false
+            self.shadowImage = nil
+        }
+
+        currentOverride = type
+
         switch type {
         case .clear:
             respectsTheme = false
+            removeSecondaryBarOverride()
             applyDarkThemeOverride()
             applyTransparentBarOverride()
         case .alwaysDark:
             respectsTheme = false
-            applyDarkThemeOverride()
+            removeSecondaryBarOverride()
             removeTransparentBarOverride()
+            applyDarkThemeOverride()
         case .removeOverride:
             respectsTheme = true
             removeDarkThemeOverride()
             removeTransparentBarOverride()
+            removeSecondaryBarOverride()
+            applyTheme()
+        case .secondaryBar:
+            respectsTheme = true
+            removeDarkThemeOverride()
+            removeTransparentBarOverride()
+            applySecondaryBarOverride()
             applyTheme()
         }
     }
