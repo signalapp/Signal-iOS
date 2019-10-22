@@ -170,9 +170,11 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 - (void)shareMediaAction;
 - (void)saveMediaAction;
 - (void)deleteAction;
+- (void)forwardMessageAction;
 
 - (BOOL)canCopyMedia;
 - (BOOL)canSaveMedia;
+- (BOOL)canForwardMessage;
 
 // For view items that correspond to interactions, this is the interaction's unique id.
 // For other view views (like the typing indicator), this is a unique, stable string.

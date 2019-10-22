@@ -1487,6 +1487,59 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         }];
 }
 
+- (BOOL)canForwardMessage
+{
+    switch (self.messageCellType) {
+        case OWSMessageCellType_Unknown:
+            return NO;
+        case OWSMessageCellType_TextOnlyMessage:
+        case OWSMessageCellType_ContactShare:
+            return YES;
+        case OWSMessageCellType_Audio:
+        case OWSMessageCellType_GenericAttachment:
+            return self.attachmentStream != nil;
+        case OWSMessageCellType_MediaMessage:
+            return [self canSaveMedia];
+        case OWSMessageCellType_OversizeTextDownloading:
+        case OWSMessageCellType_StickerMessage:
+        case OWSMessageCellType_ViewOnce:
+            return NO;
+    }
+}
+
+- (void)forwardMessageAction
+{
+    if (!self.canForwardMessage) {
+        OWSFailDebug(@"Can't forward message");
+        return;
+    }
+    //    switch (self.messageCellType) {
+    //        case OWSMessageCellType_Unknown:
+    //        case OWSMessageCellType_TextOnlyMessage:
+    //        case OWSMessageCellType_ContactShare:
+    //            OWSFailDebug(@"Cannot save text data.");
+    //            break;
+    //        case OWSMessageCellType_Audio:
+    //            OWSFailDebug(@"Cannot save media data.");
+    //            break;
+    //        case OWSMessageCellType_GenericAttachment:
+    //            OWSFailDebug(@"Cannot save media data.");
+    //            break;
+    //        case OWSMessageCellType_MediaMessage: {
+    //            [self saveMediaAlbumItems];
+    //            break;
+    //        }
+    //        case OWSMessageCellType_OversizeTextDownloading:
+    //            OWSFailDebug(@"Can't save not-yet-downloaded attachment");
+    //            return;
+    //        case OWSMessageCellType_StickerMessage:
+    //            return [self saveSticker];
+    //        case OWSMessageCellType_ViewOnce:
+    //            OWSFailDebug(@"Can't save view once message");
+    //            return;
+    //    }
+}
+
 - (void)deleteAction
 {
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {

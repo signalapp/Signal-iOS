@@ -424,6 +424,11 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
         return
     }
 
+    func forwardMessageAction() {
+        owsFailDebug("unexpected invocation")
+        return
+    }
+
     func deleteAction() {
         owsFailDebug("unexpected invocation")
         return
@@ -435,6 +440,11 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     }
 
     func canSaveMedia() -> Bool {
+        owsFailDebug("unexpected invocation")
+        return false
+    }
+
+    func canForwardMessage() -> Bool {
         owsFailDebug("unexpected invocation")
         return false
     }

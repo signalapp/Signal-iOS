@@ -12,7 +12,7 @@ protocol MessageActionsDelegate: class {
 
 struct MessageActionBuilder {
     static func reply(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-        return MenuAction(image: #imageLiteral(resourceName: "ic_reply"),
+        return MenuAction(image: #imageLiteral(resourceName: "reply-outline-24"),
                           title: NSLocalizedString("MESSAGE_ACTION_REPLY", comment: "Action sheet button title"),
                           subtitle: nil,
                           accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "reply"),
@@ -71,6 +71,16 @@ struct MessageActionBuilder {
                             conversationViewItem.saveMediaAction()
         })
     }
+
+    static func forwardMessage(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
+        return MenuAction(image: #imageLiteral(resourceName: "forward-outline-24.png"),
+                          title: NSLocalizedString("MESSAGE_ACTION_FORWARD_MESSAGE", comment: "Action sheet button title"),
+                          subtitle: nil,
+                          accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "forward_message"),
+                          block: { (_) in
+                            conversationViewItem.forwardMessageAction()
+        })
+    }
 }
 
 @objc
@@ -88,6 +98,10 @@ class ConversationViewItemActions: NSObject {
         if conversationViewItem.hasBodyTextActionContent {
             let copyTextAction = MessageActionBuilder.copyText(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(copyTextAction)
+        }
+
+        if conversationViewItem.canForwardMessage() {
+            actions.append(MessageActionBuilder.forwardMessage(conversationViewItem: conversationViewItem, delegate: delegate))
         }
 
         let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
@@ -119,6 +133,10 @@ class ConversationViewItemActions: NSObject {
             }
         }
 
+        if conversationViewItem.canForwardMessage() {
+            actions.append(MessageActionBuilder.forwardMessage(conversationViewItem: conversationViewItem, delegate: delegate))
+        }
+
         let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
         actions.append(deleteAction)
 
@@ -135,6 +153,10 @@ class ConversationViewItemActions: NSObject {
         if shouldAllowReply {
             let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(replyAction)
+        }
+
+        if conversationViewItem.canForwardMessage() {
+            actions.append(MessageActionBuilder.forwardMessage(conversationViewItem: conversationViewItem, delegate: delegate))
         }
 
         let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
