@@ -53,6 +53,31 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         }
     }
 
+    func pushViewController(_ vc: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
+        guard let presentingViewController = presentingViewController,
+            let presentingNavController = presentingViewController.navigationController else {
+                return owsFailDebug("presenting view controller missing")
+        }
+
+        presentingNavController.pushViewController(vc, animated: animated, completion: completion)
+    }
+
+    func popToPresentingViewController(animated: Bool, completion: (() -> Void)? = nil) {
+        guard var presentingViewController = presentingViewController,
+            let presentingNavController = presentingViewController.navigationController else {
+            return owsFailDebug("presenting view controller missing")
+        }
+
+        // The presenting view contrtoller may not directly be in the nav stack
+        // (like with the compose flow). So make sure we referenve the top view
+        // controller.
+        if let parentViewController = presentingViewController.parent {
+            presentingViewController = parentViewController
+        }
+
+        presentingNavController.popToViewController(presentingViewController, animated: animated, completion: completion)
+    }
+
     // MARK: Twitter
 
     private func canTweet() -> Bool {
@@ -84,7 +109,8 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         let tweetUrl = URL(string: installUrl)
         twitterViewController.add(tweetUrl)
         twitterViewController.add(#imageLiteral(resourceName: "twitter_sharing_image"))
-        presentingViewController?.present(twitterViewController, animated: true, completion: nil)
+
+        presentingViewController?.present(twitterViewController, animated: true)
     }
 
     // MARK: ContactsPickerDelegate
@@ -94,7 +120,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
         guard let inviteChannel = channel else {
             Logger.error("unexpected nil channel after returning from contact picker.")
-            presentingViewController?.dismiss(animated: true)
+            popToPresentingViewController(animated: true)
             return
         }
 
@@ -129,19 +155,19 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
     func contactsPicker(_: ContactsPicker, contactFetchDidFail error: NSError) {
         Logger.error("with error: \(error)")
-        presentingViewController?.dismiss(animated: true) {
+        popToPresentingViewController(animated: true) {
             OWSAlerts.showErrorAlert(message: NSLocalizedString("ERROR_COULD_NOT_FETCH_CONTACTS", comment: "Error indicating that the phone's contacts could not be retrieved."))
         }
     }
 
     func contactsPickerDidCancel(_: ContactsPicker) {
         Logger.debug("")
-        presentingViewController?.dismiss(animated: true)
+        popToPresentingViewController(animated: true)
     }
 
     func contactsPicker(_: ContactsPicker, didSelectContact contact: Contact) {
         owsFailDebug("InviteFlow only supports multi-select")
-        presentingViewController?.dismiss(animated: true)
+        popToPresentingViewController(animated: true)
     }
 
     // MARK: SMS
@@ -164,23 +190,24 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: .phoneNumber)
         picker.contactsPickerDelegate = self
         picker.title = NSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
-        let navigationController = OWSNavigationController(rootViewController: picker)
-        presentingViewController?.present(navigationController, animated: true)
+
+        pushViewController(picker, animated: true)
     }
 
     public func dismissAndSendSMSTo(phoneNumbers: [String]) {
-        presentingViewController?.dismiss(animated: true) {
+        popToPresentingViewController(animated: true) {
             if phoneNumbers.count > 1 {
                 let warning = UIAlertController(title: nil,
                                                 message: NSLocalizedString("INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT",
-                                                                                       comment: "Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other."),
+                                                                           comment: "Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other."),
                                                 preferredStyle: .alert)
                 warning.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_CONTINUE",
                                                                          comment: "Label for 'continue' button."),
                                                 style: .default, handler: { [weak self] _ in
-                    self?.sendSMSTo(phoneNumbers: phoneNumbers)
+                                                    self?.sendSMSTo(phoneNumbers: phoneNumbers)
                 }))
                 warning.addAction(OWSAlerts.cancelAction)
+
                 self.presentingViewController?.presentAlert(warning)
             } else {
                 self.sendSMSTo(phoneNumbers: phoneNumbers)
@@ -239,8 +266,8 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: .email)
         picker.contactsPickerDelegate = self
         picker.title = NSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
-        let navigationController = OWSNavigationController(rootViewController: picker)
-        presentingViewController?.present(navigationController, animated: true)
+
+        pushViewController(picker, animated: true)
     }
 
     private func sendMailTo(emails recipientEmails: [String]) {
@@ -254,7 +281,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         mailComposeViewController.setSubject(subject)
         mailComposeViewController.setMessageBody(body, isHTML: false)
 
-        presentingViewController?.dismiss(animated: true) {
+        popToPresentingViewController(animated: true) {
             self.presentingViewController?.present(mailComposeViewController, animated: true)
         }
     }
