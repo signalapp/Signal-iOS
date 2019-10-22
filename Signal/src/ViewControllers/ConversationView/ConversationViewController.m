@@ -574,7 +574,7 @@ typedef enum : NSUInteger {
     OWSAssertDebug(self.conversationStyle);
 
     _layout = [[ConversationViewLayout alloc] initWithConversationStyle:self.conversationStyle];
-    self.conversationStyle.viewWidth = self.view.width;
+    self.conversationStyle.viewWidth = floor(self.view.width);
 
     self.layout.delegate = self;
     // We use the root view bounds as the initial frame for the collection
@@ -5011,7 +5011,7 @@ typedef enum : NSUInteger {
 {
     self.scrollContinuity = kScrollContinuityBottom;
 
-    self.conversationStyle.viewWidth = self.collectionView.width;
+    self.conversationStyle.viewWidth = floor(self.collectionView.width);
     // Evacuate cached cell sizes.
     for (id<ConversationViewItem> viewItem in self.viewItems) {
         [viewItem clearCachedLayoutState];
