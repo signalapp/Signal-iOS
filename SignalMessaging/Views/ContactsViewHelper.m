@@ -379,20 +379,17 @@ NS_ASSUME_NONNULL_BEGIN
     [viewController presentAlert:alert];
 }
 
-- (void)presentContactViewControllerForAddress:(SignalServiceAddress *)address
-                            fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
-                               editImmediately:(BOOL)shouldEditImmediately
+- (nullable CNContactViewController *)contactViewControllerForAddress:(SignalServiceAddress *)address
+                                                      editImmediately:(BOOL)shouldEditImmediately
 {
-    [self presentContactViewControllerForAddress:address
-                              fromViewController:fromViewController
+    return [self contactViewControllerForAddress:address
                                  editImmediately:shouldEditImmediately
                           addToExistingCnContact:nil];
 }
 
-- (void)presentContactViewControllerForAddress:(SignalServiceAddress *)address
-                            fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
-                               editImmediately:(BOOL)shouldEditImmediately
-                        addToExistingCnContact:(CNContact *_Nullable)existingContact
+- (nullable CNContactViewController *)contactViewControllerForAddress:(SignalServiceAddress *)address
+                                                      editImmediately:(BOOL)shouldEditImmediately
+                                               addToExistingCnContact:(CNContact *_Nullable)existingContact
 {
     OWSAssertIsOnMainThread();
 
@@ -401,12 +398,12 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self.contactsManager.supportsContactEditing) {
         // Should not expose UI that lets the user get here.
         OWSFailDebug(@"Contact editing not supported.");
-        return;
+        return nil;
     }
 
     if (!self.contactsManager.isSystemContactsAuthorized) {
-        [self presentMissingContactAccessAlertControllerFromViewController:fromViewController];
-        return;
+        [self presentMissingContactAccessAlertControllerFromViewController:CurrentAppContext().frontmostViewController];
+        return nil;
     }
 
     CNContactViewController *_Nullable contactViewController;
@@ -476,23 +473,11 @@ NS_ASSUME_NONNULL_BEGIN
         contactViewController = [CNContactViewController viewControllerForNewContact:newContact];
     }
 
-    contactViewController.delegate = fromViewController;
     contactViewController.allowsActions = NO;
     contactViewController.allowsEditing = YES;
-    contactViewController.navigationItem.leftBarButtonItem =
-        [[UIBarButtonItem alloc] initWithTitle:CommonStrings.cancelButton
-                                         style:UIBarButtonItemStylePlain
-                                        target:fromViewController
-                                        action:@selector(didFinishEditingContact)];
     contactViewController.edgesForExtendedLayout = UIRectEdgeNone;
 
-    OWSNavigationController *modal = [[OWSNavigationController alloc] initWithRootViewController:contactViewController];
-
-    // We want the presentation to imply a "replacement" in this case.
-    if (shouldEditImmediately) {
-        modal.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    }
-    [fromViewController presentViewController:modal animated:YES completion:nil];
+    return contactViewController;
 }
 
 - (void)blockListCacheDidUpdate:(OWSBlockListCache *)blocklistCache

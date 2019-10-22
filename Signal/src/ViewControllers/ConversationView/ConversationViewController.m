@@ -106,7 +106,6 @@ typedef enum : NSUInteger {
     ContactShareApprovalViewControllerDelegate,
     AVAudioPlayerDelegate,
     CNContactViewControllerDelegate,
-    ContactEditingDelegate,
     ContactsPickerDelegate,
     ContactShareViewHelperDelegate,
     ContactsViewHelperDelegate,
@@ -2350,9 +2349,17 @@ typedef enum : NSUInteger {
         return;
     }
     TSContactThread *contactThread = (TSContactThread *)self.thread;
-    [self.contactsViewHelper presentContactViewControllerForAddress:contactThread.contactAddress
-                                                 fromViewController:self
-                                                    editImmediately:YES];
+    CNContactViewController *_Nullable contactVC =
+        [self.contactsViewHelper contactViewControllerForAddress:contactThread.contactAddress editImmediately:YES];
+
+    if (!contactVC) {
+        OWSFailDebug(@"Unexpected missing contact VC");
+        return;
+    }
+
+    contactVC.delegate = self;
+
+    [self.navigationController pushViewController:contactVC animated:YES];
 
     // Delete the offers.
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
@@ -2695,30 +2702,12 @@ typedef enum : NSUInteger {
     [ViewOnceMessageViewController tryToPresentWithInteraction:viewItem.interaction from:self];
 }
 
-#pragma mark - ContactEditingDelegate
-
-- (void)didFinishEditingContact
-{
-    OWSLogDebug(@"");
-
-    [self dismissViewControllerAnimated:NO completion:nil];
-}
-
 #pragma mark - CNContactViewControllerDelegate
 
 - (void)contactViewController:(CNContactViewController *)viewController
        didCompleteWithContact:(nullable CNContact *)contact
 {
-    if (contact) {
-        // Saving normally returns you to the "Show Contact" view
-        // which we're not interested in, so we skip it here. There is
-        // an unfortunate blip of the "Show Contact" view on slower devices.
-        OWSLogDebug(@"completed editing contact.");
-        [self dismissViewControllerAnimated:NO completion:nil];
-    } else {
-        OWSLogDebug(@"canceled editing contact.");
-        [self dismissViewControllerAnimated:YES completion:nil];
-    }
+    [self.navigationController popToViewController:self animated:YES];
 }
 
 #pragma mark - ContactsViewHelperDelegate
