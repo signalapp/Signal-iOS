@@ -277,6 +277,33 @@ public class AccountManager: NSObject {
         }
     }
 
+    @objc
+    public func fakeRegistration() {
+        fakeRegisterForTests(phoneNumber: "+15551231234", uuid: UUID())
+        SignalApp.shared().showConversationSplitView()
+    }
+
+    private func fakeRegisterForTests(phoneNumber: String, uuid: UUID) {
+        let serverAuthToken = generateServerAuthToken()
+        let identityKeyPair = Curve25519.generateKeyPair()
+        let profileKey = OWSAES256Key.generateRandom()
+
+        tsAccountManager.phoneNumberAwaitingVerification = phoneNumber
+        tsAccountManager.uuidAwaitingVerification = uuid
+
+        databaseStorage.write { transaction in
+            self.identityManager.storeIdentityKeyPair(identityKeyPair,
+                                                      transaction: transaction)
+            self.profileManager.setLocalProfileKey(profileKey,
+                                                   transaction: transaction)
+            self.tsAccountManager.setStoredServerAuthToken(serverAuthToken,
+                                                           deviceId: 1,
+                                                           transaction: transaction)
+        }
+        OWS2FAManager.shared().mark2FAAsEnabled(withPin: "12341234")
+        completeRegistration()
+    }
+
     private func createPreKeys() -> Promise<Void> {
         return Promise { resolver in
             TSPreKeyManager.createPreKeys(success: { resolver.fulfill(()) },

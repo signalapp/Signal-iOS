@@ -687,11 +687,6 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
             [AppEnvironment.shared.notificationPresenter clearAllNotifications];
 
             [self.socketManager requestSocketOpen];
-
-            UITapGestureRecognizer *gesture =
-                [[UITapGestureRecognizer alloc] initWithTarget:[Pastelog class] action:@selector(submitLogs)];
-            gesture.numberOfTapsRequired = 8;
-            [self.window addGestureRecognizer:gesture];
         }
     }); // end dispatchOnce for first time we become active
 
