@@ -75,7 +75,7 @@ public class OWSNavigationBar: UINavigationBar {
             return
         }
 
-        if currentOverride == .secondaryBar {
+        if currentStyle == .secondaryBar {
             let color = Theme.secondaryBackgroundColor
             let backgroundImage = UIImage(color: color)
             self.setBackgroundImage(backgroundImage, for: .default)
@@ -238,14 +238,14 @@ public class OWSNavigationBar: UINavigationBar {
     // MARK: Override Theme
 
     @objc
-    public enum NavigationBarThemeOverride: Int {
-        case clear, alwaysDark, removeOverride, secondaryBar
+    public enum NavigationBarStyle: Int {
+        case clear, alwaysDark, `default`, secondaryBar
     }
 
-    private var currentOverride: NavigationBarThemeOverride?
+    private var currentStyle: NavigationBarStyle?
 
     @objc
-    public func overrideTheme(type: NavigationBarThemeOverride) {
+    public func switchToStyle(_ style: NavigationBarStyle) {
         let applyDarkThemeOverride = {
             self.barStyle = .black
             self.titleTextAttributes = [NSAttributedString.Key.foregroundColor: Theme.darkThemePrimaryColor]
@@ -288,9 +288,9 @@ public class OWSNavigationBar: UINavigationBar {
             self.shadowImage = nil
         }
 
-        currentOverride = type
+        currentStyle = style
 
-        switch type {
+        switch style {
         case .clear:
             respectsTheme = false
             removeSecondaryBarOverride()
@@ -301,7 +301,7 @@ public class OWSNavigationBar: UINavigationBar {
             removeSecondaryBarOverride()
             removeTransparentBarOverride()
             applyDarkThemeOverride()
-        case .removeOverride:
+        case .default:
             respectsTheme = true
             removeDarkThemeOverride()
             removeTransparentBarOverride()

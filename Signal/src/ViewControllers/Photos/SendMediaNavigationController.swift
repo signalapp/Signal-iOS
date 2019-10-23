@@ -371,9 +371,9 @@ class SendMediaNavigationController: OWSNavigationController {
 
 extension SendMediaNavigationController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        if let navbarTheme = preferredNavbarTheme(viewController: viewController) {
+        if let navbarTheme = preferredNavbarStyle(viewController: viewController) {
             if let owsNavBar = navigationBar as? OWSNavigationBar {
-                owsNavBar.overrideTheme(type: navbarTheme)
+                owsNavBar.switchToStyle(navbarTheme)
             } else {
                 owsFailDebug("unexpected navigationBar: \(navigationBar)")
             }
@@ -400,9 +400,9 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
 
     // In case back navigation was canceled, we re-apply whatever is showing.
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        if let navbarTheme = preferredNavbarTheme(viewController: viewController) {
+        if let navbarTheme = preferredNavbarStyle(viewController: viewController) {
             if let owsNavBar = navigationBar as? OWSNavigationBar {
-                owsNavBar.overrideTheme(type: navbarTheme)
+                owsNavBar.switchToStyle(navbarTheme)
             } else {
                 owsFailDebug("unexpected navigationBar: \(navigationBar)")
             }
@@ -412,7 +412,7 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
 
     // MARK: - Helpers
 
-    private func preferredNavbarTheme(viewController: UIViewController) -> OWSNavigationBar.NavigationBarThemeOverride? {
+    private func preferredNavbarStyle(viewController: UIViewController) -> OWSNavigationBar.NavigationBarStyle? {
         switch viewController {
         case is AttachmentApprovalViewController:
             return .clear
@@ -421,7 +421,7 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
         case is PhotoCaptureViewController:
             return .clear
         case is ConversationPickerViewController:
-            return .removeOverride
+            return .default
         default:
             owsFailDebug("unexpected viewController: \(viewController)")
             return nil

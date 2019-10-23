@@ -275,11 +275,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     if (self.splitViewController.isCollapsed) {
         self.view.backgroundColor = Theme.backgroundColor;
         self.tableView.backgroundColor = Theme.backgroundColor;
-        [self.searchBar overrideTheme:OWSSearchBarThemeOverride_None];
+        [self.searchBar switchToStyle:OWSSearchBarStyle_Default];
     } else {
         self.view.backgroundColor = Theme.secondaryBackgroundColor;
         self.tableView.backgroundColor = Theme.secondaryBackgroundColor;
-        [self.searchBar overrideTheme:OWSSearchBarThemeOverride_SecondaryBar];
+        [self.searchBar switchToStyle:OWSSearchBarStyle_SecondaryBar];
     }
 }
 
@@ -292,10 +292,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         return;
     }
 
+    [self.tableView reloadData];
+
     [coordinator
         animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
             [self applyTheme];
-            [self.tableView reloadData];
         }
                         completion:nil];
 }
@@ -745,8 +746,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 
     // Whether or not the theme has changed, always ensure
-    // the the right theme is applied. The initial collapsed
-    // state of the split view controller is determined betwteen
+    // the right theme is applied. The initial collapsed
+    // state of the split view controller is determined between
     // `viewWillAppear` and `viewDidAppear`, so this is the soonest
     // we can know the right thing to display.
     [self applyTheme];

@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSSearchBar ()
 
-@property (nonatomic) OWSSearchBarThemeOverride currentOverride;
+@property (nonatomic) OWSSearchBarStyle currentStyle;
 
 @end
 
@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)ows_configure
 {
-    _currentOverride = OWSSearchBarThemeOverride_None;
+    _currentStyle = OWSSearchBarStyle_Default;
 
     [self ows_applyTheme];
 
@@ -63,15 +63,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)ows_applyTheme
 {
-    [self.class applyThemeToSearchBar:self override:self.currentOverride];
+    [self.class applyThemeToSearchBar:self style:self.currentStyle];
 }
 
 + (void)applyThemeToSearchBar:(UISearchBar *)searchBar
 {
-    [self applyThemeToSearchBar:searchBar override:OWSSearchBarThemeOverride_None];
+    [self applyThemeToSearchBar:searchBar style:OWSSearchBarStyle_Default];
 }
 
-+ (void)applyThemeToSearchBar:(UISearchBar *)searchBar override:(OWSSearchBarThemeOverride)type
++ (void)applyThemeToSearchBar:(UISearchBar *)searchBar style:(OWSSearchBarStyle)style
 {
     OWSAssertIsOnMainThread();
 
@@ -103,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     UIColor *searchFieldBackgroundColor = Theme.searchFieldBackgroundColor;
-    if (type == OWSSearchBarThemeOverride_SecondaryBar) {
+    if (style == OWSSearchBarStyle_SecondaryBar) {
         searchFieldBackgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray95Color : UIColor.ows_gray05Color;
     }
 
@@ -117,9 +117,9 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
-- (void)overrideTheme:(OWSSearchBarThemeOverride)type
+- (void)switchToStyle:(OWSSearchBarStyle)style
 {
-    self.currentOverride = type;
+    self.currentStyle = style;
     [self ows_applyTheme];
 }
 

@@ -77,7 +77,7 @@ class ConversationSplitViewController: UISplitViewController {
         guard let owsNavBar = primaryNavController.navigationBar as? OWSNavigationBar else {
             return owsFailDebug("unexpected nav bar")
         }
-        owsNavBar.overrideTheme(type: collapsed ? .removeOverride : .secondaryBar)
+        owsNavBar.switchToStyle(collapsed ? .default : .secondaryBar)
     }
 
     private var hasHiddenExtraSubivew = false
