@@ -1106,32 +1106,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return thumbnailAttachment;
 }
 
-//- (nullable TSAttachmentStream *)clone
-//{
-//    NSError *error;
-//    NSData *_Nullable data = [self readDataFromFileWithError:&error];
-//    if (data == nil || error != nil) {
-//        OWSFailDebug(@"Error: %@", error);
-//        return nil;
-//    }
-//
-//    TSAttachmentStream *attachment =
-//    [[TSAttachmentStream alloc] initWithContentType:self.contentType
-//                                          byteCount:self.byteCount
-//                                     sourceFilename:self.sourceFilename
-//                                            caption:self.caption
-//                                     albumMessageId:nil];
-//
-//    NSError *error;
-//    BOOL success = [attachment writeData:data error:&error];
-//    if (!success || error) {
-//        OWSLogError(@"Couldn't copy attachment data for message sent to self: %@.", error);
-//        return nil;
-//    }
-//
-//    return attachment;
-//}
-
 // MARK: Protobuf serialization
 
 + (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId

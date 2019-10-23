@@ -4,14 +4,6 @@
 
 import Foundation
 
-public struct DebugError: Error {
-    public let errorCode: Int = SCKError.Code.assertionError.rawValue
-    public let description: String
-    public init(_ description: String) {
-        self.description = description
-    }
-}
-
 /// Durably Decrypt a received signal message enevelope
 ///
 /// The queue's operations (`SSKMessageDecryptOperation`) uses `SSKMessageDecrypt` to decrypt
@@ -160,10 +152,7 @@ public class SSKMessageDecryptOperation: OWSOperation, DurableOperation {
             },
                                              failureBlock: {
                                                 // TODO error API's should return specific error
-                                                let someError = DebugError("yo") as NSError
-                                                someError.isRetryable = false
-                                                self.reportError(someError)
-//                                                self.reportError(OWSAssertionError("unknown error"))
+                                                self.reportError(OWSAssertionError("unknown error"))
                                             })
         } catch {
             reportError(withUndefinedRetry: error)

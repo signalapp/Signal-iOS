@@ -353,22 +353,15 @@ extension ForwardMessageNavigationController: ContactShareApprovalViewController
 extension ForwardMessageNavigationController: AttachmentApprovalViewControllerDelegate {
 
     func attachmentApprovalDidAppear(_ attachmentApproval: AttachmentApprovalViewController) {
-        // TODO:
-        //        updateViewState(topViewController: attachmentApproval)
+        // We can ignore this event.
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageText newMessageText: String?) {
         self.approvalMessageText = newMessageText
-        //        sendMediaNavDelegate?.sendMediaNav(self, didChangeMessageText: newMessageText)
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {
-        //        guard let removedDraft = attachmentDraftCollection.attachmentDraft(forAttachment: attachment) else {
-        //            owsFailDebug("removedDraft was unexpectedly nil")
-        //            return
-        //        }
-        //
-        //        attachmentDraftCollection.remove(removedDraft)
+        // We can ignore this event.
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {

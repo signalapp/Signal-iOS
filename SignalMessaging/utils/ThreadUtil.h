@@ -69,7 +69,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSOutgoingMessage *)enqueueMessageWithContactShare:(OWSContact *)contactShare inThread:(TSThread *)thread;
 
-+ (TSOutgoingMessage *)buildMessageForContactShare:(OWSContact *)contactShare
                                           inThread:(TSThread *)thread
                                        transaction:(SDSAnyReadTransaction *)transaction;
 
