@@ -102,11 +102,18 @@ class PhotoCaptureViewController: OWSViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        // If we don't set the frame manually here, we get an undesirable back and forth animation
-        // while switching orientations.
-        photoCapture.previewView.frame = CGRect(origin: .zero, size: size)
-        photoCapture.previewView.bounds = CGRect(origin: .zero, size: size)
-        photoCapture.updateVideoConnectionToDeviceOrientation()
+        if UIDevice.current.isIPad {
+            // Since we support iPad multitasking, we cannot *disable* rotation of our views.
+            // Rotating the preview layer is really distracting, so we fade out the preview layer
+            // while the rotation occurs.
+            self.photoCapture.previewView.alpha = 0
+            coordinator.animate(alongsideTransition: { _ in }) { _ in
+                UIView.animate(withDuration: 0.1) {
+                    self.photoCapture.previewView.alpha = 1
+                }
+            }
+            photoCapture.updateVideoConnectionToDeviceOrientation()
+        }
     }
 
     // MARK: -
