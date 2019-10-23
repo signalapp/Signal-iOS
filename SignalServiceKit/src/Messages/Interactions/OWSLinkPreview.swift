@@ -340,7 +340,6 @@ public class OWSLinkPreview: MTLModel {
         "media2.giphy.com",
         "media3.giphy.com",
         "gph.is"
-        
     ]
 
     // For media domains, we DO NOT require an exact match - subdomains are allowed.
