@@ -350,8 +350,13 @@ class PhotoCaptureViewController: OWSViewController {
         }
 
         view.addSubview(captureButton)
-        captureButton.autoHCenterInSuperview()
-        captureButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: SendMediaNavigationController.bottomButtonsCenterOffset).isActive = true
+        if UIDevice.current.isIPad {
+            captureButton.autoVCenterInSuperview()
+            captureButton.centerXAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: SendMediaNavigationController.trailingButtonsOffset).isActive = true
+        } else {
+            captureButton.autoHCenterInSuperview()
+            captureButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: SendMediaNavigationController.bottomButtonsCenterOffset).isActive = true
+        }
 
         // If the view is already visible, setup the volume button listener
         // now that the capture UI is ready. Otherwise, we'll wait until
