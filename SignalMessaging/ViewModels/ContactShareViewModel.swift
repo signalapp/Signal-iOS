@@ -165,4 +165,14 @@ public class ContactShareViewModel: NSObject {
         // If we want to keep the avatar image, the caller will need to re-apply it.
         return ContactShareViewModel(contactShareRecord: newDbRecord, avatarImageData: nil)
     }
+
+    @objc
+    public func duplicate() -> ContactShareViewModel {
+
+        // TODO move the `newContact` logic into the view model?
+        let newDbRecord = dbRecord.copy() as! OWSContact
+
+        // If we want to keep the avatar image, the caller will need to re-apply it.
+        return ContactShareViewModel(contactShareRecord: newDbRecord, avatarImageData: nil)
+    }
 }

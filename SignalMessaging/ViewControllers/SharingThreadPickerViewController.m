@@ -224,9 +224,8 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord avatarImageData:avatarImageData];
 
     ContactShareApprovalViewController *approvalVC =
-        [[ContactShareApprovalViewController alloc] initWithContactShare:contactShare
-                                                         contactsManager:self.contactsManager
-                                                                delegate:self];
+        [[ContactShareApprovalViewController alloc] initWithContactShare:contactShare];
+    approvalVC.delegate = self;
     [self.navigationController pushViewController:approvalVC animated:YES];
 }
 

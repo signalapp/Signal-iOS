@@ -4632,11 +4632,9 @@ typedef enum : NSUInteger {
     ContactShareViewModel *contactShare =
         [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord avatarImageData:avatarImageData];
 
-    // TODO: We should probably show this in the same navigation view controller.
     ContactShareApprovalViewController *approveContactShare =
-        [[ContactShareApprovalViewController alloc] initWithContactShare:contactShare
-                                                         contactsManager:self.contactsManager
-                                                                delegate:self];
+        [[ContactShareApprovalViewController alloc] initWithContactShare:contactShare];
+    approveContactShare.delegate = self;
     OWSAssertDebug(contactsPicker.navigationController);
     [contactsPicker.navigationController pushViewController:approveContactShare animated:YES];
 }

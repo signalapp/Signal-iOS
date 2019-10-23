@@ -166,6 +166,7 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCo
                               transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (nullable TSAttachmentStream *)cloneAsThumbnail;
+//- (nullable TSAttachmentStream *)clone;
 
 #pragma mark - Protobuf
 

@@ -1495,8 +1495,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         case OWSMessageCellType_TextOnlyMessage:
             return YES;
         case OWSMessageCellType_ContactShare:
-            // TODO:
-            return NO;
+            return YES;
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_GenericAttachment:
             return self.attachmentStream != nil;

@@ -218,13 +218,19 @@ class ContactShareFieldView: UIStackView {
 
 // MARK: -
 
-// TODO: Rename to ContactShareApprovalViewController
 @objc
 public class ContactShareApprovalViewController: OWSViewController, EditContactShareNameViewControllerDelegate, ContactShareFieldViewDelegate {
 
-    weak var delegate: ContactShareApprovalViewControllerDelegate?
+    // MARK: - Dependencies
 
-    let contactsManager: OWSContactsManager
+    private var contactsManager: OWSContactsManager {
+        return Environment.shared.contactsManager
+    }
+
+    // MARK: -
+
+    @objc
+    public weak var delegate: ContactShareApprovalViewControllerDelegate?
 
     var contactShare: ContactShareViewModel
 
@@ -240,10 +246,8 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
     }
 
     @objc
-    required public init(contactShare: ContactShareViewModel, contactsManager: OWSContactsManager, delegate: ContactShareApprovalViewControllerDelegate) {
-        self.contactsManager = contactsManager
+    required public init(contactShare: ContactShareViewModel) {
         self.contactShare = contactShare
-        self.delegate = delegate
 
         super.init(nibName: nil, bundle: nil)
 

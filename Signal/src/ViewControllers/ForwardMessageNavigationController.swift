@@ -192,6 +192,14 @@ extension ForwardMessageNavigationController {
             approvalView.delegate = self
             self.pushViewController(approvalView, animated: true)
         case .contactShare:
+            guard let oldContactShare = conversationViewItem.contactShare else {
+                throw OWSAssertionError("Missing contactShareViewModel.")
+            }
+            let newContactShare = oldContactShare.duplicate()
+            let approvalView = ContactShareApprovalViewController(contactShare: newContactShare)
+            approvalView.delegate = self
+            self.pushViewController(approvalView, animated: true)
+
             throw OWSAssertionError("Invalid message type.")
         case .audio,
              .genericAttachment,
@@ -234,6 +242,14 @@ extension ForwardMessageNavigationController {
                 self.send(body: body, thread: thread, transaction: transaction)
             }
         case .contactShare:
+            guard let contactShare = approvedContactShare else {
+                    throw OWSAssertionError("Missing contactShare.")
+            }
+
+            send { (thread, transaction) in
+                self.send(contactShare: contactShare, thread: thread, transaction: transaction)
+            }
+
             throw OWSAssertionError("Invalid message type.")
         case .audio,
              .genericAttachment,
@@ -318,38 +334,15 @@ extension ForwardMessageNavigationController {
 
     func send(body: String, thread: TSThread, transaction: SDSAnyWriteTransaction) {
         let outgoingMessagePreparer = OutgoingMessagePreparer(fullMessageText: body, mediaAttachments: [], thread: thread, quotedReplyModel: nil, transaction: transaction)
-////            [[OutgoingMessagePreparer alloc] initWithFullMessageText:fullMessageText
-////                mediaAttachments:mediaAttachments
-////                thread:thread
-////                quotedReplyModel:quotedReplyModel
-////                transaction:transaction];
-//        
-//        [BenchManager benchAsyncWithTitle:@"Saving outgoing message"
-//            block:^(void (^benchmarkCompletion)(void)) {
-//            [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
         outgoingMessagePreparer.insertMessage(linkPreviewDraft: nil, transaction: transaction)
         messageSenderJobQueue.add(message: outgoingMessagePreparer, transaction: transaction)
-//            [outgoingMessagePreparer insertMessageWithLinkPreviewDraft:linkPreviewDraft transaction:writeTransaction];
-//            [self.messageSenderJobQueue addMessage:outgoingMessagePreparer transaction:writeTransaction];
-//            }
-//
-//        let (promise, resolver) = Promise<Void>.pending()
-////        ThreadUtil.sendMessageNonDurably(text: <#T##String#>, thread: <#T##TSThread#>, quotedReplyModel: <#T##OWSQuotedReplyModel?#>, messageSender: <#T##MessageSender#>)
-////        ThreadUtil.sendMessageNonDurably(withContactShare: <#T##OWSContact#>, in: <#T##TSThread#>, messageSender: <#T##MessageSender#>, completion: <#T##(Error?) -> Void#>)
-////        ThreadUtil.sendMessageNonDurably(withText: <#T##String#>, in: <#T##TSThread#>, quotedReplyModel: <#T##OWSQuotedReplyModel?#>, transaction: <#T##SDSAnyReadTransaction#>, messageSender: <#T##MessageSender#>, completion: <#T##(Error?) -> Void#>)
-////        ThreadUtil.sendMessageNonDurably(withText: String, mediaAttachments: <#T##[SignalAttachment]#>, in: <#T##TSThread#>, quotedReplyModel: <#T##OWSQuotedReplyModel?#>, transaction: <#T##SDSAnyReadTransaction#>, messageSender: <#T##MessageSender#>, completion: <#T##(Error?) -> Void#>)
-//        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-//            outgoingMessage = [ThreadUtil sendMessageNonDurablyWithText:messageText
-//            mediaAttachments:attachments
-//            inThread:self.thread
-//            quotedReplyModel:nil
-//            transaction:transaction
-//            messageSender:self.messageSender
-//            completion:^(NSError *_Nullable error) {
-//            sendCompletion(error, outgoingMessage);
-//            }];
-//            }];
-//        return promise
+    }
+
+    func send(contactShare: ContactShareViewModel, thread: TSThread, transaction: SDSAnyWriteTransaction) {
+        // TODO: Avatar?
+        let message = ThreadUtil.buildMessage(forContactShare: contactShare.dbRecord, in: thread, transaction: transaction)
+        message.anyInsert(transaction: transaction)
+        messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
     }
 
     func send(enqueueBlock: @escaping (TSThread, SDSAnyWriteTransaction) -> Void) {
@@ -753,6 +746,7 @@ class ForwardMessageNavigationController: OWSNavigationController {
     public weak var forwardMessageDelegate: ForwardMessageDelegate?
 
     var approvedAttachments: [SignalAttachment]?
+    var approvedContactShare: ContactShareViewModel?
     var approvalMessageText: String?
 
     var selectedConversations: [ConversationItem] = []
@@ -768,7 +762,9 @@ class ForwardMessageNavigationController: OWSNavigationController {
     public init(conversationViewItem: ConversationViewItem) {
         self.conversationViewItem = conversationViewItem
 
-        self.approvalMessageText = conversationViewItem.displayableBodyText?.fullText
+        if conversationViewItem.hasBodyText {
+            self.approvalMessageText = conversationViewItem.displayableBodyText?.fullText
+        }
 
 //        forwardMessageFlow = ForwardMessageFlow()
 
@@ -866,6 +862,22 @@ extension ForwardMessageNavigationController: TextApprovalViewControllerDelegate
     }
 
     func textApprovalDidCancel(_ textApproval: TextApprovalViewController) {
+        forwardMessageDelegate?.forwardMessageFlowDidCancel()
+    }
+}
+
+// MARK: -
+
+extension ForwardMessageNavigationController: ContactShareApprovalViewControllerDelegate {
+    func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
+                             didApproveContactShare contactShare: ContactShareViewModel) {
+        approvedContactShare = contactShare
+
+        send()
+    }
+
+    func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
+                             didCancelContactShare contactShare: ContactShareViewModel) {
         forwardMessageDelegate?.forwardMessageFlowDidCancel()
     }
 }

@@ -173,10 +173,25 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     OWSAssertDebug(contactShare.ows_isValid);
     OWSAssertDebug(thread);
 
-    __block OWSDisappearingMessagesConfiguration *configuration;
+    __block TSOutgoingMessage *message;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        configuration = [thread disappearingMessagesConfigurationWithTransaction:transaction];
+        message = [self buildMessageForContactShare:contactShare inThread:thread transaction:transaction];
     }];
+
+    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [message anyInsertWithTransaction:transaction];
+        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
+    }];
+
+    return message;
+}
+
++ (TSOutgoingMessage *)buildMessageForContactShare:(OWSContact *)contactShare
+                                          inThread:(TSThread *)thread
+                                       transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSDisappearingMessagesConfiguration *configuration =
+        [thread disappearingMessagesConfigurationWithTransaction:transaction];
 
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
     TSOutgoingMessage *message =
@@ -193,11 +208,6 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                         linkPreview:nil
                                                      messageSticker:nil
                                                   isViewOnceMessage:NO];
-
-    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [message anyInsertWithTransaction:transaction];
-        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
-    }];
 
     return message;
 }
