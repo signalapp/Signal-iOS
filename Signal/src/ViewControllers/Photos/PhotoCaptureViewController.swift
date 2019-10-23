@@ -282,9 +282,7 @@ class PhotoCaptureViewController: OWSViewController {
 
     @objc
     func didChangeDeviceOrientation(notification: Notification) {
-        let currentOrientation = UIDevice.current.orientation
-
-        if let captureOrientation = AVCaptureVideoOrientation(deviceOrientation: currentOrientation) {
+        if let captureOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) {
             // since the "face up" and "face down" orientations aren't reflected in the photo output,
             // we need to capture the last known _other_ orientation so we can reflect the appropriate
             // portrait/landscape in our captured photos.
@@ -297,6 +295,10 @@ class PhotoCaptureViewController: OWSViewController {
     // MARK: -
 
     private func updateIconOrientations(isAnimated: Bool, captureOrientation: AVCaptureVideoOrientation) {
+        guard !UIDevice.current.isIPad else {
+            return
+        }
+
         Logger.verbose("captureOrientation: \(captureOrientation)")
 
         let transformFromOrientation: CGAffineTransform
