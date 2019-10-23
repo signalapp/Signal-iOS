@@ -5,7 +5,7 @@
 import Foundation
 import PromiseKit
 
-extension SendMediaNavigationController {
+class AttachmentMultisend {
 
     // MARK: Dependencies
 

@@ -156,9 +156,9 @@ extension ForwardMessageNavigationController {
             }
 
             let conversations = selectedConversationsForConversationPicker
-            SendMediaNavigationController.sendApprovedMedia(conversations: conversations,
-                                                            approvalMessageText: self.approvalMessageText,
-                                                            approvedAttachments: approvedAttachments)
+            AttachmentMultisend.sendApprovedMedia(conversations: conversations,
+                                                  approvalMessageText: self.approvalMessageText,
+                                                  approvedAttachments: approvedAttachments)
                 .done { threads in
                     self.forwardMessageDelegate?.forwardMessageFlowDidComplete(threads: threads)
                 }.retainUntilComplete()

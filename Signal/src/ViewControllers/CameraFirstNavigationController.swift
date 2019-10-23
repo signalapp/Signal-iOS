@@ -82,9 +82,9 @@ extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
         }
 
         let conversations = selectedConversationsForConversationPicker
-        SendMediaNavigationController.sendApprovedMedia(conversations: conversations,
-                                                        approvalMessageText: self.approvalMessageText,
-                                                        approvedAttachments: approvedAttachments)
+        AttachmentMultisend.sendApprovedMedia(conversations: conversations,
+                                              approvalMessageText: self.approvalMessageText,
+                                              approvedAttachments: approvedAttachments)
             .done { _ in
                 self.delegate?.cameraFirstCaptureSendFlowDidComplete(self)
             }.retainUntilComplete()
