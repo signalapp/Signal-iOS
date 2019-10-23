@@ -9,6 +9,9 @@ import SafariServices
 public class OnboardingAccountLockedViewController: OnboardingBaseViewController {
     override public func loadView() {
         view = UIView()
+        view.addSubview(primaryView)
+        primaryView.autoPinEdgesToSuperviewEdges()
+
         view.backgroundColor = Theme.backgroundColor
 
         let titleLabel = self.titleLabel(text:
@@ -48,7 +51,7 @@ public class OnboardingAccountLockedViewController: OnboardingBaseViewController
         ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        view.addSubview(stackView)
+        primaryView.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewMargins()
     }
 

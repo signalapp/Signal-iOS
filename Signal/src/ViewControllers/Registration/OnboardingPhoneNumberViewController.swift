@@ -27,6 +27,8 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
     override public func loadView() {
         view = UIView()
+        view.addSubview(primaryView)
+        primaryView.autoPinEdgesToSuperviewEdges()
 
         populateDefaults()
 
@@ -136,7 +138,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
             ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        view.addSubview(stackView)
+        primaryView.addSubview(stackView)
 
         // Because of the keyboard, vertical spacing can get pretty cramped,
         // so we have custom spacer logic.

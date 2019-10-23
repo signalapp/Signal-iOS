@@ -271,6 +271,8 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
 
     override public func loadView() {
         view = UIView()
+        view.addSubview(primaryView)
+        primaryView.autoPinEdgesToSuperviewEdges()
 
         view.backgroundColor = Theme.backgroundColor
 
@@ -322,7 +324,7 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
             ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        view.addSubview(stackView)
+        primaryView.addSubview(stackView)
 
         // Because of the keyboard, vertical spacing can get pretty cramped,
         // so we have custom spacer logic.

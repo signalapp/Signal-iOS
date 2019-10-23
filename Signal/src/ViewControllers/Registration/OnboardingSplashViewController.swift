@@ -19,6 +19,8 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
 
     override public func loadView() {
         view = UIView()
+        view.addSubview(primaryView)
+        primaryView.autoPinEdgesToSuperviewEdges()
 
         view.backgroundColor = Theme.backgroundColor
 
@@ -32,7 +34,7 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         heroImageView.accessibilityIdentifier = "onboarding.splash." + "heroImageView"
 
         let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_SPLASH_TITLE", comment: "Title of the 'onboarding splash' view."))
-        view.addSubview(titleLabel)
+        primaryView.addSubview(titleLabel)
         titleLabel.accessibilityIdentifier = "onboarding.splash." + "titleLabel"
 
         let explanationLabel = UILabel()
@@ -65,7 +67,7 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         stackView.axis = .vertical
         stackView.alignment = .fill
 
-        view.addSubview(stackView)
+        primaryView.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewMargins()
     }
 

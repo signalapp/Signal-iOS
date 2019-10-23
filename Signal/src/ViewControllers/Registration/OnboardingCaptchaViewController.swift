@@ -12,6 +12,8 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
 
     override public func loadView() {
         view = UIView()
+        view.addSubview(primaryView)
+        primaryView.autoPinEdgesToSuperviewEdges()
 
         view.backgroundColor = Theme.backgroundColor
 
@@ -51,7 +53,7 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
             ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        view.addSubview(stackView)
+        primaryView.addSubview(stackView)
 
         stackView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
         autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)

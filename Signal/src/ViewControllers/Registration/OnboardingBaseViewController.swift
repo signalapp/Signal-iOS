@@ -131,9 +131,20 @@ public class OnboardingBaseViewController: OWSViewController {
         self.navigationController?.navigationItem.backBarButtonItem?.isEnabled = false
     }
 
+    // The margins for `primaryView` will update to reflect the current traitCollection.
+    // This includes handling changes to traits - e.g. when splitting an iPad or rotating
+    // some iPhones.
+    //
+    // Subclasses should add primaryView as the single child of self.view and add any further
+    // subviews to primaryView.
+    //
+    // If not for iOS10, we could get rid of primaryView, and manipulate the layoutMargins on
+    // self.view directly, however on iOS10, UIKit VC presentation machinery resets the
+    // layoutMargins *after* this method is called.
+    let primaryView = UIView()
     override public func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        view.layoutMargins = primaryLayoutMargins
+        primaryView.layoutMargins = primaryLayoutMargins
     }
 
     // MARK: - Orientation
