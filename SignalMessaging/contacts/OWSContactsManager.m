@@ -393,11 +393,12 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     dispatch_async(self.serialQueue, ^{
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            [self.keyValueStore setObject:phoneNumbersForIntersection
-                                      key:OWSContactsManagerKeyLastKnownContactPhoneNumbers
-                              transaction:transaction];
-
             if (isFullIntersection) {
+                // replace last known numbers
+                [self.keyValueStore setObject:phoneNumbersForIntersection
+                                          key:OWSContactsManagerKeyLastKnownContactPhoneNumbers
+                                  transaction:transaction];
+
                 // Don't do a full intersection more often than once every 6 hours.
                 const NSTimeInterval kMinFullIntersectionInterval = 6 * kHourInterval;
                 NSDate *nextFullIntersectionDate = [NSDate
@@ -405,6 +406,30 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                 [self.keyValueStore setDate:nextFullIntersectionDate
                                         key:OWSContactsManagerKeyNextFullIntersectionDate
                                 transaction:transaction];
+            } else {
+                NSSet<NSString *> *_Nullable lastKnownContactPhoneNumbers =
+                    [self.keyValueStore getObject:OWSContactsManagerKeyLastKnownContactPhoneNumbers
+                                      transaction:transaction];
+
+                // If a user has a "flaky" address book, perhaps a network linked directory that
+                // goes in and out of existence, we could get thrashing between what the last
+                // known set is, causing us to re-intersect contacts many times within the debounce
+                // interval. So while we're doing incremental intersections, we *accumulate*,
+                // rather than replace the set of recently intersected contacts.
+                if ([lastKnownContactPhoneNumbers isKindOfClass:NSSet.class]) {
+                    NSSet<NSString *> *_Nullable accumulatedSet =
+                        [lastKnownContactPhoneNumbers setByAddingObjectsFromSet:phoneNumbersForIntersection];
+
+                    // replace last known numbers
+                    [self.keyValueStore setObject:accumulatedSet
+                                              key:OWSContactsManagerKeyLastKnownContactPhoneNumbers
+                                      transaction:transaction];
+                } else {
+                    // replace last known numbers
+                    [self.keyValueStore setObject:phoneNumbersForIntersection
+                                              key:OWSContactsManagerKeyLastKnownContactPhoneNumbers
+                                      transaction:transaction];
+                }
             }
         }];
     });
