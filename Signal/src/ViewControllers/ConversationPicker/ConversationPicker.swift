@@ -15,6 +15,10 @@ protocol ConversationPickerDelegate: AnyObject {
                             didDeselectConversation conversation: ConversationItem)
 
     func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController)
+
+    func conversationPickerCanCancel(_ conversationPickerViewController: ConversationPickerViewController) -> Bool
+
+    func conversationPickerDidCancel(_ conversationPickerViewController: ConversationPickerViewController)
 }
 
 @objc
@@ -86,6 +90,11 @@ class ConversationPickerViewController: OWSViewController {
 
         searchBar.sizeToFit()
         tableView.tableHeaderView = searchBar
+
+        if delegate?.conversationPickerCanCancel(self) ?? false {
+            let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(onTouchCancelButton))
+            self.navigationItem.leftBarButtonItem = cancelButton
+        }
     }
 
     override func viewDidLoad() {
@@ -291,6 +300,12 @@ class ConversationPickerViewController: OWSViewController {
                 }
             }
         }
+    }
+
+    // MARK: - Button Actions
+
+    @objc func onTouchCancelButton() {
+        delegate?.conversationPickerDidCancel(self)
     }
 }
 

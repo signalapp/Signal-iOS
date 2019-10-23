@@ -50,19 +50,6 @@ extension ForwardMessageNavigationController {
             // Skip approval for these message types.
             send()
         case .mediaMessage:
-//            fileprivate func pushApprovalViewController(
-//                attachmentApprovalItems: [AttachmentApprovalItem],
-//                options: AttachmentApprovalViewControllerOptions = .canAddMore,
-//                animated: Bool
-//                ) {
-//                guard let sendMediaNavDelegate = self.sendMediaNavDelegate else {
-//                    owsFailDebug("sendMediaNavDelegate was unexpectedly nil")
-//                    return
-//                }
-
-//            public static let canAddMore = AttachmentApprovalViewControllerOptions(rawValue: 1 << 0)
-//            public static let hasCancel = AttachmentApprovalViewControllerOptions(rawValue: 1 << 1)
-//            public static let canToggleViewOnce = AttachmentApprovalViewControllerOptions(rawValue: 1 << 2)
             let options: AttachmentApprovalViewControllerOptions = .hasCancel
             let sendButtonImageName = "send-solid-24"
 
@@ -75,28 +62,9 @@ extension ForwardMessageNavigationController {
                     continue
                 }
                 let signalAttachment = try attachmentStream.asSignalAttachmentForSending()
-//                @interface ConversationMediaAlbumItem : NSObject
-//
-//                @property (nonatomic, readonly) TSAttachment *attachment;
-//
-//                // This property will only be set if the attachment is downloaded.
-//                @property (nonatomic, readonly, nullable) TSAttachmentStream *attachmentStream;
-//
-//                // This property will be non-zero if the attachment is valid.
-//                @property (nonatomic, readonly) CGSize mediaSize;
-//
-//                @property (nonatomic, readonly, nullable) NSString *caption;
-//
-//                @property (nonatomic, readonly) BOOL isFailedDownload;
-
-//            for attachment in attachments {
                 let attachmentApprovalItem = AttachmentApprovalItem(attachment: signalAttachment, canSave: false)
                 attachmentApprovalItems.append(attachmentApprovalItem)
-//                let cameraCaptureAttachment = CameraCaptureAttachment(signalAttachment: attachment, canSave: false)
-//                navController.attachmentDraftCollection.append(.camera(attachment: cameraCaptureAttachment))
-//                attachmentApprovalItems.append(cameraCaptureAttachment.attachmentApprovalItem)
             }
-            //        let approvalItem = Attachmen
             let approvalViewController = AttachmentApprovalViewController(options: options,
                                                                           sendButtonImageName: sendButtonImageName,
                                                                           attachmentApprovalItems: attachmentApprovalItems)
@@ -248,7 +216,6 @@ extension ForwardMessageNavigationController {
 
 @objc
 class ForwardMessageNavigationController: OWSNavigationController {
-//    class ForwardMessageNavigationController: SendMediaNavigationController {
 
     // MARK: Dependencies
 
@@ -317,6 +284,14 @@ extension ForwardMessageNavigationController: ConversationPickerDelegate {
 
     func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {
         approve()
+    }
+
+    func conversationPickerCanCancel(_ conversationPickerViewController: ConversationPickerViewController) -> Bool {
+        return true
+    }
+
+    func conversationPickerDidCancel(_ conversationPickerViewController: ConversationPickerViewController) {
+        forwardMessageDelegate?.forwardMessageFlowDidCancel()
     }
 }
 
@@ -394,114 +369,6 @@ extension ForwardMessageNavigationController: AttachmentApprovalViewControllerDe
         return nil
     }
 }
-
-//extension ForwardMediaNavigationController: SendMediaNavDelegate {
-//    func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
-//                             didApproveContactShare contactShare: ContactShareViewModel) {
-//        approvedContactShare = contactShare
-//
-//        send()
-//    }
-//
-//    func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
-//                             didCancelContactShare contactShare: ContactShareViewModel) {
-//        forwardMessageDelegate?.forwardMessageFlowDidCancel()
-//    }
-//}
-
-//@objc
-//public protocol CameraFirstCaptureDelegate: AnyObject {
-//    func cameraFirstCaptureSendFlowDidComplete(_ cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow)
-//    func cameraFirstCaptureSendFlowDidCancel(_ cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow)
-//}
-
-//@objc
-//public class ForwardMediaSendFlow: NSObject {
-//    @objc
-//    public weak var delegate: ForwardMessageDelegate?
-//
-//    var approvedAttachments: [SignalAttachment]?
-//    var approvalMessageText: String?
-//
-//    var selectedConversations: [ConversationItem] = []
-//
-//    // MARK: Dependencies
-//
-//    var databaseStorage: SDSDatabaseStorage {
-//        return SSKEnvironment.shared.databaseStorage
-//    }
-//}
-////func forwardMessageFlowDidComplete(threads: [TSThread])
-////func forwardMessageFlowDidCancel()
-//
-//extension ForwardMediaSendFlow: SendMediaNavDelegate {
-//    func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController) {
-//        delegate?.forwardMessageFlowDidCancel()
-//    }
-//    
-//    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
-//        self.approvedAttachments = attachments
-//        self.approvalMessageText = messageText
-//        
-//        let pickerVC = ConversationPickerViewController()
-//        pickerVC.delegate = self
-//        sendMediaNavigationController.pushViewController(pickerVC, animated: true)
-//    }
-//    
-//    func sendMediaNavInitialMessageText(_ sendMediaNavigationController: SendMediaNavigationController) -> String? {
-//        return approvalMessageText
-//    }
-//    
-//    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageText newMessageText: String?) {
-//        self.approvalMessageText = newMessageText
-//    }
-//    
-//    var sendMediaNavApprovalButtonImageName: String {
-//        return "arrow-right-24"
-//    }
-//    
-//    var sendMediaNavCanSaveAttachments: Bool {
-//        return true
-//    }
-//    
-//    var sendMediaNavTextInputContextIdentifier: String? {
-//        return nil
-//    }
-//}
-//
-//extension ForwardMediaSendFlow: ConversationPickerDelegate {
-//    var selectedConversationsForConversationPicker: [ConversationItem] {
-//        return selectedConversations
-//    }
-//    
-//    func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
-//                            didSelectConversation conversation: ConversationItem) {
-//        self.selectedConversations.append(conversation)
-//    }
-//    
-//    func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
-//                            didDeselectConversation conversation: ConversationItem) {
-//        self.selectedConversations = self.selectedConversations.filter {
-//            $0.messageRecipient != conversation.messageRecipient
-//        }
-//    }
-//    
-//    func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {
-//        guard let approvedAttachments = self.approvedAttachments else {
-//            owsFailDebug("approvedAttachments was unexpectedly nil")
-//            delegate?.forwardMessageFlowDidCancel()
-//            return
-//        }
-//        
-//        let conversations = selectedConversationsForConversationPicker
-//        SendMediaNavigationController.sendApprovedMedia(conversations: conversations,
-//                                                        approvalMessageText: self.approvalMessageText,
-//                                                        approvedAttachments: approvedAttachments)
-//            .done { threads in
-//                self.delegate?.forwardMessageFlowDidComplete(threads: threads)
-//            }.retainUntilComplete()
-//    }
-//}
 
 // MARK: -
 

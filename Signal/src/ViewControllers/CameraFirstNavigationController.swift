@@ -89,4 +89,12 @@ extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
                 self.delegate?.cameraFirstCaptureSendFlowDidComplete(self)
             }.retainUntilComplete()
     }
+
+    func conversationPickerCanCancel(_ conversationPickerViewController: ConversationPickerViewController) -> Bool {
+        return false
+    }
+
+    func conversationPickerDidCancel(_ conversationPickerViewController: ConversationPickerViewController) {
+        owsFailDebug("Camera-first capture flow should never cancel conversation picker.")
+    }
 }
