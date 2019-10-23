@@ -9,7 +9,7 @@ from distutils.version import LooseVersion
 import logging
 import argparse 
 
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 
 def is_on_master():
     output = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).strip()
