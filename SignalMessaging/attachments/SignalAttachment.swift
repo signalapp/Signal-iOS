@@ -259,6 +259,7 @@ public class SignalAttachment: NSObject {
 
         let attachment = SignalAttachment(dataSource: clonedDataSource, dataUTI: self.dataUTI)
         attachment.captionText = self.captionText
+        attachment.isViewOnceAttachment = self.isViewOnceAttachment
 
         return attachment
     }
