@@ -232,7 +232,7 @@ const CGFloat kMaxTextViewHeight = 98;
     
     // H Stack
     _hStack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ self.attachmentButton, vStackWrapper, /*self.voiceMemoButton,*/ self.sendButton ]];
+        initWithArrangedSubviews:@[ self.attachmentButton, vStackWrapper, self.voiceMemoButton, self.sendButton ]];
     self.hStack.axis = UILayoutConstraintAxisHorizontal;
     self.hStack.layoutMarginsRelativeArrangement = YES;
     self.hStack.layoutMargins = UIEdgeInsetsMake(6, 6, 6, 6);
