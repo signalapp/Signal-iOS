@@ -4,166 +4,11 @@
 
 import PromiseKit
 
-//@objc
-//public class ForwardMessageAction: NSObject, MessageAction {
-//    private weak var delegate: MessageActionsDelegate?
-//    private let message: TSMessage
-//    private let conversationViewItem: ConversationViewItem
-//
-//    @objc
-//    public required init(delegate: MessageActionsDelegate,
-//                         message: TSMessage,
-//                         conversationViewItem: ConversationViewItem) {
-//        self.delegate = delegate
-//        self.message = message
-//        self.conversationViewItem = conversationViewItem
-//
-//        super.init()
-//
-//        delegate.messageActionDidStart(self)
-//    }
-//
-////    @objc
-////    public func showUI() {
-////        ForwardMessageNavigationController *cameraModal =
-////            [ForwardMessageNavigationController captureFirstCameraModal];
-////        cameraModal.forwardMessageFlow.delegate = self;
-////
-////        [self presentFullScreenViewController:cameraModal animated:YES completion:nil];
-////
-//////        let pickerVC = ConversationPickerViewController()
-//////        pickerVC.delegate = self
-//////        sendMediaNavigationController.pushViewController(pickerVC, animated: true)
-////    }
-//
-//}
-
-// MARK: -
-
-//@objc
-//class ForwardMessageNavigationController: SendMediaNavigationController {
-//    
-//    @objc
-//    private(set) var forwardMessageFlow: ForwardMessageFlow!
-//    
-//    @objc
-//    public class func captureFirstCameraModal() -> ForwardMessageNavigationController {
-//        let navController = ForwardMessageNavigationController()
-//        navController.setViewControllers([navController.captureViewController], animated: false)
-//        
-//        let forwardMessageFlow = ForwardMessageFlow()
-//        navController.forwardMessageFlow = forwardMessageFlow
-//        navController.sendMediaNavDelegate = forwardMessageFlow
-//        
-//        return navController
-//    }
-//}
-
 @objc
 public protocol ForwardMessageDelegate: AnyObject {
     @objc(forwardMessageFlowDidComplete:)
     func forwardMessageFlowDidComplete(threads: [TSThread])
     func forwardMessageFlowDidCancel()
-}
-
-// MARK: -
-
-//@objc
-//public class ForwardMessageFlow: NSObject {
-//    @objc
-//    public weak var delegate: ForwardMessageDelegate?
-//
-//    var approvedAttachments: [SignalAttachment]?
-//    var approvalMessageText: String?
-//
-//    var selectedConversations: [ConversationItem] = []
-//
-//    // MARK: Dependencies
-//
-//    var databaseStorage: SDSDatabaseStorage {
-//        return SSKEnvironment.shared.databaseStorage
-//    }
-//
-//    var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue {
-//        return AppEnvironment.shared.broadcastMediaMessageJobQueue
-//    }
-//}
-
-// MARK: - Approval
-
-extension ForwardMessageNavigationController {
-    private var needsApproval: Bool {
-        switch conversationViewItem.messageCellType {
-        case .textOnlyMessage:
-            return true
-        case .contactShare:
-            return true
-        case .audio,
-             .genericAttachment:
-            return false
-        case .mediaMessage:
-            return true
-        case .unknown,
-             .oversizeTextDownloading,
-             .stickerMessage,
-             .viewOnce:
-            return false
-        }
-    }
-
-    private func buildOutgoingMessage(for thread: TSThread,
-                                      transaction: SDSAnyWriteTransaction) throws -> TSOutgoingMessage {
-        switch conversationViewItem.messageCellType {
-//        case .textOnlyMessage:
-//            guard let body = message.body,
-//                body.count > 0 else {
-//                    throw OWSAssertionError("Missing body.")
-//            }
-//            return TSOutgoingMessage(in: thread, messageBody: body, attachmentId: nil)
-        case .contactShare:
-            throw OWSAssertionError("Invalid message.")
-            //            guard let contactShareViewModel = conversationViewItem.contactShare
-            //            ContactShareViewModel *contactShare
-            //            OWSFailDebug(@"Invalid cell type.");
-            //            break;
-            //            TSOutgoingMessage(
-            //            - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
-            //            inThread:(TSThread *)thread
-            //            messageBody:(nullable NSString *)body
-            //            attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
-            //            expiresInSeconds:(uint32_t)expiresInSeconds
-            //            expireStartedAt:(uint64_t)expireStartedAt
-            //            isVoiceMessage:(BOOL)isVoiceMessage
-            //            groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
-            //            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-            //            contactShare:(nullable OWSContact *)contactShare
-            //            linkPreview:(nullable OWSLinkPreview *)linkPreview
-            //            messageSticker:(nullable MessageSticker *)messageSticker
-            //            isViewOnceMessage:(BOOL)isViewOnceMessage NS_DESIGNATED_INITIALIZER;
-            //        case .audio, .genericAttachment:
-            //            guard let attachmentStream = conversationViewItem.attachmentStream else {
-            //                throw OWSAssertionError("Missing attachmentStream.")
-            //            }
-            //        case OWSMessageCellType_GenericAttachment:
-            //            OWSFailDebug(@"Invalid cell type.");
-            //            break;
-            //        //          return self.attachmentStream != nil;
-            //        case OWSMessageCellType_MediaMessage:
-            //            OWSFailDebug(@"Invalid cell type.");
-            //            break;
-            //        //            return [self canSaveMedia];
-            //        case OWSMessageCellType_Unknown:
-            //        case OWSMessageCellType_OversizeTextDownloading:
-            //        case OWSMessageCellType_StickerMessage:
-            //        case OWSMessageCellType_ViewOnce:
-            //            OWSFailDebug(@"Invalid cell type.");
-        //            break;
-        default:
-            throw OWSAssertionError("Invalid cell type.")
-
-        }
-    }
-
 }
 
 // MARK: - Approval
@@ -256,7 +101,33 @@ extension ForwardMessageNavigationController {
         case .audio,
              .genericAttachment,
              .stickerMessage:
-            throw OWSAssertionError("Invalid message type.")
+
+            guard let attachmentStream = conversationViewItem.attachmentStream else {
+                throw OWSAssertionError("Missing attachmentStream.")
+            }
+
+            send { (thread, transaction) in
+                guard let sourceUrl = attachmentStream.originalMediaURL else {
+                    throw OWSAssertionError("Missing originalMediaURL.")
+                }
+                guard let dataUTI = MIMETypeUtil.utiType(forMIMEType: attachmentStream.contentType) else {
+                    throw OWSAssertionError("Missing dataUTI.")
+                }
+                let newUrl = OWSFileSystem.temporaryFileUrl(fileExtension: sourceUrl.pathExtension)
+                try FileManager.default.copyItem(at: sourceUrl, to: newUrl)
+
+                let clonedDataSource = try DataSourcePath.dataSource(with: newUrl,
+                                                                     shouldDeleteOnDeallocation: true)
+                clonedDataSource.sourceFilename = attachmentStream.sourceFilename
+
+                var attachment: SignalAttachment
+                if attachmentStream.isVoiceMessage {
+                    attachment = SignalAttachment.voiceMessageAttachment(dataSource: clonedDataSource, dataUTI: dataUTI)
+                } else {
+                    attachment = SignalAttachment.attachment(dataSource: clonedDataSource, dataUTI: dataUTI, imageQuality: .original)
+                }
+                self.send(body: "", attachment: attachment, thread: thread, transaction: transaction)
+            }
         case .mediaMessage:
             throw OWSAssertionError("Invalid message type.")
         case .unknown,
@@ -266,74 +137,6 @@ extension ForwardMessageNavigationController {
         }
     }
 
-//    func tryToSend() throws {
-//        guard let approvedAttachments = self.approvedAttachments else {
-//            throw OWSAssertionError("Missing attachments.")
-//        }
-//
-//        let conversations = selectedConversationsForConversationPicker
-//
-//        DispatchQueue.global().async(.promise) {
-//            // Duplicate attachments per conversation
-//            let conversationAttachments: [(ConversationItem, [SignalAttachment])] =
-//                try conversations.map { conversation in
-//                    return (conversation, try approvedAttachments.map { try $0.cloneAttachment() })
-//            }
-//
-//            // We only upload one set of attachments, and then copy the upload details into
-//            // each conversation before sending.
-//            let attachmentsToUpload: [OutgoingAttachmentInfo] = approvedAttachments.map { attachment in
-//                return OutgoingAttachmentInfo(dataSource: attachment.dataSource,
-//                                              contentType: attachment.mimeType,
-//                                              sourceFilename: attachment.filenameOrDefault,
-//                                              caption: attachment.captionText,
-//                                              albumMessageId: nil)
-//            }
-//
-//            self.databaseStorage.write { transaction in
-//                var messages: [TSOutgoingMessage] = []
-//
-//                for (conversation, attachments) in conversationAttachments {
-//                    let thread: TSThread
-//                    switch conversation.messageRecipient {
-//                    case .contact(let address):
-//                        thread = TSContactThread.getOrCreateThread(withContactAddress: address,
-//                                                                   transaction: transaction)
-//                    case .group(let groupThread):
-//                        thread = groupThread
-//                    }
-//
-//                    let message = try! ThreadUtil.createUnsentMessage(withText: self.approvalMessageText,
-//                                                                      mediaAttachments: attachments,
-//                                                                      in: thread,
-//                                                                      quotedReplyModel: nil,
-//                                                                      linkPreviewDraft: nil,
-//                                                                      transaction: transaction)
-//                    messages.append(message)
-//                }
-//
-//                // map of attachments we'll upload to their copies in each recipient thread
-//                var attachmentIdMap: [String: [String]] = [:]
-//                let correspondingAttachmentIds = transpose(messages.map { $0.attachmentIds })
-//                for (index, attachmentInfo) in attachmentsToUpload.enumerated() {
-//                    do {
-//                        let attachmentToUpload = try attachmentInfo.asStreamConsumingDataSource(withIsVoiceMessage: false)
-//                        attachmentToUpload.anyInsert(transaction: transaction)
-//
-//                        attachmentIdMap[attachmentToUpload.uniqueId] = correspondingAttachmentIds[index]
-//                    } catch {
-//                        owsFailDebug("error: \(error)")
-//                    }
-//                }
-//
-//                self.broadcastMediaMessageJobQueue.add(attachmentIdMap: attachmentIdMap,
-//                                                       transaction: transaction)
-//            }
-//            }.done { _ in
-//                self.forwardMessageDelegate?.forwardMessageFlowDidComplete()
-//            }.retainUntilComplete()
-//    }
-
     func send(body: String, thread: TSThread, transaction: SDSAnyWriteTransaction) {
         let outgoingMessagePreparer = OutgoingMessagePreparer(fullMessageText: body, mediaAttachments: [], thread: thread, quotedReplyModel: nil, transaction: transaction)
         outgoingMessagePreparer.insertMessage(linkPreviewDraft: nil, transaction: transaction)
@@ -341,13 +144,18 @@ extension ForwardMessageNavigationController {
     }
 
     func send(contactShare: ContactShareViewModel, thread: TSThread, transaction: SDSAnyWriteTransaction) {
-        // TODO: Avatar?
         let message = ThreadUtil.buildMessage(forContactShare: contactShare.dbRecord, in: thread, transaction: transaction)
         message.anyInsert(transaction: transaction)
         messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
     }
 
-    func send(enqueueBlock: @escaping (TSThread, SDSAnyWriteTransaction) -> Void) {
+    func send(body: String, attachment: SignalAttachment, thread: TSThread, transaction: SDSAnyWriteTransaction) {
+        let outgoingMessagePreparer = OutgoingMessagePreparer(fullMessageText: body, mediaAttachments: [attachment], thread: thread, quotedReplyModel: nil, transaction: transaction)
+        outgoingMessagePreparer.insertMessage(linkPreviewDraft: nil, transaction: transaction)
+        messageSenderJobQueue.add(message: outgoingMessagePreparer, transaction: transaction)
+    }
+
+    func send(enqueueBlock: @escaping (TSThread, SDSAnyWriteTransaction) throws -> Void) {
         AssertIsOnMainThread()
 
         let conversations = selectedConversationsForConversationPicker
@@ -357,9 +165,9 @@ extension ForwardMessageNavigationController {
                 throw OWSAssertionError("No recipients.")
             }
 
-//            var messages: [TSOutgoingMessage] = []
-                        var threads: [TSThread] = []
+            var threads: [TSThread] = []
 
+            var sendError: Error?
             self.databaseStorage.write { transaction in
                 for conversation in conversations {
                     let thread: TSThread
@@ -371,356 +179,25 @@ extension ForwardMessageNavigationController {
                         thread = groupThread
                     }
 
-                    enqueueBlock(thread, transaction)
-                    threads.append(thread)
+                    do {
+                        try enqueueBlock(thread, transaction)
+                        threads.append(thread)
+                    } catch {
+                        owsFailDebug("error: \(error)")
+                        sendError = error
+                        break
+                    }
                 }
             }
-
-//                let preparer: OutgoingMessagePreparer = block(thread, transaction)
-//                let message = block(thread, transaction)
-//
-//                OutgoingMessagePreparer *outgoingMessagePreparer =
-//                    [[OutgoingMessagePreparer alloc] initWithFullMessageText:fullMessageText
-//                        mediaAttachments:mediaAttachments
-//                        thread:thread
-//                        quotedReplyModel:quotedReplyModel
-//                        transaction:transaction];
-//
-//                [BenchManager benchAsyncWithTitle:@"Saving outgoing message"
-//                    block:^(void (^benchmarkCompletion)(void)) {
-//                    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
-//                    [outgoingMessagePreparer insertMessageWithLinkPreviewDraft:linkPreviewDraft transaction:writeTransaction];
-//                    [self.messageSenderJobQueue addMessage:outgoingMessagePreparer transaction:writeTransaction];
-//                    }
-//                    completion:benchmarkCompletion];
-//                    }];
-//
-//                return outgoingMessagePreparer.unpreparedMessage;
-//
-//
-//                outgoingMessage = [ThreadUtil sendMessageNonDurablyWithText:messageText
-//                    mediaAttachments:attachments
-//                    inThread:self.thread
-//                    quotedReplyModel:nil
-//                    transaction:transaction
-//                    messageSender:self.messageSender
-//                    completion:^(NSError *_Nullable error) {
-//                    sendCompletion(error, outgoingMessage);
-//                    }];
-//
-////                let message = try! ThreadUtil.createUnsentMessage(withText: self.approvalMessageText,
-////                                                                  mediaAttachments: attachments,
-////                                                                  in: thread,
-////                                                                  quotedReplyModel: nil,
-////                                                                  linkPreviewDraft: nil,
-////                                                                  transaction: transaction)
-//                messages.append(message)
-//            }
-//
-//            // map of attachments we'll upload to their copies in each recipient thread
-//            var attachmentIdMap: [String: [String]] = [:]
-//            let correspondingAttachmentIds = transpose(messages.map { $0.attachmentIds })
-//            for (index, attachmentInfo) in attachmentsToUpload.enumerated() {
-//                do {
-//                    let attachmentToUpload = try attachmentInfo.asStreamConsumingDataSource(withIsVoiceMessage: false)
-//                    attachmentToUpload.anyInsert(transaction: transaction)
-//
-//                    attachmentIdMap[attachmentToUpload.uniqueId] = correspondingAttachmentIds[index]
-//                } catch {
-//                    owsFailDebug("error: \(error)")
-//                }
-//            }
-//
-//            self.broadcastMediaMessageJobQueue.add(attachmentIdMap: attachmentIdMap,
-//                                                   transaction: transaction)
-//
-//            for
-//
-//            [ThreadUtil addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:self.thread];
-//            [self
-//                tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
-//                OWSAssertIsOnMainThread();
-//
-//                __block TSOutgoingMessage *outgoingMessage = nil;
-//                // DURABLE CLEANUP - SAE uses non-durable sending to make sure the app is running long enough to complete
-//                // the sending operation. Alternatively, we could use a durable send, but do more to make sure the
-//                // SAE runs as long as it needs.
-//                // TODO ALBUMS - send album via SAE
-//
-//                [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-//                outgoingMessage = [ThreadUtil sendMessageNonDurablyWithText:messageText
-//                mediaAttachments:attachments
-//                inThread:self.thread
-//                quotedReplyModel:nil
-//                transaction:transaction
-//                messageSender:self.messageSender
-//                completion:^(NSError *_Nullable error) {
-//                sendCompletion(error, outgoingMessage);
-//                }];
-//                }];
-//
-//                // This is necessary to show progress.
-//                self.outgoingMessage = outgoingMessage;
-//                }
-//                fromViewController:attachmentApproval];
-//        }
-//
-//
-//
-//
-//            - (void)tryToSendMessageWithBlock:(SendMessageBlock)sendMessageBlock
-//        fromViewController:(UIViewController *)fromViewController
-//        {
-//            // Reset progress in case we're retrying
-//            self.progressView.progress = 0;
-//
-//            NSString *progressTitle = NSLocalizedString(@"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE", @"Alert title");
-//            UIAlertController *progressAlert = [UIAlertController alertControllerWithTitle:progressTitle
-//                message:nil
-//                preferredStyle:UIAlertControllerStyleAlert];
-//
-//            UIAlertAction *progressCancelAction = [UIAlertAction actionWithTitle:[CommonStrings cancelButton]
-//                style:UIAlertActionStyleCancel
-//                handler:^(UIAlertAction *_Nonnull action) {
-//                [self.shareViewDelegate shareViewWasCancelled];
-//                }];
-//            [progressAlert addAction:progressCancelAction];
-//
-//
-//            // We add a progress subview to an AlertController, which is a total hack.
-//            // ...but it looks good, and given how short a progress view is and how
-//            // little the alert controller changes, I'm not super worried about it.
-//            [progressAlert.view addSubview:self.progressView];
-//            [self.progressView autoPinWidthToSuperviewWithMargin:24];
-//            [self.progressView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:progressAlert.view withOffset:4];
-//            #ifdef DEBUG
-//            if (@available(iOS 14, *)) {
-//                // TODO: Congratulations! You survived to see another iOS release.
-//                OWSFailDebug(@"Make sure the progress view still looks good, and increment the version canary.");
-//}
-//#endif
-//
-//SendCompletionBlock sendCompletion = ^(NSError *_Nullable error, TSOutgoingMessage *message) {
-//
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        if (error) {
-//            [fromViewController
-//                dismissViewControllerAnimated:YES
-//                completion:^{
-//                OWSLogInfo(@"Sending message failed with error: %@", error);
-//                [self showSendFailureAlertWithError:error
-//                message:message
-//                fromViewController:fromViewController];
-//                }];
-//            return;
-//        }
-//
-//        OWSLogInfo(@"Sending message succeeded.");
-//        [self.shareViewDelegate shareViewWasCompleted];
-//        });
-//};
-//
-//[fromViewController presentAlert:progressAlert
-//    completion:^{
-//    sendMessageBlock(sendCompletion);
-//    }];
-//}
-//            // Duplicate attachments per conversation
-//            let conversationAttachments: [(ConversationItem, [SignalAttachment])] =
-//                try conversations.map { conversation in
-//                    return (conversation, try approvedAttachments.map { try $0.cloneAttachment() })
-//            }
-//
-//            // We only upload one set of attachments, and then copy the upload details into
-//            // each conversation before sending.
-//            let attachmentsToUpload: [OutgoingAttachmentInfo] = approvedAttachments.map { attachment in
-//                return OutgoingAttachmentInfo(dataSource: attachment.dataSource,
-//                                              contentType: attachment.mimeType,
-//                                              sourceFilename: attachment.filenameOrDefault,
-//                                              caption: attachment.captionText,
-//                                              albumMessageId: nil)
-//            }
-//
-//            self.databaseStorage.write { transaction in
-//                var messages: [TSOutgoingMessage] = []
-//
-//                for (conversation, attachments) in conversationAttachments {
-//                    let thread: TSThread
-//                    switch conversation.messageRecipient {
-//                    case .contact(let address):
-//                        thread = TSContactThread.getOrCreateThread(withContactAddress: address,
-//                                                                   transaction: transaction)
-//                    case .group(let groupThread):
-//                        thread = groupThread
-//                    }
-//
-//                    let message = try! ThreadUtil.createUnsentMessage(withText: self.approvalMessageText,
-//                                                                      mediaAttachments: attachments,
-//                                                                      in: thread,
-//                                                                      quotedReplyModel: nil,
-//                                                                      linkPreviewDraft: nil,
-//                                                                      transaction: transaction)
-//                    messages.append(message)
-//                }
-//
-//                // map of attachments we'll upload to their copies in each recipient thread
-//                var attachmentIdMap: [String: [String]] = [:]
-//                let correspondingAttachmentIds = transpose(messages.map { $0.attachmentIds })
-//                for (index, attachmentInfo) in attachmentsToUpload.enumerated() {
-//                    do {
-//                        let attachmentToUpload = try attachmentInfo.asStreamConsumingDataSource(withIsVoiceMessage: false)
-//                        attachmentToUpload.anyInsert(transaction: transaction)
-//
-//                        attachmentIdMap[attachmentToUpload.uniqueId] = correspondingAttachmentIds[index]
-//                    } catch {
-//                        owsFailDebug("error: \(error)")
-//                    }
-//                }
-//
-//                self.broadcastMediaMessageJobQueue.add(attachmentIdMap: attachmentIdMap,
-//                                                       transaction: transaction)
-//            }
+            if let error = sendError {
+                throw error
+            }
                 return threads
             }.done { threads in
                 self.forwardMessageDelegate?.forwardMessageFlowDidComplete(threads: threads)
             }.retainUntilComplete()
     }
 }
-
-////
-////  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-////
-//
-//import Foundation
-//import PromiseKit
-//
-//@objc
-//public protocol CameraFirstCaptureDelegate: AnyObject {
-//    func forwardMessageFlowDidComplete(_ forwardMessageFlow: ForwardMessageFlow)
-//    func forwardMessageFlowDidCancel(_ forwardMessageFlow: ForwardMessageFlow)
-//}
-
-//extension ForwardMessageFlow: SendMediaNavDelegate {
-//    func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController) {
-//        delegate?.forwardMessageFlowDidCancel(self)
-//    }
-//
-//    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
-//        self.approvedAttachments = attachments
-//        self.approvalMessageText = messageText
-//
-//        let pickerVC = ConversationPickerViewController()
-//        pickerVC.delegate = self
-//        sendMediaNavigationController.pushViewController(pickerVC, animated: true)
-//    }
-//
-//    func sendMediaNavInitialMessageText(_ sendMediaNavigationController: SendMediaNavigationController) -> String? {
-//        return approvalMessageText
-//    }
-//
-//    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageText newMessageText: String?) {
-//        self.approvalMessageText = newMessageText
-//    }
-//
-//    var sendMediaNavApprovalButtonImageName: String {
-//        return "arrow-right-24"
-//    }
-//
-//    var sendMediaNavCanSaveAttachments: Bool {
-//        return true
-//    }
-//
-//    var sendMediaNavTextInputContextIdentifier: String? {
-//        return nil
-//    }
-//}
-//
-//extension ForwardMessageFlow: ConversationPickerDelegate {
-//    var selectedConversationsForConversationPicker: [ConversationItem] {
-//        return selectedConversations
-//    }
-//
-//    func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
-//                            didSelectConversation conversation: ConversationItem) {
-//        self.selectedConversations.append(conversation)
-//    }
-//
-//    func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
-//                            didDeselectConversation conversation: ConversationItem) {
-//        self.selectedConversations = self.selectedConversations.filter {
-//            $0.messageRecipient != conversation.messageRecipient
-//        }
-//    }
-//
-//    func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {
-//        guard let approvedAttachments = self.approvedAttachments else {
-//            owsFailDebug("approvedAttachments was unexpectedly nil")
-//            delegate?.forwardMessageFlowDidCancel(self)
-//            return
-//        }
-//
-//        let conversations = selectedConversationsForConversationPicker
-//        DispatchQueue.global().async(.promise) {
-//            // Duplicate attachments per conversation
-//            let conversationAttachments: [(ConversationItem, [SignalAttachment])] =
-//                try conversations.map { conversation in
-//                    return (conversation, try approvedAttachments.map { try $0.cloneAttachment() })
-//            }
-//
-//            // We only upload one set of attachments, and then copy the upload details into
-//            // each conversation before sending.
-//            let attachmentsToUpload: [OutgoingAttachmentInfo] = approvedAttachments.map { attachment in
-//                return OutgoingAttachmentInfo(dataSource: attachment.dataSource,
-//                                              contentType: attachment.mimeType,
-//                                              sourceFilename: attachment.filenameOrDefault,
-//                                              caption: attachment.captionText,
-//                                              albumMessageId: nil)
-//            }
-//
-//            self.databaseStorage.write { transaction in
-//                var messages: [TSOutgoingMessage] = []
-//
-//                for (conversation, attachments) in conversationAttachments {
-//                    let thread: TSThread
-//                    switch conversation.messageRecipient {
-//                    case .contact(let address):
-//                        thread = TSContactThread.getOrCreateThread(withContactAddress: address,
-//                                                                   transaction: transaction)
-//                    case .group(let groupThread):
-//                        thread = groupThread
-//                    }
-//
-//                    let message = try! ThreadUtil.createUnsentMessage(withText: self.approvalMessageText,
-//                                                                      mediaAttachments: attachments,
-//                                                                      in: thread,
-//                                                                      quotedReplyModel: nil,
-//                                                                      linkPreviewDraft: nil,
-//                                                                      transaction: transaction)
-//                    messages.append(message)
-//                }
-//
-//                // map of attachments we'll upload to their copies in each recipient thread
-//                var attachmentIdMap: [String: [String]] = [:]
-//                let correspondingAttachmentIds = transpose(messages.map { $0.attachmentIds })
-//                for (index, attachmentInfo) in attachmentsToUpload.enumerated() {
-//                    do {
-//                        let attachmentToUpload = try attachmentInfo.asStreamConsumingDataSource(withIsVoiceMessage: false)
-//                        attachmentToUpload.anyInsert(transaction: transaction)
-//
-//                        attachmentIdMap[attachmentToUpload.uniqueId] = correspondingAttachmentIds[index]
-//                    } catch {
-//                        owsFailDebug("error: \(error)")
-//                    }
-//                }
-//
-//                self.broadcastMediaMessageJobQueue.add(attachmentIdMap: attachmentIdMap,
-//                                                       transaction: transaction)
-//            }
-//            }.done { _ in
-//                self.delegate?.forwardMessageFlowDidComplete(self)
-//            }.retainUntilComplete()
-//    }
-//}
 
 // MARK: -
 
