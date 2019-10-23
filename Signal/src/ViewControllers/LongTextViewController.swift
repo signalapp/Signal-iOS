@@ -138,9 +138,12 @@ public class LongTextViewController: OWSViewController {
         footer.autoPinEdge(.top, to: .bottom, of: messageTextView)
         footer.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
 
+        let forwardIcon = (Theme.isDarkThemeEnabled ? #imageLiteral(resourceName: "forward-solid-24") : #imageLiteral(resourceName: "forward-outline-24"))
         footer.items = [
             UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
             UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareButtonPressed)),
+            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
+            UIBarButtonItem(image: forwardIcon, style: .plain, target: self, action: #selector(forwardButtonPressed)),
             UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         ]
     }
@@ -149,6 +152,12 @@ public class LongTextViewController: OWSViewController {
 
     @objc func shareButtonPressed() {
         AttachmentSharing.showShareUI(forText: fullText)
+    }
+
+    @objc func forwardButtonPressed() {
+        let modal = ForwardMessageNavigationController(conversationViewItem: viewItem)
+        modal.forwardMessageDelegate = self
+        self.presentFullScreen(modal, animated: true)
     }
 }
 
@@ -176,5 +185,33 @@ extension LongTextViewController: SDSDatabaseStorageObserver {
         AssertIsOnMainThread()
 
         refreshContent()
+    }
+}
+
+// MARK: -
+
+extension LongTextViewController: ForwardMessageDelegate {
+    public func forwardMessageFlowDidComplete(threads: [TSThread]) {
+        dismiss(animated: true) {
+            self.didForwardMessage(threads: threads)
+        }
+    }
+
+    public func forwardMessageFlowDidCancel() {
+        dismiss(animated: true)
+    }
+
+    func didForwardMessage(threads: [TSThread]) {
+        guard threads.count == 1 else {
+            return
+        }
+        guard let thread = threads.first else {
+            owsFailDebug("Missing thread.")
+            return
+        }
+        guard thread.uniqueId != viewItem.interaction.uniqueThreadId else {
+            return
+        }
+        SignalApp.shared().presentConversation(for: thread, animated: true)
     }
 }

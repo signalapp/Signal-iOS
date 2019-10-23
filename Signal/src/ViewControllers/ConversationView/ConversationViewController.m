@@ -2497,9 +2497,9 @@ typedef enum : NSUInteger {
     OWSAssertDebug(viewItem);
     OWSAssertDebug(attachmentStream);
 
-    PdfViewController *pdfView = [[PdfViewController alloc] initWithAttachmentStream:attachmentStream];
-    UIViewController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:pdfView];
-    [self presentFullScreenViewController:navigationController animated:YES completion:nil];
+    PdfViewController *pdfView = [[PdfViewController alloc] initWithViewItem:viewItem
+                                                            attachmentStream:attachmentStream];
+    [self.navigationController pushViewController:pdfView animated:YES];
 }
 
 - (void)didTapTruncatedTextMessage:(id<ConversationViewItem>)conversationItem

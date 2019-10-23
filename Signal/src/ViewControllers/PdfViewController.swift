@@ -12,6 +12,7 @@ public class PdfViewController: OWSViewController {
 
     // MARK: Properties
 
+    private let viewItem: ConversationViewItem
     private let attachmentStream: TSAttachmentStream
     private var pdfView: UIView?
     private var viewHasEverAppeared = false
@@ -24,7 +25,9 @@ public class PdfViewController: OWSViewController {
     }
 
     @objc
-    public required init(attachmentStream: TSAttachmentStream) {
+    public required init(viewItem: ConversationViewItem,
+                         attachmentStream: TSAttachmentStream) {
+        self.viewItem = viewItem
         self.attachmentStream = attachmentStream
 
         super.init(nibName: nil, bundle: nil)
@@ -99,10 +102,13 @@ public class PdfViewController: OWSViewController {
         toolbar.barTintColor = Theme.darkThemeBackgroundColor.withAlphaComponent(0.6)
         toolbar.tintColor = Theme.darkThemePrimaryColor
 
+        let forwardIcon = (Theme.isDarkThemeEnabled ? #imageLiteral(resourceName: "forward-solid-24") : #imageLiteral(resourceName: "forward-outline-24"))
         setToolbarItems(
             [
                 UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
                 UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareButtonPressed)),
+                UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
+                UIBarButtonItem(image: forwardIcon, style: .plain, target: self, action: #selector(forwardButtonPressed)),
                 UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
             ],
             animated: false
@@ -137,6 +143,12 @@ public class PdfViewController: OWSViewController {
         AttachmentSharing.showShareUI(forAttachment: attachmentStream)
     }
 
+    @objc func forwardButtonPressed() {
+        let modal = ForwardMessageNavigationController(conversationViewItem: viewItem)
+        modal.forwardMessageDelegate = self
+        self.presentFullScreen(modal, animated: true)
+    }
+
     @objc
     private func didPressCloseButton(sender: UIButton) {
         self.dismiss(animated: true)
@@ -167,5 +179,33 @@ public class PdfViewController: OWSViewController {
 
     public override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
         return .none
+    }
+}
+
+// MARK: -
+
+extension PdfViewController: ForwardMessageDelegate {
+    public func forwardMessageFlowDidComplete(threads: [TSThread]) {
+        dismiss(animated: true) {
+            self.didForwardMessage(threads: threads)
+        }
+    }
+
+    public func forwardMessageFlowDidCancel() {
+        dismiss(animated: true)
+    }
+
+    func didForwardMessage(threads: [TSThread]) {
+        guard threads.count == 1 else {
+            return
+        }
+        guard let thread = threads.first else {
+            owsFailDebug("Missing thread.")
+            return
+        }
+        guard thread.uniqueId != viewItem.interaction.uniqueThreadId else {
+            return
+        }
+        SignalApp.shared().presentConversation(for: thread, animated: true)
     }
 }
