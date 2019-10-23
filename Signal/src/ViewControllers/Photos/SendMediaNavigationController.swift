@@ -291,7 +291,7 @@ class SendMediaNavigationController: OWSNavigationController {
 
     // MARK: State
 
-    fileprivate var attachmentDraftCollection: AttachmentDraftCollection = .empty
+    private var attachmentDraftCollection: AttachmentDraftCollection = .empty
 
     private var attachmentApprovalItemPromises: [Promise<AttachmentApprovalItem>] {
         return attachmentDraftCollection.attachmentApprovalItemPromises
@@ -313,7 +313,7 @@ class SendMediaNavigationController: OWSNavigationController {
         return vc
     }()
 
-    fileprivate func pushApprovalViewController(
+    private func pushApprovalViewController(
         attachmentApprovalItems: [AttachmentApprovalItem],
         options: AttachmentApprovalViewControllerOptions = .canAddMore,
         animated: Bool

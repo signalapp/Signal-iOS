@@ -172,7 +172,6 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 - (void)shareMediaAction;
 - (void)saveMediaAction;
 - (void)deleteAction;
-//- (void)forwardMessageAction:(id<MessageActionsDelegate>)delegate NS_SWIFT_NAME(forwardMessageAction(delegate:));
 
 - (BOOL)canCopyMedia;
 - (BOOL)canSaveMedia;
