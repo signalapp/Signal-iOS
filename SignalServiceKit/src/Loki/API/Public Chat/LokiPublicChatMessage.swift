@@ -46,6 +46,18 @@ public final class LokiPublicChatMessage : NSObject {
         public let linkPreviewTitle: String?
         
         public enum Kind : String { case attachment, linkPreview = "preview" }
+        
+        public var dotNETType: String {
+            if contentType.hasPrefix("image") {
+                return "photo"
+            } else if contentType.hasPrefix("video") {
+                return "video"
+            } else if contentType.hasPrefix("audio") {
+                return "audio"
+            } else {
+                return "other"
+            }
+        }
     }
     
     public struct Signature {
@@ -118,10 +130,10 @@ public final class LokiPublicChatMessage : NSObject {
         }
         let annotation: JSON = [ "type" : type, "value" : value ]
         let attachmentAnnotations: [JSON] = attachments.map { attachment in
-            let type = attachment.contentType.hasPrefix("image") ? "photo" : "video" // TODO: We should do better than this
+            let type: String
             var attachmentValue: JSON = [
                 // Fields required by the .NET API
-                "version" : 1, "type" : type,
+                "version" : 1, "type" : attachment.dotNETType,
                 // Custom fields
                 "lokiType" : attachment.kind.rawValue, "server" : attachment.server, "id" : attachment.serverID, "contentType" : attachment.contentType, "size" : attachment.size, "fileName" : attachment.fileName, "width" : attachment.width, "height" : attachment.height, "url" : attachment.url
             ]
