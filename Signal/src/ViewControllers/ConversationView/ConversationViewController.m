@@ -3513,7 +3513,6 @@ typedef enum : NSUInteger {
     [gifAction setValue:gifImage forKey:@"image"];
     [actionSheet addAction:gifAction];
 
-    /*
     UIAlertAction *chooseDocumentAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(@"MEDIA_FROM_DOCUMENT_PICKER_BUTTON",
                                            @"action sheet button title when choosing attachment type")
@@ -3527,6 +3526,7 @@ typedef enum : NSUInteger {
     [chooseDocumentAction setValue:chooseDocumentImage forKey:@"image"];
     [actionSheet addAction:chooseDocumentAction];
 
+    /*
     if (kIsSendingContactSharesEnabled) {
         UIAlertAction *chooseContactAction =
             [UIAlertAction actionWithTitle:NSLocalizedString(@"ATTACHMENT_MENU_CONTACT_BUTTON",
