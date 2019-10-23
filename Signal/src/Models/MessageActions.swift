@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public protocol MessageActionsDelegate: class {
+protocol MessageActionsDelegate: class {
     func messageActionsShowDetailsForItem(_ conversationViewItem: ConversationViewItem)
     func messageActionsReplyToItem(_ conversationViewItem: ConversationViewItem)
     func messageActionsForwardItem(_ conversationViewItem: ConversationViewItem)

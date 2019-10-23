@@ -18,16 +18,27 @@ protocol SendMediaNavDelegate: AnyObject {
     var sendMediaNavTextInputContextIdentifier: String? { get }
 }
 
-// MARK: -
+@objc
+class CaptureFirstCaptureNavigationController: SendMediaNavigationController {
+
+    @objc
+    private(set) var cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow!
+
+    @objc
+    public class func captureFirstCameraModal() -> CaptureFirstCaptureNavigationController {
+        let navController = CaptureFirstCaptureNavigationController()
+        navController.setViewControllers([navController.captureViewController], animated: false)
+
+        let cameraFirstCaptureSendFlow = CameraFirstCaptureSendFlow()
+        navController.cameraFirstCaptureSendFlow = cameraFirstCaptureSendFlow
+        navController.sendMediaNavDelegate = cameraFirstCaptureSendFlow
+
+        return navController
+    }
+}
 
 @objc
 class SendMediaNavigationController: OWSNavigationController {
-
-    @objc
-    public class func make() -> SendMediaNavigationController {
-        let navController = SendMediaNavigationController()
-        return navController
-    }
 
     static var bottomButtonsCenterOffset: CGFloat {
         return -1 * (CaptureButton.recordingDiameter / 2 + 4)
@@ -809,26 +820,5 @@ private class DoneButton: UIView {
     @objc
     func didTap(tapGesture: UITapGestureRecognizer) {
         delegate?.doneButtonWasTapped(self)
-    }
-}
-
-// MARK: -
-
-@objc
-class CaptureFirstCaptureNavigationController: SendMediaNavigationController {
-
-    @objc
-    private(set) var cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow!
-
-    @objc
-    public class func captureFirstCameraModal() -> CaptureFirstCaptureNavigationController {
-        let navController = CaptureFirstCaptureNavigationController()
-        navController.setViewControllers([navController.captureViewController], animated: false)
-
-        let cameraFirstCaptureSendFlow = CameraFirstCaptureSendFlow()
-        navController.cameraFirstCaptureSendFlow = cameraFirstCaptureSendFlow
-        navController.sendMediaNavDelegate = cameraFirstCaptureSendFlow
-
-        return navController
     }
 }
