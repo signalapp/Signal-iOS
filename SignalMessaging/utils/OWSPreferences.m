@@ -301,11 +301,16 @@ NSString *const OWSPreferencesKeyIsViewOnceMessagesEnabled = @"OWSPreferencesKey
     return [self boolForKey:OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators defaultValue:NO];
 }
 
-- (void)setShouldShowUnidentifiedDeliveryIndicators:(BOOL)value
+- (void)setShouldShowUnidentifiedDeliveryIndicatorsAndSendSyncMessage:(BOOL)value
 {
     [self setBool:value forKey:OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators];
 
     [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
+}
+
+- (void)setShouldShowUnidentifiedDeliveryIndicators:(BOOL)value transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self.keyValueStore setBool:value key:OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators transaction:transaction];
 }
 
 - (BOOL)shouldNotifyOfNewAccountsWithTransaction:(SDSAnyReadTransaction *)transaction

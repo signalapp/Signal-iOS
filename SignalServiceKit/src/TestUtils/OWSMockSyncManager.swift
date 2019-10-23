@@ -20,6 +20,15 @@ public class OWSMockSyncManager: NSObject, OWSSyncManagerProtocol {
     }
 
     @objc
+    public func sendAllSyncRequestMessages() {
+        Logger.info("")
+    }
+
+    public func processIncomingConfigurationSyncMessage(_ syncMessage: SSKProtoSyncMessageConfiguration, transaction: SDSAnyWriteTransaction) {
+        Logger.info("")
+    }
+
+    @objc
     public func syncLocalContact() -> AnyPromise {
         Logger.info("")
 

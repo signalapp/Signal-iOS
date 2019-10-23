@@ -36,7 +36,7 @@ public class OWS112TypingIndicatorsMigration: YDBDatabaseMigration {
         DispatchQueue.main.async {
             // Typing indicators should be disabled by default for
             // legacy users.
-            self.typingIndicators.setTypingIndicatorsEnabled(value: false)
+            self.typingIndicators.setTypingIndicatorsEnabledAndSendSyncMessage(value: false)
 
             DispatchQueue.global().async {
                 self.markAsCompleteWithSneakyTransaction()

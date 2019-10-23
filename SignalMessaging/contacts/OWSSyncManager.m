@@ -13,9 +13,12 @@
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/DataSource.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
+#import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/OWSSyncBlockedRequestMessage.h>
 #import <SignalServiceKit/OWSSyncConfigurationMessage.h>
+#import <SignalServiceKit/OWSSyncConfigurationRequestMessage.h>
 #import <SignalServiceKit/OWSSyncContactsMessage.h>
 #import <SignalServiceKit/OWSSyncGroupsMessage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
@@ -24,6 +27,8 @@
 #import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSString *const OWSSyncManagerConfigurationDidChangeNotification = @"OWSSyncManagerConfigurationDidChangeNotification";
 
 NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManagerLastMessageKey";
 
@@ -69,14 +74,18 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                                object:nil];
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if ([self.tsAccountManager isRegisteredAndReady] && self.tsAccountManager.isRegisteredPrimaryDevice) {
+        if ([self.tsAccountManager isRegisteredAndReady]) {
             OWSAssertDebug(self.contactsManager.isSetup);
 
-            // Flush any pending changes.
-            //
-            // sendSyncContactsMessageIfNecessary will skipIfRedundant,
-            // so this won't yield redundant traffic.
-            [self sendSyncContactsMessageIfNecessary];
+            if (self.tsAccountManager.isRegisteredPrimaryDevice) {
+                // Flush any pending changes.
+                //
+                // sendSyncContactsMessageIfNecessary will skipIfRedundant,
+                // so this won't yield redundant traffic.
+                [self sendSyncContactsMessageIfNecessary];
+            } else {
+                [self sendAllSyncRequestMessages];
+            }
         }
     }];
 
@@ -170,10 +179,6 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
             return;
         }
 
-        if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
-            return;
-        }
-
         dispatch_async(dispatch_get_main_queue(), ^{
             [self sendConfigurationSyncMessage_AppReady];
         });
@@ -184,10 +189,6 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     DDLogInfo(@"");
 
     if (!self.tsAccountManager.isRegisteredAndReady) {
-        return;
-    }
-
-    if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
         return;
     }
 
@@ -213,6 +214,18 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
         [self.messageSenderJobQueue addMessage:syncConfigurationMessage.asPreparer transaction:transaction];
     }];
+}
+
+- (void)processIncomingConfigurationSyncMessage:(SSKProtoSyncMessageConfiguration *)syncMessage transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [SSKEnvironment.shared.readReceiptManager setAreReadReceiptsEnabled:syncMessage.readReceipts transaction:transaction];
+    [Environment.shared.preferences
+        setShouldShowUnidentifiedDeliveryIndicators:syncMessage.unidentifiedDeliveryIndicators
+                                        transaction:transaction];
+    [self.typingIndicators setTypingIndicatorsEnabledWithValue:syncMessage.typingIndicators transaction:transaction];
+    [SSKPreferences setAreLinkPreviewsEnabled:syncMessage.linkPreviews transaction:transaction];
+
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:OWSSyncManagerConfigurationDidChangeNotification object:nil];
 }
 
 #pragma mark - Groups Sync
@@ -399,6 +412,72 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     NSData *_Nullable result = [Cryptography computeSHA256Digest:messageData];
     OWSAssertDebug(result != nil);
     return result;
+}
+
+# pragma mark - Sync Requests
+
+- (void)sendAllSyncRequestMessages
+{
+    DDLogInfo(@"");
+
+    if (!self.tsAccountManager.isRegisteredAndReady) {
+        return;
+    }
+
+    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self sendBlockListSyncRequestMessageTransaction:transaction];
+        [self sendConfigurationSyncRequestMessageTransaction:transaction];
+    }];
+}
+
+- (void)sendBlockListSyncRequestMessageTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    DDLogInfo(@"");
+
+    if (!self.tsAccountManager.isRegisteredAndReady) {
+        return;
+    }
+
+    if (self.tsAccountManager.isRegisteredPrimaryDevice) {
+        OWSFailDebug(@"Sync request should only be sent from a linked device");
+        return;
+    }
+
+    TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
+    if (thread == nil) {
+        OWSFailDebug(@"Missing thread.");
+        return;
+    }
+
+    OWSSyncBlockedRequestMessage *syncConfigurationRequestMessage =
+        [[OWSSyncBlockedRequestMessage alloc] initWithThread:thread];
+
+    [self.messageSenderJobQueue addMessage:syncConfigurationRequestMessage.asPreparer transaction:transaction];
+}
+
+- (void)sendConfigurationSyncRequestMessageTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    DDLogInfo(@"");
+
+    if (!self.tsAccountManager.isRegisteredAndReady) {
+        return;
+    }
+
+    if (self.tsAccountManager.isRegisteredPrimaryDevice) {
+        OWSFailDebug(@"Sync request should only be sent from a linked device");
+        return;
+    }
+
+    TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
+    if (thread == nil) {
+        OWSFailDebug(@"Missing thread.");
+        return;
+    }
+
+    OWSSyncConfigurationRequestMessage *syncConfigurationRequestMessage =
+        [[OWSSyncConfigurationRequestMessage alloc] initWithThread:thread];
+
+    [self.messageSenderJobQueue addMessage:syncConfigurationRequestMessage.asPreparer transaction:transaction];
 }
 
 @end

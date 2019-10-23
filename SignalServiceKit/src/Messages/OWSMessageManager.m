@@ -1002,6 +1002,10 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Ignoring sync request without type.");
             return;
         }
+        if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
+            // Don't respond to sync requests from a linked device.
+            return;
+        }
         if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeContacts) {
             // We respond asynchronously because populating the sync message will
             // create transactions and it's not practical (due to locking in the OWSIdentityManager)
@@ -1048,6 +1052,9 @@ NS_ASSUME_NONNULL_BEGIN
         [ViewOnceMessages processIncomingSyncMessage:syncMessage.viewOnceOpen
                                             envelope:envelope
                                          transaction:transaction];
+    } else if (syncMessage.configuration) {
+        OWSLogInfo(@"Received configuration sync message.");
+        [SSKEnvironment.shared.syncManager processIncomingConfigurationSyncMessage:syncMessage.configuration transaction:transaction];
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
     }
