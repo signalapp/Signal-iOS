@@ -6,7 +6,6 @@ import PromiseKit
 
 @objc
 public protocol ForwardMessageDelegate: AnyObject {
-    @objc(forwardMessageFlowDidComplete:)
     func forwardMessageFlowDidComplete(threads: [TSThread])
     func forwardMessageFlowDidCancel()
 }

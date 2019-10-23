@@ -194,6 +194,11 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                      messageSticker:nil
                                                   isViewOnceMessage:NO];
 
+    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [message anyInsertWithTransaction:transaction];
+        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
+    }];
+
     return message;
 }
 

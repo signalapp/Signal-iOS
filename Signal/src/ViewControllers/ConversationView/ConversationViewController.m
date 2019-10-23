@@ -5409,24 +5409,25 @@ typedef enum : NSUInteger {
 
 #pragma mark - ForwardMessageDelegate
 
-- (void)forwardMessageFlowDidComplete:(NSArray<TSThread *> *)threads
+- (void)forwardMessageFlowDidCompleteWithThreads:(NSArray<TSThread *> *)threads
 {
     __weak ConversationViewController *weakSelf = self;
     [self dismissViewControllerAnimated:true
                              completion:^{
-                                 ConversationViewController *_Nullable strongSelf = weakSelf;
-                                 if (strongSelf == nil) {
-                                     return;
-                                 }
-                                 if (threads.count > 1) {
-                                     return;
-                                 }
-                                 TSThread *thread = threads.firstObject;
-                                 if ([thread.uniqueId isEqualToString:strongSelf.thread.uniqueId]) {
-                                     return;
-                                 }
-                                 [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
+                                 [weakSelf didForwardMessageToThreads:threads];
                              }];
+}
+
+- (void)didForwardMessageToThreads:(NSArray<TSThread *> *)threads
+{
+    if (threads.count > 1) {
+        return;
+    }
+    TSThread *thread = threads.firstObject;
+    if ([thread.uniqueId isEqualToString:strongSelf.thread.uniqueId]) {
+        return;
+    }
+    [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
 }
 
 - (void)forwardMessageFlowDidCancel
