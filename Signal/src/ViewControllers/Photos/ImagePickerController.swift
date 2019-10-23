@@ -67,11 +67,18 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         // quickly toggle between the Capture and the Picker VC's, we use the same custom "X"
         // icon here rather than the system "stop" icon so that the spacing matches exactly.
         // Otherwise there's a noticable shift in the icon placement.
-        let cancelImage = UIImage(imageLiteralResourceName: "ic_x_with_shadow")
-        let cancelButton = UIBarButtonItem(image: cancelImage, style: .plain, target: self, action: #selector(didPressCancel))
+        if UIDevice.current.isIPad {
+            let cancelButton = OWSButton.shadowedCancelButton { [weak self] in
+                self?.didPressCancel()
+            }
+            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
+        } else {
+            let cancelImage = UIImage(imageLiteralResourceName: "ic_x_with_shadow")
+            let cancelButton = UIBarButtonItem(image: cancelImage, style: .plain, target: self, action: #selector(didPressCancel))
 
-        cancelButton.tintColor = .ows_gray05
-        navigationItem.leftBarButtonItem = cancelButton
+            cancelButton.tintColor = .ows_gray05
+            navigationItem.leftBarButtonItem = cancelButton
+        }
 
         let titleView = TitleView()
         titleView.delegate = self
@@ -314,7 +321,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     // MARK: - Actions
 
     @objc
-    func didPressCancel(sender: UIBarButtonItem) {
+    func didPressCancel() {
         self.delegate?.imagePickerDidCancel(self)
     }
 

@@ -351,21 +351,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         updateNavigationBar(navigationBarItems: navigationBarItems)
 
         if options.contains(.hasCancel) {
-            // Mimic a UIBarButtonItem of type .cancel, but with a shadow.
-            let cancelButton = OWSButton(title: CommonStrings.cancelButton) { [weak self] in
+            let cancelButton = OWSButton.shadowedCancelButton { [weak self] in
                 self?.cancelPressed()
             }
-            cancelButton.setTitleColor(.white, for: .normal)
-            if let titleLabel = cancelButton.titleLabel {
-                titleLabel.font = UIFont.systemFont(ofSize: 18.0)
-                titleLabel.layer.shadowColor = UIColor.black.cgColor
-                titleLabel.layer.shadowRadius = 2.0
-                titleLabel.layer.shadowOpacity = 0.66
-                titleLabel.layer.shadowOffset = .zero
-            } else {
-                owsFailDebug("Missing titleLabel.")
-            }
-            cancelButton.sizeToFit()
             navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
         } else {
             // Mimic a conventional back button, but with a shadow.

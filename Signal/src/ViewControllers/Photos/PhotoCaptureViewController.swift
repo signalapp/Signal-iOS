@@ -121,7 +121,14 @@ class PhotoCaptureViewController: OWSViewController {
             recordingTimerView.sizeToFit()
         } else {
             navigationItem.titleView = nil
-            navigationItem.leftBarButtonItem = dismissControl.barButtonItem
+            if UIDevice.current.isIPad {
+                let cancelButton = OWSButton.shadowedCancelButton { [weak self] in
+                    self?.didTapClose()
+                }
+                navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
+            } else {
+                navigationItem.leftBarButtonItem = dismissControl.barButtonItem
+            }
             let fixedSpace = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
             fixedSpace.width = 16
 

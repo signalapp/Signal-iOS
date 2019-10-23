@@ -70,6 +70,22 @@ public class OWSButton: UIButton {
         return button
     }
 
+    /// Mimics a UIBarButtonItem of type .cancel, but with a shadow.
+    @objc
+    public class func shadowedCancelButton(block: @escaping () -> Void) -> OWSButton {
+        let cancelButton = OWSButton(title: CommonStrings.cancelButton, block: block)
+        cancelButton.setTitleColor(.white, for: .normal)
+        if let titleLabel = cancelButton.titleLabel {
+            titleLabel.font = UIFont.systemFont(ofSize: 18.0)
+            titleLabel.layer.shadowColor = UIColor.black.cgColor
+            titleLabel.setShadow()
+        } else {
+            owsFailDebug("Missing titleLabel.")
+        }
+        cancelButton.sizeToFit()
+        return cancelButton
+    }
+
     @objc
     public class func navigationBarButton(imageName: String, block: @escaping () -> Void) -> OWSButton {
         let button = OWSButton(imageName: imageName, tintColor: .white, block: block)
