@@ -33,8 +33,8 @@ extension ForwardMessageNavigationController {
 
     private var needsApproval: Bool {
         return ![.audio,
-                .genericAttachment,
-                .stickerMessage].contains(conversationViewItem.messageCellType)
+                 .genericAttachment,
+                 .stickerMessage].contains(conversationViewItem.messageCellType)
     }
 
     func showApprovalUI() throws {
@@ -118,7 +118,7 @@ extension ForwardMessageNavigationController {
             }
         case .contactShare:
             guard let contactShare = approvedContactShare else {
-                    throw OWSAssertionError("Missing contactShare.")
+                throw OWSAssertionError("Missing contactShare.")
             }
 
             send { thread in
@@ -173,7 +173,7 @@ extension ForwardMessageNavigationController {
     func send(body: String, thread: TSThread) {
         databaseStorage.read { transaction in
             ThreadUtil.enqueueMessage(withText: body, in: thread, quotedReplyModel: nil, linkPreviewDraft: nil, transaction: transaction)
-            }
+        }
     }
 
     func send(contactShare: ContactShareViewModel, thread: TSThread) {
@@ -354,21 +354,21 @@ extension ForwardMessageNavigationController: AttachmentApprovalViewControllerDe
 
     func attachmentApprovalDidAppear(_ attachmentApproval: AttachmentApprovalViewController) {
         // TODO:
-//        updateViewState(topViewController: attachmentApproval)
+        //        updateViewState(topViewController: attachmentApproval)
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageText newMessageText: String?) {
         self.approvalMessageText = newMessageText
-//        sendMediaNavDelegate?.sendMediaNav(self, didChangeMessageText: newMessageText)
+        //        sendMediaNavDelegate?.sendMediaNav(self, didChangeMessageText: newMessageText)
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {
-//        guard let removedDraft = attachmentDraftCollection.attachmentDraft(forAttachment: attachment) else {
-//            owsFailDebug("removedDraft was unexpectedly nil")
-//            return
-//        }
-//
-//        attachmentDraftCollection.remove(removedDraft)
+        //        guard let removedDraft = attachmentDraftCollection.attachmentDraft(forAttachment: attachment) else {
+        //            owsFailDebug("removedDraft was unexpectedly nil")
+        //            return
+        //        }
+        //
+        //        attachmentDraftCollection.remove(removedDraft)
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
