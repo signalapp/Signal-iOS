@@ -720,7 +720,7 @@ class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
 
         @available(iOS 11.0, *)
         func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-            let data = photo.fileDataRepresentation()!
+            let data = photo.fileDataRepresentation()
             DispatchQueue.main.async {
                 self.delegate?.captureOutputDidFinishProcessing(photoData: data, error: error)
             }
