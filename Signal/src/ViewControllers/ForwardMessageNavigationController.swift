@@ -136,8 +136,19 @@ extension ForwardMessageNavigationController {
                 throw OWSAssertionError("Missing stickerInfo.")
             }
 
-            send { thread in
-                self.send(stickerInfo: stickerInfo, thread: thread)
+            if StickerManager.isStickerInstalled(stickerInfo: stickerInfo) {
+                send { thread in
+                    self.send(installedSticker: stickerInfo, thread: thread)
+                }
+            } else {
+                guard let stickerAttachment = conversationViewItem.stickerAttachment else {
+                    owsFailDebug("Missing stickerAttachment.")
+                    return
+                }
+                let stickerData = try stickerAttachment.readDataFromFile()
+                send { thread in
+                    self.send(uninstalledSticker: stickerInfo, stickerData: stickerData, thread: thread)
+                }
             }
         case .audio,
              .genericAttachment:
@@ -187,8 +198,12 @@ extension ForwardMessageNavigationController {
         }
     }
 
-    func send(stickerInfo: StickerInfo, thread: TSThread) {
-        ThreadUtil.enqueueMessage(withSticker: stickerInfo, in: thread)
+    func send(installedSticker stickerInfo: StickerInfo, thread: TSThread) {
+        ThreadUtil.enqueueMessage(withInstalledSticker: stickerInfo, in: thread)
+    }
+
+    func send(uninstalledSticker stickerInfo: StickerInfo, stickerData: Data, thread: TSThread) {
+        ThreadUtil.enqueueMessage(withUninstalledSticker: stickerInfo, stickerData: stickerData, in: thread)
     }
 
     func send(enqueueBlock: @escaping (TSThread) throws -> Void) {

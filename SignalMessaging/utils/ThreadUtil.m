@@ -202,33 +202,13 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     return message;
 }
 
-+ (TSOutgoingMessage *)enqueueMessageWithSticker:(StickerInfo *)stickerInfo inThread:(TSThread *)thread
++ (TSOutgoingMessage *)enqueueMessageWithInstalledSticker:(StickerInfo *)stickerInfo inThread:(TSThread *)thread
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(stickerInfo);
-    OWSAssertDebug(thread);
+    OWSAssertDebug(stickerInfo != nil);
+    OWSAssertDebug(thread != nil);
 
-    __block OWSDisappearingMessagesConfiguration *configuration;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        configuration = [thread disappearingMessagesConfigurationWithTransaction:transaction];
-    }];
-
-    uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
-
-    TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                           inThread:thread
-                                                        messageBody:nil
-                                                      attachmentIds:[NSMutableArray new]
-                                                   expiresInSeconds:expiresInSeconds
-                                                    expireStartedAt:0
-                                                     isVoiceMessage:NO
-                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                      quotedMessage:nil
-                                                       contactShare:nil
-                                                        linkPreview:nil
-                                                     messageSticker:nil
-                                                  isViewOnceMessage:NO];
+    TSOutgoingMessage *message = [self buildOutgoingMessageForSticker:stickerInfo thread:thread];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // Load the sticker data async.
@@ -242,25 +222,82 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
             OWSFailDebug(@"Couldn't load sticker data.");
             return;
         }
-        MessageStickerDraft *stickerDraft =
-            [[MessageStickerDraft alloc] initWithInfo:stickerInfo stickerData:stickerData];
+        MessageStickerDraft *stickerDraft = [[MessageStickerDraft alloc] initWithInfo:stickerInfo
+                                                                          stickerData:stickerData];
 
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            MessageSticker *_Nullable messageSticker =
-                [self messageStickerForStickerDraft:stickerDraft transaction:transaction];
-            if (!messageSticker) {
-                OWSFailDebug(@"Couldn't send sticker.");
-                return;
-            }
-
-            [message anyInsertWithTransaction:transaction];
-            [message updateWithMessageSticker:messageSticker transaction:transaction];
-
-            [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
-        }];
+        [self enqueueMessage:message stickerDraft:stickerDraft thread:thread];
     });
 
     return message;
+}
+
++ (TSOutgoingMessage *)enqueueMessageWithUninstalledSticker:(StickerInfo *)stickerInfo
+                                                stickerData:(NSData *)stickerData
+                                                   inThread:(TSThread *)thread
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(stickerInfo != nil);
+    OWSAssertDebug(stickerData.length > 0);
+    OWSAssertDebug(thread != nil);
+
+    TSOutgoingMessage *message = [self buildOutgoingMessageForSticker:stickerInfo thread:thread];
+
+    MessageStickerDraft *stickerDraft = [[MessageStickerDraft alloc] initWithInfo:stickerInfo stickerData:stickerData];
+
+    [self enqueueMessage:message stickerDraft:stickerDraft thread:thread];
+
+    return message;
+}
+
++ (TSOutgoingMessage *)buildOutgoingMessageForSticker:(StickerInfo *)stickerInfo thread:(TSThread *)thread
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(stickerInfo != nil);
+    OWSAssertDebug(thread != nil);
+
+    __block OWSDisappearingMessagesConfiguration *configuration;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        configuration = [thread disappearingMessagesConfigurationWithTransaction:transaction];
+    }];
+
+    uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
+
+    return [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                              inThread:thread
+                                                           messageBody:nil
+                                                         attachmentIds:[NSMutableArray new]
+                                                      expiresInSeconds:expiresInSeconds
+                                                       expireStartedAt:0
+                                                        isVoiceMessage:NO
+                                                      groupMetaMessage:TSGroupMetaMessageUnspecified
+                                                         quotedMessage:nil
+                                                          contactShare:nil
+                                                           linkPreview:nil
+                                                        messageSticker:nil
+                                                     isViewOnceMessage:NO];
+}
+
++ (void)enqueueMessage:(TSOutgoingMessage *)message
+          stickerDraft:(MessageStickerDraft *)stickerDraft
+                thread:(TSThread *)thread
+{
+    OWSAssertDebug(message != nil);
+    OWSAssertDebug(stickerDraft != nil);
+    OWSAssertDebug(thread != nil);
+
+    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        MessageSticker *_Nullable messageSticker = [self messageStickerForStickerDraft:stickerDraft
+                                                                           transaction:transaction];
+        if (!messageSticker) {
+            OWSFailDebug(@"Couldn't send sticker.");
+            return;
+        }
+
+        [message anyInsertWithTransaction:transaction];
+        [message updateWithMessageSticker:messageSticker transaction:transaction];
+
+        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
+    }];
 }
 
 + (void)enqueueLeaveGroupMessageInThread:(TSGroupThread *)thread

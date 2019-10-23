@@ -1504,7 +1504,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         case OWSMessageCellType_OversizeTextDownloading:
             return NO;
         case OWSMessageCellType_StickerMessage:
-            return [StickerManager isStickerInstalledWithStickerInfo:self.stickerInfo];
+            return YES;
         case OWSMessageCellType_ViewOnce:
             return NO;
     }

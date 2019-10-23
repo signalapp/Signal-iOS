@@ -2499,7 +2499,8 @@ typedef enum : NSUInteger {
 
     PdfViewController *pdfView = [[PdfViewController alloc] initWithViewItem:viewItem
                                                             attachmentStream:attachmentStream];
-    [self.navigationController pushViewController:pdfView animated:YES];
+    UIViewController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:pdfView];
+    [self presentFullScreenViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)didTapTruncatedTextMessage:(id<ConversationViewItem>)conversationItem
@@ -4225,7 +4226,7 @@ typedef enum : NSUInteger {
 
     OWSLogVerbose(@"Sending sticker.");
 
-    TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithSticker:stickerInfo inThread:self.thread];
+    TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithInstalledSticker:stickerInfo inThread:self.thread];
     [self messageWasSent:message];
 }
 

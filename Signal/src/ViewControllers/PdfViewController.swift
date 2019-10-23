@@ -146,12 +146,12 @@ public class PdfViewController: OWSViewController {
     @objc func forwardButtonPressed() {
         let modal = ForwardMessageNavigationController(conversationViewItem: viewItem)
         modal.forwardMessageDelegate = self
-        self.presentFullScreen(modal, animated: true)
+        presentFullScreen(modal, animated: true)
     }
 
     @objc
     private func didPressCloseButton(sender: UIButton) {
-        self.dismiss(animated: true)
+        dismiss(animated: true)
     }
 
     // MARK: - Bar Management

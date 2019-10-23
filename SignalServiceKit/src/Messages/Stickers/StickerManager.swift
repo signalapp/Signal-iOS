@@ -820,6 +820,9 @@ public class StickerManager: NSObject {
     @objc
     public class func stickerWasSent(_ stickerInfo: StickerInfo,
                                      transaction: SDSAnyWriteTransaction) {
+        guard isStickerInstalled(stickerInfo: stickerInfo) else {
+            return
+        }
         store.appendToStringSet(key: kRecentStickersKey,
                                 value: stickerInfo.asKey(),
                                 transaction: transaction,
