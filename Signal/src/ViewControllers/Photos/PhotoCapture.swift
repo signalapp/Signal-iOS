@@ -107,6 +107,18 @@ class PhotoCapture: NSObject {
         audioSession.endAudioActivity(recordingAudioActivity)
     }
 
+    func updateVideoConnectionToDeviceOrientation() {
+        guard let captureOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) else {
+            owsFailDebug("captureOrientation was unexpectedly nil")
+            return
+        }
+        guard let videoConnection = previewView.previewLayer.connection else {
+            owsFailDebug("videoConnection was unexpectedly nil")
+            return
+        }
+        videoConnection.videoOrientation = captureOrientation
+    }
+
     public func startVideoCapture() -> Promise<Void> {
         // If the session is already running, no need to do anything.
         guard !self.session.isRunning else { return Promise.value(()) }
@@ -129,10 +141,16 @@ class PhotoCapture: NSObject {
                 throw PhotoCaptureError.initializationFailed
             }
 
+            guard let captureOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) else {
+                owsFailDebug("captureOrientation was unexpectedly nil")
+                return
+            }
+
             if let connection = photoOutput.connection(with: .video) {
                 if connection.isVideoStabilizationSupported {
                     connection.preferredVideoStabilizationMode = .auto
                 }
+                connection.videoOrientation = captureOrientation
             }
 
             self.session.addOutput(photoOutput)
@@ -147,6 +165,8 @@ class PhotoCapture: NSObject {
                 if connection.isVideoStabilizationSupported {
                     connection.preferredVideoStabilizationMode = .auto
                 }
+                connection.videoOrientation = captureOrientation
+
                 if #available(iOS 11.0, *) {
                     guard movieOutput.availableVideoCodecTypes.contains(.h264) else {
                         throw PhotoCaptureError.initializationFailed
@@ -619,7 +639,7 @@ class CaptureOutput {
     func beginVideo(delegate: CaptureOutputDelegate) {
         delegate.assertIsOnSessionQueue()
         guard let videoConnection = movieOutput.connection(with: .video) else {
-            owsFailDebug("movieOutputConnection was unexpectedly nil")
+            owsFailDebug("videoConnection was unexpectedly nil")
             return
         }
 
@@ -778,6 +798,7 @@ extension AVCaptureVideoOrientation {
         case .portraitUpsideDown: self = .portraitUpsideDown
         case .landscapeLeft: self = .landscapeRight
         case .landscapeRight: self = .landscapeLeft
+        case .faceUp, .faceDown: self = .portrait
         default: return nil
         }
     }

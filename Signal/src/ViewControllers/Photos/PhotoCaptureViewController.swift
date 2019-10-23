@@ -99,6 +99,16 @@ class PhotoCaptureViewController: OWSViewController {
         return true
     }
 
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        // If we don't set the frame manually here, we get an undesirable back and forth animation
+        // while switching orientations.
+        photoCapture.previewView.frame = CGRect(origin: .zero, size: size)
+        photoCapture.previewView.bounds = CGRect(origin: .zero, size: size)
+        photoCapture.updateVideoConnectionToDeviceOrientation()
+    }
+
     // MARK: -
     var isRecordingMovie: Bool = false
     let recordingTimerView = RecordingTimerView()
