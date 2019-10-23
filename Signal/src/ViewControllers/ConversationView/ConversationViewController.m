@@ -5416,7 +5416,7 @@ typedef enum : NSUInteger {
         return;
     }
     TSThread *thread = threads.firstObject;
-    if ([thread.uniqueId isEqualToString:strongSelf.thread.uniqueId]) {
+    if ([thread.uniqueId isEqualToString:self.thread.uniqueId]) {
         return;
     }
     [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
