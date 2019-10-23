@@ -195,12 +195,10 @@ extension ForwardMessageNavigationController {
             guard let oldContactShare = conversationViewItem.contactShare else {
                 throw OWSAssertionError("Missing contactShareViewModel.")
             }
-            let newContactShare = oldContactShare.duplicate()
+            let newContactShare = oldContactShare.copyForResending()
             let approvalView = ContactShareApprovalViewController(contactShare: newContactShare)
             approvalView.delegate = self
             self.pushViewController(approvalView, animated: true)
-
-            throw OWSAssertionError("Invalid message type.")
         case .audio,
              .genericAttachment,
              .stickerMessage:
@@ -247,10 +245,14 @@ extension ForwardMessageNavigationController {
             }
 
             send { (thread, transaction) in
-                self.send(contactShare: contactShare, thread: thread, transaction: transaction)
-            }
+                let contactShareCopy = contactShare.copyForResending()
 
-            throw OWSAssertionError("Invalid message type.")
+                if let avatarImage = contactShareCopy.avatarImage {
+                    contactShareCopy.dbRecord.saveAvatarImage(avatarImage, transaction: transaction)
+                }
+
+                self.send(contactShare: contactShareCopy, thread: thread, transaction: transaction)
+            }
         case .audio,
              .genericAttachment,
              .stickerMessage:
@@ -751,11 +753,6 @@ class ForwardMessageNavigationController: OWSNavigationController {
 
     var selectedConversations: [ConversationItem] = []
 
-//    @objc
-//    public let forwardMessageFlow: ForwardMessageFlow
-
-//    private weak var delegate: MessageActionsDelegate?
-//    private let message: TSMessage
     private let conversationViewItem: ConversationViewItem
 
     @objc
@@ -766,64 +763,19 @@ class ForwardMessageNavigationController: OWSNavigationController {
             self.approvalMessageText = conversationViewItem.displayableBodyText?.fullText
         }
 
-//        forwardMessageFlow = ForwardMessageFlow()
-
         super.init(owsNavbar: ())
 
         let pickerVC = ConversationPickerViewController()
         pickerVC.delegate = self
-//        sendMediaNavigationController.pushViewController(pickerVC, animated: true)
 
         setViewControllers([
             pickerVC
-            //            navController.captureViewController
             ], animated: false)
     }
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-//    @objc
-//    public class func forwardMessageModal(conversationViewItem: ConversationViewItem) -> ForwardMessageNavigationController {
-//        let navController = ForwardMessageNavigationController(conversationViewItem: conversationViewItem)
-//        navController.setViewControllers([
-////            navController.captureViewController
-//            ], animated: false)
-//
-////        let forwardMessageFlow = ForwardMessageFlow()
-////        navController.forwardMessageFlow = forwardMessageFlow
-////        navController.sendMediaNavDelegate = forwardMessageFlow
-//
-//        return navController
-//    }
-
-    //    @objc
-//    public required init(
-////        delegate: MessageActionsDelegate,
-////                         message: TSMessage,
-//                         conversationViewItem: ConversationViewItem) {
-////        self.delegate = delegate
-////        self.message = message
-//        self.conversationViewItem = conversationViewItem
-//
-//
-//        super.initWithOWSNavbar()
-//
-////        delegate.messageActionDidStart(self)
-//    }
-
-//    @objc
-//    public class func captureFirstCameraModal() -> ForwardMessageNavigationController {
-//        let navController = ForwardMessageNavigationController()
-//        navController.setViewControllers([navController.captureViewController], animated: false)
-//
-//        let forwardMessageFlow = ForwardMessageFlow()
-//        navController.forwardMessageFlow = forwardMessageFlow
-//        navController.sendMediaNavDelegate = forwardMessageFlow
-//
-//        return navController
-//    }
 }
 
 // MARK: -
