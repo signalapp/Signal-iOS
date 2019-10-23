@@ -348,12 +348,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         } else {
             containerWidth = self.view.frame.size.width
         }
-
-        let kItemsPerPortraitRow = 4
-        let minimumViewWidth = min(view.frame.width, view.frame.height)
-        let approxItemWidth = minimumViewWidth / CGFloat(kItemsPerPortraitRow)
-
-        let itemCount = round(containerWidth / approxItemWidth)
+        let minItemWidth: CGFloat = 100
+        let itemCount = floor(containerWidth / minItemWidth)
         let interSpaceWidth = (itemCount - 1) * type(of: self).kInterItemSpacing
 
         let availableWidth = containerWidth - interSpaceWidth
