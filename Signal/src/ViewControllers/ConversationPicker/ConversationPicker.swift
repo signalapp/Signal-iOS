@@ -5,6 +5,11 @@
 import Foundation
 import PromiseKit
 
+enum ConversationPickerMode {
+    case send
+    case next
+}
+
 protocol ConversationPickerDelegate: AnyObject {
     var selectedConversationsForConversationPicker: [ConversationItem] { get }
 
@@ -19,6 +24,8 @@ protocol ConversationPickerDelegate: AnyObject {
     func conversationPickerCanCancel(_ conversationPickerViewController: ConversationPickerViewController) -> Bool
 
     func conversationPickerDidCancel(_ conversationPickerViewController: ConversationPickerViewController)
+
+    func conversationPickerMode(_ conversationPickerViewController: ConversationPickerViewController) -> ConversationPickerMode
 }
 
 @objc
@@ -79,6 +86,13 @@ class ConversationPickerViewController: OWSViewController {
         return currentInputAcccessoryView
     }
 
+    var mode: ConversationPickerMode {
+        guard let delegate = delegate else {
+            return .send
+        }
+        return delegate.conversationPickerMode(self)
+    }
+
     override func loadView() {
         self.view = UIView()
         view.backgroundColor = Theme.backgroundColor
@@ -129,7 +143,7 @@ class ConversationPickerViewController: OWSViewController {
             }
             tableView.selectRow(at: index, animated: false, scrollPosition: .none)
         }
-        updateFooterForCurrentSelection(animated: false)
+        updateUIForCurrentSelection(animated: false)
     }
 
     let blockListCache = BlockListCache()
@@ -307,6 +321,10 @@ class ConversationPickerViewController: OWSViewController {
     @objc func onTouchCancelButton() {
         delegate?.conversationPickerDidCancel(self)
     }
+
+    @objc func onTouchNextButton() {
+        delegate?.conversationPickerDidCompleteSelection(self)
+    }
 }
 
 extension ConversationPickerViewController: BlockListCacheDelegate {
@@ -470,7 +488,7 @@ extension ConversationPickerViewController: UITableViewDelegate {
             return
         }
         delegate?.conversationPicker(self, didSelectConversation: conversation)
-        updateFooterForCurrentSelection(animated: true)
+        updateUIForCurrentSelection(animated: true)
     }
 
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
@@ -479,18 +497,24 @@ extension ConversationPickerViewController: UITableViewDelegate {
             return
         }
         delegate?.conversationPicker(self, didDeselectConversation: conversation)
-        updateFooterForCurrentSelection(animated: true)
+        updateUIForCurrentSelection(animated: true)
     }
 
-    private func updateFooterForCurrentSelection(animated: Bool) {
+    private func updateUIForCurrentSelection(animated: Bool) {
         guard let delegate = delegate else { return }
 
         let conversations = delegate.selectedConversationsForConversationPicker
+        var nextButton: UIBarButtonItem?
         if conversations.count == 0 {
             currentInputAcccessoryView = nil
         } else {
-            currentInputAcccessoryView = footerView
+            if mode == .next {
+                nextButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(onTouchNextButton))
+            } else {
+                currentInputAcccessoryView = footerView
+            }
         }
+        self.navigationItem.rightBarButtonItem = nextButton
 
         let labelText = conversations.map { $0.title }.joined(separator: ", ")
         footerView.setNamesText(labelText, animated: animated)

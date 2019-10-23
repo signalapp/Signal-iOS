@@ -313,6 +313,10 @@ extension ForwardMessageNavigationController: ConversationPickerDelegate {
     func conversationPickerDidCancel(_ conversationPickerViewController: ConversationPickerViewController) {
         forwardMessageDelegate?.forwardMessageFlowDidCancel()
     }
+
+    func conversationPickerMode(_ conversationPickerViewController: ConversationPickerViewController) -> ConversationPickerMode {
+        return needsApproval ? .next : .send
+    }
 }
 
 // MARK: -
