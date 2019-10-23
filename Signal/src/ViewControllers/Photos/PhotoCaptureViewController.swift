@@ -368,7 +368,7 @@ class PhotoCaptureViewController: OWSViewController {
         view.addSubview(captureButton)
         if UIDevice.current.isIPad {
             captureButton.autoVCenterInSuperview()
-            captureButton.centerXAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: SendMediaNavigationController.trailingButtonsOffset).isActive = true
+            captureButton.centerXAnchor.constraint(equalTo: view.trailingAnchor, constant: SendMediaNavigationController.bottomButtonsCenterOffset).isActive = true
         } else {
             captureButton.autoHCenterInSuperview()
             captureButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: SendMediaNavigationController.bottomButtonsCenterOffset).isActive = true
