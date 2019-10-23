@@ -46,7 +46,7 @@ public class TextApprovalViewController: OWSViewController, UITextViewDelegate {
         self.navigationItem.title = NSLocalizedString("MESSAGE_APPROVAL_DIALOG_TITLE",
                                                       comment: "Title for the 'message approval' dialog.")
 
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(cancelPressed))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelPressed))
         sendButton = UIBarButtonItem(title: MessageStrings.sendButton,
                                      style: .plain,
                                      target: self,

@@ -25,6 +25,12 @@ extension ForwardMessageNavigationController {
         }
     }
 
+    func needsApproval() -> Bool {
+        return [.audio,
+                .genericAttachment,
+                .stickerMessage].contains(conversationViewItem.messageCellType)
+    }
+
     func showApprovalUI() throws {
         switch conversationViewItem.messageCellType {
         case .textOnlyMessage:
@@ -119,9 +125,9 @@ extension ForwardMessageNavigationController {
 
                 self.send(contactShare: contactShareCopy, thread: thread, transaction: transaction)
             }
+        case .stickerMessage:
         case .audio,
-             .genericAttachment,
-             .stickerMessage:
+             .genericAttachment:
 
             guard let attachmentStream = conversationViewItem.attachmentStream else {
                 throw OWSAssertionError("Missing attachmentStream.")
@@ -171,18 +177,40 @@ extension ForwardMessageNavigationController {
     func send(enqueueBlock: @escaping (TSThread, SDSAnyWriteTransaction) throws -> Void) {
         AssertIsOnMainThread()
 
-        let conversations = selectedConversationsForConversationPicker
+        let conversations = self.selectedConversationsForConversationPicker
+        self.threads(for: conversations)
+            .then(on: .global()) { (threads: [TSThread]) -> Promise<[TSThread]> in
+                var sendError: Error?
+                self.databaseStorage.write { transaction in
+                    for thread in threads {
+                        do {
+                            try enqueueBlock(thread, transaction)
+                        } catch {
+                            owsFailDebug("error: \(error)")
+                            sendError = error
+                            break
+                        }
+                    }
+                }
+                if let error = sendError {
+                    throw error
+                }
+                return Promise.value(threads)
+            }.done { threads in
+                self.forwardMessageDelegate?.forwardMessageFlowDidComplete(threads: threads)
+            }.retainUntilComplete()
+    }
 
-        DispatchQueue.global().async(.promise) {
-            guard conversations.count > 0 else {
+    func threads(for conversationItems: [ConversationItem]) -> Promise<[TSThread]> {
+        return DispatchQueue.global().async(.promise) {
+            guard conversationItems.count > 0 else {
                 throw OWSAssertionError("No recipients.")
             }
 
             var threads: [TSThread] = []
 
-            var sendError: Error?
             self.databaseStorage.write { transaction in
-                for conversation in conversations {
+                for conversation in conversationItems {
                     let thread: TSThread
                     switch conversation.messageRecipient {
                     case .contact(let address):
@@ -192,23 +220,11 @@ extension ForwardMessageNavigationController {
                         thread = groupThread
                     }
 
-                    do {
-                        try enqueueBlock(thread, transaction)
-                        threads.append(thread)
-                    } catch {
-                        owsFailDebug("error: \(error)")
-                        sendError = error
-                        break
-                    }
+                    threads.append(thread)
                 }
             }
-            if let error = sendError {
-                throw error
-            }
-                return threads
-            }.done { threads in
-                self.forwardMessageDelegate?.forwardMessageFlowDidComplete(threads: threads)
-            }.retainUntilComplete()
+            return threads
+        }
     }
 }
 

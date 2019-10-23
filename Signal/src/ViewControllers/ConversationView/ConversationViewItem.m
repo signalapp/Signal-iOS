@@ -1502,7 +1502,9 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         case OWSMessageCellType_MediaMessage:
             return [self canSaveMedia];
         case OWSMessageCellType_OversizeTextDownloading:
+            return NO;
         case OWSMessageCellType_StickerMessage:
+            return YES;
         case OWSMessageCellType_ViewOnce:
             return NO;
     }
