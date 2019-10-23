@@ -16,6 +16,12 @@ public protocol ForwardMessageDelegate: AnyObject {
 extension ForwardMessageNavigationController {
 
     func approve() {
+        guard needsApproval else {
+            // Skip approval for these message types.
+            send()
+            return
+        }
+
         do {
             try showApprovalUI()
         } catch {
@@ -25,8 +31,8 @@ extension ForwardMessageNavigationController {
         }
     }
 
-    func needsApproval() -> Bool {
-        return [.audio,
+    private var needsApproval: Bool {
+        return ![.audio,
                 .genericAttachment,
                 .stickerMessage].contains(conversationViewItem.messageCellType)
     }
@@ -53,8 +59,7 @@ extension ForwardMessageNavigationController {
         case .audio,
              .genericAttachment,
              .stickerMessage:
-            // Skip approval for these message types.
-            send()
+            throw OWSAssertionError("Message type does not need approval.")
         case .mediaMessage:
             let options: AttachmentApprovalViewControllerOptions = .hasCancel
             let sendButtonImageName = "send-solid-24"
@@ -108,24 +113,33 @@ extension ForwardMessageNavigationController {
                     throw OWSAssertionError("Missing body.")
             }
 
-            send { (thread, transaction) in
-                self.send(body: body, thread: thread, transaction: transaction)
+            send { thread in
+                self.send(body: body, thread: thread)
             }
         case .contactShare:
             guard let contactShare = approvedContactShare else {
                     throw OWSAssertionError("Missing contactShare.")
             }
 
-            send { (thread, transaction) in
+            send { thread in
                 let contactShareCopy = contactShare.copyForResending()
 
                 if let avatarImage = contactShareCopy.avatarImage {
-                    contactShareCopy.dbRecord.saveAvatarImage(avatarImage, transaction: transaction)
+                    self.databaseStorage.write { transaction in
+                        contactShareCopy.dbRecord.saveAvatarImage(avatarImage, transaction: transaction)
+                    }
                 }
 
-                self.send(contactShare: contactShareCopy, thread: thread, transaction: transaction)
+                self.send(contactShare: contactShareCopy, thread: thread)
             }
         case .stickerMessage:
+            guard let stickerInfo = conversationViewItem.stickerInfo else {
+                throw OWSAssertionError("Missing stickerInfo.")
+            }
+
+            send { thread in
+                self.send(stickerInfo: stickerInfo, thread: thread)
+            }
         case .audio,
              .genericAttachment:
 
@@ -133,9 +147,9 @@ extension ForwardMessageNavigationController {
                 throw OWSAssertionError("Missing attachmentStream.")
             }
 
-            send { (thread, transaction) in
+            send { thread in
                 let attachment = try attachmentStream.asSignalAttachmentForSending()
-                self.send(body: "", attachment: attachment, thread: thread, transaction: transaction)
+                self.send(body: nil, attachment: attachment, thread: thread)
             }
         case .mediaMessage:
             guard let approvedAttachments = approvedAttachments else {
@@ -156,47 +170,38 @@ extension ForwardMessageNavigationController {
         }
     }
 
-    func send(body: String, thread: TSThread, transaction: SDSAnyWriteTransaction) {
-        let outgoingMessagePreparer = OutgoingMessagePreparer(fullMessageText: body, mediaAttachments: [], thread: thread, quotedReplyModel: nil, transaction: transaction)
-        outgoingMessagePreparer.insertMessage(linkPreviewDraft: nil, transaction: transaction)
-        messageSenderJobQueue.add(message: outgoingMessagePreparer, transaction: transaction)
+    func send(body: String, thread: TSThread) {
+        databaseStorage.read { transaction in
+            ThreadUtil.enqueueMessage(withText: body, in: thread, quotedReplyModel: nil, linkPreviewDraft: nil, transaction: transaction)
+            }
     }
 
-    func send(contactShare: ContactShareViewModel, thread: TSThread, transaction: SDSAnyWriteTransaction) {
-        let message = ThreadUtil.buildMessage(forContactShare: contactShare.dbRecord, in: thread, transaction: transaction)
-        message.anyInsert(transaction: transaction)
-        messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+    func send(contactShare: ContactShareViewModel, thread: TSThread) {
+        databaseStorage.read { _ in
+            ThreadUtil.enqueueMessage(withContactShare: contactShare.dbRecord, in: thread)
+        }
     }
 
-    func send(body: String, attachment: SignalAttachment, thread: TSThread, transaction: SDSAnyWriteTransaction) {
-        let outgoingMessagePreparer = OutgoingMessagePreparer(fullMessageText: body, mediaAttachments: [attachment], thread: thread, quotedReplyModel: nil, transaction: transaction)
-        outgoingMessagePreparer.insertMessage(linkPreviewDraft: nil, transaction: transaction)
-        messageSenderJobQueue.add(message: outgoingMessagePreparer, transaction: transaction)
+    func send(body: String?, attachment: SignalAttachment, thread: TSThread) {
+        databaseStorage.read { transaction in
+            ThreadUtil.enqueueMessage(withText: body, mediaAttachments: [attachment], in: thread, quotedReplyModel: nil, linkPreviewDraft: nil, transaction: transaction)
+        }
     }
 
-    func send(enqueueBlock: @escaping (TSThread, SDSAnyWriteTransaction) throws -> Void) {
+    func send(stickerInfo: StickerInfo, thread: TSThread) {
+        ThreadUtil.enqueueMessage(withSticker: stickerInfo, in: thread)
+    }
+
+    func send(enqueueBlock: @escaping (TSThread) throws -> Void) {
         AssertIsOnMainThread()
 
         let conversations = self.selectedConversationsForConversationPicker
         self.threads(for: conversations)
-            .then(on: .global()) { (threads: [TSThread]) -> Promise<[TSThread]> in
-                var sendError: Error?
-                self.databaseStorage.write { transaction in
-                    for thread in threads {
-                        do {
-                            try enqueueBlock(thread, transaction)
-                        } catch {
-                            owsFailDebug("error: \(error)")
-                            sendError = error
-                            break
-                        }
-                    }
+            .done { (threads: [TSThread]) in
+                for thread in threads {
+                    try enqueueBlock(thread)
                 }
-                if let error = sendError {
-                    throw error
-                }
-                return Promise.value(threads)
-            }.done { threads in
+
                 self.forwardMessageDelegate?.forwardMessageFlowDidComplete(threads: threads)
             }.retainUntilComplete()
     }

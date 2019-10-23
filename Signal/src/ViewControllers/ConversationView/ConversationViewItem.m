@@ -1504,28 +1504,11 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         case OWSMessageCellType_OversizeTextDownloading:
             return NO;
         case OWSMessageCellType_StickerMessage:
-            return YES;
+            return [StickerManager isStickerInstalledWithStickerInfo:self.stickerInfo];
         case OWSMessageCellType_ViewOnce:
             return NO;
     }
 }
-
-//- (void)forwardMessageAction:(id<MessageActionsDelegate>)delegate
-//{
-//    if (!self.canForwardMessage) {
-//        OWSFailDebug(@"Can't forward message.");
-//        return;
-//    }
-//    if (![self.interaction isKindOfClass:TSMessage.class]) {
-//        OWSFailDebug(@"Invalid interaction.");
-//        return;
-//    }
-//    TSMessage *message = (TSMessage*)self.interaction;
-//    ForwardMessageAction *messageAction = [[ForwardMessageAction alloc] initWithDelegate:delegate
-//                                                                                 message:message
-//                                                                         messageCellType:self.messageCellType];
-//    [messageAction showUI];
-//}
 
 - (void)deleteAction
 {
