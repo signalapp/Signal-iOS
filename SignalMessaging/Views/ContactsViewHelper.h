@@ -22,15 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@protocol ContactEditingDelegate <CNContactViewControllerDelegate>
-
-- (void)didFinishEditingContact;
-
-@end
-
 #pragma mark -
 
 @class CNContact;
+@class CNContactViewController;
 @class OWSBlockingManager;
 @class OWSContactsManager;
 @class OWSProfileManager;
@@ -77,15 +72,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)warmNonSignalContactsCacheAsync;
 - (NSArray<Contact *> *)nonSignalContactsMatchingSearchString:(NSString *)searchText;
 
-- (void)presentContactViewControllerForAddress:(SignalServiceAddress *)address
-                            fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
-                               editImmediately:(BOOL)shouldEditImmediately;
+- (nullable CNContactViewController *)contactViewControllerForAddress:(SignalServiceAddress *)address
+                                                      editImmediately:(BOOL)shouldEditImmediately;
 
 // This method can be used to edit existing contacts.
-- (void)presentContactViewControllerForAddress:(SignalServiceAddress *)address
-                            fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
-                               editImmediately:(BOOL)shouldEditImmediately
-                        addToExistingCnContact:(CNContact *_Nullable)cnContact;
+- (nullable CNContactViewController *)contactViewControllerForAddress:(SignalServiceAddress *)address
+                                                      editImmediately:(BOOL)shouldEditImmediately
+                                               addToExistingCnContact:(CNContact *_Nullable)existingContact;
 
 + (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController;
 

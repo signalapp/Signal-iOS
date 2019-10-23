@@ -86,7 +86,7 @@ public class PdfViewController: OWSViewController {
             return
         }
 
-        navigationBar.overrideTheme(type: .alwaysDark)
+        navigationBar.switchToStyle(.alwaysDark)
 
         // Only setup the bottom bar if we have a PDF rendered
         guard let toolbar = navigationController?.toolbar, pdfView != nil else {

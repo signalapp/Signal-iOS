@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSAddToContactViewController () <ContactEditingDelegate, ContactsViewHelperDelegate>
+@interface OWSAddToContactViewController () <ContactsViewHelperDelegate>
 
 @property (nonatomic) SignalServiceAddress *address;
 
@@ -74,38 +74,24 @@ NS_ASSUME_NONNULL_BEGIN
     _address = address;
 }
 
-#pragma mark - ContactEditingDelegate
-
-- (void)didFinishEditingContact
-{
-    OWSLogDebug(@"");
-    [self dismissViewControllerAnimated:NO
-                             completion:^{
-                                 [self.navigationController popViewControllerAnimated:YES];
-                             }];
-}
-
 #pragma mark - CNContactViewControllerDelegate
 
 - (void)contactViewController:(CNContactViewController *)viewController
        didCompleteWithContact:(nullable CNContact *)contact
 {
-    if (contact) {
-        // Saving normally returns you to the "Show Contact" view
-        // which we're not interested in, so we skip it here. There is
-        // an unfortunate blip of the "Show Contact" view on slower devices.
-        OWSLogDebug(@"completed editing contact.");
-        [self dismissViewControllerAnimated:NO
-                                 completion:^{
-                                     [self.navigationController popViewControllerAnimated:YES];
-                                 }];
-    } else {
-        OWSLogDebug(@"canceled editing contact.");
-        [self dismissViewControllerAnimated:YES
-                                 completion:^{
-                                     [self.navigationController popViewControllerAnimated:YES];
-                                 }];
+    OWSAssertDebug(self.navigationController);
+
+    // We're done, pop back to the view that presented us.
+
+    NSUInteger selfIndex = [self.navigationController.viewControllers indexOfObject:self];
+    if (selfIndex == NSNotFound) {
+        OWSFailDebug(@"Unexpectedly not in nav hierarchy");
+        return;
     }
+
+    UIViewController *previousVC = self.navigationController.viewControllers[selfIndex - 1];
+
+    [self.navigationController popToViewController:previousVC animated:YES];
 }
 
 #pragma mark - ContactsViewHelperDelegate
@@ -201,10 +187,20 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Could not load system contact.");
         return;
     }
-    [self.contactsViewHelper presentContactViewControllerForAddress:self.address
-                                                 fromViewController:self
-                                                    editImmediately:YES
-                                             addToExistingCnContact:cnContact];
+
+    CNContactViewController *_Nullable contactViewController =
+        [self.contactsViewHelper contactViewControllerForAddress:self.address
+                                                 editImmediately:YES
+                                          addToExistingCnContact:cnContact];
+
+    if (!contactViewController) {
+        OWSFailDebug(@"Unexpected missing contact VC");
+        return;
+    }
+
+    contactViewController.delegate = self;
+
+    [self.navigationController pushViewController:contactViewController animated:YES];
 }
 
 @end

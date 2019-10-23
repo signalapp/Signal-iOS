@@ -209,7 +209,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             owsFailDebug("navigationBar was nil or unexpected class")
             return
         }
-        navigationBar.overrideTheme(type: .removeOverride)
+        navigationBar.switchToStyle(.default)
     }
 
     var hasEverAppeared = false

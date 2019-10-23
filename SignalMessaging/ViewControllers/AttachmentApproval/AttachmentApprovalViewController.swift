@@ -149,7 +149,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             owsFailDebug("navigationBar was nil or unexpected class")
             return navController
         }
-        navigationBar.overrideTheme(type: .clear)
+        navigationBar.switchToStyle(.clear)
 
         return navController
     }
@@ -227,7 +227,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             owsFailDebug("navigationBar was nil or unexpected class")
             return
         }
-        navigationBar.overrideTheme(type: .clear)
+        navigationBar.switchToStyle(.clear)
 
         updateContents(isApproved: false)
     }

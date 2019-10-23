@@ -78,7 +78,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 // Mark: Search
 
-@property (nonatomic, readonly) UISearchBar *searchBar;
+@property (nonatomic, readonly) OWSSearchBar *searchBar;
 @property (nonatomic) ConversationSearchViewController *searchResultsController;
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
@@ -272,8 +272,33 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     OWSAssertDebug(self.tableView);
     OWSAssertDebug(self.searchBar);
 
-    self.view.backgroundColor = Theme.backgroundColor;
-    self.tableView.backgroundColor = Theme.backgroundColor;
+    if (self.splitViewController.isCollapsed) {
+        self.view.backgroundColor = Theme.backgroundColor;
+        self.tableView.backgroundColor = Theme.backgroundColor;
+        [self.searchBar switchToStyle:OWSSearchBarStyle_Default];
+    } else {
+        self.view.backgroundColor = Theme.secondaryBackgroundColor;
+        self.tableView.backgroundColor = Theme.secondaryBackgroundColor;
+        [self.searchBar switchToStyle:OWSSearchBarStyle_SecondaryBar];
+    }
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size
+       withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
+    if (!self.isViewLoaded) {
+        return;
+    }
+
+    [self.tableView reloadData];
+
+    [coordinator
+        animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+            [self applyTheme];
+        }
+                        completion:nil];
 }
 
 #pragma mark - View Life Cycle
@@ -646,19 +671,18 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     // Search
 
-    UISearchBar *searchBar = [OWSSearchBar new];
-    _searchBar = searchBar;
-    searchBar.placeholder = NSLocalizedString(@"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER",
+    _searchBar = [OWSSearchBar new];
+    self.searchBar.placeholder = NSLocalizedString(@"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER",
         @"Placeholder text for search bar which filters conversations.");
-    searchBar.delegate = self;
-    searchBar.textField.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"conversation_search");
-    [searchBar sizeToFit];
+    self.searchBar.delegate = self;
+    self.searchBar.textField.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"conversation_search");
+    [self.searchBar sizeToFit];
 
     // Setting tableHeader calls numberOfSections, which must happen after updateMappings has been called at least once.
     OWSAssertDebug(self.tableView.tableHeaderView == nil);
     self.tableView.tableHeaderView = self.searchBar;
     // Hide search bar by default.  User can pull down to search.
-    self.tableView.contentOffset = CGPointMake(0, CGRectGetHeight(searchBar.frame));
+    self.tableView.contentOffset = CGPointMake(0, CGRectGetHeight(self.searchBar.frame));
 
     ConversationSearchViewController *searchResultsController = [ConversationSearchViewController new];
     searchResultsController.delegate = self;
@@ -720,6 +744,13 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         [self.tableView reloadData];
         self.hasThemeChanged = NO;
     }
+
+    // Whether or not the theme has changed, always ensure
+    // the right theme is applied. The initial collapsed
+    // state of the split view controller is determined between
+    // `viewWillAppear` and `viewDidAppear`, so this is the soonest
+    // we can know the right thing to display.
+    [self applyTheme];
 
     [self requestReviewIfAppropriate];
 
@@ -1215,22 +1246,37 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     ConversationListViewControllerSection section = (ConversationListViewControllerSection)indexPath.section;
+
+    UITableViewCell *_Nullable cell;
+
     switch (section) {
         case ConversationListViewControllerSectionReminders: {
             OWSAssert(self.reminderStackView);
-
-            return self.reminderViewCell;
+            cell = self.reminderViewCell;
+            break;
         }
         case ConversationListViewControllerSectionConversations: {
-            return [self tableView:tableView cellForConversationAtIndexPath:indexPath];
+            cell = [self tableView:tableView cellForConversationAtIndexPath:indexPath];
+            break;
         }
         case ConversationListViewControllerSectionArchiveButton: {
-            return [self cellForArchivedConversationsRow:tableView];
+            cell = [self cellForArchivedConversationsRow:tableView];
+            break;
         }
     }
 
-    OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)section);
-    return [UITableViewCell new];
+    if (!cell) {
+        OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)section);
+        cell = [UITableViewCell new];
+    }
+
+    if (!self.splitViewController.isCollapsed) {
+        cell.selectedBackgroundView.backgroundColor
+            = Theme.isDarkThemeEnabled ? UIColor.ows_gray65Color : UIColor.ows_gray15Color;
+        cell.contentView.backgroundColor = Theme.secondaryBackgroundColor;
+    }
+
+    return cell;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForConversationAtIndexPath:(NSIndexPath *)indexPath

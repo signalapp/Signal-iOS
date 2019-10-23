@@ -106,7 +106,6 @@ typedef enum : NSUInteger {
     ContactShareApprovalViewControllerDelegate,
     AVAudioPlayerDelegate,
     CNContactViewControllerDelegate,
-    ContactEditingDelegate,
     ContactsPickerDelegate,
     ContactShareViewHelperDelegate,
     ContactsViewHelperDelegate,
@@ -575,7 +574,7 @@ typedef enum : NSUInteger {
     OWSAssertDebug(self.conversationStyle);
 
     _layout = [[ConversationViewLayout alloc] initWithConversationStyle:self.conversationStyle];
-    self.conversationStyle.viewWidth = self.view.width;
+    self.conversationStyle.viewWidth = floor(self.view.width);
 
     self.layout.delegate = self;
     // We use the root view bounds as the initial frame for the collection
@@ -1403,14 +1402,9 @@ typedef enum : NSUInteger {
 
 - (void)updateLeftBarItem
 {
-    // Show the close button if the split view is not collapsed.
+    // No left button when the view is not collapsed, there's nowhere to go.
     if (!self.conversationSplitViewController.isCollapsed) {
-        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
-            initWithTitle:NSLocalizedString(
-                              @"CLOSE_BUTTON", @"A string indicating that the user can close the current conversation")
-                    style:UIBarButtonItemStyleDone
-                   target:self
-                   action:@selector(closeButtonPressed)];
+        self.navigationItem.leftBarButtonItem = nil;
         return;
     }
 
@@ -1461,11 +1455,6 @@ typedef enum : NSUInteger {
     }
 
     self.navigationItem.leftBarButtonItem = backItem;
-}
-
-- (void)closeButtonPressed
-{
-    [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
 }
 
 - (void)windowManagerCallDidChange:(NSNotification *)notification
@@ -2360,9 +2349,17 @@ typedef enum : NSUInteger {
         return;
     }
     TSContactThread *contactThread = (TSContactThread *)self.thread;
-    [self.contactsViewHelper presentContactViewControllerForAddress:contactThread.contactAddress
-                                                 fromViewController:self
-                                                    editImmediately:YES];
+    CNContactViewController *_Nullable contactVC =
+        [self.contactsViewHelper contactViewControllerForAddress:contactThread.contactAddress editImmediately:YES];
+
+    if (!contactVC) {
+        OWSFailDebug(@"Unexpected missing contact VC");
+        return;
+    }
+
+    contactVC.delegate = self;
+
+    [self.navigationController pushViewController:contactVC animated:YES];
 
     // Delete the offers.
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
@@ -2705,30 +2702,12 @@ typedef enum : NSUInteger {
     [ViewOnceMessageViewController tryToPresentWithInteraction:viewItem.interaction from:self];
 }
 
-#pragma mark - ContactEditingDelegate
-
-- (void)didFinishEditingContact
-{
-    OWSLogDebug(@"");
-
-    [self dismissViewControllerAnimated:NO completion:nil];
-}
-
 #pragma mark - CNContactViewControllerDelegate
 
 - (void)contactViewController:(CNContactViewController *)viewController
        didCompleteWithContact:(nullable CNContact *)contact
 {
-    if (contact) {
-        // Saving normally returns you to the "Show Contact" view
-        // which we're not interested in, so we skip it here. There is
-        // an unfortunate blip of the "Show Contact" view on slower devices.
-        OWSLogDebug(@"completed editing contact.");
-        [self dismissViewControllerAnimated:NO completion:nil];
-    } else {
-        OWSLogDebug(@"canceled editing contact.");
-        [self dismissViewControllerAnimated:YES completion:nil];
-    }
+    [self.navigationController popToViewController:self animated:YES];
 }
 
 #pragma mark - ContactsViewHelperDelegate
@@ -2878,7 +2857,7 @@ typedef enum : NSUInteger {
     GifPickerNavigationViewController *gifModal = [GifPickerNavigationViewController new];
     gifModal.approvalDelegate = self;
     [self dismissKeyBoard];
-    [self presentFormSheetViewController:gifModal animated:YES completion:nil];
+    [self presentViewController:gifModal animated:YES completion:nil];
 }
 
 - (void)messageWasSent:(TSOutgoingMessage *)message
@@ -5032,7 +5011,7 @@ typedef enum : NSUInteger {
 {
     self.scrollContinuity = kScrollContinuityBottom;
 
-    self.conversationStyle.viewWidth = self.collectionView.width;
+    self.conversationStyle.viewWidth = floor(self.collectionView.width);
     // Evacuate cached cell sizes.
     for (id<ConversationViewItem> viewItem in self.viewItems) {
         [viewItem clearCachedLayoutState];

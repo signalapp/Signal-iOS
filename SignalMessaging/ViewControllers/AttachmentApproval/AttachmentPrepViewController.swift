@@ -438,7 +438,7 @@ extension AttachmentPrepViewController: ImageEditorViewDelegate {
         navigationController.ows_prefersStatusBarHidden = true
 
         if let navigationBar = navigationController.navigationBar as? OWSNavigationBar {
-            navigationBar.overrideTheme(type: .clear)
+            navigationBar.switchToStyle(.clear)
         } else {
             owsFailDebug("navigationBar was nil or unexpected class")
         }
