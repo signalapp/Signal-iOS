@@ -35,7 +35,7 @@ extension ForwardMessageNavigationController {
 
             let approvalView = TextApprovalViewController(messageText: body)
             approvalView.delegate = self
-            self.pushViewController(approvalView, animated: true)
+            pushViewController(approvalView, animated: true)
         case .contactShare:
             guard let oldContactShare = conversationViewItem.contactShare else {
                 throw OWSAssertionError("Missing contactShareViewModel.")
@@ -43,14 +43,67 @@ extension ForwardMessageNavigationController {
             let newContactShare = oldContactShare.copyForResending()
             let approvalView = ContactShareApprovalViewController(contactShare: newContactShare)
             approvalView.delegate = self
-            self.pushViewController(approvalView, animated: true)
+            pushViewController(approvalView, animated: true)
         case .audio,
              .genericAttachment,
              .stickerMessage:
             // Skip approval for these message types.
             send()
         case .mediaMessage:
-            throw OWSAssertionError("Invalid message type.")
+//            fileprivate func pushApprovalViewController(
+//                attachmentApprovalItems: [AttachmentApprovalItem],
+//                options: AttachmentApprovalViewControllerOptions = .canAddMore,
+//                animated: Bool
+//                ) {
+//                guard let sendMediaNavDelegate = self.sendMediaNavDelegate else {
+//                    owsFailDebug("sendMediaNavDelegate was unexpectedly nil")
+//                    return
+//                }
+
+//            public static let canAddMore = AttachmentApprovalViewControllerOptions(rawValue: 1 << 0)
+//            public static let hasCancel = AttachmentApprovalViewControllerOptions(rawValue: 1 << 1)
+//            public static let canToggleViewOnce = AttachmentApprovalViewControllerOptions(rawValue: 1 << 2)
+            let options: AttachmentApprovalViewControllerOptions = .hasCancel
+            let sendButtonImageName = "send-solid-24"
+
+            var attachmentApprovalItems = [AttachmentApprovalItem]()
+            guard let mediaAlbumItems = conversationViewItem.mediaAlbumItems else {
+                throw OWSAssertionError("Missing mediaAlbumItems.")
+            }
+            for mediaAlbumItem in mediaAlbumItems {
+                guard let attachmentStream = mediaAlbumItem.attachmentStream else {
+                    continue
+                }
+                let signalAttachment = try attachmentStream.asSignalAttachmentForSending()
+//                @interface ConversationMediaAlbumItem : NSObject
+//
+//                @property (nonatomic, readonly) TSAttachment *attachment;
+//
+//                // This property will only be set if the attachment is downloaded.
+//                @property (nonatomic, readonly, nullable) TSAttachmentStream *attachmentStream;
+//
+//                // This property will be non-zero if the attachment is valid.
+//                @property (nonatomic, readonly) CGSize mediaSize;
+//
+//                @property (nonatomic, readonly, nullable) NSString *caption;
+//
+//                @property (nonatomic, readonly) BOOL isFailedDownload;
+
+//            for attachment in attachments {
+                let attachmentApprovalItem = AttachmentApprovalItem(attachment: signalAttachment, canSave: false)
+                attachmentApprovalItems.append(attachmentApprovalItem)
+//                let cameraCaptureAttachment = CameraCaptureAttachment(signalAttachment: attachment, canSave: false)
+//                navController.attachmentDraftCollection.append(.camera(attachment: cameraCaptureAttachment))
+//                attachmentApprovalItems.append(cameraCaptureAttachment.attachmentApprovalItem)
+            }
+            //        let approvalItem = Attachmen
+            let approvalViewController = AttachmentApprovalViewController(options: options,
+                                                                          sendButtonImageName: sendButtonImageName,
+                                                                          attachmentApprovalItems: attachmentApprovalItems)
+            approvalViewController.approvalDelegate = self
+            approvalViewController.messageText = approvalMessageText
+
+            pushViewController(approvalViewController, animated: true)
         case .unknown,
              .oversizeTextDownloading,
              .viewOnce:
@@ -107,29 +160,21 @@ extension ForwardMessageNavigationController {
             }
 
             send { (thread, transaction) in
-                guard let sourceUrl = attachmentStream.originalMediaURL else {
-                    throw OWSAssertionError("Missing originalMediaURL.")
-                }
-                guard let dataUTI = MIMETypeUtil.utiType(forMIMEType: attachmentStream.contentType) else {
-                    throw OWSAssertionError("Missing dataUTI.")
-                }
-                let newUrl = OWSFileSystem.temporaryFileUrl(fileExtension: sourceUrl.pathExtension)
-                try FileManager.default.copyItem(at: sourceUrl, to: newUrl)
-
-                let clonedDataSource = try DataSourcePath.dataSource(with: newUrl,
-                                                                     shouldDeleteOnDeallocation: true)
-                clonedDataSource.sourceFilename = attachmentStream.sourceFilename
-
-                var attachment: SignalAttachment
-                if attachmentStream.isVoiceMessage {
-                    attachment = SignalAttachment.voiceMessageAttachment(dataSource: clonedDataSource, dataUTI: dataUTI)
-                } else {
-                    attachment = SignalAttachment.attachment(dataSource: clonedDataSource, dataUTI: dataUTI, imageQuality: .original)
-                }
+                let attachment = try attachmentStream.asSignalAttachmentForSending()
                 self.send(body: "", attachment: attachment, thread: thread, transaction: transaction)
             }
         case .mediaMessage:
-            throw OWSAssertionError("Invalid message type.")
+            guard let approvedAttachments = approvedAttachments else {
+                throw OWSAssertionError("Missing approvedAttachments.")
+            }
+
+            let conversations = selectedConversationsForConversationPicker
+            SendMediaNavigationController.sendApprovedMedia(conversations: conversations,
+                                                            approvalMessageText: self.approvalMessageText,
+                                                            approvedAttachments: approvedAttachments)
+                .done { threads in
+                    self.forwardMessageDelegate?.forwardMessageFlowDidComplete(threads: threads)
+                }.retainUntilComplete()
         case .unknown,
              .oversizeTextDownloading,
              .viewOnce:
@@ -209,10 +254,6 @@ class ForwardMessageNavigationController: OWSNavigationController {
 
     var databaseStorage: SDSDatabaseStorage {
         return SSKEnvironment.shared.databaseStorage
-    }
-
-    var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue {
-        return AppEnvironment.shared.broadcastMediaMessageJobQueue
     }
 
     var messageSenderJobQueue: MessageSenderJobQueue {
@@ -308,5 +349,184 @@ extension ForwardMessageNavigationController: ContactShareApprovalViewController
     func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
                              didCancelContactShare contactShare: ContactShareViewModel) {
         forwardMessageDelegate?.forwardMessageFlowDidCancel()
+    }
+}
+
+// MARK: -
+
+extension ForwardMessageNavigationController: AttachmentApprovalViewControllerDelegate {
+
+    func attachmentApprovalDidAppear(_ attachmentApproval: AttachmentApprovalViewController) {
+        // TODO:
+//        updateViewState(topViewController: attachmentApproval)
+    }
+
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageText newMessageText: String?) {
+        self.approvalMessageText = newMessageText
+//        sendMediaNavDelegate?.sendMediaNav(self, didChangeMessageText: newMessageText)
+    }
+
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {
+//        guard let removedDraft = attachmentDraftCollection.attachmentDraft(forAttachment: attachment) else {
+//            owsFailDebug("removedDraft was unexpectedly nil")
+//            return
+//        }
+//
+//        attachmentDraftCollection.remove(removedDraft)
+    }
+
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
+        self.approvedAttachments = attachments
+        self.approvalMessageText = messageText
+
+        send()
+    }
+
+    func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController) {
+        forwardMessageDelegate?.forwardMessageFlowDidCancel()
+    }
+
+    func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController) {
+        owsFailDebug("Cannot add more to message forwards.")
+    }
+
+    var attachmentApprovalTextInputContextIdentifier: String? {
+        return nil
+    }
+}
+
+//extension ForwardMediaNavigationController: SendMediaNavDelegate {
+//    func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
+//                             didApproveContactShare contactShare: ContactShareViewModel) {
+//        approvedContactShare = contactShare
+//
+//        send()
+//    }
+//
+//    func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
+//                             didCancelContactShare contactShare: ContactShareViewModel) {
+//        forwardMessageDelegate?.forwardMessageFlowDidCancel()
+//    }
+//}
+
+//@objc
+//public protocol CameraFirstCaptureDelegate: AnyObject {
+//    func cameraFirstCaptureSendFlowDidComplete(_ cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow)
+//    func cameraFirstCaptureSendFlowDidCancel(_ cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow)
+//}
+
+//@objc
+//public class ForwardMediaSendFlow: NSObject {
+//    @objc
+//    public weak var delegate: ForwardMessageDelegate?
+//
+//    var approvedAttachments: [SignalAttachment]?
+//    var approvalMessageText: String?
+//
+//    var selectedConversations: [ConversationItem] = []
+//
+//    // MARK: Dependencies
+//
+//    var databaseStorage: SDSDatabaseStorage {
+//        return SSKEnvironment.shared.databaseStorage
+//    }
+//}
+////func forwardMessageFlowDidComplete(threads: [TSThread])
+////func forwardMessageFlowDidCancel()
+//
+//extension ForwardMediaSendFlow: SendMediaNavDelegate {
+//    func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController) {
+//        delegate?.forwardMessageFlowDidCancel()
+//    }
+//    
+//    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
+//        self.approvedAttachments = attachments
+//        self.approvalMessageText = messageText
+//        
+//        let pickerVC = ConversationPickerViewController()
+//        pickerVC.delegate = self
+//        sendMediaNavigationController.pushViewController(pickerVC, animated: true)
+//    }
+//    
+//    func sendMediaNavInitialMessageText(_ sendMediaNavigationController: SendMediaNavigationController) -> String? {
+//        return approvalMessageText
+//    }
+//    
+//    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageText newMessageText: String?) {
+//        self.approvalMessageText = newMessageText
+//    }
+//    
+//    var sendMediaNavApprovalButtonImageName: String {
+//        return "arrow-right-24"
+//    }
+//    
+//    var sendMediaNavCanSaveAttachments: Bool {
+//        return true
+//    }
+//    
+//    var sendMediaNavTextInputContextIdentifier: String? {
+//        return nil
+//    }
+//}
+//
+//extension ForwardMediaSendFlow: ConversationPickerDelegate {
+//    var selectedConversationsForConversationPicker: [ConversationItem] {
+//        return selectedConversations
+//    }
+//    
+//    func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
+//                            didSelectConversation conversation: ConversationItem) {
+//        self.selectedConversations.append(conversation)
+//    }
+//    
+//    func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
+//                            didDeselectConversation conversation: ConversationItem) {
+//        self.selectedConversations = self.selectedConversations.filter {
+//            $0.messageRecipient != conversation.messageRecipient
+//        }
+//    }
+//    
+//    func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {
+//        guard let approvedAttachments = self.approvedAttachments else {
+//            owsFailDebug("approvedAttachments was unexpectedly nil")
+//            delegate?.forwardMessageFlowDidCancel()
+//            return
+//        }
+//        
+//        let conversations = selectedConversationsForConversationPicker
+//        SendMediaNavigationController.sendApprovedMedia(conversations: conversations,
+//                                                        approvalMessageText: self.approvalMessageText,
+//                                                        approvedAttachments: approvedAttachments)
+//            .done { threads in
+//                self.delegate?.forwardMessageFlowDidComplete(threads: threads)
+//            }.retainUntilComplete()
+//    }
+//}
+
+// MARK: -
+
+extension TSAttachmentStream {
+    func asSignalAttachmentForSending() throws -> SignalAttachment {
+        guard let sourceUrl = originalMediaURL else {
+            throw OWSAssertionError("Missing originalMediaURL.")
+        }
+        guard let dataUTI = MIMETypeUtil.utiType(forMIMEType: contentType) else {
+            throw OWSAssertionError("Missing dataUTI.")
+        }
+        let newUrl = OWSFileSystem.temporaryFileUrl(fileExtension: sourceUrl.pathExtension)
+        try FileManager.default.copyItem(at: sourceUrl, to: newUrl)
+
+        let clonedDataSource = try DataSourcePath.dataSource(with: newUrl,
+                                                             shouldDeleteOnDeallocation: true)
+        clonedDataSource.sourceFilename = sourceFilename
+
+        var signalAttachment: SignalAttachment
+        if isVoiceMessage {
+            signalAttachment = SignalAttachment.voiceMessageAttachment(dataSource: clonedDataSource, dataUTI: dataUTI)
+        } else {
+            signalAttachment = SignalAttachment.attachment(dataSource: clonedDataSource, dataUTI: dataUTI, imageQuality: .original)
+        }
+        signalAttachment.captionText = caption
+        return signalAttachment
     }
 }

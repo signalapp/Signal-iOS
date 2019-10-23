@@ -2052,11 +2052,18 @@ typedef enum : NSUInteger {
 {
     OWSAssertDebug(conversationViewItem);
 
+    //    if (conversationViewItem.messageCellType == OWSMessageCellType_MediaMessage) {
     ForwardMessageNavigationController *modal =
         [[ForwardMessageNavigationController alloc] initWithConversationViewItem:conversationViewItem];
     modal.forwardMessageDelegate = self;
-
     [self presentFullScreenViewController:modal animated:YES completion:nil];
+    //    } else {
+    //        NSMutableArray<SignalAttachment *> *attachments = [NSMutableArray new];
+    //        ForwardMediaNavigationController *modal = [ForwardMediaNavigationController
+    //        forwardMediaModalWithAttachments:<#(NSArray<SignalAttachment *> * _Nonnull)#>];
+    //        modal.forwardMediaSendFlow.delegate = self;
+    //        [self presentFullScreenViewController:modal animated:YES completion:nil];
+    //    }
 }
 
 #pragma mark - MessageDetailViewDelegate

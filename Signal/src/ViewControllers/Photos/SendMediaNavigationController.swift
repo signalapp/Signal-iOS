@@ -18,6 +18,8 @@ protocol SendMediaNavDelegate: AnyObject {
     var sendMediaNavTextInputContextIdentifier: String? { get }
 }
 
+// MARK: -
+
 @objc
 class SendMediaNavigationController: OWSNavigationController {
 
@@ -289,7 +291,7 @@ class SendMediaNavigationController: OWSNavigationController {
 
     // MARK: State
 
-    private var attachmentDraftCollection: AttachmentDraftCollection = .empty
+    fileprivate var attachmentDraftCollection: AttachmentDraftCollection = .empty
 
     private var attachmentApprovalItemPromises: [Promise<AttachmentApprovalItem>] {
         return attachmentDraftCollection.attachmentApprovalItemPromises
@@ -311,7 +313,7 @@ class SendMediaNavigationController: OWSNavigationController {
         return vc
     }()
 
-    private func pushApprovalViewController(
+    fileprivate func pushApprovalViewController(
         attachmentApprovalItems: [AttachmentApprovalItem],
         options: AttachmentApprovalViewControllerOptions = .canAddMore,
         animated: Bool
@@ -586,6 +588,7 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
 private enum AttachmentDraft {
     case camera(attachment: CameraCaptureAttachment)
     case picker(attachment: MediaLibraryAttachment)
+//    case forward(attachment: MediaForwardAttachment)
 }
 
 private extension AttachmentDraft {
@@ -707,6 +710,26 @@ private struct MediaLibraryAttachment: Hashable, Equatable {
         return lhs.asset == rhs.asset
     }
 }
+
+//private struct MediaForwardAttachment: Hashable, Equatable {
+//    let signalAttachment: SignalAttachment
+//    let attachmentApprovalItem: AttachmentApprovalItem
+//    let attachmentApprovalItemPromise: Promise<AttachmentApprovalItem>
+//
+//    init(signalAttachment: SignalAttachment, canSave: Bool) {
+//        self.signalAttachment = signalAttachment
+//        self.attachmentApprovalItem = AttachmentApprovalItem(attachment: signalAttachment, canSave: canSave)
+//        self.attachmentApprovalItemPromise = Promise.value(attachmentApprovalItem)
+//    }
+//
+//    func hash(into hasher: inout Hasher) {
+//        hasher.combine(signalAttachment)
+//    }
+//
+//    static func ==(lhs: MediaForwardAttachment, rhs: MediaForwardAttachment) -> Bool {
+//        return lhs.signalAttachment == rhs.signalAttachment
+//    }
+//}
 
 extension SendMediaNavigationController: DoneButtonDelegate {
     var doneButtonCount: Int {
@@ -830,3 +853,51 @@ class CaptureFirstCaptureNavigationController: SendMediaNavigationController {
         return navController
     }
 }
+
+// MARK: -
+
+//@objc
+//class ForwardMediaNavigationController: SendMediaNavigationController {
+////    delegate: SendMediaNavDelegate
+////    @objc
+////    private(set) var cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow!
+//    @objc
+//    public let forwardMediaSendFlow = ForwardMediaSendFlow()
+//
+//    @objc
+//    public class func forwardMediaModal(attachments: [SignalAttachment]) -> ForwardMediaNavigationController {
+//        let navController = ForwardMediaNavigationController()
+//
+//        navController.sendMediaNavDelegate = navController.forwardMediaSendFlow
+//
+//        var attachmentApprovalItems = [AttachmentApprovalItem]()
+//        for attachment in attachments {
+//            let cameraCaptureAttachment = CameraCaptureAttachment(signalAttachment: attachment, canSave: false)
+//            navController.attachmentDraftCollection.append(.camera(attachment: cameraCaptureAttachment))
+//            attachmentApprovalItems.append(cameraCaptureAttachment.attachmentApprovalItem)
+//        }
+////        let approvalItem = AttachmentApprovalItem(attachment: attachment, canSave: false)
+////        let libraryMedia = MediaLibraryAttachment(asset: asset,
+////                                                  attachmentApprovalItemPromise: .value(approvalItem))
+////        navController.attachmentDraftCollection.append(.picker(attachment: libraryMedia))
+//
+////        navController.setViewControllers([navController.mediaLibraryViewController], animated: false)
+//
+//        // Since we're starting on the approval view, include cancel to allow the user to immediately dismiss.
+//        // If they choose to add more, `hasCancel` will go away and they'll enter the normal gallery flow.
+//        navController.pushApprovalViewController(
+//            attachmentApprovalItems: attachmentApprovalItems,
+//            options: [.canAddMore, .hasCancel],
+//            animated: false
+//        )
+//
+//
+////        navController.setViewControllers([navController.captureViewController], animated: false)
+//
+////        let cameraFirstCaptureSendFlow = CameraFirstCaptureSendFlow()
+////        navController.cameraFirstCaptureSendFlow = cameraFirstCaptureSendFlow
+////        navController.sendMediaNavDelegate = cameraFirstCaptureSendFlow
+//
+//        return navController
+//    }
+//}
