@@ -12,6 +12,8 @@ public protocol ContactShareApprovalViewControllerDelegate: class {
     func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
                              didCancelContactShare contactShare: ContactShareViewModel)
 
+    func contactApprovalCustomTitle(_ contactApproval: ContactShareApprovalViewController) -> String?
+
     func contactApprovalRecipientsDescription(_ contactApproval: ContactShareApprovalViewController) -> String?
 
     func contactApprovalMode(_ contactApproval: ContactShareApprovalViewController) -> ApprovalMode
@@ -340,7 +342,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
     override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        updateUI()
+        updateControls()
     }
 
     override public func viewDidAppear(_ animated: Bool) {
@@ -358,8 +360,12 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
     override public func loadView() {
         super.loadView()
 
-        self.navigationItem.title = NSLocalizedString("CONTACT_SHARE_APPROVAL_VIEW_TITLE",
-                                                      comment: "Title for the 'Approve contact share' view.")
+        if let title = delegate?.contactApprovalCustomTitle(self) {
+            self.navigationItem.title = title
+        } else {
+            self.navigationItem.title = NSLocalizedString("CONTACT_SHARE_APPROVAL_VIEW_TITLE",
+                                                          comment: "Title for the 'Approve contact share' view.")
+        }
 
         self.view.backgroundColor = Theme.backgroundColor
 
@@ -367,7 +373,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
 
         updateContent()
 
-        updateUI()
+        updateControls()
     }
 
     func isAtLeastOneFieldSelected() -> Bool {
@@ -379,7 +385,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         return false
     }
 
-    func updateUI() {
+    func updateControls() {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
                                                                 target: self,
                                                                 action: #selector(didPressCancel))
@@ -549,13 +555,13 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
 
         nameLabel.text = contactShare.name.displayName
 
-        updateUI()
+        updateControls()
     }
 
     // MARK: - ContactShareFieldViewDelegate
 
     public func contactShareFieldViewDidChangeSelectedState() {
-        updateUI()
+        updateControls()
     }
 }
 

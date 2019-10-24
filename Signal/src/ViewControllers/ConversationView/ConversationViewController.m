@@ -4669,12 +4669,17 @@ typedef enum : NSUInteger {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (nullable NSString *)contactApprovalCustomTitle:(ContactShareApprovalViewController *)contactApproval
+{
+    return nil;
+}
+
 - (nullable NSString *)contactApprovalRecipientsDescription:(ContactShareApprovalViewController *)contactApproval
 {
     OWSLogInfo(@"");
 
     __block NSString *result;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         result = [self.contactsManager displayNameForThread:self.thread transaction:transaction];
     }];
     return result;

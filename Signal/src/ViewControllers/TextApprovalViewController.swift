@@ -10,6 +10,8 @@ public protocol TextApprovalViewControllerDelegate: class {
 
     func textApprovalDidCancel(_ textApproval: TextApprovalViewController)
 
+    func textApprovalCustomTitle(_ textApproval: TextApprovalViewController) -> String?
+
     func textApprovalRecipientsDescription(_ textApproval: TextApprovalViewController) -> String?
 
     func textApprovalMode(_ textApproval: TextApprovalViewController) -> ApprovalMode
@@ -75,8 +77,12 @@ public class TextApprovalViewController: OWSViewController, UITextViewDelegate {
     override public func viewDidLoad() {
         super.viewDidLoad()
 
-        self.navigationItem.title = NSLocalizedString("MESSAGE_APPROVAL_DIALOG_TITLE",
-                                                      comment: "Title for the 'message approval' dialog.")
+        if let title = delegate?.textApprovalCustomTitle(self) {
+            self.navigationItem.title = title
+        } else {
+            self.navigationItem.title = NSLocalizedString("MESSAGE_APPROVAL_DIALOG_TITLE",
+                                                          comment: "Title for the 'message approval' dialog.")
+        }
 
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelPressed))
 
