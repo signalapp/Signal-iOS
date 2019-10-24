@@ -359,6 +359,10 @@ extension ForwardMessageNavigationController: TextApprovalViewControllerDelegate
         forwardMessageDelegate?.forwardMessageFlowDidCancel()
     }
 
+    func textApprovalCustomTitle(_ textApproval: TextApprovalViewController) -> String? {
+        return NSLocalizedString("FORWARD_MESSAGE", comment: "Label and title for 'message forwarding' views.")
+    }
+
     func textApprovalRecipientsDescription(_ textApproval: TextApprovalViewController) -> String? {
         let conversations = selectedConversationsForConversationPicker
         guard conversations.count > 0 else {
@@ -385,6 +389,10 @@ extension ForwardMessageNavigationController: ContactShareApprovalViewController
     func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
                              didCancelContactShare contactShare: ContactShareViewModel) {
         forwardMessageDelegate?.forwardMessageFlowDidCancel()
+    }
+
+    func contactApprovalCustomTitle(_ contactApproval: ContactShareApprovalViewController) -> String? {
+        return NSLocalizedString("FORWARD_CONTACT", comment: "Label and title for 'contact forwarding' views.")
     }
 
     func contactApprovalRecipientsDescription(_ contactApproval: ContactShareApprovalViewController) -> String? {
