@@ -75,6 +75,7 @@ public extension LokiAPI {
                 })
                 return randomSnodePool.randomElement()!
             }.recover { error -> Promise<LokiAPITarget> in
+                print("[Loki] Failed to contact seed node at: \(target).")
                 Analytics.shared.track("Seed Node Failed")
                 throw error
             }.retryingIfNeeded(maxRetryCount: 16) // The seed nodes have historically been unreliable
