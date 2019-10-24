@@ -175,9 +175,9 @@ extension StorageServiceProtoContactRecord {
         // If our local blocked state differs from the service state, use the service's value.
         if hasBlocked, blocked != localIsBlocked {
             if blocked {
-                blockingManager.addBlockedAddress(address, transaction: transaction)
+                blockingManager.addBlockedAddress(address, wasLocallyInitiated: false, transaction: transaction)
             } else {
-                blockingManager.removeBlockedAddress(address, transaction: transaction)
+                blockingManager.removeBlockedAddress(address, wasLocallyInitiated: false, transaction: transaction)
             }
 
         // If the service is missing a blocked state, mark it as needing update.

@@ -43,8 +43,8 @@ extern uint32_t const OWSDevicePrimaryDeviceId;
                        createdAt:(NSDate *)createdAt
                         deviceId:(NSInteger)deviceId
                       lastSeenAt:(NSDate *)lastSeenAt
-                            name:(nullable NSString *)name NS_SWIFT_NAME(init(uniqueId:createdAt:deviceId:lastSeenAt:
-                                     name:));
+                            name:(nullable NSString *)name
+NS_SWIFT_NAME(init(uniqueId:createdAt:deviceId:lastSeenAt:name:));
 
 // --- CODE GENERATION MARKER
 

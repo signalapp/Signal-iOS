@@ -86,7 +86,7 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
                                  transaction:(SDSAnyReadTransaction *)transaction;
 - (NSString *)comparableNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
-- (nullable UIImage *)systemContactImageForAddress:(nullable SignalServiceAddress *)address;
+- (nullable UIImage *)systemContactOrSyncedImageForAddress:(nullable SignalServiceAddress *)address;
 - (nullable UIImage *)profileImageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
 - (nullable NSData *)profileImageDataForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
 - (nullable UIImage *)imageForAddress:(nullable SignalServiceAddress *)address

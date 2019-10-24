@@ -7,7 +7,9 @@ NS_ASSUME_NONNULL_BEGIN
 @class AnyPromise;
 @class SDSAnyWriteTransaction;
 @class SSKProtoSyncMessageConfiguration;
+@class SSKProtoSyncMessageContacts;
 @class SSKProtoSyncMessageFetchLatest;
+@class SSKProtoSyncMessageGroups;
 @class SignalAccount;
 
 @protocol OWSSyncManagerProtocol <NSObject>
@@ -25,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)syncGroupsWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)processIncomingConfigurationSyncMessage:(SSKProtoSyncMessageConfiguration *)syncMessage transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)processIncomingContactsSyncMessage:(SSKProtoSyncMessageContacts *)syncMessage transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)processIncomingGroupsSyncMessage:(SSKProtoSyncMessageGroups *)syncMessage transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)sendFetchLatestProfileSyncMessage;
 - (void)sendFetchLatestStorageManifestSyncMessage;

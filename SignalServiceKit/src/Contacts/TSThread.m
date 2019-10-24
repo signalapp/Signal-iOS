@@ -43,7 +43,6 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 @interface TSThread ()
 
 @property (nonatomic, nullable) NSDate *creationDate;
-@property (nonatomic) NSString *conversationColorName;
 @property (nonatomic) BOOL isArchived;
 @property (nonatomic, copy, nullable) NSString *messageDraft;
 @property (atomic, nullable) NSDate *mutedUntilDate;

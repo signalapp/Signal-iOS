@@ -76,7 +76,7 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
  */
 - (BOOL)isGroupThread;
 
-@property (nonatomic, readonly) ConversationColorName conversationColorName;
+@property (nonatomic) ConversationColorName conversationColorName;
 
 - (void)updateConversationColorName:(ConversationColorName)colorName transaction:(SDSAnyWriteTransaction *)transaction;
 + (ConversationColorName)stableColorNameForNewConversationWithString:(NSString *)colorSeed;

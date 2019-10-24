@@ -1026,7 +1026,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogInfo(@"Received request for block list");
             [self.blockingManager syncBlockList];
         } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeConfiguration) {
-            [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
+            [self.syncManager sendConfigurationSyncMessage];
 
             // We send _two_ responses to the "configuration request".
             [StickerManager syncAllInstalledPacksWithTransaction:transaction];
@@ -1035,7 +1035,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else if (syncMessage.blocked) {
         OWSLogInfo(@"Received blocked sync message.");
-        [self.blockingManager processIncomingBlockedSyncMessage:syncMessage.blocked transaction:transaction];
+        [self handleSyncedBlockList:syncMessage.blocked transaction:transaction];
     } else if (syncMessage.read.count > 0) {
         OWSLogInfo(@"Received %lu read receipt(s)", (unsigned long)syncMessage.read.count);
         [OWSReadReceiptManager.sharedManager processReadReceiptsFromLinkedDevice:syncMessage.read
@@ -1043,7 +1043,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      transaction:transaction];
     } else if (syncMessage.verified) {
         OWSLogInfo(@"Received verification state for %@", syncMessage.verified.destinationAddress);
-        [self.identityManager throws_processIncomingSyncMessage:syncMessage.verified transaction:transaction];
+        [self.identityManager throws_processIncomingVerifiedProto:syncMessage.verified transaction:transaction];
+        [self.identityManager fireIdentityStateChangeNotificationAfterTransaction:transaction];
     } else if (syncMessage.stickerPackOperation.count > 0) {
         OWSLogInfo(@"Received sticker pack operation(s): %d", (int)syncMessage.stickerPackOperation.count);
         for (SSKProtoSyncMessageStickerPackOperation *packOperationProto in syncMessage.stickerPackOperation) {
@@ -1056,13 +1057,33 @@ NS_ASSUME_NONNULL_BEGIN
                                          transaction:transaction];
     } else if (syncMessage.configuration) {
         OWSLogInfo(@"Received configuration sync message.");
-        [SSKEnvironment.shared.syncManager processIncomingConfigurationSyncMessage:syncMessage.configuration transaction:transaction];
+        [self.syncManager processIncomingConfigurationSyncMessage:syncMessage.configuration transaction:transaction];
+    } else if (syncMessage.contacts) {
+        [self.syncManager processIncomingContactsSyncMessage:syncMessage.contacts transaction:transaction];
+    } else if (syncMessage.groups) {
+        [self.syncManager processIncomingGroupsSyncMessage:syncMessage.groups transaction:transaction];
     } else if (syncMessage.fetchLatest) {
-        [SSKEnvironment.shared.syncManager processIncomingFetchLatestSyncMessage:syncMessage.fetchLatest
-                                                                     transaction:transaction];
+        [self.syncManager processIncomingFetchLatestSyncMessage:syncMessage.fetchLatest transaction:transaction];
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
     }
+}
+
+- (void)handleSyncedBlockList:(SSKProtoSyncMessageBlocked *)blocked transaction:(SDSAnyWriteTransaction *)transaction
+{
+    NSMutableSet<NSUUID *> *blockedUUIDs = [NSMutableSet new];
+    for (NSString *uuidString in blocked.uuids) {
+        NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
+        if (uuid == nil) {
+            OWSFailDebug(@"uuid was unexpectedly nil");
+            continue;
+        }
+        [blockedUUIDs addObject:uuid];
+    }
+    [self.blockingManager processIncomingSyncWithBlockedPhoneNumbers:[NSSet setWithArray:blocked.numbers]
+                                                        blockedUUIDs:blockedUUIDs
+                                                     blockedGroupIds:[NSSet setWithArray:blocked.groupIds]
+                                                         transaction:transaction];
 }
 
 - (void)handleEndSessionMessageWithEnvelope:(SSKProtoEnvelope *)envelope

@@ -8,8 +8,10 @@
 #import "OWSPreferences.h"
 #import "OWSProfileManager.h"
 #import "OWSReadReceiptManager.h"
+#import <Contacts/Contacts.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/DataSource.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
@@ -144,6 +146,16 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     return SDSDatabaseStorage.shared;
 }
 
+- (OWSIncomingContactSyncJobQueue *)incomingContactSyncJobQueue
+{
+    return Environment.shared.incomingContactSyncJobQueue;
+}
+
+- (OWSIncomingGroupSyncJobQueue *)incomingGroupSyncJobQueue
+{
+    return Environment.shared.incomingGroupSyncJobQueue;
+}
+
 #pragma mark - Notifications
 
 - (void)signalAccountsDidChange:(id)notification {
@@ -231,6 +243,23 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     }];
 }
 
+- (void)processIncomingGroupsSyncMessage:(SSKProtoSyncMessageGroups *)syncMessage transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSLogInfo(@"");
+
+    TSAttachmentPointer *attachmentPointer = [TSAttachmentPointer attachmentPointerFromProto:syncMessage.blob albumMessage:nil];
+    [attachmentPointer anyInsertWithTransaction:transaction];
+    [self.incomingGroupSyncJobQueue addWithAttachmentId:attachmentPointer.uniqueId transaction:transaction];
+}
+
+- (void)processIncomingContactsSyncMessage:(SSKProtoSyncMessageContacts *)syncMessage transaction:(SDSAnyWriteTransaction *)transaction
+{
+    TSAttachmentPointer *attachmentPointer = [TSAttachmentPointer attachmentPointerFromProto:syncMessage.blob
+                                                                                albumMessage:nil];
+    [attachmentPointer anyInsertWithTransaction:transaction];
+    [self.incomingContactSyncJobQueue addWithAttachmentId:attachmentPointer.uniqueId transaction:transaction];
+}
+
 #pragma mark - Groups Sync
 
 - (void)syncGroupsWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -266,7 +295,8 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 {
     SignalAccount *signalAccount =
         [[SignalAccount alloc] initWithSignalServiceAddress:self.tsAccountManager.localAddress];
-    signalAccount.contact = [Contact new];
+    // OWSContactsOutputStream requires all signalAccount to have a contact.
+    signalAccount.contact = [[Contact alloc] initWithSystemContact:[CNContact new]];
 
     return [self syncContactsForSignalAccounts:@[ signalAccount ] skipIfRedundant:NO debounce:NO];
 }
@@ -431,6 +461,8 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self sendSyncRequestMessage:OWSSyncRequestType_Blocked transaction:transaction];
         [self sendSyncRequestMessage:OWSSyncRequestType_Configuration transaction:transaction];
+        [self sendSyncRequestMessage:OWSSyncRequestType_Groups transaction:transaction];
+        [self sendSyncRequestMessage:OWSSyncRequestType_Contacts transaction:transaction];
     }];
 }
 

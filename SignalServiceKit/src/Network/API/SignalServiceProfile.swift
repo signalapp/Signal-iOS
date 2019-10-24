@@ -36,7 +36,6 @@ public class SignalServiceProfile: NSObject {
         }
 
         let identityKeyWithType = try params.requiredBase64EncodedData(key: "identityKey")
-        let kIdentityKeyLength = 33
         guard identityKeyWithType.count == kIdentityKeyLength else {
             throw ValidationError.invalidIdentityKey(description: "malformed identity key \(identityKeyWithType.hexadecimalString) with decoded length: \(identityKeyWithType.count)")
         }

@@ -40,6 +40,7 @@ public struct JobRecordRecord: SDSRecord {
     public let messageId: String?
     public let removeMessageAfterSending: Bool?
     public let threadId: String?
+    public let attachmentId: String?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -55,6 +56,7 @@ public struct JobRecordRecord: SDSRecord {
         case messageId
         case removeMessageAfterSending
         case threadId
+        case attachmentId
     }
 
     public static func columnName(_ column: JobRecordRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -91,6 +93,7 @@ public extension JobRecordRecord {
         messageId = row[10]
         removeMessageAfterSending = row[11]
         threadId = row[12]
+        attachmentId = row[13]
     }
 }
 
@@ -136,6 +139,40 @@ extension SSKJobRecord {
                                                      sortId: sortId,
                                                      status: status,
                                                      attachmentIdMap: attachmentIdMap)
+
+        case .incomingContactSyncJobRecord:
+
+            let uniqueId: String = record.uniqueId
+            let failureCount: UInt = record.failureCount
+            let label: String = record.label
+            let sortId: UInt64 = UInt64(recordId)
+            let status: SSKJobRecordStatus = record.status
+            let attachmentId: String = try SDSDeserialization.required(record.attachmentId, name: "attachmentId")
+
+            return OWSIncomingContactSyncJobRecord(grdbId: recordId,
+                                                  uniqueId: uniqueId,
+                                                  failureCount: failureCount,
+                                                  label: label,
+                                                  sortId: sortId,
+                                                  status: status,
+                                                  attachmentId: attachmentId)
+
+        case .incomingGroupSyncJobRecord:
+
+            let uniqueId: String = record.uniqueId
+            let failureCount: UInt = record.failureCount
+            let label: String = record.label
+            let sortId: UInt64 = UInt64(recordId)
+            let status: SSKJobRecordStatus = record.status
+            let attachmentId: String = try SDSDeserialization.required(record.attachmentId, name: "attachmentId")
+
+            return OWSIncomingGroupSyncJobRecord(grdbId: recordId,
+                                                uniqueId: uniqueId,
+                                                failureCount: failureCount,
+                                                label: label,
+                                                sortId: sortId,
+                                                status: status,
+                                                attachmentId: attachmentId)
 
         case .sessionResetJobRecord:
 
@@ -234,6 +271,12 @@ extension SSKJobRecord: SDSModel {
         case let model as OWSSessionResetJobRecord:
             assert(type(of: model) == OWSSessionResetJobRecord.self)
             return OWSSessionResetJobRecordSerializer(model: model)
+        case let model as OWSIncomingGroupSyncJobRecord:
+            assert(type(of: model) == OWSIncomingGroupSyncJobRecord.self)
+            return OWSIncomingGroupSyncJobRecordSerializer(model: model)
+        case let model as OWSIncomingContactSyncJobRecord:
+            assert(type(of: model) == OWSIncomingContactSyncJobRecord.self)
+            return OWSIncomingContactSyncJobRecordSerializer(model: model)
         case let model as OWSBroadcastMediaMessageJobRecord:
             assert(type(of: model) == OWSBroadcastMediaMessageJobRecord.self)
             return OWSBroadcastMediaMessageJobRecordSerializer(model: model)
@@ -269,13 +312,14 @@ extension SSKJobRecordSerializer {
     static let labelColumn = SDSColumnMetadata(columnName: "label", columnType: .unicodeString, columnIndex: 4)
     static let statusColumn = SDSColumnMetadata(columnName: "status", columnType: .int, columnIndex: 5)
     // Subclass properties
-    static let attachmentIdMapColumn = SDSColumnMetadata(columnName: "attachmentIdMap", columnType: .blob, isOptional: true, columnIndex: 6)
-    static let contactThreadIdColumn = SDSColumnMetadata(columnName: "contactThreadId", columnType: .unicodeString, isOptional: true, columnIndex: 7)
-    static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob, isOptional: true, columnIndex: 8)
-    static let invisibleMessageColumn = SDSColumnMetadata(columnName: "invisibleMessage", columnType: .blob, isOptional: true, columnIndex: 9)
-    static let messageIdColumn = SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true, columnIndex: 10)
-    static let removeMessageAfterSendingColumn = SDSColumnMetadata(columnName: "removeMessageAfterSending", columnType: .int, isOptional: true, columnIndex: 11)
-    static let threadIdColumn = SDSColumnMetadata(columnName: "threadId", columnType: .unicodeString, isOptional: true, columnIndex: 12)
+    static let attachmentIdColumn = SDSColumnMetadata(columnName: "attachmentId", columnType: .unicodeString, isOptional: true, columnIndex: 6)
+    static let attachmentIdMapColumn = SDSColumnMetadata(columnName: "attachmentIdMap", columnType: .blob, isOptional: true, columnIndex: 7)
+    static let contactThreadIdColumn = SDSColumnMetadata(columnName: "contactThreadId", columnType: .unicodeString, isOptional: true, columnIndex: 8)
+    static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob, isOptional: true, columnIndex: 9)
+    static let invisibleMessageColumn = SDSColumnMetadata(columnName: "invisibleMessage", columnType: .blob, isOptional: true, columnIndex: 10)
+    static let messageIdColumn = SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true, columnIndex: 11)
+    static let removeMessageAfterSendingColumn = SDSColumnMetadata(columnName: "removeMessageAfterSending", columnType: .int, isOptional: true, columnIndex: 12)
+    static let threadIdColumn = SDSColumnMetadata(columnName: "threadId", columnType: .unicodeString, isOptional: true, columnIndex: 13)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -288,6 +332,7 @@ extension SSKJobRecordSerializer {
         failureCountColumn,
         labelColumn,
         statusColumn,
+        attachmentIdColumn,
         attachmentIdMapColumn,
         contactThreadIdColumn,
         envelopeDataColumn,
@@ -709,6 +754,7 @@ class SSKJobRecordSerializer: SDSSerializer {
         let status: SSKJobRecordStatus = model.status
 
         // Subclass properties
+        let attachmentId: String? = nil
         let attachmentIdMap: Data? = nil
         let contactThreadId: String? = nil
         let envelopeData: Data? = nil
@@ -717,6 +763,6 @@ class SSKJobRecordSerializer: SDSSerializer {
         let removeMessageAfterSending: Bool? = nil
         let threadId: String? = nil
 
-        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId)
+        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId)
     }
 }

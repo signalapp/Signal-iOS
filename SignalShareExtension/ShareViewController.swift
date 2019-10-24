@@ -26,10 +26,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         return OWSProfileManager.shared()
     }
 
-    private var syncManager: OWSSyncManagerProtocol {
-        return SSKEnvironment.shared.syncManager
-    }
-
     private var storageCoordinator: StorageCoordinator {
         return SSKEnvironment.shared.storageCoordinator
     }
@@ -302,9 +298,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // We don't need to use ExperienceUpgradeFinder in the SAE.
 
             // We don't need to use OWSDisappearingMessagesJob in the SAE.
-
-            // TODO: This is probably superfluous and can be removed.
-            syncManager.syncLocalContact().retainUntilComplete()
         }
     }
 

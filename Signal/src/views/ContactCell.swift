@@ -75,8 +75,13 @@ class ContactCell: UITableViewCell {
         self.contact = contact
         self.showsWhenSelected = showsWhenSelected
 
-        let cnContact = contactsManager.cnContact(withId: contact.cnContactId)
-        titleLabel.attributedText = cnContact?.formattedFullName(font: titleLabel.font)
+        if let cnContactId = contact.cnContactId,
+            let cnContact = contactsManager.cnContact(withId: cnContactId) {
+            titleLabel.attributedText = cnContact.formattedFullName(font: titleLabel.font)
+        } else {
+            titleLabel.text = contact.fullName
+        }
+
         updateSubtitle(subtitleType: subtitleType, contact: contact)
 
         if let contactImage = contactsManager.avatarImage(forCNContactId: contact.cnContactId) {

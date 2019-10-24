@@ -532,8 +532,63 @@ public class CommonGenerator: NSObject {
     }
 
     @objc
+    static public func email() -> String {
+        return "\(word)@\(word).\(word)"
+    }
+
+    @objc
     static public func address(hasPhoneNumber: Bool = true) -> SignalServiceAddress {
         return SignalServiceAddress(uuid: UUID(), phoneNumber: hasPhoneNumber ? e164() : nil)
+    }
+
+    static let names = [
+        "Alice",
+        "Arthur",
+        "Bertha",
+        "Bob",
+        "Carol",
+        "Carole",
+        "Carlos",
+        "Charlie",
+        "Chuck",
+        "Craig",
+        "Dan",
+        "Dave",
+        "David",
+        "Erin",
+        "Eve",
+        "Faythe",
+        "Frank",
+        "Grace",
+        "Heidi",
+        "Lilia",
+        "Mallory",
+        "Mallet",
+        "Matthew",
+        "Michael",
+        "Moxie",
+        "Nora",
+        "Oscar",
+        "Peggy",
+        "Pat",
+        "Paul",
+        "Riya",
+        "Scott",
+        "Sybil",
+        "Trent",
+        "Ted",
+        "Trevor",
+        "Trudy",
+        "Victor",
+        "Vanna",
+        "Walter",
+        "Wendy",
+        "Merlin"
+    ]
+
+    @objc
+    static public func name() -> String {
+        return names.randomElement()!
     }
 
     // Body Content
@@ -591,5 +646,68 @@ public class CommonGenerator: NSObject {
 
     static public func paragraph(sentenceCount: UInt) -> String {
         return sentences(count: sentenceCount).joined(separator: " ")
+    }
+}
+
+public class ContactFactory {
+    public init() { }
+
+    public func build() throws -> Contact {
+
+        var userTextPhoneNumbers: [String] = []
+        var phoneNumberNameMap: [String: String] = [:]
+        var parsedPhoneNumbers: [PhoneNumber] = []
+        for (userText, label) in userTextPhoneNumberAndLabelBuilder() {
+            guard let parsedPhoneNumber = PhoneNumber(fromUserSpecifiedText: userText) else {
+                throw OWSAssertionError("unparseable phone number: \(userText)")
+            }
+
+            parsedPhoneNumbers.append(parsedPhoneNumber)
+            phoneNumberNameMap[parsedPhoneNumber.toE164()] = label
+            userTextPhoneNumbers.append(userText)
+        }
+
+        return Contact(uniqueId: uniqueIdBuilder(),
+                       cnContactId: cnContactIdBuilder(),
+                       firstName: firstNameBuilder(),
+                       lastName: lastNameBuilder(),
+                       fullName: fullNameBuilder(),
+                       userTextPhoneNumbers: userTextPhoneNumbers,
+                       phoneNumberNameMap: phoneNumberNameMap,
+                       parsedPhoneNumbers: parsedPhoneNumbers,
+                       emails: emailsBuilder(),
+                       imageDataToHash: imageDataToHashBuilder())
+    }
+
+    public var uniqueIdBuilder: () -> String = {
+        return UUID().uuidString
+    }
+
+    public var cnContactIdBuilder: () -> String? = {
+        return nil
+    }
+
+    public var firstNameBuilder: () -> String? = {
+        return CommonGenerator.name()
+    }
+
+    public var lastNameBuilder: () -> String? = {
+        return CommonGenerator.name()
+    }
+
+    public var fullNameBuilder: () -> String = {
+        return "\(CommonGenerator.name()) \(CommonGenerator.name())"
+    }
+
+    public var userTextPhoneNumberAndLabelBuilder: () -> [(String, String)] = {
+        return [(CommonGenerator.e164(), "Main")]
+    }
+
+    public var emailsBuilder: () -> [String] = {
+        return [CommonGenerator.email()]
+    }
+
+    public var imageDataToHashBuilder: () -> Data? = {
+        return nil
     }
 }
