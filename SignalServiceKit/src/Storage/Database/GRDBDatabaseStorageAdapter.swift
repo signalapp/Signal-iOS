@@ -412,6 +412,7 @@ private struct GRDBStorage {
             try db.execute(sql: "PRAGMA key = \"\(keyspec)\"")
             try db.execute(sql: "PRAGMA cipher_plaintext_header_size = 32")
         }
+        configuration.defaultTransactionKind = .immediate
         self.configuration = configuration
 
         pool = try DatabasePool(path: dbURL.path, configuration: configuration)
