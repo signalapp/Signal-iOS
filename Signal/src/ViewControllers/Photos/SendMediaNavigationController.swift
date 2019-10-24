@@ -19,14 +19,14 @@ protocol SendMediaNavDelegate: AnyObject {
 }
 
 @objc
-class CaptureFirstCaptureNavigationController: SendMediaNavigationController {
+class CameraFirstCaptureNavigationController: SendMediaNavigationController {
 
     @objc
     private(set) var cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow!
 
     @objc
-    public class func captureFirstCameraModal() -> CaptureFirstCaptureNavigationController {
-        let navController = CaptureFirstCaptureNavigationController()
+    public class func cameraFirstModal() -> CameraFirstCaptureNavigationController {
+        let navController = CameraFirstCaptureNavigationController()
         navController.setViewControllers([navController.captureViewController], animated: false)
 
         let cameraFirstCaptureSendFlow = CameraFirstCaptureSendFlow()
@@ -43,6 +43,8 @@ class SendMediaNavigationController: OWSNavigationController {
     static var bottomButtonsCenterOffset: CGFloat {
         return -1 * (CaptureButton.recordingDiameter / 2 + 4)
     }
+
+    static var trailingButtonsOffset: CGFloat = -28
 
     var attachmentCount: Int {
         return attachmentDraftCollection.count
@@ -67,23 +69,46 @@ class SendMediaNavigationController: OWSNavigationController {
 
         view.addSubview(batchModeButton)
         batchModeButton.setCompressionResistanceHigh()
-        batchModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
-        batchModeButton.autoPinEdge(toSuperviewMargin: .trailing)
 
         view.addSubview(doneButton)
         doneButton.setCompressionResistanceHigh()
-        doneButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
-        doneButton.autoPinEdge(toSuperviewMargin: .trailing)
 
         view.addSubview(cameraModeButton)
         cameraModeButton.setCompressionResistanceHigh()
-        cameraModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
-        cameraModeButton.autoPinEdge(toSuperviewMargin: .leading)
 
         view.addSubview(mediaLibraryModeButton)
         mediaLibraryModeButton.setCompressionResistanceHigh()
-        mediaLibraryModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
-        mediaLibraryModeButton.autoPinEdge(toSuperviewMargin: .leading)
+
+        if UIDevice.current.isIPad {
+            let buttonSpacing: CGFloat = 28
+            // `doneButton` is our widest button, so we position it relative to the superview
+            // margin, and position other buttons relative to `doneButton`. This ensures
+            // `donebutton` has a good distance from the edge *and* that all the buttons in the
+            // cluster are centered WRT eachother.
+            doneButton.autoPinEdge(toSuperviewMargin: .trailing)
+            doneButton.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -buttonSpacing).isActive = true
+
+            batchModeButton.autoAlignAxis(.vertical, toSameAxisOf: doneButton)
+            batchModeButton.autoAlignAxis(.horizontal, toSameAxisOf: doneButton)
+
+            cameraModeButton.autoAlignAxis(.vertical, toSameAxisOf: doneButton)
+            cameraModeButton.autoPinEdge(.bottom, to: .top, of: doneButton, withOffset: -buttonSpacing)
+
+            mediaLibraryModeButton.autoAlignAxis(.vertical, toSameAxisOf: cameraModeButton)
+            mediaLibraryModeButton.autoAlignAxis(.horizontal, toSameAxisOf: cameraModeButton)
+        } else {
+            batchModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
+            batchModeButton.autoPinEdge(toSuperviewMargin: .trailing)
+
+            doneButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
+            doneButton.autoPinEdge(toSuperviewMargin: .trailing)
+
+            cameraModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
+            cameraModeButton.autoPinEdge(toSuperviewMargin: .leading)
+
+            mediaLibraryModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
+            mediaLibraryModeButton.autoPinEdge(toSuperviewMargin: .leading)
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {

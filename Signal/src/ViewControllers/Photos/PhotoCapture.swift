@@ -34,24 +34,20 @@ protocol PhotoCaptureDelegate: AnyObject {
 class PhotoCapture: NSObject {
 
     weak var delegate: PhotoCaptureDelegate?
-    var flashMode: AVCaptureDevice.FlashMode {
-        return captureOutput.flashMode
-    }
-    let session: AVCaptureSession
 
     // There can only ever be one `CapturePreviewView` per AVCaptureSession
     lazy private(set) var previewView = CapturePreviewView(session: session)
 
-    let sessionQueue = DispatchQueue(label: "PhotoCapture.sessionQueue")
+    private let sessionQueue = DispatchQueue(label: "PhotoCapture.sessionQueue")
 
     private var currentCaptureInput: AVCaptureDeviceInput?
     private let captureOutput: CaptureOutput
-    var captureDevice: AVCaptureDevice? {
+    private var captureDevice: AVCaptureDevice? {
         return currentCaptureInput?.device
     }
     private(set) var desiredPosition: AVCaptureDevice.Position = .back
 
-    let recordingAudioActivity = AudioActivity(audioDescription: "PhotoCapture", behavior: .playAndRecord)
+    private let recordingAudioActivity = AudioActivity(audioDescription: "PhotoCapture", behavior: .playAndRecord)
 
     override init() {
         self.session = AVCaptureSession()
@@ -60,14 +56,21 @@ class PhotoCapture: NSObject {
 
     // MARK: - Dependencies
 
-    var audioSession: OWSAudioSession {
+    private var audioSession: OWSAudioSession {
         return Environment.shared.audioSession
     }
 
-    // MARK: -
+    private var audioDeviceInput: AVCaptureDeviceInput?
 
-    var audioDeviceInput: AVCaptureDeviceInput?
-    func startAudioCapture() throws {
+    // MARK: - Public
+
+    public var flashMode: AVCaptureDevice.FlashMode {
+        return captureOutput.flashMode
+    }
+
+    public let session: AVCaptureSession
+
+    public func startAudioCapture() throws {
         assertIsOnSessionQueue()
 
         guard audioSession.startAudioActivity(recordingAudioActivity) else {
@@ -89,7 +92,7 @@ class PhotoCapture: NSObject {
         }
     }
 
-    func stopAudioCapture() {
+    public func stopAudioCapture() {
         assertIsOnSessionQueue()
 
         self.session.beginConfiguration()
@@ -104,12 +107,23 @@ class PhotoCapture: NSObject {
         audioSession.endAudioActivity(recordingAudioActivity)
     }
 
-    func startVideoCapture() -> Promise<Void> {
+    func updateVideoConnectionOrientation() {
+        guard let delegate = self.delegate else { return }
+
+        guard let videoConnection = previewView.previewLayer.connection else {
+            owsFailDebug("videoConnection was unexpectedly nil")
+            return
+        }
+        videoConnection.videoOrientation = delegate.captureOrientation
+    }
+
+    public func startVideoCapture() -> Promise<Void> {
         // If the session is already running, no need to do anything.
         guard !self.session.isRunning else { return Promise.value(()) }
 
         return sessionQueue.async(.promise) { [weak self] in
             guard let self = self else { return }
+            guard let delegate = self.delegate else { return }
 
             self.session.beginConfiguration()
             defer { self.session.commitConfiguration() }
@@ -126,10 +140,13 @@ class PhotoCapture: NSObject {
                 throw PhotoCaptureError.initializationFailed
             }
 
+            let captureOrientation = delegate.captureOrientation
+
             if let connection = photoOutput.connection(with: .video) {
                 if connection.isVideoStabilizationSupported {
                     connection.preferredVideoStabilizationMode = .auto
                 }
+                connection.videoOrientation = captureOrientation
             }
 
             self.session.addOutput(photoOutput)
@@ -144,6 +161,8 @@ class PhotoCapture: NSObject {
                 if connection.isVideoStabilizationSupported {
                     connection.preferredVideoStabilizationMode = .auto
                 }
+                connection.videoOrientation = captureOrientation
+
                 if #available(iOS 11.0, *) {
                     guard movieOutput.availableVideoCodecTypes.contains(.h264) else {
                         throw PhotoCaptureError.initializationFailed
@@ -155,21 +174,22 @@ class PhotoCapture: NSObject {
                 }
             }
         }.done(on: sessionQueue) {
+            self.updateVideoConnectionOrientation()
             self.session.startRunning()
         }
     }
 
-    func stopCapture() -> Guarantee<Void> {
+    public func stopCapture() -> Guarantee<Void> {
         return sessionQueue.async(.promise) {
             self.session.stopRunning()
         }
     }
 
-    func assertIsOnSessionQueue() {
+    public func assertIsOnSessionQueue() {
         assertOnQueue(sessionQueue)
     }
 
-    func switchCamera() -> Promise<Void> {
+    public func switchCamera() -> Promise<Void> {
         AssertIsOnMainThread()
         let newPosition: AVCaptureDevice.Position
         switch desiredPosition {
@@ -197,7 +217,7 @@ class PhotoCapture: NSObject {
 
     // This method should be called on the serial queue,
     // and between calls to session.beginConfiguration/commitConfiguration
-    func updateCurrentInput(position: AVCaptureDevice.Position) throws {
+    public func updateCurrentInput(position: AVCaptureDevice.Position) throws {
         assertIsOnSessionQueue()
 
         guard let device = captureOutput.videoDevice(position: position) else {
@@ -218,7 +238,7 @@ class PhotoCapture: NSObject {
         resetFocusAndExposure()
     }
 
-    func switchFlashMode() -> Guarantee<Void> {
+    public func switchFlashMode() -> Guarantee<Void> {
         return sessionQueue.async(.promise) {
             switch self.captureOutput.flashMode {
             case .auto:
@@ -237,7 +257,7 @@ class PhotoCapture: NSObject {
         }
     }
 
-    func focus(with focusMode: AVCaptureDevice.FocusMode,
+    public func focus(with focusMode: AVCaptureDevice.FocusMode,
                exposureMode: AVCaptureDevice.ExposureMode,
                at devicePoint: CGPoint,
                monitorSubjectAreaChange: Bool) {
@@ -270,23 +290,23 @@ class PhotoCapture: NSObject {
         }
     }
 
-    func resetFocusAndExposure() {
+    public func resetFocusAndExposure() {
         let devicePoint = CGPoint(x: 0.5, y: 0.5)
         focus(with: .continuousAutoFocus, exposureMode: .continuousAutoExposure, at: devicePoint, monitorSubjectAreaChange: false)
     }
 
     @objc
-    func subjectAreaDidChange(notification: NSNotification) {
+    private func subjectAreaDidChange(notification: NSNotification) {
         resetFocusAndExposure()
     }
 
     // MARK: - Zoom
 
-    let minimumZoom: CGFloat = 1.0
-    let maximumZoom: CGFloat = 3.0
-    var previousZoomFactor: CGFloat = 1.0
+    private let minimumZoom: CGFloat = 1.0
+    private let maximumZoom: CGFloat = 3.0
+    private var previousZoomFactor: CGFloat = 1.0
 
-    func updateZoom(alpha: CGFloat) {
+    public func updateZoom(alpha: CGFloat) {
         assert(alpha >= 0 && alpha <= 1)
         sessionQueue.async {
             guard let captureDevice = self.captureDevice else {
@@ -301,7 +321,7 @@ class PhotoCapture: NSObject {
         }
     }
 
-    func updateZoom(scaleFromPreviousZoomFactor scale: CGFloat) {
+    public func updateZoom(scaleFromPreviousZoomFactor scale: CGFloat) {
         sessionQueue.async {
             guard let captureDevice = self.captureDevice else {
                 owsFailDebug("captureDevice was unexpectedly nil")
@@ -313,7 +333,7 @@ class PhotoCapture: NSObject {
         }
     }
 
-    func completeZoom(scaleFromPreviousZoomFactor scale: CGFloat) {
+    public func completeZoom(scaleFromPreviousZoomFactor scale: CGFloat) {
         sessionQueue.async {
             guard let captureDevice = self.captureDevice else {
                 owsFailDebug("captureDevice was unexpectedly nil")
@@ -616,7 +636,7 @@ class CaptureOutput {
     func beginVideo(delegate: CaptureOutputDelegate) {
         delegate.assertIsOnSessionQueue()
         guard let videoConnection = movieOutput.connection(with: .video) else {
-            owsFailDebug("movieOutputConnection was unexpectedly nil")
+            owsFailDebug("videoConnection was unexpectedly nil")
             return
         }
 
@@ -697,7 +717,7 @@ class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
 
         @available(iOS 11.0, *)
         func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-            let data = photo.fileDataRepresentation()!
+            let data = photo.fileDataRepresentation()
             DispatchQueue.main.async {
                 self.delegate?.captureOutputDidFinishProcessing(photoData: data, error: error)
             }
@@ -769,13 +789,16 @@ class StillImageCaptureOutput: ImageCaptureOutput {
 }
 
 extension AVCaptureVideoOrientation {
-    init?(deviceOrientation: UIDeviceOrientation) {
-        switch deviceOrientation {
+    init?(interfaceOrientation: UIInterfaceOrientation) {
+        switch interfaceOrientation {
+        case .unknown:
+            return nil
         case .portrait: self = .portrait
         case .portraitUpsideDown: self = .portraitUpsideDown
-        case .landscapeLeft: self = .landscapeRight
-        case .landscapeRight: self = .landscapeLeft
-        default: return nil
+        case .landscapeLeft: self = .landscapeLeft
+        case .landscapeRight: self = .landscapeRight
+        @unknown default:
+            return nil
         }
     }
 }

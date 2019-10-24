@@ -60,7 +60,7 @@ class PhotoCaptureViewController: OWSViewController {
         updateNavigationItems()
         updateFlashModeControl()
 
-        let initialCaptureOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) ?? .portrait
+        let initialCaptureOrientation = AVCaptureVideoOrientation(interfaceOrientation: self.interfaceOrientation) ?? .portrait
         updateIconOrientations(isAnimated: false, captureOrientation: initialCaptureOrientation)
 
         view.addGestureRecognizer(pinchZoomGesture)
@@ -99,6 +99,23 @@ class PhotoCaptureViewController: OWSViewController {
         return true
     }
 
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        if UIDevice.current.isIPad {
+            // Since we support iPad multitasking, we cannot *disable* rotation of our views.
+            // Rotating the preview layer is really distracting, so we fade out the preview layer
+            // while the rotation occurs.
+            self.photoCapture.previewView.alpha = 0
+            coordinator.animate(alongsideTransition: { _ in }) { _ in
+                self.photoCapture.updateVideoConnectionOrientation()
+                UIView.animate(withDuration: 0.1) {
+                    self.photoCapture.previewView.alpha = 1
+                }
+            }
+        }
+    }
+
     // MARK: -
     var isRecordingMovie: Bool = false
     let recordingTimerView = RecordingTimerView()
@@ -111,7 +128,14 @@ class PhotoCaptureViewController: OWSViewController {
             recordingTimerView.sizeToFit()
         } else {
             navigationItem.titleView = nil
-            navigationItem.leftBarButtonItem = dismissControl.barButtonItem
+            if UIDevice.current.isIPad {
+                let cancelButton = OWSButton.shadowedCancelButton { [weak self] in
+                    self?.didTapClose()
+                }
+                navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
+            } else {
+                navigationItem.leftBarButtonItem = dismissControl.barButtonItem
+            }
             let fixedSpace = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
             fixedSpace.width = 16
 
@@ -254,18 +278,12 @@ class PhotoCaptureViewController: OWSViewController {
                                                object: UIDevice.current)
     }
 
-    var lastKnownCaptureOrientation: AVCaptureVideoOrientation = .portrait
-
     @objc
     func didChangeDeviceOrientation(notification: Notification) {
-        let currentOrientation = UIDevice.current.orientation
-
-        if let captureOrientation = AVCaptureVideoOrientation(deviceOrientation: currentOrientation) {
-            // since the "face up" and "face down" orientations aren't reflected in the photo output,
-            // we need to capture the last known _other_ orientation so we can reflect the appropriate
-            // portrait/landscape in our captured photos.
-            Logger.verbose("lastKnownCaptureOrientation: \(lastKnownCaptureOrientation)->\(captureOrientation)")
-            lastKnownCaptureOrientation = captureOrientation
+        // Even though `interfaceOrientation` is deprecated, we use it rather than DeviceOrientation
+        // because "face up" and "face down" could correspond to any capture orientation. The user
+        // expects the capture orientation to reflect the interface orientation.
+        if let captureOrientation = AVCaptureVideoOrientation(interfaceOrientation: self.interfaceOrientation) {
             updateIconOrientations(isAnimated: true, captureOrientation: captureOrientation)
         }
     }
@@ -273,6 +291,10 @@ class PhotoCaptureViewController: OWSViewController {
     // MARK: -
 
     private func updateIconOrientations(isAnimated: Bool, captureOrientation: AVCaptureVideoOrientation) {
+        guard !UIDevice.current.isIPad else {
+            return
+        }
+
         Logger.verbose("captureOrientation: \(captureOrientation)")
 
         let transformFromOrientation: CGAffineTransform
@@ -295,7 +317,7 @@ class PhotoCaptureViewController: OWSViewController {
 
         let updateOrientation = {
             self.flashModeControl.button.transform = transformFromOrientation
-            self.switchCameraControl.button.transform   = transformFromOrientation.concatenating(tranformFromCameraType)
+            self.switchCameraControl.button.transform = transformFromOrientation.concatenating(tranformFromCameraType)
         }
 
         if isAnimated {
@@ -309,7 +331,7 @@ class PhotoCaptureViewController: OWSViewController {
     private func setupPhotoCapture() {
         photoCapture.delegate = self
         captureButton.delegate = photoCapture
-        previewView.contentMode = .scaleAspectFit
+        previewView.contentMode = .scaleAspectFill
 
         let captureReady = { [weak self] in
             guard let self = self else { return }
@@ -332,15 +354,21 @@ class PhotoCaptureViewController: OWSViewController {
     private func showCaptureUI() {
         Logger.debug("")
         view.addSubview(previewView)
-        if UIDevice.current.hasIPhoneXNotch {
+        if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
             previewView.autoPinEdgesToSuperviewEdges()
         } else {
-            previewView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 0, leading: 0, bottom: 40, trailing: 0))
+            let bottomOffset: CGFloat = CaptureButton.recordingDiameter + 16
+            previewView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 0, leading: 0, bottom: bottomOffset, trailing: 0))
         }
 
         view.addSubview(captureButton)
-        captureButton.autoHCenterInSuperview()
-        captureButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: SendMediaNavigationController.bottomButtonsCenterOffset).isActive = true
+        if UIDevice.current.isIPad {
+            captureButton.autoVCenterInSuperview()
+            captureButton.centerXAnchor.constraint(equalTo: view.trailingAnchor, constant: SendMediaNavigationController.bottomButtonsCenterOffset).isActive = true
+        } else {
+            captureButton.autoHCenterInSuperview()
+            captureButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: SendMediaNavigationController.bottomButtonsCenterOffset).isActive = true
+        }
 
         // If the view is already visible, setup the volume button listener
         // now that the capture UI is ready. Otherwise, we'll wait until
@@ -443,7 +471,7 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
     }
 
     var captureOrientation: AVCaptureVideoOrientation {
-        return lastKnownCaptureOrientation
+        return AVCaptureVideoOrientation(interfaceOrientation: interfaceOrientation) ?? .portrait
     }
 
     func beginCaptureButtonAnimation(_ duration: TimeInterval) {
