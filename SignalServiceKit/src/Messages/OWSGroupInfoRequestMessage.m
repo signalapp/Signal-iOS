@@ -2,13 +2,13 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSSyncGroupsRequestMessage.h"
+#import "OWSGroupInfoRequestMessage.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSSyncGroupsRequestMessage ()
+@interface OWSGroupInfoRequestMessage ()
 
 @property (nonatomic) NSData *groupId;
 
@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@implementation OWSSyncGroupsRequestMessage
+@implementation OWSGroupInfoRequestMessage
 
 - (instancetype)initWithThread:(TSThread *)thread groupId:(NSData *)groupId
 {

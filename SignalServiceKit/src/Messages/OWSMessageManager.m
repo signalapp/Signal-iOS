@@ -18,6 +18,7 @@
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
+#import "OWSGroupInfoRequestMessage.h"
 #import "OWSIdentityManager.h"
 #import "OWSIncomingMessageFinder.h"
 #import "OWSIncomingSentMessageTranscript.h"
@@ -26,7 +27,6 @@
 #import "OWSOutgoingReceiptManager.h"
 #import "OWSReadReceiptManager.h"
 #import "OWSRecordTranscriptJob.h"
-#import "OWSSyncGroupsRequestMessage.h"
 #import "ProfileManagerProtocol.h"
 #import "SSKEnvironment.h"
 #import "SSKSessionStore.h"
@@ -623,10 +623,10 @@ NS_ASSUME_NONNULL_BEGIN
     TSThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
                                                                 transaction:transaction];
 
-    OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
-        [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread groupId:groupId];
+    OWSGroupInfoRequestMessage *groupInfoRequestMessage =
+        [[OWSGroupInfoRequestMessage alloc] initWithThread:thread groupId:groupId];
 
-    [self.messageSenderJobQueue addMessage:syncGroupsRequestMessage.asPreparer transaction:transaction];
+    [self.messageSenderJobQueue addMessage:groupInfoRequestMessage.asPreparer transaction:transaction];
 }
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
