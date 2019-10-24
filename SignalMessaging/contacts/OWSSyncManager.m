@@ -225,7 +225,10 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     [self.typingIndicators setTypingIndicatorsEnabledWithValue:syncMessage.typingIndicators transaction:transaction];
     [SSKPreferences setAreLinkPreviewsEnabled:syncMessage.linkPreviews transaction:transaction];
 
-    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:OWSSyncManagerConfigurationDidChangeNotification object:nil];
+    [transaction addCompletionWithBlock:^{
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:OWSSyncManagerConfigurationDidChangeNotification
+                                                                 object:nil];
+    }];
 }
 
 #pragma mark - Groups Sync
@@ -421,6 +424,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     DDLogInfo(@"");
 
     if (!self.tsAccountManager.isRegisteredAndReady) {
+        OWSFailDebug(@"Unexpectedly tried to send sync request before registration.");
         return;
     }
 
@@ -435,6 +439,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     DDLogInfo(@"");
 
     if (!self.tsAccountManager.isRegisteredAndReady) {
+        OWSFailDebug(@"Unexpectedly tried to send sync request before registration.");
         return;
     }
 
@@ -460,6 +465,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     DDLogInfo(@"");
 
     if (!self.tsAccountManager.isRegisteredAndReady) {
+        OWSFailDebug(@"Unexpectedly tried to send sync request before registration.");
         return;
     }
 
