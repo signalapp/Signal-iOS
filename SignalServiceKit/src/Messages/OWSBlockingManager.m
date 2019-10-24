@@ -236,25 +236,61 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     [self handleUpdateAndSendSyncMessage:YES transaction:transaction];
 }
 
-- (void)setBlockedPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers sendSyncMessage:(BOOL)sendSyncMessage
+- (void)processIncomingBlockedSyncMessage:(SSKProtoSyncMessageBlocked *)syncMessage
+                              transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug(blockedPhoneNumbers != nil);
+    OWSAssertDebug(syncMessage);
+    OWSAssertDebug(transaction);
 
-    OWSLogInfo(@"setBlockedPhoneNumbers: %d", (int)blockedPhoneNumbers.count);
+    OWSLogInfo(@"");
+
+    BOOL hasGroupChanges = NO;
 
     @synchronized(self)
     {
         [self ensureLazyInitialization];
 
-        NSSet *newSet = [NSSet setWithArray:blockedPhoneNumbers];
-        if ([_blockedPhoneNumberSet isEqualToSet:newSet]) {
+        BOOL hasChanges = NO;
+
+        NSSet *newPhoneNumberSet = [NSSet setWithArray:syncMessage.numbers];
+        if (![_blockedPhoneNumberSet isEqualToSet:newPhoneNumberSet]) {
+            hasChanges = YES;
+        }
+
+        NSSet *newUUIDsSet = [NSSet setWithArray:syncMessage.uuids];
+        if (![_blockedUUIDSet isEqualToSet:newUUIDsSet]) {
+            hasChanges = YES;
+        }
+
+        NSSet *newGroupIdsSet = [NSSet setWithArray:syncMessage.groupIds];
+        if (![[NSSet setWithArray:_blockedGroupMap.allKeys] isEqualToSet:newGroupIdsSet]) {
+            hasChanges = YES;
+            hasGroupChanges = YES;
+        }
+
+        if (!hasChanges) {
             return;
         }
 
-        _blockedPhoneNumberSet = [newSet mutableCopy];
+        _blockedPhoneNumberSet = [newPhoneNumberSet mutableCopy];
+        _blockedUUIDSet = [newUUIDsSet mutableCopy];
     }
 
-    [self handleUpdateAndSendSyncMessage:sendSyncMessage];
+    // Re-generate the group map only if the groupIds have changed.
+    if (hasGroupChanges) {
+        NSMutableDictionary<NSData *, TSGroupModel *> *newGroupMap = [NSMutableDictionary new];
+
+        for (NSData *groupId in syncMessage.groupIds) {
+            TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupId:groupId transaction:transaction];
+            newGroupMap[groupId] = groupThread.groupModel;
+        }
+
+        @synchronized(self) {
+            _blockedGroupMap = newGroupMap;
+        }
+    }
+
+    [self handleUpdateAndSendSyncMessage:NO transaction:transaction];
 }
 
 - (NSArray<NSString *> *)blockedPhoneNumbers

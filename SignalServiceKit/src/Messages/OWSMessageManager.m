@@ -1030,10 +1030,8 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogWarn(@"ignoring unsupported sync request message");
         }
     } else if (syncMessage.blocked) {
-        NSArray<NSString *> *blockedPhoneNumbers = [syncMessage.blocked.numbers copy];
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [self.blockingManager setBlockedPhoneNumbers:blockedPhoneNumbers sendSyncMessage:NO];
-        });
+        OWSLogInfo(@"Received blocked sync message.");
+        [self.blockingManager processIncomingBlockedSyncMessage:syncMessage.blocked transaction:transaction];
     } else if (syncMessage.read.count > 0) {
         OWSLogInfo(@"Received %lu read receipt(s)", (unsigned long)syncMessage.read.count);
         [OWSReadReceiptManager.sharedManager processReadReceiptsFromLinkedDevice:syncMessage.read
