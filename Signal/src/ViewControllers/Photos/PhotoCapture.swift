@@ -107,16 +107,14 @@ class PhotoCapture: NSObject {
         audioSession.endAudioActivity(recordingAudioActivity)
     }
 
-    func updateVideoConnectionToDeviceOrientation() {
-        guard let captureOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) else {
-            owsFailDebug("captureOrientation was unexpectedly nil")
-            return
-        }
+    func updateVideoConnectionOrientation() {
+        guard let delegate = self.delegate else { return }
+
         guard let videoConnection = previewView.previewLayer.connection else {
             owsFailDebug("videoConnection was unexpectedly nil")
             return
         }
-        videoConnection.videoOrientation = captureOrientation
+        videoConnection.videoOrientation = delegate.captureOrientation
     }
 
     public func startVideoCapture() -> Promise<Void> {
@@ -125,6 +123,7 @@ class PhotoCapture: NSObject {
 
         return sessionQueue.async(.promise) { [weak self] in
             guard let self = self else { return }
+            guard let delegate = self.delegate else { return }
 
             self.session.beginConfiguration()
             defer { self.session.commitConfiguration() }
@@ -141,10 +140,7 @@ class PhotoCapture: NSObject {
                 throw PhotoCaptureError.initializationFailed
             }
 
-            guard let captureOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) else {
-                owsFailDebug("captureOrientation was unexpectedly nil")
-                return
-            }
+            let captureOrientation = delegate.captureOrientation
 
             if let connection = photoOutput.connection(with: .video) {
                 if connection.isVideoStabilizationSupported {
@@ -178,6 +174,7 @@ class PhotoCapture: NSObject {
                 }
             }
         }.done(on: sessionQueue) {
+            self.updateVideoConnectionOrientation()
             self.session.startRunning()
         }
     }
@@ -792,14 +789,16 @@ class StillImageCaptureOutput: ImageCaptureOutput {
 }
 
 extension AVCaptureVideoOrientation {
-    init?(deviceOrientation: UIDeviceOrientation) {
-        switch deviceOrientation {
+    init?(interfaceOrientation: UIInterfaceOrientation) {
+        switch interfaceOrientation {
+        case .unknown:
+            return nil
         case .portrait: self = .portrait
         case .portraitUpsideDown: self = .portraitUpsideDown
-        case .landscapeLeft: self = .landscapeRight
-        case .landscapeRight: self = .landscapeLeft
-        case .faceUp, .faceDown: self = .portrait
-        default: return nil
+        case .landscapeLeft: self = .landscapeLeft
+        case .landscapeRight: self = .landscapeRight
+        @unknown default:
+            return nil
         }
     }
 }

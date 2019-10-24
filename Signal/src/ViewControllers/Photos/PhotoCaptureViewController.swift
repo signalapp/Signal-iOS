@@ -60,7 +60,7 @@ class PhotoCaptureViewController: OWSViewController {
         updateNavigationItems()
         updateFlashModeControl()
 
-        let initialCaptureOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) ?? .portrait
+        let initialCaptureOrientation = AVCaptureVideoOrientation(interfaceOrientation: self.interfaceOrientation) ?? .portrait
         updateIconOrientations(isAnimated: false, captureOrientation: initialCaptureOrientation)
 
         view.addGestureRecognizer(pinchZoomGesture)
@@ -108,11 +108,11 @@ class PhotoCaptureViewController: OWSViewController {
             // while the rotation occurs.
             self.photoCapture.previewView.alpha = 0
             coordinator.animate(alongsideTransition: { _ in }) { _ in
+                self.photoCapture.updateVideoConnectionOrientation()
                 UIView.animate(withDuration: 0.1) {
                     self.photoCapture.previewView.alpha = 1
                 }
             }
-            photoCapture.updateVideoConnectionToDeviceOrientation()
         }
     }
 
@@ -278,16 +278,12 @@ class PhotoCaptureViewController: OWSViewController {
                                                object: UIDevice.current)
     }
 
-    var lastKnownCaptureOrientation: AVCaptureVideoOrientation = .portrait
-
     @objc
     func didChangeDeviceOrientation(notification: Notification) {
-        if let captureOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) {
-            // since the "face up" and "face down" orientations aren't reflected in the photo output,
-            // we need to capture the last known _other_ orientation so we can reflect the appropriate
-            // portrait/landscape in our captured photos.
-            Logger.verbose("lastKnownCaptureOrientation: \(lastKnownCaptureOrientation)->\(captureOrientation)")
-            lastKnownCaptureOrientation = captureOrientation
+        // Even though `interfaceOrientation` is deprecated, we use it rather than DeviceOrientation
+        // because "face up" and "face down" could correspond to any capture orientation. The user
+        // expects the capture orientation to reflect the interface orientation.
+        if let captureOrientation = AVCaptureVideoOrientation(interfaceOrientation: self.interfaceOrientation) {
             updateIconOrientations(isAnimated: true, captureOrientation: captureOrientation)
         }
     }
@@ -475,7 +471,7 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
     }
 
     var captureOrientation: AVCaptureVideoOrientation {
-        return lastKnownCaptureOrientation
+        return AVCaptureVideoOrientation(interfaceOrientation: interfaceOrientation) ?? .portrait
     }
 
     func beginCaptureButtonAnimation(_ duration: TimeInterval) {
