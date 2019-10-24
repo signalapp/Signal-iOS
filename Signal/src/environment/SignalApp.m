@@ -233,6 +233,19 @@ NS_ASSUME_NONNULL_BEGIN
     OWSNavigationController *navController =
         [[OWSNavigationController alloc] initWithRootViewController:initialViewController];
 
+#if TESTABLE_BUILD
+    AccountManager *accountManager = AppEnvironment.shared.accountManager;
+    UITapGestureRecognizer *registerGesture =
+        [[UITapGestureRecognizer alloc] initWithTarget:accountManager action:@selector(fakeRegistration)];
+    registerGesture.numberOfTapsRequired = 8;
+    [navController.view addGestureRecognizer:registerGesture];
+#else
+    UITapGestureRecognizer *submitLogGesture = [[UITapGestureRecognizer alloc] initWithTarget:[Pastelog class]
+                                                                                       action:@selector(submitLogs)];
+    submitLogGesture.numberOfTapsRequired = 8;
+    [navController.view addGestureRecognizer:submitLogGesture];
+#endif
+
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     appDelegate.window.rootViewController = navController;
 

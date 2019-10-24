@@ -43,7 +43,8 @@ public class MessageFetcherJob: NSObject {
         Logger.debug("")
 
         guard tsAccountManager.isRegisteredAndReady else {
-            owsFailDebug("isRegisteredAndReady was unexpectedly false")
+            assert(AppReadiness.isAppReady())
+            Logger.warn("not registered")
             return Promise.value(())
         }
 
