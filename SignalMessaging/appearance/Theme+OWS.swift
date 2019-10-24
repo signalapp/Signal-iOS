@@ -32,6 +32,13 @@ public enum ThemeIcon: UInt {
     case attachmentFile
     case attachmentGif
     case attachmentLocation
+
+    case messageActionReply
+    case messageActionForward
+    case messageActionCopy
+    case messageActionDetails
+    case messageActionDelete
+    case messageActionSave
 }
 
 @objc
@@ -100,6 +107,21 @@ public extension Theme {
             return isDarkThemeEnabled ? "gif-outline-32" :  "gif-outline-32-with-background"
         case .attachmentLocation:
             return isDarkThemeEnabled ? "location-outline-32" :  "location-outline-32-with-background"
+
+        case .messageActionReply:
+            return isDarkThemeEnabled ? "reply-filled-24" :  "reply-outline-24"
+        case .messageActionForward:
+            return isDarkThemeEnabled ? "forward-solid-24" :  "forward-outline-24"
+        case .messageActionCopy:
+            return isDarkThemeEnabled ? "copy-solid-24" :  "forwardic_copy"
+        case .messageActionDetails:
+            return isDarkThemeEnabled ? "info-solid-24" :  "ic_info"
+        case .messageActionDelete:
+            // TODO: We're missing dark theme version of this icon.
+            return "ic_trash"
+        case .messageActionSave:
+            // TODO: We're missing dark theme version of this icon.
+            return "download-filled-24"
         }
     }
 }

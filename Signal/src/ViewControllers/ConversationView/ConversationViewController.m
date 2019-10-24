@@ -5420,7 +5420,8 @@ typedef enum : NSUInteger {
 
 #pragma mark - ForwardMessageDelegate
 
-- (void)forwardMessageFlowDidCompleteWithThreads:(NSArray<TSThread *> *)threads
+- (void)forwardMessageFlowDidCompleteWithViewItem:(id<ConversationViewItem>)viewItem
+                                          threads:(NSArray<TSThread *> *)threads
 {
     __weak ConversationViewController *weakSelf = self;
     [self dismissViewControllerAnimated:true

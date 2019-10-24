@@ -138,7 +138,7 @@ public class LongTextViewController: OWSViewController {
         footer.autoPinEdge(.top, to: .bottom, of: messageTextView)
         footer.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
 
-        let forwardIcon = (Theme.isDarkThemeEnabled ? #imageLiteral(resourceName: "forward-solid-24") : #imageLiteral(resourceName: "forward-outline-24"))
+        let forwardIcon = Theme.iconImage(.messageActionForward)
         footer.items = [
             UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
             UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareButtonPressed)),
@@ -191,7 +191,8 @@ extension LongTextViewController: SDSDatabaseStorageObserver {
 // MARK: -
 
 extension LongTextViewController: ForwardMessageDelegate {
-    public func forwardMessageFlowDidComplete(threads: [TSThread]) {
+    public func forwardMessageFlowDidComplete(viewItem: ConversationViewItem,
+                                              threads: [TSThread]) {
         dismiss(animated: true) {
             self.didForwardMessage(threads: threads)
         }

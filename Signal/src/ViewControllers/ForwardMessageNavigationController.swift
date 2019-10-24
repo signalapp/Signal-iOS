@@ -6,8 +6,60 @@ import PromiseKit
 
 @objc
 public protocol ForwardMessageDelegate: AnyObject {
-    func forwardMessageFlowDidComplete(threads: [TSThread])
+    func forwardMessageFlowDidComplete(viewItem: ConversationViewItem,
+                                       threads: [TSThread])
     func forwardMessageFlowDidCancel()
+}
+
+// MARK: -
+
+@objc
+class ForwardMessageNavigationController: OWSNavigationController {
+
+    // MARK: Dependencies
+
+    var databaseStorage: SDSDatabaseStorage {
+        return SSKEnvironment.shared.databaseStorage
+    }
+
+    var messageSenderJobQueue: MessageSenderJobQueue {
+        return SSKEnvironment.shared.messageSenderJobQueue
+    }
+
+    // MARK: -
+
+    @objc
+    public weak var forwardMessageDelegate: ForwardMessageDelegate?
+
+    var approvedAttachments: [SignalAttachment]?
+    var approvedContactShare: ContactShareViewModel?
+    var approvalMessageText: String?
+
+    var selectedConversations: [ConversationItem] = []
+
+    private let conversationViewItem: ConversationViewItem
+
+    @objc
+    public init(conversationViewItem: ConversationViewItem) {
+        self.conversationViewItem = conversationViewItem
+
+        if conversationViewItem.hasBodyText {
+            self.approvalMessageText = conversationViewItem.displayableBodyText?.fullText
+        }
+
+        super.init(owsNavbar: ())
+
+        let pickerVC = ConversationPickerViewController()
+        pickerVC.delegate = self
+
+        setViewControllers([
+            pickerVC
+            ], animated: false)
+    }
+
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 }
 
 // MARK: - Approval
@@ -171,7 +223,8 @@ extension ForwardMessageNavigationController {
                                                   approvalMessageText: self.approvalMessageText,
                                                   approvedAttachments: approvedAttachments)
                 .done { threads in
-                    self.forwardMessageDelegate?.forwardMessageFlowDidComplete(threads: threads)
+                    self.forwardMessageDelegate?.forwardMessageFlowDidComplete(viewItem: self.conversationViewItem,
+                                                                               threads: threads)
                 }.retainUntilComplete()
         case .unknown,
              .oversizeTextDownloading,
@@ -214,7 +267,8 @@ extension ForwardMessageNavigationController {
                     try enqueueBlock(thread)
                 }
 
-                self.forwardMessageDelegate?.forwardMessageFlowDidComplete(threads: threads)
+                self.forwardMessageDelegate?.forwardMessageFlowDidComplete(viewItem: self.conversationViewItem,
+                                                                           threads: threads)
             }.retainUntilComplete()
     }
 
@@ -242,57 +296,6 @@ extension ForwardMessageNavigationController {
             }
             return threads
         }
-    }
-}
-
-// MARK: -
-
-@objc
-class ForwardMessageNavigationController: OWSNavigationController {
-
-    // MARK: Dependencies
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SSKEnvironment.shared.databaseStorage
-    }
-
-    var messageSenderJobQueue: MessageSenderJobQueue {
-        return SSKEnvironment.shared.messageSenderJobQueue
-    }
-
-    // MARK: -
-
-    @objc
-    public weak var forwardMessageDelegate: ForwardMessageDelegate?
-
-    var approvedAttachments: [SignalAttachment]?
-    var approvedContactShare: ContactShareViewModel?
-    var approvalMessageText: String?
-
-    var selectedConversations: [ConversationItem] = []
-
-    private let conversationViewItem: ConversationViewItem
-
-    @objc
-    public init(conversationViewItem: ConversationViewItem) {
-        self.conversationViewItem = conversationViewItem
-
-        if conversationViewItem.hasBodyText {
-            self.approvalMessageText = conversationViewItem.displayableBodyText?.fullText
-        }
-
-        super.init(owsNavbar: ())
-
-        let pickerVC = ConversationPickerViewController()
-        pickerVC.delegate = self
-
-        setViewControllers([
-            pickerVC
-            ], animated: false)
-    }
-
-    required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }
 

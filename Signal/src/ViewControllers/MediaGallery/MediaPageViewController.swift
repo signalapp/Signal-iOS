@@ -321,6 +321,13 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         return shareBarButton
     }()
 
+    lazy var forwardBarButton: UIBarButtonItem = {
+        let image = Theme.iconImage(.messageActionForward)
+        let forwardBarButton = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(didPressForward))
+        forwardBarButton.tintColor = Theme.darkThemePrimaryColor
+        return forwardBarButton
+    }()
+
     lazy var deleteBarButton: UIBarButtonItem = {
         let deleteBarButton = UIBarButtonItem(barButtonSystemItem: .trash,
                                               target: self,
@@ -356,6 +363,8 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         var toolbarItems: [UIBarButtonItem] = [
             shareBarButton,
+            buildFlexibleSpace(),
+            forwardBarButton,
             buildFlexibleSpace()
         ]
 
@@ -406,6 +415,30 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let attachmentStream = currentViewController.galleryItem.attachmentStream
 
         AttachmentSharing.showShareUI(forAttachment: attachmentStream)
+    }
+
+    @objc
+    public func didPressForward(_ sender: Any) {
+        let galleryItem: MediaGalleryItem = currentItem
+        var fetchedItem: ConversationViewItem?
+        databaseStorage.uiRead { transaction in
+            let message = galleryItem.message
+            let thread = message.thread(transaction: transaction)
+            let conversationStyle = ConversationStyle(thread: thread)
+            fetchedItem = ConversationInteractionViewItem(interaction: message,
+                                                          thread: thread,
+                                                          transaction: transaction,
+                                                          conversationStyle: conversationStyle)
+        }
+
+        guard let viewItem = fetchedItem else {
+            owsFailDebug("viewItem was unexpectedly nil")
+            return
+        }
+
+        let modal = ForwardMessageNavigationController(conversationViewItem: viewItem)
+        modal.forwardMessageDelegate = self
+        self.presentFullScreen(modal, animated: true)
     }
 
     @objc
@@ -897,5 +930,35 @@ extension MediaPageViewController: UIViewControllerTransitioningDelegate {
                 return nil
         }
         return interactionController
+    }
+}
+
+// MARK: -
+
+extension MediaPageViewController: ForwardMessageDelegate {
+    public func forwardMessageFlowDidComplete(viewItem: ConversationViewItem,
+                                              threads: [TSThread]) {
+        dismiss(animated: true) {
+            self.didForwardMessage(viewItem: viewItem, threads: threads)
+        }
+    }
+
+    public func forwardMessageFlowDidCancel() {
+        dismiss(animated: true)
+    }
+
+    func didForwardMessage(viewItem: ConversationViewItem,
+                           threads: [TSThread]) {
+        guard threads.count == 1 else {
+            return
+        }
+        guard let thread = threads.first else {
+            owsFailDebug("Missing thread.")
+            return
+        }
+        guard thread.uniqueId != viewItem.interaction.uniqueThreadId else {
+            return
+        }
+        SignalApp.shared().presentConversation(for: thread, animated: true)
     }
 }

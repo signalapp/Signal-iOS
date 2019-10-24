@@ -15,7 +15,7 @@ protocol MessageActionsDelegate: class {
 
 struct MessageActionBuilder {
     static func reply(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-        let image = (Theme.isDarkThemeEnabled ? #imageLiteral(resourceName: "reply-filled-24") : #imageLiteral(resourceName: "reply-outline-24"))
+        let image = Theme.iconImage(.messageActionReply)
         return MenuAction(image: image,
                           title: NSLocalizedString("MESSAGE_ACTION_REPLY", comment: "Action sheet button title"),
                           subtitle: nil,
@@ -27,7 +27,7 @@ struct MessageActionBuilder {
     }
 
     static func copyText(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-        let image = (Theme.isDarkThemeEnabled ? #imageLiteral(resourceName: "copy-solid-24") : #imageLiteral(resourceName: "ic_copy"))
+        let image = Theme.iconImage(.messageActionCopy)
         return MenuAction(image: image,
                           title: NSLocalizedString("MESSAGE_ACTION_COPY_TEXT", comment: "Action sheet button title"),
                           subtitle: nil,
@@ -38,7 +38,7 @@ struct MessageActionBuilder {
     }
 
     static func showDetails(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-        let image = (Theme.isDarkThemeEnabled ? #imageLiteral(resourceName: "info-solid-24") : #imageLiteral(resourceName: "ic_info"))
+        let image = Theme.iconImage(.messageActionDetails)
         return MenuAction(image: image,
                           title: NSLocalizedString("MESSAGE_ACTION_DETAILS", comment: "Action sheet button title"),
                           subtitle: nil,
@@ -49,8 +49,8 @@ struct MessageActionBuilder {
     }
 
     static func deleteMessage(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-		// TODO: We're missing dark theme version of this icon.
-        return MenuAction(image: #imageLiteral(resourceName: "ic_trash"),
+        let image = Theme.iconImage(.messageActionDelete)
+        return MenuAction(image: image,
                           title: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE", comment: "Action sheet button title"),
                           subtitle: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE", comment: "Action sheet button subtitle"),
                           accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "delete_message"),
@@ -60,7 +60,7 @@ struct MessageActionBuilder {
     }
 
     static func copyMedia(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-        let image = (Theme.isDarkThemeEnabled ? #imageLiteral(resourceName: "copy-solid-24") : #imageLiteral(resourceName: "ic_copy"))
+        let image = Theme.iconImage(.messageActionCopy)
         return MenuAction(image: image,
                           title: NSLocalizedString("MESSAGE_ACTION_COPY_MEDIA", comment: "Action sheet button title"),
                           subtitle: nil,
@@ -71,8 +71,8 @@ struct MessageActionBuilder {
     }
 
     static func saveMedia(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-		// TODO: We're missing dark theme version of this icon.
-        return MenuAction(image: #imageLiteral(resourceName: "download-filled-24.png"),
+        let image = Theme.iconImage(.messageActionSave)
+        return MenuAction(image: image,
                           title: NSLocalizedString("MESSAGE_ACTION_SAVE_MEDIA", comment: "Action sheet button title"),
                           subtitle: nil,
                           accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "save_media"),
@@ -82,7 +82,7 @@ struct MessageActionBuilder {
     }
 
     static func forwardMessage(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-        let image = (Theme.isDarkThemeEnabled ? #imageLiteral(resourceName: "forward-solid-24") : #imageLiteral(resourceName: "forward-outline-24"))
+        let image = Theme.iconImage(.messageActionForward)
         return MenuAction(image: image,
                           title: NSLocalizedString("MESSAGE_ACTION_FORWARD_MESSAGE", comment: "Action sheet button title"),
                           subtitle: nil,

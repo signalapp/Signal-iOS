@@ -102,7 +102,7 @@ public class PdfViewController: OWSViewController {
         toolbar.barTintColor = Theme.darkThemeBackgroundColor.withAlphaComponent(0.6)
         toolbar.tintColor = Theme.darkThemePrimaryColor
 
-        let forwardIcon = (Theme.isDarkThemeEnabled ? #imageLiteral(resourceName: "forward-solid-24") : #imageLiteral(resourceName: "forward-outline-24"))
+        let forwardIcon = Theme.iconImage(.messageActionForward)
         setToolbarItems(
             [
                 UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
@@ -185,7 +185,8 @@ public class PdfViewController: OWSViewController {
 // MARK: -
 
 extension PdfViewController: ForwardMessageDelegate {
-    public func forwardMessageFlowDidComplete(threads: [TSThread]) {
+    public func forwardMessageFlowDidComplete(viewItem: ConversationViewItem,
+                                              threads: [TSThread]) {
         dismiss(animated: true) {
             self.didForwardMessage(threads: threads)
         }
