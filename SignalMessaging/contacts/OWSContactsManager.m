@@ -1197,6 +1197,16 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
 {
+    __block NSString *comparableName;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        comparableName = [self comparableNameForSignalAccount:signalAccount transaction:transaction];
+    }];
+    return comparableName;
+}
+
+- (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
+                                 transaction:(SDSAnyReadTransaction *)transaction
+{
     NSString *_Nullable name;
     if (signalAccount.contact) {
         if (self.shouldSortByGivenName) {
@@ -1207,7 +1217,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }
 
     if (name.length < 1) {
-        name = [self displayNameForSignalAccount:signalAccount];
+        name = [self displayNameForAddress:signalAccount.recipientAddress transaction:transaction];
     }
 
     return name;

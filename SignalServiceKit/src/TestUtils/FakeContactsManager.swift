@@ -48,6 +48,10 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
         return ComparisonResult.orderedAscending
     }
 
+    public func comparableName(for signalAccount: SignalAccount, transaction: SDSAnyReadTransaction) -> String {
+        return "Fake name"
+    }
+
     public func cnContact(withId contactId: String?) -> CNContact? {
         return nil
     }
