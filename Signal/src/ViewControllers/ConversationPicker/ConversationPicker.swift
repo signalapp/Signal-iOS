@@ -5,11 +5,6 @@
 import Foundation
 import PromiseKit
 
-enum ConversationPickerMode {
-    case send
-    case next
-}
-
 protocol ConversationPickerDelegate: AnyObject {
     var selectedConversationsForConversationPicker: [ConversationItem] { get }
 
@@ -25,7 +20,7 @@ protocol ConversationPickerDelegate: AnyObject {
 
     func conversationPickerDidCancel(_ conversationPickerViewController: ConversationPickerViewController)
 
-    func conversationPickerMode(_ conversationPickerViewController: ConversationPickerViewController) -> ConversationPickerMode
+    func approvalMode(_ conversationPickerViewController: ConversationPickerViewController) -> ApprovalMode
 }
 
 @objc
@@ -56,7 +51,7 @@ class ConversationPickerViewController: OWSViewController {
     let kMaxPickerSelection = 32
 
     private let tableView = UITableView()
-    private let footerView = ConversationPickerFooterView()
+    private let footerView = ApprovalFooterView()
     private var footerOffsetConstraint: NSLayoutConstraint!
     private lazy var searchBar: OWSSearchBar = {
         let searchBar = OWSSearchBar()
@@ -86,11 +81,11 @@ class ConversationPickerViewController: OWSViewController {
         return currentInputAcccessoryView
     }
 
-    var mode: ConversationPickerMode {
+    var approvalMode: ApprovalMode {
         guard let delegate = delegate else {
             return .send
         }
-        return delegate.conversationPickerMode(self)
+        return delegate.approvalMode(self)
     }
 
     override func loadView() {
@@ -508,7 +503,7 @@ extension ConversationPickerViewController: UITableViewDelegate {
         if conversations.count == 0 {
             currentInputAcccessoryView = nil
         } else {
-            if mode == .next {
+            if approvalMode == .next {
                 nextButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(onTouchNextButton))
             } else {
                 currentInputAcccessoryView = footerView
@@ -567,11 +562,19 @@ extension ConversationPickerViewController: UISearchBarDelegate {
     }
 }
 
-extension ConversationPickerViewController: ConversationPickerFooterDelegate {
-    fileprivate func conversationPickerFooterDelegateDidRequestProceed(_ conversationPickerFooterView: ConversationPickerFooterView) {
+// MARK: -
+
+extension ConversationPickerViewController: ApprovalFooterDelegate {
+    public func approvalFooterDelegateDidRequestProceed(_ approvalFooterView: ApprovalFooterView) {
         delegate?.conversationPickerDidCompleteSelection(self)
     }
+
+    public func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode {
+        return approvalMode
+    }
 }
+
+// MARK: -
 
 extension ConversationPickerViewController {
     private struct Strings {
@@ -666,104 +669,5 @@ private class ConversationPickerCell: ContactTableViewCell {
         imageView.image = ConversationPickerCell.selectedBadgeImage
         imageView.tintColor = .ows_signalBlue
         return imageView
-    }()
-}
-
-// MARK: - ConversationPickerFooterView
-
-private protocol ConversationPickerFooterDelegate: AnyObject {
-    func conversationPickerFooterDelegateDidRequestProceed(_ conversationPickerFooterView: ConversationPickerFooterView)
-}
-
-private class ConversationPickerFooterView: UIView {
-    weak var delegate: ConversationPickerFooterDelegate?
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        autoresizingMask = .flexibleHeight
-        translatesAutoresizingMaskIntoConstraints = false
-
-        backgroundColor = Theme.keyboardBackgroundColor
-        layoutMargins = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16)
-
-        let topStrokeView = UIView()
-        topStrokeView.backgroundColor = Theme.hairlineColor
-        addSubview(topStrokeView)
-        topStrokeView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
-        topStrokeView.autoSetDimension(.height, toSize: CGHairlineWidth())
-
-        let stackView = UIStackView(arrangedSubviews: [labelScrollView, proceedButton])
-        stackView.spacing = 12
-        stackView.alignment = .center
-        addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override var intrinsicContentSize: CGSize {
-        return CGSize.zero
-    }
-
-    // MARK: public
-
-    var namesText: String? {
-        get {
-            return namesLabel.text
-        }
-    }
-
-    func setNamesText(_ newValue: String?, animated: Bool) {
-        let changes = {
-            self.namesLabel.text = newValue
-
-            self.layoutIfNeeded()
-
-            let offset = max(0, self.labelScrollView.contentSize.width - self.labelScrollView.bounds.width)
-            let trailingEdge = CGPoint(x: offset, y: 0)
-
-            self.labelScrollView.setContentOffset(trailingEdge, animated: false)
-        }
-
-        if animated {
-            UIView.animate(withDuration: 0.1, animations: changes)
-        } else {
-            changes()
-        }
-    }
-
-    // MARK: private subviews
-
-    lazy var labelScrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.showsHorizontalScrollIndicator = false
-
-        scrollView.addSubview(namesLabel)
-        namesLabel.autoPinEdgesToSuperviewEdges()
-        namesLabel.autoMatch(.height, to: .height, of: scrollView)
-
-        return scrollView
-    }()
-
-    lazy var namesLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.ows_dynamicTypeBody
-        label.textColor = Theme.secondaryTextAndIconColor
-
-        label.setContentHuggingLow()
-
-        return label
-    }()
-
-    lazy var proceedButton: UIButton = {
-        let button = OWSButton.sendButton(imageName: "send-solid-24") { [weak self] in
-            guard let self = self else { return }
-            self.delegate?.conversationPickerFooterDelegateDidRequestProceed(self)
-        }
-
-        return button
     }()
 }

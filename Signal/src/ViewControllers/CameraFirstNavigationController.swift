@@ -98,7 +98,7 @@ extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
         owsFailDebug("Camera-first capture flow should never cancel conversation picker.")
     }
 
-    func conversationPickerMode(_ conversationPickerViewController: ConversationPickerViewController) -> ConversationPickerMode {
+    func approvalMode(_ conversationPickerViewController: ConversationPickerViewController) -> ApprovalMode {
         return .send
     }
 }
