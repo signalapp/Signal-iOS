@@ -586,71 +586,94 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             }
         }
 
-        NSMutableDictionary<SignalServiceAddress *, SignalAccount *> *oldSignalAccounts = [NSMutableDictionary new];
+        NSMutableArray<SignalAccount *> *oldSignalAccountList = [NSMutableArray new];
+        NSMutableDictionary<SignalServiceAddress *, SignalAccount *> *oldSignalAccountMap = [NSMutableDictionary new];
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             [SignalAccount anyEnumerateWithTransaction:transaction
                                                  block:^(SignalAccount *signalAccount, BOOL *stop) {
-                                                     oldSignalAccounts[signalAccount.recipientAddress] = signalAccount;
+                                                     oldSignalAccountMap[signalAccount.recipientAddress]
+                                                         = signalAccount;
+                                                     [oldSignalAccountList addObject:signalAccount];
                                                  }];
         }];
 
-        NSMutableArray<SignalAccount *> *accountsToSave = [NSMutableArray new];
+        NSMutableDictionary<SignalServiceAddress *, SignalAccount *> *newSignalAccountMap = [NSMutableDictionary new];
+        NSMutableArray<SignalAccount *> *signalAccountsToUpsert = [NSMutableArray new];
         for (SignalAccount *signalAccount in signalAccounts) {
-            SignalAccount *_Nullable oldSignalAccount = oldSignalAccounts[signalAccount.recipientAddress];
-
-            // keep track of which accounts are still relevant, so we can clean up orphans
-            [oldSignalAccounts removeObjectForKey:signalAccount.recipientAddress];
-
-            if (oldSignalAccount == nil) {
-                // new Signal Account
-                [accountsToSave addObject:signalAccount];
+            if ([newSignalAccountMap objectForKey:signalAccount.recipientAddress] != nil) {
+                OWSFailDebug(@"Ignoring redundant signal account: %@", signalAccount.recipientAddress);
                 continue;
             }
 
-            if ([oldSignalAccount isEqual:signalAccount]) {
+            SignalAccount *_Nullable oldSignalAccount = oldSignalAccountMap[signalAccount.recipientAddress];
+
+            if (oldSignalAccount == nil) {
+                // new Signal Account
+                newSignalAccountMap[signalAccount.recipientAddress] = signalAccount;
+                [signalAccountsToUpsert addObject:signalAccount];
+                continue;
+            }
+
+            if ([oldSignalAccount hasSameContent:signalAccount]) {
                 // Same value, no need to save.
+                newSignalAccountMap[signalAccount.recipientAddress] = oldSignalAccount;
                 continue;
             }
 
             // value changed, save account
-            [accountsToSave addObject:signalAccount];
+            newSignalAccountMap[signalAccount.recipientAddress] = signalAccount;
+            [signalAccountsToUpsert addObject:signalAccount];
+        }
+
+        // Clean up orphans.
+        NSMutableArray<SignalAccount *> *signalAccountsToRemove = [NSMutableArray new];
+        for (SignalAccount *signalAccount in oldSignalAccountList) {
+            if (signalAccount == newSignalAccountMap[signalAccount.recipientAddress]) {
+                continue;
+            }
+
+            // In theory we want to remove SignalAccounts if the user deletes the corresponding system contact.
+            // However, as of iOS 11.2 CNContactStore occasionally gives us only a subset of the system contacts.
+            // Because of that, it's not safe to clear orphaned accounts.
+            // Because we still want to give users a way to clear their stale accounts, if they pull-to-refresh
+            // their contacts we'll clear the cached ones.
+            // RADAR: https://bugreport.apple.com/web/?problemID=36082946
+            BOOL isOrphan = newSignalAccountMap[signalAccount.recipientAddress] == nil;
+            if (isOrphan && !shouldClearStaleCache) {
+                OWSLogVerbose(@"Ensuring old SignalAccount is not inadvertently lost: %@", signalAccount);
+                // Make note that we're retaining this orphan; otherwise we could
+                // retain multiple orphans for a given recipient.
+                newSignalAccountMap[signalAccount.recipientAddress] = signalAccount;
+                continue;
+            } else {
+                // Always cleanup instances that have been replaced by another instance.
+            }
+            [signalAccountsToRemove addObject:signalAccount];
         }
 
         // Update cached SignalAccounts on disk
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            OWSLogInfo(@"Saving %lu SignalAccounts", (unsigned long)accountsToSave.count);
-            for (SignalAccount *signalAccount in accountsToSave) {
-                OWSLogVerbose(@"Saving SignalAccount: %@", signalAccount);
+            if (signalAccountsToUpsert.count > 0) {
+                OWSLogInfo(@"Saving %lu SignalAccounts", (unsigned long)signalAccountsToUpsert.count);
+                for (SignalAccount *signalAccount in signalAccountsToUpsert) {
+                    OWSLogVerbose(@"Saving SignalAccount: %@", signalAccount);
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                [signalAccount anyUpsertWithTransaction:transaction];
+                    [signalAccount anyUpsertWithTransaction:transaction];
 #pragma clang diagnostic pop
+                }
             }
 
-            if (shouldClearStaleCache) {
-                OWSLogInfo(@"Removing %lu old SignalAccounts.", (unsigned long)oldSignalAccounts.count);
-                for (SignalAccount *signalAccount in oldSignalAccounts.allValues) {
+            if (signalAccountsToRemove.count > 0) {
+                OWSLogInfo(@"Removing %lu old SignalAccounts.", (unsigned long)signalAccountsToRemove.count);
+                for (SignalAccount *signalAccount in signalAccountsToRemove) {
                     OWSLogVerbose(@"Removing old SignalAccount: %@", signalAccount);
                     [signalAccount anyRemoveWithTransaction:transaction];
                 }
-            } else {
-                // In theory we want to remove SignalAccounts if the user deletes the corresponding system contact.
-                // However, as of iOS 11.2 CNContactStore occasionally gives us only a subset of the system contacts.
-                // Because of that, it's not safe to clear orphaned accounts.
-                // Because we still want to give users a way to clear their stale accounts, if they pull-to-refresh
-                // their contacts we'll clear the cached ones.
-                // RADAR: https://bugreport.apple.com/web/?problemID=36082946
-                if (oldSignalAccounts.allValues.count > 0) {
-                    OWSLogWarn(@"NOT Removing %lu old SignalAccounts.", (unsigned long)oldSignalAccounts.count);
-                    for (SignalAccount *signalAccount in oldSignalAccounts.allValues) {
-                        OWSLogVerbose(@"Ensuring old SignalAccount is not inadvertently lost: %@", signalAccount);
-                        [signalAccounts addObject:signalAccount];
-                    }
-
-                    // re-sort signal accounts since we've appended some orphans
-                    [signalAccounts sortUsingComparator:self.signalAccountComparator];
-                }
             }
+
+            OWSLogInfo(
+                @"SignalAccount cache size: %lu.", (unsigned long)[SignalAccount anyCountWithTransaction:transaction]);
         }];
 
         // Add system contacts to the profile whitelist immediately

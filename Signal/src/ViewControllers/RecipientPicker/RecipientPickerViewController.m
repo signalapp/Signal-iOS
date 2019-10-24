@@ -55,6 +55,7 @@ const NSUInteger kMinimumSearchLength = 2;
 
 @property (nonatomic, readonly) UISearchBar *searchBar;
 @property (nonatomic, nullable) ComposeScreenSearchResultSet *searchResults;
+@property (nonatomic, nullable) NSString *lastSearchText;
 @property (nonatomic, nullable) OWSInviteFlow *inviteFlow;
 
 // A list of possible phone numbers parsed from the search text as
@@ -1050,20 +1051,33 @@ const NSUInteger kMinimumSearchLength = 2;
 
     if (searchText.length < kMinimumSearchLength) {
         self.searchResults = nil;
+        self.lastSearchText = nil;
         return;
     }
+
+    if ([NSObject isNullableObject:self.lastSearchText equalTo:searchText]) {
+        return;
+    }
+
+    self.lastSearchText = searchText;
 
     __weak __typeof(self) weakSelf = self;
 
     __block ComposeScreenSearchResultSet *searchResults;
     [self.databaseStorage
         asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-            searchResults = [self.fullTextSearcher searchForComposeScreenWithSearchText:searchText
-                                                                            transaction:transaction];
+            searchResults =
+                [self.fullTextSearcher searchForComposeScreenWithSearchText:searchText
+                                                                 maxResults:FullTextSearcher.kDefaultMaxResults
+                                                                transaction:transaction];
         }
         completion:^{
             __typeof(self) strongSelf = weakSelf;
             if (!strongSelf) {
+                return;
+            }
+            if (![NSObject isNullableObject:strongSelf.lastSearchText equalTo:searchText]) {
+                // Discard obsolete search results.
                 return;
             }
             strongSelf.searchResults = searchResults;

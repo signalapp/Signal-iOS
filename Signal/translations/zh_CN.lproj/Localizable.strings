@@ -50,6 +50,9 @@
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "是否与该用户共享您的资料？";
 
+/* generic button text to acknowledge that the corresponding text was read. */
+"ALERT_ACTION_ACKNOWLEDGE" = "知道了";
+
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "放弃";
 
@@ -75,13 +78,13 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "错误";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
-"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Could Not Load Database";
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "无法加载数据库";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Please upgrade to the latest version of Signal.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "请升级至最新版本的 Signal。";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Unknown Database Version.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "未知的数据库版本。";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "输入您的名字";
@@ -639,7 +642,7 @@
 "CONVERSATION_PICKER_SECTION_RECENTS" = "最近聊天";
 
 /* table section header for section containing contacts */
-"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "People";
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "联系人";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "选择接收人";
@@ -658,6 +661,9 @@
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "添加已有的联系人";
+
+/* button in conversation settings view. */
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "屏蔽此群组";
@@ -904,7 +910,7 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "为什么不邀请你的朋友?";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "确认您的PIN码。";
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "确认您的 PIN 码。";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
 "ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "无法禁用注册锁。";
@@ -1486,7 +1492,7 @@
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@不再标记为已验证。点击打开选项。";
 
 /* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "您已屏蔽此群组的一名成员";
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "您已屏蔽此群组的 1 名成员";
 
 /* Indicates that this group conversation has been blocked. */
 "MESSAGES_VIEW_GROUP_BLOCKED" = "您已屏蔽此群组";
@@ -1647,7 +1653,7 @@
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "PIN 输入错误次数已达上限。";
 
 /* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_1" = "该电话号码已经开启注册锁。请输入注册锁PIN码。";
+"ONBOARDING_2FA_EXPLANATION_1" = "该电话号码已经开启注册锁。请输入注册锁 PIN 码。";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_2" = "您的注册锁 PIN 码与最后一步时发送给您的验证码是不同的。";
@@ -1659,16 +1665,16 @@
 "ONBOARDING_2FA_INVALID_PIN" = "PIN 错误";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Incorrect PIN. %lu attempts remaining.";
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "PIN 错误，您还有 %lu 次尝试机会。";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "PIN 输入错误。最后一次尝试机会。";
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "PIN 输入错误。最后 1 次尝试机会。";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "注册锁";
 
 /* Explanation of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "为了您的隐私和账户安全，我们已将其锁定 7 天。\n\n在 7 天无操作后，您可以不用 PIN 码，用此手机号重新注册。此账户之前的信息会被彻底清除。";
 
 /* Label for the 'learn more' link in the 'onboarding account locked' view. */
 "ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "了解更多关于被锁账户的信息";
@@ -1698,10 +1704,25 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "无效的号码";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "Enter the PIN you created for your account. This is different from your SMS verification code.";
+"ONBOARDING_PIN_EXPLANATION" = "请输入您为此账户设置的 PIN 码。这与您收到的短信验证码不同。";
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_TITLE" = "请输入 PIN";
+
+/* header text when this device is being added as a secondary */
+"ONBOARDING_SECONDARY_CHOOSE_DEVICE_NAME" = "ONBOARDING_SECONDARY_CHOOSE_DEVICE_NAME";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"ONBOARDING_SECONDARY_COMPLETE_LINKING_PROCESS" = "ONBOARDING_SECONDARY_COMPLETE_LINKING_PROCESS";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"ONBOARDING_SECONDARY_SCAN_CODE_BODY" = "ONBOARDING_SECONDARY_SCAN_CODE_BODY";
+
+/* Link text for page with troubleshooting info shown on the QR scanning screen */
+"ONBOARDING_SECONDARY_SCAN_CODE_HELP_TEXT" = "ONBOARDING_SECONDARY_SCAN_CODE_HELP_TEXT";
+
+/* header text while displaying a QR code which, when scanned, will link this device. */
+"ONBOARDING_SECONDARY_SCAN_CODE_TITLE" = "ONBOARDING_SECONDARY_SCAN_CODE_TITLE";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "协议与隐私政策";
@@ -1788,7 +1809,7 @@
 "PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "闪照";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Disappearing Video";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "自毁视频";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "图片";
@@ -1860,7 +1881,7 @@
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "确认您的新 PIN";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Your PIN adds and extra layer of security and backs up your account.";
+"PIN_CREATION_EXPLANATION" = "您的 PIN 码为账户增加一层安全保护，并可以备份您的账户。";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN 不匹配。请重新尝试。";
@@ -2043,19 +2064,19 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "视频";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
-"REGISTER_2FA_FORGOT_PIN" = "我忘记了我的PIN码。";
+"REGISTER_2FA_FORGOT_PIN" = "我忘记了我的 PIN 码。";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "For your privacy and security, there is no way to recover your PIN. If you can’t remember your PIN, you may re-verify with SMS after 7 days of inactivity. In this case, your account will be wiped and all content deleted.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "为了您的隐私和安全，PIN 码是不可找回的。如果您不记得 PIN 码了，可在 7 天无操作后用短信验证码重新验证。这种情况下，您账户的信息会被彻底清除。";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "忘记了 PIN？";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "您还剩 %lu 次尝试机会。如果您尝试机会用光，此账户会被锁定。在 7 天无操作后，您可以不用 PIN 码重新注册。这种情况下，您账户的信息会被彻底清除。";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "您还剩最后 1 次尝试机会。如果您尝试机会用光，此账户会被锁定。在 7 天无操作后，您可以不用 PIN 码重新注册。这种情况下，您账户的信息会被彻底清除。";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN 错误";
@@ -2148,10 +2169,10 @@
 "REMINDER_2FA_NAV_TITLE" = "请输入您的注册锁 PIN 码";
 
 /* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "您可以在隐私设置里设置一个新的PIN码。";
+"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "您可以在隐私设置里设置一个新的 PIN 码。";
 
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "不正确的PIN码。";
+"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "不正确的 PIN 码。";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "重新注册推送通知服务";
@@ -2227,6 +2248,45 @@
 
 /* section header for search results that match a message in a conversation */
 "SEARCH_SECTION_MESSAGES" = "消息";
+
+/* alert title */
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
+
+/* alert title */
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Failed to Link Your Device";
+
+/* header text when this device is being added as a secondary */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choose a name for this device";
+
+/* label text */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "You'll see this name under \"Linked Devices.\"";
+
+/* text field placeholder */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Choose a name";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Finish Linking";
+
+/* header text before the user can link this device */
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "To get started, open the Signal app on your phone.";
+
+/* Link explaining what to do when trying to link a device before having a primary device. */
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone.";
+
+/* alert body */
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "To use Signal on your iPad, you need to download and register an account on your phone first.\n\nGo to your phone’s app store, install Signal, and then you’ll be able to link your iPad.";
+
+/* alert title */
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Install Signal on Your Phone";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "In Signal on your iPhone, tap Settings -> Linked Devices -> Add, then point the camera at this screen.";
+
+/* Link text for page with troubleshooting info shown on the QR scanning screen */
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Having Trouble?";
+
+/* header text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan the QR Code";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "安全会话被重置。";
@@ -2454,7 +2514,7 @@
 "SETTINGS_NOTIFICATIONS" = "通知";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security and backs up your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+"SETTINGS_PINS_FOOTER" = "您的 PIN 码为账户增加一层安全保护，并可以备份您的账户。当您用手机号注册 Signal 时，需要输入此 PIN 码。如果您忘记了 PIN 码，账户会被锁定 7 天。";
 
 /* Label for the 'pins' item of the privacy settings. */
 "SETTINGS_PINS_ITEM" = "更改 PIN";
@@ -2676,10 +2736,10 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "验证安全码";
 
 /* The number of members in a group. Embeds {{member count}} */
-"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu members";
+"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu 名成员";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of %@, %@, and %lu additional groups";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@，%@，以及其他 %lu 个群组的成员";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@ 的成员";
@@ -2872,6 +2932,12 @@
 
 /* Error moessage shown when a username update fails. */
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "用户名更新失败。";
+
+/* error label near a field */
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Device name cannot be blank";
+
+/* error label near a field */
+"VALIDATION_ERROR_TOO_LONG" = "Device name is too long";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "您已将%@标记为未验证。";

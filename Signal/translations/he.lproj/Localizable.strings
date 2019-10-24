@@ -50,6 +50,9 @@
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "האם תרצה לשתף את הפרופיל שלך עם משתמש זה?";
 
+/* generic button text to acknowledge that the corresponding text was read. */
+"ALERT_ACTION_ACKNOWLEDGE" = "הבנתי";
+
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "השלך";
 
@@ -75,13 +78,13 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "שגיאה";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
-"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Could Not Load Database";
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "לא היה ניתן לטעון מסד נתונים";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Please upgrade to the latest version of Signal.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "אנא שדרג אל הגרסה האחרונה של Signal.";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Unknown Database Version.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "גרסת מסד נתונים בלתי ידועה.";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "הכנס את שמך";
@@ -120,7 +123,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "מגבלת כיתוב הושגה.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "הוסף כיתוב...";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "הוסף כיתוב…";
 
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "כיתוב";
@@ -153,7 +156,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "לא היה ניתן להמיר תמונה.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "לא היה ניתן לעבד וידיאו.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "לא היה ניתן לעבד סרטון.";
 
 /* Attachment error message for image attachments which cannot be parsed */
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "לא היה ניתן לעבד תמונה.";
@@ -659,6 +662,9 @@
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "הוסף לאיש קשר קיים";
 
+/* button in conversation settings view. */
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
+
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "חסום קבוצה זו";
 
@@ -741,7 +747,7 @@
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "משתמש זה אינו באנשי הקשר שלך.";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "טוען עוד הודעות...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "טוען עוד הודעות…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "הקש לעוד";
@@ -892,7 +898,7 @@
 "EDIT_TXT" = "ערוך";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "שלום,\n\nלאחרונה אני משתמש ב-Signal כדי לשמור על השיחות ב-iPhone שלי פרטיות. אני רוצה שגם תתקין אותו, ככה שנוכל להיות בטוחים שרק אתה ואני יכולים לקרוא את ההודעות שלנו או לשמוע את השיחות שלנו.\n\nSignal זמין עבור iPhone ו-Android. השג אותו כאן: %@\n\nSignal עובד כמו יישום ההתכתבויות הקיים שלך. אנחנו יכולים לשלוח תמונות ווידיאוים, לבצע שיחות ולהתחיל התכתבויות קבוצתיות. החלק הכי טוב הוא שאף אחד לא יכול לראות שום דבר מזה, אפילו לא האנשים שיוצרים את Signal!\n\nאתה יכול לקרוא עוד אודות Open Whisper Systems, האנשים שיוצרים את Signal, כאן: %@";
+"EMAIL_INVITE_BODY" = "שלום,\n\nלאחרונה אני משתמש ב־Signal כדי לשמור על השיחות ב־iPhone שלי פרטיות. אני רוצה שגם תתקין אותו, ככה שנוכל להיות בטוחים שרק אתה ואני יכולים לקרוא את ההודעות שלנו או לשמוע את השיחות שלנו.\n\nSignal זמין עבור iPhone ו־Android. השג אותו כאן: %@\n\nSignal עובד כמו יישום ההתכתבויות הקיים שלך. אנחנו יכולים לשלוח תמונות וסרטונים, לבצע שיחות ולהתחיל התכתבויות קבוצתיות. החלק הכי טוב הוא שאף אחד לא יכול לראות שום דבר מזה, אפילו לא האנשים שיוצרים את Signal!\n\nאתה יכול לקרוא עוד אודות Open Whisper Systems, האנשים שיוצרים את Signal, כאן: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "בוא נחליף אל Signal";
@@ -1066,10 +1072,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "אין לך מדיה כלשהי בשיחה זו.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "טוען מדיה חדשה יותר...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "טוען מדיה חדשה יותר…";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "טוען מדיה ישנה יותר...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "טוען מדיה ישנה יותר…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "צרופה";
@@ -1189,16 +1195,16 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "נכשל בבחירת צרופה.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "מתחבר...";
+"IN_CALL_CONNECTING" = "מתחבר…";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "מתחבר מחדש...";
+"IN_CALL_RECONNECTING" = "מתחבר מחדש…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "מצלצל...";
+"IN_CALL_RINGING" = "מצלצל…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "נענתה. מאבטח...";
+"IN_CALL_SECURING" = "נענתה. מאבטח…";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "השיחה הסתיימה.";
@@ -1207,7 +1213,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "שיחות אלו מאורכבות ויופיעו בתיבה הנכנסת רק אם מתקבלות הודעות חדשות.";
 
 /* Message shown in the home view when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "תן לתיבת הדואר הנכנס שלך משהו לכתוב עליו בית. התחל ע\"י שליחת הודעה לחבר.";
+"INBOX_VIEW_EMPTY_INBOX" = "תן לתיבה שלך משהו לכתוב עליו בית. התחל ע\"י שליחת הודעה לחבר.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "אתה יכול לאפשר גישה אל אנשי קשר ביישום הגדרות של iOS כדי לראות שמות אנשי קשר ברשימת שיחות Signal שלך.";
@@ -1465,13 +1471,13 @@
 "MESSAGE_STATUS_SEND_FAILED" = "שליחה נכשלה";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "שולח...";
+"MESSAGE_STATUS_SENDING" = "שולח…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "נשלח";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "מעלה...";
+"MESSAGE_STATUS_UPLOADING" = "מעלה…";
 
 /* placeholder text for the editable message field */
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "הודעה חדשה";
@@ -1703,6 +1709,21 @@
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_TITLE" = "הכנס את ה־PIN שלך";
 
+/* header text when this device is being added as a secondary */
+"ONBOARDING_SECONDARY_CHOOSE_DEVICE_NAME" = "ONBOARDING_SECONDARY_CHOOSE_DEVICE_NAME";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"ONBOARDING_SECONDARY_COMPLETE_LINKING_PROCESS" = "ONBOARDING_SECONDARY_COMPLETE_LINKING_PROCESS";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"ONBOARDING_SECONDARY_SCAN_CODE_BODY" = "ONBOARDING_SECONDARY_SCAN_CODE_BODY";
+
+/* Link text for page with troubleshooting info shown on the QR scanning screen */
+"ONBOARDING_SECONDARY_SCAN_CODE_HELP_TEXT" = "ONBOARDING_SECONDARY_SCAN_CODE_HELP_TEXT";
+
+/* header text while displaying a QR code which, when scanned, will link this device. */
+"ONBOARDING_SECONDARY_SCAN_CODE_TITLE" = "ONBOARDING_SECONDARY_SCAN_CODE_TITLE";
+
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "תנאים ומדיניות פרטיות";
 
@@ -1779,7 +1800,7 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "שגיאה בטיפול בהודעה נכנסת";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Media Message";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "הודעת מדיה";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "מדיה";
@@ -1788,13 +1809,13 @@
 "PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "תצלום נעלם";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Disappearing Video";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "סרטון נעלם";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "תצלום";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "וידיאו";
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "סרטון";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "הוצג";
@@ -2040,7 +2061,7 @@
 "QUOTED_REPLY_TYPE_IMAGE" = "תמונה";
 
 /* Indicates this message is a quoted reply to a video file. */
-"QUOTED_REPLY_TYPE_VIDEO" = "וידיאו";
+"QUOTED_REPLY_TYPE_VIDEO" = "סרטון";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "שכחתי את ה־PIN שלי.";
@@ -2227,6 +2248,45 @@
 
 /* section header for search results that match a message in a conversation */
 "SEARCH_SECTION_MESSAGES" = "הודעות";
+
+/* alert title */
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
+
+/* alert title */
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Failed to Link Your Device";
+
+/* header text when this device is being added as a secondary */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choose a name for this device";
+
+/* label text */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "You'll see this name under \"Linked Devices.\"";
+
+/* text field placeholder */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Choose a name";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Finish Linking";
+
+/* header text before the user can link this device */
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "To get started, open the Signal app on your phone.";
+
+/* Link explaining what to do when trying to link a device before having a primary device. */
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone.";
+
+/* alert body */
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "To use Signal on your iPad, you need to download and register an account on your phone first.\n\nGo to your phone’s app store, install Signal, and then you’ll be able to link your iPad.";
+
+/* alert title */
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Install Signal on Your Phone";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "In Signal on your iPhone, tap Settings -> Linked Devices -> Add, then point the camera at this screen.";
+
+/* Link text for page with troubleshooting info shown on the QR scanning screen */
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Having Trouble?";
+
+/* header text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan the QR Code";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "שיח מאובטח אופס.";
@@ -2574,7 +2634,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "מספר הביטחון שלך עם %@ השתנה לאחרונה. מומלץ לוודא אותו ביישום הראשי לפני שליחה מחדש.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "טוען...";
+"SHARE_EXTENSION_LOADING" = "טוען…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "הפעל את היישום Signal כדי להירשם.";
@@ -2592,7 +2652,7 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "לא היה ניתן לשלוח צרופה";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "מעלה...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "מעלה…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "לא היה ניתן להכין צרופה";
@@ -2637,7 +2697,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "מדבקות מותקנות";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "טוען...";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "טוען…";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "אין מדבקות מותקנות";
@@ -2872,6 +2932,12 @@
 
 /* Error moessage shown when a username update fails. */
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "עדכון שם משתמש נכשל.";
+
+/* error label near a field */
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Device name cannot be blank";
+
+/* error label near a field */
+"VALIDATION_ERROR_TOO_LONG" = "Device name is too long";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "סימנת את %@ כלא מוודא.";

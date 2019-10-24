@@ -92,7 +92,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
     override func tearDown() {
         super.tearDown()
 
-        SDSDatabaseStorage.shouldLogDBQueries = true
+        SDSDatabaseStorage.shouldLogDBQueries = FeatureFlags.logSQLQueries
     }
 
     override func setUp() {

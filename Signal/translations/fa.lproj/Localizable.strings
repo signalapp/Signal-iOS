@@ -50,6 +50,9 @@
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "آیا تمایل دارید پروفایل خود را با این کاربر به اشتراک بگذارید؟";
 
+/* generic button text to acknowledge that the corresponding text was read. */
+"ALERT_ACTION_ACKNOWLEDGE" = "فهمیدم";
+
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "ولش كن";
 
@@ -75,13 +78,13 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "خطاء";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
-"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Could Not Load Database";
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "پایگاه داده بارگیری نشد";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Please upgrade to the latest version of Signal.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = ".لطفا سیگنال را به آخرین نسخه ارتقاء دهید";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Unknown Database Version.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "نسخه پایگاه داده ناشناخته.";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "نام خود را وارد کنید";
@@ -126,7 +129,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "کپشن";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
-"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Failed to Save";
+"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "ذخیره نشد";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "نوع فايل: %@";
@@ -177,7 +180,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "فایل ضمیمه خالی است.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose Media to Send";
+"ATTACHMENT_HINT" = "رسانه را برای ارسال انتخاب کنید";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "دوربین";
@@ -195,10 +198,10 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "موقعیت";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Grant access to your photos in settings to send them here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "در تنظیمات به عکسهای خود دسترسی دهید تا آنها را در اینجا بفرستید.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Once you’ve taken photos, you’ll be able to send your recents here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "پس از عکس گرفتن ، می توانید پیام های خود را به اینجا ارسال کنید.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "ضمیمه";
@@ -216,7 +219,7 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "پیام صوتی";
 
 /* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Audio Message";
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "پیام صوتی";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "بلندگو";
@@ -354,7 +357,7 @@
 "BUTTON_NEXT" = "بعدی";
 
 /* Label for the 'okay' button. */
-"BUTTON_OKAY" = "Okay";
+"BUTTON_OKAY" = "باشه";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "انتخاب";
@@ -501,10 +504,10 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "گروه‌ها";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Phone number search";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "جستجوی شماره تلفن";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Username search";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "جستجوی نام کاربری";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "شما میتوانید دسترسی مخاطبان را در قسمت تنظیمات iOS فعال  کنید تا ببینید کدام یک از مخاطب های شما کاربرهای Signal هستند.";
@@ -630,7 +633,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "گفتگو حذف شود؟";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ conversations.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "شما نمی توانید بیشتر از %@ آیتم را به اشتراک بگذارید.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "گروه ها";
@@ -639,10 +642,10 @@
 "CONVERSATION_PICKER_SECTION_RECENTS" = "آخرین چت ها";
 
 /* table section header for section containing contacts */
-"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "People";
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "مردم";
 
 /* navbar header */
-"CONVERSATION_PICKER_TITLE" = "Choose Recipients";
+"CONVERSATION_PICKER_TITLE" = "گیرندگان را انتخاب کنید";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "هیچ مطابقی یافت نشد";
@@ -658,6 +661,9 @@
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "اضافه کردن به مخاطبین قبلی";
+
+/* button in conversation settings view. */
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "این گروه را مسدود کن";
@@ -714,7 +720,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "خارج کردن از حالت سکوت";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "This user is in your contacts";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "این کاربر در مخاطبین شما است";
 
 /* Indicates that user's profile has been shared with a group. */
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "این گروه اطلاعات پروفایل شما را می‌بیند.";
@@ -925,10 +931,10 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "رمزی که شما وارد کرده اید با رمزی که اول وارد کرده اید مطابقت ندارد.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too long. */
-"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN can be no longer than 20 digits.";
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "پین می تواند بیش از 20 رقم باشد.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too short. */
-"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN must be at least 4 digits.";
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "پین حداقل باید 4 رقم باشد.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "یک پین قفل ثبت نام وارد کنید. دفعه بعدی که با این شماره تلفن با Signal ثبت نام کنید از شما خواسته خواهد شد تا این پین را وارد کنید.";
@@ -949,7 +955,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "تماس ناموفق";
 
 /* Label indicating that this OS version is no longer supported. */
-"END_OF_LIFE_OS_WARNING" = "The latest Signal features won’t work on this version of iOS. Please upgrade this device to receive future Signal updates.";
+"END_OF_LIFE_OS_WARNING" = "آخرین ویژگی های سیگنال روی این نسخه از آی‌او‌اس کار نخواهند کرد. لطفا این دستگاه ها را بروزرسانی کنید تا به روز رسانی های بعدی سیگنال را دریافت کنید";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "دسترسی به مخاطبین ممکن نشد.";
@@ -1171,7 +1177,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "اولین مکالمه خود را از اینجا شروع کنید.";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Message Request";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "درخواست پیام";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "هیچ نتیجه ای برای '%@' یافت نشد";
@@ -1303,10 +1309,10 @@
 "LIST_GROUP_MEMBERS_ACTION" = "اعضای گروه";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Search by name or address";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "جستجو بر اساس نام یا آدرس";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "Select Location";
+"LOCATION_PICKER_TITLE" = "انتخاب‌ کردن موقعیت";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "ثبت گزارش‌ها";
@@ -1426,19 +1432,19 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "حذف";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "You must share your profile to continue your conversation with %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "برای ادامه مکالمه خود با%@ باید نمایه خود را به اشتراک بگذارید.";
 
 /* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "You must share your profile to continue your conversation in %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "برای ادامه مکالمه خود با%@ باید نمایه خود را به اشتراک بگذارید.";
 
 /* A button used to learn more about why you must share your profile. */
 "MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "اطلاعات بیشتر";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "آیا می خواهید%@ به شما پیام بدهد؟ آنها نمی دانند شما پیامهای آنها را ندیده اید تا زمانی که شما بپذیرید.";
 
 /* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Do you want to join the group %@? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "آیا می خواهید به گروه%@ بپیوندید؟ آنها نمی دانند شما پیامهای آنها را ندیده اید تا زمانی که شما بپذیرید.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "اشتراک گذاری پروفایل";
@@ -1524,7 +1530,7 @@
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "شما می‌توانید این اجازه را از تنظیمات اپ iOS فعال کنید.";
 
 /* Alert title indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_TITLE" = "Signal requires access to your location for this feature.";
+"MISSING_LOCATION_PERMISSION_TITLE" = "سیگنال برای این ویژگی به مکان شما نیاز دارد.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "شما می‌توانید این اجازه را از تنظیمات اپ iOS فعال کنید.";
@@ -1608,10 +1614,10 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "جستجو مخاطبین از طریق شماره تلفن";
 
 /* A string prompting the user to send a new mesaage to a user */
-"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "New message to:";
+"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "پیام جدید به :";
 
 /* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "No user found. Invite via SMS?";
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "هیچ کاربری یافت نشد از طریق پیامک می خواهید دعوتش کنید؟";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "یادداشت به خود";
@@ -1644,7 +1650,7 @@
 "OK" = "باشه";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Incorrect PIN. Attempts exhausted.";
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "پین نادرست .";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "این شماره تلفن دارای قفل ثبت نام فعال شده میباشد. لطفا PIN قفل ثبت نام را وارد کنید.";
@@ -1653,28 +1659,28 @@
 "ONBOARDING_2FA_EXPLANATION_2" = "پین قفل ثبت نام با کد تاییدیه خودکاری که به گوشی همراه شما در طول آخرین مرحله ارسال شد تفاوت دارد. ";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Forgot your PIN?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "پین خود را فراموش کرده اید؟";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "کد نادرست است";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Incorrect PIN. %lu attempts remaining.";
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "پین نادرست تلاشهای٪ lu باقی مانده است";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Incorrect PIN. 1 attempt remaining.";
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "پین اشتباه وارد شده . 1 تلاش دیگر باقی مانده است.";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "قفل ثبت نام";
 
 /* Explanation of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "برای محافظت از حریم خصوصی شما و امنیت حساب شما ، ما آن را به مدت 7 روز قفل کرده ایم. \"\n\nپس از 7 روز عدم فعالیت ، بدون نیاز به پین ​​خود ، مجدداً شماره این شماره را ثبت کنید. همه محتوا پاک می شوند.";
 
 /* Label for the 'learn more' link in the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Learn more about locked accounts";
+"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "درباره حسابهای قفل شده بیشتر بدانید";
 
 /* Title of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Account Locked";
+"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "حساب کاربری قفل شد";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "کمی انسانیت به پیام های خود اضافه کنید";
@@ -1698,10 +1704,25 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "شماره نامعتبر";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "Enter the PIN you created for your account. This is different from your SMS verification code.";
+"ONBOARDING_PIN_EXPLANATION" = "پین ایجاد شده برای حساب خود را وارد کنید. این با کد تأیید پیام کوتاه شما متفاوت است.";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_TITLE" = "Enter your PIN";
+"ONBOARDING_PIN_TITLE" = "پین خود را وارد کنید";
+
+/* header text when this device is being added as a secondary */
+"ONBOARDING_SECONDARY_CHOOSE_DEVICE_NAME" = "ONBOARDING_SECONDARY_CHOOSE_DEVICE_NAME";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"ONBOARDING_SECONDARY_COMPLETE_LINKING_PROCESS" = "ONBOARDING_SECONDARY_COMPLETE_LINKING_PROCESS";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"ONBOARDING_SECONDARY_SCAN_CODE_BODY" = "ONBOARDING_SECONDARY_SCAN_CODE_BODY";
+
+/* Link text for page with troubleshooting info shown on the QR scanning screen */
+"ONBOARDING_SECONDARY_SCAN_CODE_HELP_TEXT" = "ONBOARDING_SECONDARY_SCAN_CODE_HELP_TEXT";
+
+/* header text while displaying a QR code which, when scanned, will link this device. */
+"ONBOARDING_SECONDARY_SCAN_CODE_TITLE" = "ONBOARDING_SECONDARY_SCAN_CODE_TITLE";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "شرایط و سیاست های حفظ حریم خصوصی";
@@ -1779,7 +1800,7 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "خطا در کنترل پیام دریافتی";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Media Message";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "پیام رسانه ای";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "مدیا";
@@ -1788,7 +1809,7 @@
 "PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "عکس ناپدید شد";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Disappearing Video";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "ناپدید شدن ویدئو";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "تصویر";
@@ -1851,58 +1872,58 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "آلبوم بی نام";
 
 /* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "There is no way to recover your PIN, so remember it.";
+"PIN_CREATION_BOLD_EXPLANATION" = "هیچ راهی برای بازیابی پین شما وجود ندارد ، بنابراین آن را بخاطر بسپارید.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_CHANGING_TITLE" = "Change your PIN";
+"PIN_CREATION_CHANGING_TITLE" = "پین خود را تغییر دهید";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Confirm your new PIN.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "پین جدید خود را تأیید کنید.";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Your PIN adds and extra layer of security and backs up your account.";
+"PIN_CREATION_EXPLANATION" = "پین شما یک لایه امنیتی بیشتر اضافه می کند و از حساب شما نسخه پشتیبان تهیه می کند.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
-"PIN_CREATION_MISMATCH_ERROR" = "PINs don’t match. Try again.";
+"PIN_CREATION_MISMATCH_ERROR" = "پین ها مطابقت ندارند. دوباره امتحان کنید";
 
 /* The placeholder when confirming a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "Re-enter PIN";
+"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "وارد کردن دوباره پین";
 
 /* The placeholder when creating a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "PIN must be 4+ digits";
+"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "پین باید بیشتر از 4 کارکتر باشد";
 
 /* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "When you’re logged out, there is no way to recover your PIN.";
+"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "هنگامی که از سیستم خارج شدید ، راهی برای بازیابی پین خود ندارید.";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Because you’re still logged in, you can create a new PIN.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "از آنجایی که هنوز داخل سیستم هستید ، می توانید یک پین جدید ایجاد کنید.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Create a new PIN";
+"PIN_CREATION_RECREATION_TITLE" = "یک پین جدید ایجاد کنید";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "Create your PIN";
+"PIN_CREATION_TITLE" = "پین خود را ایجاد کنید";
 
 /* Label indicating that the attempted PIN is too long */
-"PIN_CREATION_TOO_LONG_ERROR" = "PIN must be no more than 20 digits.";
+"PIN_CREATION_TOO_LONG_ERROR" = "پین نباید بیش از 20 رقم باشد.";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "پین حداقل باید 4 رقم باشد.";
 
 /* The explanation for the 'pin reminder' dialog. */
-"PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
+"PIN_REMINDER_EXPLANATION" = "برای کمک به شما در به خاطر سپردن پین خود ، از شما می خواهیم که به صورت دوره ای آن را وارد کنید. با گذشت زمان کمتر سؤال خواهیم کرد.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
-"PIN_REMINDER_FORGOT_PIN" = "Forgot your PIN?";
+"PIN_REMINDER_FORGOT_PIN" = "پین خود را فراموش کرده اید؟";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
-"PIN_REMINDER_MISMATCH_ERROR" = "Invalid PIN, try again.";
+"PIN_REMINDER_MISMATCH_ERROR" = "پین نامعتبر است ، دوباره امتحان کنید.";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "Enter your Signal PIN";
+"PIN_REMINDER_TITLE" = "پین سیگنال خود را وارد کنید";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "پین حداقل باید 4 رقم باشد.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "پخش مدیا";
@@ -1965,7 +1986,7 @@
 "PROFILE_VIEW_CLEAR_AVATAR" = "حذف تصویر پروفایل";
 
 /* A string indicating that the user can create a username on the profile view. */
-"PROFILE_VIEW_CREATE_USERNAME" = "Create Username";
+"PROFILE_VIEW_CREATE_USERNAME" = "ایجاد نام کاربری";
 
 /* Error message shown when user tries to update profile with a profile name that is too long. */
 "PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "نام پروفایل شما طولانی است.";
@@ -1992,7 +2013,7 @@
 "PROFILE_VIEW_TITLE" = "نمایه";
 
 /* Label for the username field of the profile view. */
-"PROFILE_VIEW_USERNAME_FIELD" = "Username";
+"PROFILE_VIEW_USERNAME_FIELD" = "نام کاربری";
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "علامت‌گذاری به عنوان خوانده‌شده";
@@ -2046,16 +2067,16 @@
 "REGISTER_2FA_FORGOT_PIN" = "پین خود را فراموش کرده ام.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "For your privacy and security, there is no way to recover your PIN. If you can’t remember your PIN, you may re-verify with SMS after 7 days of inactivity. In this case, your account will be wiped and all content deleted.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "برای حفظ حریم خصوصی و امنیت شما ، هیچ راهی برای بازیابی پین شما وجود ندارد. اگر نمی توانید پین خود را به خاطر بسپارید ، می توانید پس از 7 روز عدم فعالیت دوباره با پیام کوتاه تأیید کنید. در این حالت ، حساب شما پاک می شود و کلیه محتوا حذف می شود.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Forgot your PIN?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "پین خود را فراموش کرده اید؟";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "شما%lu تلاش های دیگر دارید. در صورت عدم موفقیت ، حساب شما قفل خواهد شد. پس از 7 روز عدم فعالیت ، می توانید بدون PIN خود دوباره ثبت نام کنید. حساب شما پاک خواهد شد و کلیه محتوا حذف می شود.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "شما یک تلاش باقی مانده است. در صورت عدم موفقیت ، حساب شما قفل خواهد شد. پس از 7 روز عدم فعالیت ، می توانید بدون PIN خود دوباره ثبت نام کنید. حساب شما پاک خواهد شد و کلیه محتوا حذف می شود.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "کد نادرست است";
@@ -2211,7 +2232,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "آنلاک کردن Signal";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Name, username, or number";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "نام ، نام کاربری یا شماره";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "جستجو با اسم یا شماره";
@@ -2227,6 +2248,45 @@
 
 /* section header for search results that match a message in a conversation */
 "SEARCH_SECTION_MESSAGES" = "پیام ها";
+
+/* alert title */
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
+
+/* alert title */
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Failed to Link Your Device";
+
+/* header text when this device is being added as a secondary */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choose a name for this device";
+
+/* label text */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "You'll see this name under \"Linked Devices.\"";
+
+/* text field placeholder */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Choose a name";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Finish Linking";
+
+/* header text before the user can link this device */
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "To get started, open the Signal app on your phone.";
+
+/* Link explaining what to do when trying to link a device before having a primary device. */
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone.";
+
+/* alert body */
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "To use Signal on your iPad, you need to download and register an account on your phone first.\n\nGo to your phone’s app store, install Signal, and then you’ll be able to link your iPad.";
+
+/* alert title */
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Install Signal on Your Phone";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "In Signal on your iPhone, tap Settings -> Linked Devices -> Add, then point the camera at this screen.";
+
+/* Link text for page with troubleshooting info shown on the QR scanning screen */
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Having Trouble?";
+
+/* header text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan the QR Code";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "وضعیت رمزنگاری به حالت اولیه بازگردانیده شد.";
@@ -2454,13 +2514,13 @@
 "SETTINGS_NOTIFICATIONS" = "اعلانات";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security and backs up your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+"SETTINGS_PINS_FOOTER" = "پین شما یک لایه امنیتی بیشتر اضافه می کند و از حساب شما نسخه پشتیبان تهیه می کند. وقتی شماره تلفن خود را با سیگنال ثبت می کنید ، از شما خواسته می شود. اگر پین خود را فراموش کرده اید ، به مدت 7 روز از حساب خود قفل نخواهید شد.";
 
 /* Label for the 'pins' item of the privacy settings. */
-"SETTINGS_PINS_ITEM" = "Change your PIN";
+"SETTINGS_PINS_ITEM" = "پین خود را تغییر دهید";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "PIN";
+"SETTINGS_PINS_TITLE" = "پین";
 
 /* Label for 'CallKit privacy' preference */
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "نمایش نام و شماره تماس‌گیرنده";
@@ -2631,7 +2691,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "استیکر هایی که دریافت کردید";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Some sticker packs failed to load";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "برخی از بسته‌ های استیکر بارگیری نشدند";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "استیکر های نصب شده";
@@ -2661,7 +2721,7 @@
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "پک استیکر";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Sticker Pack failed to load";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = ".بستۀ استیکر بارگیری نشد";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "حذف";
@@ -2676,19 +2736,19 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "تایید کد امنیتی";
 
 /* The number of members in a group. Embeds {{member count}} */
-"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu members";
+"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu کاربران";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of %@, %@, and %lu additional groups";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of%@, %@, and %lu additional groups";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Member of %@";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "کاربر از %@";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Member of %@, %@, and %@";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Member of %@ and %@";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Member of %@and%@";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ روز";
@@ -2805,25 +2865,25 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "پشتیبانی نشده است";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Create your PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "پین خود را ایجاد کنید";
 
 /* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Learn more about PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "درباره پین ​​اطلاعات بیشتری کسب کنید";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock now does more. With PINs you can take your contacts with you when you switch devices.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "قفل ثبت نام شما اکنون کارهای بیشتری انجام می دهد. با استفاده از پین می توانید هنگام تعویض دستگاه ها ، مخاطبین خود را با خود ببرید.";
 
 /* Header for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registration Lock = PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "قفل ثبت‌نام = پین";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Add even more security to your account and take your contacts with you when you switch phones.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "امنیت بیشتری به حساب خود اضافه کنید و هنگام تعویض تلفن ، مخاطبین خود را با خود ببرید.";
 
 /* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducing PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "تعریف پین ها";
 
 /* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Do I have to create a PIN?";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "آیا باید پین ایجاد کنم؟";
 
 /* Body text for stickers splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "چرا از کلمات استفاده می کنید وقتی می توانید از استیکر ها استفاده کنید؟ روی کیبورد خود این آیکون را کلیک کنید:";
@@ -2838,40 +2898,46 @@
 "UPGRADE_IOS_ALERT_TITLE" = "به‌روزرسانی iOS";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Usernames on Signal are optional. If you choose to create a username other Signal users will be able to find you by this username and contact you without knowing your phone number.";
+"USERNAME_DESCRIPTION" = "نامهای کاربری در سیگنال اختیاری هستند. اگر تصمیم به ایجاد یک نام کاربری دارید ، سایر کاربران سیگنال قادر خواهند بود شما را با این نام کاربری پیدا کنند و بدون دانستن شماره تلفن شما با شما تماس بگیرند.";
 
 /* Label for the username field in the username view. */
-"USERNAME_FIELD" = "Username";
+"USERNAME_FIELD" = "نام کاربری";
 
 /* An error indicating that the supplied username contains disallowed characters. */
-"USERNAME_INVALID_CHARACTERS_ERROR" = "Usernames may only contain a-z, 0-9, and _";
+"USERNAME_INVALID_CHARACTERS_ERROR" = "نامهای کاربری باید فقط شامل a-z ، 0-9 و _ باشد";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "An error occured while looking up the username. Please try again later.";
+"USERNAME_LOOKUP_ERROR" = "هنگام جستجوی نام کاربری خطایی روی داد. لطفاً دوباره امتحان کنید.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@ is not a Signal user. Make sure you’ve entered the complete username.";
+"USERNAME_NOT_FOUND_FORMAT" = "%@کاربر سیگنال نیست اطمینان حاصل کنید که نام کاربری کامل را وارد کرده اید.";
 
 /* A message indicating that the given username was not registered with signal. */
-"USERNAME_NOT_FOUND_TITLE" = "User Not Found";
+"USERNAME_NOT_FOUND_TITLE" = "کاربر یافت نشد";
 
 /* The placeholder for the username text entry in the username view. */
-"USERNAME_PLACEHOLDER" = "Enter a username";
+"USERNAME_PLACEHOLDER" = "نام کاربری را وارد کنید";
 
 /* A prefix appeneded to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
 /* The title for the username view. */
-"USERNAME_TITLE" = "Username";
+"USERNAME_TITLE" = "نام کاربری";
 
 /* An error indicating that the supplied username is too short. */
-"USERNAME_TOO_SHORT_ERROR" = "Usernames must have at least 4 characters.";
+"USERNAME_TOO_SHORT_ERROR" = "نام کاربری باید حداقل 4 کاراکتر داشته باشد.";
 
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
-"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ is taken.";
+"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@گرفته شده است.";
 
 /* Error moessage shown when a username update fails. */
-"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Username update failed.";
+"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "بروزرسانی نام کاربری با شکست مواجه شد";
+
+/* error label near a field */
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Device name cannot be blank";
+
+/* error label near a field */
+"VALIDATION_ERROR_TOO_LONG" = "Device name is too long";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "شما %@ را به عنوان تائیدنشده علامت‌گذاری کردید.";

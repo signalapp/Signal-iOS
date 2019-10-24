@@ -17,6 +17,8 @@ public class SecondaryLinkingPrepViewController: OnboardingBaseViewController {
 
     override public func loadView() {
         view = UIView()
+        view.addSubview(primaryView)
+        primaryView.autoPinEdgesToSuperviewEdges()
 
         view.backgroundColor = Theme.backgroundColor
 
@@ -32,7 +34,7 @@ public class SecondaryLinkingPrepViewController: OnboardingBaseViewController {
         heroImageView.accessibilityIdentifier = "onboarding.prelink.heroImageView"
 
         let titleLabel = self.titleLabel(text: NSLocalizedString("SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY", comment: "header text before the user can link this device"))
-        view.addSubview(titleLabel)
+        primaryView.addSubview(titleLabel)
         titleLabel.accessibilityIdentifier = "onboarding.prelink.titleLabel"
 
         let explanationLabel = UILabel()
@@ -62,7 +64,7 @@ public class SecondaryLinkingPrepViewController: OnboardingBaseViewController {
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.spacing = 12
-        view.addSubview(stackView)
+        primaryView.addSubview(stackView)
 
         stackView.autoPinEdgesToSuperviewMargins()
     }

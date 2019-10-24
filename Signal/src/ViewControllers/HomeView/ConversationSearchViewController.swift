@@ -44,6 +44,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
             updateSeparators()
         }
     }
+    private var lastSearchText: String?
 
     var searcher: FullTextSearcher {
         return FullTextSearcher.shared
@@ -384,12 +385,21 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         }
     }
 
-    private func updateSearchResults(searchText: String) {
-        guard searchText.stripped.count > 0 else {
-            self.searchResultSet = HomeScreenSearchResultSet.empty
-            self.tableView.reloadData()
+    private func updateSearchResults(searchText rawSearchText: String) {
+
+        let searchText = rawSearchText.stripped
+        guard searchText.count > 0 else {
+            searchResultSet = HomeScreenSearchResultSet.empty
+            lastSearchText = nil
+            tableView.reloadData()
             return
         }
+        guard lastSearchText != searchText else {
+            // Ignoring redundant search.
+            return
+        }
+
+        lastSearchText = searchText
 
         var searchResults: HomeScreenSearchResultSet?
         self.databaseStorage.asyncRead(block: {[weak self] transaction in
@@ -402,6 +412,10 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
 
                                                 guard let results = searchResults else {
                                                     owsFailDebug("searchResults was unexpectedly nil")
+                                                    return
+                                                }
+                                                guard strongSelf.lastSearchText == searchText else {
+                                                    // Discard results from stale search.
                                                     return
                                                 }
 

@@ -18,18 +18,20 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
 
     override public func loadView() {
         view = UIView()
+        view.addSubview(primaryView)
+        primaryView.autoPinEdgesToSuperviewEdges()
 
         view.backgroundColor = Theme.backgroundColor
 
         let titleLabel = self.titleLabel(text: NSLocalizedString("SECONDARY_ONBOARDING_SCAN_CODE_TITLE", comment: "header text while displaying a QR code which, when scanned, will link this device."))
-        view.addSubview(titleLabel)
+        primaryView.addSubview(titleLabel)
         titleLabel.accessibilityIdentifier = "onboarding.linking.titleLabel"
         titleLabel.setContentHuggingHigh()
 
         let bodyLabel = self.titleLabel(text: NSLocalizedString("SECONDARY_ONBOARDING_SCAN_CODE_BODY", comment: "body text while displaying a QR code which, when scanned, will link this device."))
         bodyLabel.font = UIFont.ows_dynamicTypeBody
         bodyLabel.numberOfLines = 0
-        view.addSubview(bodyLabel)
+        primaryView.addSubview(bodyLabel)
         bodyLabel.accessibilityIdentifier = "onboarding.linking.bodyLabel"
         bodyLabel.setContentHuggingHigh()
 
@@ -60,7 +62,7 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.spacing = 12
-        view.addSubview(stackView)
+        primaryView.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewMargins()
     }
 

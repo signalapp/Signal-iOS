@@ -41,6 +41,8 @@ public class ConversationSearchController: NSObject {
     @objc
     public let resultsBar: SearchResultsBar = SearchResultsBar(frame: .zero)
 
+    private var lastSearchText: String?
+
     // MARK: Initializer
 
     @objc
@@ -95,8 +97,15 @@ extension ConversationSearchController: UISearchResultsUpdating {
         guard searchText.count >= ConversationSearchController.kMinimumSearchTextLength else {
             self.resultsBar.updateResults(resultSet: nil)
             self.delegate?.conversationSearchController(self, didUpdateSearchResults: nil)
+            self.lastSearchText = nil
             return
         }
+
+        guard lastSearchText != searchText else {
+            // Skip redundant search.
+            return
+        }
+        lastSearchText = searchText
 
         var resultSet: ConversationScreenSearchResultSet?
         databaseStorage.asyncRead(block: { [weak self] transaction in
@@ -106,6 +115,10 @@ extension ConversationSearchController: UISearchResultsUpdating {
             resultSet = self.dbSearcher.searchWithinConversation(thread: self.thread, searchText: searchText, transaction: transaction)
         }, completion: { [weak self] in
             guard let self = self else {
+                return
+            }
+            guard self.lastSearchText == searchText else {
+                // Discard obsolete search results.
                 return
             }
             self.resultsBar.updateResults(resultSet: resultSet)
