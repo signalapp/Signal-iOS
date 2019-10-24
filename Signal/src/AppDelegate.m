@@ -1369,14 +1369,16 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
     // Every time the user upgrades to a new version:
     //
     // * Update account attributes.
-    // * Sync configuration.
+    // * Sync configuration to linked devices.
     if ([self.tsAccountManager isRegistered]) {
         AppVersion *appVersion = AppVersion.sharedInstance;
         if (appVersion.lastAppVersion.length > 0
             && ![appVersion.lastAppVersion isEqualToString:appVersion.currentAppVersion]) {
             [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
 
-            [self.syncManager sendConfigurationSyncMessage];
+            if (self.tsAccountManager.isRegisteredPrimaryDevice) {
+                [self.syncManager sendConfigurationSyncMessage];
+            }
         }
     }
 

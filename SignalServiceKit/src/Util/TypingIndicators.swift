@@ -37,7 +37,10 @@ public protocol TypingIndicators: class {
     func typingAddress(forThread thread: TSThread) -> SignalServiceAddress?
 
     @objc
-    func setTypingIndicatorsEnabled(value: Bool)
+    func setTypingIndicatorsEnabledAndSendSyncMessage(value: Bool)
+
+    @objc
+    func setTypingIndicatorsEnabled(value: Bool, transaction: SDSAnyWriteTransaction)
 
     @objc
     func areTypingIndicatorsEnabled() -> Bool
@@ -66,6 +69,8 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     @objc
     public let keyValueStore = SDSKeyValueStore(collection: "TypingIndicators")
 
+    private let serialQueue = DispatchQueue(label: "org.signal.typingIndicators")
+
     public override init() {
         super.init()
 
@@ -85,9 +90,13 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     private func warmCache(transaction: SDSAnyReadTransaction) {
         AssertIsOnMainThread()
 
-        _areTypingIndicatorsEnabled = keyValueStore.getBool(kDatabaseKey_TypingIndicatorsEnabled,
-                                                            defaultValue: true,
-                                                            transaction: transaction)
+        let enabled = keyValueStore.getBool(kDatabaseKey_TypingIndicatorsEnabled,
+                                                                defaultValue: true,
+                                                                transaction: transaction)
+
+        serialQueue.sync {
+            _areTypingIndicatorsEnabled = enabled
+        }
     }
 
     // MARK: - Dependencies
@@ -99,10 +108,11 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     // MARK: -
 
     @objc
-    public func setTypingIndicatorsEnabled(value: Bool) {
-        AssertIsOnMainThread()
-        Logger.info("\(_areTypingIndicatorsEnabled) -> \(value)")
-        _areTypingIndicatorsEnabled = value
+    public func setTypingIndicatorsEnabledAndSendSyncMessage(value: Bool) {
+        serialQueue.sync {
+            Logger.info("\(_areTypingIndicatorsEnabled) -> \(value)")
+            _areTypingIndicatorsEnabled = value
+        }
 
         databaseStorage.write { transaction in
             self.keyValueStore.setBool(value,
@@ -116,10 +126,24 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     }
 
     @objc
+    public func setTypingIndicatorsEnabled(value: Bool, transaction: SDSAnyWriteTransaction) {
+        serialQueue.sync {
+            Logger.info("\(_areTypingIndicatorsEnabled) -> \(value)")
+            _areTypingIndicatorsEnabled = value
+        }
+
+        keyValueStore.setBool(value,
+                              key: kDatabaseKey_TypingIndicatorsEnabled,
+                              transaction: transaction)
+
+        NotificationCenter.default.postNotificationNameAsync(TypingIndicatorsImpl.typingIndicatorStateDidChange, object: nil)
+    }
+
+    @objc
     public func areTypingIndicatorsEnabled() -> Bool {
         AssertIsOnMainThread()
 
-        return _areTypingIndicatorsEnabled
+        return serialQueue.sync { _areTypingIndicatorsEnabled }
     }
 
     // MARK: -

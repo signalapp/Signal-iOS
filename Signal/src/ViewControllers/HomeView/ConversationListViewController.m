@@ -1365,6 +1365,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     OWSAssertIsOnMainThread();
     OWSLogInfo(@"beggining refreshing.");
+
+    if (!TSAccountManager.sharedInstance.isRegisteredPrimaryDevice) {
+        [SSKEnvironment.shared.syncManager sendAllSyncRequestMessages];
+    }
+
     [[AppEnvironment.shared.messageFetcherJob run].ensure(^{
         OWSLogInfo(@"ending refreshing.");
         [refreshControl endRefreshing];

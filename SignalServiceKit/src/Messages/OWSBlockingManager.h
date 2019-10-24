@@ -6,6 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
+@class SSKProtoSyncMessageBlocked;
 @class SignalServiceAddress;
 @class TSGroupModel;
 @class TSThread;
@@ -27,9 +28,8 @@ extern NSString *const kNSNotificationName_BlockListDidChange;
 - (void)removeBlockedAddress:(SignalServiceAddress *)address;
 - (void)removeBlockedAddress:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction;
 
-// When updating the block list from a sync message, we don't
-// want to fire a sync message.
-- (void)setBlockedPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers sendSyncMessage:(BOOL)sendSyncMessage;
+- (void)processIncomingBlockedSyncMessage:(SSKProtoSyncMessageBlocked *)syncMessage
+                              transaction:(SDSAnyWriteTransaction *)transaction;
 
 @property (readonly) NSSet<SignalServiceAddress *> *blockedAddresses;
 @property (readonly) NSArray<NSString *> *blockedPhoneNumbers;

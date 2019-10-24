@@ -46,6 +46,8 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                              selector:@selector(screenLockDidChange:)
                                                  name:OWSScreenLock.ScreenLockDidChange
                                                object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(configurationSettingsDidChange:) name:OWSSyncManagerConfigurationDidChangeNotification object:nil];
 }
 
 - (void)dealloc
@@ -496,7 +498,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 {
     BOOL enabled = sender.isOn;
     OWSLogInfo(@"toggled areTypingIndicatorsEnabled: %@", enabled ? @"ON" : @"OFF");
-    [self.typingIndicators setTypingIndicatorsEnabledWithValue:enabled];
+    [self.typingIndicators setTypingIndicatorsEnabledAndSendSyncMessageWithValue:enabled];
 }
 
 - (void)didToggleCallsHideIPAddressSwitch:(UISwitch *)sender
@@ -545,14 +547,14 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 - (void)didToggleUDShowIndicatorsSwitch:(UISwitch *)sender
 {
     OWSLogInfo(@"toggled to: %@", (sender.isOn ? @"ON" : @"OFF"));
-    [self.preferences setShouldShowUnidentifiedDeliveryIndicators:sender.isOn];
+    [self.preferences setShouldShowUnidentifiedDeliveryIndicatorsAndSendSyncMessage:sender.isOn];
 }
 
 - (void)didToggleLinkPreviewsEnabled:(UISwitch *)sender
 {
     OWSLogInfo(@"toggled to: %@", (sender.isOn ? @"ON" : @"OFF"));
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [SSKPreferences setAreLinkPreviewsEnabled:sender.isOn transaction:transaction];
+        [SSKPreferences setAreLinkPreviewsEnabledAndSendSyncMessage:sender.isOn transaction:transaction];
     }];
 }
 
@@ -631,6 +633,13 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
             @"Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately.");
     }
     return [NSString formatDurationSeconds:(uint32_t)value useShortFormat:useShortFormat];
+}
+
+- (void)configurationSettingsDidChange:(NSNotification *)notification
+{
+    OWSLogInfo(@"");
+
+    [self updateTableContents];
 }
 
 @end

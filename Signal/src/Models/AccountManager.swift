@@ -227,6 +227,7 @@ public class AccountManager: NSObject {
             }
         }.done { (_) -> Void in
             self.completeRegistration()
+            OWSSyncManager.shared().sendAllSyncRequestMessages()
         }
     }
 
