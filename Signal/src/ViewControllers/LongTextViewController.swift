@@ -155,9 +155,7 @@ public class LongTextViewController: OWSViewController {
     }
 
     @objc func forwardButtonPressed() {
-        let modal = ForwardMessageNavigationController(conversationViewItem: viewItem)
-        modal.forwardMessageDelegate = self
-        self.presentFullScreen(modal, animated: true)
+        ForwardMessageNavigationController.present(for: viewItem, from: self, delegate: self)
     }
 }
 

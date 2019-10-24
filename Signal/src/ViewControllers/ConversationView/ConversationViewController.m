@@ -2052,10 +2052,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertDebug(conversationViewItem);
 
-    ForwardMessageNavigationController *modal =
-        [[ForwardMessageNavigationController alloc] initWithConversationViewItem:conversationViewItem];
-    modal.forwardMessageDelegate = self;
-    [self presentFullScreenViewController:modal animated:YES completion:nil];
+    [ForwardMessageNavigationController presentFor:conversationViewItem from:self delegate:self];
 }
 
 #pragma mark - MessageDetailViewDelegate

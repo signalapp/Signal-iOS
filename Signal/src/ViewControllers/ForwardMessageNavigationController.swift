@@ -57,6 +57,15 @@ class ForwardMessageNavigationController: OWSNavigationController {
             ], animated: false)
     }
 
+    @objc
+    public class func present(for viewItem: ConversationViewItem,
+                              from fromViewController: UIViewController,
+                              delegate: ForwardMessageDelegate) {
+        let modal = ForwardMessageNavigationController(conversationViewItem: viewItem)
+        modal.forwardMessageDelegate = delegate
+        fromViewController.presentFormSheet(modal, animated: true)
+    }
+
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
