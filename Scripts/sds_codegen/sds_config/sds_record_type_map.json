@@ -23,6 +23,8 @@
     "OWSDevice": 33, 
     "OWSDisappearingConfigurationUpdateInfoMessage": 28, 
     "OWSDisappearingMessagesConfiguration": 39, 
+    "OWSIncomingContactSyncJobRecord": 61, 
+    "OWSIncomingGroupSyncJobRecord": 60, 
     "OWSLinkedDeviceReadReceipt": 36, 
     "OWSMessageContentJob": 15, 
     "OWSMessageDecryptJob": 8, 

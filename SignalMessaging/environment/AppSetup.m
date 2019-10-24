@@ -99,17 +99,21 @@ NS_ASSUME_NONNULL_BEGIN
         OWSStorageServiceManager *storageServiceManager = OWSStorageServiceManager.shared;
 
         OWSAudioSession *audioSession = [OWSAudioSession new];
+        OWSIncomingContactSyncJobQueue *incomingContactSyncJobQueue = [OWSIncomingContactSyncJobQueue new];
+        OWSIncomingGroupSyncJobQueue *incomingGroupSyncJobQueue = [OWSIncomingGroupSyncJobQueue new];
+        LaunchJobs *launchJobs = [LaunchJobs new];
         OWSSounds *sounds = [OWSSounds new];
         id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
         OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
-        LaunchJobs *launchJobs = [LaunchJobs new];
 
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
+                                             incomingContactSyncJobQueue:incomingContactSyncJobQueue
+                                               incomingGroupSyncJobQueue:incomingGroupSyncJobQueue
+                                                              launchJobs:launchJobs
                                                              preferences:preferences
                                               proximityMonitoringManager:proximityMonitoringManager
                                                                   sounds:sounds
-                                                           windowManager:windowManager
-                                                              launchJobs:launchJobs]];
+                                                           windowManager:windowManager]];
 
         [SMKEnvironment setShared:[[SMKEnvironment alloc] initWithAccountIdFinder:[OWSAccountIdFinder new]]];
 

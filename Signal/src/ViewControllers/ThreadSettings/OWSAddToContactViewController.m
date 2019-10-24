@@ -182,12 +182,10 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Contact editing not supported");
         return;
     }
-    CNContact *_Nullable cnContact = [self.contactsManager cnContactWithId:contact.cnContactId];
-    if (!cnContact) {
-        OWSFailDebug(@"Could not load system contact.");
-        return;
+    CNContact *_Nullable cnContact;
+    if (contact.cnContactId != nil) {
+        cnContact = [self.contactsManager cnContactWithId:contact.cnContactId];
     }
-
     CNContactViewController *_Nullable contactViewController =
         [self.contactsViewHelper contactViewControllerForAddress:self.address
                                                  editImmediately:YES

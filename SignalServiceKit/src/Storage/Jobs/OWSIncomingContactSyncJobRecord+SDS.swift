@@ -12,17 +12,17 @@ import SignalCoreKit
 // MARK: - Typed Convenience Methods
 
 @objc
-public extension OWSBroadcastMediaMessageJobRecord {
+public extension OWSIncomingContactSyncJobRecord {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchBroadcastMediaMessageJobRecord(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> OWSBroadcastMediaMessageJobRecord? {
+    class func anyFetchIncomingContactSyncJobRecord(uniqueId: String,
+                                   transaction: SDSAnyReadTransaction) -> OWSIncomingContactSyncJobRecord? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {
                                         return nil
         }
-        guard let instance = object as? OWSBroadcastMediaMessageJobRecord else {
+        guard let instance = object as? OWSIncomingContactSyncJobRecord else {
             owsFailDebug("Object has unexpected type: \(type(of: object))")
             return nil
         }
@@ -30,9 +30,9 @@ public extension OWSBroadcastMediaMessageJobRecord {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdateBroadcastMediaMessageJobRecord(transaction: SDSAnyWriteTransaction, block: (OWSBroadcastMediaMessageJobRecord) -> Void) {
+    func anyUpdateIncomingContactSyncJobRecord(transaction: SDSAnyWriteTransaction, block: (OWSIncomingContactSyncJobRecord) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
-            guard let instance = object as? OWSBroadcastMediaMessageJobRecord else {
+            guard let instance = object as? OWSIncomingContactSyncJobRecord else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")
                 return
             }
@@ -45,10 +45,10 @@ public extension OWSBroadcastMediaMessageJobRecord {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class OWSBroadcastMediaMessageJobRecordSerializer: SDSSerializer {
+class OWSIncomingContactSyncJobRecordSerializer: SDSSerializer {
 
-    private let model: OWSBroadcastMediaMessageJobRecord
-    public required init(model: OWSBroadcastMediaMessageJobRecord) {
+    private let model: OWSIncomingContactSyncJobRecord
+    public required init(model: OWSIncomingContactSyncJobRecord) {
         self.model = model
     }
 
@@ -57,7 +57,7 @@ class OWSBroadcastMediaMessageJobRecordSerializer: SDSSerializer {
     func asRecord() throws -> SDSRecord {
         let id: Int64? = model.sortId > 0 ? Int64(model.sortId) : model.grdbId?.int64Value
 
-        let recordType: SDSRecordType = .broadcastMediaMessageJobRecord
+        let recordType: SDSRecordType = .incomingContactSyncJobRecord
         let uniqueId: String = model.uniqueId
 
         // Base class properties
@@ -66,8 +66,8 @@ class OWSBroadcastMediaMessageJobRecordSerializer: SDSSerializer {
         let status: SSKJobRecordStatus = model.status
 
         // Subclass properties
-        let attachmentId: String? = nil
-        let attachmentIdMap: Data? = optionalArchive(model.attachmentIdMap)
+        let attachmentId: String? = model.attachmentId
+        let attachmentIdMap: Data? = nil
         let contactThreadId: String? = nil
         let envelopeData: Data? = nil
         let invisibleMessage: Data? = nil

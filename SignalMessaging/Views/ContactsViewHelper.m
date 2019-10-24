@@ -440,7 +440,7 @@ NS_ASSUME_NONNULL_BEGIN
             cnContact = updatedContact;
         }
     }
-    if (signalAccount && !cnContact) {
+    if (signalAccount && !cnContact && signalAccount.contact.cnContactId != nil) {
         cnContact = [self.contactsManager cnContactWithId:signalAccount.contact.cnContactId];
     }
     if (cnContact) {

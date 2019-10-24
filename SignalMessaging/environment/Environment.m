@@ -50,11 +50,13 @@ static Environment *sharedEnvironment = nil;
 }
 
 - (instancetype)initWithAudioSession:(OWSAudioSession *)audioSession
+         incomingContactSyncJobQueue:(OWSIncomingContactSyncJobQueue *)incomingContactSyncJobQueue
+           incomingGroupSyncJobQueue:(OWSIncomingGroupSyncJobQueue *)incomingGroupSyncJobQueue
+                          launchJobs:(LaunchJobs *)launchJobs
                          preferences:(OWSPreferences *)preferences
           proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
                               sounds:(OWSSounds *)sounds
                        windowManager:(OWSWindowManager *)windowManager
-                          launchJobs:(LaunchJobs *)launchJobs
 {
     self = [super init];
     if (!self) {
@@ -62,18 +64,22 @@ static Environment *sharedEnvironment = nil;
     }
 
     OWSAssertDebug(audioSession);
+    OWSAssertDebug(incomingGroupSyncJobQueue);
+    OWSAssertDebug(incomingContactSyncJobQueue);
+    OWSAssertDebug(launchJobs);
     OWSAssertDebug(preferences);
     OWSAssertDebug(proximityMonitoringManager);
     OWSAssertDebug(sounds);
     OWSAssertDebug(windowManager);
-    OWSAssertDebug(launchJobs);
 
     _audioSession = audioSession;
+    _incomingContactSyncJobQueue = incomingContactSyncJobQueue;
+    _incomingGroupSyncJobQueue = incomingGroupSyncJobQueue;
+    _launchJobs = launchJobs;
     _preferences = preferences;
     _proximityMonitoringManager = proximityMonitoringManager;
     _sounds = sounds;
     _windowManager = windowManager;
-    _launchJobs = launchJobs;
 
     OWSSingletonAssert();
 

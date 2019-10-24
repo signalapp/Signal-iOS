@@ -649,6 +649,13 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             } else {
                 // Always cleanup instances that have been replaced by another instance.
             }
+
+            // Only remove SignalAccounts if they were derived from the local system contacts.
+            // Otherwise we'll lose the SignalAccounts we learned about from our contact sync.
+            if (signalAccount.contact.isFromContactSync) {
+                continue;
+            }
+
             [signalAccountsToRemove addObject:signalAccount];
         }
 
@@ -771,18 +778,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }
 
     return [NSString stringWithFormat:@"%@ (%@)", fullName, multipleAccountLabelText];
-}
-
-- (nullable NSString *)cachedFirstNameForAddress:(SignalServiceAddress *)address
-{
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address];
-    return signalAccount.contact.firstName.filterStringForDisplay;
-}
-
-- (nullable NSString *)cachedLastNameForAddress:(SignalServiceAddress *)address
-{
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address];
-    return signalAccount.contact.lastName.filterStringForDisplay;
 }
 
 - (nullable NSString *)phoneNumberForAddress:(SignalServiceAddress *)address
@@ -1060,7 +1055,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [self fetchSignalAccountForAddress:address] != nil;
 }
 
-- (nullable UIImage *)systemContactImageForAddress:(nullable SignalServiceAddress *)address
+- (nullable UIImage *)systemContactOrSyncedImageForAddress:(nullable SignalServiceAddress *)address
 {
     if (address == nil) {
         OWSFailDebug(@"address was unexpectedly nil");
@@ -1070,14 +1065,33 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     NSString *_Nullable phoneNumber = [self phoneNumberForAddress:address];
     Contact *_Nullable contact = self.allContactsMap[phoneNumber];
 
-    if (!contact) {
-        // If we haven't loaded system contacts yet, we may have a cached
-        // copy in the db
-        SignalAccount *_Nullable account = [self fetchSignalAccountForAddress:address];
-        contact = account.contact;
+    if (contact != nil && contact.cnContactId != nil) {
+        UIImage *_Nullable systemContactImage = [self avatarImageForCNContactId:contact.cnContactId];
+        if (systemContactImage != nil) {
+            return systemContactImage;
+        }
     }
 
-    return [self avatarImageForCNContactId:contact.cnContactId];
+    // If we haven't loaded system contacts yet, we may have a cached copy in the db
+    SignalAccount *signalAccount = [self fetchSignalAccountForAddress:address];
+    if (signalAccount == nil) {
+        return nil;
+    }
+
+    contact = signalAccount.contact;
+    OWSAssertDebug(signalAccount.contact);
+    if (contact != nil && contact.cnContactId != nil) {
+        UIImage *_Nullable systemContactImage = [self avatarImageForCNContactId:contact.cnContactId];
+        if (systemContactImage != nil) {
+            return systemContactImage;
+        }
+    }
+
+    if (signalAccount.contactAvatarJpegData != nil) {
+        return [[UIImage alloc] initWithData:signalAccount.contactAvatarJpegData];
+    }
+
+    return nil;
 }
 
 - (nullable UIImage *)profileImageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address
@@ -1115,8 +1129,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return nil;
     }
 
-    // Prefer the contact image from the local address book if available
-    __block UIImage *_Nullable image = [self systemContactImageForAddress:address];
+    __block UIImage *_Nullable image = [self systemContactOrSyncedImageForAddress:address];
     if (image != nil) {
         return image;
     }
@@ -1133,8 +1146,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return nil;
     }
 
-    // Prefer the contact image from the local address book if available
-    __block UIImage *_Nullable image = [self systemContactImageForAddress:address];
+    __block UIImage *_Nullable image = [self systemContactOrSyncedImageForAddress:address];
     if (image != nil) {
         return image;
     }

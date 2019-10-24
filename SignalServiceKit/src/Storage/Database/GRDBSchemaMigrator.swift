@@ -28,6 +28,7 @@ public class GRDBSchemaMigrator: NSObject {
         case createInitialSchema
         case signalAccount_add_contactAvatars
         case signalAccount_add_contactAvatars_indices
+        case jobRecords_add_attachmentId
     }
 
     // For new users, we import the latest schema with the first migration
@@ -63,6 +64,7 @@ public class GRDBSchemaMigrator: NSObject {
             owsFail("This migration should have already been run by the last YapDB migration.")
             // try createV1Schema(db: db)
         }
+
         migrator.registerMigration(MigrationId.signalAccount_add_contactAvatars.rawValue) { database in
             let sql = """
                 DROP TABLE "model_SignalAccount";
@@ -104,6 +106,12 @@ public class GRDBSchemaMigrator: NSObject {
                 ;
             """
             try db.execute(sql: sql)
+        }
+
+        migrator.registerMigration(MigrationId.jobRecords_add_attachmentId.rawValue) { db in
+            try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
+                table.add(column: "attachmentId", .text)
+            }
         }
 
         return migrator

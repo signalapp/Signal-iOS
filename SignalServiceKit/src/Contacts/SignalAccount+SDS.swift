@@ -28,7 +28,7 @@ public struct SignalAccountRecord: SDSRecord {
     public let uniqueId: String
 
     // Base class properties
-    public let contact: Data?
+    public let contact: Data
     public let contactAvatarHash: Data?
     public let contactAvatarJpegData: Data?
     public let multipleAccountLabelText: String
@@ -108,8 +108,8 @@ extension SignalAccount {
         case .signalAccount:
 
             let uniqueId: String = record.uniqueId
-            let contactSerialized: Data? = record.contact
-            let contact: Contact? = try SDSDeserialization.optionalUnarchive(contactSerialized, name: "contact")
+            let contactSerialized: Data = record.contact
+            let contact: Contact = try SDSDeserialization.unarchive(contactSerialized, name: "contact")
             let contactAvatarHash: Data? = SDSDeserialization.optionalData(record.contactAvatarHash, name: "contactAvatarHash")
             let contactAvatarJpegData: Data? = SDSDeserialization.optionalData(record.contactAvatarJpegData, name: "contactAvatarJpegData")
             let multipleAccountLabelText: String = record.multipleAccountLabelText
@@ -168,7 +168,7 @@ extension SignalAccountSerializer {
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
     // Base class properties
-    static let contactColumn = SDSColumnMetadata(columnName: "contact", columnType: .blob, isOptional: true, columnIndex: 3)
+    static let contactColumn = SDSColumnMetadata(columnName: "contact", columnType: .blob, columnIndex: 3)
     static let contactAvatarHashColumn = SDSColumnMetadata(columnName: "contactAvatarHash", columnType: .blob, isOptional: true, columnIndex: 4)
     static let contactAvatarJpegDataColumn = SDSColumnMetadata(columnName: "contactAvatarJpegData", columnType: .blob, isOptional: true, columnIndex: 5)
     static let multipleAccountLabelTextColumn = SDSColumnMetadata(columnName: "multipleAccountLabelText", columnType: .unicodeString, columnIndex: 6)
@@ -598,7 +598,7 @@ class SignalAccountSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Base class properties
-        let contact: Data? = optionalArchive(model.contact)
+        let contact: Data = requiredArchive(model.contact)
         let contactAvatarHash: Data? = model.contactAvatarHash
         let contactAvatarJpegData: Data? = model.contactAvatarJpegData
         let multipleAccountLabelText: String = model.multipleAccountLabelText

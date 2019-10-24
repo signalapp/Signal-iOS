@@ -45,6 +45,7 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
 //       convert getOrCreateThreadWithContactId to take "any" transaction.
 - (instancetype)initWithGroupModel:(TSGroupModel *)groupModel;
 
++ (nullable instancetype)getThreadWithGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction;
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel;
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
                                     transaction:(SDSAnyWriteTransaction *)transaction;

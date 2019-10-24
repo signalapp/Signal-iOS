@@ -64,8 +64,15 @@ extern const NSUInteger kStoredIdentityKeyLength;
 - (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToAddress:(SignalServiceAddress *)address;
 
 // This method can be called from any thread.
-- (void)throws_processIncomingSyncMessage:(SSKProtoVerified *)verified
-                              transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)throws_processIncomingVerifiedProto:(SSKProtoVerified *)verified
+                                transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_UNAVAILABLE("throws objc exceptions");
+
+- (BOOL)processIncomingVerifiedProto:(SSKProtoVerified *)verified
+                         transaction:(SDSAnyWriteTransaction *)transaction
+                               error:(NSError **)error;
+
+- (void)fireIdentityStateChangeNotificationAfterTransaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)saveRemoteIdentity:(NSData *)identityKey address:(SignalServiceAddress *)address;
 

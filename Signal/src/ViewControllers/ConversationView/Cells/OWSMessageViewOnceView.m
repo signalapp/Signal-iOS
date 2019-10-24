@@ -46,13 +46,6 @@ typedef NS_ENUM(NSUInteger, ViewOnceMessageType) {
 
 @implementation OWSMessageViewOnceView
 
-#pragma mark - Dependencies
-
-- (OWSAttachmentDownloads *)attachmentDownloads
-{
-    return SSKEnvironment.shared.attachmentDownloads;
-}
-
 #pragma mark -
 
 - (instancetype)initWithFrame:(CGRect)frame

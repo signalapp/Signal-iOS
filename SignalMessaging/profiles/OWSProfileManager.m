@@ -107,7 +107,9 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     OWSSingletonAssert();
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [self rotateLocalProfileKeyIfNecessary];
+        if (TSAccountManager.sharedInstance.isRegistered) {
+            [self rotateLocalProfileKeyIfNecessary];
+        }
     }];
 
     [self observeNotifications];
@@ -596,6 +598,12 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 }
 
 - (void)rotateLocalProfileKeyIfNecessary {
+    if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
+        OWSAssertDebug(self.tsAccountManager.isRegistered);
+        OWSLogVerbose(@"Not rotating profile key on non-primary device");
+        return;
+    }
+
     [self
         rotateLocalProfileKeyIfNecessaryWithSuccess:^{
         }
@@ -608,6 +616,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     OWSAssertDebug(AppReadiness.isAppReady);
 
     if (!self.tsAccountManager.isRegistered) {
+        OWSFailDebug(@"tsAccountManager.isRegistered was unexpectely false");
         success();
         return;
     }

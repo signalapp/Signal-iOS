@@ -3,6 +3,7 @@
 //
 
 #import "UIImage+OWS.h"
+#import "NSData+Image.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -254,6 +255,42 @@ NS_ASSUME_NONNULL_BEGIN
     UIGraphicsEndImageContext();
 
     return image;
+}
+
++ (nullable NSData *)validJpegDataFromAvatarData:(NSData *)avatarData
+{
+    ImageData *imageData = [avatarData imageDataWithPath:nil mimeType:nil];
+    if (!imageData.isValid) {
+        return nil;
+    }
+
+    const CGFloat kMaxAvatarDimensionPixels = 600;
+    if (imageData.imageFormat == ImageFormat_Jpeg && imageData.pixelSize.width <= kMaxAvatarDimensionPixels
+        && imageData.pixelSize.height <= kMaxAvatarDimensionPixels) {
+        return avatarData;
+    }
+
+    UIImage *_Nullable avatarImage = [UIImage imageWithData:avatarData];
+    if (avatarImage == nil) {
+        OWSFailDebug(@"Could not load avatar.");
+        return nil;
+    }
+    if (avatarImage.pixelWidth > kMaxAvatarDimensionPixels || avatarImage.pixelHeight > kMaxAvatarDimensionPixels) {
+        avatarImage = [avatarImage resizedWithMaxDimensionPixels:kMaxAvatarDimensionPixels];
+        if (avatarImage == nil) {
+            OWSFailDebug(@"Could not resize avatar.");
+            return nil;
+        }
+    }
+
+    NSData *jpegData = UIImageJPEGRepresentation(avatarImage, 0.9);
+    OWSLogVerbose(@"Converted avatar to JPEG: %lu -> %lu, %@ %@.",
+        (unsigned long)avatarData.length,
+        (unsigned long)jpegData.length,
+        NSStringForImageFormat(imageData.imageFormat),
+        NSStringFromCGSize(imageData.pixelSize));
+
+    return jpegData;
 }
 
 - (size_t)pixelWidth {

@@ -203,7 +203,9 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding {
             return uuidString
         } else {
             guard let phoneNumber = phoneNumber else {
-                owsFailDebug("phoneNumber was unexpectedly nil")
+                if !CurrentAppContext().isRunningTests {
+                    owsFailDebug("phoneNumber was unexpectedly nil")
+                }
                 return uuidString
             }
 

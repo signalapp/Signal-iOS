@@ -23,6 +23,7 @@
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/SCKExceptionWrapper.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -244,7 +245,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         // Cancel any pending verification state sync messages for this recipient.
         [self clearSyncMessageForAccountId:accountId transaction:transaction];
 
-        [self fireIdentityStateChangeNotification];
+        [self fireIdentityStateChangeNotificationAfterTransaction:transaction];
 
         // Identity key was created, schedule a social graph backup
         [self.storageServiceManager recordPendingUpdatesWithUpdatedIds:@[ accountId ]];
@@ -281,7 +282,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         // Cancel any pending verification state sync messages for this recipient.
         [self clearSyncMessageForAccountId:accountId transaction:transaction];
 
-        [self fireIdentityStateChangeNotification];
+        [self fireIdentityStateChangeNotificationAfterTransaction:transaction];
 
         // Identity key was changed, schedule a social graph backup
         [self.storageServiceManager recordPendingUpdatesWithUpdatedIds:@[ accountId ]];
@@ -357,7 +358,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     // Verification state has changed, schedule a social graph backup
     [self.storageServiceManager recordPendingUpdatesWithUpdatedIds:@[ accountId ]];
 
-    [self fireIdentityStateChangeNotification];
+    [self fireIdentityStateChangeNotificationAfterTransaction:transaction];
 }
 
 - (OWSVerificationState)verificationStateForAddress:(SignalServiceAddress *)address
@@ -435,11 +436,12 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     return result;
 }
 
-- (void)fireIdentityStateChangeNotification
+- (void)fireIdentityStateChangeNotificationAfterTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_IdentityStateDidChange
-                                                             object:nil
-                                                           userInfo:nil];
+    [transaction addCompletionWithBlock:^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_IdentityStateDidChange
+                                                            object:nil];
+    }];
 }
 
 - (BOOL)isTrustedIdentityKey:(NSData *)identityKey
@@ -761,7 +763,19 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     [self.queuedVerificationStateSyncMessagesKeyValueStore setObject:nil key:accountId transaction:transaction];
 }
 
-- (void)throws_processIncomingSyncMessage:(SSKProtoVerified *)verified transaction:(SDSAnyWriteTransaction *)transaction
+- (BOOL)processIncomingVerifiedProto:(SSKProtoVerified *)verified
+                         transaction:(SDSAnyWriteTransaction *)transaction
+                               error:(NSError **)error
+{
+    return [SCKExceptionWrapper
+        tryBlock:^{
+            [self throws_processIncomingVerifiedProto:verified transaction:transaction];
+        }
+           error:error];
+}
+
+- (void)throws_processIncomingVerifiedProto:(SSKProtoVerified *)verified
+                                transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(verified);
     OWSAssertDebug(transaction);
@@ -805,8 +819,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                 OWSVerificationStateToString(OWSVerificationStateNoLongerVerified));
             return;
     }
-
-    [self fireIdentityStateChangeNotification];
 }
 
 - (void)tryToApplyVerificationStateFromSyncMessage:(OWSVerificationState)verificationState
