@@ -160,6 +160,7 @@ NSString *NSStringForDataStore(DataStore value)
     switch (SSKFeatureFlags.storageMode) {
         case StorageModeYdbForAll:
             break;
+        case StorageModeGrdbForAlreadyMigrated:
         case StorageModeGrdbForLegacyUsersOnly:
         case StorageModeGrdbForNewUsersOnly:
         case StorageModeGrdbForAll:
@@ -186,6 +187,17 @@ NSString *NSStringForDataStore(DataStore value)
     switch (SSKFeatureFlags.storageMode) {
         case StorageModeYdbForAll:
             return DataStoreYdb;
+        case StorageModeGrdbForAlreadyMigrated:
+            if (isNewUser) {
+                // New users should use YDB.
+                return DataStoreYdb;
+            } else if (hasUnmigratedYdbFile) {
+                // Existing users should use YDB.
+                return DataStoreYdb;
+            } else {
+                // Only users who have already migrated to GRDB should use GRDB.
+                return DataStoreGrdb;
+            }
         case StorageModeGrdbForLegacyUsersOnly:
             if (isNewUser) {
                 // New users should use YDB.
@@ -233,6 +245,7 @@ NSString *NSStringForDataStore(DataStore value)
     switch (SSKFeatureFlags.storageMode) {
         case StorageModeYdbForAll:
         case StorageModeGrdbForAll:
+        case StorageModeGrdbForAlreadyMigrated:
         case StorageModeGrdbForLegacyUsersOnly:
         case StorageModeGrdbForNewUsersOnly:
         case StorageModeGrdbThrowawayIfMigrating:
