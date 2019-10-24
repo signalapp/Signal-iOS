@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSInteger, OWSMessageCellType) {
+typedef NS_CLOSED_ENUM(NSInteger, OWSMessageCellType) {
     OWSMessageCellType_Unknown,
     OWSMessageCellType_TextOnlyMessage,
     OWSMessageCellType_Audio,
@@ -53,6 +53,8 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 @class TSGroupThread;
 @class TSInteraction;
 @class TSThread;
+
+@protocol MessageActionsDelegate;
 
 @interface ConversationMediaAlbumItem : NSObject
 
@@ -173,6 +175,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 
 - (BOOL)canCopyMedia;
 - (BOOL)canSaveMedia;
+- (BOOL)canForwardMessage;
 
 // For view items that correspond to interactions, this is the interaction's unique id.
 // For other view views (like the typing indicator), this is a unique, stable string.

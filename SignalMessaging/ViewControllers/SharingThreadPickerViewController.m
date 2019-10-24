@@ -224,9 +224,8 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord avatarImageData:avatarImageData];
 
     ContactShareApprovalViewController *approvalVC =
-        [[ContactShareApprovalViewController alloc] initWithContactShare:contactShare
-                                                         contactsManager:self.contactsManager
-                                                                delegate:self];
+        [[ContactShareApprovalViewController alloc] initWithContactShare:contactShare];
+    approvalVC.delegate = self;
     [self.navigationController pushViewController:approvalVC animated:YES];
 }
 
@@ -374,6 +373,24 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     OWSLogInfo(@"");
 
     [self cancelShareExperience];
+}
+
+- (nullable NSString *)contactApprovalRecipientsDescription:(ContactShareApprovalViewController *)contactApproval
+{
+    OWSLogInfo(@"");
+
+    __block NSString *result;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [self.contactsManager displayNameForThread:self.thread transaction:transaction];
+    }];
+    return result;
+}
+
+- (ApprovalMode)contactApprovalMode:(ContactShareApprovalViewController *)contactApproval
+{
+    OWSLogInfo(@"");
+
+    return ApprovalModeSend;
 }
 
 #pragma mark - Helpers

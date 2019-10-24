@@ -735,7 +735,7 @@ extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
     func didTapPdf(for viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream) {
         AssertIsOnMainThread()
 
-        let pdfView = PdfViewController(attachmentStream: attachmentStream)
+        let pdfView = PdfViewController(viewItem: viewItem, attachmentStream: attachmentStream)
         let navigationController = OWSNavigationController(rootViewController: pdfView)
         presentFullScreen(navigationController, animated: true)
     }

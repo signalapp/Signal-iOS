@@ -69,7 +69,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSOutgoingMessage *)enqueueMessageWithContactShare:(OWSContact *)contactShare inThread:(TSThread *)thread;
 + (void)enqueueLeaveGroupMessageInThread:(TSGroupThread *)thread;
-+ (TSOutgoingMessage *)enqueueMessageWithSticker:(StickerInfo *)stickerInfo inThread:(TSThread *)thread;
+
++ (TSOutgoingMessage *)enqueueMessageWithInstalledSticker:(StickerInfo *)stickerInfo inThread:(TSThread *)thread;
++ (TSOutgoingMessage *)enqueueMessageWithUninstalledSticker:(StickerInfo *)stickerInfo
+                                                stickerData:(NSData *)stickerData
+                                                   inThread:(TSThread *)thread;
 
 #pragma mark - Non-Durable Sending
 

@@ -1487,6 +1487,29 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         }];
 }
 
+- (BOOL)canForwardMessage
+{
+    switch (self.messageCellType) {
+        case OWSMessageCellType_Unknown:
+            return NO;
+        case OWSMessageCellType_TextOnlyMessage:
+            return YES;
+        case OWSMessageCellType_ContactShare:
+            return YES;
+        case OWSMessageCellType_Audio:
+        case OWSMessageCellType_GenericAttachment:
+            return self.attachmentStream != nil;
+        case OWSMessageCellType_MediaMessage:
+            return [self canSaveMedia];
+        case OWSMessageCellType_OversizeTextDownloading:
+            return NO;
+        case OWSMessageCellType_StickerMessage:
+            return YES;
+        case OWSMessageCellType_ViewOnce:
+            return NO;
+    }
+}
+
 - (void)deleteAction
 {
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {

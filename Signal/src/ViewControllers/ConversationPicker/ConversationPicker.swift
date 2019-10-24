@@ -15,6 +15,12 @@ protocol ConversationPickerDelegate: AnyObject {
                             didDeselectConversation conversation: ConversationItem)
 
     func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController)
+
+    func conversationPickerCanCancel(_ conversationPickerViewController: ConversationPickerViewController) -> Bool
+
+    func conversationPickerDidCancel(_ conversationPickerViewController: ConversationPickerViewController)
+
+    func approvalMode(_ conversationPickerViewController: ConversationPickerViewController) -> ApprovalMode
 }
 
 @objc
@@ -45,7 +51,7 @@ class ConversationPickerViewController: OWSViewController {
     let kMaxPickerSelection = 32
 
     private let tableView = UITableView()
-    private let footerView = ConversationPickerFooterView()
+    private let footerView = ApprovalFooterView()
     private var footerOffsetConstraint: NSLayoutConstraint!
     private lazy var searchBar: OWSSearchBar = {
         let searchBar = OWSSearchBar()
@@ -75,6 +81,13 @@ class ConversationPickerViewController: OWSViewController {
         return currentInputAcccessoryView
     }
 
+    private var approvalMode: ApprovalMode {
+        guard let delegate = delegate else {
+            return .send
+        }
+        return delegate.approvalMode(self)
+    }
+
     override func loadView() {
         self.view = UIView()
         view.backgroundColor = Theme.backgroundColor
@@ -86,6 +99,11 @@ class ConversationPickerViewController: OWSViewController {
 
         searchBar.sizeToFit()
         tableView.tableHeaderView = searchBar
+
+        if delegate?.conversationPickerCanCancel(self) ?? false {
+            let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(onTouchCancelButton))
+            self.navigationItem.leftBarButtonItem = cancelButton
+        }
     }
 
     override func viewDidLoad() {
@@ -120,7 +138,7 @@ class ConversationPickerViewController: OWSViewController {
             }
             tableView.selectRow(at: index, animated: false, scrollPosition: .none)
         }
-        updateFooterForCurrentSelection(animated: false)
+        updateUIForCurrentSelection(animated: false)
     }
 
     let blockListCache = BlockListCache()
@@ -292,7 +310,15 @@ class ConversationPickerViewController: OWSViewController {
             }
         }
     }
+
+    // MARK: - Button Actions
+
+    @objc func onTouchCancelButton() {
+        delegate?.conversationPickerDidCancel(self)
+    }
 }
+
+// MARK: -
 
 extension ConversationPickerViewController: BlockListCacheDelegate {
     func blockListCacheDidUpdate(_ blocklistCache: BlockListCache) {
@@ -300,6 +326,8 @@ extension ConversationPickerViewController: BlockListCacheDelegate {
         self.conversationCollection = buildConversationCollection()
     }
 }
+
+// MARK: -
 
 extension ConversationPickerViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -392,6 +420,8 @@ extension ConversationPickerViewController: UITableViewDataSource {
     }
 }
 
+// MARK: -
+
 extension ConversationPickerViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         guard let delegate = delegate else { return nil }
@@ -455,7 +485,7 @@ extension ConversationPickerViewController: UITableViewDelegate {
             return
         }
         delegate?.conversationPicker(self, didSelectConversation: conversation)
-        updateFooterForCurrentSelection(animated: true)
+        updateUIForCurrentSelection(animated: true)
     }
 
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
@@ -464,10 +494,10 @@ extension ConversationPickerViewController: UITableViewDelegate {
             return
         }
         delegate?.conversationPicker(self, didDeselectConversation: conversation)
-        updateFooterForCurrentSelection(animated: true)
+        updateUIForCurrentSelection(animated: true)
     }
 
-    private func updateFooterForCurrentSelection(animated: Bool) {
+    private func updateUIForCurrentSelection(animated: Bool) {
         guard let delegate = delegate else { return }
 
         let conversations = delegate.selectedConversationsForConversationPicker
@@ -496,6 +526,8 @@ extension ConversationPickerViewController: UITableViewDelegate {
         toastController.presentToastView(fromBottomOfView: view, inset: kToastInset)
     }
 }
+
+// MARK: -
 
 extension ConversationPickerViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -528,11 +560,19 @@ extension ConversationPickerViewController: UISearchBarDelegate {
     }
 }
 
-extension ConversationPickerViewController: ConversationPickerFooterDelegate {
-    fileprivate func conversationPickerFooterDelegateDidRequestProceed(_ conversationPickerFooterView: ConversationPickerFooterView) {
+// MARK: -
+
+extension ConversationPickerViewController: ApprovalFooterDelegate {
+    public func approvalFooterDelegateDidRequestProceed(_ approvalFooterView: ApprovalFooterView) {
         delegate?.conversationPickerDidCompleteSelection(self)
     }
+
+    public func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode {
+        return approvalMode
+    }
 }
+
+// MARK: -
 
 extension ConversationPickerViewController {
     private struct Strings {
@@ -627,104 +667,5 @@ private class ConversationPickerCell: ContactTableViewCell {
         imageView.image = ConversationPickerCell.selectedBadgeImage
         imageView.tintColor = .ows_signalBlue
         return imageView
-    }()
-}
-
-// MARK: - ConversationPickerFooterView
-
-private protocol ConversationPickerFooterDelegate: AnyObject {
-    func conversationPickerFooterDelegateDidRequestProceed(_ conversationPickerFooterView: ConversationPickerFooterView)
-}
-
-private class ConversationPickerFooterView: UIView {
-    weak var delegate: ConversationPickerFooterDelegate?
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        autoresizingMask = .flexibleHeight
-        translatesAutoresizingMaskIntoConstraints = false
-
-        backgroundColor = Theme.keyboardBackgroundColor
-        layoutMargins = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16)
-
-        let topStrokeView = UIView()
-        topStrokeView.backgroundColor = Theme.hairlineColor
-        addSubview(topStrokeView)
-        topStrokeView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
-        topStrokeView.autoSetDimension(.height, toSize: CGHairlineWidth())
-
-        let stackView = UIStackView(arrangedSubviews: [labelScrollView, proceedButton])
-        stackView.spacing = 12
-        stackView.alignment = .center
-        addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override var intrinsicContentSize: CGSize {
-        return CGSize.zero
-    }
-
-    // MARK: public
-
-    var namesText: String? {
-        get {
-            return namesLabel.text
-        }
-    }
-
-    func setNamesText(_ newValue: String?, animated: Bool) {
-        let changes = {
-            self.namesLabel.text = newValue
-
-            self.layoutIfNeeded()
-
-            let offset = max(0, self.labelScrollView.contentSize.width - self.labelScrollView.bounds.width)
-            let trailingEdge = CGPoint(x: offset, y: 0)
-
-            self.labelScrollView.setContentOffset(trailingEdge, animated: false)
-        }
-
-        if animated {
-            UIView.animate(withDuration: 0.1, animations: changes)
-        } else {
-            changes()
-        }
-    }
-
-    // MARK: private subviews
-
-    lazy var labelScrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.showsHorizontalScrollIndicator = false
-
-        scrollView.addSubview(namesLabel)
-        namesLabel.autoPinEdgesToSuperviewEdges()
-        namesLabel.autoMatch(.height, to: .height, of: scrollView)
-
-        return scrollView
-    }()
-
-    lazy var namesLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.ows_dynamicTypeBody
-        label.textColor = Theme.secondaryTextAndIconColor
-
-        label.setContentHuggingLow()
-
-        return label
-    }()
-
-    lazy var proceedButton: UIButton = {
-        let button = OWSButton.sendButton(imageName: "send-solid-24") { [weak self] in
-            guard let self = self else { return }
-            self.delegate?.conversationPickerFooterDelegateDidRequestProceed(self)
-        }
-
-        return button
     }()
 }

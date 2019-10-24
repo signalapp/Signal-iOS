@@ -1399,6 +1399,9 @@
 "MESSAGE_ACTION_DETAILS" = "More Info";
 
 /* Action sheet button title */
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
+
+/* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Reply to This Message";
 
 /* Action sheet button title */

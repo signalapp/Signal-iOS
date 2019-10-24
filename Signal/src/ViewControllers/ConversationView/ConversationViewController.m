@@ -135,7 +135,8 @@ typedef enum : NSUInteger {
     ConversationViewModelDelegate,
     MessageRequestDelegate,
     LocationPickerDelegate,
-    InputAccessoryViewPlaceholderDelegate>
+    InputAccessoryViewPlaceholderDelegate,
+    ForwardMessageDelegate>
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
@@ -2047,6 +2048,13 @@ typedef enum : NSUInteger {
     [self populateReplyForViewItem:conversationViewItem];
 }
 
+- (void)messageActionsForwardItem:(id<ConversationViewItem>)conversationViewItem
+{
+    OWSAssertDebug(conversationViewItem);
+
+    [ForwardMessageNavigationController presentFor:conversationViewItem from:self delegate:self];
+}
+
 #pragma mark - MessageDetailViewDelegate
 
 - (void)detailViewMessageWasDeleted:(MessageDetailViewController *)messageDetailViewController
@@ -2486,7 +2494,8 @@ typedef enum : NSUInteger {
     OWSAssertDebug(viewItem);
     OWSAssertDebug(attachmentStream);
 
-    PdfViewController *pdfView = [[PdfViewController alloc] initWithAttachmentStream:attachmentStream];
+    PdfViewController *pdfView = [[PdfViewController alloc] initWithViewItem:viewItem
+                                                            attachmentStream:attachmentStream];
     UIViewController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:pdfView];
     [self presentFullScreenViewController:navigationController animated:YES completion:nil];
 }
@@ -4214,7 +4223,7 @@ typedef enum : NSUInteger {
 
     OWSLogVerbose(@"Sending sticker.");
 
-    TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithSticker:stickerInfo inThread:self.thread];
+    TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithInstalledSticker:stickerInfo inThread:self.thread];
     [self messageWasSent:message];
 }
 
@@ -4620,11 +4629,9 @@ typedef enum : NSUInteger {
     ContactShareViewModel *contactShare =
         [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord avatarImageData:avatarImageData];
 
-    // TODO: We should probably show this in the same navigation view controller.
     ContactShareApprovalViewController *approveContactShare =
-        [[ContactShareApprovalViewController alloc] initWithContactShare:contactShare
-                                                         contactsManager:self.contactsManager
-                                                                delegate:self];
+        [[ContactShareApprovalViewController alloc] initWithContactShare:contactShare];
+    approveContactShare.delegate = self;
     OWSAssertDebug(contactsPicker.navigationController);
     [contactsPicker.navigationController pushViewController:approveContactShare animated:YES];
 }
@@ -4660,6 +4667,24 @@ typedef enum : NSUInteger {
     OWSLogInfo(@"");
 
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (nullable NSString *)contactApprovalRecipientsDescription:(ContactShareApprovalViewController *)contactApproval
+{
+    OWSLogInfo(@"");
+
+    __block NSString *result;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [self.contactsManager displayNameForThread:self.thread transaction:transaction];
+    }];
+    return result;
+}
+
+- (ApprovalMode)contactApprovalMode:(ContactShareApprovalViewController *)contactApproval
+{
+    OWSLogInfo(@"");
+
+    return ApprovalModeSend;
 }
 
 #pragma mark - ContactShareViewHelperDelegate
@@ -5388,6 +5413,35 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     [self showGifPicker];
+}
+
+#pragma mark - ForwardMessageDelegate
+
+- (void)forwardMessageFlowDidCompleteWithViewItem:(id<ConversationViewItem>)viewItem
+                                          threads:(NSArray<TSThread *> *)threads
+{
+    __weak ConversationViewController *weakSelf = self;
+    [self dismissViewControllerAnimated:true
+                             completion:^{
+                                 [weakSelf didForwardMessageToThreads:threads];
+                             }];
+}
+
+- (void)didForwardMessageToThreads:(NSArray<TSThread *> *)threads
+{
+    if (threads.count > 1) {
+        return;
+    }
+    TSThread *thread = threads.firstObject;
+    if ([thread.uniqueId isEqualToString:self.thread.uniqueId]) {
+        return;
+    }
+    [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
+}
+
+- (void)forwardMessageFlowDidCancel
+{
+    [self dismissViewControllerAnimated:true completion:nil];
 }
 
 @end

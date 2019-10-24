@@ -31,7 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIScrollView *scrollView;
 @property (nonatomic) UIView *mediaView;
 @property (nonatomic) UIView *replacingView;
-@property (nonatomic) UIButton *shareButton;
 
 @property (nonatomic) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) id<ConversationViewItem> viewItem;

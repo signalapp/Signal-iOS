@@ -8,11 +8,15 @@ import Foundation
 protocol MessageActionsDelegate: class {
     func messageActionsShowDetailsForItem(_ conversationViewItem: ConversationViewItem)
     func messageActionsReplyToItem(_ conversationViewItem: ConversationViewItem)
+    func messageActionsForwardItem(_ conversationViewItem: ConversationViewItem)
 }
+
+// MARK: -
 
 struct MessageActionBuilder {
     static func reply(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-        return MenuAction(image: #imageLiteral(resourceName: "ic_reply"),
+        let image = Theme.iconImage(.messageActionReply)
+        return MenuAction(image: image,
                           title: NSLocalizedString("MESSAGE_ACTION_REPLY", comment: "Action sheet button title"),
                           subtitle: nil,
                           accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "reply"),
@@ -23,7 +27,8 @@ struct MessageActionBuilder {
     }
 
     static func copyText(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-        return MenuAction(image: #imageLiteral(resourceName: "ic_copy"),
+        let image = Theme.iconImage(.messageActionCopy)
+        return MenuAction(image: image,
                           title: NSLocalizedString("MESSAGE_ACTION_COPY_TEXT", comment: "Action sheet button title"),
                           subtitle: nil,
                           accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "copy_text"),
@@ -33,7 +38,8 @@ struct MessageActionBuilder {
     }
 
     static func showDetails(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-        return MenuAction(image: #imageLiteral(resourceName: "ic_info"),
+        let image = Theme.iconImage(.messageActionDetails)
+        return MenuAction(image: image,
                           title: NSLocalizedString("MESSAGE_ACTION_DETAILS", comment: "Action sheet button title"),
                           subtitle: nil,
                           accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "show_details"),
@@ -43,7 +49,8 @@ struct MessageActionBuilder {
     }
 
     static func deleteMessage(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-        return MenuAction(image: #imageLiteral(resourceName: "ic_trash"),
+        let image = Theme.iconImage(.messageActionDelete)
+        return MenuAction(image: image,
                           title: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE", comment: "Action sheet button title"),
                           subtitle: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE", comment: "Action sheet button subtitle"),
                           accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "delete_message"),
@@ -53,7 +60,8 @@ struct MessageActionBuilder {
     }
 
     static func copyMedia(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-        return MenuAction(image: #imageLiteral(resourceName: "ic_copy"),
+        let image = Theme.iconImage(.messageActionCopy)
+        return MenuAction(image: image,
                           title: NSLocalizedString("MESSAGE_ACTION_COPY_MEDIA", comment: "Action sheet button title"),
                           subtitle: nil,
                           accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "copy_media"),
@@ -63,12 +71,24 @@ struct MessageActionBuilder {
     }
 
     static func saveMedia(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-        return MenuAction(image: #imageLiteral(resourceName: "download-filled-24.png"),
+        let image = Theme.iconImage(.messageActionSave)
+        return MenuAction(image: image,
                           title: NSLocalizedString("MESSAGE_ACTION_SAVE_MEDIA", comment: "Action sheet button title"),
                           subtitle: nil,
                           accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "save_media"),
                           block: { (_) in
                             conversationViewItem.saveMediaAction()
+        })
+    }
+
+    static func forwardMessage(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
+        let image = Theme.iconImage(.messageActionForward)
+        return MenuAction(image: image,
+                          title: NSLocalizedString("MESSAGE_ACTION_FORWARD_MESSAGE", comment: "Action sheet button title"),
+                          subtitle: nil,
+                          accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "forward_message"),
+                          block: { [weak delegate] (_) in
+                            delegate?.messageActionsForwardItem(conversationViewItem)
         })
     }
 }
@@ -88,6 +108,10 @@ class ConversationViewItemActions: NSObject {
         if conversationViewItem.hasBodyTextActionContent {
             let copyTextAction = MessageActionBuilder.copyText(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(copyTextAction)
+        }
+
+        if conversationViewItem.canForwardMessage() {
+            actions.append(MessageActionBuilder.forwardMessage(conversationViewItem: conversationViewItem, delegate: delegate))
         }
 
         let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
@@ -119,6 +143,10 @@ class ConversationViewItemActions: NSObject {
             }
         }
 
+        if conversationViewItem.canForwardMessage() {
+            actions.append(MessageActionBuilder.forwardMessage(conversationViewItem: conversationViewItem, delegate: delegate))
+        }
+
         let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
         actions.append(deleteAction)
 
@@ -135,6 +163,10 @@ class ConversationViewItemActions: NSObject {
         if shouldAllowReply {
             let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(replyAction)
+        }
+
+        if conversationViewItem.canForwardMessage() {
+            actions.append(MessageActionBuilder.forwardMessage(conversationViewItem: conversationViewItem, delegate: delegate))
         }
 
         let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
