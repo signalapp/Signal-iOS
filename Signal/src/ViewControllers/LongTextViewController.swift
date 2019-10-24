@@ -140,11 +140,9 @@ public class LongTextViewController: OWSViewController {
 
         let forwardIcon = Theme.iconImage(.messageActionForward)
         footer.items = [
-            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
             UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareButtonPressed)),
             UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-            UIBarButtonItem(image: forwardIcon, style: .plain, target: self, action: #selector(forwardButtonPressed)),
-            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+            UIBarButtonItem(image: forwardIcon, style: .plain, target: self, action: #selector(forwardButtonPressed))
         ]
     }
 

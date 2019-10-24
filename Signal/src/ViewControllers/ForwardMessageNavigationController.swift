@@ -132,7 +132,7 @@ extension ForwardMessageNavigationController {
                 guard let attachmentStream = mediaAlbumItem.attachmentStream else {
                     continue
                 }
-                let signalAttachment = try attachmentStream.asSignalAttachmentForSending()
+                let signalAttachment = try attachmentStream.cloneAsSignalAttachment()
                 let attachmentApprovalItem = AttachmentApprovalItem(attachment: signalAttachment, canSave: false)
                 attachmentApprovalItems.append(attachmentApprovalItem)
             }
@@ -219,7 +219,7 @@ extension ForwardMessageNavigationController {
             }
 
             send { thread in
-                let attachment = try attachmentStream.asSignalAttachmentForSending()
+                let attachment = try attachmentStream.cloneAsSignalAttachment()
                 self.send(body: nil, attachment: attachment, thread: thread)
             }
         case .mediaMessage:
@@ -439,7 +439,7 @@ extension ForwardMessageNavigationController: AttachmentApprovalViewControllerDe
 // MARK: -
 
 extension TSAttachmentStream {
-    func asSignalAttachmentForSending() throws -> SignalAttachment {
+    func cloneAsSignalAttachment() throws -> SignalAttachment {
         guard let sourceUrl = originalMediaURL else {
             throw OWSAssertionError("Missing originalMediaURL.")
         }
