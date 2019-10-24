@@ -234,12 +234,16 @@ extension UIDatabaseObserver: TransactionObserver {
             if needsTruncatingCheckpoint {
                 Logger.info("running truncating checkpoint.")
                 try pool.writeWithoutTransaction { db in
-                    try checkpointWal(db: db, mode: .truncate)
+                    try Bench(title: "Sync Checkpoint Transaction", logIfLongerThan: 0.25, logInProduction: true) {
+                        try checkpointWal(db: db, mode: .truncate)
+                    }
                 }
             } else {
                 pool.asyncWriteWithoutTransaction { db in
                     do {
-                        try self.checkpointWal(db: db, mode: .passive)
+                        try Bench(title: "Async Checkpoint Transaction", logIfLongerThan: 0.25, logInProduction: true) {
+                            try self.checkpointWal(db: db, mode: .passive)
+                        }
                     } catch {
                         owsFailDebug("error \(error)")
                     }
