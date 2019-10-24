@@ -1177,17 +1177,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     NSString *_Nullable phoneNumber = signalAccount.recipientPhoneNumber;
     if (phoneNumber != nil) {
         Contact *_Nullable contact = self.allContactsMap[phoneNumber];
-        if (contact != nil) {
-            NSString *_Nullable comparableContactName;
-            if (self.shouldSortByGivenName) {
-                comparableContactName = contact.comparableNameFirstLast;
-            } else {
-                comparableContactName = contact.comparableNameLastFirst;
-            }
-
-            if (comparableContactName.length > 0) {
-                return comparableContactName;
-            }
+        NSString *_Nullable comparableContactName = [self comparableNameForContact:contact];
+        if (comparableContactName.length > 0) {
+            return comparableContactName;
         }
     }
 
@@ -1195,26 +1187,34 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [self displayNameForAddress:address transaction:transaction];
 }
 
+- (nullable NSString *)comparableNameForContact:(nullable Contact *)contact
+{
+    if (contact == nil) {
+        return nil;
+    }
+
+    if (self.shouldSortByGivenName) {
+        return contact.comparableNameFirstLast;
+    }
+
+    return contact.comparableNameLastFirst;
+}
+
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
 {
-    __block NSString *comparableName;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        comparableName = [self comparableNameForSignalAccount:signalAccount transaction:transaction];
-    }];
-    return comparableName;
+    NSString *_Nullable name = [self comparableNameForContact:signalAccount.contact];
+
+    if (name.length < 1) {
+        name = [self displayNameForSignalAccount:signalAccount];
+    }
+
+    return name;
 }
 
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
                                  transaction:(SDSAnyReadTransaction *)transaction
 {
-    NSString *_Nullable name;
-    if (signalAccount.contact) {
-        if (self.shouldSortByGivenName) {
-            name = signalAccount.contact.comparableNameFirstLast;
-        } else {
-            name = signalAccount.contact.comparableNameLastFirst;
-        }
-    }
+    NSString *_Nullable name = [self comparableNameForContact:signalAccount.contact];
 
     if (name.length < 1) {
         name = [self displayNameForAddress:signalAccount.recipientAddress transaction:transaction];
