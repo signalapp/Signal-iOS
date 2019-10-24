@@ -348,6 +348,18 @@ extension ForwardMessageNavigationController: TextApprovalViewControllerDelegate
     func textApprovalDidCancel(_ textApproval: TextApprovalViewController) {
         forwardMessageDelegate?.forwardMessageFlowDidCancel()
     }
+
+    func textApprovalRecipientsDescription(_ textApproval: TextApprovalViewController) -> String? {
+        let conversations = selectedConversationsForConversationPicker
+        guard conversations.count > 0 else {
+            return nil
+        }
+        return conversations.map { $0.title }.joined(separator: ", ")
+    }
+
+    func textApprovalMode(_ textApproval: TextApprovalViewController) -> ApprovalMode {
+        return .send
+    }
 }
 
 // MARK: -

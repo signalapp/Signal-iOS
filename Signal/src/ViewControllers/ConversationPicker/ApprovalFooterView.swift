@@ -4,8 +4,12 @@
 
 import Foundation
 
-public enum ApprovalMode {
+// Outgoing message can be a multi-step process.
+@objc
+public enum ApprovalMode: UInt {
+    // This is the final step of approval; continuing will send.
     case send
+    // This is not the final step of approval; continuing will not send.
     case next
 }
 
@@ -16,7 +20,18 @@ public protocol ApprovalFooterDelegate: AnyObject {
 }
 
 public class ApprovalFooterView: UIView {
-    weak var delegate: ApprovalFooterDelegate?
+    weak var delegate: ApprovalFooterDelegate? {
+        didSet {
+            updateContents()
+        }
+    }
+
+    var approvalMode: ApprovalMode {
+        guard let delegate = delegate else {
+            return .send
+        }
+        return delegate.approvalMode(self)
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -38,6 +53,8 @@ public class ApprovalFooterView: UIView {
         stackView.alignment = .center
         addSubview(stackView)
         stackView.autoPinEdgesToSuperviewMargins()
+
+        updateContents()
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -98,12 +115,20 @@ public class ApprovalFooterView: UIView {
         return label
     }()
 
-    lazy var proceedButton: UIButton = {
-        let button = OWSButton.sendButton(imageName: "send-solid-24") { [weak self] in
+    lazy var proceedButton: OWSButton = {
+        let button = OWSButton.sendButton(imageName: proceedImageName) { [weak self] in
             guard let self = self else { return }
             self.delegate?.approvalFooterDelegateDidRequestProceed(self)
         }
 
         return button
     }()
+
+    private var proceedImageName: String {
+        return approvalMode == .send ? "send-solid-24" : "arrow-right-24"
+    }
+
+    private func updateContents() {
+        proceedButton.setImage(imageName: proceedImageName)
+    }
 }

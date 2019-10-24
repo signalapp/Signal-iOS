@@ -7,7 +7,12 @@ import Foundation
 @objc
 public protocol TextApprovalViewControllerDelegate: class {
     func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageText: String)
+
     func textApprovalDidCancel(_ textApproval: TextApprovalViewController)
+
+    func textApprovalRecipientsDescription(_ textApproval: TextApprovalViewController) -> String?
+
+    func textApprovalMode(_ textApproval: TextApprovalViewController) -> ApprovalMode
 }
 
 // MARK: -
@@ -22,7 +27,14 @@ public class TextApprovalViewController: OWSViewController, UITextViewDelegate {
     let initialMessageText: String
 
     private(set) var textView: UITextView!
-    private var sendButton: UIBarButtonItem!
+    private let footerView = ApprovalFooterView()
+
+    var approvalMode: ApprovalMode {
+        guard let delegate = delegate else {
+            return .send
+        }
+        return delegate.textApprovalMode(self)
+    }
 
     // MARK: - Initializers
 
@@ -38,6 +50,26 @@ public class TextApprovalViewController: OWSViewController, UITextViewDelegate {
         super.init(nibName: nil, bundle: nil)
     }
 
+    // MARK: - UIViewController
+
+    public override var canBecomeFirstResponder: Bool {
+        return true
+    }
+
+    var currentInputAcccessoryView: UIView? {
+        didSet {
+            if oldValue != currentInputAcccessoryView {
+                textView.inputAccessoryView = currentInputAcccessoryView
+                textView.reloadInputViews()
+                reloadInputViews()
+            }
+        }
+    }
+
+    public override var inputAccessoryView: UIView? {
+        return currentInputAcccessoryView
+    }
+
     // MARK: - View Lifecycle
 
     override public func viewDidLoad() {
@@ -47,15 +79,21 @@ public class TextApprovalViewController: OWSViewController, UITextViewDelegate {
                                                       comment: "Title for the 'message approval' dialog.")
 
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelPressed))
-        sendButton = UIBarButtonItem(title: MessageStrings.sendButton,
-                                     style: .plain,
-                                     target: self,
-                                     action: #selector(sendPressed))
-        self.navigationItem.rightBarButtonItem = sendButton
+
+        footerView.delegate = self
     }
 
     private func updateSendButton() {
-        sendButton.isEnabled = textView.text.count > 0
+        guard textView.text.count > 0 else {
+            currentInputAcccessoryView = nil
+            return
+        }
+        guard let recipientsDescription = delegate?.textApprovalRecipientsDescription(self) else {
+            currentInputAcccessoryView = nil
+            return
+        }
+        footerView.setNamesText(recipientsDescription, animated: false)
+        currentInputAcccessoryView = footerView
     }
 
     override public func viewDidAppear(_ animated: Bool) {
@@ -93,13 +131,21 @@ public class TextApprovalViewController: OWSViewController, UITextViewDelegate {
         delegate?.textApprovalDidCancel(self)
     }
 
-    @objc func sendPressed(sender: UIButton) {
-        delegate?.textApproval(self, didApproveMessage: self.textView.text)
-    }
-
     // MARK: - UITextViewDelegate
 
     public func textViewDidChange(_ textView: UITextView) {
         updateSendButton()
+    }
+}
+
+// MARK: -
+
+extension TextApprovalViewController: ApprovalFooterDelegate {
+    public func approvalFooterDelegateDidRequestProceed(_ approvalFooterView: ApprovalFooterView) {
+        delegate?.textApproval(self, didApproveMessage: self.textView.text)
+    }
+
+    public func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode {
+        return approvalMode
     }
 }

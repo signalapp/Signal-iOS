@@ -316,11 +316,9 @@ class ConversationPickerViewController: OWSViewController {
     @objc func onTouchCancelButton() {
         delegate?.conversationPickerDidCancel(self)
     }
-
-    @objc func onTouchNextButton() {
-        delegate?.conversationPickerDidCompleteSelection(self)
-    }
 }
+
+// MARK: -
 
 extension ConversationPickerViewController: BlockListCacheDelegate {
     func blockListCacheDidUpdate(_ blocklistCache: BlockListCache) {
@@ -328,6 +326,8 @@ extension ConversationPickerViewController: BlockListCacheDelegate {
         self.conversationCollection = buildConversationCollection()
     }
 }
+
+// MARK: -
 
 extension ConversationPickerViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -420,6 +420,8 @@ extension ConversationPickerViewController: UITableViewDataSource {
     }
 }
 
+// MARK: -
+
 extension ConversationPickerViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         guard let delegate = delegate else { return nil }
@@ -499,17 +501,11 @@ extension ConversationPickerViewController: UITableViewDelegate {
         guard let delegate = delegate else { return }
 
         let conversations = delegate.selectedConversationsForConversationPicker
-        var nextButton: UIBarButtonItem?
         if conversations.count == 0 {
             currentInputAcccessoryView = nil
         } else {
-            if approvalMode == .next {
-                nextButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(onTouchNextButton))
-            } else {
-                currentInputAcccessoryView = footerView
-            }
+            currentInputAcccessoryView = footerView
         }
-        self.navigationItem.rightBarButtonItem = nextButton
 
         let labelText = conversations.map { $0.title }.joined(separator: ", ")
         footerView.setNamesText(labelText, animated: animated)
@@ -530,6 +526,8 @@ extension ConversationPickerViewController: UITableViewDelegate {
         toastController.presentToastView(fromBottomOfView: view, inset: kToastInset)
     }
 }
+
+// MARK: -
 
 extension ConversationPickerViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
