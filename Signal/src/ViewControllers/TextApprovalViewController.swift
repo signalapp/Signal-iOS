@@ -29,7 +29,7 @@ public class TextApprovalViewController: OWSViewController, UITextViewDelegate {
     private(set) var textView: UITextView!
     private let footerView = ApprovalFooterView()
 
-    var approvalMode: ApprovalMode {
+    private var approvalMode: ApprovalMode {
         guard let delegate = delegate else {
             return .send
         }

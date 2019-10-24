@@ -187,9 +187,7 @@ extension ForwardMessageNavigationController {
     }
 
     func send(contactShare: ContactShareViewModel, thread: TSThread) {
-        databaseStorage.read { _ in
-            ThreadUtil.enqueueMessage(withContactShare: contactShare.dbRecord, in: thread)
-        }
+        ThreadUtil.enqueueMessage(withContactShare: contactShare.dbRecord, in: thread)
     }
 
     func send(body: String?, attachment: SignalAttachment, thread: TSThread) {
@@ -375,6 +373,18 @@ extension ForwardMessageNavigationController: ContactShareApprovalViewController
     func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
                              didCancelContactShare contactShare: ContactShareViewModel) {
         forwardMessageDelegate?.forwardMessageFlowDidCancel()
+    }
+
+    func contactApprovalRecipientsDescription(_ contactApproval: ContactShareApprovalViewController) -> String? {
+        let conversations = selectedConversationsForConversationPicker
+        guard conversations.count > 0 else {
+            return nil
+        }
+        return conversations.map { $0.title }.joined(separator: ", ")
+    }
+
+    func contactApprovalMode(_ contactApproval: ContactShareApprovalViewController) -> ApprovalMode {
+        return .send
     }
 }
 

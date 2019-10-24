@@ -375,6 +375,24 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     [self cancelShareExperience];
 }
 
+- (nullable NSString *)contactApprovalRecipientsDescription:(ContactShareApprovalViewController *)contactApproval
+{
+    OWSLogInfo(@"");
+
+    __block NSString *result;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [self.contactsManager displayNameForThread:self.thread transaction:transaction];
+    }];
+    return result;
+}
+
+- (ApprovalMode)contactApprovalMode:(ContactShareApprovalViewController *)contactApproval
+{
+    OWSLogInfo(@"");
+
+    return ApprovalModeSend;
+}
+
 #pragma mark - Helpers
 
 - (void)tryToSendMessageWithBlock:(SendMessageBlock)sendMessageBlock

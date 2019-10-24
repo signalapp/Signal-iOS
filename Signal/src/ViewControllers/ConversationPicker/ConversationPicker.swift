@@ -81,7 +81,7 @@ class ConversationPickerViewController: OWSViewController {
         return currentInputAcccessoryView
     }
 
-    var approvalMode: ApprovalMode {
+    private var approvalMode: ApprovalMode {
         guard let delegate = delegate else {
             return .send
         }

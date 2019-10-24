@@ -4,7 +4,7 @@
 
 import Foundation
 
-// Outgoing message can be a multi-step process.
+// Outgoing message approval can be a multi-step process.
 @objc
 public enum ApprovalMode: UInt {
     // This is the final step of approval; continuing will send.
@@ -13,20 +13,24 @@ public enum ApprovalMode: UInt {
     case next
 }
 
+// MARK: -
+
 public protocol ApprovalFooterDelegate: AnyObject {
     func approvalFooterDelegateDidRequestProceed(_ approvalFooterView: ApprovalFooterView)
 
     func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode
 }
 
+// MARK: -
+
 public class ApprovalFooterView: UIView {
-    weak var delegate: ApprovalFooterDelegate? {
+    public weak var delegate: ApprovalFooterDelegate? {
         didSet {
             updateContents()
         }
     }
 
-    var approvalMode: ApprovalMode {
+    private var approvalMode: ApprovalMode {
         guard let delegate = delegate else {
             return .send
         }
@@ -67,13 +71,13 @@ public class ApprovalFooterView: UIView {
 
     // MARK: public
 
-    var namesText: String? {
+    private var namesText: String? {
         get {
             return namesLabel.text
         }
     }
 
-    func setNamesText(_ newValue: String?, animated: Bool) {
+    public func setNamesText(_ newValue: String?, animated: Bool) {
         let changes = {
             self.namesLabel.text = newValue
 

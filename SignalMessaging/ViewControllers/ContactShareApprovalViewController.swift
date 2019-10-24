@@ -11,7 +11,13 @@ public protocol ContactShareApprovalViewControllerDelegate: class {
                              didApproveContactShare contactShare: ContactShareViewModel)
     func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
                              didCancelContactShare contactShare: ContactShareViewModel)
+
+    func contactApprovalRecipientsDescription(_ contactApproval: ContactShareApprovalViewController) -> String?
+
+    func contactApprovalMode(_ contactApproval: ContactShareApprovalViewController) -> ApprovalMode
 }
+
+// MARK: -
 
 protocol ContactShareField: class {
 
@@ -238,6 +244,33 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
 
     var nameLabel: UILabel!
 
+    private let footerView = ApprovalFooterView()
+
+    private var approvalMode: ApprovalMode {
+        guard let delegate = delegate else {
+            return .send
+        }
+        return delegate.contactApprovalMode(self)
+    }
+
+    // MARK: - UIViewController
+
+    public override var canBecomeFirstResponder: Bool {
+        return true
+    }
+
+    var currentInputAcccessoryView: UIView? {
+        didSet {
+            if oldValue != currentInputAcccessoryView {
+                reloadInputViews()
+            }
+        }
+    }
+
+    public override var inputAccessoryView: UIView? {
+        return currentInputAcccessoryView
+    }
+
     // MARK: Initializers
 
     @available(*, unavailable, message:"use other constructor instead.")
@@ -307,7 +340,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
     override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        updateNavigationBar()
+        updateUI()
     }
 
     override public func viewDidAppear(_ animated: Bool) {
@@ -330,9 +363,11 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
 
         self.view.backgroundColor = Theme.backgroundColor
 
+        footerView.delegate = self
+
         updateContent()
 
-        updateNavigationBar()
+        updateUI()
     }
 
     func isAtLeastOneFieldSelected() -> Bool {
@@ -344,14 +379,21 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         return false
     }
 
-    func updateNavigationBar() {
+    func updateUI() {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
                                                                 target: self,
                                                                 action: #selector(didPressCancel))
 
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON",
-                                                                                          comment: "Label for 'send' button in the 'attachment approval' dialog."),
-                                                                 style: .plain, target: self, action: #selector(didPressSendButton))
+        guard isAtLeastOneFieldSelected() else {
+            currentInputAcccessoryView = nil
+            return
+        }
+        guard let recipientsDescription = delegate?.contactApprovalRecipientsDescription(self) else {
+            currentInputAcccessoryView = nil
+            return
+        }
+        footerView.setNamesText(recipientsDescription, animated: false)
+        currentInputAcccessoryView = footerView
     }
 
     private func updateContent() {
@@ -452,7 +494,8 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
 
     // MARK: -
 
-    @objc func didPressSendButton() {
+    @objc
+    func didPressSendButton() {
         AssertIsOnMainThread()
 
         guard isAtLeastOneFieldSelected() else {
@@ -506,12 +549,24 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
 
         nameLabel.text = contactShare.name.displayName
 
-        self.updateNavigationBar()
+        updateUI()
     }
 
     // MARK: - ContactShareFieldViewDelegate
 
     public func contactShareFieldViewDidChangeSelectedState() {
-        self.updateNavigationBar()
+        updateUI()
+    }
+}
+
+// MARK: -
+
+extension ContactShareApprovalViewController: ApprovalFooterDelegate {
+    public func approvalFooterDelegateDidRequestProceed(_ approvalFooterView: ApprovalFooterView) {
+        didPressSendButton()
+    }
+
+    public func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode {
+        return approvalMode
     }
 }
