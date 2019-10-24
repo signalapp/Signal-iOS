@@ -293,6 +293,11 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     // no-op
 }
 
+- (nullable NSString *)attachmentApprovalTextInputContextIdentifier
+{
+    return nil;
+}
+
 #pragma mark - MessageApprovalViewControllerDelegate
 
 - (void)messageApproval:(MessageApprovalViewController *)approvalViewController
