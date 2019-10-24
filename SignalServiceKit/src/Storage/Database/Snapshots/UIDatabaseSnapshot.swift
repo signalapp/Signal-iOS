@@ -108,7 +108,6 @@ public class UIDatabaseObserver: NSObject {
     let pool: DatabasePool
 
     var isRunningCheckpoint = false
-    var needsTruncatingCheckpoint = false
     let checkPointQueue = DispatchQueue(label: "checkpointQueue")
 
     internal var latestSnapshot: DatabaseSnapshot {
@@ -219,27 +218,18 @@ extension UIDatabaseObserver: TransactionObserver {
         // *right here*, between committing the last transaction and starting the next one.
         //
         // Solution:
-        //   Under normal load, when the WAL is not known to be large, prefer the lighter weight
-        //   passive checkpoint, and do it async to further minimize main thread impact.
-        //   When the WAL is known to be large however, we synchronously checkpoint and truncate
-        //   the WAL before resuming the snapshot read transaction.
-        let needsTruncatingCheckpoint = checkPointQueue.sync {
-            return self.needsTruncatingCheckpoint
-        }
-
-        if needsTruncatingCheckpoint {
-            Logger.info("running truncating checkpoint.")
+        //   Perform an explicit passive checkpoint sync after every write.
+        //   It will probably not succeed often in truncating the database, but
+        //   we only need it to succeed periodically. This might have an
+        //   unacceptable perf cost, and it might not succeed often enough.
+        do {
             try pool.writeWithoutTransaction { db in
-                try checkpointWal(db: db, mode: .truncate)
-            }
-        } else {
-            pool.asyncWriteWithoutTransaction { db in
-                do {
+                try Bench(title: "Slow Passive Checkpoint", logIfLongerThan: 0.25, logInProduction: true) {
                     try self.checkpointWal(db: db, mode: .passive)
-                } catch {
-                    owsFailDebug("error \(error)")
                 }
             }
+        } catch {
+            owsFailDebug("error \(error)")
         }
 
         // [3] open a new transaction from the current db state
@@ -265,13 +255,8 @@ extension UIDatabaseObserver: TransactionObserver {
         guard code == SQLITE_OK else {
             throw OWSAssertionError("checkpoint sql error with code: \(code)")
         }
-
-        let maxWalFileSizeBytes = 2 * 1024 * 1024
-        let pageSize = 4 * 1024
-        let maxWalPages = maxWalFileSizeBytes / pageSize
-
+        Logger.verbose("walSizePages: \(walSizePages), pagesCheckpointed: \(pagesCheckpointed).")
         checkPointQueue.sync {
-            needsTruncatingCheckpoint = walSizePages > maxWalPages
             isRunningCheckpoint = false
         }
     }
