@@ -100,6 +100,8 @@ public class TextApprovalViewController: OWSViewController, UITextViewDelegate {
         super.viewDidAppear(animated)
 
         updateSendButton()
+
+        textView.becomeFirstResponder()
     }
 
     // MARK: - Create Views
@@ -122,7 +124,7 @@ public class TextApprovalViewController: OWSViewController, UITextViewDelegate {
         textView.autoPinEdge(toSuperviewSafeArea: .leading)
         textView.autoPinEdge(toSuperviewSafeArea: .trailing)
         textView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        textView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        autoPinView(toBottomOfViewControllerOrKeyboard: textView, avoidNotch: true)
     }
 
     // MARK: - Event Handlers

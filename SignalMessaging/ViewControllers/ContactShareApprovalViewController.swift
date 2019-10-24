@@ -415,7 +415,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         scrollView.autoPinEdge(toSuperviewSafeArea: .leading)
         scrollView.autoPinEdge(toSuperviewSafeArea: .trailing)
         scrollView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        scrollView.autoPinEdge(toSuperviewEdge: .bottom)
+        autoPinView(toBottomOfViewControllerOrKeyboard: scrollView, avoidNotch: true)
 
         let fieldsView = createFieldsView()
 
