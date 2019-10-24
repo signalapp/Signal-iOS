@@ -16,12 +16,11 @@
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSSyncBlockedRequestMessage.h>
 #import <SignalServiceKit/OWSSyncConfigurationMessage.h>
-#import <SignalServiceKit/OWSSyncConfigurationRequestMessage.h>
 #import <SignalServiceKit/OWSSyncContactsMessage.h>
 #import <SignalServiceKit/OWSSyncFetchLatestMessage.h>
 #import <SignalServiceKit/OWSSyncGroupsMessage.h>
+#import <SignalServiceKit/OWSSyncRequestMessage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -430,12 +429,12 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     }
 
     [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self sendBlockListSyncRequestMessageTransaction:transaction];
-        [self sendConfigurationSyncRequestMessageTransaction:transaction];
+        [self sendSyncRequestMessage:OWSSyncRequestType_Blocked transaction:transaction];
+        [self sendSyncRequestMessage:OWSSyncRequestType_Configuration transaction:transaction];
     }];
 }
 
-- (void)sendBlockListSyncRequestMessageTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)sendSyncRequestMessage:(OWSSyncRequestType)requestType transaction:(SDSAnyWriteTransaction *)transaction
 {
     DDLogInfo(@"");
 
@@ -455,36 +454,10 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         return;
     }
 
-    OWSSyncBlockedRequestMessage *syncConfigurationRequestMessage =
-        [[OWSSyncBlockedRequestMessage alloc] initWithThread:thread];
+    OWSSyncRequestMessage *syncRequestMessage = [[OWSSyncRequestMessage alloc] initWithThread:thread
+                                                                                  requestType:requestType];
 
-    [self.messageSenderJobQueue addMessage:syncConfigurationRequestMessage.asPreparer transaction:transaction];
-}
-
-- (void)sendConfigurationSyncRequestMessageTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    DDLogInfo(@"");
-
-    if (!self.tsAccountManager.isRegisteredAndReady) {
-        OWSFailDebug(@"Unexpectedly tried to send sync request before registration.");
-        return;
-    }
-
-    if (self.tsAccountManager.isRegisteredPrimaryDevice) {
-        OWSFailDebug(@"Sync request should only be sent from a linked device");
-        return;
-    }
-
-    TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
-    if (thread == nil) {
-        OWSFailDebug(@"Missing thread.");
-        return;
-    }
-
-    OWSSyncConfigurationRequestMessage *syncConfigurationRequestMessage =
-        [[OWSSyncConfigurationRequestMessage alloc] initWithThread:thread];
-
-    [self.messageSenderJobQueue addMessage:syncConfigurationRequestMessage.asPreparer transaction:transaction];
+    [self.messageSenderJobQueue addMessage:syncRequestMessage.asPreparer transaction:transaction];
 }
 
 #pragma mark - Fetch Latest
