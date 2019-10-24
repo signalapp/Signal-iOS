@@ -2,11 +2,11 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSOutgoingSyncMessage.h"
+#import "TSOutgoingMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSSyncGroupsRequestMessage : TSOutgoingMessage
+@interface OWSGroupInfoRequestMessage : TSOutgoingMessage
 
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
                                         inThread:(TSThread *)thread
