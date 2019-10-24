@@ -110,6 +110,7 @@ public class UIDatabaseObserver: NSObject {
     var isRunningCheckpoint = false
     var needsTruncatingCheckpoint = false
     let checkPointQueue = DispatchQueue(label: "checkpointQueue")
+    var lastCrossProcessWriteDate: Date?
 
     internal var latestSnapshot: DatabaseSnapshot {
         didSet {
@@ -132,6 +133,8 @@ public class UIDatabaseObserver: NSObject {
     func didReceiveCrossProcessNotification(_ notification: Notification) {
         AssertIsOnMainThread()
         Logger.verbose("")
+
+        lastCrossProcessWriteDate = Date()
 
         for delegate in snapshotDelegates {
             delegate.databaseSnapshotDidUpdateExternally()
@@ -223,21 +226,23 @@ extension UIDatabaseObserver: TransactionObserver {
         //   passive checkpoint, and do it async to further minimize main thread impact.
         //   When the WAL is known to be large however, we synchronously checkpoint and truncate
         //   the WAL before resuming the snapshot read transaction.
-        let needsTruncatingCheckpoint = checkPointQueue.sync {
-            return self.needsTruncatingCheckpoint
-        }
-
-        if needsTruncatingCheckpoint {
-            Logger.info("running truncating checkpoint.")
-            try pool.writeWithoutTransaction { db in
-                try checkpointWal(db: db, mode: .truncate)
+        if canSafelyCheckpoint {
+            let needsTruncatingCheckpoint = checkPointQueue.sync {
+                return self.needsTruncatingCheckpoint
             }
-        } else {
-            pool.asyncWriteWithoutTransaction { db in
-                do {
-                    try self.checkpointWal(db: db, mode: .passive)
-                } catch {
-                    owsFailDebug("error \(error)")
+
+            if needsTruncatingCheckpoint {
+                Logger.info("running truncating checkpoint.")
+                try pool.writeWithoutTransaction { db in
+                    try checkpointWal(db: db, mode: .truncate)
+                }
+            } else {
+                pool.asyncWriteWithoutTransaction { db in
+                    do {
+                        try self.checkpointWal(db: db, mode: .passive)
+                    } catch {
+                        owsFailDebug("error \(error)")
+                    }
                 }
             }
         }
@@ -247,6 +252,26 @@ extension UIDatabaseObserver: TransactionObserver {
 
         // [4] do *any* read to acquire non-deferred read lock
         _ = try Row.fetchCursor(db, sql: "SELECT rootpage FROM sqlite_master LIMIT 1").next()
+    }
+
+    private var canSafelyCheckpoint: Bool {
+        AssertIsOnMainThread()
+
+        guard CurrentAppContext().isMainAppAndActive else {
+            return false
+        }
+        guard let lastCrossProcessWriteDate = lastCrossProcessWriteDate else {
+            return true
+        }
+        let elapsed: TimeInterval = abs(lastCrossProcessWriteDate.timeIntervalSinceNow)
+        let minInterval: TimeInterval = kSecondInterval * 30
+        guard elapsed < minInterval else {
+            // To avoid cross process contention, don't try to
+            // truncate the WAL if we've seen cross process writes
+            // in the last N seconds.
+            return false
+        }
+        return true
     }
 
     func checkpointWal(db: Database, mode: Database.CheckpointMode) throws {
