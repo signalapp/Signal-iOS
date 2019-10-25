@@ -105,7 +105,7 @@
                 return attributes.map { (fileAttribute: FileAttributeKey, value: Any) in
                     let title = fileAttribute.rawValue.replacingOccurrences(of: "NSFile", with: "")
                     return OWSTableItem(title: "\(title): \(value)") {
-                        OWSAlerts.showAlert(title: title, message: "\(value)")
+                        OWSActionSheets.showActionSheet(title: title, message: "\(value)")
                     }
                 }
             } catch {
@@ -123,10 +123,10 @@
                 }
 
                 let alert = UIAlertController(title: "Rename File",
-                                              message: "Will be created in \(strongSelf.fileURL.lastPathComponent)",
+                                          message: "Will be created in \(strongSelf.fileURL.lastPathComponent)",
                     preferredStyle: .alert)
 
-                alert.addAction(OWSAlerts.cancelAction)
+                alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
                 alert.addAction(UIAlertAction(title: "Rename \(strongSelf.fileURL.lastPathComponent)", style: .default) { _ in
                     guard let textField = alert.textFields?.first else {
                         owsFailDebug("missing text field")
@@ -134,7 +134,7 @@
                     }
 
                     guard let inputString = textField.text, inputString.count >= 4 else {
-                        OWSAlerts.showAlert(title: "new file name missing or less than 4 chars")
+                        OWSActionSheets.showActionSheet(title: "new file name missing or less than 4 chars")
                         return
                     }
 
@@ -155,7 +155,7 @@
                     textField.text = strongSelf.fileURL.lastPathComponent
                 }
 
-                strongSelf.presentAlert(alert)
+                strongSelf.present(alert, animated: true, completion: nil)
             },
 
             OWSTableItem.disclosureItem(withText: "➡ Move") { [weak self] in
@@ -169,9 +169,9 @@
 
                 let alert = UIAlertController(title: "Moving File: \(filename)",
                                               message: "Currently in: \(oldDirectory)",
-                    preferredStyle: .alert)
+                preferredStyle: .alert)
 
-                alert.addAction(OWSAlerts.cancelAction)
+                alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
                 alert.addAction(UIAlertAction(title: "Moving \(filename)", style: .default) { _ in
                     guard let textField = alert.textFields?.first else {
                         owsFailDebug("missing text field")
@@ -179,7 +179,7 @@
                     }
 
                     guard let inputString = textField.text, inputString.count >= 4 else {
-                        OWSAlerts.showAlert(title: "new file dir missing or less than 4 chars")
+                        OWSActionSheets.showActionSheet(title: "new file dir missing or less than 4 chars")
                         return
                     }
 
@@ -200,7 +200,7 @@
                     textField.text = oldDirectory.path
                 }
 
-                strongSelf.presentAlert(alert)
+                strongSelf.present(alert, animated: true, completion: nil)
             },
 
             OWSTableItem.disclosureItem(withText: "❌ Delete") { [weak self] in
@@ -208,7 +208,7 @@
                     return
                 }
 
-                OWSAlerts.showConfirmationAlert(title: "Delete \(strongSelf.fileURL.path)?") { _ in
+                OWSActionSheets.showConfirmationAlert(title: "Delete \(strongSelf.fileURL.path)?") { _ in
                     Logger.debug("deleting file at \(strongSelf.fileURL.path)")
                     do {
                         try strongSelf.fileManager.removeItem(atPath: strongSelf.fileURL.path)
@@ -226,16 +226,15 @@
 
                 UIPasteboard.general.string = strongSelf.fileURL.path
 
-                let alert = UIAlertController(title: "Path Copied to Clipboard!",
-                                              message: "\(strongSelf.fileURL.path)",
-                                              preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Copy Filename Instead", style: .default) { _ in
+                let alert = ActionSheetController(title: "Path Copied to Clipboard!",
+                                              message: "\(strongSelf.fileURL.path)")
+                alert.addAction(ActionSheetAction(title: "Copy Filename Instead", style: .default) { _ in
                     UIPasteboard.general.string = strongSelf.fileURL.lastPathComponent
                 })
 
-                alert.addAction(UIAlertAction(title: "Dismiss", style: .default))
+                alert.addAction(ActionSheetAction(title: "Dismiss", style: .default))
 
-                strongSelf.presentAlert(alert)
+                strongSelf.presentActionSheet(alert)
             },
 
             OWSTableItem.disclosureItem(withText: "🔒 Set File Protection") { [weak self] in
@@ -255,13 +254,12 @@
                     }
                 }()
 
-                let actionSheet = UIAlertController(title: "Set file protection level",
-                    message: "Currently: \(currentFileProtection?.rawValue ?? "Unknown")",
-                    preferredStyle: .actionSheet)
+                let actionSheet = ActionSheetController(title: "Set file protection level",
+                    message: "Currently: \(currentFileProtection?.rawValue ?? "Unknown")")
 
                 let protections: [FileProtectionType] = [.none, .complete, .completeUnlessOpen, .completeUntilFirstUserAuthentication]
                 protections.forEach { (protection: FileProtectionType) in
-                    actionSheet.addAction(UIAlertAction(title: "\(protection.rawValue.replacingOccurrences(of: "NSFile", with: ""))", style: .default) { (_: UIAlertAction) in
+                    actionSheet.addAction(ActionSheetAction(title: "\(protection.rawValue.replacingOccurrences(of: "NSFile", with: ""))", style: .default) { _ in
                         Logger.debug("chose protection: \(protection) for file: \(fileURL)")
                         let fileAttributes: [FileAttributeKey: Any] = [.protectionKey: protection]
                         do {
@@ -273,9 +271,9 @@
                         }
                     })
                 }
-                actionSheet.addAction(OWSAlerts.cancelAction)
+                actionSheet.addAction(OWSActionSheets.cancelAction)
 
-                strongSelf.presentAlert(actionSheet)
+                strongSelf.presentActionSheet(actionSheet)
             }
         ]
 
@@ -289,7 +287,7 @@
                                               message: "Will be created in \(strongSelf.fileURL.lastPathComponent)",
                     preferredStyle: .alert)
 
-                alert.addAction(OWSAlerts.cancelAction)
+                alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
                 alert.addAction(UIAlertAction(title: "Create", style: .default) { _ in
                     guard let textField = alert.textFields?.first else {
                         owsFailDebug("missing text field")
@@ -297,7 +295,7 @@
                     }
 
                     guard let inputString = textField.text, inputString.count >= 4 else {
-                        OWSAlerts.showAlert(title: "file name missing or less than 4 chars")
+                        OWSActionSheets.showActionSheet(title: "file name missing or less than 4 chars")
                         return
                     }
 
@@ -313,7 +311,7 @@
                     textField.placeholder = "File Name"
                 }
 
-                strongSelf.presentAlert(alert)
+                strongSelf.present(alert, animated: true, completion: nil)
             }
 
             managementItems.append(createFileItem)
@@ -327,7 +325,7 @@
                                               message: "Will be created in \(strongSelf.fileURL.lastPathComponent)",
                     preferredStyle: .alert)
 
-                alert.addAction(OWSAlerts.cancelAction)
+                alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
                 alert.addAction(UIAlertAction(title: "Create", style: .default) { _ in
                     guard let textField = alert.textFields?.first else {
                         owsFailDebug("missing text field")
@@ -335,7 +333,7 @@
                     }
 
                     guard let inputString = textField.text, inputString.count >= 4 else {
-                        OWSAlerts.showAlert(title: "dir name missing or less than 4 chars")
+                        OWSActionSheets.showActionSheet(title: "dir name missing or less than 4 chars")
                         return
                     }
 
@@ -354,7 +352,7 @@
                     textField.placeholder = "Dir Name"
                 }
 
-                strongSelf.presentAlert(alert)
+                strongSelf.present(alert, animated: true, completion: nil)
             }
             managementItems.append(createDirItem)
 

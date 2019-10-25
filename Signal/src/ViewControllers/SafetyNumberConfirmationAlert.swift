@@ -68,9 +68,9 @@ public class SafetyNumberConfirmationAlert: NSObject {
                                            comment: "Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}}")
         let body = String(format: bodyFormat, displayName)
 
-        let actionSheet = UIAlertController(title: title, message: body, preferredStyle: .actionSheet)
+        let actionSheet = ActionSheetController(title: title, message: body)
 
-        let confirmAction = UIAlertAction(title: confirmationText, style: .default) { _ in
+        let confirmAction = ActionSheetAction(title: confirmationText, style: .default) { _ in
             Logger.info("Confirmed identity: \(untrustedIdentity)")
 
             self.databaseStorage.asyncWrite { (transaction) in
@@ -83,7 +83,7 @@ public class SafetyNumberConfirmationAlert: NSObject {
         }
         actionSheet.addAction(confirmAction)
 
-        let showSafetyNumberAction = UIAlertAction(title: NSLocalizedString("VERIFY_PRIVACY", comment: "Label for button or row which allows users to verify the safety number of another user."), style: .default) { _ in
+        let showSafetyNumberAction = ActionSheetAction(title: NSLocalizedString("VERIFY_PRIVACY", comment: "Label for button or row which allows users to verify the safety number of another user."), style: .default) { _ in
             Logger.info("Opted to show Safety Number for identity: \(untrustedIdentity)")
 
             self.presentSafetyNumberViewController(theirIdentityKey: untrustedIdentity.identityKey,
@@ -96,7 +96,7 @@ public class SafetyNumberConfirmationAlert: NSObject {
 
         // We can't use the default `OWSAlerts.cancelAction` because we need to specify that the completion
         // handler is called.
-        let cancelAction = UIAlertAction(title: CommonStrings.cancelButton, style: .cancel) { _ in
+        let cancelAction = ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel) { _ in
             Logger.info("user canceled.")
             completion(false)
         }
@@ -104,7 +104,7 @@ public class SafetyNumberConfirmationAlert: NSObject {
 
         beforePresentationHandler?()
 
-        UIApplication.shared.frontmostViewController?.presentAlert(actionSheet)
+        UIApplication.shared.frontmostViewController?.presentActionSheet(actionSheet)
         return true
     }
 

@@ -80,17 +80,17 @@ public class SecondaryLinkingPrepViewController: OnboardingBaseViewController {
 
         let title = NSLocalizedString("SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE", comment: "alert title")
         let message = NSLocalizedString("SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY", comment: "alert body")
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let alert = ActionSheetController(title: title, message: message)
 
         let dismissTitle = NSLocalizedString("ALERT_ACTION_ACKNOWLEDGE", comment: "generic button text to acknowledge that the corresponding text was read.")
 
         alert.addAction(
-            UIAlertAction(title: dismissTitle,
+            ActionSheetAction(title: dismissTitle,
                           accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "alert", name: "acknowledge"),
                           style: .default)
         )
 
-        presentAlert(alert)
+        presentActionSheet(alert)
     }
 
     @objc

@@ -106,10 +106,10 @@ typedef void (^CustomLayoutBlock)(void);
     OWSRecipientIdentity *_Nullable recipientIdentity =
         [[OWSIdentityManager sharedManager] recipientIdentityForAddress:address];
     if (!recipientIdentity) {
-        [OWSAlerts showAlertWithTitle:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_TITLE",
-                                          @"Title for alert explaining that a user cannot be verified.")
-                              message:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_MESSAGE",
-                                          @"Message for alert explaining that a user cannot be verified.")];
+        [OWSActionSheets showActionSheetWithTitle:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_TITLE",
+                                                      @"Title for alert explaining that a user cannot be verified.")
+                                          message:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_MESSAGE",
+                                                      @"Message for alert explaining that a user cannot be verified.")];
         return;
     }
 

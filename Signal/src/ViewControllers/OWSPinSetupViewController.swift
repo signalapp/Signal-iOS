@@ -389,7 +389,7 @@ public class PinSetupViewController: OWSViewController {
                 OWS2FAManager.shared().disable2FA(success: nil, failure: nil)
 
                 modalVC.dismiss {
-                    OWSAlerts.showErrorAlert(message: NSLocalizedString("ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA", comment: "Error indicating that attempt to enable 'two-factor auth' failed."))
+                    OWSActionSheets.showErrorAlert(message: NSLocalizedString("ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA", comment: "Error indicating that attempt to enable 'two-factor auth' failed."))
                 }
             })
         }

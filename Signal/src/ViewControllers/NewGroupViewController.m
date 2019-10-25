@@ -264,7 +264,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     __weak NewGroupViewController *weakSelf = self;
-    [OWSAlerts showPendingChangesAlertWithDiscardAction:^{
+    [OWSActionSheets showPendingChangesActionSheetWithDiscardAction:^{
         [weakSelf dismissViewControllerAnimated:YES completion:nil];
     }];
 }
@@ -422,7 +422,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     __weak NewGroupViewController *weakSelf = self;
-    [OWSAlerts showPendingChangesAlertWithDiscardAction:^{
+    [OWSActionSheets showPendingChangesActionSheetWithDiscardAction:^{
         [weakSelf.navigationController popViewControllerAnimated:YES];
     }];
 }

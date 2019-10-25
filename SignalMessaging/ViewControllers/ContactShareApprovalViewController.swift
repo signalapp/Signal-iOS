@@ -505,12 +505,12 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         AssertIsOnMainThread()
 
         guard isAtLeastOneFieldSelected() else {
-            OWSAlerts.showErrorAlert(message: NSLocalizedString("CONTACT_SHARE_NO_FIELDS_SELECTED",
+            OWSActionSheets.showErrorAlert(message: NSLocalizedString("CONTACT_SHARE_NO_FIELDS_SELECTED",
                                                                 comment: "Error indicating that at least one contact field must be selected before sharing a contact."))
             return
         }
         guard contactShare.ows_isValid else {
-            OWSAlerts.showErrorAlert(message: NSLocalizedString("CONTACT_SHARE_INVALID_CONTACT",
+            OWSActionSheets.showErrorAlert(message: NSLocalizedString("CONTACT_SHARE_INVALID_CONTACT",
                                                                 comment: "Error indicating that an invalid contact cannot be shared."))
             return
         }

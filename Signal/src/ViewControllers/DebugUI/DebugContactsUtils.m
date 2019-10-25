@@ -1125,7 +1125,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     CNAuthorizationStatus status = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
     if (status == CNAuthorizationStatusDenied || status == CNAuthorizationStatusRestricted) {
-        [OWSAlerts showAlertWithTitle:@"Error" message:@"No contacts access."];
+        [OWSActionSheets showActionSheetWithTitle:@"Error" message:@"No contacts access."];
         return;
     }
 
@@ -1135,7 +1135,7 @@ NS_ASSUME_NONNULL_BEGIN
                     completionHandler:^(BOOL granted, NSError *_Nullable error) {
                         if (!granted || error) {
                             dispatch_async(dispatch_get_main_queue(), ^{
-                                [OWSAlerts showAlertWithTitle:@"Error" message:@"No contacts access."];
+                                [OWSActionSheets showActionSheetWithTitle:@"Error" message:@"No contacts access."];
                             });
                             return;
                         }
@@ -1181,7 +1181,8 @@ NS_ASSUME_NONNULL_BEGIN
                         if (![store executeSaveRequest:request error:&saveError]) {
                             OWSLogError(@"Error saving fake contacts: %@", saveError);
                             dispatch_async(dispatch_get_main_queue(), ^{
-                                [OWSAlerts showAlertWithTitle:@"Error" message:saveError.localizedDescription];
+                                [OWSActionSheets showActionSheetWithTitle:@"Error"
+                                                                  message:saveError.localizedDescription];
                             });
                             return;
                         } else {
@@ -1201,7 +1202,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     CNAuthorizationStatus status = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
     if (status == CNAuthorizationStatusDenied || status == CNAuthorizationStatusRestricted) {
-        [OWSAlerts showAlertWithTitle:@"Error" message:@"No contacts access."];
+        [OWSActionSheets showActionSheetWithTitle:@"Error" message:@"No contacts access."];
         return;
     }
 
@@ -1210,7 +1211,7 @@ NS_ASSUME_NONNULL_BEGIN
                     completionHandler:^(BOOL granted, NSError *_Nullable error) {
                         if (!granted || error) {
                             dispatch_async(dispatch_get_main_queue(), ^{
-                                [OWSAlerts showAlertWithTitle:@"Error" message:@"No contacts access."];
+                                [OWSActionSheets showActionSheetWithTitle:@"Error" message:@"No contacts access."];
                             });
                             return;
                         }
@@ -1235,10 +1236,10 @@ NS_ASSUME_NONNULL_BEGIN
                         NSError *saveError = nil;
                         if (!result || fetchError) {
                             OWSLogError(@"error = %@", fetchError);
-                            [OWSAlerts showAlertWithTitle:@"Error" message:fetchError.localizedDescription];
+                            [OWSActionSheets showActionSheetWithTitle:@"Error" message:fetchError.localizedDescription];
                         } else if (![store executeSaveRequest:request error:&saveError]) {
                             OWSLogError(@"error = %@", saveError);
-                            [OWSAlerts showAlertWithTitle:@"Error" message:saveError.localizedDescription];
+                            [OWSActionSheets showActionSheetWithTitle:@"Error" message:saveError.localizedDescription];
                         }
                     }];
 }

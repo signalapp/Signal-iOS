@@ -255,20 +255,19 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        let alert = UIAlertController(title: NSLocalizedString("CHECK_FOR_BACKUP_FAILED_TITLE",
+        let alert = ActionSheetController(title: NSLocalizedString("CHECK_FOR_BACKUP_FAILED_TITLE",
                                                                comment: "Title for alert shown when the app failed to check for an existing backup."),
                                       message: NSLocalizedString("CHECK_FOR_BACKUP_FAILED_MESSAGE",
-                                                                 comment: "Message for alert shown when the app failed to check for an existing backup."),
-                                      preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("REGISTER_FAILED_TRY_AGAIN", comment: ""),
+                                                                 comment: "Message for alert shown when the app failed to check for an existing backup."))
+        alert.addAction(ActionSheetAction(title: NSLocalizedString("REGISTER_FAILED_TRY_AGAIN", comment: ""),
                                       style: .default) { (_) in
                                         self.checkCanImportBackup(fromView: view)
         })
-        alert.addAction(UIAlertAction(title: NSLocalizedString("CHECK_FOR_BACKUP_DO_NOT_RESTORE", comment: "The label for the 'do not restore backup' button."),
+        alert.addAction(ActionSheetAction(title: NSLocalizedString("CHECK_FOR_BACKUP_DO_NOT_RESTORE", comment: "The label for the 'do not restore backup' button."),
                                       style: .destructive) { (_) in
                                         self.showProfileView(fromView: view)
         })
-        view.presentAlert(alert)
+        view.presentActionSheet(alert)
     }
 
     public func onboardingDidRequire2FAPin(viewController: UIViewController) {
@@ -476,7 +475,7 @@ public class OnboardingController: NSObject {
         case let networkManagerError as NetworkManagerError:
             switch networkManagerError.statusCode {
             case 400:
-                OWSAlerts.showAlert(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
+                OWSActionSheets.showActionSheet(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
                                     message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
                 return
             default:
@@ -489,7 +488,7 @@ public class OnboardingController: NSObject {
 
         let nsError = error as NSError
         owsFailDebug("unexpected error: \(nsError)")
-        OWSAlerts.showAlert(title: nsError.localizedDescription,
+        OWSActionSheets.showActionSheet(title: nsError.localizedDescription,
                             message: nsError.localizedRecoverySuggestion)
     }
 
@@ -610,7 +609,7 @@ public class OnboardingController: NSObject {
             }
 
             Logger.verbose("error: \(error.domain) \(error.code)")
-            OWSAlerts.showAlert(title: NSLocalizedString("REGISTRATION_VERIFICATION_FAILED_TITLE", comment: "Alert view title"),
+            OWSActionSheets.showActionSheet(title: NSLocalizedString("REGISTRATION_VERIFICATION_FAILED_TITLE", comment: "Alert view title"),
                                 message: error.localizedDescription,
                                 fromViewController: fromViewController)
         }

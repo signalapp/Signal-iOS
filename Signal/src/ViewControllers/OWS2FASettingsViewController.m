@@ -384,10 +384,10 @@ NS_ASSUME_NONNULL_BEGIN
                               [modalActivityIndicator dismissWithCompletion:^{
                                   [weakSelf updateTableContents];
 
-                                  [OWSAlerts showErrorAlertWithMessage:
-                                                 NSLocalizedString(@"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA",
-                                                     @"Error indicating that attempt to disable 'two-factor "
-                                                     @"auth' failed.")];
+                                  [OWSActionSheets showErrorAlertWithMessage:
+                                                       NSLocalizedString(@"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA",
+                                                           @"Error indicating that attempt to disable 'two-factor "
+                                                           @"auth' failed.")];
                               }];
                           }];
                   }];
@@ -420,10 +420,10 @@ NS_ASSUME_NONNULL_BEGIN
 
                                   [weakSelf updateTableContents];
 
-                                  [OWSAlerts showErrorAlertWithMessage:
-                                                 NSLocalizedString(@"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA",
-                                                     @"Error indicating that attempt to enable 'two-factor "
-                                                     @"auth' failed.")];
+                                  [OWSActionSheets showErrorAlertWithMessage:
+                                                       NSLocalizedString(@"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA",
+                                                           @"Error indicating that attempt to enable 'two-factor "
+                                                           @"auth' failed.")];
                               }];
                           }];
                   }];

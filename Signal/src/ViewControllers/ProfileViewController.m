@@ -346,7 +346,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     }
  
     __weak ProfileViewController *weakSelf = self;
-    [OWSAlerts showPendingChangesAlertWithDiscardAction:^{
+    [OWSActionSheets showPendingChangesActionSheetWithDiscardAction:^{
         [weakSelf profileCompletedOrSkipped];
     }];
 }
@@ -421,7 +421,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
     NSString *normalizedProfileName = [self normalizedProfileName];
     if ([OWSProfileManager.sharedManager isProfileNameTooLong:normalizedProfileName]) {
-        [OWSAlerts
+        [OWSActionSheets
             showErrorAlertWithMessage:NSLocalizedString(@"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG",
                                           @"Error message shown when user tries to update profile with a profile name "
                                           @"that is too long.")];
@@ -445,10 +445,11 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                           failure:^{
                               dispatch_async(dispatch_get_main_queue(), ^{
                                   [modalActivityIndicator dismissWithCompletion:^{
-                                      [OWSAlerts showErrorAlertWithMessage:NSLocalizedString(
-                                                                               @"PROFILE_VIEW_ERROR_UPDATE_FAILED",
-                                                                               @"Error message shown when a "
-                                                                               @"profile update fails.")];
+                                      [OWSActionSheets
+                                          showErrorAlertWithMessage:NSLocalizedString(
+                                                                        @"PROFILE_VIEW_ERROR_UPDATE_FAILED",
+                                                                        @"Error message shown when a "
+                                                                        @"profile update fails.")];
                                   }];
                               });
                           }];

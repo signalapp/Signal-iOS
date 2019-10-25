@@ -339,7 +339,7 @@ public class StickerPackViewController: OWSViewController {
                                                                 }
                                                             }.catch { (_) in
                                                                 modal.dismiss {
-                                                                    OWSAlerts.showErrorAlert(message: NSLocalizedString("STICKERS_PACK_INSTALL_FAILED", comment: "Error message shown when a sticker pack failed to install."))
+                                                                    OWSActionSheets.showErrorAlert(message: NSLocalizedString("STICKERS_PACK_INSTALL_FAILED", comment: "Error message shown when a sticker pack failed to install."))
                                                                 }
                                                             }.retainUntilComplete()
         }

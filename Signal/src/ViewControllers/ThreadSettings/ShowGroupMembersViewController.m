@@ -213,23 +213,23 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    UIAlertController *actionSheet = [UIAlertController
-        alertControllerWithTitle:nil
-                         message:NSLocalizedString(@"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE",
-                                     @"Label for the 'reset all no-longer-verified group members' confirmation alert.")
-                  preferredStyle:UIAlertControllerStyleAlert];
+    ActionSheetController *actionSheet = [[ActionSheetController alloc]
+        initWithTitle:nil
+              message:NSLocalizedString(@"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE",
+                          @"Label for the 'reset all no-longer-verified group members' confirmation alert.")];
 
     __weak ShowGroupMembersViewController *weakSelf = self;
-    UIAlertAction *verifyAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
-                                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"ok")
-                                                           style:UIAlertActionStyleDestructive
-                                                         handler:^(UIAlertAction *_Nonnull action) {
-                                                             [weakSelf resetAllNoLongerVerified];
-                                                         }];
+    ActionSheetAction *verifyAction =
+        [[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"OK", nil)
+                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"ok")
+                                           style:ActionSheetActionStyleDestructive
+                                         handler:^(ActionSheetAction *_Nonnull action) {
+                                             [weakSelf resetAllNoLongerVerified];
+                                         }];
     [actionSheet addAction:verifyAction];
-    [actionSheet addAction:[OWSAlerts cancelAction]];
+    [actionSheet addAction:[OWSActionSheets cancelAction]];
 
-    [self presentAlert:actionSheet];
+    [self presentActionSheet:actionSheet];
 }
 
 - (void)resetAllNoLongerVerified
@@ -276,21 +276,20 @@ NS_ASSUME_NONNULL_BEGIN
     ContactsViewHelper *helper = self.contactsViewHelper;
     SignalAccount *_Nullable signalAccount = [helper fetchSignalAccountForAddress:address];
 
-    UIAlertController *actionSheet =
-        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:nil message:nil];
 
     if (self.contactsViewHelper.contactsManager.supportsContactEditing) {
         NSString *contactInfoTitle = signalAccount
             ? NSLocalizedString(@"GROUP_MEMBERS_VIEW_CONTACT_INFO", @"Button label for the 'show contact info' button")
             : NSLocalizedString(
                   @"GROUP_MEMBERS_ADD_CONTACT_INFO", @"Button label to add information to an unknown contact");
-        [actionSheet
-            addAction:[UIAlertAction actionWithTitle:contactInfoTitle
-                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_contact_info")
-                                               style:UIAlertActionStyleDefault
-                                             handler:^(UIAlertAction *_Nonnull action) {
-                                                 [self showContactInfoViewForAddress:address];
-                                             }]];
+        [actionSheet addAction:[[ActionSheetAction alloc] initWithTitle:contactInfoTitle
+                                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                                            self, @"show_contact_info")
+                                                                  style:ActionSheetActionStyleDefault
+                                                                handler:^(ActionSheetAction *_Nonnull action) {
+                                                                    [self showContactInfoViewForAddress:address];
+                                                                }]];
     }
 
     BOOL isBlocked;
@@ -298,102 +297,108 @@ NS_ASSUME_NONNULL_BEGIN
         isBlocked = [helper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
         if (isBlocked) {
             [actionSheet
-                addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
-                                                             @"Button label for the 'unblock' button")
-                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unblock")
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction *_Nonnull action) {
-                                                     [BlockListUIUtils
-                                                         showUnblockSignalAccountActionSheet:signalAccount
-                                                                          fromViewController:self
-                                                                             blockingManager:helper.blockingManager
-                                                                             contactsManager:helper.contactsManager
-                                                                             completionBlock:^(BOOL ignore) {
-                                                                                 [self updateTableContents];
-                                                                             }];
-                                                 }]];
+                addAction:[[ActionSheetAction alloc]
+                                        initWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
+                                                          @"Button label for the 'unblock' button")
+                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unblock")
+                                                style:ActionSheetActionStyleDefault
+                                              handler:^(ActionSheetAction *_Nonnull action) {
+                                                  [BlockListUIUtils
+                                                      showUnblockSignalAccountActionSheet:signalAccount
+                                                                       fromViewController:self
+                                                                          blockingManager:helper.blockingManager
+                                                                          contactsManager:helper.contactsManager
+                                                                          completionBlock:^(BOOL ignore) {
+                                                                              [self updateTableContents];
+                                                                          }];
+                                              }]];
         } else {
-            [actionSheet
-                addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON",
-                                                             @"Button label for the 'block' button")
-                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block")
-                                                   style:UIAlertActionStyleDestructive
-                                                 handler:^(UIAlertAction *_Nonnull action) {
-                                                     [BlockListUIUtils
-                                                         showBlockSignalAccountActionSheet:signalAccount
-                                                                        fromViewController:self
-                                                                           blockingManager:helper.blockingManager
-                                                                           contactsManager:helper.contactsManager
-                                                                           completionBlock:^(BOOL ignore) {
-                                                                               [self updateTableContents];
-                                                                           }];
-                                                 }]];
+            [actionSheet addAction:[[ActionSheetAction alloc]
+                                                 initWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON",
+                                                                   @"Button label for the 'block' button")
+                                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block")
+                                                         style:ActionSheetActionStyleDestructive
+                                                       handler:^(ActionSheetAction *_Nonnull action) {
+                                                           [BlockListUIUtils
+                                                               showBlockSignalAccountActionSheet:signalAccount
+                                                                              fromViewController:self
+                                                                                 blockingManager:helper.blockingManager
+                                                                                 contactsManager:helper.contactsManager
+                                                                                 completionBlock:^(BOOL ignore) {
+                                                                                     [self updateTableContents];
+                                                                                 }];
+                                                       }]];
         }
     } else {
         isBlocked = [helper isSignalServiceAddressBlocked:address];
         if (isBlocked) {
-            [actionSheet addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
-                                                                      @"Button label for the 'unblock' button")
-                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unblock")
-                                                            style:UIAlertActionStyleDefault
-                                                          handler:^(UIAlertAction *_Nonnull action) {
-                                                              [BlockListUIUtils
-                                                                  showUnblockAddressActionSheet:address
-                                                                             fromViewController:self
-                                                                                blockingManager:helper.blockingManager
-                                                                                contactsManager:helper.contactsManager
-                                                                                completionBlock:^(BOOL ignore) {
-                                                                                    [self updateTableContents];
-                                                                                }];
-                                                          }]];
+            [actionSheet
+                addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
+                                                                       @"Button label for the 'unblock' button")
+                                           accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unblock")
+                                                             style:ActionSheetActionStyleDefault
+                                                           handler:^(ActionSheetAction *_Nonnull action) {
+                                                               [BlockListUIUtils
+                                                                   showUnblockAddressActionSheet:address
+                                                                              fromViewController:self
+                                                                                 blockingManager:helper.blockingManager
+                                                                                 contactsManager:helper.contactsManager
+                                                                                 completionBlock:^(BOOL ignore) {
+                                                                                     [self updateTableContents];
+                                                                                 }];
+                                                           }]];
         } else {
-            [actionSheet addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON",
-                                                                      @"Button label for the 'block' button")
-                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block")
-                                                            style:UIAlertActionStyleDestructive
-                                                          handler:^(UIAlertAction *_Nonnull action) {
-                                                              [BlockListUIUtils
-                                                                  showBlockAddressActionSheet:address
-                                                                           fromViewController:self
-                                                                              blockingManager:helper.blockingManager
-                                                                              contactsManager:helper.contactsManager
-                                                                              completionBlock:^(BOOL ignore) {
-                                                                                  [self updateTableContents];
-                                                                              }];
-                                                          }]];
+            [actionSheet
+                addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON",
+                                                                       @"Button label for the 'block' button")
+                                           accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block")
+                                                             style:ActionSheetActionStyleDestructive
+                                                           handler:^(ActionSheetAction *_Nonnull action) {
+                                                               [BlockListUIUtils
+                                                                   showBlockAddressActionSheet:address
+                                                                            fromViewController:self
+                                                                               blockingManager:helper.blockingManager
+                                                                               contactsManager:helper.contactsManager
+                                                                               completionBlock:^(BOOL ignore) {
+                                                                                   [self updateTableContents];
+                                                                               }];
+                                                           }]];
         }
     }
 
     if (!isBlocked) {
         [actionSheet
-            addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"GROUP_MEMBERS_SEND_MESSAGE",
-                                                         @"Button label for the 'send message to group member' button")
-                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_message")
-                                               style:UIAlertActionStyleDefault
-                                             handler:^(UIAlertAction *_Nonnull action) {
-                                                 [self showConversationViewForAddress:address];
-                                             }]];
-        [actionSheet addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"GROUP_MEMBERS_CALL",
-                                                                  @"Button label for the 'call group member' button")
-                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call")
-                                                        style:UIAlertActionStyleDefault
-                                                      handler:^(UIAlertAction *_Nonnull action) {
-                                                          [self callMember:address];
-                                                      }]];
+            addAction:[[ActionSheetAction alloc]
+                                    initWithTitle:NSLocalizedString(@"GROUP_MEMBERS_SEND_MESSAGE",
+                                                      @"Button label for the 'send message to group member' button")
+                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_message")
+                                            style:ActionSheetActionStyleDefault
+                                          handler:^(ActionSheetAction *_Nonnull action) {
+                                              [self showConversationViewForAddress:address];
+                                          }]];
         [actionSheet
-            addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"VERIFY_PRIVACY",
-                                                         @"Label for button or row which allows users to verify the "
-                                                         @"safety number of another user.")
-                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"safety_numbers")
-                                               style:UIAlertActionStyleDefault
-                                             handler:^(UIAlertAction *_Nonnull action) {
-                                                 [self showSafetyNumberView:address];
-                                             }]];
+            addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"GROUP_MEMBERS_CALL",
+                                                                   @"Button label for the 'call group member' button")
+                                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call")
+                                                         style:ActionSheetActionStyleDefault
+                                                       handler:^(ActionSheetAction *_Nonnull action) {
+                                                           [self callMember:address];
+                                                       }]];
+        [actionSheet
+            addAction:[[ActionSheetAction alloc]
+                                    initWithTitle:NSLocalizedString(@"VERIFY_PRIVACY",
+                                                      @"Label for button or row which allows users to verify the "
+                                                      @"safety number of another user.")
+                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"safety_numbers")
+                                            style:ActionSheetActionStyleDefault
+                                          handler:^(ActionSheetAction *_Nonnull action) {
+                                              [self showSafetyNumberView:address];
+                                          }]];
     }
 
-    [actionSheet addAction:[OWSAlerts cancelAction]];
+    [actionSheet addAction:[OWSActionSheets cancelAction]];
 
-    [self presentAlert:actionSheet];
+    [self presentViewController:actionSheet animated:YES completion:nil];
 }
 
 - (void)showContactInfoViewForAddress:(SignalServiceAddress *)address

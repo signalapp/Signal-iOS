@@ -277,12 +277,12 @@ NS_ASSUME_NONNULL_BEGIN
     job.uploadOnlyIfStale = NO;
     [job run]
         .then(^{
-            [OWSAlerts showAlertWithTitle:NSLocalizedString(@"PUSH_REGISTER_SUCCESS",
-                                              @"Title of alert shown when push tokens sync job succeeds.")];
+            [OWSActionSheets showActionSheetWithTitle:NSLocalizedString(@"PUSH_REGISTER_SUCCESS",
+                                                          @"Title of alert shown when push tokens sync job succeeds.")];
         })
         .catch(^(NSError *error) {
-            [OWSAlerts showAlertWithTitle:NSLocalizedString(@"REGISTRATION_BODY",
-                                              @"Title of alert shown when push tokens sync job fails.")];
+            [OWSActionSheets showActionSheetWithTitle:NSLocalizedString(@"REGISTRATION_BODY",
+                                                          @"Title of alert shown when push tokens sync job fails.")];
         });
 }
 

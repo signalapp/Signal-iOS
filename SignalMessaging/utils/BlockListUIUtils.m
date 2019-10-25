@@ -14,7 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
+typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 
 @implementation BlockListUIUtils
 
@@ -94,7 +94,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                message:NSLocalizedString(@"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE",
                                            @"The message of the 'You can't block yourself' alert.")
                     fromViewController:fromViewController
-                       completionBlock:^(UIAlertAction *action) {
+                       completionBlock:^(ActionSheetAction *action) {
                            if (completionBlock) {
                                completionBlock(NO);
                            }
@@ -108,22 +108,21 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                                      @"blocked user's name or phone number}}."),
                                 [self formatDisplayNameForAlertTitle:displayName]];
 
-    UIAlertController *actionSheet =
-        [UIAlertController alertControllerWithTitle:title
-                                            message:NSLocalizedString(@"BLOCK_USER_BEHAVIOR_EXPLANATION",
-                                                        @"An explanation of the consequences of blocking another user.")
-                                     preferredStyle:UIAlertControllerStyleActionSheet];
+    ActionSheetController *actionSheet = [[ActionSheetController alloc]
+        initWithTitle:title
+              message:NSLocalizedString(@"BLOCK_USER_BEHAVIOR_EXPLANATION",
+                          @"An explanation of the consequences of blocking another user.")];
 
-    UIAlertAction *blockAction = [UIAlertAction
-                actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON", @"Button label for the 'block' button")
+    ActionSheetAction *blockAction = [[ActionSheetAction alloc]
+                  initWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON", @"Button label for the 'block' button")
         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block")
-                          style:UIAlertActionStyleDestructive
-                        handler:^(UIAlertAction *_Nonnull action) {
+                          style:ActionSheetActionStyleDestructive
+                        handler:^(ActionSheetAction *_Nonnull action) {
                             [self blockAddresses:addresses
                                        displayName:displayName
                                 fromViewController:fromViewController
                                    blockingManager:blockingManager
-                                   completionBlock:^(UIAlertAction *ignore) {
+                                   completionBlock:^(ActionSheetAction *ignore) {
                                        if (completionBlock) {
                                            completionBlock(YES);
                                        }
@@ -131,16 +130,17 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                         }];
     [actionSheet addAction:blockAction];
 
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
-                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
-                                                            style:UIAlertActionStyleCancel
-                                                          handler:^(UIAlertAction *_Nonnull action) {
-                                                              if (completionBlock) {
-                                                                  completionBlock(NO);
-                                                              }
-                                                          }];
+    ActionSheetAction *dismissAction =
+        [[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
+                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
+                                           style:ActionSheetActionStyleCancel
+                                         handler:^(ActionSheetAction *_Nonnull action) {
+                                             if (completionBlock) {
+                                                 completionBlock(NO);
+                                             }
+                                         }];
     [actionSheet addAction:dismissAction];
-    [fromViewController presentAlert:actionSheet];
+    [fromViewController presentActionSheet:actionSheet];
 }
 
 + (void)showBlockGroupActionSheet:(TSGroupThread *)groupThread
@@ -158,22 +158,21 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                              @"A format for the 'block group' action sheet title. Embeds the {{group name}}."),
         [self formatDisplayNameForAlertTitle:groupThread.groupNameOrDefault]];
 
-    UIAlertController *actionSheet =
-        [UIAlertController alertControllerWithTitle:title
-                                            message:NSLocalizedString(@"BLOCK_GROUP_BEHAVIOR_EXPLANATION",
-                                                        @"An explanation of the consequences of blocking a group.")
-                                     preferredStyle:UIAlertControllerStyleActionSheet];
+    ActionSheetController *actionSheet =
+        [[ActionSheetController alloc] initWithTitle:title
+                                             message:NSLocalizedString(@"BLOCK_GROUP_BEHAVIOR_EXPLANATION",
+                                                         @"An explanation of the consequences of blocking a group.")];
 
-    UIAlertAction *blockAction = [UIAlertAction
-                actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON", @"Button label for the 'block' button")
+    ActionSheetAction *blockAction = [[ActionSheetAction alloc]
+                  initWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON", @"Button label for the 'block' button")
         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block")
-                          style:UIAlertActionStyleDestructive
-                        handler:^(UIAlertAction *_Nonnull action) {
+                          style:ActionSheetActionStyleDestructive
+                        handler:^(ActionSheetAction *_Nonnull action) {
                             [self blockGroup:groupThread
                                 fromViewController:fromViewController
                                    blockingManager:blockingManager
                                      messageSender:messageSender
-                                   completionBlock:^(UIAlertAction *ignore) {
+                                   completionBlock:^(ActionSheetAction *ignore) {
                                        if (completionBlock) {
                                            completionBlock(YES);
                                        }
@@ -181,16 +180,17 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                         }];
     [actionSheet addAction:blockAction];
 
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
-                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
-                                                            style:UIAlertActionStyleCancel
-                                                          handler:^(UIAlertAction *_Nonnull action) {
-                                                              if (completionBlock) {
-                                                                  completionBlock(NO);
-                                                              }
-                                                          }];
+    ActionSheetAction *dismissAction =
+        [[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
+                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
+                                           style:ActionSheetActionStyleCancel
+                                         handler:^(ActionSheetAction *_Nonnull action) {
+                                             if (completionBlock) {
+                                                 completionBlock(NO);
+                                             }
+                                         }];
     [actionSheet addAction:dismissAction];
-    [fromViewController presentAlert:actionSheet];
+    [fromViewController presentActionSheet:actionSheet];
 }
 
 + (void)blockAddresses:(NSArray<SignalServiceAddress *> *)addresses
@@ -323,37 +323,37 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                 @"A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}."),
         [self formatDisplayNameForAlertTitle:displayName]];
 
-    UIAlertController *actionSheet =
-        [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:title message:nil];
 
-    UIAlertAction *unblockAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(
-                                           @"BLOCK_LIST_UNBLOCK_BUTTON", @"Button label for the 'unblock' button")
-               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unblock")
-                                 style:UIAlertActionStyleDestructive
-                               handler:^(UIAlertAction *_Nonnull action) {
-                                   [BlockListUIUtils unblockAddresses:addresses
-                                                          displayName:displayName
-                                                   fromViewController:fromViewController
-                                                      blockingManager:blockingManager
-                                                      completionBlock:^(UIAlertAction *ignore) {
-                                                          if (completionBlock) {
-                                                              completionBlock(NO);
-                                                          }
-                                                      }];
-                               }];
+    ActionSheetAction *unblockAction =
+        [[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
+                                                     @"Button label for the 'unblock' button")
+                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unblock")
+                                           style:ActionSheetActionStyleDestructive
+                                         handler:^(ActionSheetAction *_Nonnull action) {
+                                             [BlockListUIUtils unblockAddresses:addresses
+                                                                    displayName:displayName
+                                                             fromViewController:fromViewController
+                                                                blockingManager:blockingManager
+                                                                completionBlock:^(ActionSheetAction *ignore) {
+                                                                    if (completionBlock) {
+                                                                        completionBlock(NO);
+                                                                    }
+                                                                }];
+                                         }];
     [actionSheet addAction:unblockAction];
 
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
-                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
-                                                            style:UIAlertActionStyleCancel
-                                                          handler:^(UIAlertAction *_Nonnull action) {
-                                                              if (completionBlock) {
-                                                                  completionBlock(YES);
-                                                              }
-                                                          }];
+    ActionSheetAction *dismissAction =
+        [[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
+                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
+                                           style:ActionSheetActionStyleCancel
+                                         handler:^(ActionSheetAction *_Nonnull action) {
+                                             if (completionBlock) {
+                                                 completionBlock(YES);
+                                             }
+                                         }];
     [actionSheet addAction:dismissAction];
-    [fromViewController presentAlert:actionSheet];
+    [fromViewController presentActionSheet:actionSheet];
 }
 
 + (void)unblockAddresses:(NSArray<SignalServiceAddress *> *)addresses
@@ -394,36 +394,36 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     NSString *message = NSLocalizedString(
         @"BLOCK_LIST_UNBLOCK_GROUP_BODY", @"Action sheet body when confirming you want to unblock a group");
 
-    UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:title
-                                                                         message:message
-                                                                  preferredStyle:UIAlertControllerStyleActionSheet];
+    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:title message:message];
 
-    UIAlertAction *unblockAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
-                                                                      @"Button label for the 'unblock' button")
-                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unblock")
-                                                            style:UIAlertActionStyleDestructive
-                                                          handler:^(UIAlertAction *_Nonnull action) {
-                                                              [BlockListUIUtils unblockGroup:groupModel
-                                                                          fromViewController:fromViewController
-                                                                             blockingManager:blockingManager
-                                                                             completionBlock:^(UIAlertAction *ignore) {
-                                                                                 if (completionBlock) {
-                                                                                     completionBlock(NO);
-                                                                                 }
-                                                                             }];
-                                                          }];
+    ActionSheetAction *unblockAction =
+        [[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
+                                                     @"Button label for the 'unblock' button")
+                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unblock")
+                                           style:ActionSheetActionStyleDestructive
+                                         handler:^(ActionSheetAction *_Nonnull action) {
+                                             [BlockListUIUtils unblockGroup:groupModel
+                                                         fromViewController:fromViewController
+                                                            blockingManager:blockingManager
+                                                            completionBlock:^(ActionSheetAction *ignore) {
+                                                                if (completionBlock) {
+                                                                    completionBlock(NO);
+                                                                }
+                                                            }];
+                                         }];
     [actionSheet addAction:unblockAction];
 
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
-                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
-                                                            style:UIAlertActionStyleCancel
-                                                          handler:^(UIAlertAction *_Nonnull action) {
-                                                              if (completionBlock) {
-                                                                  completionBlock(YES);
-                                                              }
-                                                          }];
+    ActionSheetAction *dismissAction =
+        [[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
+                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
+                                           style:ActionSheetActionStyleCancel
+                                         handler:^(ActionSheetAction *_Nonnull action) {
+                                             if (completionBlock) {
+                                                 completionBlock(YES);
+                                             }
+                                         }];
     [actionSheet addAction:dismissAction];
-    [fromViewController presentAlert:actionSheet];
+    [fromViewController presentActionSheet:actionSheet];
 }
 
 + (void)unblockGroup:(TSGroupModel *)groupModel
@@ -459,15 +459,15 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     OWSAssertDebug(title.length > 0);
     OWSAssertDebug(fromViewController);
 
-    UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+    ActionSheetController *alert = [[ActionSheetController alloc] initWithTitle:title message:message];
 
-    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
-                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"ok")
-                                                       style:UIAlertActionStyleDefault
-                                                     handler:completionBlock];
+    ActionSheetAction *okAction =
+        [[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"OK", nil)
+                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"ok")
+                                           style:ActionSheetActionStyleDefault
+                                         handler:completionBlock];
     [alert addAction:okAction];
-    [fromViewController presentAlert:alert];
+    [fromViewController presentActionSheet:alert];
 }
 
 + (NSString *)formatDisplayNameForAlertTitle:(NSString *)displayName

@@ -1329,7 +1329,7 @@ private class SignalCallData: NSObject {
                 // We don't need to worry about the user granting or remoting this permission
                 // during a call while the app is in the background, because changing this
                 // permission kills the app.
-                OWSAlerts.showAlert(title: NSLocalizedString("MISSING_CAMERA_PERMISSION_TITLE", comment: "Alert title when camera is not authorized"),
+                OWSActionSheets.showActionSheet(title: NSLocalizedString("MISSING_CAMERA_PERMISSION_TITLE", comment: "Alert title when camera is not authorized"),
                                     message: NSLocalizedString("MISSING_CAMERA_PERMISSION_MESSAGE", comment: "Alert body when camera is not authorized"))
             }
         }

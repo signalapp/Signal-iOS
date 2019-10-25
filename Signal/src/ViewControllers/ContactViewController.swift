@@ -534,22 +534,22 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     func didPressPhoneNumber(phoneNumber: OWSContactPhoneNumber) {
         Logger.info("")
 
-        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let actionSheet = ActionSheetController(title: nil, message: nil)
 
         if let e164 = phoneNumber.tryToConvertToE164() {
             let address = SignalServiceAddress(phoneNumber: e164)
             if contactShare.systemContactsWithSignalAccountPhoneNumbers(contactsManager).contains(e164) {
-                actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ACTION_SEND_MESSAGE",
+                actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("ACTION_SEND_MESSAGE",
                                                                              comment: "Label for 'send message' button in contact view."),
                                                     style: .default) { _ in
                                                         SignalApp.shared().presentConversation(for: address, action: .compose, animated: true)
                 })
-                actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ACTION_AUDIO_CALL",
+                actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("ACTION_AUDIO_CALL",
                                                                              comment: "Label for 'audio call' button in contact view."),
                                                     style: .default) { _ in
                                                         SignalApp.shared().presentConversation(for: address, action: .audioCall, animated: true)
                 })
-                actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ACTION_VIDEO_CALL",
+                actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("ACTION_VIDEO_CALL",
                                                                              comment: "Label for 'video call' button in contact view."),
                                                     style: .default) { _ in
                                                         SignalApp.shared().presentConversation(for: address, action: .videoCall, animated: true)
@@ -558,13 +558,13 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
                 // TODO: We could offer callPhoneNumberWithSystemCall.
             }
         }
-        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("EDIT_ITEM_COPY_ACTION",
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("EDIT_ITEM_COPY_ACTION",
                                                                      comment: "Short name for edit menu item to copy contents of media message."),
                                             style: .default) { _ in
                                                 UIPasteboard.general.string = phoneNumber.phoneNumber
         })
-        actionSheet.addAction(OWSAlerts.cancelAction)
-        presentAlert(actionSheet)
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+        presentActionSheet(actionSheet)
     }
 
     func callPhoneNumberWithSystemCall(phoneNumber: OWSContactPhoneNumber) {
@@ -580,19 +580,19 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     func didPressEmail(email: OWSContactEmail) {
         Logger.info("")
 
-        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP",
+        let actionSheet = ActionSheetController(title: nil, message: nil)
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP",
                                                                      comment: "Label for 'open email in email app' button in contact view."),
                                             style: .default) { [weak self] _ in
                                                 self?.openEmailInEmailApp(email: email)
         })
-        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("EDIT_ITEM_COPY_ACTION",
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("EDIT_ITEM_COPY_ACTION",
                                                                      comment: "Short name for edit menu item to copy contents of media message."),
                                             style: .default) { _ in
                                                 UIPasteboard.general.string = email.email
         })
-        actionSheet.addAction(OWSAlerts.cancelAction)
-        presentAlert(actionSheet)
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+        presentActionSheet(actionSheet)
     }
 
     func openEmailInEmailApp(email: OWSContactEmail) {
@@ -608,21 +608,21 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     func didPressAddress(address: OWSContactAddress) {
         Logger.info("")
 
-        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP",
+        let actionSheet = ActionSheetController(title: nil, message: nil)
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP",
                                                                      comment: "Label for 'open address in maps app' button in contact view."),
                                             style: .default) { [weak self] _ in
                                                 self?.openAddressInMaps(address: address)
         })
-        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("EDIT_ITEM_COPY_ACTION",
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("EDIT_ITEM_COPY_ACTION",
                                                                      comment: "Short name for edit menu item to copy contents of media message."),
                                             style: .default) { [weak self] _ in
                                                 guard let strongSelf = self else { return }
 
                                                 UIPasteboard.general.string = strongSelf.formatAddressForQuery(address: address)
         })
-        actionSheet.addAction(OWSAlerts.cancelAction)
-        presentAlert(actionSheet)
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+        presentActionSheet(actionSheet)
     }
 
     func openAddressInMaps(address: OWSContactAddress) {

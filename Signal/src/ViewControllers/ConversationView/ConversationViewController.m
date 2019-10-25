@@ -719,7 +719,8 @@ typedef enum : NSUInteger {
         return;
     }
 
-    if ([presentedViewController isKindOfClass:[UIAlertController class]]) {
+    if ([presentedViewController isKindOfClass:[ActionSheetController class]] ||
+        [presentedViewController isKindOfClass:[UIAlertController class]]) {
         OWSLogDebug(@"dismissing presentedViewController: %@", presentedViewController);
         [self dismissViewControllerAnimated:NO completion:nil];
         return;
@@ -1064,35 +1065,33 @@ typedef enum : NSUInteger {
         }
         BOOL hasMultiple = noLongerVerifiedAddresses.count > 1;
 
-        UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:nil
-                                                                             message:nil
-                                                                      preferredStyle:UIAlertControllerStyleActionSheet];
+        ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:nil message:nil];
 
         __weak ConversationViewController *weakSelf = self;
-        UIAlertAction *verifyAction = [UIAlertAction
-            actionWithTitle:(hasMultiple ? NSLocalizedString(@"VERIFY_PRIVACY_MULTIPLE",
-                                               @"Label for button or row which allows users to verify the safety "
-                                               @"numbers of multiple users.")
-                                         : NSLocalizedString(@"VERIFY_PRIVACY",
-                                               @"Label for button or row which allows users to verify the safety "
-                                               @"number of another user."))
-                      style:UIAlertActionStyleDefault
-                    handler:^(UIAlertAction *action) {
-                        [weakSelf showNoLongerVerifiedUI];
-                    }];
+        ActionSheetAction *verifyAction = [[ActionSheetAction alloc]
+            initWithTitle:(hasMultiple ? NSLocalizedString(@"VERIFY_PRIVACY_MULTIPLE",
+                               @"Label for button or row which allows users to verify the safety "
+                               @"numbers of multiple users.")
+                                       : NSLocalizedString(@"VERIFY_PRIVACY",
+                                           @"Label for button or row which allows users to verify the safety "
+                                           @"number of another user."))
+                    style:ActionSheetActionStyleDefault
+                  handler:^(ActionSheetAction *action) {
+                      [weakSelf showNoLongerVerifiedUI];
+                  }];
         [actionSheet addAction:verifyAction];
 
-        UIAlertAction *dismissAction =
-            [UIAlertAction actionWithTitle:CommonStrings.dismissButton
-                   accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
-                                     style:UIAlertActionStyleCancel
-                                   handler:^(UIAlertAction *action) {
-                                       [weakSelf resetVerificationStateToDefault];
-                                   }];
+        ActionSheetAction *dismissAction =
+            [[ActionSheetAction alloc] initWithTitle:CommonStrings.dismissButton
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
+                                               style:ActionSheetActionStyleCancel
+                                             handler:^(ActionSheetAction *action) {
+                                                 [weakSelf resetVerificationStateToDefault];
+                                             }];
         [actionSheet addAction:dismissAction];
 
         [self dismissKeyBoard];
-        [self presentAlert:actionSheet];
+        [self presentActionSheet:actionSheet];
     }
 }
 
@@ -1869,27 +1868,26 @@ typedef enum : NSUInteger {
 
 - (void)handleUnsentMessageTap:(TSOutgoingMessage *)message
 {
-    UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:message.mostRecentFailureText
-                                                                         message:nil
-                                                                  preferredStyle:UIAlertControllerStyleActionSheet];
+    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:message.mostRecentFailureText
+                                                                              message:nil];
 
-    [actionSheet addAction:[OWSAlerts cancelAction]];
+    [actionSheet addAction:[OWSActionSheets cancelAction]];
 
-    UIAlertAction *deleteMessageAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
-                                 style:UIAlertActionStyleDestructive
-                               handler:^(UIAlertAction *action) {
-                                   [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                                       [message anyRemoveWithTransaction:transaction];
-                                   }];
-                               }];
+    ActionSheetAction *deleteMessageAction = [[ActionSheetAction alloc]
+        initWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
+                style:ActionSheetActionStyleDestructive
+              handler:^(ActionSheetAction *action) {
+                  [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                      [message anyRemoveWithTransaction:transaction];
+                  }];
+              }];
     [actionSheet addAction:deleteMessageAction];
 
-    UIAlertAction *resendMessageAction = [UIAlertAction
-                actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
+    ActionSheetAction *resendMessageAction = [[ActionSheetAction alloc]
+                  initWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_again")
-                          style:UIAlertActionStyleDefault
-                        handler:^(UIAlertAction *action) {
+                          style:ActionSheetActionStyleDefault
+                        handler:^(ActionSheetAction *action) {
                             [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
                                 [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
                             }];
@@ -1898,7 +1896,7 @@ typedef enum : NSUInteger {
     [actionSheet addAction:resendMessageAction];
 
     [self dismissKeyBoard];
-    [self presentAlert:actionSheet];
+    [self presentActionSheet:actionSheet];
 }
 
 - (void)tappedNonBlockingIdentityChangeForAddress:(nullable SignalServiceAddress *)address
@@ -1929,17 +1927,15 @@ typedef enum : NSUInteger {
     NSString *alertMessage = [NSString
         stringWithFormat:NSLocalizedString(@"CORRUPTED_SESSION_DESCRIPTION", @"ActionSheet title"), threadName];
 
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
-                                                                   message:alertMessage
-                                                            preferredStyle:UIAlertControllerStyleAlert];
+    ActionSheetController *alert = [[ActionSheetController alloc] initWithTitle:nil message:alertMessage];
 
-    [alert addAction:[OWSAlerts cancelAction]];
+    [alert addAction:[OWSActionSheets cancelAction]];
 
-    UIAlertAction *resetSessionAction = [UIAlertAction
-                actionWithTitle:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", @"")
+    ActionSheetAction *resetSessionAction = [[ActionSheetAction alloc]
+                  initWithTitle:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", @"")
         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"reset_session")
-                          style:UIAlertActionStyleDefault
-                        handler:^(UIAlertAction *action) {
+                          style:ActionSheetActionStyleDefault
+                        handler:^(ActionSheetAction *action) {
                             if (![self.thread isKindOfClass:[TSContactThread class]]) {
                                 // Corrupt Message errors only appear in contact threads.
                                 OWSLogError(@"Unexpected request to reset session in group thread. Refusing");
@@ -1953,7 +1949,7 @@ typedef enum : NSUInteger {
     [alert addAction:resetSessionAction];
 
     [self dismissKeyBoard];
-    [self presentAlert:alert];
+    [self presentActionSheet:alert];
 }
 
 - (void)tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)errorMessage
@@ -1962,46 +1958,43 @@ typedef enum : NSUInteger {
     NSString *titleFormat = NSLocalizedString(@"SAFETY_NUMBERS_ACTIONSHEET_TITLE", @"Action sheet heading");
     NSString *titleText = [NSString stringWithFormat:titleFormat, keyOwner];
 
-    UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:titleText
-                                                                         message:nil
-                                                                  preferredStyle:UIAlertControllerStyleActionSheet];
+    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:titleText message:nil];
 
-    [actionSheet addAction:[OWSAlerts cancelAction]];
+    [actionSheet addAction:[OWSActionSheets cancelAction]];
 
-    UIAlertAction *showSafteyNumberAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
-               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_safety_number")
-                                 style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *action) {
-                                   OWSLogInfo(@"Remote Key Changed actions: Show fingerprint display");
-                                   [self showFingerprintWithAddress:errorMessage.theirSignalAddress];
-                               }];
+    ActionSheetAction *showSafteyNumberAction =
+        [[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
+                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_safety_number")
+                                           style:ActionSheetActionStyleDefault
+                                         handler:^(ActionSheetAction *action) {
+                                             OWSLogInfo(@"Remote Key Changed actions: Show fingerprint display");
+                                             [self showFingerprintWithAddress:errorMessage.theirSignalAddress];
+                                         }];
     [actionSheet addAction:showSafteyNumberAction];
 
-    UIAlertAction *acceptSafetyNumberAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"ACCEPT_NEW_IDENTITY_ACTION", @"Action sheet item")
-               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"accept_safety_number")
-                                 style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *action) {
-                                   OWSLogInfo(@"Remote Key Changed actions: Accepted new identity key");
+    ActionSheetAction *acceptSafetyNumberAction = [[ActionSheetAction alloc]
+                  initWithTitle:NSLocalizedString(@"ACCEPT_NEW_IDENTITY_ACTION", @"Action sheet item")
+        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"accept_safety_number")
+                          style:ActionSheetActionStyleDefault
+                        handler:^(ActionSheetAction *action) {
+                            OWSLogInfo(@"Remote Key Changed actions: Accepted new identity key");
 
         // DEPRECATED: we're no longer creating these incoming SN error's per message,
         // but there will be some legacy ones in the wild, behind which await
         // as-of-yet-undecrypted messages
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                                   if ([errorMessage isKindOfClass:[TSInvalidIdentityKeyReceivingErrorMessage class]]) {
-                                       // Deliberately crash if the user fails to explicitly accept the new identity
-                                       // key. In practice we haven't been creating these messages in over a year.
-                                       [errorMessage throws_acceptNewIdentityKey];
+                            if ([errorMessage isKindOfClass:[TSInvalidIdentityKeyReceivingErrorMessage class]]) {
+                                // Deliberately crash if the user fails to explicitly accept the new identity
+                                // key. In practice we haven't been creating these messages in over a year.
+                                [errorMessage throws_acceptNewIdentityKey];
 #pragma clang diagnostic pop
-
-                                   }
-                               }];
+                            }
+                        }];
     [actionSheet addAction:acceptSafetyNumberAction];
 
     [self dismissKeyBoard];
-    [self presentAlert:actionSheet];
+    [self presentActionSheet:actionSheet];
 }
 
 - (void)handleCallTap:(TSCall *)call
@@ -2016,24 +2009,24 @@ typedef enum : NSUInteger {
     TSContactThread *contactThread = (TSContactThread *)self.thread;
     NSString *displayName = [self.contactsManager displayNameForAddress:contactThread.contactAddress];
 
-    UIAlertController *alert = [UIAlertController
-        alertControllerWithTitle:[CallStrings callBackAlertTitle]
-                         message:[NSString stringWithFormat:[CallStrings callBackAlertMessageFormat], displayName]
-                  preferredStyle:UIAlertControllerStyleAlert];
+    ActionSheetController *alert = [[ActionSheetController alloc]
+        initWithTitle:[CallStrings callBackAlertTitle]
+              message:[NSString stringWithFormat:[CallStrings callBackAlertMessageFormat], displayName]];
 
     __weak ConversationViewController *weakSelf = self;
-    UIAlertAction *callAction = [UIAlertAction actionWithTitle:[CallStrings callBackAlertCallButton]
-                                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call_back")
-                                                         style:UIAlertActionStyleDefault
-                                                       handler:^(UIAlertAction *action) {
-                                                           [weakSelf startAudioCall];
-                                                       }];
+    ActionSheetAction *callAction =
+        [[ActionSheetAction alloc] initWithTitle:[CallStrings callBackAlertCallButton]
+                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call_back")
+                                           style:ActionSheetActionStyleDefault
+                                         handler:^(ActionSheetAction *action) {
+                                             [weakSelf startAudioCall];
+                                         }];
     [alert addAction:callAction];
-    [alert addAction:[OWSAlerts cancelAction]];
+    [alert addAction:[OWSActionSheets cancelAction]];
 
     [self.inputToolbar clearDesiredKeyboard];
     [self dismissKeyBoard];
-    [self presentAlert:alert];
+    [self presentActionSheet:alert];
 }
 
 #pragma mark - MessageActionsDelegate
@@ -2317,18 +2310,16 @@ typedef enum : NSUInteger {
                                        @"Embeds {{the unknown user's name or phone number}}."),
                   [BlockListUIUtils formatDisplayNameForAlertTitle:displayName]];
 
-    UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:title
-                                                                         message:nil
-                                                                  preferredStyle:UIAlertControllerStyleActionSheet];
+    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:title message:nil];
 
-    [actionSheet addAction:[OWSAlerts cancelAction]];
+    [actionSheet addAction:[OWSActionSheets cancelAction]];
 
-    UIAlertAction *blockAction = [UIAlertAction
-                actionWithTitle:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION",
+    ActionSheetAction *blockAction = [[ActionSheetAction alloc]
+                  initWithTitle:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION",
                                     @"Action sheet that will block an unknown user.")
         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block_user")
-                          style:UIAlertActionStyleDestructive
-                        handler:^(UIAlertAction *action) {
+                          style:ActionSheetActionStyleDestructive
+                        handler:^(ActionSheetAction *action) {
                             OWSLogInfo(@"Blocking an unknown user.");
                             [self.blockingManager addBlockedAddress:contactThread.contactAddress];
                             // Delete the offers.
@@ -2343,7 +2334,7 @@ typedef enum : NSUInteger {
     [actionSheet addAction:blockAction];
 
     [self dismissKeyBoard];
-    [self presentAlert:actionSheet];
+    [self presentActionSheet:actionSheet];
 }
 
 - (void)tappedAddToContactsOfferMessage:(OWSContactOffersInteraction *)interaction
@@ -2922,13 +2913,14 @@ typedef enum : NSUInteger {
         OWSLogInfo(@"User picked directory.");
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            [OWSAlerts
-                showAlertWithTitle:
+            [OWSActionSheets
+                showActionSheetWithTitle:
                     NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE",
                         @"Alert title when picking a document fails because user picked a directory/bundle")
-                           message:
-                               NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY",
-                                   @"Alert body when picking a document fails because user picked a directory/bundle")];
+                                 message:NSLocalizedString(
+                                             @"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY",
+                                             @"Alert body when picking a document fails because user picked a "
+                                             @"directory/bundle")];
         });
         return;
     }
@@ -2950,8 +2942,9 @@ typedef enum : NSUInteger {
         OWSFailDebug(@"error: %@", error);
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            [OWSAlerts showAlertWithTitle:NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE",
-                                              @"Alert title when picking a document fails for an unknown reason")];
+            [OWSActionSheets
+                showActionSheetWithTitle:NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE",
+                                             @"Alert title when picking a document fails for an unknown reason")];
         });
         return;
     }
@@ -3180,7 +3173,7 @@ typedef enum : NSUInteger {
         } else {
             OWSLogInfo(@"we do not have recording permission.");
             [strongSelf cancelVoiceMemo];
-            [OWSAlerts showNoMicrophonePermissionAlert];
+            [self ows_showNoMicrophonePermissionActionSheet];
         }
     }];
 }
@@ -3265,13 +3258,14 @@ typedef enum : NSUInteger {
 
         [self dismissKeyBoard];
 
-        [OWSAlerts
-            showAlertWithTitle:
+        [OWSActionSheets
+            showActionSheetWithTitle:
                 NSLocalizedString(@"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE",
                     @"Title for the alert indicating the 'voice message' needs to be held to be held down to record.")
-                       message:NSLocalizedString(@"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE",
-                                   @"Message for the alert indicating the 'voice message' needs to be held to be held "
-                                   @"down to record.")];
+                             message:NSLocalizedString(@"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE",
+                                         @"Message for the alert indicating the 'voice message' needs to be held to be "
+                                         @"held "
+                                         @"down to record.")];
         return;
     }
 
@@ -3813,9 +3807,9 @@ typedef enum : NSUInteger {
 
     OWSLogError(@": %@", errorMessage);
 
-    [OWSAlerts showAlertWithTitle:NSLocalizedString(
-                                      @"ATTACHMENT_ERROR_ALERT_TITLE", @"The title of the 'attachment error' alert.")
-                          message:errorMessage];
+    [OWSActionSheets showActionSheetWithTitle:NSLocalizedString(@"ATTACHMENT_ERROR_ALERT_TITLE",
+                                                  @"The title of the 'attachment error' alert.")
+                                      message:errorMessage];
 }
 
 - (CGFloat)safeContentHeight

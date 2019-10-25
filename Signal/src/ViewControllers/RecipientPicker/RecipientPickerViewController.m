@@ -314,7 +314,7 @@ const NSUInteger kMinimumSearchLength = 2;
 {
     [super viewDidAppear:animated];
 
-    [OWSAlerts showIOSUpgradeNagIfNecessary];
+    [OWSActionSheets showIOSUpgradeNagIfNecessary];
 }
 
 #pragma mark - Table Contents
@@ -833,25 +833,25 @@ const NSUInteger kMinimumSearchLength = 2;
             stringByAppendingString:NSLocalizedString(@"QUESTIONMARK_PUNCTUATION", @"")];
     }
 
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONFIRMATION_TITLE", @"")
-                                                                   message:confirmMessage
-                                                            preferredStyle:UIAlertControllerStyleAlert];
+    ActionSheetController *alert =
+        [[ActionSheetController alloc] initWithTitle:NSLocalizedString(@"CONFIRMATION_TITLE", @"")
+                                             message:confirmMessage];
 
-    UIAlertAction *okAction = [UIAlertAction
-                actionWithTitle:NSLocalizedString(@"OK", @"")
+    ActionSheetAction *okAction = [[ActionSheetAction alloc]
+                  initWithTitle:NSLocalizedString(@"OK", @"")
         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"ok")
-                          style:UIAlertActionStyleDefault
-                        handler:^(UIAlertAction *action) {
+                          style:ActionSheetActionStyleDefault
+                        handler:^(ActionSheetAction *action) {
                             [self.searchBar resignFirstResponder];
                             if ([MFMessageComposeViewController canSendText]) {
                                 [inviteFlow sendSMSToPhoneNumbers:@[ phoneNumber ]];
                             } else {
-                                [OWSAlerts
+                                [OWSActionSheets
                                     showErrorAlertWithMessage:NSLocalizedString(@"UNSUPPORTED_FEATURE_ERROR", @"")];
                             }
                         }];
 
-    [alert addAction:[OWSAlerts cancelAction]];
+    [alert addAction:[OWSActionSheets cancelAction]];
     [alert addAction:okAction];
     self.searchBar.text = @"";
     [self searchTextDidChange];
@@ -860,10 +860,10 @@ const NSUInteger kMinimumSearchLength = 2;
     if ([self presentedViewController]) {
         [self dismissViewControllerAnimated:YES
                                  completion:^{
-                                     [self presentAlert:alert];
+                                     [self presentActionSheet:alert];
                                  }];
     } else {
-        [self presentAlert:alert];
+        [self presentActionSheet:alert];
     }
 }
 
@@ -877,7 +877,7 @@ const NSUInteger kMinimumSearchLength = 2;
         case MessageComposeResultCancelled:
             break;
         case MessageComposeResultFailed: {
-            [OWSAlerts showErrorAlertWithMessage:NSLocalizedString(@"SEND_INVITE_FAILURE", @"")];
+            [OWSActionSheets showErrorAlertWithMessage:NSLocalizedString(@"SEND_INVITE_FAILURE", @"")];
             break;
         }
         case MessageComposeResultSent: {
@@ -885,8 +885,8 @@ const NSUInteger kMinimumSearchLength = 2;
                                      completion:^{
                                          OWSLogDebug(@"view controller dismissed");
                                      }];
-            [OWSAlerts
-                showAlertWithTitle:NSLocalizedString(@"SEND_INVITE_SUCCESS", @"Alert body after invite succeeded")];
+            [OWSActionSheets showActionSheetWithTitle:NSLocalizedString(@"SEND_INVITE_SUCCESS",
+                                                          @"Alert body after invite succeeded")];
             break;
         }
         default:
@@ -937,13 +937,14 @@ const NSUInteger kMinimumSearchLength = 2;
                                           @"A message indicating that the given username is not a registered signal "
                                           @"account. Embeds "
                                           @"{{username}}");
-                                      [OWSAlerts showAlertWithTitle:
-                                                     NSLocalizedString(@"USERNAME_NOT_FOUND_TITLE",
-                                                         @"A message indicating that the given username was not "
-                                                         @"registered with signal.")
-                                                            message:[[NSString alloc]
-                                                                        initWithFormat:usernameNotFoundFormat,
-                                                                        [CommonFormats formatUsername:username]]];
+                                      [OWSActionSheets
+                                          showActionSheetWithTitle:
+                                              NSLocalizedString(@"USERNAME_NOT_FOUND_TITLE",
+                                                  @"A message indicating that the given username was not "
+                                                  @"registered with signal.")
+                                                           message:[[NSString alloc]
+                                                                       initWithFormat:usernameNotFoundFormat,
+                                                                       [CommonFormats formatUsername:username]]];
                                   }];
                               });
                           }
@@ -954,9 +955,9 @@ const NSUInteger kMinimumSearchLength = 2;
                                   }
 
                                   [modal dismissWithCompletion:^{
-                                      [OWSAlerts showErrorAlertWithMessage:
-                                                     NSLocalizedString(@"USERNAME_LOOKUP_ERROR",
-                                                         @"A message indicating that username lookup failed.")];
+                                      [OWSActionSheets showErrorAlertWithMessage:
+                                                           NSLocalizedString(@"USERNAME_LOOKUP_ERROR",
+                                                               @"A message indicating that username lookup failed.")];
                                   }];
                               });
                           }];

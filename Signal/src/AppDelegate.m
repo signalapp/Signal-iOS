@@ -438,18 +438,17 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
             break;
     }
 
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:alertTitle
-                                                                   message:alertMessage
-                                                            preferredStyle:UIAlertControllerStyleAlert];
+    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:alertTitle message:alertMessage];
 
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", nil)
-                                              style:UIAlertActionStyleDefault
-                                            handler:^(UIAlertAction *_Nonnull action) {
-                                                [Pastelog submitLogsWithCompletion:^{
-                                                    OWSFail(@"exiting after sharing debug logs.");
-                                                }];
-                                            }]];
-    [viewController presentAlert:alert];
+    [actionSheet
+        addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", nil)
+                                                     style:ActionSheetActionStyleDefault
+                                                   handler:^(ActionSheetAction *_Nonnull action) {
+                                                       [Pastelog submitLogsWithCompletion:^{
+                                                           OWSFail(@"exiting after sharing debug logs.");
+                                                       }];
+                                                   }]];
+    [viewController presentActionSheet:actionSheet];
 }
 
 - (void)startupLogging
@@ -793,16 +792,15 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         if (![self.tsAccountManager isRegisteredAndReady]) {
-            UIAlertController *controller =
-                [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
-                                                    message:NSLocalizedString(@"REGISTRATION_RESTRICTED_MESSAGE", nil)
-                                             preferredStyle:UIAlertControllerStyleAlert];
+            ActionSheetController *controller = [[ActionSheetController alloc]
+                initWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
+                      message:NSLocalizedString(@"REGISTRATION_RESTRICTED_MESSAGE", nil)];
 
-            [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
-                                                           style:UIAlertActionStyleDefault
-                                                         handler:^(UIAlertAction *_Nonnull action){
+            [controller addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"OK", nil)
+                                                                     style:ActionSheetActionStyleDefault
+                                                                   handler:^(ActionSheetAction *_Nonnull action) {
 
-                                                         }]];
+                                                                   }]];
             UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
             [fromViewController presentViewController:controller
                                              animated:YES

@@ -24,7 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
 
         UIViewController *_Nullable nextViewController = viewController.presentedViewController;
         if (nextViewController) {
-            if (!ignoringAlerts || ![nextViewController isKindOfClass:[UIAlertController class]]) {
+            BOOL nextViewControllerIsAlert = [nextViewController isKindOfClass:[ActionSheetController class]] ||
+                [nextViewController isKindOfClass:[UIAlertController class]];
+            if (!ignoringAlerts || !nextViewControllerIsAlert) {
                 if ([visitedViewControllers containsObject:nextViewController]) {
                     // Cycle detected.
                     return viewController;

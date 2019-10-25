@@ -75,20 +75,18 @@ NS_ASSUME_NONNULL_BEGIN
     if ([self isVersion:lastCompletedLaunchAppVersion atLeast:@"1.0.2" andLessThan:@"2.0"]) {
         OWSLogError(@"Migrating from RedPhone no longer supported. Quitting.");
         // Not translating these as so few are affected.
-        UIAlertController *alert = [UIAlertController
-            alertControllerWithTitle:@"You must reinstall Signal"
-                             message:
-                                 @"Sorry, your installation is too old for us to update. You'll have to start fresh."
-                      preferredStyle:UIAlertControllerStyleAlert];
+        ActionSheetController *actionSheet = [[ActionSheetController alloc]
+            initWithTitle:@"You must reinstall Signal"
+                  message:@"Sorry, your installation is too old for us to update. You'll have to start fresh."];
 
-        UIAlertAction *quitAction = [UIAlertAction actionWithTitle:@"Quit"
-                                                             style:UIAlertActionStyleDefault
-                                                           handler:^(UIAlertAction *_Nonnull action) {
-                                                               OWSFail(@"Obsolete install.");
-                                                           }];
-        [alert addAction:quitAction];
+        ActionSheetAction *quitAction = [[ActionSheetAction alloc] initWithTitle:@"Quit"
+                                                                           style:ActionSheetActionStyleDefault
+                                                                         handler:^(ActionSheetAction *_Nonnull action) {
+                                                                             OWSFail(@"Obsolete install.");
+                                                                         }];
+        [actionSheet addAction:quitAction];
 
-        [CurrentAppContext().frontmostViewController presentAlert:alert];
+        [CurrentAppContext().frontmostViewController presentActionSheet:actionSheet];
     }
 
     if ([self isVersion:lastCompletedLaunchAppVersion atLeast:@"2.0.0" andLessThan:@"2.1.70"] &&

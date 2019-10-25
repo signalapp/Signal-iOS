@@ -491,9 +491,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(action);
 
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"How many?"
-                                                                   message:nil
-                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+    ActionSheetController *alert = [[ActionSheetController alloc] initWithTitle:@"How many?" message:nil];
     for (NSNumber *countValue in @[
              @(1),
              @(10),
@@ -501,16 +499,17 @@ NS_ASSUME_NONNULL_BEGIN
              @(1 * 1000),
              @(10 * 1000),
          ]) {
-        [alert addAction:[UIAlertAction actionWithTitle:countValue.stringValue
-                                                  style:UIAlertActionStyleDefault
-                                                handler:^(UIAlertAction *ignore) {
-                                                    [action prepareAndPerformNTimes:countValue.unsignedIntegerValue];
-                                                }]];
+        [alert addAction:[[ActionSheetAction alloc]
+                             initWithTitle:countValue.stringValue
+                                     style:ActionSheetActionStyleDefault
+                                   handler:^(ActionSheetAction *ignore) {
+                                       [action prepareAndPerformNTimes:countValue.unsignedIntegerValue];
+                                   }]];
     }
 
-    [alert addAction:[OWSAlerts cancelAction]];
+    [alert addAction:[OWSActionSheets cancelAction]];
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentAlert:alert];
+    [fromViewController presentActionSheet:alert];
 }
 
 #pragma mark - Send Media
@@ -2797,20 +2796,19 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)selectActionUI:(NSArray<DebugUIMessagesAction *> *)actions label:(NSString *)label
 {
     OWSAssertIsOnMainThread();
-    UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:label message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    ActionSheetController *alert = [[ActionSheetController alloc] initWithTitle:label message:nil];
     for (DebugUIMessagesAction *action in actions) {
-        [alert addAction:[UIAlertAction actionWithTitle:action.label
-                                                  style:UIAlertActionStyleDefault
-                                                handler:^(UIAlertAction *ignore) {
-                                                    [self performActionNTimes:action];
-                                                }]];
+        [alert addAction:[[ActionSheetAction alloc] initWithTitle:action.label
+                                                            style:ActionSheetActionStyleDefault
+                                                          handler:^(ActionSheetAction *ignore) {
+                                                              [self performActionNTimes:action];
+                                                          }]];
     }
 
-    [alert addAction:[OWSAlerts cancelAction]];
+    [alert addAction:[OWSActionSheets cancelAction]];
 
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentAlert:alert];
+    [fromViewController presentActionSheet:alert];
 }
 
 #pragma mark - Sequences

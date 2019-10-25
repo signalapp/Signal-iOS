@@ -441,23 +441,21 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     func presentAudioSourcePicker() {
         AssertIsOnMainThread()
 
-        let actionSheetController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let actionSheetController = ActionSheetController(title: nil, message: nil)
 
-        let dismissAction = UIAlertAction(title: CommonStrings.dismissButton, style: .cancel, handler: nil)
+        let dismissAction = ActionSheetAction(title: CommonStrings.dismissButton, style: .cancel)
         actionSheetController.addAction(dismissAction)
 
         let currentAudioSource = callUIAdapter.audioService.currentAudioSource(call: self.call)
         for audioSource in self.appropriateAudioSources {
-            let routeAudioAction = UIAlertAction(title: audioSource.localizedName, style: .default) { _ in
+            let routeAudioAction = ActionSheetAction(title: audioSource.localizedName, style: .default) { _ in
                 self.callUIAdapter.setAudioSource(call: self.call, audioSource: audioSource)
             }
 
-            // HACK: private API to create checkmark for active audio source.
-            routeAudioAction.setValue(currentAudioSource == audioSource, forKey: "checked")
-
-            // TODO: pick some icons. Leaving out for MVP
-            // HACK: private API to add image to actionsheet
-            // routeAudioAction.setValue(audioSource.image, forKey: "image")
+            // create checkmark for active audio source.
+            if currentAudioSource == audioSource {
+                routeAudioAction.trailingIcon = .checkCircle
+            }
 
             actionSheetController.addAction(routeAudioAction)
         }
@@ -465,7 +463,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         // Note: It's critical that we present from this view and
         // not the "frontmost view controller" since this view may
         // reside on a separate window.
-        presentAlert(actionSheetController)
+        presentActionSheet(actionSheetController)
     }
 
     func updateAvatarImage() {

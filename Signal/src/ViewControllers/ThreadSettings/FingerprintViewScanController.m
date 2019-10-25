@@ -176,29 +176,28 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *descriptionFormat = NSLocalizedString(
         @"SUCCESSFUL_VERIFICATION_DESCRIPTION", @"Alert body after verifying privacy with {{other user's name}}");
     NSString *successDescription = [NSString stringWithFormat:descriptionFormat, contactName];
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:successTitle
-                                                                   message:successDescription
-                                                            preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction
-                         actionWithTitle:NSLocalizedString(@"FINGERPRINT_SCAN_VERIFY_BUTTON",
-                                             @"Button that marks user as verified after a successful fingerprint scan.")
-                                   style:UIAlertActionStyleDefault
-                                 handler:^(UIAlertAction *action) {
-                                     [OWSIdentityManager.sharedManager setVerificationState:OWSVerificationStateVerified
-                                                                                identityKey:identityKey
-                                                                                    address:address
-                                                                      isUserInitiatedChange:YES];
-                                     [viewController dismissViewControllerAnimated:true completion:nil];
-                                 }]];
-    UIAlertAction *dismissAction =
-        [UIAlertAction actionWithTitle:CommonStrings.dismissButton
-                                 style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *action) {
+    ActionSheetController *alert = [[ActionSheetController alloc] initWithTitle:successTitle
+                                                                        message:successDescription];
+    [alert addAction:[[ActionSheetAction alloc]
+                         initWithTitle:NSLocalizedString(@"FINGERPRINT_SCAN_VERIFY_BUTTON",
+                                           @"Button that marks user as verified after a successful fingerprint scan.")
+                                 style:ActionSheetActionStyleDefault
+                               handler:^(ActionSheetAction *action) {
+                                   [OWSIdentityManager.sharedManager setVerificationState:OWSVerificationStateVerified
+                                                                              identityKey:identityKey
+                                                                                  address:address
+                                                                    isUserInitiatedChange:YES];
                                    [viewController dismissViewControllerAnimated:true completion:nil];
-                               }];
+                               }]];
+    ActionSheetAction *dismissAction =
+        [[ActionSheetAction alloc] initWithTitle:CommonStrings.dismissButton
+                                           style:ActionSheetActionStyleDefault
+                                         handler:^(ActionSheetAction *action) {
+                                             [viewController dismissViewControllerAnimated:true completion:nil];
+                                         }];
     [alert addAction:dismissAction];
 
-    [viewController presentAlert:alert];
+    [viewController presentActionSheet:alert];
 }
 
 + (void)showVerificationFailedWithError:(NSError *)error
@@ -218,21 +217,20 @@ NS_ASSUME_NONNULL_BEGIN
         failureTitle = NSLocalizedString(@"FAILED_VERIFICATION_TITLE", @"alert title");
     } // else no title. We don't want to show a big scary "VERIFICATION FAILED" when it's just user error.
 
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:failureTitle
-                                                                   message:error.localizedDescription
-                                                            preferredStyle:UIAlertControllerStyleAlert];
+    ActionSheetController *alert = [[ActionSheetController alloc] initWithTitle:failureTitle
+                                                                        message:error.localizedDescription];
 
     if (retryBlock) {
-        [alert addAction:[UIAlertAction actionWithTitle:[CommonStrings retryButton]
-                                                  style:UIAlertActionStyleDefault
-                                                handler:^(UIAlertAction *action) {
-                                                    retryBlock();
-                                                }]];
+        [alert addAction:[[ActionSheetAction alloc] initWithTitle:[CommonStrings retryButton]
+                                                            style:ActionSheetActionStyleDefault
+                                                          handler:^(ActionSheetAction *action) {
+                                                              retryBlock();
+                                                          }]];
     }
 
-    [alert addAction:[OWSAlerts cancelAction]];
+    [alert addAction:[OWSActionSheets cancelAction]];
 
-    [viewController presentAlert:alert];
+    [viewController presentActionSheet:alert];
 
     OWSLogWarn(@"%@ Identity verification failed with error: %@", tag, error);
 }

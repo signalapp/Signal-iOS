@@ -474,14 +474,13 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
     private func showResendActionSheet() {
         Logger.info("")
 
-        let actionSheet = UIAlertController(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE",
+        let actionSheet = ActionSheetController(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE",
                                                                      comment: "Title for the 'resend code' alert in the 'onboarding verification' view."),
                                             message: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE",
-                                                                       comment: "Message for the 'resend code' alert in the 'onboarding verification' view."),
-                                            preferredStyle: .actionSheet)
+                                                                       comment: "Message for the 'resend code' alert in the 'onboarding verification' view."))
 
         if onboardingController.verificationRequestCount > 2 {
-            actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT",
+            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT",
                                                                          comment: "action sheet item shown after a number of failures to receive a verificaiton SMS during registration"),
                                                 style: .default) { _ in
                                                     Pastelog.submitEmail(logUrl: nil,
@@ -489,19 +488,19 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
             })
         }
 
-        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON",
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON",
                                                                      comment: "Label for the 'resend code by SMS' button in the 'onboarding verification' view."),
                                             style: .default) { _ in
                                                 self.onboardingController.requestVerification(fromViewController: self, isSMS: true)
         })
-        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON",
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON",
                                                                      comment: "Label for the 'resend code by voice' button in the 'onboarding verification' view."),
                                             style: .default) { _ in
                                                 self.onboardingController.requestVerification(fromViewController: self, isSMS: false)
         })
-        actionSheet.addAction(OWSAlerts.cancelAction)
+        actionSheet.addAction(OWSActionSheets.cancelAction)
 
-        self.presentAlert(actionSheet)
+        self.presentActionSheet(actionSheet)
     }
 
     private func tryToVerify() {
