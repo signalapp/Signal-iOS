@@ -294,6 +294,11 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
         }
     }
 
+    return [self loadAccountStateWithSneakyTransaction];
+}
+
+- (TSAccountState *)loadAccountStateWithSneakyTransaction
+{
     // We avoid opening a transaction while @synchronized.
     __block TSAccountState *accountState;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
@@ -951,9 +956,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
     // Any database write by the main app might reflect a deregistration,
     // so clear the cached "is registered" state.  This will significantly
     // erode the value of this cache in the SAE.
-    @synchronized(self) {
-        self.cachedAccountState = nil;
-    }
+    [self loadAccountStateWithSneakyTransaction];
 }
 
 - (void)databaseStorageDidReset
