@@ -156,4 +156,26 @@ public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
 
         reportSuccess()
     }
+
+    public override func didSucceed() {
+        self.databaseStorage.write { transaction in
+            self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
+        }
+    }
+
+    public override func didReportError(_ error: Error) {
+        Logger.debug("remainingRetries: \(self.remainingRetries)")
+
+        self.databaseStorage.write { transaction in
+            self.durableOperationDelegate?.durableOperation(self, didReportError: error, transaction: transaction)
+        }
+    }
+
+    public override func didFail(error: Error) {
+        Logger.error("failed with error: \(error)")
+
+        self.databaseStorage.write { transaction in
+            self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
+        }
+    }
 }

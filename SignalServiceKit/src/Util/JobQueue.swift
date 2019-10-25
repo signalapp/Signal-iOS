@@ -202,7 +202,7 @@ public extension JobQueue {
         }
         databaseStorage.write { transaction in
             let runningRecords = self.finder.allRecords(label: self.jobRecordLabel, status: .running, transaction: transaction)
-            Logger.info("marking old `running` JobRecords as ready: \(runningRecords.count)")
+            Logger.info("marking old `running` \(self.jobRecordLabel) JobRecords as ready: \(runningRecords.count)")
             for jobRecord in runningRecords {
                 do {
                     try jobRecord.saveRunningAsReady(transaction: transaction)
