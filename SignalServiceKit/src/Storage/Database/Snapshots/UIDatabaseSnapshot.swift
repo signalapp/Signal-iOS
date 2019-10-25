@@ -224,7 +224,7 @@ extension UIDatabaseObserver: TransactionObserver {
         //   unacceptable perf cost, and it might not succeed often enough.
         do {
             try pool.writeWithoutTransaction { db in
-                try Bench(title: "Slow Passive Checkpoint", logIfLongerThan: 0.25, logInProduction: true) {
+                try Bench(title: "Slow Passive Checkpoint", logIfLongerThan: 0.025, logInProduction: true) {
                     try self.checkpointWal(db: db, mode: .passive)
                 }
             }
@@ -251,11 +251,19 @@ extension UIDatabaseObserver: TransactionObserver {
         }
 
         let code = sqlite3_wal_checkpoint_v2(db.sqliteConnection, nil, mode.rawValue, &walSizePages, &pagesCheckpointed)
-        // Logger.verbose("checkpoint mode: \(mode), walSizePages: \(walSizePages),  pagesCheckpointed:\(pagesCheckpointed)")
         guard code == SQLITE_OK else {
             throw OWSAssertionError("checkpoint sql error with code: \(code)")
         }
+
         Logger.verbose("walSizePages: \(walSizePages), pagesCheckpointed: \(pagesCheckpointed).")
+
+        let pageSize: Int32 = 4 * 1024
+        let walFileSizeBytes = walSizePages * pageSize
+        let maxWalFileSizeBytes = 4 * 1024 * 1024
+        if walFileSizeBytes > maxWalFileSizeBytes {
+            Logger.info("walFileSizeBytes: \(walFileSizeBytes).")
+        }
+
         checkPointQueue.sync {
             isRunningCheckpoint = false
         }
