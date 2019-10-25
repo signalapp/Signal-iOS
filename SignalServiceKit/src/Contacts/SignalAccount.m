@@ -163,7 +163,6 @@ NSUInteger const SignalAccountSchemaVersion = 1;
         return;
     }
 
-    // TODO: Avoid this work by caching the avatarPngData on SignalAccount.
     UIImage *_Nullable avatarImage = [UIImage imageWithData:self.contactAvatarData];
     if (avatarImage == nil) {
         OWSFailDebug(@"Could not load avatar.");
