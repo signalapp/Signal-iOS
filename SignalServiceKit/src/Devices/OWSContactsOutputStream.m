@@ -50,21 +50,7 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
         contactBuilder.verified = verified;
     }
 
-    NSData *_Nullable rawAvatarData = [contactsManager avatarDataForCNContactId:signalAccount.contact.cnContactId];
-    NSData *_Nullable avatarPngData;
-    if (rawAvatarData != nil) {
-        if (rawAvatarData.ows_isValidPng) {
-            avatarPngData = rawAvatarData;
-        } else {
-            OWSLogVerbose(@"Converting avatar to PNG.");
-            // TODO: Avoid this work by caching the avatarPngData on SignalAccount.
-            UIImage *_Nullable avatarImage = [UIImage imageWithData:rawAvatarData];
-            if (avatarImage != nil) {
-                avatarPngData = UIImagePNGRepresentation(avatarImage);
-            }
-        }
-    }
-
+    NSData *_Nullable avatarPngData = signalAccount.contactAvatarPngData;
     if (avatarPngData != nil) {
         SSKProtoContactDetailsAvatarBuilder *avatarBuilder = [SSKProtoContactDetailsAvatar builder];
         [avatarBuilder setContentType:OWSMimeTypeImagePng];

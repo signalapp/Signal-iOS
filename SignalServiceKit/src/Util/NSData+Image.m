@@ -555,7 +555,7 @@ NSString *NSStringForImageFormat(ImageFormat value)
     return uiImage;
 }
 
-- (BOOL)ows_isValidGroupAvatarPng
+- (BOOL)ows_isValidPng
 {
     ImageFormat imageFormat = [self ows_guessImageFormat];
     if (imageFormat != ImageFormat_Png) {

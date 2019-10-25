@@ -4,6 +4,9 @@
 
 #import "SignalAccount.h"
 #import "Contact.h"
+#import "ContactsManagerProtocol.h"
+#import "NSData+Image.h"
+#import "SSKEnvironment.h"
 #import "SignalRecipient.h"
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -21,6 +24,15 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 #pragma mark -
 
 @implementation SignalAccount
+
+#pragma mark - Dependencies
+
+- (id<ContactsManagerProtocol>)contactsManager
+{
+    return SSKEnvironment.shared.contactsManager;
+}
+
+#pragma mark -
 
 + (BOOL)shouldBeIndexedForFTS
 {
@@ -75,6 +87,8 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
                          contact:(nullable Contact *)contact
+               contactAvatarData:(nullable NSData *)contactAvatarData
+            contactAvatarPngData:(nullable NSData *)contactAvatarPngData
         multipleAccountLabelText:(NSString *)multipleAccountLabelText
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
@@ -87,6 +101,8 @@ NSUInteger const SignalAccountSchemaVersion = 1;
     }
 
     _contact = contact;
+    _contactAvatarData = contactAvatarData;
+    _contactAvatarPngData = contactAvatarPngData;
     _multipleAccountLabelText = multipleAccountLabelText;
     _recipientPhoneNumber = recipientPhoneNumber;
     _recipientUUID = recipientUUID;
@@ -118,10 +134,47 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 {
     OWSAssertDebug(other != nil);
 
+    // NOTE: We don't want to compare contactAvatarPngData, which
+    //       is derived from contactAvatarData.
     return ([NSObject isNullableObject:self.recipientPhoneNumber equalTo:other.recipientPhoneNumber] &&
         [NSObject isNullableObject:self.recipientUUID equalTo:other.recipientUUID] &&
         [NSObject isNullableObject:self.contact equalTo:other.contact] &&
-        [NSObject isNullableObject:self.multipleAccountLabelText equalTo:other.multipleAccountLabelText]);
+        [NSObject isNullableObject:self.multipleAccountLabelText equalTo:other.multipleAccountLabelText] &&
+        [NSObject isNullableObject:self.contactAvatarData equalTo:other.contactAvatarData]);
+}
+
+- (void)tryToCacheContactAvatarData
+{
+    OWSAssertDebug(self.contactAvatarData == nil);
+    OWSAssertDebug(self.contactAvatarPngData == nil);
+
+    if (self.contact == nil) {
+        OWSFailDebug(@"Missing contact.");
+        return;
+    }
+
+    self.contactAvatarData = [self.contactsManager avatarDataForCNContactId:self.contact.cnContactId];
+    if (self.contactAvatarData == nil) {
+        return;
+    }
+
+    if (self.contactAvatarData.ows_isValidPng) {
+        self.contactAvatarPngData = self.contactAvatarData;
+        return;
+    }
+
+    // TODO: Avoid this work by caching the avatarPngData on SignalAccount.
+    UIImage *_Nullable avatarImage = [UIImage imageWithData:self.contactAvatarData];
+    if (avatarImage == nil) {
+        OWSFailDebug(@"Could not load avatar.");
+        return;
+    }
+    self.contactAvatarPngData = UIImagePNGRepresentation(avatarImage);
+    if (self.contactAvatarPngData == nil) {
+        OWSFailDebug(@"Could not convert avatar to PNG.");
+        return;
+    }
+    OWSLogVerbose(@"Converted avatar to PNG.");
 }
 
 @end
