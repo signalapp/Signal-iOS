@@ -15,13 +15,25 @@ public class AppPreferences: NSObject {
 
     private static let hasDimissedFirstConversationCueKey = "hasDimissedFirstConversationCue"
 
+    private static var hasDimissedFirstConversationCueCache: Bool?
+
     @objc
     public static func hasDimissedFirstConversationCue(transaction: SDSAnyReadTransaction) -> Bool {
-        return store.getBool(hasDimissedFirstConversationCueKey, defaultValue: false, transaction: transaction)
+        AssertIsOnMainThread()
+
+        if let value = hasDimissedFirstConversationCueCache {
+          return value
+        }
+        let value = store.getBool(hasDimissedFirstConversationCueKey, defaultValue: false, transaction: transaction)
+        hasDimissedFirstConversationCueCache = value
+        return value
     }
 
     @objc
     public static func setHasDimissedFirstConversationCue(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
+        AssertIsOnMainThread()
+
         store.setBool(newValue, key: hasDimissedFirstConversationCueKey, transaction: transaction)
+        hasDimissedFirstConversationCueCache = newValue
     }
 }

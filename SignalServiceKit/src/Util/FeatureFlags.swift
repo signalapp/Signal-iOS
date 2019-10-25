@@ -33,6 +33,7 @@ public enum StorageMode: Int {
     // Supercedes grdbMigratesFreshDBEveryLaunch.
     case grdbThrowawayIfMigrating
     // Use GRDB under certain conditions.
+    case grdbForAlreadyMigrated
     case grdbForLegacyUsersOnly
     case grdbForNewUsersOnly
     // Use GRDB, migrating once if necessary.
@@ -55,6 +56,8 @@ extension StorageMode: CustomStringConvertible {
             return ".ydbForAll"
         case .grdbThrowawayIfMigrating:
             return ".grdbThrowawayIfMigrating"
+        case .grdbForAlreadyMigrated:
+            return ".grdbForAlreadyMigrated"
         case .grdbForLegacyUsersOnly:
             return ".grdbForLegacyUsersOnly"
         case .grdbForNewUsersOnly:
@@ -97,7 +100,7 @@ public class FeatureFlags: NSObject {
             // We should be running the tests using both .ydbTests or .grdbTests.
             return .grdbTests
         } else {
-            return .grdbForAll
+            return .grdbForAlreadyMigrated
         }
     }
 

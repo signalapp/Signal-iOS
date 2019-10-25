@@ -272,6 +272,23 @@ class ThreadMapping: NSObject {
                                                    newIndexPath: IndexPath(row: newIndex, section: kSection)))
             }
         }
+        let possiblyMovedThreadIds = newThreadIds.filter {
+            oldThreadIds.contains($0) && !exlusivelyUpdatedThreadIds.contains($0)
+        }
+        for threadId in possiblyMovedThreadIds {
+            guard let oldIndex = oldThreadIds.firstIndexAsInt(of: threadId) else {
+                throw assertionError("oldIndex was unexpectedly nil")
+            }
+            guard let newIndex = newThreadIds.firstIndexAsInt(of: threadId) else {
+                throw assertionError("newIndex was unexpectedly nil")
+            }
+            if oldIndex != newIndex {
+                rowChanges.append(ThreadMappingRowChange(type: .move,
+                                                         uniqueRowId: threadId,
+                                                         oldIndexPath: IndexPath(row: oldIndex, section: kSection),
+                                                         newIndexPath: IndexPath(row: newIndex, section: kSection)))
+            }
+        }
 
         return ThreadMappingDiff(sectionChanges: [], rowChanges: rowChanges)
     }

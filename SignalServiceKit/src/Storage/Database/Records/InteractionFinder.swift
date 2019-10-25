@@ -856,6 +856,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .threadUniqueId) = ?
         ORDER BY \(interactionColumn: .id) DESC
+        LIMIT 1
         """
         let arguments: StatementArguments = [threadUniqueId]
         return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
@@ -869,6 +870,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                 AND \(interactionColumn: .errorType) IS NOT ?
                 AND \(interactionColumn: .messageType) IS NOT ?
                 ORDER BY \(interactionColumn: .id) DESC
+                LIMIT 1
                 """
         let arguments: StatementArguments = [threadUniqueId,
                                              TSErrorMessageType.nonBlockingIdentityChange.rawValue,
