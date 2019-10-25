@@ -250,12 +250,14 @@ extension UIDatabaseObserver: TransactionObserver {
             isRunningCheckpoint = true
         }
 
+        SDSDatabaseStorage.shared.logFileSizes()
+
         let code = sqlite3_wal_checkpoint_v2(db.sqliteConnection, nil, mode.rawValue, &walSizePages, &pagesCheckpointed)
         guard code == SQLITE_OK else {
             throw OWSAssertionError("checkpoint sql error with code: \(code)")
         }
 
-        Logger.verbose("walSizePages: \(walSizePages), pagesCheckpointed: \(pagesCheckpointed).")
+        Logger.info("walSizePages: \(walSizePages), pagesCheckpointed: \(pagesCheckpointed).")
 
         let pageSize: Int32 = 4 * 1024
         let walFileSizeBytes = walSizePages * pageSize
