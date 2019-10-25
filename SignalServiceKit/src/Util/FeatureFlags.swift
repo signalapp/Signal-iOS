@@ -100,7 +100,7 @@ public class FeatureFlags: NSObject {
             // We should be running the tests using both .ydbTests or .grdbTests.
             return .grdbTests
         } else {
-            return .grdbForAll
+            return .grdbForAlreadyMigrated
         }
     }
 
