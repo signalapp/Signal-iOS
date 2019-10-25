@@ -6,6 +6,7 @@
 #import "Contact.h"
 #import "ContactsManagerProtocol.h"
 #import "MIMETypeUtil.h"
+#import "NSData+Image.h"
 #import "NSData+keyVersionByte.h"
 #import "OWSBlockingManager.h"
 #import "OWSDisappearingMessagesConfiguration.h"
@@ -49,23 +50,33 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
         contactBuilder.verified = verified;
     }
 
-    UIImage *_Nullable rawAvatar = [contactsManager avatarImageForCNContactId:signalAccount.contact.cnContactId];
-    NSData *_Nullable avatarPng;
-    if (rawAvatar) {
-        avatarPng = UIImagePNGRepresentation(rawAvatar);
-        if (avatarPng) {
-            SSKProtoContactDetailsAvatarBuilder *avatarBuilder = [SSKProtoContactDetailsAvatar builder];
-            [avatarBuilder setContentType:OWSMimeTypeImagePng];
-            [avatarBuilder setLength:(uint32_t)avatarPng.length];
-
-            NSError *error;
-            SSKProtoContactDetailsAvatar *_Nullable avatar = [avatarBuilder buildAndReturnError:&error];
-            if (error || !avatar) {
-                OWSLogError(@"could not build protobuf: %@", error);
-                return;
+    NSData *_Nullable rawAvatarData = [contactsManager avatarDataForCNContactId:signalAccount.contact.cnContactId];
+    NSData *_Nullable avatarPngData;
+    if (rawAvatarData != nil) {
+        if (rawAvatarData.ows_isValidPng) {
+            avatarPngData = rawAvatarData;
+        } else {
+            OWSLogVerbose(@"Converting avatar to PNG.");
+            // TODO: Avoid this work by caching the avatarPngData on SignalAccount.
+            UIImage *_Nullable avatarImage = [UIImage imageWithData:rawAvatarData];
+            if (avatarImage != nil) {
+                avatarPngData = UIImagePNGRepresentation(avatarImage);
             }
-            [contactBuilder setAvatar:avatar];
         }
+    }
+
+    if (avatarPngData != nil) {
+        SSKProtoContactDetailsAvatarBuilder *avatarBuilder = [SSKProtoContactDetailsAvatar builder];
+        [avatarBuilder setContentType:OWSMimeTypeImagePng];
+        [avatarBuilder setLength:(uint32_t)avatarPngData.length];
+
+        NSError *error;
+        SSKProtoContactDetailsAvatar *_Nullable avatar = [avatarBuilder buildAndReturnError:&error];
+        if (error || !avatar) {
+            OWSLogError(@"could not build protobuf: %@", error);
+            return;
+        }
+        [contactBuilder setAvatar:avatar];
     }
 
     if (profileKeyData) {
@@ -97,8 +108,8 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     [self writeVariableLengthUInt32:contactDataLength];
     [self writeData:contactData];
 
-    if (avatarPng) {
-        [self writeData:avatarPng];
+    if (avatarPngData != nil) {
+        [self writeData:avatarPngData];
     }
 }
 
