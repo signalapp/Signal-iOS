@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSMessageViewOnceView *messageViewOnceView;
 
 @property (nonatomic, readonly) UITapGestureRecognizer *tapGestureRecognizer;
+@property (nonatomic, readonly) UITapGestureRecognizer *avatarTapGestureRecognizer;
 @property (nonatomic, readonly) UIPanGestureRecognizer *panGestureRecognizer;
 
 + (NSString *)cellReuseIdentifier;

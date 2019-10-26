@@ -2271,6 +2271,21 @@ typedef enum : NSUInteger {
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
+- (void)conversationCell:(ConversationViewCell *)cell didTapAvatar:(id<ConversationViewItem>)viewItem
+{
+    OWSAssertDebug(viewItem);
+
+    if (viewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
+        OWSFailDebug(@"not an incoming message.");
+        return;
+    }
+
+    TSIncomingMessage *incomingMessage = (TSIncomingMessage *)viewItem.interaction;
+    MemberActionSheet *actionSheet = [[MemberActionSheet alloc] initWithAddress:incomingMessage.authorAddress
+                                                             contactsViewHelper:self.contactsViewHelper];
+    [actionSheet presentFromViewController:self];
+}
+
 - (void)conversationCell:(ConversationViewCell *)cell didReplyToItem:(id<ConversationViewItem>)viewItem
 {
     [self populateReplyForViewItem:viewItem];
@@ -4448,6 +4463,7 @@ typedef enum : NSUInteger {
     if ([cell isKindOfClass:[OWSMessageCell class]]) {
         OWSMessageCell *messageCell = (OWSMessageCell *)cell;
         [self.tapGestureRecognizer requireGestureRecognizerToFail:messageCell.tapGestureRecognizer];
+        [self.tapGestureRecognizer requireGestureRecognizerToFail:messageCell.avatarTapGestureRecognizer];
     }
 
 #ifdef DEBUG

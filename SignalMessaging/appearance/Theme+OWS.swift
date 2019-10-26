@@ -43,6 +43,8 @@ public enum ThemeIcon: UInt {
     case compose
     case phone
     case checkCircle
+    case message
+    case call
 }
 
 @objc
@@ -133,6 +135,10 @@ public extension Theme {
             return isDarkThemeEnabled ? "button_phone_white" : "phone-right-outline-24"
         case .checkCircle:
             return isDarkThemeEnabled ? "check-circle-solid-24" : "check-circle-outline-24"
+        case .message:
+            return isDarkThemeEnabled ? "message-solid-24" : "message-outline-24"
+        case .call:
+            return isDarkThemeEnabled ? "button_phone_white" : "phone-right-outline-24"
         }
     }
 }

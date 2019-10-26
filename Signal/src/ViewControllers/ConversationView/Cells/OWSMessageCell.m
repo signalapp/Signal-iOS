@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
 
 @property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
+@property (nonatomic) UITapGestureRecognizer *avatarTapGestureRecognizer;
 @property (nonatomic) UIPanGestureRecognizer *panGestureRecognizer;
 @property (nonatomic) UIView *swipeableContentView;
 @property (nonatomic) UIImageView *swipeToReplyImageView;
@@ -88,6 +89,13 @@ NS_ASSUME_NONNULL_BEGIN
     self.panGestureRecognizer.delegate = self;
     [self.contentView addGestureRecognizer:self.panGestureRecognizer];
     [self.tapGestureRecognizer requireGestureRecognizerToFail:self.panGestureRecognizer];
+
+    self.avatarTapGestureRecognizer =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleAvatarTapGesture:)];
+    self.avatarTapGestureRecognizer.delegate = self;
+    [self.contentView addGestureRecognizer:self.avatarTapGestureRecognizer];
+    [self.avatarTapGestureRecognizer requireGestureRecognizerToFail:self.panGestureRecognizer];
+    [self.avatarTapGestureRecognizer requireGestureRecognizerToFail:self.tapGestureRecognizer];
 
     [self setupSwipeContainer];
 }
@@ -465,6 +473,18 @@ NS_ASSUME_NONNULL_BEGIN
     [self.messageView handleTapGesture:sender];
 }
 
+- (void)handleAvatarTapGesture:(UITapGestureRecognizer *)sender
+{
+    OWSAssertDebug(self.delegate);
+
+    if (![self isGestureInAvatar:sender]) {
+        OWSFailDebug(@"Received unexpected gesture");
+        return;
+    }
+
+    [self.delegate conversationCell:self didTapAvatar:self.viewItem];
+}
+
 - (void)handleLongPressGesture:(UILongPressGestureRecognizer *)sender
 {
     OWSAssertDebug(self.delegate);
@@ -529,6 +549,23 @@ NS_ASSUME_NONNULL_BEGIN
     return location.y <= headerBottom.y;
 }
 
+- (BOOL)isGestureInAvatar:(UIGestureRecognizer *)sender
+{
+    OWSAssertDebug(self.viewItem);
+
+    if (!self.viewItem.shouldShowSenderAvatar) {
+        return NO;
+    }
+
+    if (!self.viewItem.isGroupThread) {
+        OWSFailDebug(@"not a group thread.");
+        return NO;
+    }
+
+    CGPoint tapPoint = [sender locationInView:self];
+    return CGRectContainsPoint(self.avatarView.frame, tapPoint);
+}
+
 # pragma mark - UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
@@ -540,6 +577,8 @@ NS_ASSUME_NONNULL_BEGIN
         return fabs(velocity.x) > fabs(velocity.y);
     } else if (gestureRecognizer == self.tapGestureRecognizer) {
         return [self.messageView willHandleTapGesture:self.tapGestureRecognizer];
+    } else if (gestureRecognizer == self.avatarTapGestureRecognizer) {
+        return [self isGestureInAvatar:self.avatarTapGestureRecognizer];
     }
 
     return YES;

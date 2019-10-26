@@ -35,6 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
     didLongpressSystemMessageViewItem:(id<ConversationViewItem>)viewItem;
 - (void)conversationCell:(ConversationViewCell *)cell didLongpressSticker:(id<ConversationViewItem>)viewItem;
 - (void)conversationCell:(ConversationViewCell *)cell didReplyToItem:(id<ConversationViewItem>)viewItem;
+- (void)conversationCell:(ConversationViewCell *)cell didTapAvatar:(id<ConversationViewItem>)viewItem;
 
 #pragma mark - System Cell
 

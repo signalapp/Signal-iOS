@@ -592,6 +592,7 @@
 		88594E5A2335B08000390B19 /* AudioMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88594E592335B08000390B19 /* AudioMessageView.swift */; };
 		886F08A7234958970085C27F /* InputAccessoryViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886F08A6234958970085C27F /* InputAccessoryViewPlaceholder.swift */; };
 		88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88905E9D229CCA96004E4234 /* ExpirationNagView.swift */; };
+		88A357B923639384009D6B9A /* MemberActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A357B823639384009D6B9A /* MemberActionSheet.swift */; };
 		88A9729222FA5D4B004B4FBF /* AttachmentFormatPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */; };
 		88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729322FB4D02004B4FBF /* LocationPicker.swift */; };
 		88BFD4732335C2B3001797D7 /* waveformLoading.json in Resources */ = {isa = PBXBuildFile; fileRef = 88BFD4722335C2B3001797D7 /* waveformLoading.json */; };
@@ -1416,6 +1417,7 @@
 		88A358262364020B009D6B9A /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = translations/uk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		88A3582723640240009D6B9A /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = translations/vi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		88A35828236402D3009D6B9A /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = translations/bn.lproj/Localizable.strings; sourceTree = "<group>"; };
+		88A357B823639384009D6B9A /* MemberActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberActionSheet.swift; sourceTree = "<group>"; };
 		88A695BC232C18DF002F7B9B /* AudioWaveformProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformProgressView.swift; sourceTree = "<group>"; };
 		88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentFormatPickerView.swift; sourceTree = "<group>"; };
 		88A9729322FB4D02004B4FBF /* LocationPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPicker.swift; sourceTree = "<group>"; };
@@ -1738,6 +1740,7 @@
 				340FC8A6204DAC8D007AEB0F /* ShowGroupMembersViewController.m */,
 				340FC8A3204DAC8D007AEB0F /* UpdateGroupViewController.h */,
 				340FC89C204DAC8D007AEB0F /* UpdateGroupViewController.m */,
+				88A357B823639384009D6B9A /* MemberActionSheet.swift */,
 			);
 			path = ThreadSettings;
 			sourceTree = "<group>";
@@ -4065,6 +4068,7 @@
 				340E9AC4236095CD00FA362C /* AttachmentMultisend.swift in Sources */,
 				34CE88E71F2FB9A10098030F /* ProfileViewController.m in Sources */,
 				3403B95D20EA9527001A1F44 /* OWSContactShareButtonsView.m in Sources */,
+				88A357B923639384009D6B9A /* MemberActionSheet.swift in Sources */,
 				34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */,
 				34E3EF101EFC2684007F6822 /* DebugUIPage.m in Sources */,
 				34A8B3512190A40E00218A25 /* MediaAlbumCellView.swift in Sources */,

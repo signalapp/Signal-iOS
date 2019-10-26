@@ -11,7 +11,31 @@ public class ActionSheetController: OWSViewController {
     private let stackView = UIStackView()
     private let scrollView = UIScrollView()
 
-    private(set) var actions = [ActionSheetAction]()
+    @objc
+    private(set) public var actions = [ActionSheetAction]()
+
+    @objc
+    public var contentAlignment: ContentAlignment = .center {
+        didSet {
+            guard oldValue != contentAlignment else { return }
+            actions.forEach { $0.button.contentAlignment = contentAlignment }
+        }
+    }
+    @objc(ActionSheetContentAlignment)
+    public enum ContentAlignment: Int {
+        case center
+        case leading
+        case trailing
+    }
+
+    @objc
+    public var customHeader: UIView? {
+        didSet {
+            if let oldValue = oldValue { oldValue.removeFromSuperview() }
+            guard let customHeader = customHeader else { return }
+            stackView.insertArrangedSubview(customHeader, at: 0)
+        }
+    }
 
     fileprivate static let minimumRowHeight: CGFloat = 60
 
@@ -22,10 +46,15 @@ public class ActionSheetController: OWSViewController {
     }
 
     @objc
-    public init(title: String? = nil, message: String? = nil) {
+    public init() {
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .custom
         transitioningDelegate = self
+    }
+
+    @objc
+    public convenience init(title: String? = nil, message: String? = nil) {
+        self.init()
         createHeader(title: title, message: message)
     }
 
@@ -44,8 +73,10 @@ public class ActionSheetController: OWSViewController {
         } else {
             stackView.addArrangedSubview(action.button)
         }
-        action.button.releaseAction = { [weak self] in
-            self?.dismiss(animated: true) { action.handler?(action) }
+        action.button.contentAlignment = contentAlignment
+        action.button.releaseAction = { [weak self, weak action] in
+            guard let self = self, let action = action else { return }
+            self.dismiss(animated: true) { action.handler?(action) }
         }
         actions.append(action)
     }
@@ -162,6 +193,10 @@ public class ActionSheetController: OWSViewController {
         let topSpacer = UIView.vStretchingSpacer()
         headerStack.addArrangedSubview(topSpacer)
 
+        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
+            topSpacer.autoSetDimension(.height, toSize: 0)
+        }
+
         // Title
         if let title = title {
             let titleLabel = UILabel()
@@ -239,16 +274,6 @@ public class ActionSheetAction: NSObject {
         }
     }
 
-    @objc
-    public var horizontalAlignment: UIButton.ContentHorizontalAlignment {
-        set {
-            button.contentHorizontalAlignment = newValue
-        }
-        get {
-            return button.contentHorizontalAlignment
-        }
-    }
-
     fileprivate lazy var button = Button(action: self)
 
     @objc
@@ -300,6 +325,21 @@ public class ActionSheetAction: NSObject {
         private let leadingIconView = UIImageView()
         private let trailingIconView = UIImageView()
 
+        var contentAlignment: ActionSheetController.ContentAlignment = .center {
+            didSet {
+                switch contentAlignment {
+                case .center:
+                    contentHorizontalAlignment = .center
+                case .leading:
+                    contentHorizontalAlignment = CurrentAppContext().isRTL ? .right : .left
+                case .trailing:
+                    contentHorizontalAlignment = CurrentAppContext().isRTL ? .left : .right
+                }
+
+                updateEdgeInsets()
+            }
+        }
+
         init(action: ActionSheetAction) {
             super.init(frame: .zero)
 
@@ -345,7 +385,7 @@ public class ActionSheetAction: NSObject {
         }
 
         private func updateEdgeInsets() {
-            if !leadingIconView.isHidden || !trailingIconView.isHidden {
+            if !leadingIconView.isHidden || !trailingIconView.isHidden || contentAlignment != .center {
                 contentEdgeInsets = UIEdgeInsets(top: 16, leading: 56, bottom: 16, trailing: 56)
             } else {
                 contentEdgeInsets = UIEdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
