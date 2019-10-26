@@ -369,6 +369,28 @@ private struct GRDBStorage {
     private let dbURL: URL
     private let configuration: Configuration
 
+    // "Busy Timeout" is a thread local so that we can temporarily
+    // use a short timeout for checkpoints without interfering with
+    // other threads' database usage.
+    private static let maxBusyTimeoutMsKey: String = "maxBusyTimeoutMsKey"
+    private static var maxBusyTimeoutMs: UInt? {
+        get {
+            guard let value = Thread.current.threadDictionary[maxBusyTimeoutMsKey] as? UInt else {
+                return nil
+            }
+            return value
+        }
+        set {
+            Thread.current.threadDictionary[maxBusyTimeoutMsKey] = newValue
+        }
+    }
+    fileprivate static func useShortBusyTimeout() {
+        maxBusyTimeoutMs = 200
+    }
+    fileprivate static func useInfiniteBusyTimeout() {
+        maxBusyTimeoutMs = nil
+    }
+
     init(dbURL: URL, keyspec: GRDBKeySpecSource) throws {
         self.dbURL = dbURL
 
@@ -400,9 +422,15 @@ private struct GRDBStorage {
             usleep(useconds_t(millis * 1000))
 
             Logger.verbose("retryCount: \(retryCount)")
-            let accumulatedWait = millis * (retryCount + 1)
-            if accumulatedWait > 0, (accumulatedWait % 250) == 0 {
-                Logger.warn("Database busy for \(accumulatedWait)ms")
+            let accumulatedWaitMs = millis * (retryCount + 1)
+            if accumulatedWaitMs > 0, (accumulatedWaitMs % 250) == 0 {
+                Logger.warn("Database busy for \(accumulatedWaitMs)ms")
+            }
+
+            if let maxBusyTimeoutMs = GRDBStorage.maxBusyTimeoutMs,
+                accumulatedWaitMs > maxBusyTimeoutMs {
+                Logger.warn("Aborting busy retry.")
+                return false
             }
 
             return true
@@ -540,6 +568,14 @@ extension GRDBDatabaseStorageAdapter {
         Logger.info("running truncating checkpoint.")
 
         SDSDatabaseStorage.shared.logFileSizes()
+
+        // Use a short busy timeout when trying to truncate the WAL.
+        // Another process may active; we don't want to block for long.
+        defer {
+            // Restore the default busy behavior.
+            GRDBStorage.useInfiniteBusyTimeout()
+        }
+        GRDBStorage.useShortBusyTimeout()
 
         try Bench(title: "Truncating checkpoint", logIfLongerThan: 0.01, logInProduction: true) {
             try pool.writeWithoutTransaction { db in
