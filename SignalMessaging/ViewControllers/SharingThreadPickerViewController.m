@@ -411,8 +411,30 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     // Reset progress in case we're retrying
     self.progressView.progress = 0;
 
-    NSString *progressTitle = NSLocalizedString(@"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE", @"Alert title");
-    ActionSheetController *progressAlert = [[ActionSheetController alloc] initWithTitle:progressTitle message:nil];
+    ActionSheetController *progressActionSheet = [ActionSheetController new];
+
+    UIView *headerWithProgress = [UIView new];
+    headerWithProgress.backgroundColor = Theme.backgroundColor;
+    headerWithProgress.layoutMargins = UIEdgeInsetsMake(16, 16, 16, 16);
+
+    UILabel *titleLabel = [UILabel new];
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    titleLabel.numberOfLines = 0;
+    titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    titleLabel.font = UIFont.ows_dynamicTypeSubheadlineClampedFont.ows_semibold;
+    titleLabel.textColor = Theme.primaryTextColor;
+    titleLabel.text = NSLocalizedString(@"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE", @"Alert title");
+
+    [headerWithProgress addSubview:titleLabel];
+    [titleLabel autoPinWidthToSuperviewMargins];
+    [titleLabel autoPinTopToSuperviewMargin];
+
+    [headerWithProgress addSubview:self.progressView];
+    [self.progressView autoPinWidthToSuperviewMargins];
+    [self.progressView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:titleLabel withOffset:8];
+    [self.progressView autoPinBottomToSuperviewMargin];
+
+    progressActionSheet.customHeader = headerWithProgress;
 
     ActionSheetAction *progressCancelAction =
         [[ActionSheetAction alloc] initWithTitle:[CommonStrings cancelButton]
@@ -420,21 +442,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                                          handler:^(ActionSheetAction *_Nonnull action) {
                                              [self.shareViewDelegate shareViewWasCancelled];
                                          }];
-    [progressAlert addAction:progressCancelAction];
-
-
-    // We add a progress subview to an AlertController, which is a total hack.
-    // ...but it looks good, and given how short a progress view is and how
-    // little the alert controller changes, I'm not super worried about it.
-    [progressAlert.view addSubview:self.progressView];
-    [self.progressView autoPinWidthToSuperviewWithMargin:24];
-    [self.progressView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:progressAlert.view withOffset:4];
-#ifdef DEBUG
-    if (@available(iOS 14, *)) {
-        // TODO: Congratulations! You survived to see another iOS release.
-        OWSFailDebug(@"Make sure the progress view still looks good, and increment the version canary.");
-    }
-#endif
+    [progressActionSheet addAction:progressCancelAction];
 
     SendCompletionBlock sendCompletion = ^(NSError *_Nullable error, TSOutgoingMessage *message) {
 
@@ -456,7 +464,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         });
     };
 
-    [fromViewController presentActionSheet:progressAlert
+    [fromViewController presentActionSheet:progressActionSheet
                                 completion:^{
                                     sendMessageBlock(sendCompletion);
                                 }];
