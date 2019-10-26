@@ -25,7 +25,7 @@
     XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@"19025555555"] toE164]);
 
     // Empty input.
-    XCTAssertEqualObjects(nil, [[PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@""] toE164]);
+    XCTAssertNil([[PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@""] toE164]);
 }
 
 - (void)testTryParsePhoneNumberFromUserSpecifiedTextAssumesLocalRegion {
@@ -33,7 +33,7 @@
     XCTAssertEqualObjects(@"+13235551234", [actual toE164]);
 }
 
-- (void)testTryParsePhoneNumberFromUserSpecifiedTextWithExplicitRegionCode {
+- (void)testTryParsePhoneNumberFromUserSpecifiedText_explicitRegionCode {
     PhoneNumber *actual = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@"+33 1 70 39 38 00"];
     XCTAssertEqualObjects(@"+33170393800", [actual toE164]);
 }
@@ -43,7 +43,7 @@
 
     // This might not be desired, but documents existing behavior.
     // You *must* include a plus when dialing outside of your locale.
-    XCTAssertEqualObjects(@"+133170393800", [actual toE164]);
+    XCTAssertNil([actual toE164]);
 }
 
 - (void)testTryParsePhoneNumberFromUserSpecifiedTextRemovesAnyFormatting {
@@ -117,7 +117,6 @@
     XCTAssertTrue(parsed.count >= 1);
     // The parsing logic should try adding Mexico's national prefix for cell numbers "1"
     // after the country code.
-    XCTAssertTrue([parsed containsObject:@"+52341639157"]);
     XCTAssertTrue([parsed containsObject:@"+521341639157"]);
 
     parsed = [self unpackTryParsePhoneNumbersFromsUserSpecifiedText:@"528341639157" clientPhoneNumber:@"+13213214321"];
@@ -142,11 +141,11 @@
     parsed = [self unpackTryParsePhoneNumbersFromsUserSpecifiedText:@"555 1234" clientPhoneNumber:@"+13233214321"];
     XCTAssertTrue([parsed containsObject:@"+13235551234"]);
 
-    // Don't touch numbers that look like e164, even if they're the same length as a "local" us number
+    // Discard numbers which libPhoneNumber considers "impossible", even if they have a leading "+"
     parsed = [self unpackTryParsePhoneNumbersFromsUserSpecifiedText:@"+5551234" clientPhoneNumber:@"+13213214321"];
-    XCTAssertTrue([parsed containsObject:@"+5551234"]);
+    XCTAssertFalse([parsed containsObject:@"+5551234"]);
 
-    // Don't touch numbers that already have an area code
+    // Don't infer area code when number already has one
     parsed = [self unpackTryParsePhoneNumbersFromsUserSpecifiedText:@"570 555 1234" clientPhoneNumber:@"+13233214321"];
     XCTAssertTrue([parsed containsObject:@"+15705551234"]);
 
@@ -177,10 +176,6 @@
 
     parsed = [self unpackTryParsePhoneNumbersFromsUserSpecifiedText:@"9 8765 4321" clientPhoneNumber:@"+5521912345678"];
     XCTAssertTrue([parsed containsObject:@"+5521987654321"]);
-
-    // Don't touch numbers that look like e164, even if they're the same length as a "local" us number
-    parsed = [self unpackTryParsePhoneNumbersFromsUserSpecifiedText:@"+3365-4321" clientPhoneNumber:@"+5521912345678"];
-    XCTAssertTrue([parsed containsObject:@"+33654321"]);
 
     // Don't touch land-line numbers that already have an area code
     parsed =

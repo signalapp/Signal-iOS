@@ -188,17 +188,17 @@ class YDBFullTextSearcherTest: SignalBaseTest {
         // Exact match
         threads = searchConversations(searchText: aliceRecipient.phoneNumber!)
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
+        XCTAssertEqual([aliceThread, bookClubThread, snackClubThread], threads)
 
         // Partial match
         threads = searchConversations(searchText: "+123456")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
+        XCTAssertEqual([aliceThread, bookClubThread, snackClubThread], threads)
 
         // Prefixes
         threads = searchConversations(searchText: "12345678900")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
+        XCTAssertEqual([aliceThread, bookClubThread, snackClubThread], threads)
 
         threads = searchConversations(searchText: "49")
         XCTAssertEqual(1, threads.count)
@@ -206,19 +206,19 @@ class YDBFullTextSearcherTest: SignalBaseTest {
 
         threads = searchConversations(searchText: "1-234-56")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
+        XCTAssertEqual([aliceThread, bookClubThread, snackClubThread], threads)
 
         threads = searchConversations(searchText: "123456")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
+        XCTAssertEqual([aliceThread, bookClubThread, snackClubThread], threads)
 
         threads = searchConversations(searchText: "1.234.56")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
+        XCTAssertEqual([aliceThread, bookClubThread, snackClubThread], threads)
 
         threads = searchConversations(searchText: "1 234 56")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
+        XCTAssertEqual([aliceThread, bookClubThread, snackClubThread], threads)
     }
 
     func testSearchContactByNumberWithoutCountryCode() {
@@ -226,11 +226,11 @@ class YDBFullTextSearcherTest: SignalBaseTest {
         // Phone Number formatting should be forgiving
         threads = searchConversations(searchText: "234.56")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
+        XCTAssertEqual([aliceThread, bookClubThread, snackClubThread], threads)
 
         threads = searchConversations(searchText: "234 56")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
+        XCTAssertEqual([aliceThread, bookClubThread, snackClubThread], threads)
     }
 
     func testSearchConversationByContactByName() {
@@ -238,7 +238,7 @@ class YDBFullTextSearcherTest: SignalBaseTest {
 
         threads = searchConversations(searchText: "Alice")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
+        XCTAssertEqual([aliceThread, bookClubThread, snackClubThread], threads)
 
         threads = searchConversations(searchText: "Bob")
         XCTAssertEqual(1, threads.count)

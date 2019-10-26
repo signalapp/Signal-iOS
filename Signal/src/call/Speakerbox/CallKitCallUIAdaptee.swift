@@ -175,7 +175,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
              since calls may be "denied" for various legitimate reasons. See CXErrorCodeIncomingCallError.
              */
             guard error == nil else {
-                Logger.error("failed to report new incoming call")
+                Logger.error("failed to report new incoming call, error: \(error!)")
                 return
             }
 

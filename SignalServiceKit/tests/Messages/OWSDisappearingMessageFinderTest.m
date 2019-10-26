@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (SignalServiceAddress *)localAddress
 {
-    return [[SignalServiceAddress alloc] initWithPhoneNumber:@"+1333444555"];
+    return [[SignalServiceAddress alloc] initWithPhoneNumber:@"+13334445555"];
 }
 
 - (SignalServiceAddress *)otherAddress

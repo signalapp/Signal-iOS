@@ -27,10 +27,10 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
     let localE164Identifier = "+13235551234"
     let localUUID = UUID()
 
-    let aliceE164Identifier = "+147153"
+    let aliceE164Identifier = "+14715355555"
     var aliceClient: SignalClient!
 
-    let bobE164Identifier = "+1808"
+    let bobE164Identifier = "+18083235555"
     var bobClient: SignalClient!
 
     let localClient = LocalSignalClient()
