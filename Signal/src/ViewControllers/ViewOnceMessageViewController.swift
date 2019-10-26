@@ -343,7 +343,7 @@ class ViewOnceMessageViewController: OWSViewController {
             formatter.zeroFormattingBehavior = [ .pad ]
 
             let avPlayer = player.avPlayer
-            self.videoPlayerProgressObserver = avPlayer.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.1, preferredTimescale: 100), queue: nil) { [weak self] (_) in
+            self.videoPlayerProgressObserver = avPlayer.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.1, preferredTimescale: 100), queue: nil) { _ in
 
                 guard let item = avPlayer.currentItem else {
                     owsFailDebug("item was unexpectedly nil")

@@ -47,7 +47,7 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 @property (atomic, nullable) UIWindow *mainWindow;
 
-@property (nonatomic) CGRect frame;
+@property (nonatomic, readonly) CGRect frame;
 
 @property (nonatomic, readonly) UIInterfaceOrientation interfaceOrientation;
 

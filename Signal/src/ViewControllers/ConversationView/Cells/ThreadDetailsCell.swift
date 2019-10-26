@@ -161,10 +161,6 @@ public class ThreadDetailsCell: ConversationViewCell {
             return owsFailDebug("Missing viewItem")
         }
 
-        guard let threadDetails = viewItem.interaction as? ThreadDetailsInteraction else {
-            return owsFailDebug("Missing threadDetails")
-        }
-
         switch viewItem.thread {
         case let groupThread as TSGroupThread:
             let formatString = NSLocalizedString("THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT",
