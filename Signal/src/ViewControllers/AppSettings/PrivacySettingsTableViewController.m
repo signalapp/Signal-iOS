@@ -211,79 +211,84 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                     selector:@selector(didToggleScreenSecuritySwitch:)]];
     [contents addSection:screenSecuritySection];
 
-    // Allow calls to connect directly vs. using TURN exclusively
-    OWSTableSection *callingSection = [OWSTableSection new];
-    callingSection.headerTitle
-        = NSLocalizedString(@"SETTINGS_SECTION_TITLE_CALLING", @"settings topic header for table section");
-    callingSection.footerTitle = NSLocalizedString(@"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL",
-        @"User settings section footer, a detailed explanation");
-    [callingSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(
-                                                                 @"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE",
-                                                                 @"Table cell label")
-                                accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@",
-                                                                  @"calling_hide_ip_address"]
-                                isOnBlock:^{
-                                    return [Environment.shared.preferences doCallsHideIPAddress];
-                                }
-                                isEnabledBlock:^{
-                                    return YES;
-                                }
-                                target:weakSelf
-                                selector:@selector(didToggleCallsHideIPAddressSwitch:)]];
-    [contents addSection:callingSection];
+    if (SSKFeatureFlags.calling) {
+        // Allow calls to connect directly vs. using TURN exclusively
+        OWSTableSection *callingSection = [OWSTableSection new];
+        callingSection.headerTitle
+            = NSLocalizedString(@"SETTINGS_SECTION_TITLE_CALLING", @"settings topic header for table section");
+        callingSection.footerTitle = NSLocalizedString(@"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL",
+            @"User settings section footer, a detailed explanation");
+        [callingSection
+            addItem:[OWSTableItem
+                        switchItemWithText:NSLocalizedString(@"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE",
+                                               @"Table cell label")
+                        accessibilityIdentifier:[NSString
+                                                    stringWithFormat:@"settings.privacy.%@", @"calling_hide_ip_address"]
+                        isOnBlock:^{
+                            return [Environment.shared.preferences doCallsHideIPAddress];
+                        }
+                        isEnabledBlock:^{
+                            return YES;
+                        }
+                        target:weakSelf
+                        selector:@selector(didToggleCallsHideIPAddressSwitch:)]];
+        [contents addSection:callingSection];
 
-    if (CallUIAdapter.isCallkitDisabledForLocale) {
-        // Hide all CallKit-related prefs; CallKit is disabled.
-    } else if (@available(iOS 11, *)) {
-        OWSTableSection *callKitSection = [OWSTableSection new];
-        [callKitSection
-            addItem:[OWSTableItem switchItemWithText:NSLocalizedString(
-                                                         @"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE",
-                                                         @"Short table cell label")
-                        accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"callkit_history"]
-                        isOnBlock:^{
-                            return [Environment.shared.preferences isSystemCallLogEnabled];
-                        }
-                        isEnabledBlock:^{
-                            return YES;
-                        }
-                        target:weakSelf
-                        selector:@selector(didToggleEnableSystemCallLogSwitch:)]];
-        callKitSection.footerTitle = NSLocalizedString(
-            @"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION", @"Settings table section footer.");
-        [contents addSection:callKitSection];
-    } else if (@available(iOS 10, *)) {
-        OWSTableSection *callKitSection = [OWSTableSection new];
-        callKitSection.footerTitle
-            = NSLocalizedString(@"SETTINGS_SECTION_CALL_KIT_DESCRIPTION", @"Settings table section footer.");
-        [callKitSection
-            addItem:[OWSTableItem switchItemWithText:NSLocalizedString(
-                                                         @"SETTINGS_PRIVACY_CALLKIT_TITLE", @"Short table cell label")
-                        accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"callkit"]
-                        isOnBlock:^{
-                            return [Environment.shared.preferences isCallKitEnabled];
-                        }
-                        isEnabledBlock:^{
-                            return YES;
-                        }
-                        target:weakSelf
-                        selector:@selector(didToggleEnableCallKitSwitch:)]];
-        if (self.preferences.isCallKitEnabled) {
+        if (CallUIAdapter.isCallkitDisabledForLocale) {
+            // Hide all CallKit-related prefs; CallKit is disabled.
+        } else if (@available(iOS 11, *)) {
+            OWSTableSection *callKitSection = [OWSTableSection new];
             [callKitSection
-                addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE",
-                                                             @"Label for 'CallKit privacy' preference")
+                addItem:[OWSTableItem
+                            switchItemWithText:NSLocalizedString(
+                                                   @"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE",
+                                                   @"Short table cell label")
                             accessibilityIdentifier:[NSString
-                                                        stringWithFormat:@"settings.privacy.%@", @"callkit_privacy"]
+                                                        stringWithFormat:@"settings.privacy.%@", @"callkit_history"]
                             isOnBlock:^{
-                                return (BOOL) ![Environment.shared.preferences isCallKitPrivacyEnabled];
+                                return [Environment.shared.preferences isSystemCallLogEnabled];
                             }
                             isEnabledBlock:^{
                                 return YES;
                             }
                             target:weakSelf
-                            selector:@selector(didToggleEnableCallKitPrivacySwitch:)]];
+                            selector:@selector(didToggleEnableSystemCallLogSwitch:)]];
+            callKitSection.footerTitle = NSLocalizedString(
+                @"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION", @"Settings table section footer.");
+            [contents addSection:callKitSection];
+        } else if (@available(iOS 10, *)) {
+            OWSTableSection *callKitSection = [OWSTableSection new];
+            callKitSection.footerTitle
+                = NSLocalizedString(@"SETTINGS_SECTION_CALL_KIT_DESCRIPTION", @"Settings table section footer.");
+            [callKitSection
+                addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_PRIVACY_CALLKIT_TITLE",
+                                                             @"Short table cell label")
+                            accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"callkit"]
+                            isOnBlock:^{
+                                return [Environment.shared.preferences isCallKitEnabled];
+                            }
+                            isEnabledBlock:^{
+                                return YES;
+                            }
+                            target:weakSelf
+                            selector:@selector(didToggleEnableCallKitSwitch:)]];
+            if (self.preferences.isCallKitEnabled) {
+                [callKitSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(
+                                                                             @"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE",
+                                                                             @"Label for 'CallKit privacy' preference")
+                                            accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@",
+                                                                              @"callkit_privacy"]
+                                            isOnBlock:^{
+                                                return (BOOL) ![Environment.shared.preferences isCallKitPrivacyEnabled];
+                                            }
+                                            isEnabledBlock:^{
+                                                return YES;
+                                            }
+                                            target:weakSelf
+                                            selector:@selector(didToggleEnableCallKitPrivacySwitch:)]];
+            }
+            [contents addSection:callKitSection];
         }
-        [contents addSection:callKitSection];
     }
 
     // If pins are enabled for everyone, everyone has registration lock so we don't need this section

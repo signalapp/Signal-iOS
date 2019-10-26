@@ -432,6 +432,11 @@ private class SignalCallData: NSObject {
     @objc public func createCallUIAdapter() {
         AssertIsOnMainThread()
 
+        guard FeatureFlags.calling else {
+            Logger.info("not creating call UI adapter for device that doesn't support calling")
+            return
+        }
+
         if self.callData != nil {
             Logger.warn("ending current call in. Did user toggle callkit preference while in a call?")
             self.terminate(callData: self.callData)
@@ -1388,6 +1393,11 @@ private class SignalCallData: NSObject {
 
     public func callConnection(_ callConnectionParam: CallConnection, onCallEvent event: CallEvent, callId: UInt64) {
         AssertIsOnMainThread()
+
+        guard FeatureFlags.calling else {
+            Logger.info("Ignoring call event on unsupported device.")
+            return
+        }
 
         guard let callData = self.callData,
             callConnectionParam == callData.callConnection else {

@@ -690,6 +690,10 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Missing callMessage.");
         return;
     }
+    if (!SSKFeatureFlags.calling) {
+        OWSLogInfo(@"Ignoring call message for unsupported device.");
+        return;
+    }
 
     if ([self isEnvelopeSenderBlocked:envelope]) {
         OWSFailDebug(@"envelope sender is blocked. Shouldn't have gotten this far.");

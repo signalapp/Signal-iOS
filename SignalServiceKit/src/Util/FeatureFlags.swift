@@ -220,4 +220,10 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let logSQLQueries = build.includes(.dev)
+
+    @objc
+    public static var calling: Bool {
+        // TODO MULTIRING
+        return TSAccountManager.sharedInstance().isRegisteredPrimaryDevice
+    }
 }

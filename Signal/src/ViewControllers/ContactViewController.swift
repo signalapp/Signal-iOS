@@ -281,20 +281,22 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
                                                                     guard let strongSelf = self else { return }
                                                                     strongSelf.didPressSendMessage()
             }))
-            stackView.addArrangedSubview(createCircleActionButton(text: NSLocalizedString("ACTION_AUDIO_CALL",
-                                                                                          comment: "Label for 'audio call' button in contact view."),
-                                                                  imageName: "contact_view_audio_call",
-                                                                  actionBlock: { [weak self] in
-                                                                    guard let strongSelf = self else { return }
-                                                                    strongSelf.didPressAudioCall()
-            }))
-            stackView.addArrangedSubview(createCircleActionButton(text: NSLocalizedString("ACTION_VIDEO_CALL",
-                                                                                          comment: "Label for 'video call' button in contact view."),
-                                                                  imageName: "contact_view_video_call",
-                                                                  actionBlock: { [weak self] in
-                                                                    guard let strongSelf = self else { return }
-                                                                    strongSelf.didPressVideoCall()
-            }))
+            if FeatureFlags.calling {
+                stackView.addArrangedSubview(createCircleActionButton(text: NSLocalizedString("ACTION_AUDIO_CALL",
+                                                                                              comment: "Label for 'audio call' button in contact view."),
+                                                                      imageName: "contact_view_audio_call",
+                                                                      actionBlock: { [weak self] in
+                                                                        guard let strongSelf = self else { return }
+                                                                        strongSelf.didPressAudioCall()
+                }))
+                stackView.addArrangedSubview(createCircleActionButton(text: NSLocalizedString("ACTION_VIDEO_CALL",
+                                                                                              comment: "Label for 'video call' button in contact view."),
+                                                                      imageName: "contact_view_video_call",
+                                                                      actionBlock: { [weak self] in
+                                                                        guard let strongSelf = self else { return }
+                                                                        strongSelf.didPressVideoCall()
+                }))
+            }
             topView.addSubview(stackView)
             stackView.autoPinEdge(.top, to: .bottom, of: lastView, withOffset: 20)
             stackView.autoPinLeadingToSuperviewMargin(withInset: hMargin)

@@ -1683,8 +1683,7 @@ typedef enum : NSUInteger {
 
 - (BOOL)canCall
 {
-    // MULTIRING TODO
-    if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
+    if (!SSKFeatureFlags.calling) {
         return NO;
     }
 

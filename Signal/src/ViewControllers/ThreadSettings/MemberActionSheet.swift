@@ -85,8 +85,7 @@ class MemberActionSheet: NSObject {
         messageAction.leadingIcon = .message
         actionSheet.addAction(messageAction)
 
-        // TODO: Multi ring
-        if TSAccountManager.sharedInstance().isRegisteredPrimaryDevice {
+        if FeatureFlags.calling {
             let callAction = ActionSheetAction(
                 title: NSLocalizedString("GROUP_MEMBERS_CALL",
                                          comment: "Button label for the 'call group member' button"),

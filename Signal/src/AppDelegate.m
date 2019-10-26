@@ -866,8 +866,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
                 return;
             }
 
-            // MULTIRING TODO
-            if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
+            if (!SSKFeatureFlags.calling) {
                 OWSLogInfo(@"Ignoring unsupported activity.");
                 return;
             }
@@ -931,8 +930,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
                 return;
             }
 
-            // MULTIRING TODO
-            if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
+            if (!SSKFeatureFlags.calling) {
                 OWSLogInfo(@"Ignoring unsupported activity.");
                 return;
             }
@@ -986,8 +984,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
                 return;
             }
 
-            // MULTIRING TODO
-            if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
+            if (!SSKFeatureFlags.calling) {
                 OWSLogInfo(@"Ignoring unsupported activity.");
                 return;
             }
