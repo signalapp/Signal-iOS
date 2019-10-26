@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable PhoneNumber *)tryParsePhoneNumberFromUserSpecifiedText:(NSString *)text;
 + (nullable PhoneNumber *)tryParsePhoneNumberFromE164:(NSString *)text;
++ (nullable PhoneNumber *)phoneNumberFromUserSpecifiedText:(NSString *)text;
 
 // This will try to parse the input text as a phone number using
 // the default region and the country code for this client's phone

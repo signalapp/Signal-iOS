@@ -131,7 +131,7 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
         tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
 
         // Session setup
-        let bobClient = FakeSignalClient.generate(e164Identifier: "+1808")
+        let bobClient = FakeSignalClient.generate(e164Identifier: "+18083235555")
 
         write { transaction in
             XCTAssertEqual(0, TSMessage.anyCount(transaction: transaction))
