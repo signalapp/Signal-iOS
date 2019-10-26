@@ -82,6 +82,11 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     return SDSDatabaseStorage.shared;
 }
 
+- (TSAccountManager *)accountManager
+{
+    return TSAccountManager.sharedInstance;
+}
+
 #pragma mark - Table Contents
 
 - (void)updateTableContents
@@ -141,7 +146,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     [contents addSection:typingIndicatorsSection];
 
     // If pins are enabled for everyone, show the change pin section
-    if (SSKFeatureFlags.pinsForEveryone) {
+    if (SSKFeatureFlags.pinsForEveryone && self.accountManager.isRegisteredPrimaryDevice) {
         OWSTableSection *pinsSection = [OWSTableSection new];
         pinsSection.headerTitle
             = NSLocalizedString(@"SETTINGS_PINS_TITLE", @"Title for the 'PINs' section of the privacy settings.");
@@ -292,7 +297,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     }
 
     // If pins are enabled for everyone, everyone has registration lock so we don't need this section
-    if (!SSKFeatureFlags.pinsForEveryone) {
+    if (!SSKFeatureFlags.pinsForEveryone && self.accountManager.isRegisteredPrimaryDevice) {
         OWSTableSection *twoFactorAuthSection = [OWSTableSection new];
         twoFactorAuthSection.headerTitle = NSLocalizedString(
             @"SETTINGS_TWO_FACTOR_AUTH_TITLE", @"Title for the 'two factor auth' section of the privacy settings.");
