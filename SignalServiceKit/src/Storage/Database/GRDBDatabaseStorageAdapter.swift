@@ -369,6 +369,28 @@ private struct GRDBStorage {
     private let dbURL: URL
     private let configuration: Configuration
 
+    // "Busy Timeout" is a thread local so that we can temporarily
+    // use a short timeout for checkpoints without interfering with
+    // other threads' database usage.
+    private static let maxBusyTimeoutMsKey: String = "maxBusyTimeoutMsKey"
+    private static var maxBusyTimeoutMs: UInt? {
+        get {
+            guard let value = Thread.current.threadDictionary[maxBusyTimeoutMsKey] as? UInt else {
+                return nil
+            }
+            return value
+        }
+        set {
+            Thread.current.threadDictionary[maxBusyTimeoutMsKey] = newValue
+        }
+    }
+    fileprivate static func useShortBusyTimeout() {
+        maxBusyTimeoutMs = 100
+    }
+    fileprivate static func useInfiniteBusyTimeout() {
+        maxBusyTimeoutMs = nil
+    }
+
     init(dbURL: URL, keyspec: GRDBKeySpecSource) throws {
         self.dbURL = dbURL
 
@@ -400,9 +422,15 @@ private struct GRDBStorage {
             usleep(useconds_t(millis * 1000))
 
             Logger.verbose("retryCount: \(retryCount)")
-            let accumulatedWait = millis * (retryCount + 1)
-            if accumulatedWait > 0, (accumulatedWait % 250) == 0 {
-                Logger.warn("Database busy for \(accumulatedWait)ms")
+            let accumulatedWaitMs = millis * (retryCount + 1)
+            if accumulatedWaitMs > 0, (accumulatedWaitMs % 250) == 0 {
+                Logger.warn("Database busy for \(accumulatedWaitMs)ms")
+            }
+
+            if let maxBusyTimeoutMs = GRDBStorage.maxBusyTimeoutMs,
+                accumulatedWaitMs > maxBusyTimeoutMs {
+                Logger.warn("Aborting busy retry.")
+                return false
             }
 
             return true
@@ -524,5 +552,50 @@ extension GRDBDatabaseStorageAdapter {
             return 0
         }
         return fileSize.uint64Value
+    }
+}
+
+// MARK: - Checkpoints
+
+public struct GrdbTruncationResult {
+    let walSizePages: Int32
+    let pagesCheckpointed: Int32
+}
+
+extension GRDBDatabaseStorageAdapter {
+    @objc
+    public func syncTruncatingCheckpoint() throws {
+        Logger.info("running truncating checkpoint.")
+
+        SDSDatabaseStorage.shared.logFileSizes()
+
+        // Use a short busy timeout when trying to truncate the WAL.
+        // Another process may be active; we don't want to block for long.
+        defer {
+            // Restore the default busy behavior.
+            GRDBStorage.useInfiniteBusyTimeout()
+        }
+        GRDBStorage.useShortBusyTimeout()
+
+        try Bench(title: "Truncating checkpoint", logIfLongerThan: 0.01, logInProduction: true) {
+            try pool.writeWithoutTransaction { db in
+                let result = try GRDBDatabaseStorageAdapter.checkpointWal(db: db, mode: .truncate)
+                Logger.info("walSizePages: \(result.walSizePages), pagesCheckpointed: \(result.pagesCheckpointed)")
+            }
+        }
+
+        SDSDatabaseStorage.shared.logFileSizes()
+    }
+
+    public static func checkpointWal(db: Database, mode: Database.CheckpointMode) throws -> GrdbTruncationResult {
+        var walSizePages: Int32 = 0
+        var pagesCheckpointed: Int32 = 0
+
+        let code = sqlite3_wal_checkpoint_v2(db.sqliteConnection, nil, mode.rawValue, &walSizePages, &pagesCheckpointed)
+        guard code == SQLITE_OK else {
+            throw OWSAssertionError("checkpoint sql error with code: \(code)")
+        }
+
+        return GrdbTruncationResult(walSizePages: walSizePages, pagesCheckpointed: pagesCheckpointed)
     }
 }

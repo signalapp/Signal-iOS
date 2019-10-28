@@ -175,23 +175,35 @@ NS_ASSUME_NONNULL_BEGIN
                 [SSKEnvironment.shared warmCaches];
             }
 
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [storageCoordinator markStorageSetupAsComplete];
-
-                // Don't start database migrations until storage is ready.
-                [VersionMigrations performUpdateCheckWithCompletion:^() {
-                    OWSAssertIsOnMainThread();
-
-                    [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:sleepBlockObject];
-
-                    if (StorageCoordinator.dataStoreForUI == DataStoreGrdb) {
-                        [SSKEnvironment.shared warmCaches];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                if (AppSetup.shouldTruncateGrdbWal) {
+                    // Try to truncate GRDB WAL before any readers or writers are
+                    // active.
+                    NSError *_Nullable error;
+                    [databaseStorage.grdbStorage syncTruncatingCheckpointAndReturnError:&error];
+                    if (error != nil) {
+                        OWSFailDebug(@"error: %@", error);
                     }
-                    migrationCompletion();
+                }
 
-                    OWSAssertDebug(backgroundTask);
-                    backgroundTask = nil;
-                }];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [storageCoordinator markStorageSetupAsComplete];
+
+                    // Don't start database migrations until storage is ready.
+                    [VersionMigrations performUpdateCheckWithCompletion:^() {
+                        OWSAssertIsOnMainThread();
+
+                        [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:sleepBlockObject];
+
+                        if (StorageCoordinator.dataStoreForUI == DataStoreGrdb) {
+                            [SSKEnvironment.shared warmCaches];
+                        }
+                        migrationCompletion();
+
+                        OWSAssertDebug(backgroundTask);
+                        backgroundTask = nil;
+                    }];
+                });
             });
         };
 
@@ -201,6 +213,20 @@ NS_ASSUME_NONNULL_BEGIN
             completionBlock();
         }
     });
+}
+
++ (BOOL)shouldTruncateGrdbWal
+{
+    if (StorageCoordinator.dataStoreForUI != DataStoreGrdb) {
+        return NO;
+    }
+    if (!CurrentAppContext().isMainApp) {
+        return NO;
+    }
+    if (CurrentAppContext().mainApplicationStateOnLaunch == UIApplicationStateBackground) {
+        return NO;
+    }
+    return YES;
 }
 
 @end
