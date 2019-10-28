@@ -194,7 +194,11 @@ NSUInteger const SignalAccountSchemaVersion = 1;
         OWSFailDebug(@"Could not convert avatar to PNG.");
         return;
     }
-    OWSLogVerbose(@"Converted avatar to PNG.");
+    OWSLogVerbose(@"Converted avatar to PNG: %lu -> %lu, %@ %@.",
+        (unsigned long)contactAvatarData.length,
+        (unsigned long)self.contactAvatarPngData.length,
+        NSStringForImageFormat(imageData.imageFormat),
+        NSStringFromCGSize(imageData.pixelSize));
 }
 
 @end
