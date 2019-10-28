@@ -26,6 +26,7 @@ public class GRDBSchemaMigrator: NSObject {
 
     private enum MigrationId: String, CaseIterable {
         case createInitialSchema
+        case signalAccount_add_contactAvatars
     }
 
     // For new users, we import the latest schema with the first migration
@@ -57,10 +58,31 @@ public class GRDBSchemaMigrator: NSObject {
     // to the latest.
     private lazy var incrementalMigrator: DatabaseMigrator = {
         var migrator = DatabaseMigrator()
-        migrator.registerMigration(MigrationId.createInitialSchema.rawValue) { db in
+        migrator.registerMigration(MigrationId.createInitialSchema.rawValue) { _ in
             owsFail("This migration should have already been run by the last YapDB migration.")
             // try createV1Schema(db: db)
         }
+        migrator.registerMigration(MigrationId.signalAccount_add_contactAvatars.rawValue) { database in
+            let sql = """
+                DROP TABLE "model_SignalAccount";
+                CREATE
+                    TABLE
+                        IF NOT EXISTS "model_SignalAccount" (
+                            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+                            ,"recordType" INTEGER NOT NULL
+                            ,"uniqueId" TEXT NOT NULL UNIQUE
+                                ON CONFLICT FAIL
+                            ,"contact" BLOB
+                            ,"contactAvatarHash" BLOB
+                            ,"contactAvatarJpegData" BLOB
+                            ,"multipleAccountLabelText" TEXT NOT NULL
+                            ,"recipientPhoneNumber" TEXT
+                            ,"recipientUUID" TEXT
+                        );
+            """
+            try database.execute(sql: sql)
+        }
+
         return migrator
     }()
 }
@@ -384,6 +406,8 @@ private func createV1Schema(db: Database) throws {
             .unique(onConflict: .fail)
         // GRDB how big are these serialized contacts?
         table.column("contact", .blob)
+        table.column("contactAvatarHash", .blob)
+        table.column("contactAvatarJpegData", .blob)
         table.column("multipleAccountLabelText", .text)
             .notNull()
         table.column("recipientPhoneNumber", .text)

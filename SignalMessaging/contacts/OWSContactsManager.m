@@ -582,6 +582,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                     signalAccount.multipleAccountLabelText =
                         [[self class] accountLabelForContact:contact address:signalRecipient.address];
                 }
+                [signalAccount tryToCacheContactAvatarData];
                 [signalAccounts addObject:signalAccount];
             }
         }

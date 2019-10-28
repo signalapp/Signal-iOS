@@ -4,7 +4,12 @@
 
 #import "SignalAccount.h"
 #import "Contact.h"
+#import "ContactsManagerProtocol.h"
+#import "NSData+Image.h"
+#import "SSKEnvironment.h"
 #import "SignalRecipient.h"
+#import "UIImage+OWS.h"
+#import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -21,6 +26,15 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 #pragma mark -
 
 @implementation SignalAccount
+
+#pragma mark - Dependencies
+
+- (id<ContactsManagerProtocol>)contactsManager
+{
+    return SSKEnvironment.shared.contactsManager;
+}
+
+#pragma mark -
 
 + (BOOL)shouldBeIndexedForFTS
 {
@@ -75,6 +89,8 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
                          contact:(nullable Contact *)contact
+               contactAvatarHash:(nullable NSData *)contactAvatarHash
+            contactAvatarJpegData:(nullable NSData *)contactAvatarJpegData
         multipleAccountLabelText:(NSString *)multipleAccountLabelText
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
@@ -87,6 +103,8 @@ NSUInteger const SignalAccountSchemaVersion = 1;
     }
 
     _contact = contact;
+    _contactAvatarHash = contactAvatarHash;
+    _contactAvatarJpegData = contactAvatarJpegData;
     _multipleAccountLabelText = multipleAccountLabelText;
     _recipientPhoneNumber = recipientPhoneNumber;
     _recipientUUID = recipientUUID;
@@ -118,10 +136,71 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 {
     OWSAssertDebug(other != nil);
 
+    // NOTE: We don't want to compare contactAvatarJpegData.
+    //       It can't change without contactAvatarHash changing
+    //       as well.
     return ([NSObject isNullableObject:self.recipientPhoneNumber equalTo:other.recipientPhoneNumber] &&
         [NSObject isNullableObject:self.recipientUUID equalTo:other.recipientUUID] &&
         [NSObject isNullableObject:self.contact equalTo:other.contact] &&
-        [NSObject isNullableObject:self.multipleAccountLabelText equalTo:other.multipleAccountLabelText]);
+        [NSObject isNullableObject:self.multipleAccountLabelText equalTo:other.multipleAccountLabelText] &&
+        [NSObject isNullableObject:self.contactAvatarHash equalTo:other.contactAvatarHash]);
+}
+
+- (void)tryToCacheContactAvatarData
+{
+    OWSAssertDebug(self.contactAvatarHash == nil);
+    OWSAssertDebug(self.contactAvatarJpegData == nil);
+
+    if (self.contact == nil) {
+        OWSFailDebug(@"Missing contact.");
+        return;
+    }
+
+    NSData *_Nullable contactAvatarData = [self.contactsManager avatarDataForCNContactId:self.contact.cnContactId];
+    if (contactAvatarData == nil) {
+        return;
+    }
+    self.contactAvatarHash = [Cryptography computeSHA256Digest:contactAvatarData];
+    OWSAssertDebug(self.contactAvatarHash != nil);
+    if (self.contactAvatarHash == nil) {
+        return;
+    }
+
+    ImageData *imageData = [contactAvatarData imageDataWithPath:nil mimeType:nil];
+    if (!imageData.isValid) {
+        return;
+    }
+
+    const CGFloat kMaxAvatarDimensionPixels = 600;
+    if (imageData.imageFormat == ImageFormat_Jpeg && imageData.pixelSize.width <= kMaxAvatarDimensionPixels
+        && imageData.pixelSize.height <= kMaxAvatarDimensionPixels) {
+        self.contactAvatarJpegData = contactAvatarData;
+        return;
+    }
+
+    UIImage *_Nullable avatarImage = [UIImage imageWithData:contactAvatarData];
+    if (avatarImage == nil) {
+        OWSFailDebug(@"Could not load avatar.");
+        return;
+    }
+    if (avatarImage.pixelWidth > kMaxAvatarDimensionPixels || avatarImage.pixelHeight > kMaxAvatarDimensionPixels) {
+        avatarImage = [avatarImage resizedWithMaxDimensionPixels:kMaxAvatarDimensionPixels];
+        if (avatarImage == nil) {
+            OWSFailDebug(@"Could not resize avatar.");
+            return;
+        }
+    }
+
+    self.contactAvatarJpegData = UIImageJPEGRepresentation(avatarImage, 0.9);
+    if (self.contactAvatarJpegData == nil) {
+        OWSFailDebug(@"Could not convert avatar to JPEG.");
+        return;
+    }
+    OWSLogVerbose(@"Converted avatar to JPEG: %lu -> %lu, %@ %@.",
+        (unsigned long)contactAvatarData.length,
+        (unsigned long)self.contactAvatarJpegData.length,
+        NSStringForImageFormat(imageData.imageFormat),
+        NSStringFromCGSize(imageData.pixelSize));
 }
 
 @end
