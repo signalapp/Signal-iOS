@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    UIGraphicsBeginImageContext(CGSizeMake(thumbnailSize.width, thumbnailSize.height));
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(thumbnailSize.width, thumbnailSize.height), NO, 1.0);
     CGContextRef _Nullable context = UIGraphicsGetCurrentContext();
     if (context == NULL) {
         OWSLogError(@"Couldn't create context.");

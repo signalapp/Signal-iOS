@@ -38,8 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
 // change detection.
 //
 // contactAvatarJpegData contains the data we'll sync
-// to Desktop. We only want to send valid PNGs.
-// Converting the avatars to PNGs isn't deterministic
+// to Desktop. We only want to send valid avatar images.
+// Converting the avatars to JPEGs isn't deterministic
 // and our contact sync de-bouncing logic is based
 // on the actual data sent over the wire, so we need
 // to cache this as well.

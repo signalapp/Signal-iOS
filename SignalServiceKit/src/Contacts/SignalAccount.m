@@ -137,6 +137,8 @@ NSUInteger const SignalAccountSchemaVersion = 1;
     OWSAssertDebug(other != nil);
 
     // NOTE: We don't want to compare contactAvatarJpegData.
+    //       It can't change without contactAvatarHash changing
+    //       as well.
     return ([NSObject isNullableObject:self.recipientPhoneNumber equalTo:other.recipientPhoneNumber] &&
         [NSObject isNullableObject:self.recipientUUID equalTo:other.recipientUUID] &&
         [NSObject isNullableObject:self.contact equalTo:other.contact] &&

@@ -50,11 +50,11 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
         contactBuilder.verified = verified;
     }
 
-    NSData *_Nullable avatarPngData = signalAccount.contactAvatarJpegData;
-    if (avatarPngData != nil) {
+    NSData *_Nullable avatarJpegData = signalAccount.contactAvatarJpegData;
+    if (avatarJpegData != nil) {
         SSKProtoContactDetailsAvatarBuilder *avatarBuilder = [SSKProtoContactDetailsAvatar builder];
-        [avatarBuilder setContentType:OWSMimeTypeImagePng];
-        [avatarBuilder setLength:(uint32_t)avatarPngData.length];
+        [avatarBuilder setContentType:OWSMimeTypeImageJpeg];
+        [avatarBuilder setLength:(uint32_t)avatarJpegData.length];
 
         NSError *error;
         SSKProtoContactDetailsAvatar *_Nullable avatar = [avatarBuilder buildAndReturnError:&error];
@@ -94,8 +94,8 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     [self writeVariableLengthUInt32:contactDataLength];
     [self writeData:contactData];
 
-    if (avatarPngData != nil) {
-        [self writeData:avatarPngData];
+    if (avatarJpegData != nil) {
+        [self writeData:avatarJpegData];
     }
 }
 
