@@ -590,6 +590,11 @@ class MediaGallery {
     func delete(items: [MediaGalleryItem], initiatedBy: AnyObject) {
         AssertIsOnMainThread()
 
+        guard items.count > 0 else {
+            owsFailDebug("No items.")
+            return
+        }
+
         Logger.info("with items: \(items.map { ($0.attachmentStream, $0.message.timestamp) })")
 
         deletedGalleryItems.formUnion(items)
