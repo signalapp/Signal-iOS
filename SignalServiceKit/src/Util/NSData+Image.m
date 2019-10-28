@@ -398,7 +398,7 @@ NSString *NSStringForImageFormat(ImageFormat value)
 
 #pragma mark - Image Data
 
-+ (ImageData *)imageDataWithPath:(NSString *)filePath mimeType:(nullable NSString *)declaredMimeType
++ (ImageData *)imageDataWithPath:(NSString *)filePath mimeType:(nullable NSString *)mimeType
 {
     NSError *error = nil;
     NSData *_Nullable data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
@@ -406,40 +406,11 @@ NSString *NSStringForImageFormat(ImageFormat value)
         OWSLogError(@"Could not read image data: %@", error);
         return ImageData.invalid;
     }
-    ImageFormat imageFormat = [data ows_guessImageFormat];
-    if (![data ows_hasValidImageFormat:imageFormat]) {
-        return ImageData.invalid;
-    }
-    // We only use the memory-mapped NSData for reading the header.
-    data = nil;
-
-    BOOL isAnimated = [self isAnimatedWithImageFormat:imageFormat];
-
-    return [self imageDataWithPath:filePath imageFormat:imageFormat isAnimated:isAnimated];
-}
-
-+ (ImageData *)imageDataWithPath:(NSString *)path imageFormat:(ImageFormat)imageFormat isAnimated:(BOOL)isAnimated
-{
-    if (imageFormat == ImageFormat_Webp) {
-        CGSize imageSize = [self sizeForWebpFilePath:path];
-        if (![self ows_isValidImageDimension:imageSize depthBytes:1 isAnimated:YES]) {
-            return ImageData.invalid;
-        }
-        return [ImageData validWithImageFormat:imageFormat pixelSize:imageSize];
-    }
-
-    NSURL *url = [NSURL fileURLWithPath:path];
-    if (!url) {
-        return ImageData.invalid;
-    }
-
-    CGImageSourceRef imageSource = CGImageSourceCreateWithURL((__bridge CFURLRef)url, NULL);
-    if (imageSource == NULL) {
-        return ImageData.invalid;
-    }
-    ImageData *imageData = [self imageDataWithImageSource:imageSource imageFormat:imageFormat isAnimated:isAnimated];
-    CFRelease(imageSource);
-    return imageData;
+    // Use memory-mapped NSData instead of a URL-based
+    // CGImageSource. We should usually only be reading
+    // from (a small portion of) the file header,
+    // depending on the file format.
+    return [data imageDataWithPath:filePath mimeType:mimeType];
 }
 
 // If filePath and/or declaredMimeType is supplied, we warn
