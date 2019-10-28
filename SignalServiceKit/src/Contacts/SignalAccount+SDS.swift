@@ -29,7 +29,7 @@ public struct SignalAccountRecord: SDSRecord {
 
     // Base class properties
     public let contact: Data?
-    public let contactAvatarData: Data?
+    public let contactAvatarHash: Data?
     public let contactAvatarPngData: Data?
     public let multipleAccountLabelText: String
     public let recipientPhoneNumber: String?
@@ -40,7 +40,7 @@ public struct SignalAccountRecord: SDSRecord {
         case recordType
         case uniqueId
         case contact
-        case contactAvatarData
+        case contactAvatarHash
         case contactAvatarPngData
         case multipleAccountLabelText
         case recipientPhoneNumber
@@ -72,7 +72,7 @@ public extension SignalAccountRecord {
         recordType = row[1]
         uniqueId = row[2]
         contact = row[3]
-        contactAvatarData = row[4]
+        contactAvatarHash = row[4]
         contactAvatarPngData = row[5]
         multipleAccountLabelText = row[6]
         recipientPhoneNumber = row[7]
@@ -110,7 +110,7 @@ extension SignalAccount {
             let uniqueId: String = record.uniqueId
             let contactSerialized: Data? = record.contact
             let contact: Contact? = try SDSDeserialization.optionalUnarchive(contactSerialized, name: "contact")
-            let contactAvatarData: Data? = SDSDeserialization.optionalData(record.contactAvatarData, name: "contactAvatarData")
+            let contactAvatarHash: Data? = SDSDeserialization.optionalData(record.contactAvatarHash, name: "contactAvatarHash")
             let contactAvatarPngData: Data? = SDSDeserialization.optionalData(record.contactAvatarPngData, name: "contactAvatarPngData")
             let multipleAccountLabelText: String = record.multipleAccountLabelText
             let recipientPhoneNumber: String? = record.recipientPhoneNumber
@@ -119,7 +119,7 @@ extension SignalAccount {
             return SignalAccount(grdbId: recordId,
                                  uniqueId: uniqueId,
                                  contact: contact,
-                                 contactAvatarData: contactAvatarData,
+                                 contactAvatarHash: contactAvatarHash,
                                  contactAvatarPngData: contactAvatarPngData,
                                  multipleAccountLabelText: multipleAccountLabelText,
                                  recipientPhoneNumber: recipientPhoneNumber,
@@ -169,7 +169,7 @@ extension SignalAccountSerializer {
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
     // Base class properties
     static let contactColumn = SDSColumnMetadata(columnName: "contact", columnType: .blob, isOptional: true, columnIndex: 3)
-    static let contactAvatarDataColumn = SDSColumnMetadata(columnName: "contactAvatarData", columnType: .blob, isOptional: true, columnIndex: 4)
+    static let contactAvatarHashColumn = SDSColumnMetadata(columnName: "contactAvatarHash", columnType: .blob, isOptional: true, columnIndex: 4)
     static let contactAvatarPngDataColumn = SDSColumnMetadata(columnName: "contactAvatarPngData", columnType: .blob, isOptional: true, columnIndex: 5)
     static let multipleAccountLabelTextColumn = SDSColumnMetadata(columnName: "multipleAccountLabelText", columnType: .unicodeString, columnIndex: 6)
     static let recipientPhoneNumberColumn = SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 7)
@@ -184,7 +184,7 @@ extension SignalAccountSerializer {
         recordTypeColumn,
         uniqueIdColumn,
         contactColumn,
-        contactAvatarDataColumn,
+        contactAvatarHashColumn,
         contactAvatarPngDataColumn,
         multipleAccountLabelTextColumn,
         recipientPhoneNumberColumn,
@@ -599,12 +599,12 @@ class SignalAccountSerializer: SDSSerializer {
 
         // Base class properties
         let contact: Data? = optionalArchive(model.contact)
-        let contactAvatarData: Data? = model.contactAvatarData
+        let contactAvatarHash: Data? = model.contactAvatarHash
         let contactAvatarPngData: Data? = model.contactAvatarPngData
         let multipleAccountLabelText: String = model.multipleAccountLabelText
         let recipientPhoneNumber: String? = model.recipientPhoneNumber
         let recipientUUID: String? = model.recipientUUID
 
-        return SignalAccountRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, contact: contact, contactAvatarData: contactAvatarData, contactAvatarPngData: contactAvatarPngData, multipleAccountLabelText: multipleAccountLabelText, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID)
+        return SignalAccountRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, contact: contact, contactAvatarHash: contactAvatarHash, contactAvatarPngData: contactAvatarPngData, multipleAccountLabelText: multipleAccountLabelText, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID)
     }
 }

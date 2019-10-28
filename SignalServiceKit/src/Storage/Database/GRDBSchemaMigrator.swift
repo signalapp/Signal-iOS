@@ -26,8 +26,7 @@ public class GRDBSchemaMigrator: NSObject {
 
     private enum MigrationId: String, CaseIterable {
         case createInitialSchema
-        case signalAccount_add_contactAvatarPngData
-        case signalAccount_add_contactAvatarData
+        case signalAccount_add_contactAvatar
     }
 
     // For new users, we import the latest schema with the first migration
@@ -63,21 +62,11 @@ public class GRDBSchemaMigrator: NSObject {
             owsFail("This migration should have already been run by the last YapDB migration.")
             // try createV1Schema(db: db)
         }
-        migrator.registerMigration(MigrationId.signalAccount_add_contactAvatarPngData.rawValue) { database in
-            let sql = """
-            ALTER TABLE \(SignalAccountRecord.databaseTableName)
-            ADD COLUMN \(signalAccountColumn: .contactAvatarPngData) BLOB
-            """
-            let statement = try database.makeUpdateStatement(sql: sql)
-            try statement.execute()
-        }
-        migrator.registerMigration(MigrationId.signalAccount_add_contactAvatarData.rawValue) { database in
-            let sql = """
-            ALTER TABLE \(SignalAccountRecord.databaseTableName)
-            ADD COLUMN \(signalAccountColumn: .contactAvatarData) BLOB
-            """
-            let statement = try database.makeUpdateStatement(sql: sql)
-            try statement.execute()
+        migrator.registerMigration(MigrationId.signalAccount_add_contactAvatar.rawValue) { database in
+            try database.alter(table: SignalAccountRecord.databaseTableName) { (table: TableAlteration) -> Void in
+                table.add(column: "contactAvatarHash", .blob)
+                table.add(column: "contactAvatarPngData", .blob)
+            }
         }
 
         return migrator
@@ -408,7 +397,7 @@ private func createV1Schema(db: Database) throws {
         table.column("recipientPhoneNumber", .text)
         table.column("recipientUUID", .text)
         table.column("contactAvatarPngData", .blob)
-        table.column("contactAvatarData", .blob)
+        table.column("contactAvatarHash", .blob)
     }
     try db.create(index: "index_model_SignalAccount_on_uniqueId", on: "model_SignalAccount", columns: ["uniqueId"])
 

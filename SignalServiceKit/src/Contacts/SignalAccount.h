@@ -33,11 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 // We cache the contact avatar data on this class.
 //
-// contactAvatarData is the original avatar data
-// (if any) from the system contact.  It might not be
-// a PNG.  We use it for change detection.  When the
-// underlying contact changes, we need to update
-// the SignalAccount.
+// contactAvatarHash is the hash of the original avatar
+// data (if any) from the system contact.  We use it for
+// change detection.
 //
 // contactAvatarPngData contains the data we'll sync
 // to Desktop. We only want to send valid PNGs.
@@ -48,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 //
 // This property is optional and will not be set for
 // non-contact account.
-@property (nonatomic, nullable) NSData *contactAvatarData;
+@property (nonatomic, nullable) NSData *contactAvatarHash;
 @property (nonatomic, nullable) NSData *contactAvatarPngData;
 
 // For contacts with more than one signal account,
@@ -73,12 +71,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
                          contact:(nullable Contact *)contact
-               contactAvatarData:(nullable NSData *)contactAvatarData
+               contactAvatarHash:(nullable NSData *)contactAvatarHash
             contactAvatarPngData:(nullable NSData *)contactAvatarPngData
         multipleAccountLabelText:(NSString *)multipleAccountLabelText
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
-NS_SWIFT_NAME(init(grdbId:uniqueId:contact:contactAvatarData:contactAvatarPngData:multipleAccountLabelText:recipientPhoneNumber:recipientUUID:));
+NS_SWIFT_NAME(init(grdbId:uniqueId:contact:contactAvatarHash:contactAvatarPngData:multipleAccountLabelText:recipientPhoneNumber:recipientUUID:));
 
 // clang-format on
 

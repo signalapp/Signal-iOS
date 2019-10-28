@@ -39,25 +39,36 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)resizedWithMaxDimensionPoints:(CGFloat)maxDimensionPoints
 {
-    CGSize originalSize = self.size;
+    // Use points.
+    return [self resizedWithOriginalSize:self.size maxDimensionPixels:maxDimensionPoints];
+}
+
+- (nullable UIImage *)resizedWithMaxDimensionPixels:(CGFloat)maxDimensionPixels
+{
+    // Use pixels.
+    return [self resizedWithOriginalSize:self.pixelSize maxDimensionPixels:maxDimensionPixels];
+}
+
+- (nullable UIImage *)resizedWithOriginalSize:(CGSize)originalSize maxDimensionPixels:(CGFloat)maxDimension
+{
     if (originalSize.width < 1 || originalSize.height < 1) {
         OWSLogError(@"Invalid original size: %@", NSStringFromCGSize(originalSize));
         return nil;
     }
 
-    CGFloat maxOriginalDimensionPoints = MAX(originalSize.width, originalSize.height);
-    if (maxOriginalDimensionPoints < maxDimensionPoints) {
+    CGFloat maxOriginalDimension = MAX(originalSize.width, originalSize.height);
+    if (maxOriginalDimension < maxDimension) {
         // Don't bother scaling an image that is already smaller than the max dimension.
         return self;
     }
 
     CGSize thumbnailSize = CGSizeZero;
     if (originalSize.width > originalSize.height) {
-        thumbnailSize.width = maxDimensionPoints;
-        thumbnailSize.height = round(maxDimensionPoints * originalSize.height / originalSize.width);
+        thumbnailSize.width = maxDimension;
+        thumbnailSize.height = round(maxDimension * originalSize.height / originalSize.width);
     } else {
-        thumbnailSize.width = round(maxDimensionPoints * originalSize.width / originalSize.height);
-        thumbnailSize.height = maxDimensionPoints;
+        thumbnailSize.width = round(maxDimension * originalSize.width / originalSize.height);
+        thumbnailSize.height = maxDimension;
     }
     if (thumbnailSize.width < 1 || thumbnailSize.height < 1) {
         OWSLogError(@"Invalid thumbnail size: %@", NSStringFromCGSize(thumbnailSize));

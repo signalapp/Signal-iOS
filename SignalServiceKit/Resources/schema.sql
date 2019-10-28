@@ -332,6 +332,7 @@ CREATE
             ,"multipleAccountLabelText" TEXT NOT NULL
             ,"recipientPhoneNumber" TEXT
             ,"recipientUUID" TEXT
+            ,"contactAvatarHash" BLOB
             ,"contactAvatarPngData" BLOB
         )
 ;

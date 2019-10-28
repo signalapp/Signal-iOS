@@ -8,6 +8,8 @@
 #import "NSData+Image.h"
 #import "SSKEnvironment.h"
 #import "SignalRecipient.h"
+#import "UIImage+OWS.h"
+#import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -87,7 +89,7 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
                          contact:(nullable Contact *)contact
-               contactAvatarData:(nullable NSData *)contactAvatarData
+               contactAvatarHash:(nullable NSData *)contactAvatarHash
             contactAvatarPngData:(nullable NSData *)contactAvatarPngData
         multipleAccountLabelText:(NSString *)multipleAccountLabelText
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
@@ -101,7 +103,7 @@ NSUInteger const SignalAccountSchemaVersion = 1;
     }
 
     _contact = contact;
-    _contactAvatarData = contactAvatarData;
+    _contactAvatarHash = contactAvatarHash;
     _contactAvatarPngData = contactAvatarPngData;
     _multipleAccountLabelText = multipleAccountLabelText;
     _recipientPhoneNumber = recipientPhoneNumber;
@@ -134,18 +136,17 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 {
     OWSAssertDebug(other != nil);
 
-    // NOTE: We don't want to compare contactAvatarPngData, which
-    //       is derived from contactAvatarData.
+    // NOTE: We don't want to compare contactAvatarPngData.
     return ([NSObject isNullableObject:self.recipientPhoneNumber equalTo:other.recipientPhoneNumber] &&
         [NSObject isNullableObject:self.recipientUUID equalTo:other.recipientUUID] &&
         [NSObject isNullableObject:self.contact equalTo:other.contact] &&
         [NSObject isNullableObject:self.multipleAccountLabelText equalTo:other.multipleAccountLabelText] &&
-        [NSObject isNullableObject:self.contactAvatarData equalTo:other.contactAvatarData]);
+        [NSObject isNullableObject:self.contactAvatarHash equalTo:other.contactAvatarHash]);
 }
 
 - (void)tryToCacheContactAvatarData
 {
-    OWSAssertDebug(self.contactAvatarData == nil);
+    OWSAssertDebug(self.contactAvatarHash == nil);
     OWSAssertDebug(self.contactAvatarPngData == nil);
 
     if (self.contact == nil) {
@@ -153,21 +154,41 @@ NSUInteger const SignalAccountSchemaVersion = 1;
         return;
     }
 
-    self.contactAvatarData = [self.contactsManager avatarDataForCNContactId:self.contact.cnContactId];
-    if (self.contactAvatarData == nil) {
+    NSData *_Nullable contactAvatarData = [self.contactsManager avatarDataForCNContactId:self.contact.cnContactId];
+    if (contactAvatarData == nil) {
+        return;
+    }
+    self.contactAvatarHash = [Cryptography computeSHA256Digest:contactAvatarData];
+    OWSAssertDebug(self.contactAvatarHash != nil);
+    if (self.contactAvatarHash == nil) {
         return;
     }
 
-    if (self.contactAvatarData.ows_isValidPng) {
-        self.contactAvatarPngData = self.contactAvatarData;
+    ImageData *imageData = [contactAvatarData imageDataWithPath:nil mimeType:nil];
+    if (!imageData.isValid) {
         return;
     }
 
-    UIImage *_Nullable avatarImage = [UIImage imageWithData:self.contactAvatarData];
+    const CGFloat kMaxAvatarDimensionPixels = 600;
+    if (imageData.imageFormat == ImageFormat_Png && imageData.pixelSize.width <= kMaxAvatarDimensionPixels
+        && imageData.pixelSize.height <= kMaxAvatarDimensionPixels) {
+        self.contactAvatarPngData = contactAvatarData;
+        return;
+    }
+
+    UIImage *_Nullable avatarImage = [UIImage imageWithData:contactAvatarData];
     if (avatarImage == nil) {
         OWSFailDebug(@"Could not load avatar.");
         return;
     }
+    if (avatarImage.pixelWidth > kMaxAvatarDimensionPixels || avatarImage.pixelHeight > kMaxAvatarDimensionPixels) {
+        avatarImage = [avatarImage resizedWithMaxDimensionPixels:kMaxAvatarDimensionPixels];
+        if (avatarImage == nil) {
+            OWSFailDebug(@"Could not resize avatar.");
+            return;
+        }
+    }
+
     self.contactAvatarPngData = UIImagePNGRepresentation(avatarImage);
     if (self.contactAvatarPngData == nil) {
         OWSFailDebug(@"Could not convert avatar to PNG.");

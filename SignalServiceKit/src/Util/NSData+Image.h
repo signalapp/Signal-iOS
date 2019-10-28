@@ -4,6 +4,35 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+
+typedef NS_ENUM(NSInteger, ImageFormat) {
+    ImageFormat_Unknown,
+    ImageFormat_Png,
+    ImageFormat_Gif,
+    ImageFormat_Tiff,
+    ImageFormat_Jpeg,
+    ImageFormat_Bmp,
+    ImageFormat_Webp,
+};
+
+NSString *NSStringForImageFormat(ImageFormat value);
+
+#pragma mark -
+
+@interface ImageData : NSObject
+
+@property (nonatomic) BOOL isValid;
+
+// These properties are only set if isValid is true.
+@property (nonatomic) ImageFormat imageFormat;
+@property (nonatomic) CGSize pixelSize;
+
+// TODO: We could add an hasAlpha property.
+
+@end
+
+#pragma mark -
+
 @interface NSData (Image)
 
 // If mimeType is non-nil, we ensure that the magic numbers agree with the
@@ -24,6 +53,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable UIImage *)stillForWebpData;
 
 - (BOOL)ows_isValidPng;
+
+#pragma mark - Image Data
+
+// declaredMimeType is optional.
+// If present, it is used to validate the file format contents.
++ (ImageData *)imageDataWithPath:(NSString *)filePath mimeType:(nullable NSString *)declaredMimeType;
+
+// filePath and declaredMimeType are optional.
+// If present, they are used to validate the file format contents.
+- (ImageData *)imageDataWithPath:(nullable NSString *)filePath mimeType:(nullable NSString *)declaredMimeType;
 
 @end
 
