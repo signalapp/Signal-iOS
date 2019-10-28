@@ -40,18 +40,20 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable UIImage *)resizedWithMaxDimensionPoints:(CGFloat)maxDimensionPoints
 {
     // Use points.
-    return [self resizedWithOriginalSize:self.size maxDimension:maxDimensionPoints];
+    return [self resizedWithOriginalSize:self.size maxDimension:maxDimensionPoints isPixels:NO];
 }
 
 - (nullable UIImage *)resizedWithMaxDimensionPixels:(CGFloat)maxDimensionPixels
 {
     // Use pixels.
-    return [self resizedWithOriginalSize:self.pixelSize maxDimension:maxDimensionPixels];
+    return [self resizedWithOriginalSize:self.pixelSize maxDimension:maxDimensionPixels isPixels:YES];
 }
 
 // Original size and maxDimension should both be in the same units,
 // either points or pixels.
-- (nullable UIImage *)resizedWithOriginalSize:(CGSize)originalSize maxDimension:(CGFloat)maxDimension
+- (nullable UIImage *)resizedWithOriginalSize:(CGSize)originalSize
+                                 maxDimension:(CGFloat)maxDimension
+                                     isPixels:(BOOL)isPixels
 {
     if (originalSize.width < 1 || originalSize.height < 1) {
         OWSLogError(@"Invalid original size: %@", NSStringFromCGSize(originalSize));
@@ -77,7 +79,11 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(thumbnailSize.width, thumbnailSize.height), NO, 1.0);
+    if (isPixels) {
+        UIGraphicsBeginImageContextWithOptions(CGSizeMake(thumbnailSize.width, thumbnailSize.height), NO, 1.0);
+    } else {
+        UIGraphicsBeginImageContext(CGSizeMake(thumbnailSize.width, thumbnailSize.height));
+    }
     CGContextRef _Nullable context = UIGraphicsGetCurrentContext();
     if (context == NULL) {
         OWSLogError(@"Couldn't create context.");
