@@ -737,6 +737,9 @@ extension MediaGallery: MediaGalleryDatabaseSnapshotDelegate {
     }
 
     func mediaGalleryDatabaseSnapshotDidUpdate(deletedAttachmentIds: Set<String>) {
+        guard deletedAttachmentIds.count > 0 else {
+            return
+        }
         process(deletedAttachmentIds: Array(deletedAttachmentIds))
     }
 
