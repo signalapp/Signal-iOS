@@ -329,11 +329,11 @@ CREATE
             ,"uniqueId" TEXT NOT NULL UNIQUE
                 ON CONFLICT FAIL
             ,"contact" BLOB
+            ,"contactAvatarHash" BLOB
+            ,"contactAvatarJpegData" BLOB
             ,"multipleAccountLabelText" TEXT NOT NULL
             ,"recipientPhoneNumber" TEXT
             ,"recipientUUID" TEXT
-            ,"contactAvatarHash" BLOB
-            ,"contactAvatarJpegData" BLOB
         )
 ;
 

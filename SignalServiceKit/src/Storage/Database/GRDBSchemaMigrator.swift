@@ -63,10 +63,24 @@ public class GRDBSchemaMigrator: NSObject {
             // try createV1Schema(db: db)
         }
         migrator.registerMigration(MigrationId.signalAccount_add_contactAvatars.rawValue) { database in
-            try database.alter(table: SignalAccountRecord.databaseTableName) { (table: TableAlteration) -> Void in
-                table.add(column: "contactAvatarHash", .blob)
-                table.add(column: "contactAvatarJpegData", .blob)
-            }
+            let sql = """
+                DROP TABLE "model_SignalAccount";
+                CREATE
+                    TABLE
+                        IF NOT EXISTS "model_SignalAccount" (
+                            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+                            ,"recordType" INTEGER NOT NULL
+                            ,"uniqueId" TEXT NOT NULL UNIQUE
+                                ON CONFLICT FAIL
+                            ,"contact" BLOB
+                            ,"contactAvatarHash" BLOB
+                            ,"contactAvatarJpegData" BLOB
+                            ,"multipleAccountLabelText" TEXT NOT NULL
+                            ,"recipientPhoneNumber" TEXT
+                            ,"recipientUUID" TEXT
+                        );
+            """
+            try database.execute(sql: sql)
         }
 
         return migrator
@@ -392,12 +406,12 @@ private func createV1Schema(db: Database) throws {
             .unique(onConflict: .fail)
         // GRDB how big are these serialized contacts?
         table.column("contact", .blob)
+        table.column("contactAvatarHash", .blob)
+        table.column("contactAvatarJpegData", .blob)
         table.column("multipleAccountLabelText", .text)
             .notNull()
         table.column("recipientPhoneNumber", .text)
         table.column("recipientUUID", .text)
-        table.column("contactAvatarJpegData", .blob)
-        table.column("contactAvatarHash", .blob)
     }
     try db.create(index: "index_model_SignalAccount_on_uniqueId", on: "model_SignalAccount", columns: ["uniqueId"])
 
