@@ -40,16 +40,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable UIImage *)resizedWithMaxDimensionPoints:(CGFloat)maxDimensionPoints
 {
     // Use points.
-    return [self resizedWithOriginalSize:self.size maxDimensionPixels:maxDimensionPoints];
+    return [self resizedWithOriginalSize:self.size maxDimension:maxDimensionPoints];
 }
 
 - (nullable UIImage *)resizedWithMaxDimensionPixels:(CGFloat)maxDimensionPixels
 {
     // Use pixels.
-    return [self resizedWithOriginalSize:self.pixelSize maxDimensionPixels:maxDimensionPixels];
+    return [self resizedWithOriginalSize:self.pixelSize maxDimension:maxDimensionPixels];
 }
 
-- (nullable UIImage *)resizedWithOriginalSize:(CGSize)originalSize maxDimensionPixels:(CGFloat)maxDimension
+// Original size and maxDimension should both be in the same units,
+// either points or pixels.
+- (nullable UIImage *)resizedWithOriginalSize:(CGSize)originalSize maxDimension:(CGFloat)maxDimension
 {
     if (originalSize.width < 1 || originalSize.height < 1) {
         OWSLogError(@"Invalid original size: %@", NSStringFromCGSize(originalSize));
