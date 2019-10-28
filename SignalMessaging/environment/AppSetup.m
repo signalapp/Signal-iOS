@@ -177,6 +177,8 @@ NS_ASSUME_NONNULL_BEGIN
 
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 if (AppSetup.shouldTruncateGrdbWal) {
+                    // Try to truncate GRDB WAL before any readers or writers are
+                    // active.
                     NSError *_Nullable error;
                     [databaseStorage.grdbStorage syncTruncatingCheckpointAndReturnError:&error];
                     if (error != nil) {

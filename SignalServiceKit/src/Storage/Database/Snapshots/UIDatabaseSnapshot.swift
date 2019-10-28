@@ -31,6 +31,33 @@ enum DatabaseObserverError: Error {
     case changeTooLarge
 }
 
+@objc
+public class AtomicBool: NSObject {
+    private var value: Bool
+
+    @objc
+    public required init(_ value: Bool) {
+        self.value = value
+    }
+
+    // All instances can share a single queue.
+    private static let serialQueue = DispatchQueue(label: "AtomicBool")
+
+    @objc
+    public func get() -> Bool {
+        return AtomicBool.serialQueue.sync {
+            return self.value
+        }
+    }
+
+    @objc
+    public func set(_ value: Bool) {
+        return AtomicBool.serialQueue.sync {
+            self.value = value
+        }
+    }
+}
+
 func AssertIsOnUIDatabaseObserverSerialQueue() {
     assert(UIDatabaseObserver.isOnUIDatabaseObserverSerialQueue)
 }
@@ -219,8 +246,6 @@ extension UIDatabaseObserver: TransactionObserver {
             }
             isRunningCheckpoint = true
         }
-
-        SDSDatabaseStorage.shared.logFileSizes()
 
         let result = try GRDBDatabaseStorageAdapter.checkpointWal(db: db, mode: mode)
 
