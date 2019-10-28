@@ -62,12 +62,20 @@ public class ActionSheetController: OWSViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    var firstCancelAction: ActionSheetAction? {
+        return actions.first(where: { $0.style == .cancel })
+    }
+
     @objc
     public func addAction(_ action: ActionSheetAction) {
+        if action.style == .cancel && firstCancelAction != nil {
+            owsFailDebug("Only one cancel button permitted per action sheet.")
+        }
+
         // If we've already added a cancel action, any non-cancel actions should come before it
         // This matches how UIAlertController handles cancel actions.
         if action.style != .cancel,
-            let firstCancelAction = actions.first(where: { $0.style == .cancel }),
+            let firstCancelAction = firstCancelAction,
             let index = stackView.arrangedSubviews.firstIndex(of: firstCancelAction.button) {
             stackView.insertArrangedSubview(action.button, at: index)
         } else {
@@ -144,6 +152,10 @@ public class ActionSheetController: OWSViewController {
         safeAreaBackdrop.autoPinEdge(toSuperviewEdge: .bottom)
         safeAreaBackdrop.autoMatch(.height, to: .height, of: scrollView, withMultiplier: 0.5)
         safeAreaBackdrop.autoMatch(.width, to: .width, of: scrollView)
+
+        // Support tapping the backdrop to cancel the action sheet.
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapBackdrop(_:)))
+        view.addGestureRecognizer(tapGestureRecognizer)
     }
 
     public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -176,6 +188,19 @@ public class ActionSheetController: OWSViewController {
         // Always scroll to the bottom initially, so it's clear to the
         // user that there's more to scroll to if it goes offscreen.
         scrollView.contentOffset = CGPoint(x: 0, y: scrollView.contentSize.height - scrollView.height() + bottomInset)
+    }
+
+    @objc func didTapBackdrop(_ sender: UITapGestureRecognizer) {
+        // If we have a cancel action, treat tapping the background
+        // as tapping the cancel button.
+        guard let firstCancelAction = firstCancelAction else { return }
+
+        let point = sender.location(in: self.scrollView)
+        guard !contentView.frame.contains(point) else { return }
+
+        dismiss(animated: true) {
+            firstCancelAction.handler?(firstCancelAction)
+        }
     }
 
     func createHeader(title: String? = nil, message: String? = nil) {
