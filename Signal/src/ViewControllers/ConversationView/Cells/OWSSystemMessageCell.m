@@ -296,9 +296,8 @@ typedef void (^SystemMessageActionBlock)(void);
                 } else {
                     OWSFailDebug(@"unexpected interaction type: %@", interaction.class);
                 }
-                result = (areDisappearingMessagesEnabled
-                        ? [UIImage imageNamed:@"system_message_disappearing_messages"]
-                        : [UIImage imageNamed:@"system_message_disappearing_messages_disabled"]);
+                result = (areDisappearingMessagesEnabled ? [Theme iconImage:ThemeIconSettingsTimer]
+                                                         : [Theme iconImage:ThemeIconSettingsTimerDisabled]);
                 break;
             }
             case TSInfoMessageVerificationStateChange:
@@ -317,7 +316,7 @@ typedef void (^SystemMessageActionBlock)(void);
                 break;
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
-        result = [UIImage imageNamed:@"system_message_call"];
+        result = [Theme iconImage:ThemeIconPhone];
     } else {
         OWSFailDebug(@"Unknown interaction type: %@", [interaction class]);
         return nil;

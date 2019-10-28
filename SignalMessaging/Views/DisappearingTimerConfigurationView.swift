@@ -36,7 +36,7 @@ public class DisappearingTimerConfigurationView: UIView {
 
     @objc
     public init(durationSeconds: UInt32) {
-        self.imageView = UIImageView(image: #imageLiteral(resourceName: "ic_timer"))
+        self.imageView = UIImageView(image: Theme.iconImage(.settingsTimer))
         imageView.contentMode = .scaleAspectFit
 
         self.label = UILabel()
