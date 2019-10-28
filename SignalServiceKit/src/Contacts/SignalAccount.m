@@ -90,7 +90,7 @@ NSUInteger const SignalAccountSchemaVersion = 1;
                       uniqueId:(NSString *)uniqueId
                          contact:(nullable Contact *)contact
                contactAvatarHash:(nullable NSData *)contactAvatarHash
-            contactAvatarPngData:(nullable NSData *)contactAvatarPngData
+            contactAvatarJpegData:(nullable NSData *)contactAvatarJpegData
         multipleAccountLabelText:(NSString *)multipleAccountLabelText
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
@@ -104,7 +104,7 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 
     _contact = contact;
     _contactAvatarHash = contactAvatarHash;
-    _contactAvatarPngData = contactAvatarPngData;
+    _contactAvatarJpegData = contactAvatarJpegData;
     _multipleAccountLabelText = multipleAccountLabelText;
     _recipientPhoneNumber = recipientPhoneNumber;
     _recipientUUID = recipientUUID;
@@ -136,7 +136,7 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 {
     OWSAssertDebug(other != nil);
 
-    // NOTE: We don't want to compare contactAvatarPngData.
+    // NOTE: We don't want to compare contactAvatarJpegData.
     return ([NSObject isNullableObject:self.recipientPhoneNumber equalTo:other.recipientPhoneNumber] &&
         [NSObject isNullableObject:self.recipientUUID equalTo:other.recipientUUID] &&
         [NSObject isNullableObject:self.contact equalTo:other.contact] &&
@@ -147,7 +147,7 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 - (void)tryToCacheContactAvatarData
 {
     OWSAssertDebug(self.contactAvatarHash == nil);
-    OWSAssertDebug(self.contactAvatarPngData == nil);
+    OWSAssertDebug(self.contactAvatarJpegData == nil);
 
     if (self.contact == nil) {
         OWSFailDebug(@"Missing contact.");
@@ -169,10 +169,10 @@ NSUInteger const SignalAccountSchemaVersion = 1;
         return;
     }
 
-    const CGFloat kMaxAvatarDimensionPixels = 600;
-    if (imageData.imageFormat == ImageFormat_Png && imageData.pixelSize.width <= kMaxAvatarDimensionPixels
+    const CGFloat kMaxAvatarDimensionPixels = 300;
+    if (imageData.imageFormat == ImageFormat_Jpeg && imageData.pixelSize.width <= kMaxAvatarDimensionPixels
         && imageData.pixelSize.height <= kMaxAvatarDimensionPixels) {
-        self.contactAvatarPngData = contactAvatarData;
+        self.contactAvatarJpegData = contactAvatarData;
         return;
     }
 
@@ -189,14 +189,14 @@ NSUInteger const SignalAccountSchemaVersion = 1;
         }
     }
 
-    self.contactAvatarPngData = UIImagePNGRepresentation(avatarImage);
-    if (self.contactAvatarPngData == nil) {
-        OWSFailDebug(@"Could not convert avatar to PNG.");
+    self.contactAvatarJpegData = UIImageJPEGRepresentation(avatarImage, 0.9);
+    if (self.contactAvatarJpegData == nil) {
+        OWSFailDebug(@"Could not convert avatar to JPEG.");
         return;
     }
-    OWSLogVerbose(@"Converted avatar to PNG: %lu -> %lu, %@ %@.",
+    OWSLogVerbose(@"Converted avatar to JPEG: %lu -> %lu, %@ %@.",
         (unsigned long)contactAvatarData.length,
-        (unsigned long)self.contactAvatarPngData.length,
+        (unsigned long)self.contactAvatarJpegData.length,
         NSStringForImageFormat(imageData.imageFormat),
         NSStringFromCGSize(imageData.pixelSize));
 }

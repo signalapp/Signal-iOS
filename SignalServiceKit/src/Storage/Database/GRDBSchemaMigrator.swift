@@ -26,7 +26,7 @@ public class GRDBSchemaMigrator: NSObject {
 
     private enum MigrationId: String, CaseIterable {
         case createInitialSchema
-        case signalAccount_add_contactAvatar
+        case signalAccount_add_contactAvatars
     }
 
     // For new users, we import the latest schema with the first migration
@@ -62,10 +62,10 @@ public class GRDBSchemaMigrator: NSObject {
             owsFail("This migration should have already been run by the last YapDB migration.")
             // try createV1Schema(db: db)
         }
-        migrator.registerMigration(MigrationId.signalAccount_add_contactAvatar.rawValue) { database in
+        migrator.registerMigration(MigrationId.signalAccount_add_contactAvatars.rawValue) { database in
             try database.alter(table: SignalAccountRecord.databaseTableName) { (table: TableAlteration) -> Void in
                 table.add(column: "contactAvatarHash", .blob)
-                table.add(column: "contactAvatarPngData", .blob)
+                table.add(column: "contactAvatarJpegData", .blob)
             }
         }
 
@@ -396,7 +396,7 @@ private func createV1Schema(db: Database) throws {
             .notNull()
         table.column("recipientPhoneNumber", .text)
         table.column("recipientUUID", .text)
-        table.column("contactAvatarPngData", .blob)
+        table.column("contactAvatarJpegData", .blob)
         table.column("contactAvatarHash", .blob)
     }
     try db.create(index: "index_model_SignalAccount_on_uniqueId", on: "model_SignalAccount", columns: ["uniqueId"])

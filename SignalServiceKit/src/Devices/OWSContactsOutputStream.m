@@ -50,7 +50,7 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
         contactBuilder.verified = verified;
     }
 
-    NSData *_Nullable avatarPngData = signalAccount.contactAvatarPngData;
+    NSData *_Nullable avatarPngData = signalAccount.contactAvatarJpegData;
     if (avatarPngData != nil) {
         SSKProtoContactDetailsAvatarBuilder *avatarBuilder = [SSKProtoContactDetailsAvatar builder];
         [avatarBuilder setContentType:OWSMimeTypeImagePng];

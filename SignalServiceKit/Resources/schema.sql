@@ -333,7 +333,7 @@ CREATE
             ,"recipientPhoneNumber" TEXT
             ,"recipientUUID" TEXT
             ,"contactAvatarHash" BLOB
-            ,"contactAvatarPngData" BLOB
+            ,"contactAvatarJpegData" BLOB
         )
 ;
 
