@@ -40,6 +40,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSComparisonResult)compareSignalAccount:(SignalAccount *)left
                          withSignalAccount:(SignalAccount *)right NS_SWIFT_NAME(compare(signalAccount:with:));
 
+- (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
+                                 transaction:(SDSAnyReadTransaction *)transaction;
+
 #pragma mark - CNContacts
 
 - (nullable CNContact *)cnContactWithId:(nullable NSString *)contactId;

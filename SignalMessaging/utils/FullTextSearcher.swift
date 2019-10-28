@@ -66,23 +66,27 @@ public class ConversationSearchResult<SortKey>: Comparable where SortKey: Compar
 @objc
 public class ContactSearchResult: NSObject, Comparable {
     public let signalAccount: SignalAccount
-
-    var contactsManager: ContactsManagerProtocol {
-        return Environment.shared.contactsManager
-    }
+    private let comparableName: String
 
     public var recipientAddress: SignalServiceAddress {
         return signalAccount.recipientAddress
     }
 
-    init(signalAccount: SignalAccount) {
+    init(signalAccount: SignalAccount, transaction: SDSAnyReadTransaction) {
         self.signalAccount = signalAccount
+        self.comparableName = Environment.shared.contactsManager.comparableName(for: signalAccount, transaction: transaction)
     }
 
     // MARK: Comparable
 
     public static func < (lhs: ContactSearchResult, rhs: ContactSearchResult) -> Bool {
-        return lhs.contactsManager.compare(signalAccount: lhs.signalAccount, with: rhs.signalAccount) == .orderedAscending
+        var comparisonResult = lhs.comparableName.caseInsensitiveCompare(rhs.comparableName)
+
+        if comparisonResult == .orderedSame {
+            comparisonResult = lhs.recipientAddress.stringForDisplay.compare(rhs.recipientAddress.stringForDisplay)
+        }
+
+        return comparisonResult == .orderedAscending
     }
 
     // MARK: Equatable
@@ -267,7 +271,7 @@ public class FullTextSearcher: NSObject {
 
             switch match {
             case let signalAccount as SignalAccount:
-                let searchResult = ContactSearchResult(signalAccount: signalAccount)
+                let searchResult = ContactSearchResult(signalAccount: signalAccount, transaction: transaction)
                 signalContacts.append(searchResult)
             case let groupThread as TSGroupThread:
                 let sortKey = ConversationSortKey(isContactThread: false,
@@ -291,7 +295,7 @@ public class FullTextSearcher: NSObject {
             if !signalContacts.contains(where: { $0.signalAccount.recipientAddress.isLocalAddress }) {
                 if let localAddress = TSAccountManager.localAddress {
                     let localAccount = SignalAccount(address: localAddress)
-                    let localResult = ContactSearchResult(signalAccount: localAccount)
+                    let localResult = ContactSearchResult(signalAccount: localAccount, transaction: transaction)
                     signalContacts.append(localResult)
                 } else {
                     owsFailDebug("localAddress was unexpectedly nil")
@@ -395,7 +399,7 @@ public class FullTextSearcher: NSObject {
 
                 messages.append(searchResult)
             } else if let signalAccount = match as? SignalAccount {
-                let searchResult = ContactSearchResult(signalAccount: signalAccount)
+                let searchResult = ContactSearchResult(signalAccount: signalAccount, transaction: transaction)
                 contacts.append(searchResult)
             } else {
                 owsFailDebug("unhandled item: \(match)")
@@ -406,7 +410,7 @@ public class FullTextSearcher: NSObject {
             if !contacts.contains(where: { $0.signalAccount.recipientAddress.isLocalAddress }) {
                 if let localAddress = TSAccountManager.localAddress {
                     let localAccount = SignalAccount(address: localAddress)
-                    let localResult = ContactSearchResult(signalAccount: localAccount)
+                    let localResult = ContactSearchResult(signalAccount: localAccount, transaction: transaction)
                     contacts.append(localResult)
                 } else {
                     owsFailDebug("localAddress was unexpectedly nil")

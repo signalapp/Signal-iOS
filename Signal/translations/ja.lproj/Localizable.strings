@@ -525,7 +525,7 @@
 "CONFIRM_LEAVE_GROUP_TITLE" = "離脱してよろしいですか？";
 
 /* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "端末を追加します";
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "端末をリンク";
 
 /* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@は端末の再設定・変更をした可能性があります。プライバシーを保証するためにこの相手に対する安全番号を確認してください。";
@@ -663,7 +663,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "既存の連絡先に加える";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "連絡先に追加";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "このグループをブロックする";
@@ -1276,13 +1276,13 @@
 "LINK_DEVICE_INVALID_CODE_BODY" = "このQRコードは無効です。リンクしたい端末のQRコードをスキャンしましたか？";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "端末の追加に失敗";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "端末のリンクに失敗";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "この端末は、あなたのグループと通話相手、会話、メッセージにアクセスできます。";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "この端末を追加しますか？";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "この端末をリンクしますか？";
 
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "再試行";
@@ -1294,16 +1294,16 @@
 "LINK_NEW_DEVICE_SUBTITLE" = "QRコードを読み取る";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "新しい端末を追加";
+"LINK_NEW_DEVICE_TITLE" = "新しい端末をリンク";
 
 /* Label for link previews with an unknown host. */
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "リンクプレビュー";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "追加される端末";
+"LINKED_DEVICES_TITLE" = "リンク済み端末";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "端末の追加に失敗";
+"LINKING_DEVICE_FAILED_TITLE" = "端末のリンクに失敗";
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "メンバー";
@@ -1539,10 +1539,10 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "この機能を使うためには、Signalに写真のアクセスを許可する必要があります。";
 
 /* alert title: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "これ以上のデバイスは追加できません。";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "これ以上の端末はリンクできません。";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "リンクできる端末の数が最大限度に達しています。デバイスを削除してください。";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "リンクできる端末の数が最大限度に達しています。端末を削除してください。";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "消音にすると通知が行われなくなります。";
@@ -2250,43 +2250,43 @@
 "SEARCH_SECTION_MESSAGES" = "メッセージ";
 
 /* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "リンクコードが取得できません";
 
 /* alert title */
-"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Failed to Link Your Device";
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "端末をリンクできませんでした";
 
 /* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choose a name for this device";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "この端末の名前を選択";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "You'll see this name under \"Linked Devices.\"";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "この名前は「リンク済み端末」に表示されます";
 
 /* text field placeholder */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Choose a name";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "名前を選択";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Finish Linking";
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "リンク作業を終了";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "To get started, open the Signal app on your phone.";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "まず、あなたの携帯のSignalを開いてください。";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone.";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "私の携帯にSignalがない";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "To use Signal on your iPad, you need to download and register an account on your phone first.\n\nGo to your phone’s app store, install Signal, and then you’ll be able to link your iPad.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "iPadでSignalを使うには、その前に携帯にアプリをダウンロードし、アカウントを登録しなければなりません。\n\n携帯にSignalをインストールし、iPadにリンクします。";
 
 /* alert title */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Install Signal on Your Phone";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Signalのインストール";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "In Signal on your iPhone, tap Settings -> Linked Devices -> Add, then point the camera at this screen.";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Signalを起動し，「設定」>「リンク済み端末」に進み，「新しい端末を追加」を選び、上部のコードをスキャンしてください。";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Having Trouble?";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "問題発生？";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan the QR Code";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "QRコードを読み取る";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "安全なセッションがリセットされました。";
@@ -2727,7 +2727,7 @@
 "STICKERS_UNINSTALL_BUTTON" = "アンインストール";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@に対する安全番号と一致しました。この相手は確認済みにできます。";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@に対する安全番号と一致しました。この相手は「確認済み」にできます。";
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "安全番号が一致しました";
@@ -2844,7 +2844,7 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "「%@」の追加を解除しますか？";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "端末の追加を解除できませんでした";
+"UNLINKING_FAILED_ALERT_TITLE" = "端末のリンクを解除できませんでした";
 
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "無名のデバイス";
@@ -2856,7 +2856,7 @@
 "UNSUPPORTED_ATTACHMENT" = "サポートされていない種類の添付ファイルを受信しました";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_FEATURE_ERROR" = "このデバイスでは対応されていない機能です。";
+"UNSUPPORTED_FEATURE_ERROR" = "この端末では対応されていない機能です。";
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "グループのメンバーは削除できません。本人が離脱するか，グループを新たに作成してください。";
@@ -2934,22 +2934,22 @@
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "ユーザー名の更新に失敗しました";
 
 /* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Device name cannot be blank";
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "端末名は必須です";
 
 /* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "Device name is too long";
+"VALIDATION_ERROR_TOO_LONG" = "端末名が長すぎます";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "%@を未確認にしました";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "%@を「未確認」にしました";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "%@は別端末で未確認にしました";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "別の端末で %@を「未確認」にしました";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "%@を確認済みにしました";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "%@を「確認済み」にしました";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "%@は別端末で確認済みにしました";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "別の端末で %@を「確認済み」にしました";
 
 /* Generic message indicating that verification state changed for a given user. */
 "VERIFICATION_STATE_CHANGE_GENERIC" = "認証状態が変わりました";

@@ -39,6 +39,9 @@ public enum ThemeIcon: UInt {
     case messageActionDetails
     case messageActionDelete
     case messageActionSave
+
+    case compose
+    case phone
 }
 
 @objc
@@ -122,6 +125,11 @@ public extension Theme {
         case .messageActionSave:
             // TODO: We're missing dark theme version of this icon.
             return "download-filled-24"
+
+        case .compose:
+            return isDarkThemeEnabled ? "compose-solid-24" : "compose-outline-24"
+        case .phone:
+            return isDarkThemeEnabled ? "button_phone_white" : "phone-right-outline-24"
         }
     }
 }

@@ -1489,7 +1489,7 @@ typedef enum : NSUInteger {
         // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
         // The contents of the navigation bar are cramped in this view.
         UIButton *callButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        UIImage *image = [[UIImage imageNamed:@"button_phone_white"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        UIImage *image = [[Theme iconImage:ThemeIconPhone] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         [callButton setImage:image forState:UIControlStateNormal];
         
         if (OWSWindowManager.sharedManager.hasCall) {
@@ -3749,6 +3749,7 @@ typedef enum : NSUInteger {
 
     [self createInputToolbar];
     [self updateInputToolbarLayout];
+    [self updateBarButtonItems];
 
     [self.collectionView reloadData];
 }

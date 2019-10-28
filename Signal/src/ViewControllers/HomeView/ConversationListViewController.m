@@ -281,6 +281,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         self.tableView.backgroundColor = Theme.secondaryBackgroundColor;
         [self.searchBar switchToStyle:OWSSearchBarStyle_SecondaryBar];
     }
+
+    [self updateBarButtonItems];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
@@ -802,14 +804,14 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     self.navigationItem.leftBarButtonItem = settingsButton;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, settingsButton);
 
-    UIBarButtonItem *compose = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"compose-24"]
+    UIBarButtonItem *compose = [[UIBarButtonItem alloc] initWithImage:[Theme iconImage:ThemeIconCompose]
                                                                 style:UIBarButtonItemStylePlain
                                                                target:self
                                                                action:@selector(showNewConversationView)];
     compose.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"compose");
 
     if (SSKFeatureFlags.cameraFirstCaptureFlow) {
-        UIBarButtonItem *camera = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"camera-outline-24"]
+        UIBarButtonItem *camera = [[UIBarButtonItem alloc] initWithImage:[Theme iconImage:ThemeIconCameraButton]
                                                                    style:UIBarButtonItemStylePlain
                                                                   target:self
                                                                   action:@selector(showCameraView)];
