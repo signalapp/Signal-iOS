@@ -238,6 +238,19 @@ void AssertIsOnSendingQueue()
         return;
     }
 
+    if (TSAccountManager.sharedInstance.isDeregistered) {
+        OWSLogWarn(@"Unable to send because the application is deregistered.");
+        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeAppDeregistered,
+            TSAccountManager.sharedInstance.isPrimaryDevice
+                ? NSLocalizedString(@"ERROR_SENDING_DEREGISTERED",
+                    @"Error indicating a send failure due to a deregistered application.")
+                : NSLocalizedString(
+                    @"ERROR_SENDING_DELINKED", @"Error indicating a send failure due to a delinked application."));
+        error.isRetryable = NO;
+        [self reportError:error];
+        return;
+    }
+
     // If the message has been deleted, abort send.
     __block TSInteraction *_Nullable latestCopy;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {

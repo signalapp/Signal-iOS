@@ -37,6 +37,10 @@ public extension TSAccountManager {
         return isRegistered && self.storedDeviceId() == OWSDevicePrimaryDeviceId
     }
 
+    var isPrimaryDevice: Bool {
+        return storedDeviceId() == OWSDevicePrimaryDeviceId
+    }
+
     var storedServerUsername: String? {
         guard let serviceIdentifier = self.localAddress?.serviceIdentifier else {
             return nil

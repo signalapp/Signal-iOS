@@ -31,8 +31,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
++ (void)showRelinkingUI
+{
+    OWSLogInfo(@"showRelinkingUI");
+
+    if (![self.tsAccountManager resetForReregistration]) {
+        OWSFailDebug(@"could not reset for re-registration.");
+        return;
+    }
+
+    [Environment.shared.preferences unsetRecordedAPNSTokens];
+
+    [SecondaryLinkingQRCodeViewController presentRelinkingFlow];
+}
+
 + (void)showReregistrationUIFromViewController:(UIViewController *)fromViewController
 {
+    // If this is not the primary device, jump directly to the re-linking flow.
+    if (!self.tsAccountManager.isPrimaryDevice) {
+        [self showRelinkingUI];
+        return;
+    }
+
     ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:nil message:nil];
 
     [actionSheet

@@ -321,16 +321,18 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, reminderStackView);
 
     __weak ConversationListViewController *weakSelf = self;
-    ReminderView *deregisteredView =
-        [ReminderView nagWithText:NSLocalizedString(@"DEREGISTRATION_WARNING",
-                                      @"Label warning the user that they have been de-registered.")
-                        tapAction:^{
-                            ConversationListViewController *strongSelf = weakSelf;
-                            if (!strongSelf) {
-                                return;
-                            }
-                            [RegistrationUtils showReregistrationUIFromViewController:strongSelf];
-                        }];
+    ReminderView *deregisteredView = [ReminderView
+        nagWithText:TSAccountManager.sharedInstance.isPrimaryDevice
+            ? NSLocalizedString(@"DEREGISTRATION_WARNING", @"Label warning the user that they have been de-registered.")
+            : NSLocalizedString(
+                @"UNLINKED_WARNING", @"Label warning the user that they have been unlinked from their primary device.")
+          tapAction:^{
+              ConversationListViewController *strongSelf = weakSelf;
+              if (!strongSelf) {
+                  return;
+              }
+              [RegistrationUtils showReregistrationUIFromViewController:strongSelf];
+          }];
     _deregisteredView = deregisteredView;
     [reminderStackView addArrangedSubview:deregisteredView];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, deregisteredView);

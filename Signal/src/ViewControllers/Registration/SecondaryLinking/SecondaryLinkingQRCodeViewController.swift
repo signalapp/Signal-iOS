@@ -14,6 +14,16 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
         super.init(onboardingController: provisioningController.onboardingController)
     }
 
+    @objc
+    public static func presentRelinkingFlow() {
+        let provisioningController = ProvisioningController(onboardingController: OnboardingController())
+        let vc = SecondaryLinkingQRCodeViewController(provisioningController: provisioningController)
+        let navController = OWSNavigationController(rootViewController: vc)
+        provisioningController.awaitProvisioning(from: vc)
+        navController.isNavigationBarHidden = true
+        CurrentAppContext().mainWindow?.rootViewController = navController
+    }
+
     let qrCodeView = ProvisioningQRCodeView()
 
     override public func loadView() {
