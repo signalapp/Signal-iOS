@@ -32,6 +32,9 @@ public enum ThemeIcon: UInt {
     case attachmentFile
     case attachmentGif
     case attachmentLocation
+
+    case compose
+    case phone
 }
 
 @objc
@@ -100,6 +103,11 @@ public extension Theme {
             return isDarkThemeEnabled ? "gif-outline-32" :  "gif-outline-32-with-background"
         case .attachmentLocation:
             return isDarkThemeEnabled ? "location-outline-32" :  "location-outline-32-with-background"
+
+        case .compose:
+            return isDarkThemeEnabled ? "compose-solid-24" : "compose-outline-24"
+        case .phone:
+            return isDarkThemeEnabled ? "button_phone_white" : "phone-right-outline-24"
         }
     }
 }
