@@ -158,17 +158,13 @@ public class ActionSheetController: OWSViewController {
         view.addGestureRecognizer(tapGestureRecognizer)
     }
 
-    public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-
-        coordinator.animate(alongsideTransition: { _ in
-            self.view.frame = CGRect(origin: .zero, size: size)
-            self.view.layoutIfNeeded()
-        }, completion: nil)
-    }
-
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+
+        // Ensure the scrollView's layout has completed
+        // as we're about to use its bounds to calculate
+        // the masking view and contentOffset.
+        scrollView.layoutIfNeeded()
 
         let cornerRadius: CGFloat = 16
         let path = UIBezierPath(
@@ -465,6 +461,15 @@ private class ActionSheetPresentationController: UIPresentationController {
         }, completion: { _ in
             self.backdropView.removeFromSuperview()
         })
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        guard let presentedView = presentedView else { return }
+        coordinator.animate(alongsideTransition: { _ in
+            presentedView.frame = self.frameOfPresentedViewInContainerView
+            presentedView.layoutIfNeeded()
+        }, completion: nil)
     }
 }
 
