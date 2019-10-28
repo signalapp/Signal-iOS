@@ -114,6 +114,12 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
     return nil != self.reregistrationPhoneNumber;
 }
 
+- (void)log
+{
+    OWSLogInfo(@"isRegistered: %d", self.isRegistered);
+    OWSLogInfo(@"isDeregistered: %d", self.isDeregistered);
+}
+
 @end
 
 #pragma mark -
@@ -223,7 +229,9 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 
 - (void)warmCaches
 {
-    [self getOrLoadAccountStateWithSneakyTransaction];
+    TSAccountState *accountState = [self getOrLoadAccountStateWithSneakyTransaction];
+
+    [accountState log];
 }
 
 - (nullable NSString *)phoneNumberAwaitingVerification
