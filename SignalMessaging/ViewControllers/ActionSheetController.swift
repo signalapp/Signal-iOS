@@ -31,7 +31,7 @@ public class ActionSheetController: OWSViewController {
     @objc
     public var customHeader: UIView? {
         didSet {
-            if let oldValue = oldValue { oldValue.removeFromSuperview() }
+            oldValue?.removeFromSuperview()
             guard let customHeader = customHeader else { return }
             stackView.insertArrangedSubview(customHeader, at: 0)
         }

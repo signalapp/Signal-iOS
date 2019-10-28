@@ -176,10 +176,18 @@ private class MemberHeader: UIStackView {
         var fetchedDisplayName: String?
         var username: String?
 
-        databaseStorage.write { transaction in
-            fetchedThread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: transaction)
+        databaseStorage.read { transaction in
+            fetchedThread = TSContactThread.getWithContactAddress(address, transaction: transaction)
             fetchedDisplayName = self.contactsManager.displayName(for: address, transaction: transaction)
             username = self.profileManager.username(for: address, transaction: transaction)
+        }
+
+        // Only open a write transaction if we need to create a new thread record.
+        if fetchedThread == nil {
+            databaseStorage.write { transaction in
+                fetchedThread = TSContactThread(contactAddress: address)
+                fetchedThread?.anyInsert(transaction: transaction)
+            }
         }
 
         guard let thread = fetchedThread, let displayName = fetchedDisplayName else {
