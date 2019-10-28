@@ -1,0 +1,2982 @@
+/* Button text to dismiss missing contacts permission alert */
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Để sau";
+
+/* Action sheet item */
+"ACCEPT_NEW_IDENTITY_ACTION" = "Chấp nhận số an toàn mới";
+
+/* Accessibility label for attachment. */
+"ACCESSIBILITY_LABEL_ATTACHMENT" = "Tệp đính kèm";
+
+/* Accessibility label for audio. */
+"ACCESSIBILITY_LABEL_AUDIO" = "Âm thanh";
+
+/* Accessibility label for contact. */
+"ACCESSIBILITY_LABEL_CONTACT" = "Liên hệ";
+
+/* Accessibility label for media. */
+"ACCESSIBILITY_LABEL_MEDIA" = "Đa phương tiện";
+
+/* Accessibility label for message. */
+"ACCESSIBILITY_LABEL_MESSAGE" = "Tin nhắn";
+
+/* Accessibility label for messages sent by you. */
+"ACCESSIBILITY_LABEL_SENDER_SELF" = "Bạn";
+
+/* Accessibility label for stickers. */
+"ACCESSIBILITY_LABEL_STICKER" = "Nhãn dán";
+
+/* Label for 'audio call' button in contact view. */
+"ACTION_AUDIO_CALL" = "Cuộc gọi Signal";
+
+/* Label for 'invite' button in contact view. */
+"ACTION_INVITE" = "Mời dùng Signal";
+
+/* Label for 'send message' button in contact view.
+   Label for button that lets you send a message to a contact. */
+"ACTION_SEND_MESSAGE" = "Gửi tin nhắn";
+
+/* Label for 'share contact' button. */
+"ACTION_SHARE_CONTACT" = "Chia sẻ liên hệ";
+
+/* Label for 'video call' button in contact view. */
+"ACTION_VIDEO_CALL" = "Gọi video";
+
+/* Message shown in conversation view that offers to share your profile with a group. */
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Bạn có muốn chia sẻ hồ sơ với nhóm này?";
+
+/* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
+"ADD_TO_CONTACTS_OFFER" = "Bạn có muốn thêm người dùng này vào danh bạ?";
+
+/* Message shown in conversation view that offers to share your profile with a user. */
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Bạn có muốn chia sẻ hồ sơ với người này?";
+
+/* generic button text to acknowledge that the corresponding text was read. */
+"ALERT_ACTION_ACKNOWLEDGE" = "Đã rõ";
+
+/* The label for the 'discard' button in alerts and action sheets. */
+"ALERT_DISCARD_BUTTON" = "Huỷ";
+
+/* The label for the 'don't save' button in action sheets. */
+"ALERT_DONT_SAVE" = "Không lưu";
+
+/* No comment provided by engineer. */
+"ALERT_ERROR_TITLE" = "Lỗi";
+
+/* The label for the 'save' button in action sheets. */
+"ALERT_SAVE" = "Lưu";
+
+/* notification action */
+"ANSWER_CALL_BUTTON_TITLE" = "Trả lời";
+
+/* notification body */
+"APN_Message" = "Tin Nhắn Mới!";
+
+/* Message for the 'app launch failed' alert. */
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Không thể chạy Signal. Vui lòng gửi nhật kí lỗi đến support@signal.org để chúng tôi có thể xử lí vấn đề này.";
+
+/* Title for the 'app launch failed' alert. */
+"APP_LAUNCH_FAILURE_ALERT_TITLE" = "Lỗi";
+
+/* Error indicating that the app could not launch because the database could not be loaded. */
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Không thể tải cơ sở dữ liệu";
+
+/* Error indicating that the app could not launch without reverting unknown database migrations. */
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Vui lòng cập nhật phiên bản mới nhất của Signal.";
+
+/* Error indicating that the app could not launch without reverting unknown database migrations. */
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Phiên bản cơ sở dữ liệu không rõ.";
+
+/* Text prompting user to edit their profile name. */
+"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Điền tên của bạn";
+
+/* Label for the 'dismiss' button in the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Để sau";
+
+/* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Phiên bản %@ đã có trên App Store";
+
+/* Title for the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_TITLE" = "Đã có phiên bản mới của Signal";
+
+/* Label for the 'update' button in the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Cập nhật";
+
+/* Name indicating that the dark theme is enabled. */
+"APPEARANCE_SETTINGS_DARK_THEME_NAME" = "Tối";
+
+/* Name indicating that the light theme is enabled. */
+"APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "Sáng";
+
+/* Name indicating that the system theme is enabled. */
+"APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "Hệ thống";
+
+/* Name of application */
+"APPLICATION_NAME" = "Signal";
+
+/* Pressing this button moves a thread from the inbox to the archive */
+"ARCHIVE_ACTION" = "Lưu trữ";
+
+/* No comment provided by engineer. */
+"ATTACHMENT" = "Tệp đính kèm";
+
+/* One-line label indicating the user can add no more text to the attachment caption. */
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Đạt giới hạn tiêu đề";
+
+/* placeholder text for an empty captioning field */
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Thêm tiêu đề...";
+
+/* Title for 'caption' mode of the attachment approval view. */
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Tiêu đề";
+
+/* alert text when Signal was unable to save a copy of the attachment to the system photo library */
+"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Không thể lưu";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Loại tệp: %@";
+
+/* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Kích cỡ: %@";
+
+/* toast alert shown after user taps the 'save' button */
+"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Đã lưu";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Gửi";
+
+/* Generic filename for an attachment with no known name */
+"ATTACHMENT_DEFAULT_FILENAME" = "Tệp đính kèm";
+
+/* Status label when an attachment download has failed. */
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Tải xuống thất bại. Nhấn để thử lại.";
+
+/* The title of the 'attachment error' alert. */
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Lỗi gửi tệp đính kèm";
+
+/* Attachment error message for image attachments which could not be converted to JPEG */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Không thể chuyển đổi định dạng ảnh.";
+
+/* Attachment error message for video attachments which could not be converted to MP4 */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Không thể xử lí video.";
+
+/* Attachment error message for image attachments which cannot be parsed */
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Không thể thêm ảnh.";
+
+/* Attachment error message for image attachments in which metadata could not be removed */
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Không thể loại bỏ metadata khỏi ảnh.";
+
+/* Attachment error message for image attachments which could not be resized */
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Không thể thay đổi kích cỡ ảnh.";
+
+/* Attachment error message for attachments whose data exceed file size limits */
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Tệp đính kèm quá lớn.";
+
+/* Attachment error message for attachments with invalid data */
+"ATTACHMENT_ERROR_INVALID_DATA" = "Tệp đính kèm chứa nội dung không hợp lệ.";
+
+/* Attachment error message for attachments with an invalid file format */
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Tệp đính kèm có định dạng không hợp lệ.";
+
+/* Attachment error message for attachments without any data */
+"ATTACHMENT_ERROR_MISSING_DATA" = "Tệp đính kèm rỗng.";
+
+/* Accessibility hint describing what you can do with the attachment button */
+"ATTACHMENT_HINT" = "Chọn tệp đa phương tiện để gửi";
+
+/* A button to open the camera from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_CAMERA" = "Máy ảnh";
+
+/* A button to select a contact from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_CONTACT" = "Liên hệ";
+
+/* A button to select a file from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_FILE" = "Tệp";
+
+/* A button to select a GIF from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_GIF" = "GIF";
+
+/* A button to select a location from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_LOCATION" = "Vị trí";
+
+/* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Cấp quyền truy cập ảnh trong cài đặt để gửi chúng.";
+
+/* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Sau khi đã chụp ảnh, bạn sẽ gửi được ảnh ở đây.";
+
+/* Accessibility label for attaching photos */
+"ATTACHMENT_LABEL" = "Tệp đính kèm";
+
+/* Alert title when picking a document fails for an unknown reason */
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Không thể chọn tài liệu.";
+
+/* Alert body when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Vui lòng nén và gửi tệp nén của tệp hoặc thư mục này.";
+
+/* Alert title when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Tệp tin không hỗ trợ";
+
+/* Short text label for a voice message attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Tin nhắn thoại";
+
+/* A string indicating that an audio message is playing. */
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Tin nhắn âm thanh";
+
+/* action sheet button title to enable built in speaker during a call */
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Loa";
+
+/* return to the previous screen */
+"BACK_BUTTON" = "Trở lại";
+
+/* Error indicating the backup export could not export the user's data. */
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Không thể xuất dữ liệu sao lưu.";
+
+/* Error indicating that the app received an invalid response from CloudKit. */
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Phản hồi dịch vụ không hợp lệ";
+
+/* Indicates that the cloud is being cleaned up. */
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Đang dọn dẹp sao lưu";
+
+/* Indicates that the backup export is being configured. */
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Đang tiến hành sao lưu";
+
+/* Indicates that the database data is being exported. */
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Xuất dữ liệu";
+
+/* Indicates that the backup export data is being exported. */
+"BACKUP_EXPORT_PHASE_EXPORT" = "Xuất bản sao lưu";
+
+/* Indicates that the backup export data is being uploaded. */
+"BACKUP_EXPORT_PHASE_UPLOAD" = "Tải lên bản sao lưu";
+
+/* Error indicating the backup import could not import the user's data. */
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Không thể nhập bản sao lưu.";
+
+/* Indicates that the backup import is being configured. */
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Đang thiết đặt sao lưu";
+
+/* Indicates that the backup import data is being downloaded. */
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Đang tải dữ liệu sao lưu";
+
+/* Indicates that the backup import data is being finalized. */
+"BACKUP_IMPORT_PHASE_FINALIZING" = "Đang hoàn tất sao lưu";
+
+/* Indicates that the backup import data is being imported. */
+"BACKUP_IMPORT_PHASE_IMPORT" = "Đang nhập bản sao lưu.";
+
+/* Indicates that the backup database is being restored. */
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Đang khôi phục dữ liệu";
+
+/* Indicates that the backup import data is being restored. */
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Đang khôi phục các tệp";
+
+/* Label for the backup restore decision section. */
+"BACKUP_RESTORE_DECISION_TITLE" = "Hiện có sẵn bản sao lưu";
+
+/* Label for the backup restore description. */
+"BACKUP_RESTORE_DESCRIPTION" = "Đang khôi phục bản sao lưu";
+
+/* Label for the backup restore progress. */
+"BACKUP_RESTORE_PROGRESS" = "Tiến độ";
+
+/* Label for the backup restore status. */
+"BACKUP_RESTORE_STATUS" = "Trạng thái";
+
+/* Error shown when backup fails due to an unexpected error. */
+"BACKUP_UNEXPECTED_ERROR" = "Lỗi sao lưu";
+
+/* An explanation of the consequences of blocking a group. */
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Bạn sẽ không còn nhận tin nhắn hay cập nhật từ nhóm này nữa.";
+
+/* Button label for the 'block' button */
+"BLOCK_LIST_BLOCK_BUTTON" = "Chặn";
+
+/* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Chặn và rời nhóm \"%@\" ?";
+
+/* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Chặn %@?";
+
+/* Section header for groups that have been blocked */
+"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Các nhóm đã chặn";
+
+/* Section header for users that have been blocked */
+"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Người dùng đã chặn";
+
+/* Button label for the 'unblock' button */
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Bỏ chặn";
+
+/* Action sheet body when confirming you want to unblock a group */
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Các thành viên đang trong nhóm có thể thêm lại bạn vào nhóm";
+
+/* Action sheet title when confirming you want to unblock a group. */
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Bỏ chặn nhóm này?";
+
+/* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Bỏ chặn %@?";
+
+/* A label for the block button in the block list view */
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Chặn";
+
+/* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@đã bị chặn.";
+
+/* The title of the 'user blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Đã chặn người dùng";
+
+/* The title of the 'group blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Đã chặn nhóm";
+
+/* The message of the 'You can't block yourself' alert. */
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Bạn không thể chặn chính mình.";
+
+/* The title of the 'You can't block yourself' alert. */
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Lỗi";
+
+/* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ đã được bỏ chặn.";
+
+/* Alert body after unblocking a group. */
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Các thành viên đang trong nhóm có thể thêm lại bạn vào nhóm.";
+
+/* Action sheet that will block an unknown user. */
+"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Chặn";
+
+/* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
+"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Chặn %@?";
+
+/* An explanation of the consequences of blocking another user. */
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Người dùng bị chặn sẽ không thể nhắn tin hay gọi bạn.";
+
+/* Label for 'continue' button. */
+"BUTTON_CONTINUE" = "Tiếp tục";
+
+/* Label for generic done button. */
+"BUTTON_DONE" = "Xong";
+
+/* Label for the 'next' button. */
+"BUTTON_NEXT" = "Tiếp";
+
+/* Label for the 'okay' button. */
+"BUTTON_OKAY" = "OK";
+
+/* Button text to enable batch selection mode */
+"BUTTON_SELECT" = "Chọn";
+
+/* Label for the 'submit' button. */
+"BUTTON_SUBMIT" = "Gửi";
+
+/* Label for button that lets users call a contact again. */
+"CALL_AGAIN_BUTTON_TITLE" = "Gọi Lại";
+
+/* Alert message when calling and permissions for microphone are missing */
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Hãy bật quyền truy cập micro trong cài đặt iOS để gọi và ghi tin nhắn âm thanh với Signal.";
+
+/* Alert title when calling and permissions for microphone are missing */
+"CALL_AUDIO_PERMISSION_TITLE" = "Cần quyền truy cập micro";
+
+/* notification body */
+"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Cuộc gọi đến";
+
+/* Accessibility label for placing call button */
+"CALL_LABEL" = "Gọi";
+
+/* notification body */
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Đã lỡ cuộc gọi vì mã số an toàn của người gọi đã thay đổi.";
+
+/* notification body */
+"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Cuộc gọi nhỡ";
+
+/* Call setup status label after outgoing call times out */
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Không hồi đáp";
+
+/* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
+"CALL_STATUS_FORMAT" = "Signal %@";
+
+/* Label for call button for alert offering to call a user. */
+"CALL_USER_ALERT_CALL_BUTTON" = "Gọi";
+
+/* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "Bạn có muốn gọi %@?";
+
+/* Title for alert offering to call a user. */
+"CALL_USER_ALERT_TITLE" = "Gọi?";
+
+/* Accessibility label for accepting incoming calls */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Nhận cuộc gọi đến";
+
+/* Accessibility label for selection the audio source */
+"CALL_VIEW_AUDIO_SOURCE_LABEL" = "Âm thanh";
+
+/* Accessibility label for declining incoming calls */
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Từ chối cuộc gọi đến";
+
+/* tooltip label when remote party has enabled their video */
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "Nhấn để bật camera";
+
+/* Accessibility label for hang up call */
+"CALL_VIEW_HANGUP_LABEL" = "Kết thúc cuộc gọi";
+
+/* Accessibility label for muting the microphone */
+"CALL_VIEW_MUTE_LABEL" = "Im lặng";
+
+/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Bạn có thể bật tính năng Liên kết cuộc gọi iOS trong cài đặt riêng tư Signal để nhận cuộc gọi tới khi màn hình khóa.";
+
+/* Reminder to the user of the benefits of disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Bạn có thể bật tính năng Liên kết cuộc gọi iOS trong cài đặt riêng tư Signal để thấy tên và số điện thoại người gọi trên màn hình khóa.";
+
+/* Label for button that dismiss the call view's settings nag. */
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Để sau";
+
+/* Label for button that shows the privacy settings. */
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Hiện cài đặt riêng tư";
+
+/* Accessibility label to toggle front- vs. rear-facing camera */
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Xoay máy ảnh";
+
+/* Accessibility label to switch to audio only */
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Chuyển sang gọi thoại";
+
+/* Accessibility label to switch to video call */
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Chuyển sang gọi video";
+
+/* Label for the 'return to call' banner. */
+"CALL_WINDOW_RETURN_TO_CALL" = "Nhấn để quay trở lại cuộc gọi";
+
+/* notification action */
+"CALLBACK_BUTTON_TITLE" = "Gọi lại";
+
+/* The generic name used for calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Người dùng Signal";
+
+/* Accessibility hint describing what you can do with the camera button */
+"CAMERA_BUTTON_HINT" = "Chụp một bức ảnh và gửi đi";
+
+/* Accessibility label for camera button. */
+"CAMERA_BUTTON_LABEL" = "Máy ảnh";
+
+/* Message for alert explaining that a user cannot be verified. */
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Người dùng này không thể được xác minh cho tới khi bạn đã nhắn tin với họ.";
+
+/* Title for alert explaining that a user cannot be verified. */
+"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Lỗi";
+
+/* Title for the 'censorship circumvention country' view. */
+"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Chọn quốc gia";
+
+/* The label for the 'do not restore backup' button. */
+"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Không khôi phục";
+
+/* Message for alert shown when the app failed to check for an existing backup. */
+"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Không thể xác minh rằng bản sao lưu có thể được khôi phục hay không.";
+
+/* Title for alert shown when the app failed to check for an existing backup. */
+"CHECK_FOR_BACKUP_FAILED_TITLE" = "Lỗi";
+
+/* The label for the 'restore backup' button. */
+"CHECK_FOR_BACKUP_RESTORE" = "Khôi phục";
+
+/* Error indicating that the app could not determine that user's iCloud account status */
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal không thể xác minh tình trạng tài khoản iCloud của bạn. Hãy đăng nhập iCloud trong cài đặt iOS để sao lưu dữ liệu Signal.";
+
+/* Error indicating that user does not have an iCloud account. */
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Không tìm thấy tài khoản iCloud. Hãy đăng nhập iCloud trong cài đặt iOS để sao lưu dữ liệu Signal.";
+
+/* Error indicating that the app was prevented from accessing the user's iCloud account. */
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal đã bị từ chối truy cập tài khoản iCloud để sao lưu. Hãy cấp cho Signal quyền truy cập tài khoản iCloud trong cài đặt iOS để sao lưu dữ liệu Signal.";
+
+/* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
+"COLOR_PICKER_DEMO_MESSAGE_1" = "Chọn màu sắc của tin nhắn gửi đi trong cuộc trò chuyện này.";
+
+/* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
+"COLOR_PICKER_DEMO_MESSAGE_2" = "Chỉ bạn mới thấy màu sắc bạn chọn.";
+
+/* Modal Sheet title when picking a conversation color. */
+"COLOR_PICKER_SHEET_TITLE" = "Màu cuộc trò chuyện";
+
+/* Activity Sheet label */
+"COMPARE_SAFETY_NUMBER_ACTION" = "So sánh với Bộ nhớ đệm";
+
+/* Table section header for contact listing when composing a new message */
+"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Liên hệ";
+
+/* Table section header for group listing when composing a new message */
+"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Nhóm";
+
+/* Table section header for phone number search when composing a new message */
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Tìm kiếm số điện thoại";
+
+/* Table section header for username search when composing a new message */
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Tìm kiếm tên người dùng";
+
+/* Multi-line label explaining why compose-screen contact picker is empty. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Bạn có thể cấp quyền truy cập danh bạ trong cài đặt iOS để thấy những liên hệ nào đang dùng Signal.";
+
+/* No comment provided by engineer. */
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Thao tác này sẽ cài lại ứng dụng bằng cách xóa tất cả tin nhắn và hủy đăng kí tài khoản của bạn khỏi máy chủ. Ứng dụng sẽ đóng sau khi quá trình hoàn tất.";
+
+/* No comment provided by engineer. */
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Bạn có chắc muốn xoá tài khoản?";
+
+/* Alert body */
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Bạn sẽ không thể gửi hoặc nhận tin nhắn trong nhóm này nữa.";
+
+/* Alert title */
+"CONFIRM_LEAVE_GROUP_TITLE" = "Bạn có chắc chắn muốn rời?";
+
+/* Button text */
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Liên kết thiết bị mới";
+
+/* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ có thể đã cài lại ứng dụng hoặc đổi thiết bị. Hãy xác minh mã số an toàn để đảm bảo tính riêng tư.";
+
+/* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Mã số an toàn với %@ đã thay đổi";
+
+/* No comment provided by engineer. */
+"CONFIRMATION_TITLE" = "Xác nhận";
+
+/* Label for a contact's postal address. */
+"CONTACT_ADDRESS" = "Địa chỉ";
+
+/* An indicator that a contact or group has been blocked. */
+"CONTACT_CELL_IS_BLOCKED" = "Đã chặn";
+
+/* An indicator that a contact is no longer verified. */
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Chưa xác minh";
+
+/* No comment provided by engineer. */
+"CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Số chưa đăng ký";
+
+/* Label for the 'edit name' button in the contact share approval view. */
+"CONTACT_EDIT_NAME_BUTTON" = "Sửa";
+
+/* Label for a contact's email address. */
+"CONTACT_EMAIL" = "Email";
+
+/* Label for the 'city' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_CITY" = "Thành phố";
+
+/* Label for the 'country' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_COUNTRY" = "Quốc gia";
+
+/* Label for the 'neighborhood' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Quận huyện";
+
+/* Label for the 'pobox' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_POBOX" = "Hòm thư";
+
+/* Label for the 'postcode' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_POSTCODE" = "Mã vùng";
+
+/* Label for the 'region' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_REGION" = "Vùng";
+
+/* Label for the 'street' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_STREET" = "Đường";
+
+/* Label for the 'family name' field of a contact. */
+"CONTACT_FIELD_FAMILY_NAME" = "Họ";
+
+/* Label for the 'given name' field of a contact. */
+"CONTACT_FIELD_GIVEN_NAME" = "Tên";
+
+/* Label for the 'middle name' field of a contact. */
+"CONTACT_FIELD_MIDDLE_NAME" = "Tên đệm";
+
+/* Label for the 'name prefix' field of a contact. */
+"CONTACT_FIELD_NAME_PREFIX" = "Danh xưng";
+
+/* Label for the 'name suffix' field of a contact. */
+"CONTACT_FIELD_NAME_SUFFIX" = "Hậu tố";
+
+/* Label for the 'organization' field of a contact. */
+"CONTACT_FIELD_ORGANIZATION" = "Tổ chức";
+
+/* Label for a contact's phone number. */
+"CONTACT_PHONE" = "Số điện thoại";
+
+/* table cell subtitle when contact card has no email */
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Không có sẵn email.";
+
+/* table cell subtitle when contact card has no known phone number */
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Không có sẵn số điện thoại.";
+
+/* navbar title for contact picker when sharing a contact */
+"CONTACT_PICKER_TITLE" = "Chọn Liên Hệ";
+
+/* Title for the 'Approve contact share' view. */
+"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Chia sẻ liên hệ";
+
+/* Title for the 'edit contact share name' view. */
+"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Sửa tên";
+
+/* Error indicating that an invalid contact cannot be shared. */
+"CONTACT_SHARE_INVALID_CONTACT" = "Liên hệ không hợp lệ.";
+
+/* Error indicating that at least one contact field must be selected before sharing a contact. */
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Chưa chọn liên hệ";
+
+/* Label for 'open address in maps app' button in contact view. */
+"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Mở trong Maps";
+
+/* Label for 'open email in email app' button in contact view. */
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Gửi Email";
+
+/* Indicates that a contact has no name. */
+"CONTACT_WITHOUT_NAME" = "Liên hệ Chưa lưu tên";
+
+/* Message for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Thao tác này không thể quay lại được.";
+
+/* Title for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Xoá Cuộc trò chuyện?";
+
+/* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Bạn không thể chọn nhiều hơn %@ cuộc trò chuyện.";
+
+/* table section header for section containing groups */
+"CONVERSATION_PICKER_SECTION_GROUPS" = "Nhóm";
+
+/* table section header for section containing recent conversations */
+"CONVERSATION_PICKER_SECTION_RECENTS" = "Cuộc trò chuyện Gần đây";
+
+/* table section header for section containing contacts */
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Liên hệ";
+
+/* navbar header */
+"CONVERSATION_PICKER_TITLE" = "Chọn Người nhận";
+
+/* keyboard toolbar label when no messages match the search string */
+"CONVERSATION_SEARCH_NO_RESULTS" = "Không có kết quả";
+
+/* keyboard toolbar label when exactly 1 message matches the search string */
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 kết quả";
+
+/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d trong số %d kết quả";
+
+/* title for conversation settings screen */
+"CONVERSATION_SETTINGS" = "Cài đặt cuộc hội thoại";
+
+/* Label for 'new contact' button in conversation settings view. */
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Thêm vào Liên hệ Có sẵn";
+
+/* button in conversation settings view. */
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Thêm vào Liên hệ trong Hệ thống";
+
+/* table cell label in conversation settings */
+"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Chặn Nhóm này";
+
+/* table cell label in conversation settings */
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Chặn Người dùng này";
+
+/* Navbar title when viewing settings for a 1-on-1 thread */
+"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Thông tin Liên hệ";
+
+/* Label for table cell which leads to picking a new conversation color */
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Màu cuộc trò chuyện";
+
+/* Navbar title when viewing settings for a group thread */
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Thông tin Nhóm";
+
+/* Title of the 'mute this thread' action sheet. */
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Im lặng";
+
+/* label for 'mute thread' cell in conversation settings */
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "Im lặng";
+
+/* Indicates that the current thread is not muted. */
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Không tắt thông báo";
+
+/* Label for button to mute a thread for a day. */
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Tắt thông báo trong một ngày";
+
+/* Label for button to mute a thread for a hour. */
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Tắt thông báo trong một giờ";
+
+/* Label for button to mute a thread for a minute. */
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Tắt thông báo trong một phút";
+
+/* Label for button to mute a thread for a week. */
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Tắt thông báo trong một tuần";
+
+/* Label for button to mute a thread for a year. */
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Tắt thông báo trong một năm";
+
+/* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
+"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "cho đến %@";
+
+/* Label for 'new contact' button in conversation settings view. */
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "Tạo Liên hệ Mới";
+
+/* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
+"CONVERSATION_SETTINGS_SEARCH" = "Tìm Cuộc trò chuyện";
+
+/* Label for button that opens conversation settings. */
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Nhấn để Thay đổi";
+
+/* Label for button to unmute a thread. */
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Tắt im lặng";
+
+/* Indicates that user is in the system contacts list. */
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Liên hệ này đã có trong danh bạ của bạn";
+
+/* Indicates that user's profile has been shared with a group. */
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Nhóm này có thể xem thông tin cá nhân của bạn";
+
+/* Indicates that user's profile has been shared with a user. */
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Người dùng này có thể xem thông tin cá nhân của bạn";
+
+/* Button to confirm that user wants to share their profile with a user or group. */
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Chia sẻ Thông tin ";
+
+/* Action that shares user profile with a group. */
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Chia sẻ Thông tin cá nhân của bạn";
+
+/* Action that shares user profile with a user. */
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Chia sẻ Thông tin cá nhân của bạn";
+
+/* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
+"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Thêm vào danh bạ";
+
+/* Message shown in conversation view that offers to share your profile with a user. */
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Chia sẻ Thông tin cá nhân của bạn với Người dùng này";
+
+/* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
+"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Người dùng này không trong danh bạ của bạn";
+
+/* Indicates that the app is loading more messages in this conversation. */
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Đang tải thêm tin nhắn...";
+
+/* Indicator on truncated text messages that they can be tapped to see the entire text message. */
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Nhấn để xem thêm";
+
+/* Message shown in conversation view that offers to block an unknown user. */
+"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Chặn Người dùng này";
+
+/* ActionSheet title */
+"CORRUPTED_SESSION_DESCRIPTION" = "Đặt lại phiên này sẽ cho phép bạn nhận các tin nhắn trong tương lai từ %@, nhưng bạn không thể khôi phục các tin nhắn đã hỏng.";
+
+/* No comment provided by engineer. */
+"COUNTRYCODE_SELECT_TITLE" = "Chọn Mã quốc gia";
+
+/* Title for the 'crop/scale image' dialog. */
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "Di chuyển và Thay đổi tỉ lệ";
+
+/* Subtitle shown while the app is updating its database. */
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "Việc này có thể mất vài phút";
+
+/* Title shown while the app is updating its database. */
+"DATABASE_VIEW_OVERLAY_TITLE" = "Đang tối ưu hoá cơ sở dữ liệu";
+
+/* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
+"DATE_HOURS_AGO_FORMAT" = "%@ giờ trước";
+
+/* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
+"DATE_MINUTES_AGO_FORMAT" = "%@ phút trước";
+
+/* The present; the current time. */
+"DATE_NOW" = "Vừa xong";
+
+/* The current day. */
+"DATE_TODAY" = "Hôm nay";
+
+/* The day before today. */
+"DATE_YESTERDAY" = "Ngày hôm qua";
+
+/* Error indicating that the debug logs could not be copied. */
+"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Không thể sao chép thông tin";
+
+/* Error indicating that the debug logs could not be packaged. */
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Không thể đóng gói thông tin ";
+
+/* Error indicating that a debug log could not be uploaded. */
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Không thể tải lên thông tin sự cố";
+
+/* Message of the debug log alert. */
+"DEBUG_LOG_ALERT_MESSAGE" = "Bạn muốn làm gì với đường dẫn ghi chép thông tin này?";
+
+/* Error indicating that no debug logs could be found. */
+"DEBUG_LOG_ALERT_NO_LOGS" = "Không thể tìm thấy ghi chép thông tin";
+
+/* Label for the 'Open a Bug Report' option of the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Mở Báo cáo Sự cố";
+
+/* Label for the 'copy link' option of the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Sao chép Đường dẫn";
+
+/* Label for the 'email debug log' option of the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Gửi email cho Bộ phận Hỗ trợ";
+
+/* Label for the 'send to self' option of the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Gửi cho bản thân";
+
+/* Label for the 'Share' option of the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_SHARE" = "Chia sẻ";
+
+/* Title of the alert shown for failures while uploading debug logs.
+   Title of the debug log alert. */
+"DEBUG_LOG_ALERT_TITLE" = "Thêm một bước nữa";
+
+/* Error indicating that the app could not launch the Email app. */
+"DEBUG_LOG_COULD_NOT_EMAIL" = "Không thể mở app Email";
+
+/* Message of the alert before redirecting to GitHub Issues. */
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Đường dẫn đã được sao chép. Bạn sẽ được chuyển sang danh sách sự cố của GitHub.";
+
+/* Title of the alert before redirecting to GitHub Issues. */
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Chuyển sang GitHub";
+
+/* Label for button that lets users re-register using the same phone number. */
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Đăng ký lại số điện thoại này";
+
+/* Label warning the user that they have been de-registered. */
+"DEREGISTRATION_WARNING" = "Thiết bị không còn được đăng ký. Số điện thoại có thể được đăng ký với Signal bằng một thiết bị khác. Nhấn để đăng ký lại.";
+
+/* {{Short Date}} when device last communicated with Signal Server. */
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Hoạt động gần đây nhất: %@";
+
+/* {{Short Date}} when device was linked. */
+"DEVICE_LINKED_AT_LABEL" = "Đã liên kết: %@";
+
+/* Alert title that can occur when viewing device manager. */
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Không thể cập nhật danh sách thiết bị.";
+
+/* table cell label in conversation settings */
+"DISAPPEARING_MESSAGES" = "Tin nhắn tự hủy";
+
+/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Tin nhắn trong cuộc trò chuyện này sẽ biến mất sau %@.";
+
+/* subheading in conversation settings */
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Khi bật, tin nhắn gửi và nhận trong cuộc hội thoại này sẽ biến mất sau khi đã được xem.";
+
+/* Accessibility hint that contains current timeout information */
+"DISAPPEARING_MESSAGES_HINT" = "Các tin nhắn hiện tại sẽ biến mất sau %@";
+
+/* Accessibility label for disappearing messages */
+"DISAPPEARING_MESSAGES_LABEL" = "Cài đặt tin nhắn tự hủy";
+
+/* Short text to dismiss current modal / actionsheet / screen */
+"DISMISS_BUTTON_TEXT" = "Bỏ qua";
+
+/* Section title for the 'domain fronting country' view. */
+"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Địa điểm Tránh Kiểm duyệt";
+
+/* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Bạn có thể cho phép quyền truy cập trong Cài đặt của iOS.";
+
+/* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal cần Quyền truy cập vào Danh bạ để thay đổi Thông tin Liên hệ";
+
+/* table cell label in conversation settings */
+"EDIT_GROUP_ACTION" = "Sửa nhóm";
+
+/* a title for the contacts section of the 'new/update group' view. */
+"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Liên hệ";
+
+/* The navbar title for the 'update group' view. */
+"EDIT_GROUP_DEFAULT_TITLE" = "Sửa nhóm";
+
+/* An indicator that a user is a new member of the group. */
+"EDIT_GROUP_NEW_MEMBER_LABEL" = "Đã thêm vào";
+
+/* The title for the 'update group' button. */
+"EDIT_GROUP_UPDATE_BUTTON" = "Cập nhật";
+
+/* The alert message if user tries to exit update group view without saving changes. */
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Bạn có muốn lưu các thay đổi của bạn về thông tin của nhóm này?";
+
+/* The alert title if user tries to exit update group view without saving changes. */
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Thay đổi chưa được lưu lại";
+
+/* Short name for edit menu item to copy contents of media message. */
+"EDIT_ITEM_COPY_ACTION" = "Sao chép";
+
+/* No comment provided by engineer. */
+"EDIT_TXT" = "Sửa";
+
+/* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
+"EMAIL_INVITE_BODY" = "Hey,\n\nTôi đang sử dụng Signal để trò chuyện trên iPhone. Các tin nhắn hoàn toàn được bảo mật. Tôi mời bạn cài đặt nó để chúng ta có thể nhắn tin hoặc gọi điện cho nhau.\n\nSignal đã có cho iPhone và Android. Tải về tại: %@\n\nSignal hoạt động giống như các ứng dụng nhắn tincác khác. Chúng ta có thể gửi ảnh và video, gọi cho nhau hoặc cùng nhau trò chuyện nhóm. Hay nhất là các thông tin chúng ta trao đổi hoàn toàn riêng tư, không ai có thể thấy nó kể cả những người tạo ra Signal!\n\nBạn có thể đọc thêm về Open Whisper Systems - những người đã tạo ra Signal - tại đây: %@";
+
+/* subject of email sent to contacts when inviting to install Signal */
+"EMAIL_INVITE_SUBJECT" = "Cùng chuyển sang sử dụng Signal";
+
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE1" = "Không ai trong danh bạ sử dụng Signal.";
+
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE2" = "Tại sao bạn không thử mời ai đó nhỉ?";
+
+/* Indicates that user should confirm their 'two factor auth pin'. */
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Xác nhận số PIN của bạn";
+
+/* Error indicating that attempt to disable 'two-factor auth' failed. */
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Không thể tắt Khoá Đăng ký.";
+
+/* Error indicating that attempt to enable 'two-factor auth' failed. */
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Không thể bật Khoá Đăng ký.";
+
+/* Label for the 'enable two-factor auth' item in the settings view */
+"ENABLE_2FA_VIEW_DISABLE_2FA" = "Tắt";
+
+/* Label for the 'enable two-factor auth' item in the settings view */
+"ENABLE_2FA_VIEW_ENABLE_2FA" = "Bật";
+
+/* Label for the 'next' button in the 'enable two factor auth' views. */
+"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Tiếp";
+
+/* Error indicating that the entered 'two-factor auth PINs' do not match. */
+"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN không đúng";
+
+/* Error indicating that the entered 'two-factor auth PIN' is too long. */
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN không thể dài hơn 20 kí tự.";
+
+/* Error indicating that the entered 'two-factor auth PIN' is too short. */
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN phải có ít nhất 4 kí tự.";
+
+/* Indicates that user should select a 'two factor auth pin'. */
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Nhập mã PIN Khoá Đăng ký. Bạn sẽ cần nhập mã PIN này lần tiếp theo bạn đăng ký số điện thoại này với Signal.";
+
+/* Indicates that user has 'two factor auth pin' disabled. */
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Để tăng cường bảo mật, hãy dùng một mã PIN Khoá Đăng ký để có thể đăng ký số điện thoại này lại với Signal lần tiếp theo.";
+
+/* Indicates that user has 'two factor auth pin' enabled. */
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Đang bật Khóa Đăng ký. Bạn sẽ cần nhận mã PIN khi đăng ký số điện thoại này với Signal.";
+
+/* Title for the 'enable two factor auth PIN' views. */
+"ENABLE_2FA_VIEW_TITLE" = "Khoá đăng kí";
+
+/* Call setup status label */
+"END_CALL_RESPONDER_IS_BUSY" = "Bận";
+
+/* Call setup status label */
+"END_CALL_UNCATEGORIZED_FAILURE" = "Không thể thực hiện cuộc gọi";
+
+/* Label indicating that this OS version is no longer supported. */
+"END_OF_LIFE_OS_WARNING" = "Các tính năng mới nhất của Signal không hoạt động trên phiên bản iOS này. Vui lòng nâng cấp thiết bị để nhận những bản cập nhật Signal trong tương lai.";
+
+/* Error indicating that the phone's contacts could not be retrieved. */
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "Không thể truy cập danh bạ.";
+
+/* Generic notice when message failed to send. */
+"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Không gửi được tin nhắn";
+
+/* Error message indicating that message send is disabled due to prekey update failures */
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Không thể gửi được vì dữ liệu prekey quá cũ.";
+
+/* Error message indicating that message send failed due to block list */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Không thể nhắn tin cho người dùng vì bạn đã chặn họ.";
+
+/* Generic error used whenever Signal can't contact the server */
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal không thể kết nối với internet. Vui lòng thử lại.";
+
+/* Error indicating that an outgoing message had no valid recipients. */
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Không thể gửi tin nhắn vì không có người nhận phù hợp.";
+
+/* Error indicating that a socket request failed. */
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "Yêu cầu kết nối mạng không thành công.";
+
+/* Error indicating that a socket request timed out. */
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Yêu cầu kết nối mạng đã hết thời hạn.";
+
+/* Error indicating that a socket response failed. */
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Phản hồi không phù hợp từ máy chủ.";
+
+/* Error message when attempting to send message */
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Thiết bị này không còn được đăng ký với số điện thoại của bạn. Vui lòng cài đặt lại Signal.";
+
+/* Generic server error */
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "Lỗi máy chủ. Vui lòng thử lại sau.";
+
+/* Worst case generic error message */
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Đã xảy ra lỗi chưa rõ nguyên nhân";
+
+/* Error message when attempting to send message */
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Liên hệ này không phải là người dùng Signal.";
+
+/* Error message indicating that attachment download(s) failed. */
+"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Không tải được tập đính kèm.";
+
+/* Error message when unable to receive an attachment because the sending client is too old. */
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Không tải được tập đính kèm: Hãy yêu cầu người dùng này gửi lại tin nhắn của họ sau khi đã cập nhật phiên bản mới nhất của Signal.";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Nhận được tin nhắn trùng lặp.";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Mã chìa của người nhận không có thực.";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Tin nhắn nhận được không được đồng bộ đúng.";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_INVALID_VERSION" = "Nhận một tin nhắn không khả dụng với phiên bản này.";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_NO_SESSION" = "Không có phiên liên hệ.";
+
+/* Shown when signal users safety numbers changed */
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Mã số an toàn đã thay đổi.";
+
+/* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Mã số an toàn của bạn với %@ đã thay đổi.";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_UNKNOWN_ERROR" = "Đã xảy ra lỗi chưa rõ nguyên nhân.";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Mã số an toàn đã thay đổi.";
+
+/* Error indicating a send failure due to an expired application. */
+"ERROR_SENDING_EXPIRED" = "Phiên bản Signal của bạn đã hết hạn. Vui lòng cập nhật để gửi tiếp tin nhắn.";
+
+/* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
+"ERROR_UNREGISTERED_USER_FORMAT" = "Người dùng chưa đăng ký: %@";
+
+/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
+"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Để sau";
+
+/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
+"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Bắt đầu dùng";
+
+/* Label notifying the user that the app has expired. */
+"EXPIRATION_ERROR" = "Phiên bản Signal của bạn đã hết hạn. Tin nhắn sẽ không thể được gửi đi. Nhấn để cập nhật phiên bản mới nhất.";
+
+/* Label warning the user that the app will expire soon. */
+"EXPIRATION_WARNING_SOON" = "Phiên bản Signal của bạn sẽ hết hạn trong %d ngày. Nhấn để cập nhật lên phiên bản mới nhất.";
+
+/* Label warning the user that the app will expire today. */
+"EXPIRATION_WARNING_TODAY" = "Phiên bản Signal của bạn sẽ hết hạn vào hôm nay. Nhấn để cập nhật lên phiên bản mới nhất.";
+
+/* action sheet header when re-sending message which failed because of too many attempts */
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Quá nhiều lỗi với việc gửi tin nhắn cho liên hệ này. Vui lòng thử lại sau.";
+
+/* action sheet header when re-sending message which failed because of untrusted identity keys */
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Mã an toàn của bạn với %@ vừa được thay đổi. Bạn nên xác minh lại trước khi gửi tin nhắn lại.";
+
+/* alert title */
+"FAILED_VERIFICATION_TITLE" = "Không thể xác minh Mã số An toàn!";
+
+/* Button that marks user as verified after a successful fingerprint scan. */
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Đánh dấu là đã Xác minh";
+
+/* No comment provided by engineer. */
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Tái khởi tạo phiên làm việc";
+
+/* Accessibility label for finishing new group */
+"FINISH_GROUP_CREATION_LABEL" = "Hoàn tất tạo nhóm";
+
+/* Label indicating media gallery is empty */
+"GALLERY_TILES_EMPTY_GALLERY" = "Bạn không có các tập đa phương tiện trong cuộc trò chuyện này.";
+
+/* Label indicating loading is in progress */
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Đang tải các tập đa phương tiện mới...";
+
+/* Label indicating loading is in progress */
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Đang tải các tập đa phương tiện cũ...";
+
+/* A label for generic attachments. */
+"GENERIC_ATTACHMENT_LABEL" = "Mục đính kèm";
+
+/* Error displayed when there is a failure fetching a GIF from the remote service. */
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "Không thể tải ảnh GIF bạn yêu cầu. Vui lòng xác minh lại kết nối.";
+
+/* Generic error displayed when picking a GIF */
+"GIF_PICKER_ERROR_GENERIC" = "Đã xảy ra lỗi chưa rõ nguyên nhân.";
+
+/* Shown when selected GIF couldn't be fetched */
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "Không thể chọn ảnh GIF.";
+
+/* Alert message shown when user tries to search for GIFs without entering any search terms. */
+"GIF_PICKER_VIEW_MISSING_QUERY" = "Vui lòng nhập từ khoá tìm kiếm.";
+
+/* Title for the 'GIF picker' dialog. */
+"GIF_PICKER_VIEW_TITLE" = "Tìm kiếm ảnh GIF.";
+
+/* Indicates that an error occurred while searching. */
+"GIF_VIEW_SEARCH_ERROR" = "Lỗi. Nhấn để thử lại.";
+
+/* Indicates that the user's search had no results. */
+"GIF_VIEW_SEARCH_NO_RESULTS" = "Không có kết quả.";
+
+/* Placeholder text for the search field in GIF view */
+"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Nhập từ khoá tìm kiếm.";
+
+/* No comment provided by engineer. */
+"GROUP_AVATAR_CHANGED" = "Ảnh đại diện đã thay đổi.";
+
+/* No comment provided by engineer. */
+"GROUP_CREATED" = "Nhóm đã được tạo.";
+
+/* Message shown in conversation view that indicates there were issues with group creation. */
+"GROUP_CREATION_FAILED" = "Không thể thêm tất cả các thành viên vào nhóm. Nhấn để thử lại.";
+
+/* Conversation settings table section title */
+"GROUP_MANAGEMENT_SECTION" = "Quản lý Nhóm";
+
+/* No comment provided by engineer. */
+"GROUP_MEMBER_JOINED" = "%@ đã tham gia vào nhóm.";
+
+/* No comment provided by engineer. */
+"GROUP_MEMBER_LEFT" = "%@ đã rời khỏi nhóm.";
+
+/* Button label to add information to an unknown contact */
+"GROUP_MEMBERS_ADD_CONTACT_INFO" = "Thêm liên hệ";
+
+/* Button label for the 'call group member' button */
+"GROUP_MEMBERS_CALL" = "Gọi";
+
+/* Label for the button that clears all verification errors in the 'group members' view. */
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Xoá hết các lỗi xác minh của nhóm";
+
+/* Label for the 'reset all no-longer-verified group members' confirmation alert. */
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Việc này sẽ xoá hết lỗi xác minh của mọi thành viên trong nhóm mà đã thay đổi mã số an toàn sau lần cuối họ được xác minh.";
+
+/* Title for the 'members' section of the 'group members' view. */
+"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Thành viên";
+
+/* Title for the 'no longer verified' section of the 'group members' view. */
+"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "Không còn được đánh dấu là đã Xác minh";
+
+/* Button label for the 'send message to group member' button */
+"GROUP_MEMBERS_SEND_MESSAGE" = "Gửi tin nhắn";
+
+/* Button label for the 'show contact info' button */
+"GROUP_MEMBERS_VIEW_CONTACT_INFO" = "Thông tin Liên hệ";
+
+/* No comment provided by engineer. */
+"GROUP_TITLE_CHANGED" = "Tiêu đề bây giờ là '%@'.";
+
+/* No comment provided by engineer. */
+"GROUP_UPDATED" = "Nhóm được cập nhật.";
+
+/* No comment provided by engineer. */
+"GROUP_YOU_LEFT" = "Bạn đã rời nhóm.";
+
+/* Label for 'archived conversations' button. */
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Các cuộc trò chuyện đã lưu trữ";
+
+/* Table cell subtitle label for a conversation the user has blocked. */
+"HOME_VIEW_BLOCKED_CONVERSATION" = "Đã chặn";
+
+/* Placeholder text for search bar which filters conversations. */
+"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Tìm kiếm";
+
+/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Một số liên hệ của bạn đã có trên Signal, bao gồm %@.";
+
+/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Một số liên hệ của bạn đã có trên Signal, bao gồm %@ và %@.";
+
+/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Một số liên hệ của bạn đã có trên Signal, bao gồm %@, %@ và %@.";
+
+/* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Bắt đầu cuộc trò chuyện đầu tiên của bạn ở đây.";
+
+/* Table cell subtitle label for a conversation the user has not accepted. */
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Yêu cầu gửi tin nhắn.";
+
+/* Format string when search returns no results. Embeds {{search term}} */
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Không tìm thấy kết quả cho '%@'";
+
+/* Title for the home view's 'archive' mode. */
+"HOME_VIEW_TITLE_ARCHIVE" = "Lưu trữ";
+
+/* Title for the home view's default mode. */
+"HOME_VIEW_TITLE_INBOX" = "Signal";
+
+/* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Bạn không thể chia sẻ nhiều hơn%@ mục.";
+
+/* alert title */
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Không thể chọn tập đính kèm.";
+
+/* Call setup status label */
+"IN_CALL_CONNECTING" = "Đang kết nối...";
+
+/* Call setup status label */
+"IN_CALL_RECONNECTING" = "Đang thử lại kết nối...";
+
+/* Call setup status label */
+"IN_CALL_RINGING" = "Đang đổ chuông...";
+
+/* Call setup status label */
+"IN_CALL_SECURING" = "Đã trả lời. Đang thực hiện bảo mật...";
+
+/* Call setup status label */
+"IN_CALL_TERMINATED" = "Cuộc gọi kết thúc.";
+
+/* Label reminding the user that they are in archive mode. */
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Các cuộc trò chuyện này đã được lưu trữ và chỉ xuất hiện trong hộp thư đến nếu có tin nhắn mới.";
+
+/* Message shown in the home view when the inbox is empty. */
+"INBOX_VIEW_EMPTY_INBOX" = "Hãy làm hộp thư đến không còn trống trải. Bắt đầu bằng cách gửi tin nhắn cho một người bạn.";
+
+/* Multi-line label explaining how to show names instead of phone numbers in your inbox */
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Bạn có thể cấp quyền truy cập danh bạ trong cài đặt iOS để thấy các liên hệ của bạn trong danh mục trò chuyện trên Signal.";
+
+/* info message text in conversation view */
+"INCOMING_CALL" = "Cuộc gọi đến";
+
+/* info message recorded in conversation history when local user declined a call */
+"INCOMING_DECLINED_CALL" = "Bạn từ chối một cuộc gọi.";
+
+/* info message text in conversation view */
+"INCOMING_INCOMPLETE_CALL" = "Cuộc gọi đến";
+
+/* info message text shown in conversation view */
+"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Cuộc nhỡ vì mã số an toàn của người gọi đã thay đổi.";
+
+/* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ đang sử dụng Signal!";
+
+/* accessibility label for the button which shows the sticker picker */
+"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Nhãn dán";
+
+/* accessibility label for the button which records voice memos */
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Tin nhắn thoại";
+
+/* Message for the alert indicating that an audio file is invalid. */
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Tập âm thanh không có thực.";
+
+/* Alert body when contacts disabled while trying to invite contacts to signal */
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Bạn có thể cấp quyền truy cập danh bạ trong cài đặt iOS để mời bạn bè tham gia sử dụng Signal.";
+
+/* Alert title when contacts disabled while trying to invite contacts to signal */
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Cho phép Truy cập Danh bạ";
+
+/* Label for the cell that presents the 'invite contacts' workflow. */
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Mời bạn bè dùng Signal";
+
+/* Search */
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Tìm kiếm";
+
+/* Navbar title */
+"INVITE_FRIENDS_PICKER_TITLE" = "Mời bạn bè";
+
+/* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Mời nhiều người dùng cùng lúc sẽ tạo một cuộc trò chuyện nhóm và các người dùng này sẽ thấy được thông tin của nhau.";
+
+/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
+"KEEP_MESSAGES_DURATION" = "Tin nhắn sẽ biến mất sau %@.";
+
+/* Slider label when disappearing messages is off */
+"KEEP_MESSAGES_FOREVER" = "Tin nhắn không biến mất.";
+
+/* Confirmation button within contextual alert */
+"LEAVE_BUTTON_TITLE" = "Rời";
+
+/* table cell label in conversation settings */
+"LEAVE_GROUP_ACTION" = "Rời Nhóm";
+
+/* report an invalid linking code */
+"LINK_DEVICE_INVALID_CODE_BODY" = "Mã QR này không có thực. Vui lòng kiểm tra bạn đang quét đúng mã QR trên thiết bị bạn đang muốn kết nối.";
+
+/* report an invalid linking code */
+"LINK_DEVICE_INVALID_CODE_TITLE" = "Không thể liên kết thiết bị";
+
+/* confirm the users intent to link a new device */
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Thiết bị này sẽ thấy được nhóm và danh bạ, vào được các cuộc trò chuyện, và gửi tin nhắn dưới tên của bạn.";
+
+/* confirm the users intent to link a new device */
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Liên kết thiết bị này?";
+
+/* attempt another linking */
+"LINK_DEVICE_RESTART" = "Thử lại";
+
+/* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Quét mã QR trên thiết bị bạn muốn liên kết.";
+
+/* Subheading for 'Link New Device' navigation */
+"LINK_NEW_DEVICE_SUBTITLE" = "Quét mã QR";
+
+/* Navigation title when scanning QR code to add new device. */
+"LINK_NEW_DEVICE_TITLE" = "Liên kết thiết bị mới";
+
+/* Label for link previews with an unknown host. */
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Xem trước đường dẫn";
+
+/* Menu item and navbar title for the device manager */
+"LINKED_DEVICES_TITLE" = "Các thiết bị đã liên kết";
+
+/* Alert Title */
+"LINKING_DEVICE_FAILED_TITLE" = "Không thể liên kết thiết bị";
+
+/* table cell label in conversation settings */
+"LIST_GROUP_MEMBERS_ACTION" = "Thành viên Nhóm";
+
+/* A string indicating that the user can search for a location */
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Tìm bằng tên hoặc địa chỉ";
+
+/* The title for the location picker view */
+"LOCATION_PICKER_TITLE" = "Chọn địa điểm";
+
+/* No comment provided by engineer. */
+"LOGGING_SECTION" = "Ghi chép";
+
+/* Title for the 'long text message' view. */
+"LONG_TEXT_VIEW_TITLE" = "Tin nhắn";
+
+/* nav bar button item */
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Tất cả các tập đa phương tiện";
+
+/* media picker option to take photo or video */
+"MEDIA_FROM_CAMERA_BUTTON" = "Máy ảnh";
+
+/* media picker option to choose from library */
+"MEDIA_FROM_LIBRARY_BUTTON" = "Thư viện Hình ảnh";
+
+/* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Xoá %d tin nhắn";
+
+/* Confirmation button text to delete selected media message from the gallery */
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Xóa tin nhắn";
+
+/* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
+"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ vào ngày %@ ";
+
+/* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
+"MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
+
+/* Short sender label for media sent by you */
+"MEDIA_GALLERY_SENDER_NAME_YOU" = "Bạn";
+
+/* Section header in media gallery collection view */
+"MEDIA_GALLERY_THIS_MONTH_HEADER" = "Tháng này";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_COPY_MEDIA" = "Sao chép tập đa phương tiện";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_COPY_TEXT" = "Sao chép tin nhắn";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Xoá tin nhắn này";
+
+/* Action sheet button subtitle */
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Tin nhắn sẽ chỉ được xoá trên thiết bị này.";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_DETAILS" = "Thêm Thông tin";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_REPLY" = "Trả lời tin nhắn này";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_SAVE_MEDIA" = "Lưu tập đa phương tiện";
+
+/* Title for the 'message approval' dialog. */
+"MESSAGE_APPROVAL_DIALOG_TITLE" = "Tin nhắn";
+
+/* Label for the recipient name in the 'message approval' dialog. */
+"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "Đến:";
+
+/* Title for the compose view. */
+"MESSAGE_COMPOSEVIEW_TITLE" = "Tin nhắn mới";
+
+/* Label for file size of attachments in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "Kích cỡ tập tin";
+
+/* Label for the MIME type of attachments in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "Loại MIME";
+
+/* Status label for messages which are delivered. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Đã giao";
+
+/* Status label for messages which are failed. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Không thành công";
+
+/* Status label for messages which are read. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Đã xem";
+
+/* Status label for messages which are sending. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Đang gửi";
+
+/* Status label for messages which are sent. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Đã gửi";
+
+/* Status label for messages which were skipped. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Bỏ qua";
+
+/* Status label for messages which are uploading. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Đang tải lên";
+
+/* Label for messages without a body or attachment in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Tin nhắn không có nội dung hoặc tập đính kèm.";
+
+/* Label for the 'received date & time' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Đã nhận";
+
+/* Label for the 'sender' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_SENDER" = "Người gửi";
+
+/* Label for the 'sent date & time' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Đã gửi";
+
+/* Label for the original filename of any attachment in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Tên tập tin";
+
+/* Title for the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_TITLE" = "Tin nhắn";
+
+/* A button used to block a user on an incoming message request. */
+"MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Chấp nhận";
+
+/* A button used to block a user on an incoming message request. */
+"MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Chặn";
+
+/* A button used to block a user on an incoming message request. */
+"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Xóa";
+
+/* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Bạn cần phải chia sẻ thông tin của bạn để tiếp tục cuộc trò chuyện với %@.";
+
+/* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "Bạn cần phải chia sẻ thông tin của bạn để tiếp tục cuộc trò chuyện với %@.";
+
+/* A button used to learn more about why you must share your profile. */
+"MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Tìm hiểu thêm";
+
+/* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Bạn có muốn cho phép %@ nhắn tin cho mình? Họ sẽ không biết bạn đã đọc tin nhắn của họ cho tới khi bạn chấp thuận.";
+
+/* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Bạn có muốn tham gia nhóm %@? Họ sẽ không biết bạn đã đọc tin nhắn của họ cho tới khi bạn chấp thuận.";
+
+/* A button used to share your profile with an existing thread. */
+"MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Chia sẻ Thông tin";
+
+/* message status for message delivered to their recipient. */
+"MESSAGE_STATUS_DELIVERED" = "Đã giao";
+
+/* message status while message is downloading. */
+"MESSAGE_STATUS_DOWNLOADING" = "Đang tải xuống";
+
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED" = "Không thể gửi.";
+
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED_SHORT" = "Không thành công";
+
+/* status message for read messages */
+"MESSAGE_STATUS_READ" = "Đã xem";
+
+/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Bỏ qua";
+
+/* Label indicating that a message failed to send. */
+"MESSAGE_STATUS_SEND_FAILED" = "Gửi thất bại";
+
+/* message status while message is sending. */
+"MESSAGE_STATUS_SENDING" = "Đang gửi...";
+
+/* status message for sent messages */
+"MESSAGE_STATUS_SENT" = "Đã gửi";
+
+/* status message while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "Đang tải lên...";
+
+/* placeholder text for the editable message field */
+"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Tin nhắn mới";
+
+/* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ không còn được xác minh. Nhấn để xem các lựa chọn.";
+
+/* Indicates that this 1:1 conversation has been blocked. */
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "Bạn đã chặn người dùng này";
+
+/* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ không còn được xác minh. Nhấn để xem các lựa chọn.";
+
+/* Indicates that a single member of this group has been blocked. */
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Bạn đã chặn 1 Thành viên của Nhóm này.";
+
+/* Indicates that this group conversation has been blocked. */
+"MESSAGES_VIEW_GROUP_BLOCKED" = "Bạn đã chặn nhóm này. ";
+
+/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Bạn đã chặn %@ thành viên của nhóm này";
+
+/* Indicates that more than one member of this group conversation is no longer verified. */
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Nhiều hơn một thành viên của nhóm đang không được xác thực. Nhấn để xem các lựa chọn.";
+
+/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Nhấn vào đây để xem cài đặt";
+
+/* Indicator that separates read from unread messages. */
+"MESSAGES_VIEW_UNREAD_INDICATOR" = "Các tin nhắn mới";
+
+/* Messages that indicates that there are more unseen messages. */
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "Còn tin nhắn chưa đọc";
+
+/* Messages that indicates that there are more unseen messages including safety number changes. */
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "Còn tin nhắn chưa đọc (bao gồm các thay đổi về mã số an toàn).";
+
+/* info message text in conversation view */
+"MISSED_CALL" = "Cuộc gọi nhỡ";
+
+/* Alert body
+   Alert body when camera is not authorized */
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Bạn có thể cho phép truy cập camera trong cài đặt iOS để thực hiện cuộc gọi video qua Signal.";
+
+/* Alert title
+   Alert title when camera is not authorized */
+"MISSING_CAMERA_PERMISSION_TITLE" = "Signal cần truy cập camera của bạn.";
+
+/* Alert body indicating the user has denied location permissios */
+"MISSING_LOCATION_PERMISSION_MESSAGE" = "Bạn có thể cho phép quyền truy cập này trong cài đặt iOS. ";
+
+/* Alert title indicating the user has denied location permissios */
+"MISSING_LOCATION_PERMISSION_TITLE" = "Signal cần quyền truy cập địa điểm của bạn cho tính năng này.";
+
+/* Alert body when user has previously denied media library access */
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Bạn có thể cho phép quyền truy cập này trong cài đặt iOS. ";
+
+/* Alert title when user has previously denied media library access */
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal cần quyền truy cập vào hình ảnh của bạn cho tính năng này.";
+
+/* alert title: cannot link - reached max linked devices */
+"MULTIDEVICE_PAIRING_MAX_DESC" = "Bạn không thể kết nối thêm thiết bị vì đã chạm mức giới hạn.";
+
+/* alert body: cannot link - reached max linked devices */
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Bạn đã chạm mức giới hạn số thiết bị bạn có thể kểt nối với tài khoản của mình. Vui lòng gỡ bỏ một thiết bị và thử lại.";
+
+/* An explanation of the consequences of muting a thread. */
+"MUTE_BEHAVIOR_EXPLANATION" = "Bạn sẽ không nhận thông báo cho các cuộc trò chuyện đã được bật chế độ im lặng.";
+
+/* A button to skip a view. */
+"NAVIGATION_ITEM_SKIP_BUTTON" = "Bỏ qua";
+
+/* No comment provided by engineer. */
+"NETWORK_ERROR_RECOVERY" = "Vui lòng kiểm tra bạn đang có kết nối mạng và thử lại.";
+
+/* Indicates to the user that censorship circumvention has been activated. */
+"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Tránh Kiểm duyệt: Bật";
+
+/* No comment provided by engineer. */
+"NETWORK_STATUS_CONNECTED" = "Đã kết nối";
+
+/* No comment provided by engineer. */
+"NETWORK_STATUS_CONNECTING" = "Đang kết nối";
+
+/* Error indicating that this device is no longer registered. */
+"NETWORK_STATUS_DEREGISTERED" = "Không còn được đăng ký";
+
+/* No comment provided by engineer. */
+"NETWORK_STATUS_HEADER" = "Trạng thái kết nối mạng";
+
+/* No comment provided by engineer. */
+"NETWORK_STATUS_OFFLINE" = "Ngoại tuyến";
+
+/* A label the cell that lets you add a new member to a group. */
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Tìm bằng Số điện thoại";
+
+/* Action Sheet title prompting the user for a group avatar */
+"NEW_GROUP_ADD_PHOTO_ACTION" = "Cài ảnh nhóm";
+
+/* The title for the 'create group' button. */
+"NEW_GROUP_CREATE_BUTTON" = "Tạo";
+
+/* Used in place of the group name when a group has not yet been named. */
+"NEW_GROUP_DEFAULT_TITLE" = "Nhóm Mới";
+
+/* An indicator that a user is a member of the new group. */
+"NEW_GROUP_MEMBER_LABEL" = "Thành viên";
+
+/* notification title. Embeds {{author name}} and {{group name}} */
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ đến %@";
+
+/* Placeholder text for group name field */
+"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Đặt tên cho nhóm này";
+
+/* a title for the selected section of the 'recipient picker' view. */
+"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Người dùng khác";
+
+/* The alert message if user tries to exit the new group view without saving changes. */
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Bạn có muốn huỷ bỏ các thay đổi này?";
+
+/* The alert title if user tries to exit the new group view without saving changes. */
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Thay đổi chưa được lưu lại";
+
+/* No comment provided by engineer. */
+"new_message" = "Tin nhắn mới";
+
+/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Tìm kiếm";
+
+/* Title for the 'new non-contact conversation' view. */
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Tìm người dùng";
+
+/* Label for a button that lets users search for contacts by phone number */
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Tìm liên hệ bằng số điện thoại";
+
+/* A string prompting the user to send a new mesaage to a user */
+"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Tin nhắn mới cho: ";
+
+/* A string asking the user if they'd like to invite a number to signal via SMS. */
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Không tìm thấy người dùng. Mời họ bằng tin nhắn SMS?";
+
+/* Label for 1:1 conversation with yourself. */
+"NOTE_TO_SELF" = "Ghi lại";
+
+/* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Bạn có thể đã nhận tin nhắn này khi %@ đang khởi động nguồn trở lại.";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_FOOTER_WARNING" = "Do các lỗi đã biết của khung phần mềm của Apple, xem trước tin nhắn sẽ chỉ hiện nếu tin nhắn được thu hồi trong vòng 30 giây sau khi được gửi. Biểu tượng của ứng dụng vì thế có thể sẽ không chính xác. ";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_NONE" = "Không có tên hoặc nội dung";
+
+/* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
+"NOTIFICATIONS_SECTION_INAPP" = "Bật khi ứng dụng đang mở";
+
+/* Label for settings UI that allows user to change the notification sound. */
+"NOTIFICATIONS_SECTION_SOUNDS" = "Âm thanh";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Tên và Nội dung";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_ONLY" = "Chỉ dùng tên";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SHOW" = "Hiện";
+
+/* No comment provided by engineer. */
+"OK" = "Đồng ý";
+
+/* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "PIN không chính xác. Đã hết số lần thử.";
+
+/* The first explanation in the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_EXPLANATION_1" = "Số điện thoại này đã được kích hoạt khoá đăng kí. Vui lòng điền mã PIN khoá đăng kí.";
+
+/* The first explanation in the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_EXPLANATION_2" = "Mã Khoá Đăng ký khác với mã xác minh được gửi tự động vào điện thoại của bạn trong bước trước. ";
+
+/* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Quên mã PIN của bạn?";
+
+/* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN" = "Mã PIN không chính xác";
+
+/* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Mã PIN không chính xác. Còn %lu lần thử.";
+
+/* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Mã PIN không chính xác. Còn 1 lần thử.";
+
+/* Title of the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_TITLE" = "Khoá đăng kí";
+
+/* Explanation of the 'onboarding account locked' view. */
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Để bảo vệ sự riêng tư và bảo mật của tài khoản của bạn, chúng tôi đã khoá nó trong vòng 7 ngày. \n\nSau 7 ngày không sử dụng, bạn sẽ có thể đăng ký lại số điện thoại này mà không cần mã PIN của bạn. Mọi nội dung sẽ bị xoá. ";
+
+/* Label for the 'learn more' link in the 'onboarding account locked' view. */
+"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Tìm hiểu thêm về tài khoản bị khoá";
+
+/* Title of the 'onboarding account locked' view. */
+"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Tài khoản bị khoá";
+
+/* Title of the 'onboarding Captcha' view. */
+"ONBOARDING_CAPTCHA_TITLE" = "Thêm dấu chỉ chứng minh bạn là người thật";
+
+/* Label for the 'give access' button in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Cho phép quyền truy cập";
+
+/* Explanation in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Thông tin liên lạc của bạn luôn được truyền tải một cách bảo mật.";
+
+/* Label for the 'not now' button in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "Để sau";
+
+/* Title of the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_TITLE" = "Signal có thể cho bạn biết khi nào bạn nhận được tin nhắn (và từ ai)";
+
+/* Title of the 'onboarding phone number' view. */
+"ONBOARDING_PHONE_NUMBER_TITLE" = "Điền số điện thoại của bạn để bắt đầu";
+
+/* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Số không chính xác";
+
+/* Title of the 'onboarding PIN' view. */
+"ONBOARDING_PIN_EXPLANATION" = "Nhập mã PIN bạn đã tạo cho tài khoản. Mã này khác với mã xác minh SMS của bạn.";
+
+/* Title of the 'onboarding PIN' view. */
+"ONBOARDING_PIN_TITLE" = "Nhập mã PIN của bạn";
+
+/* header text when this device is being added as a secondary */
+"ONBOARDING_SECONDARY_CHOOSE_DEVICE_NAME" = "ONBOARDING_SECONDARY_CHOOSE_DEVICE_NAME";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"ONBOARDING_SECONDARY_COMPLETE_LINKING_PROCESS" = "ONBOARDING_SECONDARY_COMPLETE_LINKING_PROCESS";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"ONBOARDING_SECONDARY_SCAN_CODE_BODY" = "ONBOARDING_SECONDARY_SCAN_CODE_BODY";
+
+/* Link text for page with troubleshooting info shown on the QR scanning screen */
+"ONBOARDING_SECONDARY_SCAN_CODE_HELP_TEXT" = "ONBOARDING_SECONDARY_SCAN_CODE_HELP_TEXT";
+
+/* header text while displaying a QR code which, when scanned, will link this device. */
+"ONBOARDING_SECONDARY_SCAN_CODE_TITLE" = "ONBOARDING_SECONDARY_SCAN_CODE_TITLE";
+
+/* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
+"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Điều khoản & Quyền riêng tư";
+
+/* Title of the 'onboarding splash' view. */
+"ONBOARDING_SPLASH_TITLE" = "Mang theo bạn sự riêng tư.\nLà chính bản thân bạn trong mọi tin nhắn.";
+
+/* Label for the link that lets users change their phone number in the onboarding views. */
+"ONBOARDING_VERIFICATION_BACK_LINK" = "Sai số điện thoại?";
+
+/* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
+"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "Tôi không nhận được mã xác minh (cho phép trong %@)";
+
+/* action sheet item shown after a number of failures to receive a verificaiton SMS during registration */
+"ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "Liên lạc Bộ phận hỗ trợ của Signal";
+
+/* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_INVALID_CODE" = "Mã này không chính xác";
+
+/* Label for link that can be used when the original code did not arrive. */
+"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "Tôi không nhận được mã ";
+
+/* Message for the 'resend code' alert in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Vui lòng đảm bảo bạn có dịch vụ điện thoại và có thể nhận tin nhắn SMS.";
+
+/* Title for the 'resend code' alert in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "Không thấy mã?";
+
+/* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Gửi lại mã";
+
+/* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Gọi tôi thay vì gửi mã";
+
+/* Label for link that can be used when the resent code did not arrive. */
+"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Vẫn không thấy mã?";
+
+/* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Nhận mã chúng tôi đã gửi tới %@.";
+
+/* Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}. */
+"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "Chúng tôi vừa gửi lại mã đến %@";
+
+/* Button text which opens the settings app */
+"OPEN_SETTINGS_BUTTON" = "Các cài đặt";
+
+/* Info Message when {{other user}} disables or doesn't support disappearing messages */
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ tắt chế độ biến mất tin nhắn.";
+
+/* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ bật thời gian biến mất tin nhắn thành %@.";
+
+/* Label warning the user that the Signal service may be down. */
+"OUTAGE_WARNING" = "Signal đang gặp trục trặc kĩ thuật. Chúng thôi đang cố hết sức để khôi phục dịch vụ càng sớm càng tốt.";
+
+/* info message text in conversation view */
+"OUTGOING_CALL" = "Cuộc gọi đi";
+
+/* info message text in conversation view */
+"OUTGOING_INCOMPLETE_CALL" = "Cuộc gọi đi";
+
+/* info message recorded in conversation history when local user tries and fails to call another user. */
+"OUTGOING_MISSED_CALL" = "Cuộc gọi đi không được trả lời";
+
+/* A display format for oversize text messages. */
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@...";
+
+/* Error indicating that a PDF could not be displayed. */
+"PDF_VIEW_COULD_NOT_RENDER" = "Tập PDF không thể được mở";
+
+/* Navbar title for for PDF view. */
+"PDF_VIEW_TITLE" = "Tập PDF";
+
+/* Label for view-once messages that have invalid content. */
+"PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Lỗi xử lý tin nhắn đến";
+
+/* inbox cell and notification text for an already viewed view-once media message. */
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Tin nhắn đa phương tiện";
+
+/* Label for outgoing view-once messages. */
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Đa phương tiện";
+
+/* inbox cell and notification text for a view-once photo. */
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Tin nhắn hình ảnh tạm thời";
+
+/* inbox cell and notification text for a view-once video. */
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Tin nhắn video tạm thời";
+
+/* Label for view-once messages indicating that user can tap to view the message's contents. */
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Ảnh";
+
+/* Label for view-once messages indicating that user can tap to view the message's contents. */
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "Video";
+
+/* Label for view-once messages indicating that the local user has viewed the message's contents. */
+"PER_MESSAGE_EXPIRATION_VIEWED" = "Đã xem";
+
+/* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
+"PHONE_NUMBER_EXAMPLE_FORMAT" = "Ví dụ: %@";
+
+/* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
+"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
+
+/* Label for 'Home' phone numbers. */
+"PHONE_NUMBER_TYPE_HOME" = "Nhà";
+
+/* Label for 'HomeFAX' phone numbers. */
+"PHONE_NUMBER_TYPE_HOME_FAX" = "Số fax nhà";
+
+/* Label for 'iPhone' phone numbers. */
+"PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
+
+/* Label for 'Main' phone numbers. */
+"PHONE_NUMBER_TYPE_MAIN" = "Chính";
+
+/* Label for 'Mobile' phone numbers. */
+"PHONE_NUMBER_TYPE_MOBILE" = "Di động";
+
+/* Label for 'Other' phone numbers. */
+"PHONE_NUMBER_TYPE_OTHER" = "Khác";
+
+/* Label for 'Other FAX' phone numbers. */
+"PHONE_NUMBER_TYPE_OTHER_FAX" = "Số fax khác";
+
+/* Label for 'Pager' phone numbers. */
+"PHONE_NUMBER_TYPE_PAGER" = "Máy nhắn tin";
+
+/* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
+"PHONE_NUMBER_TYPE_UNKNOWN" = "Không rõ";
+
+/* Label for 'Work' phone numbers. */
+"PHONE_NUMBER_TYPE_WORK" = "Công ty";
+
+/* Label for 'Work FAX' phone numbers. */
+"PHONE_NUMBER_TYPE_WORK_FAX" = "Số fax công việc";
+
+/* alert title, generic error preventing user from capturing a photo */
+"PHOTO_CAPTURE_GENERIC_ERROR" = "Không thể chụp được ảnh";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Không thể chụp được ảnh";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Không thể thiết lập camera.";
+
+/* label for system photo collections which have no name. */
+"PHOTO_PICKER_UNNAMED_COLLECTION" = "Album không có tiêu đề";
+
+/* The bold portion of the explanation in the 'pin creation' view. */
+"PIN_CREATION_BOLD_EXPLANATION" = "Không có cách để khôi phục mã PIN, vì thế hãy vui lòng nhớ kĩ nó. ";
+
+/* Title of the 'pin creation' recreation view. */
+"PIN_CREATION_CHANGING_TITLE" = "Thay đổi mã PIN của bạn";
+
+/* The explanation of confirmation in the 'pin creation' view. */
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Xác nhận mã PIN mới của bạn";
+
+/* The explanation in the 'pin creation' view. */
+"PIN_CREATION_EXPLANATION" = "Mã PIN của bạn thêm một lớp bảo mật và sao lưu tài khoản của bạn. ";
+
+/* Label indicating that the attempted PIN does not match the first PIN */
+"PIN_CREATION_MISMATCH_ERROR" = "Mã PIN không khớp. Hãy thử lại.";
+
+/* The placeholder when confirming a pin in the 'pin creation' view. */
+"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "Nhập lại mã PIN.";
+
+/* The placeholder when creating a pin in the 'pin creation' view. */
+"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "Mã PIN phải dài hơn 4 kí tự. ";
+
+/* The bold portion of the re-creation explanation in the 'pin creation' view. */
+"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "Khi bạn đã đăng xuất, không có cách để khôi phục mã PIN của bạn. ";
+
+/* The re-creation explanation in the 'pin creation' view. */
+"PIN_CREATION_RECREATION_EXPLANATION" = "Vì bạn vẫn đang đăng nhập vào, bạn có thể tạo một mã PIN mới. ";
+
+/* Title of the 'pin creation' recreation view. */
+"PIN_CREATION_RECREATION_TITLE" = "Tạo mã PIN mới";
+
+/* Title of the 'pin creation' view. */
+"PIN_CREATION_TITLE" = "Tạo mã PIN của bạn";
+
+/* Label indicating that the attempted PIN is too long */
+"PIN_CREATION_TOO_LONG_ERROR" = "PIN không thể đài hơn 20 kí tự.";
+
+/* Label indicating that the attempted PIN is too short */
+"PIN_CREATION_TOO_SHORT_ERROR" = "PIN phải có ít nhất 4 kí tự.";
+
+/* The explanation for the 'pin reminder' dialog. */
+"PIN_REMINDER_EXPLANATION" = "Để đảm bảo bạn nhớ số PIN của mình, chúng tôi thỉnh thoảng sẽ hỏi bạn. Chúng tôi sẽ hỏi ít dần.";
+
+/* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
+"PIN_REMINDER_FORGOT_PIN" = "Quên mã PIN của bạn?";
+
+/* Label indicating that the attempted PIN does not match the user's PIN */
+"PIN_REMINDER_MISMATCH_ERROR" = "PIN không đúng, hãy thử lại.";
+
+/* The title for the 'pin reminder' dialog. */
+"PIN_REMINDER_TITLE" = "Nhập mã PIN Signal của bạn";
+
+/* Label indicating that the attempted PIN is too short */
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN phải có ít nhất 4 kí tự.";
+
+/* Accessibility label for button to start media playback */
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Bật đa phương tiện";
+
+/* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Bạn chưa đánh dấu xác thực %@.";
+
+/* Badge indicating that the user is verified. */
+"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Đã kiểm chứng";
+
+/* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
+"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ đã được xác thực.";
+
+/* Label for a link to more information about safety numbers and verification. */
+"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Tìm hiểu thêm";
+
+/* Button that shows the 'scan with camera' view. */
+"PRIVACY_TAP_TO_SCAN" = "Nhấn vào để quét ";
+
+/* Button that lets user mark another user's identity as unverified. */
+"PRIVACY_UNVERIFY_BUTTON" = "Xoá xác thực";
+
+/* Alert body when verifying with {{contact name}} */
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Đây trông không giống mã an toàn của bạn với %@. Bạn có đang xác thực đúng liên hệ?";
+
+/* Alert body */
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Số được lưu trong danh sách sao chép của bạn không giống với mã an toàn của cuộc trò chuyện này.";
+
+/* Alert body for user error */
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal không thể tìm thấy mã an toàn nào trong danh sách sao chép của bạn. Bạn có sao chép đúng mã?";
+
+/* Alert body when verifying with {{contact name}} */
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Mỗi cặp người dùng của Signal chia sẻ một mã an toàn riêng biệt. Kiểm tra lại rằng %@ đang sử dụng mã an toàn riêng \"của bạn\". ";
+
+/* alert body */
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Bạn đang dùng một phiên bản cũ của Signal. Bạn sẽ cần cập nhật trước khi bạn có thể xác thực.";
+
+/* alert body */
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Người trò chuyện với bạn đang dùng một phiên bản cũ của Signal. Họ cần phải cập nhật trước khi bạn có thể xác thực.";
+
+/* alert body */
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Mã đã quét không giống mã an toàn. Cả hai bạn có đang dùng phiên bản mới nhất của Signal?";
+
+/* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Nếu bạn muốn xác thực độ bảo mật của cuộc trò chuyện đã được mã hoá hai chiều với %@, so sánh mã ở trên với mã trên thiết bị của họ.\n\nHoặc, bạn cũng có thể quét mã hiện trên điện thoại của họ, hoặc nhờ họ quét mã của bạn.";
+
+/* Navbar title */
+"PRIVACY_VERIFICATION_TITLE" = "Xác minh mã số an toàn";
+
+/* Button that lets user mark another user's identity as verified. */
+"PRIVACY_VERIFY_BUTTON" = "Đánh dấu là đã Xác minh";
+
+/* No comment provided by engineer. */
+"PROCEED_BUTTON" = "Tiến hành";
+
+/* Action Sheet title prompting the user for a profile avatar */
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Cài ảnh đại diện";
+
+/* Label for action that clear's the user's profile avatar */
+"PROFILE_VIEW_CLEAR_AVATAR" = "Xoá ảnh đại diện";
+
+/* A string indicating that the user can create a username on the profile view. */
+"PROFILE_VIEW_CREATE_USERNAME" = "Tạo tên người dùng";
+
+/* Error message shown when user tries to update profile with a profile name that is too long. */
+"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Tên người dùng của bạn quá dài.";
+
+/* Error message shown when a profile update fails. */
+"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Không thể cập nhật thông tin";
+
+/* Default text for the profile name field of the profile view. */
+"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Điền tên của bạn";
+
+/* Description of the user profile. */
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Thông tin cá nhân trên Signal của bạn sẽ hiện cho các liên hệ của bạn, khi bạn bắt đầu các cuộc trò chuyện mới, và khi bạn chia sẻ nó với người dùng và nhóm khác.";
+
+/* Link to more information about the user profile. */
+"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Nhấn vào đây để tìm hiểu thêm.";
+
+/* Label for the profile name field of the profile view. */
+"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Tên của bạn";
+
+/* Button to save the profile view in the profile view. */
+"PROFILE_VIEW_SAVE_BUTTON" = "Lưu";
+
+/* Title for the profile view. */
+"PROFILE_VIEW_TITLE" = "Thông tin";
+
+/* Label for the username field of the profile view. */
+"PROFILE_VIEW_USERNAME_FIELD" = "Tên người dùng";
+
+/* Notification action button title */
+"PUSH_MANAGER_MARKREAD" = "Đánh dấu đã đọc";
+
+/* Notification action button title */
+"PUSH_MANAGER_REPLY" = "Hồi âm";
+
+/* Title of alert shown when push tokens sync job succeeds. */
+"PUSH_REGISTER_SUCCESS" = "Đăng ký nhận thông báo thành công";
+
+/* Used in table section header and alert view title contexts */
+"PUSH_REGISTER_TITLE" = "Nhận thông báo";
+
+/* No comment provided by engineer. */
+"QUESTIONMARK_PUNCTUATION" = "?";
+
+/* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
+"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Đang trả lời cho %@";
+
+/* message header label when someone else is quoting you */
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Đang trả lời cho bạn";
+
+/* message header label when quoting yourself */
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Đang trả lời cho chính bản thân";
+
+/* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
+"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Không tìm thấy tin nhắn gốc.";
+
+/* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
+"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Tin nhắn gốc không còn tồn tại.";
+
+/* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received. */
+"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Không tìm thấy tin nhắn gốc";
+
+/* Indicates this message is a quoted reply to an attachment of unknown type. */
+"QUOTED_REPLY_TYPE_ATTACHMENT" = "Mục đính kèm";
+
+/* Indicates this message is a quoted reply to an audio file. */
+"QUOTED_REPLY_TYPE_AUDIO" = "Âm thanh";
+
+/* Indicates this message is a quoted reply to animated GIF file. */
+"QUOTED_REPLY_TYPE_GIF" = "GIF";
+
+/* Indicates this message is a quoted reply to an image file. */
+"QUOTED_REPLY_TYPE_IMAGE" = "Hình ảnh";
+
+/* Indicates this message is a quoted reply to a video file. */
+"QUOTED_REPLY_TYPE_VIDEO" = "Đoạn phim";
+
+/* Label for 'I forgot my PIN' link in the 2FA registration view. */
+"REGISTER_2FA_FORGOT_PIN" = "Tôi đã quên mã PIN.";
+
+/* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Vì sự riêng tư và bảo mật của bạn, không có cách nào để khôi phục mã PIN của bạn. Nếu bạn không thể nhớ được mã PIN, bạn sẽ cần xác nhận lại qua SMS sau 7 ngày không sử dụng. Trong trường hợp này, mọi nội dung và thông tin trong tài khoản của bạn sẽ bị xoá.";
+
+/* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Quên mã PIN của bạn?";
+
+/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Bạn còn %lu lần thử. Nếu bạn dùng hết các lần thử này, tài khoản của bạn sẽ bị xoá. Sau 7 ngày không sử dụng, bạn có thể đăng ký lại mà không cần mã PIN. Mọi nội dung và thông tin của tài khoản sẽ bị xoá.";
+
+/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Bạn còn 1 lần thử. Nếu bạn dùng hết các lần thử này, tài khoản của bạn sẽ bị xoá. Sau 7 ngày không sử dụng, bạn có thể đăng ký lại mà không cần mã PIN. Mọi nội dung và thông tin của tài khoản sẽ bị xoá.";
+
+/* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
+"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Mã PIN không chính xác";
+
+/* Label for 'submit' button in the 2FA registration view. */
+"REGISTER_2FA_SUBMIT_BUTTON" = "Nộp";
+
+/* No comment provided by engineer. */
+"REGISTER_CONTACTS_WELCOME" = "Chào mừng!";
+
+/* No comment provided by engineer. */
+"REGISTER_FAILED_TRY_AGAIN" = "Hãy thử lại";
+
+/* No comment provided by engineer. */
+"REGISTER_RATE_LIMITING_BODY" = "Bạn thử quá nhiều lần. Vui lòng chờ một phút trước khi thử lại.";
+
+/* No comment provided by engineer. */
+"REGISTER_RATE_LIMITING_ERROR" = "Bạn thử quá nhiều lần. Vui lòng chờ một phút trước khi thử lại.";
+
+/* Title of alert shown when push tokens sync job fails. */
+"REGISTRATION_BODY" = "Không thể đăng ký để nhận thông báo";
+
+/* Label for the country code field */
+"REGISTRATION_DEFAULT_COUNTRY_NAME" = "Mã quốc gia";
+
+/* Placeholder text for the phone number textfield */
+"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Nhập số điện thoại";
+
+/* No comment provided by engineer. */
+"REGISTRATION_ERROR" = "Có Lỗi Đăng Ký";
+
+/* alert body during registration */
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Chúng tôi không thể kích hoạt tài khoản của bạn cho tới khi bạn xác thực mã chúng tôi đã gửi.";
+
+/* alert body when registering an iPad */
+"REGISTRATION_IPAD_CONFIRM_BODY" = "Đăng ký bây giờ sẽ huỷ kích hoạt Signal trên mọi thiết bị khác đăng ký bằng số điện thoại này.";
+
+/* button text to proceed with registration when on an iPad */
+"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Đăng ký iPad này";
+
+/* alert title when registering an iPad */
+"REGISTRATION_IPAD_CONFIRM_TITLE" = "Đã có tài khoản Signal?";
+
+/* No comment provided by engineer. */
+"REGISTRATION_NON_VALID_NUMBER" = "Định dạng số điện thoại này không được hỗ trợ, vui lòng liên hệ bộ phận hỗ trợ.";
+
+/* Label for the phone number textfield */
+"REGISTRATION_PHONENUMBER_BUTTON" = "Số điện thoại";
+
+/* No comment provided by engineer. */
+"REGISTRATION_RESTRICTED_MESSAGE" = "Bạn cần đăng ký trước khi gửi tin nhắn.";
+
+/* Alert view title */
+"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Xác thực không thành công";
+
+/* Error message indicating that registration failed due to a missing or incorrect verification code. */
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Mã bạn nhập vào không khớp với mã chúng tôi gửi. Bạn có muốn kiểm tra lại?";
+
+/* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "PIN Khoá Đăng ký không đúng.";
+
+/* Message of alert indicating that users needs to enter a valid phone number to register. */
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Vui lòng nhập số điện thoại có thực để đăng ký.";
+
+/* Title of alert indicating that users needs to enter a valid phone number to register. */
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Số điện thoại không có thực";
+
+/* Message of alert indicating that users needs to enter a phone number to register. */
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Vui lòng nhập số điện thoại để đăng ký.";
+
+/* Title of alert indicating that users needs to enter a phone number to register. */
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Không có số điện thoại";
+
+/* notification action */
+"REJECT_CALL_BUTTON_TITLE" = "Từ chối";
+
+/* No comment provided by engineer. */
+"RELAY_REGISTERED_ERROR_RECOVERY" = "Số điện thoại bạn đang muốn đăng ký đã được đăng ký trên máy chủ khác, vui lòng huỷ đăng ký từ đấy và thử lại.";
+
+/* Body text for when user is periodically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY" = "Khoá đăng kí đã được kích hoạt cho số điện thoại của bạn. Để giúp bạn ghi nhớ mã PIN Khoá đăng kí, Signal sẽ thường xuyên yêu cầu bạn điền lại.";
+
+/* Body header for when user is periodically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY_HEADER" = "Nhắc nhở:";
+
+/* Alert message explaining what happens if you forget your 'two-factor auth pin' */
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Khoá Đăng ký giúp bảo vệ số điện thoại của bạn khỏi những lần thử đăng ký không được bạn cho phép. Tính năng này có thể được tắt bất kì lúc nào từ cài đặt riêng tư của Signal.";
+
+/* Navbar title for when user is periodically prompted to enter their registration lock PIN */
+"REMINDER_2FA_NAV_TITLE" = "Nhập PIN Khoá Đăng ký.";
+
+/* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
+"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "Bạn có thể cài PIN mới trong cài đặt riêng tư của bạn. ";
+
+/* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
+"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Đây không phải là mã PIN chính xác.";
+
+/* No comment provided by engineer. */
+"REREGISTER_FOR_PUSH" = "Đăng ký lại để nhận thông báo";
+
+/* Generic text for button that retries whatever the last action was. */
+"RETRY_BUTTON_TEXT" = "Thử lại";
+
+/* button title to confirm adding a recipient to a group when their safety number has recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Cứ thêm vào nhóm";
+
+/* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
+"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Cứ gọi";
+
+/* button title to confirm sending to a recipient whose safety number recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Vẫn Gửi        ";
+
+/* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
+"SAFETY_NUMBER_SHARE_FORMAT" = "Mã an toàn Signal của chúng tôi:\n%@";
+
+/* Action sheet heading */
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Mã an toàn của bạn với %@ đã thay đổi. Bạn nên xác thực lại nó. ";
+
+/* label presented once scanning (camera) view is visible. */
+"SCAN_CODE_INSTRUCTIONS" = "Quét mã QR trên thiết bị của người liên hệ bạn.";
+
+/* Title for the 'scan QR code' view. */
+"SCAN_QR_CODE_VIEW_TITLE" = "Quét mã QR";
+
+/* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Ngay tức thì";
+
+/* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Xác thực mở khoá không thể được truy cập.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Xác thực không thành công.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Quá nhiều lần thử không thành công. Vui lòng thử lại sau.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Bạn phải tạo mật mã trong cài đặt iOS của bạn để dùng Khoá Màn hình.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Bạn phải tạo mật mã trong cài đặt iOS của bạn để dùng Khoá Màn hình.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Bạn phải tạo mật mã trong cài đặt iOS của bạn để dùng Khoá Màn hình.";
+
+/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Xác thực mở khoá để mở Signal.";
+
+/* Title for alert indicating that screen lock could not be unlocked. */
+"SCREEN_LOCK_UNLOCK_FAILED" = "Xác thực không thành công";
+
+/* Label for button on lock screen that lets users unlock Signal. */
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Mở khoá Signal";
+
+/* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Tên, tên người dùng, hoặc số điện thoại";
+
+/* Placeholder text indicating the user can search for contacts by name or phone number. */
+"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Tìm theo tên hoặc số điện thoại";
+
+/* placeholder text in an empty search field */
+"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "Tìm kiếm";
+
+/* section header for search results that match a contact who doesn't have an existing conversation */
+"SEARCH_SECTION_CONTACTS" = "Liên hệ khác";
+
+/* section header for search results that match existing conversations (either group or contact conversations) */
+"SEARCH_SECTION_CONVERSATIONS" = "Cuộc trò chuyện";
+
+/* section header for search results that match a message in a conversation */
+"SEARCH_SECTION_MESSAGES" = "Tin nhắn";
+
+/* alert title */
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Không thể lấy được mã kết nối thiết bị";
+
+/* alert title */
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Không thể kết nối thiết bị";
+
+/* header text when this device is being added as a secondary */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Chọn tên cho thiết bị này";
+
+/* label text */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Bạn sẽ thấy tên này trong danh sách \"Thiết bị đã được kết nối\".";
+
+/* text field placeholder */
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Chọn tên";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Hoàn tất kết nối";
+
+/* header text before the user can link this device */
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Để bắt đầu, mở ứng dụng Signal trên điện thoại của bạn.";
+
+/* Link explaining what to do when trying to link a device before having a primary device. */
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Tôi không có Signal trên điện thoại.";
+
+/* alert body */
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Để dùng Signal trên iPad, bạn cần tải và đăng ký tài khoản trên điện thoại trước.\n\nVào App Store trên điện thoại, cài đặt Signal, và bạn sẽ có thể kết nối được iPad của mình.";
+
+/* alert title */
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Cài đặt Signal trên Điện thoại của bạn";
+
+/* body text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Trên Signal trên iPhone, nhấn Cài đặt -> Thiết bị đã được kết nối -> Thêm, sau đó đặt camera trước màn hình này.";
+
+/* Link text for page with troubleshooting info shown on the QR scanning screen */
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Đang gặp vấn đề?";
+
+/* header text while displaying a QR code which, when scanned, will link this device. */
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Quét mã QR";
+
+/* No comment provided by engineer. */
+"SECURE_SESSION_RESET" = "Phiên bảo mật vừa được cài lại.";
+
+/* Table section header for conversations you haven't recently used. */
+"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Liên hệ khác";
+
+/* Table section header for recently active conversations */
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Cuộc trò chuyện gần đây";
+
+/* No comment provided by engineer. */
+"SEND_AGAIN_BUTTON" = "Gửi lại";
+
+/* Label for the button to send a message */
+"SEND_BUTTON_TITLE" = "Gửi";
+
+/* notification body */
+"SEND_FAILED_NOTIFICATION_BODY" = "Tin nhắn của bạn gửi không thành công.";
+
+/* Alert body after invite failed */
+"SEND_INVITE_FAILURE" = "Gửi tin nhắn mời không thành công, vui lòng thử lại sau.";
+
+/* Alert body after invite succeeded */
+"SEND_INVITE_SUCCESS" = "Bạn vừa mời bạn của mình để dùng Signal!";
+
+/* alert title when user attempts to leave the send media flow when they have an in-progress album */
+"SEND_MEDIA_ABANDON_TITLE" = "Bỏ tập đa phương tiện?";
+
+/* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Bỏ tập đa phương tiện";
+
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_CAMERA" = "Quay lại Camera";
+
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Quay lại Thư viện Đa phương tiện";
+
+/* No comment provided by engineer. */
+"SEND_SMS_CONFIRM_TITLE" = "Mời bạn của mình qua tin nhắn SMS không bảo mật?";
+
+/* No comment provided by engineer. */
+"SEND_SMS_INVITE_TITLE" = "Bạn có muốn mời các số điện thoại sau dùng Signal:";
+
+/* Navbar title */
+"SETTINGS_ABOUT" = "Thông tin";
+
+/* Title for the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Chặn";
+
+/* Label for the  'manual censorship circumvention' switch. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Tránh Kiểm duyệt";
+
+/* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Vị trí: %@";
+
+/* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Nếu được bật, Signal sẽ thử tránh kiểm duyệt. Đừng bật tính năng này lên trừ khi bạn đang ở một nơi mà đang chặn Signal.";
+
+/* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Tránh Kiểm duyệt đã được bật lên dựa trên số điện thoại của bạn.";
+
+/* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Bạn vừa tự mình tắt tính năng tránh kiểm duyệt.";
+
+/* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Tránh Kiểm duyệt chỉ có thể được bật lên khi bạn đang có kết nối internet.";
+
+/* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Tránh kiểm duyệt không cần thiết; bạn đã kết nối được với dịch vụ của Signal.";
+
+/* Table header for the 'censorship circumvention' section. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Tránh Kiểm duyệt";
+
+/* No comment provided by engineer. */
+"SETTINGS_ADVANCED_DEBUGLOG" = "Bật ghi chép lỗi";
+
+/* No comment provided by engineer. */
+"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Gửi bản ghi gỡ lỗi";
+
+/* No comment provided by engineer. */
+"SETTINGS_ADVANCED_TITLE" = "Cao cấp";
+
+/* table cell label */
+"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Ghi chép lỗi";
+
+/* The title for the theme section in the appearance settings. */
+"SETTINGS_APPEARANCE_THEME_TITLE" = "Chủ đề";
+
+/* The title for the appearance settings. */
+"SETTINGS_APPEARANCE_TITLE" = "Diện mạo";
+
+/* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (mặc định)";
+
+/* Label for the backup view in app settings. */
+"SETTINGS_BACKUP" = "Sao lưu";
+
+/* Label for 'backup now' button in the backup settings view. */
+"SETTINGS_BACKUP_BACKUP_NOW" = "Sao lưu ngay bây giờ";
+
+/* Label for 'cancel backup' button in the backup settings view. */
+"SETTINGS_BACKUP_CANCEL_BACKUP" = "Huỷ sao lưu";
+
+/* Label for switch in settings that controls whether or not backup is enabled. */
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "Sao lưu đã được bật";
+
+/* Label for iCloud status row in the in the backup settings view. */
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "Tình trạng iCloud";
+
+/* Indicates that the last backup restore failed. */
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Khôi phục từ sao lưu không thành công";
+
+/* Indicates that app is not restoring up. */
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Đang không khôi phục được từ sao lưu";
+
+/* Indicates that app is restoring up. */
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Đang khôi phục từ sao lưu";
+
+/* Indicates that the last backup restore succeeded. */
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Khôi phục từ sao lưu thành công";
+
+/* Label for phase row in the in the backup settings view. */
+"SETTINGS_BACKUP_PHASE" = "Bước";
+
+/* Label for phase row in the in the backup settings view. */
+"SETTINGS_BACKUP_PROGRESS" = "Tiến độ";
+
+/* Label for backup status row in the in the backup settings view. */
+"SETTINGS_BACKUP_STATUS" = "Trạng thái";
+
+/* Indicates that the last backup failed. */
+"SETTINGS_BACKUP_STATUS_FAILED" = "Sao lưu không thành công";
+
+/* Indicates that app is not backing up. */
+"SETTINGS_BACKUP_STATUS_IDLE" = "Đang chờ";
+
+/* Indicates that app is backing up. */
+"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Đang sao lưu";
+
+/* Indicates that the last backup succeeded. */
+"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Sao lưu thành công";
+
+/* A label for the 'add phone number' button in the block list table. */
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Thêm người dùng bị chặn";
+
+/* A label that indicates the user has no Signal contacts. */
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Bạn không có liên hệ nào trên Signal.";
+
+/* A label that indicates the user's search has no matching results. */
+"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Không có kết quả tìm kiếm";
+
+/* Label for the block list section of the settings view */
+"SETTINGS_BLOCK_LIST_TITLE" = "Đã chặn";
+
+/* Table cell label */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Luôn chuyển tiếp cuộc gọi";
+
+/* User settings section footer, a detailed explanation */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Chuyển tiếp mọi cuộc gọi qua một máy chủ của Signal để tránh làm lộ địa chỉ IP của bạn cho các liên hệ. Bật tính năng này sẽ làm giảm chất lượng gọi.";
+
+/* No comment provided by engineer. */
+"SETTINGS_CLEAR_HISTORY" = "Xoá lịch sử trò chuyện";
+
+/* No comment provided by engineer. */
+"SETTINGS_COPYRIGHT" = "Bản quyền Signal Messenger\nCấp phép GPLv3";
+
+/* No comment provided by engineer. */
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Xoá Tài khoản";
+
+/* Label for 'delete data' button. */
+"SETTINGS_DELETE_DATA_BUTTON" = "Xoá mọi dữ liệu";
+
+/* Alert message before user confirms clearing history */
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Bạn có chắc chắn muốn xoá mọi dữ liệu (tin nhắn, tập đính kèm, cuộc gọi, v.v.)? Hành động này không thể quay lại được.";
+
+/* Confirmation text for button which deletes all message, calling, attachments, etc. */
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Xoá tất cả";
+
+/* No comment provided by engineer. */
+"SETTINGS_HELP_HEADER" = "Trợ giúp";
+
+/* Section header */
+"SETTINGS_HISTORYLOG_TITLE" = "Xoá lịch sử trò chuyện";
+
+/* No comment provided by engineer. */
+"SETTINGS_INFORMATION_HEADER" = "Thông tin";
+
+/* Settings table view cell label */
+"SETTINGS_INVITE_TITLE" = "Mời bạn bè";
+
+/* content of tweet when inviting via twitter - please do not translate URL */
+"SETTINGS_INVITE_TWITTER_TEXT" = "Bạn có thể liên lạc với tôi bằng @signalapp. Tải app ngay: https://signal.org/download/";
+
+/* Label for settings view that allows user to change the notification sound. */
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Âm thanh tin nhắn";
+
+/* table cell label */
+"SETTINGS_LEGAL_TERMS_CELL" = "Điều khoản & Quyền riêng tư";
+
+/* Setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS" = "Gửi xem trước đường dẫn";
+
+/* Footer for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Xem trước có thể được bật cho các đường dẫn của Imgur, Instagram, Pinterest, Reddit và YouTube.";
+
+/* Header for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_HEADER" = "Xem trước đường dẫn";
+
+/* Title for settings activity */
+"SETTINGS_NAV_BAR_TITLE" = "Các cài đặt";
+
+/* table section footer */
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Thông báo Cuộc gọi và Tin nhắn có thể hiện lên khi điện thoại bạn đang khoá. Bạn nên giới hạn những gì được hiện lên trong các thông báo này.";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Nội dung Thông báo";
+
+/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Liên hệ của bạn tham gia Signal";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Sự kiện";
+
+/* No comment provided by engineer. */
+"SETTINGS_NOTIFICATIONS" = "Thông báo";
+
+/* Footer for the 'PINs' section of the privacy settings. */
+"SETTINGS_PINS_FOOTER" = "PIN của bạn thêm một lớp bảo mật và sao lưu tài khoản của bạn. Bạn sẽ được hỏi dùng nó khi bạn đăng kí số điện thoại của mình với Signal. Nếu bạn quên PIN, bạn sẽ bị khoá khỏi tài khoản trong 7 ngày.";
+
+/* Label for the 'pins' item of the privacy settings. */
+"SETTINGS_PINS_ITEM" = "Thay đổi mã PIN của bạn";
+
+/* Title for the 'PINs' section of the privacy settings. */
+"SETTINGS_PINS_TITLE" = "PIN";
+
+/* Label for 'CallKit privacy' preference */
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Hiện Tên người gọi và Số điện thoại";
+
+/* Settings table section footer. */
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Hiện cuộc gọi trong danh sách \"Cuộc gọi gần đây\" trong app Điện thoại của iOS.";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Hiện cuộc gọi trong \"Cuộc gọi gần đây\"";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Tích hợp cuộc gọi iOS";
+
+/* Settings table view cell label */
+"SETTINGS_PRIVACY_TITLE" = "Riêng tư";
+
+/* Label for the 'read receipts' setting. */
+"SETTINGS_READ_RECEIPT" = "Đánh dấu đã đọc";
+
+/* An explanation of the 'read receipts' setting. */
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Đọc và chia sẻ khi bạn đã đọc tin nhắn. Cài đặt này là tự chọn và áp dụng cho mọi cuộc trò chuyện.";
+
+/* Label for re-registration button. */
+"SETTINGS_REREGISTER_BUTTON" = "Đăng ký lại";
+
+/* Label for the 'screen lock activity timeout' setting of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Khoá màn hình";
+
+/* Footer for the 'screen lock' section of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Mở màn hình Signal dùng Touch ID, Face ID hoặc mật khẩu thiết bị iOS của bạn. Bạn vẫn có thể trả lời cuộc gọi đến và nhận thông báo tin nhắn khi bật tính năng Khoá Màn hình. Cài đặt thông báo của Signal cho phép bạn tuỳ chỉnh thông tin được hiện lên.";
+
+/* Title for the 'screen lock' section of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Khoá Màn hình";
+
+/* Label for the 'enable screen lock' switch of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Khoá Màn hình";
+
+/* No comment provided by engineer. */
+"SETTINGS_SCREEN_SECURITY" = "Bật Bảo mật Màn hình";
+
+/* No comment provided by engineer. */
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Chặn không hiện nội dung của Signal trong danh mục chuyển app.";
+
+/* Settings table section footer. */
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "Tích hợp Cuộc gọi iOS hiện cuộc gọi Signal trên màn hình khoá của bạn và trong lịch sử cuộc gọi của hệ thống. Bạn có thể tuỳ chỉnh để hiện tên liên hệ và số. Nếu iCloud được bật, lịch sử cuộc gọi này sẽ được chia sẻ với Apple.";
+
+/* Label for the notifications section of conversation settings view. */
+"SETTINGS_SECTION_NOTIFICATIONS" = "Thông báo";
+
+/* Header Label for the sounds section of settings views. */
+"SETTINGS_SECTION_SOUNDS" = "Âm thanh";
+
+/* settings topic header for table section */
+"SETTINGS_SECTION_TITLE_CALLING" = "Đang gọi";
+
+/* Section header */
+"SETTINGS_SECURITY_TITLE" = "Bảo mật Màn hình";
+
+/* No comment provided by engineer. */
+"SETTINGS_SUPPORT" = "Hỗ trợ";
+
+/* Indicates that 'two factor auth' is disabled in the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "Tắt";
+
+/* Indicates that 'two factor auth' is enabled in the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Mở";
+
+/* Label for the 'two factor auth' item of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Khoá đăng kí";
+
+/* Title for the 'two factor auth' section of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Khoá đăng kí";
+
+/* Label for the 'typing indicators' setting. */
+"SETTINGS_TYPING_INDICATORS" = "Dấu chỉ đang gõ";
+
+/* An explanation of the 'typing indicators' setting. */
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "Thấy và chia sẻ khi tin nhắn đang được soạn thảo. Cài đặt này là tự chọn và áp dụng cho mọi cuộc trò chuyện.";
+
+/* Label for a link to more info about unidentified delivery. */
+"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Tìm hiểu thêm";
+
+/* table section label */
+"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Lá thư không chủ";
+
+/* switch label */
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Hiện Dấu chỉ";
+
+/* table section footer */
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Hiện một icon dấu chỉ khi bạn chọn \"Thông tin thêm\" trên các tin nhắn được gửi qua chế độ gửi bảo mật.";
+
+/* switch label */
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Cho phép từ mọi người";
+
+/* table section footer */
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Bật Lá thư không chủ cho tin nhắn từ người gửi không có trong danh bạ và người bạn chưa chia sẻ hồ sơ.";
+
+/* No comment provided by engineer. */
+"SETTINGS_VERSION" = "Phiên bản";
+
+/* action sheet item to open native mail app */
+"SHARE_ACTION_MAIL" = "Mail";
+
+/* action sheet item to open native messages app */
+"SHARE_ACTION_MESSAGE" = "Tin nhắn";
+
+/* action sheet item */
+"SHARE_ACTION_TWEET" = "Twitter";
+
+/* alert body when sharing file failed because of untrusted/changed identity keys */
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Số an toàn của bạn với %@ vừa được thay đổi. Bạn nên xác thực lại trong ứng dụng chính trước khi gửi lại.";
+
+/* Indicates that the share extension is still loading. */
+"SHARE_EXTENSION_LOADING" = "Đang tải...";
+
+/* Message indicating that the share extension cannot be used until the user has registered in the main app. */
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Mở ứng dụng Signal để đăng ký.";
+
+/* Title indicating that the share extension cannot be used until the user has registered in the main app. */
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Chưa đăng ký";
+
+/* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Mở ứng dụng Signal để cập nhật hoặc đăng ký.";
+
+/* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
+"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Chưa sẵn sàng";
+
+/* Alert title */
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Không thể gửi tập đính kèm";
+
+/* Alert title */
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Đang tải lên...";
+
+/* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Không thể chuẩn bị tập đính kèm";
+
+/* Title for the 'share extension' view. */
+"SHARE_EXTENSION_VIEW_TITLE" = "Gửi cho Signal";
+
+/* Action sheet item */
+"SHOW_SAFETY_NUMBER_ACTION" = "Hiện Số an toàn";
+
+/* notification action */
+"SHOW_THREAD_BUTTON_TITLE" = "Hiện cuộc trò chuyện";
+
+/* body sent to contacts when inviting to Install Signal */
+"SMS_INVITE_BODY" = "Tôi đang mời bạn cài đặt Signal! Đây là đường dẫn:";
+
+/* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
+"SOUNDS_NONE" = "Không";
+
+/* Preview text shown in notifications and home view for sticker messages. */
+"STICKER_MESSAGE_PREVIEW" = "Tin nhắn nhãn dán";
+
+/* Tooltip indicating that a sticker pack was installed. */
+"STICKER_PACK_INSTALLED_TOOLTIP" = "Đã cài đặt gói nhãn dán";
+
+/* Label for a sticker that failed to download. */
+"STICKERS_FAILED_DOWNLOAD" = "Nhãn dán";
+
+/* Label for the 'install sticker pack' button. */
+"STICKERS_INSTALL_BUTTON" = "Cài đặt";
+
+/* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Tuyển tập nghệ sĩ Signal";
+
+/* Title for the 'available known stickers' section of the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Nhãn dán nhận được";
+
+/* Label indicating that one or more known sticker packs failed to load. */
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Một số bộ nhãn dán không thể tải được";
+
+/* Title for the 'installed stickers' section of the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Các nhãn dán đã cài";
+
+/* Label indicating that one or more known sticker packs is loading. */
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Đang tải...";
+
+/* Label indicating that the user has no installed sticker packs. */
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Chưa có nhãn dán nào được cài";
+
+/* Label indicating that the user has no known sticker packs. */
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Nhãn dán từ tin nhắn sẽ được hiển thị ở đây";
+
+/* Title for the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_TITLE" = "Nhãn dán";
+
+/* Default title for sticker packs. */
+"STICKERS_PACK_DEFAULT_TITLE" = "Gói nhãn dán";
+
+/* Error message shown when a sticker pack failed to install. */
+"STICKERS_PACK_INSTALL_FAILED" = "Cài đặt bộ nhãn dán không thành công.";
+
+/* Title of the 'share sticker pack' view. */
+"STICKERS_PACK_SHARE_VIEW_TITLE" = "Chia sẻ bộ nhãn dán";
+
+/* The default title for the 'sticker pack' view. */
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Gói nhãn dán";
+
+/* Label indicating that the sticker pack failed to load. */
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Bộ nhãn dán không thể tải";
+
+/* Label for the 'uninstall sticker pack' button. */
+"STICKERS_UNINSTALL_BUTTON" = "Gỡ cài đặt";
+
+/* Alert body after verifying privacy with {{other user's name}} */
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Số an toàn của bạn với %@ trùng khớp. Bạn có thể đánh dấu liên hệ này là đã xác thực.";
+
+/* No comment provided by engineer. */
+"SUCCESSFUL_VERIFICATION_TITLE" = "Số an toàn trùng khớp!";
+
+/* Label for button to verify a user's safety number. */
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Xác minh mã số an toàn";
+
+/* The number of members in a group. Embeds {{member count}} */
+"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu thành viên";
+
+/* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Thành viên của %@, %@ và %lu nhóm khác.";
+
+/* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Thành viên của %@";
+
+/* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Thành viên của %@, %@, và %@";
+
+/* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Thành viên của %@ và %@";
+
+/* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_DAYS" = "%@ ngày";
+
+/* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@ngày";
+
+/* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_HOURS" = "%@ giờ";
+
+/* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@g";
+
+/* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_MINUTES" = "%@ phút";
+
+/* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@ph";
+
+/* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SECONDS" = "%@ giây";
+
+/* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@ giây";
+
+/* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_DAY" = "%@ ngày";
+
+/* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_HOUR" = "%@ giờ";
+
+/* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_MINUTE" = "%@ phút";
+
+/* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_WEEK" = "%@ tuần";
+
+/* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_WEEKS" = "%@ tuần";
+
+/* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@ tuần";
+
+/* Label for the cancel button in an alert or action sheet. */
+"TXT_CANCEL_TITLE" = "Hủy bỏ";
+
+/* No comment provided by engineer. */
+"TXT_DELETE_TITLE" = "Xóa";
+
+/* Pressing this button moves an archived thread from the archive back to the inbox */
+"UNARCHIVE_ACTION" = "Ngưng lưu trữ";
+
+/* Message shown in conversation view that offers to block an unknown user. */
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Người dùng không trong danh bạ của bạn. Bạn có muốn chặn người này?";
+
+/* Displayed if for some reason we can't determine a contacts phone number *or* name */
+"UNKNOWN_CONTACT_NAME" = "Không rõ liên hệ";
+
+/* Label for unknown countries. */
+"UNKNOWN_COUNTRY_NAME" = "Không rõ quốc gia";
+
+/* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Một trong các thiết bị của bạn gửi một tin nhắn mà không thể hiện được ở đây vì tin nhắn này dùng một tính năng mới của Signal.";
+
+/* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ gửi một tin nhắn mà không thể hiện được ở đây vì tin nhắn này dùng một tính năng mới của Signal.";
+
+/* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Bạn nhận được một tin nhắn mà không thể hiện được ở đây vì tin nhắn này dùng một tính năng mới của Signal.";
+
+/* Label for button that lets users upgrade the app. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Nâng cấp Signal ngay bây giờ";
+
+/* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Đã nâng cấp thành phiên bản mới nhất của Signal. Bạn có thể nhận tin nhắn loại này trên thiết bị của mình.";
+
+/* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Bạn có thể hỏi %@ để gửi lại tin nhắn vì bạn giờ đang dùng phiên bản mới nhất của Signal.";
+
+/* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Bạn có thể hỏi người gửi để gửi lại tin nhắn này vì bạn giờ đang dùng phiên bản mới nhất của Signal.";
+
+/* Indicates an unknown or unrecognizable value. */
+"UNKNOWN_VALUE" = "Không rõ";
+
+/* button title for unlinking a device */
+"UNLINK_ACTION" = "Ngưng kết nối";
+
+/* Alert message to confirm unlinking a device */
+"UNLINK_CONFIRMATION_ALERT_BODY" = "Thiết bị này sẽ không nhận hay gửi được tin nhắn nếu như nó bị ngưng kết nối.";
+
+/* Alert title for confirming device deletion */
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "Ngưng kết nối \"%@\"?";
+
+/* Alert title when unlinking device fails */
+"UNLINKING_FAILED_ALERT_TITLE" = "Signal không thể ngưng kết nối thiết bị của bạn.";
+
+/* Label text in device manager for a device with no name */
+"UNNAMED_DEVICE" = "Thiết bị chưa đặt tên";
+
+/* No comment provided by engineer. */
+"UNREGISTER_SIGNAL_FAIL" = "Không thể huỷ đăng ký từ Signal.";
+
+/* No comment provided by engineer. */
+"UNSUPPORTED_ATTACHMENT" = "Nhận được loại tập đính kèm không được hỗ trợ.";
+
+/* No comment provided by engineer. */
+"UNSUPPORTED_FEATURE_ERROR" = "Thiết bị của bạn không hỗ trợ tính năng này.";
+
+/* Title for alert indicating that group members can't be removed. */
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Bạn không thể loại bỏ thành viên của nhóm. Họ hoặc phải tự rời bỏ, hoặc bạn có thể một nhóm mới không có thành viên này.";
+
+/* Title for alert indicating that group members can't be removed. */
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Không được hỗ trợ";
+
+/* Button to start a create pin flow from the one time splash screen that appears after upgrading */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Tạo mã PIN của bạn";
+
+/* Button to open a help document explaining more about why a PIN is required */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Tìm hiểu thêm về mã PIN";
+
+/* Body text for PINs migration splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Khoá Đăng ký của bạn giờ có thể làm thêm nhiều hơn nữa. Với mã PIN bạn có thể mang danh bạ của mình khi bạn đổi thiết bị.";
+
+/* Header for PINs migration splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Khoá Đăng ký = PIN";
+
+/* Body text for PINs splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Thêm bảo mật hơn nữa cho tài khoản của bạn và lưu giữ danh bạ của mình khi bạn đổi điện thoại.";
+
+/* Header for PINs splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Giới thiệu mã PIN";
+
+/* Button to open a help document explaining more about why a PIN is required */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Tôi có phải tạo mã PIN không?";
+
+/* Body text for stickers splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Tại sao phải dùng từ ngữ khi bạn có thể dùng nhãn dán? Nhấn biểu tượng này trên bàn phím của bạn: ";
+
+/* Header for stickers splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Nhãn gián giới thiệu";
+
+/* Message for the alert indicating that user should upgrade iOS. */
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal sẽ sớm yêu cầu hệ điều hành iOS 10 hoặc mới hơn. Vui lòng nâng cấp trong ứng dụng Cài đặt >> Cài đặt chung >> Nâng cấp phần mềm.";
+
+/* Title for the alert indicating that user should upgrade iOS. */
+"UPGRADE_IOS_ALERT_TITLE" = "Nâng cấp iOS";
+
+/* An explanation of how usernames work on the username view. */
+"USERNAME_DESCRIPTION" = "Tên người dùng trên Signal là không bắt buộc. Nếu bạn chọn để dùng một tên người dùng những người dùng Signal khác sẽ có thể tìm được bạn bằng tên này và liên lạc bạn mà không cần số điện thoại của bạn.";
+
+/* Label for the username field in the username view. */
+"USERNAME_FIELD" = "Tên người dùng";
+
+/* An error indicating that the supplied username contains disallowed characters. */
+"USERNAME_INVALID_CHARACTERS_ERROR" = "Tên người dùng chỉ có thể dùng kí tự a-z, 0-9, và _";
+
+/* A message indicating that username lookup failed. */
+"USERNAME_LOOKUP_ERROR" = "Có lỗi khi tìm tên người dùng này. Vui lòng thử lại sau.";
+
+/* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
+"USERNAME_NOT_FOUND_FORMAT" = "%@ không phải là người dùng Signal. Hãy kiểm tra lại bạn đã nhập đầy đủ tên người dùng.";
+
+/* A message indicating that the given username was not registered with signal. */
+"USERNAME_NOT_FOUND_TITLE" = "Không tìm thấy người dùng";
+
+/* The placeholder for the username text entry in the username view. */
+"USERNAME_PLACEHOLDER" = "Nhập tên người dùng";
+
+/* A prefix appeneded to all usernames when displayed */
+"USERNAME_PREFIX" = "@";
+
+/* The title for the username view. */
+"USERNAME_TITLE" = "Tên người dùng";
+
+/* An error indicating that the supplied username is too short. */
+"USERNAME_TOO_SHORT_ERROR" = "Tên người dùng phải có ít nhất 4 kí tự";
+
+/* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
+"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ đã được dùng.";
+
+/* Error moessage shown when a username update fails. */
+"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Không thể cập nhật tên người dùng.";
+
+/* error label near a field */
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Tên thiết bị không thể để trống";
+
+/* error label near a field */
+"VALIDATION_ERROR_TOO_LONG" = "Tên thiết bị quá dài";
+
+/* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Bạn đã đánh dấu %@ là không xác thực.";
+
+/* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "Bạn đã đánh dấu %@ là không xác thực trên một thiết bị khác.";
+
+/* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "Bạn đã đánh dấu %@ là đã xác thực.";
+
+/* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Bạn đã đánh dấu %@ là đã xác thực trên một thiết bị khác.";
+
+/* Generic message indicating that verification state changed for a given user. */
+"VERIFICATION_STATE_CHANGE_GENERIC" = "Trạng thái xác thực đã thay đổi.";
+
+/* Label for button or row which allows users to verify the safety number of another user. */
+"VERIFY_PRIVACY" = "Xem số an toàn";
+
+/* Label for button or row which allows users to verify the safety numbers of multiple users. */
+"VERIFY_PRIVACY_MULTIPLE" = "Kiểm tra lại các số an toàn";
+
+/* Indicates how to cancel a voice message. */
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Trượt để Huỷ";
+
+/* Filename for voice messages. */
+"VOICE_MESSAGE_FILE_NAME" = "Tin nhắn thoại";
+
+/* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Nhấn và giữ để lưu tin nhắn thoại.";
+
+/* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Tin nhắn thoại";
+
+/* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Hoàn tất cài đặt trên Signal Desktop. ";
+
+/* Info Message when you disable disappearing messages */
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Bạn đã tắt tính năng tự hủy tin nhắn.";
+
+/* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Bạn cài thời gian biến mất tin nhắn thành %@.";
