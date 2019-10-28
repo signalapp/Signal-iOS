@@ -75,7 +75,12 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
 
         view.addSubview(actionSheetView)
 
-        actionSheetView.autoPinWidthToSuperview()
+        // Prefer to be full width, but don't exceed the maximum width
+        actionSheetView.autoSetDimension(.width, toSize: 375, relation: .lessThanOrEqual)
+        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
+            actionSheetView.autoPinWidthToSuperview()
+        }
+        actionSheetView.autoHCenterInSuperview()
         actionSheetView.setContentHuggingVerticalHigh()
         actionSheetView.setCompressionResistanceHigh()
         self.actionSheetViewVerticalConstraint = actionSheetView.autoPinEdge(.top, to: .bottom, of: self.view)
