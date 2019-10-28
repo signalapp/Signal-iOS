@@ -570,7 +570,7 @@ extension GRDBDatabaseStorageAdapter {
         SDSDatabaseStorage.shared.logFileSizes()
 
         // Use a short busy timeout when trying to truncate the WAL.
-        // Another process may active; we don't want to block for long.
+        // Another process may be active; we don't want to block for long.
         defer {
             // Restore the default busy behavior.
             GRDBStorage.useInfiniteBusyTimeout()
