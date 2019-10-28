@@ -52,8 +52,6 @@ NSString *NSStringForImageFormat(ImageFormat value);
 
 - (nullable UIImage *)stillForWebpData;
 
-- (BOOL)ows_isValidPng;
-
 #pragma mark - Image Data
 
 // declaredMimeType is optional.

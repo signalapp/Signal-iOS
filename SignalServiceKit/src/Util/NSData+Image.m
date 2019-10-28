@@ -390,12 +390,6 @@ NSString *NSStringForImageFormat(ImageFormat value)
     return uiImage;
 }
 
-- (BOOL)ows_isValidPng
-{
-    ImageData *imageData = [self imageDataWithPath:nil mimeType:OWSMimeTypeImagePng];
-    return (imageData.isValid && imageData.imageFormat == ImageFormat_Png);
-}
-
 #pragma mark - Image Data
 
 + (ImageData *)imageDataWithPath:(NSString *)filePath mimeType:(nullable NSString *)mimeType
