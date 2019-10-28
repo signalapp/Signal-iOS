@@ -469,6 +469,7 @@ if __name__ == "__main__":
             process_if_appropriate(filepath)
 
     print 'git clang-format...'
-    print commands.getoutput('git clang-format')
+    # we don't want to format .proto files, so we specify every other supported extension
+    print commands.getoutput('git clang-format --extensions "c, h, m, mm, cc, cp, cpp, c++, cxx, hh, hxx, cu, java, js, ts, cs"')
 
     check_diff_for_keywords()
