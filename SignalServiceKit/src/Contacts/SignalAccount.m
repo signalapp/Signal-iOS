@@ -169,7 +169,7 @@ NSUInteger const SignalAccountSchemaVersion = 1;
         return;
     }
 
-    const CGFloat kMaxAvatarDimensionPixels = 300;
+    const CGFloat kMaxAvatarDimensionPixels = 600;
     if (imageData.imageFormat == ImageFormat_Jpeg && imageData.pixelSize.width <= kMaxAvatarDimensionPixels
         && imageData.pixelSize.height <= kMaxAvatarDimensionPixels) {
         self.contactAvatarJpegData = contactAvatarData;
