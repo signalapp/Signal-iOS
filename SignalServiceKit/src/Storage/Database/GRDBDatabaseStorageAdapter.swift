@@ -385,7 +385,7 @@ private struct GRDBStorage {
         }
     }
     fileprivate static func useShortBusyTimeout() {
-        maxBusyTimeoutMs = 200
+        maxBusyTimeoutMs = 100
     }
     fileprivate static func useInfiniteBusyTimeout() {
         maxBusyTimeoutMs = nil
