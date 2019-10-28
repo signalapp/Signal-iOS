@@ -38,26 +38,25 @@ NS_ASSUME_NONNULL_BEGIN
 
     AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
     if (status == AVAuthorizationStatusDenied) {
-        UIAlertController *alert = [UIAlertController
-            alertControllerWithTitle:NSLocalizedString(@"MISSING_CAMERA_PERMISSION_TITLE", @"Alert title")
-                             message:NSLocalizedString(@"MISSING_CAMERA_PERMISSION_MESSAGE", @"Alert body")
-                      preferredStyle:UIAlertControllerStyleAlert];
+        ActionSheetController *alert = [[ActionSheetController alloc]
+            initWithTitle:NSLocalizedString(@"MISSING_CAMERA_PERMISSION_TITLE", @"Alert title")
+                  message:NSLocalizedString(@"MISSING_CAMERA_PERMISSION_MESSAGE", @"Alert body")];
 
-        UIAlertAction *_Nullable openSettingsAction = [CurrentAppContext() openSystemSettingsActionWithCompletion:^{
+        ActionSheetAction *_Nullable openSettingsAction = [CurrentAppContext() openSystemSettingsActionWithCompletion:^{
             callback(NO);
         }];
         if (openSettingsAction != nil) {
             [alert addAction:openSettingsAction];
         }
 
-        UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.dismissButton
-                                                                style:UIAlertActionStyleCancel
-                                                              handler:^(UIAlertAction *action) {
-                                                                  callback(NO);
-                                                              }];
+        ActionSheetAction *dismissAction = [[ActionSheetAction alloc] initWithTitle:CommonStrings.dismissButton
+                                                                              style:ActionSheetActionStyleCancel
+                                                                            handler:^(ActionSheetAction *action) {
+                                                                                callback(NO);
+                                                                            }];
         [alert addAction:dismissAction];
 
-        [self presentAlert:alert];
+        [self presentActionSheet:alert];
     } else if (status == AVAuthorizationStatusAuthorized) {
         callback(YES);
     } else if (status == AVAuthorizationStatusNotDetermined) {
@@ -81,14 +80,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     void (^presentSettingsDialog)(void) = ^(void) {
         DispatchMainThreadSafe(^{
-            UIAlertController *alert = [UIAlertController
-                alertControllerWithTitle:NSLocalizedString(@"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE",
-                                             @"Alert title when user has previously denied media library access")
-                                 message:NSLocalizedString(@"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE",
-                                             @"Alert body when user has previously denied media library access")
-                          preferredStyle:UIAlertControllerStyleAlert];
+            ActionSheetController *alert = [[ActionSheetController alloc]
+                initWithTitle:NSLocalizedString(@"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE",
+                                  @"Alert title when user has previously denied media library access")
+                      message:NSLocalizedString(@"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE",
+                                  @"Alert body when user has previously denied media library access")];
 
-            UIAlertAction *_Nullable openSettingsAction =
+            ActionSheetAction *_Nullable openSettingsAction =
                 [CurrentAppContext() openSystemSettingsActionWithCompletion:^() {
                     completionCallback(NO);
                 }];
@@ -96,14 +94,14 @@ NS_ASSUME_NONNULL_BEGIN
                 [alert addAction:openSettingsAction];
             }
 
-            UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.dismissButton
-                                                                    style:UIAlertActionStyleCancel
-                                                                  handler:^(UIAlertAction *action) {
-                                                                      completionCallback(NO);
-                                                                  }];
+            ActionSheetAction *dismissAction = [[ActionSheetAction alloc] initWithTitle:CommonStrings.dismissButton
+                                                                                  style:ActionSheetActionStyleCancel
+                                                                                handler:^(ActionSheetAction *action) {
+                                                                                    completionCallback(NO);
+                                                                                }];
             [alert addAction:dismissAction];
 
-            [self presentAlert:alert];
+            [self presentActionSheet:alert];
         });
     };
 
@@ -165,6 +163,27 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [[AVAudioSession sharedInstance] requestRecordPermission:callback];
+}
+
+- (void)ows_showNoMicrophonePermissionActionSheet
+{
+    DispatchMainThreadSafe(^{
+        ActionSheetController *alert = [[ActionSheetController alloc]
+            initWithTitle:NSLocalizedString(@"CALL_AUDIO_PERMISSION_TITLE",
+                              @"Alert title when calling and permissions for microphone are missing")
+                  message:NSLocalizedString(@"CALL_AUDIO_PERMISSION_MESSAGE",
+                              @"Alert message when calling and permissions for microphone are missing")];
+
+        ActionSheetAction *_Nullable openSettingsAction =
+            [CurrentAppContext() openSystemSettingsActionWithCompletion:nil];
+        if (openSettingsAction) {
+            [alert addAction:openSettingsAction];
+        }
+
+        [alert addAction:OWSActionSheets.dismissAction];
+
+        [self presentActionSheet:alert];
+    });
 }
 
 @end

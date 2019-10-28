@@ -122,7 +122,7 @@ extension RecentPhotosCollectionView: UICollectionViewDelegate {
         }.ensure { [weak self] in
             self?.fetchingAttachmentIndex = nil
         }.catch { _ in
-            OWSAlerts.showAlert(title: NSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
+            OWSActionSheets.showActionSheet(title: NSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
         }.retainUntilComplete()
     }
 }

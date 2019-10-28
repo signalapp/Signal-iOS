@@ -137,55 +137,55 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *title = NSLocalizedString(@"LINK_DEVICE_INVALID_CODE_TITLE", @"report an invalid linking code");
         NSString *body = NSLocalizedString(@"LINK_DEVICE_INVALID_CODE_BODY", @"report an invalid linking code");
 
-        UIAlertController *alert =
-            [UIAlertController alertControllerWithTitle:title message:body preferredStyle:UIAlertControllerStyleAlert];
+        ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:title message:body];
 
-        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
-                                                               style:UIAlertActionStyleCancel
-                                                             handler:^(UIAlertAction *action) {
-                                                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                                                     [self popToLinkedDeviceList];
-                                                                 });
-                                                             }];
-        [alert addAction:cancelAction];
+        ActionSheetAction *cancelAction =
+            [[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
+                                               style:ActionSheetActionStyleCancel
+                                             handler:^(ActionSheetAction *action) {
+                                                 dispatch_async(dispatch_get_main_queue(), ^{
+                                                     [self popToLinkedDeviceList];
+                                                 });
+                                             }];
+        [actionSheet addAction:cancelAction];
 
-        UIAlertAction *proceedAction =
-            [UIAlertAction actionWithTitle:NSLocalizedString(@"LINK_DEVICE_RESTART", @"attempt another linking")
-                                     style:UIAlertActionStyleDefault
-                                   handler:^(UIAlertAction *action) {
-                                       [self.qrScanningController startCapture];
-                                   }];
-        [alert addAction:proceedAction];
+        ActionSheetAction *proceedAction = [[ActionSheetAction alloc]
+            initWithTitle:NSLocalizedString(@"LINK_DEVICE_RESTART", @"attempt another linking")
+                    style:ActionSheetActionStyleDefault
+                  handler:^(ActionSheetAction *action) {
+                      [self.qrScanningController startCapture];
+                  }];
+        [actionSheet addAction:proceedAction];
 
-        [self presentAlert:alert];
+        [self presentActionSheet:actionSheet];
     } else {
         NSString *title = NSLocalizedString(
             @"LINK_DEVICE_PERMISSION_ALERT_TITLE", @"confirm the users intent to link a new device");
         NSString *linkingDescription
             = NSLocalizedString(@"LINK_DEVICE_PERMISSION_ALERT_BODY", @"confirm the users intent to link a new device");
 
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:title
-                                                                       message:linkingDescription
-                                                                preferredStyle:UIAlertControllerStyleAlert];
+        ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:title
+                                                                                  message:linkingDescription];
 
-        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
-                                                               style:UIAlertActionStyleCancel
-                                                             handler:^(UIAlertAction *action) {
-                                                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                                                     [self popToLinkedDeviceList];
-                                                                 });
-                                                             }];
-        [alert addAction:cancelAction];
+        ActionSheetAction *cancelAction =
+            [[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
+                                               style:ActionSheetActionStyleCancel
+                                             handler:^(ActionSheetAction *action) {
+                                                 dispatch_async(dispatch_get_main_queue(), ^{
+                                                     [self popToLinkedDeviceList];
+                                                 });
+                                             }];
+        [actionSheet addAction:cancelAction];
 
-        UIAlertAction *proceedAction =
-            [UIAlertAction actionWithTitle:NSLocalizedString(@"CONFIRM_LINK_NEW_DEVICE_ACTION", @"Button text")
-                                     style:UIAlertActionStyleDefault
-                                   handler:^(UIAlertAction *action) {
-                                       [self provisionWithParser:parser];
-                                   }];
-        [alert addAction:proceedAction];
+        ActionSheetAction *proceedAction = [[ActionSheetAction alloc]
+            initWithTitle:NSLocalizedString(@"CONFIRM_LINK_NEW_DEVICE_ACTION", @"Button text")
+                    style:ActionSheetActionStyleDefault
+                  handler:^(ActionSheetAction *action) {
+                      [self provisionWithParser:parser];
+                  }];
+        [actionSheet addAction:proceedAction];
 
-        [self presentAlert:alert];
+        [self presentActionSheet:actionSheet];
     }
 }
 
@@ -229,38 +229,37 @@ NS_ASSUME_NONNULL_BEGIN
         failure:^(NSError *error) {
             OWSLogError(@"Failed to provision device with error: %@", error);
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self presentAlert:[self retryAlertControllerWithError:error
-                                                            retryBlock:^{
-                                                                [self provisionWithParser:parser];
-                                                            }]];
+                [self presentActionSheet:[self retryActionSheetControllerWithError:error
+                                                                        retryBlock:^{
+                                                                            [self provisionWithParser:parser];
+                                                                        }]];
             });
         }];
 }
 
-- (UIAlertController *)retryAlertControllerWithError:(NSError *)error retryBlock:(void (^)(void))retryBlock
+- (ActionSheetController *)retryActionSheetControllerWithError:(NSError *)error retryBlock:(void (^)(void))retryBlock
 {
     NSString *title = NSLocalizedString(@"LINKING_DEVICE_FAILED_TITLE", @"Alert Title");
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
-                                                                             message:error.localizedDescription
-                                                                      preferredStyle:UIAlertControllerStyleAlert];
+    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:title
+                                                                              message:error.localizedDescription];
 
-    UIAlertAction *retryAction = [UIAlertAction actionWithTitle:[CommonStrings retryButton]
-                                                          style:UIAlertActionStyleDefault
-                                                        handler:^(UIAlertAction *action) {
-                                                            retryBlock();
-                                                        }];
-    [alertController addAction:retryAction];
+    ActionSheetAction *retryAction = [[ActionSheetAction alloc] initWithTitle:[CommonStrings retryButton]
+                                                                        style:ActionSheetActionStyleDefault
+                                                                      handler:^(ActionSheetAction *action) {
+                                                                          retryBlock();
+                                                                      }];
+    [actionSheet addAction:retryAction];
 
-    UIAlertAction *cancelAction =
-        [UIAlertAction actionWithTitle:CommonStrings.cancelButton
-                                 style:UIAlertActionStyleCancel
-                               handler:^(UIAlertAction *action) {
-                                   dispatch_async(dispatch_get_main_queue(), ^{
-                                       [self dismissViewControllerAnimated:YES completion:nil];
-                                   });
-                               }];
-    [alertController addAction:cancelAction];
-    return alertController;
+    ActionSheetAction *cancelAction = [[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
+                                                                         style:ActionSheetActionStyleCancel
+                                                                       handler:^(ActionSheetAction *action) {
+                                                                           dispatch_async(dispatch_get_main_queue(), ^{
+                                                                               [self dismissViewControllerAnimated:YES
+                                                                                                        completion:nil];
+                                                                           });
+                                                                       }];
+    [actionSheet addAction:cancelAction];
+    return actionSheet;
 }
 
 - (void)popToLinkedDeviceList

@@ -496,18 +496,17 @@
 {
     __weak AppSettingsViewController *weakSelf = self;
 
-    UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TITLE", @"")
-                                            message:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TEXT", @"")
-                                     preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"PROCEED_BUTTON", @"")
-                                              style:UIAlertActionStyleDestructive
-                                            handler:^(UIAlertAction *action) {
-                                                [weakSelf deleteAccount:isRegistered];
-                                            }]];
-    [alert addAction:[OWSAlerts cancelAction]];
+    ActionSheetController *actionSheet =
+        [[ActionSheetController alloc] initWithTitle:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TITLE", @"")
+                                             message:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TEXT", @"")];
+    [actionSheet addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"PROCEED_BUTTON", @"")
+                                                              style:ActionSheetActionStyleDestructive
+                                                            handler:^(ActionSheetAction *action) {
+                                                                [weakSelf deleteAccount:isRegistered];
+                                                            }]];
+    [actionSheet addAction:[OWSActionSheets cancelAction]];
 
-    [self presentAlert:alert];
+    [self presentActionSheet:actionSheet];
 }
 
 - (void)deleteAccount:(BOOL)isRegistered
@@ -524,8 +523,9 @@
                               failure:^(NSError *error) {
                                   dispatch_async(dispatch_get_main_queue(), ^{
                                       [modalActivityIndicator dismissWithCompletion:^{
-                                          [OWSAlerts
-                                              showAlertWithTitle:NSLocalizedString(@"UNREGISTER_SIGNAL_FAIL", @"")];
+                                          [OWSActionSheets
+                                              showActionSheetWithTitle:NSLocalizedString(
+                                                                           @"UNREGISTER_SIGNAL_FAIL", @"")];
                                       }];
                                   });
                               }];

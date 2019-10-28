@@ -66,17 +66,16 @@ public class ProvisioningController {
                 Logger.info("cancelled")
             default:
                 Logger.warn("error: \(error)")
-                let alert = UIAlertController(title: NSLocalizedString("SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN", comment: "alert title"),
-                                              message: error.localizedDescription,
-                                              preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: CommonStrings.retryButton,
+                let alert = ActionSheetController(title: NSLocalizedString("SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN", comment: "alert title"),
+                                              message: error.localizedDescription)
+                alert.addAction(ActionSheetAction(title: CommonStrings.retryButton,
                                               accessibilityIdentifier: "alert.retry",
                                               style: .default,
                                               handler: { _ in
                                                 self.resetPromises()
                                                 navigationController.popViewController(animated: true)
                 }))
-                navigationController.presentAlert(alert)
+                navigationController.presentActionSheet(alert)
             }
         }.retainUntilComplete()
     }
@@ -89,17 +88,16 @@ public class ProvisioningController {
                 }
             }.catch { error in
                 Logger.warn("error: \(error)")
-                let alert = UIAlertController(title: NSLocalizedString("SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN", comment: "alert title"),
-                                              message: error.localizedDescription,
-                                              preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: CommonStrings.retryButton,
+                let alert = ActionSheetController(title: NSLocalizedString("SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN", comment: "alert title"),
+                                              message: error.localizedDescription)
+                alert.addAction(ActionSheetAction(title: CommonStrings.retryButton,
                                               accessibilityIdentifier: "alert.retry",
                                               style: .default,
                                               handler: { _ in
                                                 self.didSetDeviceName(deviceName, from: viewController)
                 }))
                 modal.dismiss {
-                    viewController.presentAlert(alert)
+                    viewController.presentActionSheet(alert)
                 }
             }.retainUntilComplete()
         }

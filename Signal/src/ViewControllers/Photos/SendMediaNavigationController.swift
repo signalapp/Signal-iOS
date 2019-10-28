@@ -374,22 +374,22 @@ class SendMediaNavigationController: OWSNavigationController {
         } else {
             let alertTitle = NSLocalizedString("SEND_MEDIA_ABANDON_TITLE", comment: "alert title when user attempts to leave the send media flow when they have an in-progress album")
 
-            let alert = UIAlertController(title: alertTitle, message: nil, preferredStyle: .alert)
+            let alert = ActionSheetController(title: alertTitle, message: nil)
 
             let confirmAbandonText = NSLocalizedString("SEND_MEDIA_CONFIRM_ABANDON_ALBUM", comment: "alert action, confirming the user wants to exit the media flow and abandon any photos they've taken")
-            let confirmAbandonAction = UIAlertAction(title: confirmAbandonText,
+            let confirmAbandonAction = ActionSheetAction(title: confirmAbandonText,
                                                      style: .destructive,
                                                      handler: { [weak self] _ in
                                                         guard let self = self else { return }
                                                         self.sendMediaNavDelegate?.sendMediaNavDidCancel(self)
             })
             alert.addAction(confirmAbandonAction)
-            let dontAbandonAction = UIAlertAction(title: dontAbandonText,
+            let dontAbandonAction = ActionSheetAction(title: dontAbandonText,
                                                   style: .default,
                                                   handler: { _ in  })
             alert.addAction(dontAbandonAction)
 
-            self.presentAlert(alert)
+            self.presentActionSheet(alert)
         }
     }
 }
@@ -529,7 +529,7 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
             }.catch { error in
                 Logger.error("failed to prepare attachments. error: \(error)")
                 modal.dismiss {
-                    OWSAlerts.showAlert(title: NSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
+                    OWSActionSheets.showActionSheet(title: NSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
                 }
             }.retainUntilComplete()
         }

@@ -1666,22 +1666,21 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 {
     OWSAssertIsOnMainThread();
 
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
-                                                                   message:nil
-                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:nil message:nil];
 
     NSString *shareTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE",
         @"Button to confirm that user wants to share their profile with a user or group.");
-    [alert addAction:[UIAlertAction actionWithTitle:shareTitle
-                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"share_profile")
-                                              style:UIAlertActionStyleDefault
-                                            handler:^(UIAlertAction *_Nonnull action) {
-                                                [self userAddedThreadToProfileWhitelist:thread];
-                                                successHandler();
-                                            }]];
-    [alert addAction:[OWSAlerts cancelAction]];
+    [actionSheet
+        addAction:[[ActionSheetAction alloc] initWithTitle:shareTitle
+                                   accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"share_profile")
+                                                     style:ActionSheetActionStyleDefault
+                                                   handler:^(ActionSheetAction *_Nonnull action) {
+                                                       [self userAddedThreadToProfileWhitelist:thread];
+                                                       successHandler();
+                                                   }]];
+    [actionSheet addAction:[OWSActionSheets cancelAction]];
 
-    [fromViewController presentAlert:alert];
+    [fromViewController presentActionSheet:actionSheet];
 }
 
 - (void)userAddedThreadToProfileWhitelist:(TSThread *)thread

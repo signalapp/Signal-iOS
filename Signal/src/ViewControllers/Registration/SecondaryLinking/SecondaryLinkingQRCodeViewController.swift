@@ -80,10 +80,10 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
             return
         }
 
-        let alert = UIAlertController(title: "TODO", message: nil, preferredStyle: .alert)
-        alert.addAction(OWSAlerts.dismissAction)
+        let alert = ActionSheetController(title: "TODO", message: nil)
+        alert.addAction(OWSActionSheets.dismissAction)
 
-        presentAlert(alert)
+        presentActionSheet(alert)
     }
 
     // MARK: -
@@ -93,9 +93,9 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
             self.qrCodeView.setQRImage(try buildQRImage(url: url))
         }.catch { error in
             let title = NSLocalizedString("SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE", comment: "alert title")
-            let alert = UIAlertController(title: title, message: error.localizedDescription, preferredStyle: .alert)
+            let alert = ActionSheetController(title: title, message: error.localizedDescription)
 
-            let retryAction = UIAlertAction(title: CommonStrings.retryButton,
+            let retryAction = ActionSheetAction(title: CommonStrings.retryButton,
                                             accessibilityIdentifier: "alert.retry",
                                             style: .default) { _ in
                                                 self.provisioningController.resetPromises()

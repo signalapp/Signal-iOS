@@ -516,17 +516,16 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                 return
             }
 
-            let alert = UIAlertController(title: NSLocalizedString("GIF_PICKER_FAILURE_ALERT_TITLE", comment: "Shown when selected GIF couldn't be fetched"),
-                                          message: error.localizedDescription,
-                                          preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: CommonStrings.retryButton, style: .default) { _ in
+            let alert = ActionSheetController(title: NSLocalizedString("GIF_PICKER_FAILURE_ALERT_TITLE", comment: "Shown when selected GIF couldn't be fetched"),
+                                          message: error.localizedDescription)
+            alert.addAction(ActionSheetAction(title: CommonStrings.retryButton, style: .default) { _ in
                 self.getFileForCell(cell)
             })
-            alert.addAction(UIAlertAction(title: CommonStrings.dismissButton, style: .cancel) { _ in
+            alert.addAction(ActionSheetAction(title: CommonStrings.dismissButton, style: .cancel) { _ in
                 self.delegate?.gifPickerDidCancel()
             })
 
-            self.presentAlert(alert)
+            self.presentActionSheet(alert)
         }.retainUntilComplete()
     }
 
@@ -585,7 +584,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         progressiveSearchTimer = nil
 
         guard let text = searchBar.text else {
-            OWSAlerts.showErrorAlert(message: NSLocalizedString("GIF_PICKER_VIEW_MISSING_QUERY",
+            OWSActionSheets.showErrorAlert(message: NSLocalizedString("GIF_PICKER_VIEW_MISSING_QUERY",
                                                            comment: "Alert message shown when user tries to search for GIFs without entering any search terms."))
             return
         }

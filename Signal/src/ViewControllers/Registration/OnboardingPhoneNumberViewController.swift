@@ -334,7 +334,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
                 isPhoneNumberInvalid = true
                 updateValidationWarnings()
 
-                OWSAlerts.showAlert(title:
+                OWSActionSheets.showActionSheet(title:
                     NSLocalizedString("REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE",
                                       comment: "Title of alert indicating that users needs to enter a phone number to register."),
                     message:
@@ -351,7 +351,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
                 isPhoneNumberInvalid = true
                 updateValidationWarnings()
 
-                OWSAlerts.showAlert(title:
+                OWSActionSheets.showActionSheet(title:
                     NSLocalizedString("REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE",
                                       comment: "Title of alert indicating that users needs to enter a valid phone number to register."),
                     message:
@@ -364,7 +364,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         onboardingController.update(phoneNumber: OnboardingPhoneNumber(e164: e164PhoneNumber, userInput: phoneNumberText))
 
         if UIDevice.current.isIPad || UIDevice.current.isCompatabilityModeIPad {
-            OWSAlerts.showConfirmationAlert(title: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_TITLE",
+            OWSActionSheets.showConfirmationAlert(title: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_TITLE",
                                                                       comment: "alert title when registering an iPad"),
                                             message: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_BODY",
                                                                         comment: "alert body when registering an iPad"),

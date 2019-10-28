@@ -33,21 +33,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)showReregistrationUIFromViewController:(UIViewController *)fromViewController
 {
-    UIAlertController *actionSheet =
-        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:nil message:nil];
 
     [actionSheet
-        addAction:[UIAlertAction
-                      actionWithTitle:NSLocalizedString(@"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER",
-                                          @"Label for button that lets users re-register using the same phone number.")
-                                style:UIAlertActionStyleDestructive
-                              handler:^(UIAlertAction *action) {
-                                  [RegistrationUtils reregisterWithFromViewController:fromViewController];
-                              }]];
+        addAction:[[ActionSheetAction alloc]
+                      initWithTitle:NSLocalizedString(@"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER",
+                                        @"Label for button that lets users re-register using the same phone number.")
+                              style:ActionSheetActionStyleDestructive
+                            handler:^(ActionSheetAction *action) {
+                                [RegistrationUtils reregisterWithFromViewController:fromViewController];
+                            }]];
 
-    [actionSheet addAction:[OWSAlerts cancelAction]];
+    [actionSheet addAction:[OWSActionSheets cancelAction]];
 
-    [fromViewController presentAlert:actionSheet];
+    [fromViewController presentActionSheet:actionSheet];
 }
 
 + (void)reregisterWithFromViewController:(UIViewController *)fromViewController
@@ -94,12 +93,13 @@ NS_ASSUME_NONNULL_BEGIN
                                   OWSLogError(@"re-registering: send verification code failed.");
                                   [modalActivityIndicator dismissWithCompletion:^{
                                       if (error.code == 400) {
-                                          [OWSAlerts showAlertWithTitle:NSLocalizedString(@"REGISTRATION_ERROR", nil)
-                                                                message:NSLocalizedString(
-                                                                            @"REGISTRATION_NON_VALID_NUMBER", nil)];
+                                          [OWSActionSheets
+                                              showActionSheetWithTitle:NSLocalizedString(@"REGISTRATION_ERROR", nil)
+                                                               message:NSLocalizedString(
+                                                                           @"REGISTRATION_NON_VALID_NUMBER", nil)];
                                       } else {
-                                          [OWSAlerts showAlertWithTitle:error.localizedDescription
-                                                                message:error.localizedRecoverySuggestion];
+                                          [OWSActionSheets showActionSheetWithTitle:error.localizedDescription
+                                                                            message:error.localizedRecoverySuggestion];
                                       }
                                   }];
                               }) retainUntilComplete];

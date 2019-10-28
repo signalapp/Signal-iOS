@@ -1179,7 +1179,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         }
         [self presentViewController:viewController animated:YES completion:nil];
     } else {
-        [OWSAlerts showIOSUpgradeNagIfNecessary];
+        [OWSActionSheets showIOSUpgradeNagIfNecessary];
     }
 }
 
@@ -1556,20 +1556,19 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     TSThread *thread = [self threadForIndexPath:indexPath];
 
     __weak ConversationListViewController *weakSelf = self;
-    UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE",
-                                                        @"Title for the 'conversation delete confirmation' alert.")
-                                            message:NSLocalizedString(@"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE",
-                                                        @"Message for the 'conversation delete confirmation' alert.")
-                                     preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", nil)
-                                              style:UIAlertActionStyleDestructive
-                                            handler:^(UIAlertAction *action) {
-                                                [weakSelf deleteThread:thread];
-                                            }]];
-    [alert addAction:[OWSAlerts cancelAction]];
+    ActionSheetController *alert = [[ActionSheetController alloc]
+        initWithTitle:NSLocalizedString(@"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE",
+                          @"Title for the 'conversation delete confirmation' alert.")
+              message:NSLocalizedString(@"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE",
+                          @"Message for the 'conversation delete confirmation' alert.")];
+    [alert addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", nil)
+                                                        style:ActionSheetActionStyleDestructive
+                                                      handler:^(ActionSheetAction *action) {
+                                                          [weakSelf deleteThread:thread];
+                                                      }]];
+    [alert addAction:[OWSActionSheets cancelAction]];
 
-    [self presentAlert:alert];
+    [self presentActionSheet:alert];
 }
 
 - (void)deleteThread:(TSThread *)thread

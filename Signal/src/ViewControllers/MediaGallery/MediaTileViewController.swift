@@ -606,16 +606,16 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             }
         }()
 
-        let deleteAction = UIAlertAction(title: confirmationTitle, style: .destructive) { _ in
+        let deleteAction = ActionSheetAction(title: confirmationTitle, style: .destructive) { _ in
             self.mediaGallery.delete(items: items, initiatedBy: self)
             self.endSelectMode()
         }
 
-        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let actionSheet = ActionSheetController(title: nil, message: nil)
         actionSheet.addAction(deleteAction)
-        actionSheet.addAction(OWSAlerts.cancelAction)
+        actionSheet.addAction(OWSActionSheets.cancelAction)
 
-        presentAlert(actionSheet)
+        presentActionSheet(actionSheet)
     }
 
     var footerBarBottomConstraint: NSLayoutConstraint!

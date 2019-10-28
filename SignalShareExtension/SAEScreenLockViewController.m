@@ -145,15 +145,15 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    [OWSAlerts showAlertWithTitle:NSLocalizedString(@"SCREEN_LOCK_UNLOCK_FAILED",
-                                      @"Title for alert indicating that screen lock could not be unlocked.")
-                          message:message
-                      buttonTitle:nil
-                     buttonAction:^(UIAlertAction *action) {
-                         // After the alert, update the UI.
-                         [self ensureUI];
-                     }
-               fromViewController:self];
+    [OWSActionSheets showActionSheetWithTitle:NSLocalizedString(@"SCREEN_LOCK_UNLOCK_FAILED",
+                                                  @"Title for alert indicating that screen lock could not be unlocked.")
+                                      message:message
+                                  buttonTitle:nil
+                                 buttonAction:^(ActionSheetAction *action) {
+                                     // After the alert, update the UI.
+                                     [self ensureUI];
+                                 }
+                           fromViewController:self];
 }
 
 - (void)dismissPressed:(id)sender

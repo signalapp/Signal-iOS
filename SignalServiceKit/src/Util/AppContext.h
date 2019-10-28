@@ -29,6 +29,7 @@ typedef void (^AppActiveBlock)(void);
 
 NSString *NSStringForUIApplicationState(UIApplicationState value);
 
+@class ActionSheetAction;
 @class OWSAES256Key;
 
 @protocol SSKKeychainStorage;
@@ -100,7 +101,7 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 - (nullable UIViewController *)frontmostViewController;
 
 // Returns nil if isMainApp is NO
-- (nullable UIAlertAction *)openSystemSettingsActionWithCompletion:(void (^_Nullable)(void))completion;
+- (nullable ActionSheetAction *)openSystemSettingsActionWithCompletion:(void (^_Nullable)(void))completion;
 
 // Should be a NOOP if isMainApp is NO.
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value;

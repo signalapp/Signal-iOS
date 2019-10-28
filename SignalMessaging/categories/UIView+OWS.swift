@@ -161,26 +161,18 @@ public extension UIView {
 
 @objc
 public extension UIViewController {
-    func presentAlert(_ alert: UIAlertController) {
-        self.presentAlert(alert, animated: true)
+    func presentActionSheet(_ alert: ActionSheetController) {
+        self.presentActionSheet(alert, animated: true)
     }
 
-    func presentAlert(_ alert: UIAlertController, animated: Bool) {
-        self.present(alert,
-                     animated: animated,
-                     completion: {
-                        alert.applyAccessibilityIdentifiers()
-        })
+    func presentActionSheet(_ alert: ActionSheetController, animated: Bool) {
+        self.present(alert, animated: animated)
     }
 
-    func presentAlert(_ alert: UIAlertController, completion: @escaping (() -> Void)) {
+    func presentActionSheet(_ alert: ActionSheetController, completion: @escaping (() -> Void)) {
         self.present(alert,
                      animated: true,
-                     completion: {
-                        alert.applyAccessibilityIdentifiers()
-
-                        completion()
-        })
+                     completion: completion)
     }
 
     /// A convenience function to present a modal view full screen, not using

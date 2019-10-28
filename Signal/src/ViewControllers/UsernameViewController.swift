@@ -199,7 +199,7 @@ class UsernameViewController: OWSViewController {
                 owsFailDebug("Unexpected username update error \(error)")
 
                 modalView.dismiss {
-                    OWSAlerts.showErrorAlert(message: NSLocalizedString("USERNAME_VIEW_ERROR_UPDATE_FAILED",
+                    OWSActionSheets.showErrorAlert(message: NSLocalizedString("USERNAME_VIEW_ERROR_UPDATE_FAILED",
                                                                         comment: "Error moessage shown when a username update fails."))
                 }
             }
@@ -239,7 +239,7 @@ class UsernameViewController: OWSViewController {
             return usernameSavedOrCanceled()
         }
 
-        OWSAlerts.showPendingChangesAlert { [weak self] in self?.usernameSavedOrCanceled() }
+        OWSActionSheets.showPendingChangesActionSheet { [weak self] in self?.usernameSavedOrCanceled() }
     }
 
     @objc func didTapSave() {

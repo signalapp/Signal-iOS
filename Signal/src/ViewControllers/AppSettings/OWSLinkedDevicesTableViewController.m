@@ -222,23 +222,19 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     NSString *alertTitle = NSLocalizedString(
         @"DEVICE_LIST_UPDATE_FAILED_TITLE", @"Alert title that can occur when viewing device manager.");
 
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:alertTitle
-                                                                   message:error.localizedDescription
-                                                            preferredStyle:UIAlertControllerStyleAlert];
+    ActionSheetController *alert = [[ActionSheetController alloc] initWithTitle:alertTitle
+                                                                        message:error.localizedDescription];
 
-    UIAlertAction *retryAction = [UIAlertAction actionWithTitle:[CommonStrings retryButton]
-                                                          style:UIAlertActionStyleDefault
-                                                        handler:^(UIAlertAction *action) {
-                                                            [self refreshDevices];
-                                                        }];
+    ActionSheetAction *retryAction = [[ActionSheetAction alloc] initWithTitle:[CommonStrings retryButton]
+                                                                        style:ActionSheetActionStyleDefault
+                                                                      handler:^(ActionSheetAction *action) {
+                                                                          [self refreshDevices];
+                                                                      }];
     [alert addAction:retryAction];
-
-    UIAlertAction *dismissAction =
-        [UIAlertAction actionWithTitle:CommonStrings.dismissButton style:UIAlertActionStyleCancel handler:nil];
-    [alert addAction:dismissAction];
+    [alert addAction:OWSActionSheets.dismissAction];
 
     [self.refreshControl endRefreshing];
-    [self presentAlert:alert];
+    [self presentActionSheet:alert];
 }
 
 - (void)deviceListUpdateModifiedDeviceList:(NSNotification *)notification
@@ -367,24 +363,23 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     NSString *confirmationTitle = [NSString stringWithFormat:confirmationTitleFormat, device.displayName];
     NSString *confirmationMessage
         = NSLocalizedString(@"UNLINK_CONFIRMATION_ALERT_BODY", @"Alert message to confirm unlinking a device");
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:confirmationTitle
-                                                                   message:confirmationMessage
-                                                            preferredStyle:UIAlertControllerStyleAlert];
+    ActionSheetController *alert = [[ActionSheetController alloc] initWithTitle:confirmationTitle
+                                                                        message:confirmationMessage];
 
-    [alert addAction:[OWSAlerts cancelAction]];
+    [alert addAction:[OWSActionSheets cancelAction]];
 
-    UIAlertAction *unlinkAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"UNLINK_ACTION", "button title for unlinking a device")
-                                 style:UIAlertActionStyleDestructive
-                               handler:^(UIAlertAction *action) {
-                                   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                                       [self unlinkDevice:device success:successCallback];
-                                   });
-                               }];
+    ActionSheetAction *unlinkAction = [[ActionSheetAction alloc]
+        initWithTitle:NSLocalizedString(@"UNLINK_ACTION", "button title for unlinking a device")
+                style:ActionSheetActionStyleDestructive
+              handler:^(ActionSheetAction *action) {
+                  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                      [self unlinkDevice:device success:successCallback];
+                  });
+              }];
     [alert addAction:unlinkAction];
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self presentAlert:alert];
+        [self presentActionSheet:alert];
     });
 }
 
@@ -395,22 +390,21 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
                             failure:^(NSError *error) {
                                 NSString *title = NSLocalizedString(
                                     @"UNLINKING_FAILED_ALERT_TITLE", @"Alert title when unlinking device fails");
-                                UIAlertController *alert =
-                                    [UIAlertController alertControllerWithTitle:title
-                                                                        message:error.localizedDescription
-                                                                 preferredStyle:UIAlertControllerStyleAlert];
+                                ActionSheetController *alert =
+                                    [[ActionSheetController alloc] initWithTitle:title
+                                                                         message:error.localizedDescription];
 
-                                UIAlertAction *retryAction =
-                                    [UIAlertAction actionWithTitle:[CommonStrings retryButton]
-                                                             style:UIAlertActionStyleDefault
-                                                           handler:^(UIAlertAction *aaction) {
-                                                               [self unlinkDevice:device success:successCallback];
-                                                           }];
+                                ActionSheetAction *retryAction = [[ActionSheetAction alloc]
+                                    initWithTitle:[CommonStrings retryButton]
+                                            style:ActionSheetActionStyleDefault
+                                          handler:^(ActionSheetAction *aaction) {
+                                              [self unlinkDevice:device success:successCallback];
+                                          }];
                                 [alert addAction:retryAction];
-                                [alert addAction:[OWSAlerts cancelAction]];
+                                [alert addAction:[OWSActionSheets cancelAction]];
 
                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                    [self presentAlert:alert];
+                                    [self presentActionSheet:alert];
                                 });
                             }];
 }

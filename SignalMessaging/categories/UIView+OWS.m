@@ -617,22 +617,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 #pragma mark -
 
-@implementation UIAlertAction (OWS)
-
-+ (instancetype)actionWithTitle:(nullable NSString *)title
-        accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
-                          style:(UIAlertActionStyle)style
-                        handler:(void (^__nullable)(UIAlertAction *action))handler
-{
-    UIAlertAction *action = [UIAlertAction actionWithTitle:title style:style handler:handler];
-    action.accessibilityIdentifier = accessibilityIdentifier;
-    return action;
-}
-
-@end
-
-#pragma mark -
-
 CGFloat CGHairlineWidth()
 {
     return 1.f / UIScreen.mainScreen.scale;

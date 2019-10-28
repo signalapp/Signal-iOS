@@ -336,33 +336,32 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    UIAlertController *alert = [UIAlertController
-        alertControllerWithTitle:NSLocalizedString(@"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
-                                     @"The alert title if user tries to exit update group view without saving changes.")
-                         message:
-                             NSLocalizedString(@"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
-                                 @"The alert message if user tries to exit update group view without saving changes.")
-                  preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_SAVE",
-                                                        @"The label for the 'save' button in action sheets.")
-                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"save")
-                                              style:UIAlertActionStyleDefault
-                                            handler:^(UIAlertAction *action) {
-                                                OWSAssertDebug(self.conversationSettingsViewDelegate);
+    ActionSheetController *alert = [[ActionSheetController alloc]
+        initWithTitle:NSLocalizedString(@"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
+                          @"The alert title if user tries to exit update group view without saving changes.")
+              message:NSLocalizedString(@"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
+                          @"The alert message if user tries to exit update group view without saving changes.")];
+    [alert addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"ALERT_SAVE",
+                                                                  @"The label for the 'save' button in action sheets.")
+                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"save")
+                                                        style:ActionSheetActionStyleDefault
+                                                      handler:^(ActionSheetAction *action) {
+                                                          OWSAssertDebug(self.conversationSettingsViewDelegate);
 
-                                                [self updateGroup];
+                                                          [self updateGroup];
 
-                                                [self.conversationSettingsViewDelegate
-                                                    popAllConversationSettingsViewsWithCompletion:nil];
-                                            }]];
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_DONT_SAVE",
-                                                        @"The label for the 'don't save' button in action sheets.")
-                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dont_save")
-                                              style:UIAlertActionStyleDestructive
-                                            handler:^(UIAlertAction *action) {
-                                                [self.navigationController popViewControllerAnimated:YES];
-                                            }]];
-    [self presentAlert:alert];
+                                                          [self.conversationSettingsViewDelegate
+                                                              popAllConversationSettingsViewsWithCompletion:nil];
+                                                      }]];
+    [alert addAction:[[ActionSheetAction alloc]
+                                   initWithTitle:NSLocalizedString(@"ALERT_DONT_SAVE",
+                                                     @"The label for the 'don't save' button in action sheets.")
+                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dont_save")
+                                           style:ActionSheetActionStyleDestructive
+                                         handler:^(ActionSheetAction *action) {
+                                             [self.navigationController popViewControllerAnimated:YES];
+                                         }]];
+    [self presentActionSheet:alert];
 }
 
 - (void)updateGroupPressed
@@ -425,11 +424,12 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL isCurrentMember = [self.memberRecipients containsObject:recipient];
     BOOL isBlocked = [self.recipientPicker.contactsViewHelper isSignalServiceAddressBlocked:recipient.address];
     if (isPreviousMember) {
-        [OWSAlerts showAlertWithTitle:NSLocalizedString(@"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE",
-                                          @"Title for alert indicating that group members can't be removed.")
-                              message:NSLocalizedString(@"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE",
-                                          @"Title for alert indicating that group members can't "
-                                          @"be removed.")];
+        [OWSActionSheets
+            showActionSheetWithTitle:NSLocalizedString(@"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE",
+                                         @"Title for alert indicating that group members can't be removed.")
+                             message:NSLocalizedString(@"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE",
+                                         @"Title for alert indicating that group members can't "
+                                         @"be removed.")];
     } else if (isCurrentMember) {
         [self removeRecipient:recipient];
     } else if (isBlocked) {

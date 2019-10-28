@@ -432,6 +432,11 @@ private class SignalCallData: NSObject {
     @objc public func createCallUIAdapter() {
         AssertIsOnMainThread()
 
+        guard FeatureFlags.calling else {
+            Logger.info("not creating call UI adapter for device that doesn't support calling")
+            return
+        }
+
         if self.callData != nil {
             Logger.warn("ending current call in. Did user toggle callkit preference while in a call?")
             self.terminate(callData: self.callData)
@@ -1329,7 +1334,7 @@ private class SignalCallData: NSObject {
                 // We don't need to worry about the user granting or remoting this permission
                 // during a call while the app is in the background, because changing this
                 // permission kills the app.
-                OWSAlerts.showAlert(title: NSLocalizedString("MISSING_CAMERA_PERMISSION_TITLE", comment: "Alert title when camera is not authorized"),
+                OWSActionSheets.showActionSheet(title: NSLocalizedString("MISSING_CAMERA_PERMISSION_TITLE", comment: "Alert title when camera is not authorized"),
                                     message: NSLocalizedString("MISSING_CAMERA_PERMISSION_MESSAGE", comment: "Alert body when camera is not authorized"))
             }
         }
@@ -1388,6 +1393,11 @@ private class SignalCallData: NSObject {
 
     public func callConnection(_ callConnectionParam: CallConnection, onCallEvent event: CallEvent, callId: UInt64) {
         AssertIsOnMainThread()
+
+        guard FeatureFlags.calling else {
+            Logger.info("Ignoring call event on unsupported device.")
+            return
+        }
 
         guard let callData = self.callData,
             callConnectionParam == callData.callConnection else {

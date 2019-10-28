@@ -158,11 +158,11 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
                 let title = NSLocalizedString("INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE", comment: "Alert title when contacts disabled while trying to invite contacts to signal")
                 let body = NSLocalizedString("INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY", comment: "Alert body when contacts disabled while trying to invite contacts to signal")
 
-                let alert = UIAlertController(title: title, message: body, preferredStyle: .alert)
+                let alert = ActionSheetController(title: title, message: body)
 
                 let dismissText = CommonStrings.cancelButton
 
-                let cancelAction = UIAlertAction(title: dismissText, style: .cancel, handler: {  _ in
+                let cancelAction = ActionSheetAction(title: dismissText, style: .cancel, handler: {  _ in
                     let error = NSError(domain: "contactsPickerErrorDomain", code: 1, userInfo: [NSLocalizedDescriptionKey: "No Contacts Access"])
                     self.contactsPickerDelegate?.contactsPicker(self, contactFetchDidFail: error)
                     errorHandler(error)
@@ -170,12 +170,12 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
                 alert.addAction(cancelAction)
 
                 let settingsText = CommonStrings.openSettingsButton
-                let openSettingsAction = UIAlertAction(title: settingsText, style: .default, handler: { (_) in
+                let openSettingsAction = ActionSheetAction(title: settingsText, style: .default, handler: { (_) in
                     UIApplication.shared.openSystemSettings()
                 })
                 alert.addAction(openSettingsAction)
 
-                self.presentAlert(alert)
+                self.presentActionSheet(alert)
 
             case CNAuthorizationStatus.notDetermined:
                 //This case means the user is prompted for the first time for allowing contacts

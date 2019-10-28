@@ -304,30 +304,40 @@ const CGFloat kIconViewLength = 24;
                                                                      @"add_to_system_contacts")];
                                  }
                                  actionBlock:^{
-                                     UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+                                     ActionSheetController *actionSheet =
+                                         [[ActionSheetController alloc] initWithTitle:nil message:nil];
 
                                      NSString *createNewTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_NEW_CONTACT",
                                                                                   @"Label for 'new contact' button in conversation settings view.");
-                                     [actionSheet addAction:[UIAlertAction actionWithTitle:createNewTitle
-                                                                                     style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                                                                                         OWSConversationSettingsViewController *strongSelf = weakSelf;
-                                                                                         OWSCAssertDebug(strongSelf);
-                                                                                         [strongSelf presentContactViewController];
-                                                                                     }]];
+                                     [actionSheet
+                                         addAction:[[ActionSheetAction alloc]
+                                                       initWithTitle:createNewTitle
+                                                               style:ActionSheetActionStyleDefault
+                                                             handler:^(ActionSheetAction *_Nonnull action) {
+                                                                 OWSConversationSettingsViewController *strongSelf
+                                                                     = weakSelf;
+                                                                 OWSCAssertDebug(strongSelf);
+                                                                 [strongSelf presentContactViewController];
+                                                             }]];
 
                                      NSString *addToExistingTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
                                                                                       @"Label for 'new contact' button in conversation settings view.");
-                                     [actionSheet addAction:[UIAlertAction actionWithTitle:addToExistingTitle
-                                                                                     style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                                                                                         OWSConversationSettingsViewController *strongSelf = weakSelf;
-                                                                                         OWSCAssertDebug(strongSelf);
-                                                                                         TSContactThread *contactThread = (TSContactThread *)strongSelf.thread;
-                                                                                         [strongSelf
-                                                                                          presentAddToContactViewControllerWithAddress:contactThread.contactAddress];
+                                     [actionSheet
+                                         addAction:[[ActionSheetAction alloc]
+                                                       initWithTitle:addToExistingTitle
+                                                               style:ActionSheetActionStyleDefault
+                                                             handler:^(ActionSheetAction *_Nonnull action) {
+                                                                 OWSConversationSettingsViewController *strongSelf
+                                                                     = weakSelf;
+                                                                 OWSCAssertDebug(strongSelf);
+                                                                 TSContactThread *contactThread
+                                                                     = (TSContactThread *)strongSelf.thread;
+                                                                 [strongSelf
+                                                                     presentAddToContactViewControllerWithAddress:
+                                                                         contactThread.contactAddress];
+                                                             }]];
 
-                                                                                     }]];
-
-                                     [self presentAlert:actionSheet animated:YES];
+                                     [self presentActionSheet:actionSheet];
                                  }]];
     }
 
@@ -1217,22 +1227,21 @@ const CGFloat kIconViewLength = 24;
 
 - (void)didTapLeaveGroup
 {
-    UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONFIRM_LEAVE_GROUP_TITLE", @"Alert title")
-                                            message:NSLocalizedString(@"CONFIRM_LEAVE_GROUP_DESCRIPTION", @"Alert body")
-                                     preferredStyle:UIAlertControllerStyleAlert];
+    ActionSheetController *alert = [[ActionSheetController alloc]
+        initWithTitle:NSLocalizedString(@"CONFIRM_LEAVE_GROUP_TITLE", @"Alert title")
+              message:NSLocalizedString(@"CONFIRM_LEAVE_GROUP_DESCRIPTION", @"Alert body")];
 
-    UIAlertAction *leaveAction = [UIAlertAction
-                actionWithTitle:NSLocalizedString(@"LEAVE_BUTTON_TITLE", @"Confirmation button within contextual alert")
+    ActionSheetAction *leaveAction = [[ActionSheetAction alloc]
+                  initWithTitle:NSLocalizedString(@"LEAVE_BUTTON_TITLE", @"Confirmation button within contextual alert")
         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"leave_group_confirm")
-                          style:UIAlertActionStyleDestructive
-                        handler:^(UIAlertAction *_Nonnull action) {
+                          style:ActionSheetActionStyleDestructive
+                        handler:^(ActionSheetAction *_Nonnull action) {
                             [self leaveGroup];
                         }];
     [alert addAction:leaveAction];
-    [alert addAction:[OWSAlerts cancelAction]];
+    [alert addAction:[OWSActionSheets cancelAction]];
 
-    [self presentAlert:alert];
+    [self presentActionSheet:alert];
 }
 
 - (BOOL)hasLeftGroup
@@ -1363,113 +1372,112 @@ const CGFloat kIconViewLength = 24;
             @"MUTE_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of muting a thread.");
     }
 
-    UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:title
-                                                                         message:message
-                                                                  preferredStyle:UIAlertControllerStyleActionSheet];
+    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:title message:message];
 
     __weak OWSConversationSettingsViewController *weakSelf = self;
     if (self.thread.isMuted) {
-        UIAlertAction *action = [UIAlertAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_UNMUTE_ACTION",
-                                                                   @"Label for button to unmute a thread.")
-                                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unmute")
-                                                         style:UIAlertActionStyleDestructive
-                                                       handler:^(UIAlertAction *_Nonnull ignore) {
-                                                           [weakSelf setThreadMutedUntilDate:nil];
-                                                       }];
+        ActionSheetAction *action =
+            [[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_UNMUTE_ACTION",
+                                                         @"Label for button to unmute a thread.")
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unmute")
+                                               style:ActionSheetActionStyleDestructive
+                                             handler:^(ActionSheetAction *_Nonnull ignore) {
+                                                 [weakSelf setThreadMutedUntilDate:nil];
+                                             }];
         [actionSheet addAction:action];
     } else {
 #ifdef DEBUG
         [actionSheet
-            addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION",
-                                                         @"Label for button to mute a thread for a minute.")
-                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"mute_1_minute")
-                                               style:UIAlertActionStyleDestructive
-                                             handler:^(UIAlertAction *_Nonnull ignore) {
-                                                 NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
-                                                 NSCalendar *calendar = [NSCalendar currentCalendar];
-                                                 [calendar setTimeZone:timeZone];
-                                                 NSDateComponents *dateComponents = [NSDateComponents new];
-                                                 [dateComponents setMinute:1];
-                                                 NSDate *mutedUntilDate =
-                                                     [calendar dateByAddingComponents:dateComponents
-                                                                               toDate:[NSDate date]
-                                                                              options:0];
-                                                 [weakSelf setThreadMutedUntilDate:mutedUntilDate];
-                                             }]];
+            addAction:[[ActionSheetAction alloc]
+                                    initWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION",
+                                                      @"Label for button to mute a thread for a minute.")
+                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"mute_1_minute")
+                                            style:ActionSheetActionStyleDestructive
+                                          handler:^(ActionSheetAction *_Nonnull ignore) {
+                                              NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+                                              NSCalendar *calendar = [NSCalendar currentCalendar];
+                                              [calendar setTimeZone:timeZone];
+                                              NSDateComponents *dateComponents = [NSDateComponents new];
+                                              [dateComponents setMinute:1];
+                                              NSDate *mutedUntilDate = [calendar dateByAddingComponents:dateComponents
+                                                                                                 toDate:[NSDate date]
+                                                                                                options:0];
+                                              [weakSelf setThreadMutedUntilDate:mutedUntilDate];
+                                          }]];
 #endif
         [actionSheet
-            addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION",
-                                                         @"Label for button to mute a thread for a hour.")
-                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"mute_1_hour")
-                                               style:UIAlertActionStyleDestructive
-                                             handler:^(UIAlertAction *_Nonnull ignore) {
-                                                 NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
-                                                 NSCalendar *calendar = [NSCalendar currentCalendar];
-                                                 [calendar setTimeZone:timeZone];
-                                                 NSDateComponents *dateComponents = [NSDateComponents new];
-                                                 [dateComponents setHour:1];
-                                                 NSDate *mutedUntilDate =
-                                                     [calendar dateByAddingComponents:dateComponents
-                                                                               toDate:[NSDate date]
-                                                                              options:0];
-                                                 [weakSelf setThreadMutedUntilDate:mutedUntilDate];
-                                             }]];
+            addAction:[[ActionSheetAction alloc]
+                                    initWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION",
+                                                      @"Label for button to mute a thread for a hour.")
+                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"mute_1_hour")
+                                            style:ActionSheetActionStyleDestructive
+                                          handler:^(ActionSheetAction *_Nonnull ignore) {
+                                              NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+                                              NSCalendar *calendar = [NSCalendar currentCalendar];
+                                              [calendar setTimeZone:timeZone];
+                                              NSDateComponents *dateComponents = [NSDateComponents new];
+                                              [dateComponents setHour:1];
+                                              NSDate *mutedUntilDate = [calendar dateByAddingComponents:dateComponents
+                                                                                                 toDate:[NSDate date]
+                                                                                                options:0];
+                                              [weakSelf setThreadMutedUntilDate:mutedUntilDate];
+                                          }]];
         [actionSheet
-            addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION",
-                                                         @"Label for button to mute a thread for a day.")
-                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"mute_1_day")
-                                               style:UIAlertActionStyleDestructive
-                                             handler:^(UIAlertAction *_Nonnull ignore) {
-                                                 NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
-                                                 NSCalendar *calendar = [NSCalendar currentCalendar];
-                                                 [calendar setTimeZone:timeZone];
-                                                 NSDateComponents *dateComponents = [NSDateComponents new];
-                                                 [dateComponents setDay:1];
-                                                 NSDate *mutedUntilDate =
-                                                     [calendar dateByAddingComponents:dateComponents
-                                                                               toDate:[NSDate date]
-                                                                              options:0];
-                                                 [weakSelf setThreadMutedUntilDate:mutedUntilDate];
-                                             }]];
+            addAction:[[ActionSheetAction alloc]
+                                    initWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION",
+                                                      @"Label for button to mute a thread for a day.")
+                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"mute_1_day")
+                                            style:ActionSheetActionStyleDestructive
+                                          handler:^(ActionSheetAction *_Nonnull ignore) {
+                                              NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+                                              NSCalendar *calendar = [NSCalendar currentCalendar];
+                                              [calendar setTimeZone:timeZone];
+                                              NSDateComponents *dateComponents = [NSDateComponents new];
+                                              [dateComponents setDay:1];
+                                              NSDate *mutedUntilDate = [calendar dateByAddingComponents:dateComponents
+                                                                                                 toDate:[NSDate date]
+                                                                                                options:0];
+                                              [weakSelf setThreadMutedUntilDate:mutedUntilDate];
+                                          }]];
         [actionSheet
-            addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION",
-                                                         @"Label for button to mute a thread for a week.")
-                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"mute_1_week")
-                                               style:UIAlertActionStyleDestructive
-                                             handler:^(UIAlertAction *_Nonnull ignore) {
-                                                 NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
-                                                 NSCalendar *calendar = [NSCalendar currentCalendar];
-                                                 [calendar setTimeZone:timeZone];
-                                                 NSDateComponents *dateComponents = [NSDateComponents new];
-                                                 [dateComponents setDay:7];
-                                                 NSDate *mutedUntilDate =
-                                                     [calendar dateByAddingComponents:dateComponents
-                                                                               toDate:[NSDate date]
-                                                                              options:0];
-                                                 [weakSelf setThreadMutedUntilDate:mutedUntilDate];
-                                             }]];
+            addAction:[[ActionSheetAction alloc]
+                                    initWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION",
+                                                      @"Label for button to mute a thread for a week.")
+                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"mute_1_week")
+                                            style:ActionSheetActionStyleDestructive
+                                          handler:^(ActionSheetAction *_Nonnull ignore) {
+                                              NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+                                              NSCalendar *calendar = [NSCalendar currentCalendar];
+                                              [calendar setTimeZone:timeZone];
+                                              NSDateComponents *dateComponents = [NSDateComponents new];
+                                              [dateComponents setDay:7];
+                                              NSDate *mutedUntilDate = [calendar dateByAddingComponents:dateComponents
+                                                                                                 toDate:[NSDate date]
+                                                                                                options:0];
+                                              [weakSelf setThreadMutedUntilDate:mutedUntilDate];
+                                          }]];
         [actionSheet
-            addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION",
-                                                         @"Label for button to mute a thread for a year.")
-                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"mute_1_year")
-                                               style:UIAlertActionStyleDestructive
-                                             handler:^(UIAlertAction *_Nonnull ignore) {
-                                                 NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
-                                                 NSCalendar *calendar = [NSCalendar currentCalendar];
-                                                 [calendar setTimeZone:timeZone];
-                                                 NSDateComponents *dateComponents = [NSDateComponents new];
-                                                 [dateComponents setYear:1];
-                                                 NSDate *mutedUntilDate =
-                                                     [calendar dateByAddingComponents:dateComponents
-                                                                               toDate:[NSDate date]
-                                                                              options:0];
-                                                 [weakSelf setThreadMutedUntilDate:mutedUntilDate];
-                                             }]];
+            addAction:[[ActionSheetAction alloc]
+                                    initWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION",
+                                                      @"Label for button to mute a thread for a year.")
+                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"mute_1_year")
+                                            style:ActionSheetActionStyleDestructive
+                                          handler:^(ActionSheetAction *_Nonnull ignore) {
+                                              NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+                                              NSCalendar *calendar = [NSCalendar currentCalendar];
+                                              [calendar setTimeZone:timeZone];
+                                              NSDateComponents *dateComponents = [NSDateComponents new];
+                                              [dateComponents setYear:1];
+                                              NSDate *mutedUntilDate = [calendar dateByAddingComponents:dateComponents
+                                                                                                 toDate:[NSDate date]
+                                                                                                options:0];
+                                              [weakSelf setThreadMutedUntilDate:mutedUntilDate];
+                                          }]];
     }
 
-    [actionSheet addAction:[OWSAlerts cancelAction]];
+    [actionSheet addAction:[OWSActionSheets cancelAction]];
 
-    [self presentAlert:actionSheet];
+    [self presentActionSheet:actionSheet];
 }
 
 - (void)setThreadMutedUntilDate:(nullable NSDate *)value

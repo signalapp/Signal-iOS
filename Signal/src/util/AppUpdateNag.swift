@@ -139,9 +139,9 @@ class AppUpdateNag: NSObject {
         let updateButtonText = NSLocalizedString("APP_UPDATE_NAG_ALERT_UPDATE_BUTTON", comment: "Label for the 'update' button in the 'new app version available' alert.")
         let dismissButtonText = NSLocalizedString("APP_UPDATE_NAG_ALERT_DISMISS_BUTTON", comment: "Label for the 'dismiss' button in the 'new app version available' alert.")
 
-        let alert = UIAlertController(title: title, message: bodyText, preferredStyle: .alert)
+        let alert = ActionSheetController(title: title, message: bodyText)
 
-        let updateAction = UIAlertAction(title: updateButtonText, style: .default) { [weak self] _ in
+        let updateAction = ActionSheetAction(title: updateButtonText, style: .default) { [weak self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -150,11 +150,11 @@ class AppUpdateNag: NSObject {
         }
 
         alert.addAction(updateAction)
-        alert.addAction(UIAlertAction(title: dismissButtonText, style: .cancel) { _ in
+        alert.addAction(ActionSheetAction(title: dismissButtonText, style: .cancel) { _ in
             Logger.info("dismissed upgrade notice")
         })
 
-        OWSAlerts.showAlert(alert)
+        OWSActionSheets.showActionSheet(alert)
     }
 
     func showAppStore(appStoreURL: URL) {

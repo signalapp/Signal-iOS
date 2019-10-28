@@ -381,7 +381,7 @@ class PhotoCaptureViewController: OWSViewController {
     private func showFailureUI(error: Error) {
         Logger.error("error: \(error)")
 
-        OWSAlerts.showAlert(title: nil,
+        OWSActionSheets.showActionSheet(title: nil,
                             message: error.localizedDescription,
                             buttonTitle: CommonStrings.dismissButton,
                             buttonAction: { [weak self] _ in self?.dismiss(animated: true) })

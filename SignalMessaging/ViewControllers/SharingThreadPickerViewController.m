@@ -411,31 +411,38 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     // Reset progress in case we're retrying
     self.progressView.progress = 0;
 
-    NSString *progressTitle = NSLocalizedString(@"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE", @"Alert title");
-    UIAlertController *progressAlert = [UIAlertController alertControllerWithTitle:progressTitle
-                                                                           message:nil
-                                                                    preferredStyle:UIAlertControllerStyleAlert];
+    ActionSheetController *progressActionSheet = [ActionSheetController new];
 
-    UIAlertAction *progressCancelAction = [UIAlertAction actionWithTitle:[CommonStrings cancelButton]
-                                                                   style:UIAlertActionStyleCancel
-                                                                 handler:^(UIAlertAction *_Nonnull action) {
-                                                                     [self.shareViewDelegate shareViewWasCancelled];
-                                                                 }];
-    [progressAlert addAction:progressCancelAction];
+    UIView *headerWithProgress = [UIView new];
+    headerWithProgress.backgroundColor = Theme.backgroundColor;
+    headerWithProgress.layoutMargins = UIEdgeInsetsMake(16, 16, 16, 16);
 
+    UILabel *titleLabel = [UILabel new];
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    titleLabel.numberOfLines = 0;
+    titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    titleLabel.font = UIFont.ows_dynamicTypeSubheadlineClampedFont.ows_semibold;
+    titleLabel.textColor = Theme.primaryTextColor;
+    titleLabel.text = NSLocalizedString(@"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE", @"Alert title");
 
-    // We add a progress subview to an AlertController, which is a total hack.
-    // ...but it looks good, and given how short a progress view is and how
-    // little the alert controller changes, I'm not super worried about it.
-    [progressAlert.view addSubview:self.progressView];
-    [self.progressView autoPinWidthToSuperviewWithMargin:24];
-    [self.progressView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:progressAlert.view withOffset:4];
-#ifdef DEBUG
-    if (@available(iOS 14, *)) {
-        // TODO: Congratulations! You survived to see another iOS release.
-        OWSFailDebug(@"Make sure the progress view still looks good, and increment the version canary.");
-    }
-#endif
+    [headerWithProgress addSubview:titleLabel];
+    [titleLabel autoPinWidthToSuperviewMargins];
+    [titleLabel autoPinTopToSuperviewMargin];
+
+    [headerWithProgress addSubview:self.progressView];
+    [self.progressView autoPinWidthToSuperviewMargins];
+    [self.progressView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:titleLabel withOffset:8];
+    [self.progressView autoPinBottomToSuperviewMargin];
+
+    progressActionSheet.customHeader = headerWithProgress;
+
+    ActionSheetAction *progressCancelAction =
+        [[ActionSheetAction alloc] initWithTitle:[CommonStrings cancelButton]
+                                           style:ActionSheetActionStyleCancel
+                                         handler:^(ActionSheetAction *_Nonnull action) {
+                                             [self.shareViewDelegate shareViewWasCancelled];
+                                         }];
+    [progressActionSheet addAction:progressCancelAction];
 
     SendCompletionBlock sendCompletion = ^(NSError *_Nullable error, TSOutgoingMessage *message) {
 
@@ -457,10 +464,10 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         });
     };
 
-    [fromViewController presentAlert:progressAlert
-                          completion:^{
-                              sendMessageBlock(sendCompletion);
-                          }];
+    [fromViewController presentActionSheet:progressActionSheet
+                                completion:^{
+                                    sendMessageBlock(sendCompletion);
+                                }];
 }
 
 - (void)showSendFailureAlertWithError:(NSError *)error
@@ -484,26 +491,26 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             [self.contactsManager displayNameForAddress:untrustedAddress];
         NSString *failureMessage = [NSString stringWithFormat:failureFormat, displayName];
 
-        UIAlertController *failureAlert = [UIAlertController alertControllerWithTitle:failureTitle
-                                                                              message:failureMessage
-                                                                       preferredStyle:UIAlertControllerStyleAlert];
+        ActionSheetController *failureAlert = [[ActionSheetController alloc] initWithTitle:failureTitle
+                                                                                   message:failureMessage];
 
-        UIAlertAction *failureCancelAction = [UIAlertAction actionWithTitle:[CommonStrings cancelButton]
-                                                                      style:UIAlertActionStyleCancel
-                                                                    handler:^(UIAlertAction *_Nonnull action) {
-                                                                        [self.shareViewDelegate shareViewWasCancelled];
-                                                                    }];
+        ActionSheetAction *failureCancelAction =
+            [[ActionSheetAction alloc] initWithTitle:[CommonStrings cancelButton]
+                                               style:ActionSheetActionStyleCancel
+                                             handler:^(ActionSheetAction *_Nonnull action) {
+                                                 [self.shareViewDelegate shareViewWasCancelled];
+                                             }];
         [failureAlert addAction:failureCancelAction];
 
         if (untrustedAddress.isValid) {
-            UIAlertAction *confirmAction =
-                [UIAlertAction actionWithTitle:[SafetyNumberStrings confirmSendButton]
-                                         style:UIAlertActionStyleDefault
-                                       handler:^(UIAlertAction *action) {
-                                           [self confirmIdentityAndResendMessage:message
-                                                                     address:untrustedAddress
-                                                              fromViewController:fromViewController];
-                                       }];
+            ActionSheetAction *confirmAction =
+                [[ActionSheetAction alloc] initWithTitle:[SafetyNumberStrings confirmSendButton]
+                                                   style:ActionSheetActionStyleDefault
+                                                 handler:^(ActionSheetAction *action) {
+                                                     [self confirmIdentityAndResendMessage:message
+                                                                                   address:untrustedAddress
+                                                                        fromViewController:fromViewController];
+                                                 }];
 
             [failureAlert addAction:confirmAction];
         } else {
@@ -512,30 +519,30 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             OWSFailDebug(@"Untrusted recipient error is missing recipient id.");
         }
 
-        [fromViewController presentAlert:failureAlert];
+        [fromViewController presentActionSheet:failureAlert];
     } else {
         // Non-identity failure, e.g. network offline, rate limit
 
-        UIAlertController *failureAlert = [UIAlertController alertControllerWithTitle:failureTitle
-                                                                              message:error.localizedDescription
-                                                                       preferredStyle:UIAlertControllerStyleAlert];
+        ActionSheetController *failureAlert = [[ActionSheetController alloc] initWithTitle:failureTitle
+                                                                                   message:error.localizedDescription];
 
-        UIAlertAction *failureCancelAction = [UIAlertAction actionWithTitle:[CommonStrings cancelButton]
-                                                                      style:UIAlertActionStyleCancel
-                                                                    handler:^(UIAlertAction *_Nonnull action) {
-                                                                        [self.shareViewDelegate shareViewWasCancelled];
-                                                                    }];
+        ActionSheetAction *failureCancelAction =
+            [[ActionSheetAction alloc] initWithTitle:[CommonStrings cancelButton]
+                                               style:ActionSheetActionStyleCancel
+                                             handler:^(ActionSheetAction *_Nonnull action) {
+                                                 [self.shareViewDelegate shareViewWasCancelled];
+                                             }];
         [failureAlert addAction:failureCancelAction];
 
-        UIAlertAction *retryAction =
-            [UIAlertAction actionWithTitle:[CommonStrings retryButton]
-                                     style:UIAlertActionStyleDefault
-                                   handler:^(UIAlertAction *action) {
-                                       [self resendMessage:message fromViewController:fromViewController];
-                                   }];
+        ActionSheetAction *retryAction =
+            [[ActionSheetAction alloc] initWithTitle:[CommonStrings retryButton]
+                                               style:ActionSheetActionStyleDefault
+                                             handler:^(ActionSheetAction *action) {
+                                                 [self resendMessage:message fromViewController:fromViewController];
+                                             }];
 
         [failureAlert addAction:retryAction];
-        [fromViewController presentAlert:failureAlert];
+        [fromViewController presentActionSheet:failureAlert];
     }
 }
 
@@ -597,40 +604,40 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     OWSAssertDebug(fromViewController);
 
     NSString *progressTitle = NSLocalizedString(@"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE", @"Alert title");
-    UIAlertController *progressAlert = [UIAlertController alertControllerWithTitle:progressTitle
-                                                                           message:nil
-                                                                    preferredStyle:UIAlertControllerStyleAlert];
+    ActionSheetController *progressAlert = [[ActionSheetController alloc] initWithTitle:progressTitle message:nil];
 
-    UIAlertAction *progressCancelAction = [UIAlertAction actionWithTitle:[CommonStrings cancelButton]
-                                                                   style:UIAlertActionStyleCancel
-                                                                 handler:^(UIAlertAction *_Nonnull action) {
-                                                                     [self.shareViewDelegate shareViewWasCancelled];
-                                                                 }];
+    ActionSheetAction *progressCancelAction =
+        [[ActionSheetAction alloc] initWithTitle:[CommonStrings cancelButton]
+                                           style:ActionSheetActionStyleCancel
+                                         handler:^(ActionSheetAction *_Nonnull action) {
+                                             [self.shareViewDelegate shareViewWasCancelled];
+                                         }];
     [progressAlert addAction:progressCancelAction];
 
     [fromViewController
-        presentAlert:progressAlert
-          completion:^{
-              [self.messageSender sendMessage:message.asPreparer
-                  success:^{
-                      OWSLogInfo(@"Resending attachment succeeded.");
-                      dispatch_async(dispatch_get_main_queue(), ^{
-                          [self.shareViewDelegate shareViewWasCompleted];
-                      });
-                  }
-                  failure:^(NSError *error) {
-                      dispatch_async(dispatch_get_main_queue(), ^{
-                          [fromViewController
-                              dismissViewControllerAnimated:YES
-                                                 completion:^{
-                                                     OWSLogInfo(@"Sending attachment failed with error: %@", error);
-                                                     [self showSendFailureAlertWithError:error
-                                                                                 message:message
-                                                                      fromViewController:fromViewController];
-                                                 }];
-                      });
-                  }];
-          }];
+        presentActionSheet:progressAlert
+                completion:^{
+                    [self.messageSender sendMessage:message.asPreparer
+                        success:^{
+                            OWSLogInfo(@"Resending attachment succeeded.");
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [self.shareViewDelegate shareViewWasCompleted];
+                            });
+                        }
+                        failure:^(NSError *error) {
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [fromViewController
+                                    dismissViewControllerAnimated:YES
+                                                       completion:^{
+                                                           OWSLogInfo(
+                                                               @"Sending attachment failed with error: %@", error);
+                                                           [self showSendFailureAlertWithError:error
+                                                                                       message:message
+                                                                            fromViewController:fromViewController];
+                                                       }];
+                            });
+                        }];
+                }];
 }
 
 - (void)attachmentUploadProgress:(NSNotification *)notification

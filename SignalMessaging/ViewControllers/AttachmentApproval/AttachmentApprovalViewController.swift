@@ -773,14 +773,14 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                                 toastController.presentToastView(fromBottomOfView: self.view, inset: inset)
                             } else {
                                 owsFailDebug("error: \(String(describing: error))")
-                                OWSAlerts.showErrorAlert(message: errorText)
+                                OWSActionSheets.showErrorAlert(message: errorText)
                             }
                         }
                     }
                 }
             } catch {
                 owsFailDebug("error: \(error)")
-                OWSAlerts.showErrorAlert(message: errorText)
+                OWSActionSheets.showErrorAlert(message: errorText)
             }
     }
 }

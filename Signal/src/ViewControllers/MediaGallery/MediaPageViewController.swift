@@ -446,16 +446,16 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return
         }
 
-        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        let deleteAction = UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""),
+        let actionSheet = ActionSheetController(title: nil, message: nil)
+        let deleteAction = ActionSheetAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""),
                                          style: .destructive) { _ in
                                             let deletedItem = currentViewController.galleryItem
                                             self.mediaGallery.delete(items: [deletedItem], initiatedBy: self)
         }
-        actionSheet.addAction(OWSAlerts.cancelAction)
+        actionSheet.addAction(OWSActionSheets.cancelAction)
         actionSheet.addAction(deleteAction)
 
-        self.presentAlert(actionSheet)
+        self.presentActionSheet(actionSheet)
     }
 
     // MARK: MediaGalleryDelegate

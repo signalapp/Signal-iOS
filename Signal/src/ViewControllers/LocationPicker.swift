@@ -171,22 +171,21 @@ public class LocationPicker: UIViewController {
             locationManager.requestWhenInUseAuthorization()
         case .denied, .restricted:
             // The user previous explicitly denied access. Point them to settings to re-enable.
-            let alert = UIAlertController(
+            let alert = ActionSheetController(
                 title: NSLocalizedString("MISSING_LOCATION_PERMISSION_TITLE",
                                          comment: "Alert title indicating the user has denied location permissios"),
                 message: NSLocalizedString("MISSING_LOCATION_PERMISSION_MESSAGE",
-                                           comment: "Alert body indicating the user has denied location permissios"),
-                preferredStyle: .alert
+                                           comment: "Alert body indicating the user has denied location permissios")
             )
-            let openSettingsAction = UIAlertAction(
+            let openSettingsAction = ActionSheetAction(
                 title: CommonStrings.openSettingsButton,
                 style: .default
             ) { _ in UIApplication.shared.openSystemSettings()  }
             alert.addAction(openSettingsAction)
 
-            let dismissAction = UIAlertAction(title: CommonStrings.dismissButton, style: .cancel, handler: nil)
+            let dismissAction = ActionSheetAction(title: CommonStrings.dismissButton, style: .cancel, handler: nil)
             alert.addAction(dismissAction)
-            presentAlert(alert)
+            presentActionSheet(alert)
         @unknown default:
             owsFailDebug("Unknown")
         }
@@ -220,8 +219,8 @@ public class LocationPicker: UIViewController {
 
             if let error = error, !geocodeCanceled {
                 // show error and remove annotation
-                let alert = UIAlertController(title: nil, message: error.localizedDescription, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OKAY",
+                let alert = ActionSheetController(title: nil, message: error.localizedDescription)
+                alert.addAction(ActionSheetAction(title: NSLocalizedString("BUTTON_OKAY",
                                                                        comment: "Label for the 'okay' button."),
                                               style: .cancel, handler: { _ in }))
                 self.present(alert, animated: true) {

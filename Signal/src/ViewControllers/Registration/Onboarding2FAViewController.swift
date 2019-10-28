@@ -153,7 +153,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
     @objc func forgotPinLinkTapped() {
         Logger.info("")
 
-        OWSAlerts.showAlert(
+        OWSActionSheets.showActionSheet(
             title: NSLocalizedString("REGISTER_2FA_FORGOT_PIN_ALERT_TITLE",
                                      comment: "Alert title explaining what happens if you forget your 'two-factor auth pin'."),
             message: NSLocalizedString("REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE",
@@ -256,7 +256,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
                                                       comment: "Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'.")
                 }
 
-                OWSAlerts.showAlert(
+                OWSActionSheets.showActionSheet(
                     title: NSLocalizedString("REGISTER_2FA_INVALID_PIN_ALERT_TITLE",
                                              comment: "Alert title explaining what happens if you forget your 'two-factor auth pin'."),
                     message: String(format: formatMessage, remaining)
