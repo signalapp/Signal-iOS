@@ -1749,13 +1749,13 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Enable Permissions";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Your contact information is always transmitted securely.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifications let you see when messages arrive and receive updates about new conversation activity.";
 
 /* Label for the 'not now' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "Not Now";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Signal can let you know when you get a message (and who it is from)";
+"ONBOARDING_PERMISSIONS_TITLE" = "Get the message";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Enter your phone number to get started";
@@ -1768,21 +1768,6 @@
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_TITLE" = "Enter your PIN";
-
-/* header text when this device is being added as a secondary */
-"ONBOARDING_SECONDARY_CHOOSE_DEVICE_NAME" = "ONBOARDING_SECONDARY_CHOOSE_DEVICE_NAME";
-
-/* body text while displaying a QR code which, when scanned, will link this device. */
-"ONBOARDING_SECONDARY_COMPLETE_LINKING_PROCESS" = "ONBOARDING_SECONDARY_COMPLETE_LINKING_PROCESS";
-
-/* body text while displaying a QR code which, when scanned, will link this device. */
-"ONBOARDING_SECONDARY_SCAN_CODE_BODY" = "ONBOARDING_SECONDARY_SCAN_CODE_BODY";
-
-/* Link text for page with troubleshooting info shown on the QR scanning screen */
-"ONBOARDING_SECONDARY_SCAN_CODE_HELP_TEXT" = "ONBOARDING_SECONDARY_SCAN_CODE_HELP_TEXT";
-
-/* header text while displaying a QR code which, when scanned, will link this device. */
-"ONBOARDING_SECONDARY_SCAN_CODE_TITLE" = "ONBOARDING_SECONDARY_SCAN_CODE_TITLE";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Terms & Privacy Policy";
@@ -2328,25 +2313,25 @@
 "SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Finish Linking";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "To get started, open the Signal app on your phone.";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Launch Signal on your phone to link this iPad to your account";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone.";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone...";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "To use Signal on your iPad, you need to download and register an account on your phone first.\n\nGo to your phone’s app store, install Signal, and then you’ll be able to link your iPad.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Go to the App Store on your phone, install Signal, complete the registration process, and then you can link your iPad to the same account.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Install Signal on Your Phone";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "In Signal on your iPhone, tap Settings -> Linked Devices -> Add, then point the camera at this screen.";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tap on your profile picture to open Signal Settings on your phone. Then \"Linked Devices\" and \"Link New Device\" to scan this code with your phone:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Having Trouble?";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Get help linking your iPad here";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan the QR Code";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan the QR Code with your phone";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "Secure session was reset.";
