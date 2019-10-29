@@ -120,13 +120,13 @@
 "ATTACHMENT" = "Załącznik";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Osiągnięto limit podpisu.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Osiągnięto limit opisu.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Dodaj podpis...";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Dodaj opis...";
 
 /* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Podpis";
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Opis";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Nie udało się zapisać";
@@ -399,7 +399,7 @@
 "CALL_USER_ALERT_MESSAGE_FORMAT" = "Czy chcesz połączyć się z %@?";
 
 /* Title for alert offering to call a user. */
-"CALL_USER_ALERT_TITLE" = "Zadzwoń?";
+"CALL_USER_ALERT_TITLE" = "Zadzwonić?";
 
 /* Accessibility label for accepting incoming calls */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Zaakceptuj połączenie przychodzące ";
@@ -928,7 +928,7 @@
 "ENABLE_2FA_VIEW_NEXT_BUTTON" = "Dalej";
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN nie jest poprawny.";
+"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN nie jest zgodny";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too long. */
 "ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN nie może mieć więcej niż 20 cyfr.";
@@ -937,10 +937,10 @@
 "ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN musi mieć przynajmniej 4 cyfry";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Wprowadź PIN blokady rejestracji. Zostaniesz poproszony(a) o wprowadzenie tego kodu PIN przy następnym rejestrowaniu tego numeru telefonu za pomocą Signal.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Wprowadź PIN blokady rejestracji. Zostaniesz poproszony(a) o wprowadzenie tego kodu PIN przy następnej rejestracji tego numeru telefonu za pomocą Signal.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "W celu zwiększenia bezpieczeństwa, ustaw kod PIN blokady rejestracji, który będzie wymagany w celu ponownego zarejestrowania tego numeru telefonu w Signal.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "W celu zwiększenia bezpieczeństwa, ustaw kod PIN blokady rejestracji, który będzie wymagany w celu ponownej rejestracji tego numeru telefonu w Signal.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
 "ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Blokada rejestracji jest włączona. Będziesz musiał(a) wprowadzić swój PIN przy ponownej rejestracji numeru telefonu w Signal.";
@@ -1357,7 +1357,7 @@
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Usuń wiadomość";
 
 /* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Zostanie usunięty tylko na tym urządzeniu.";
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Zostanie usunięta tylko na tym urządzeniu.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Więcej informacji";
@@ -1578,7 +1578,7 @@
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Ustaw zdjęcie grupy";
 
 /* The title for the 'create group' button. */
-"NEW_GROUP_CREATE_BUTTON" = "Stwórz";
+"NEW_GROUP_CREATE_BUTTON" = "Utwórz";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Nowa grupa";
@@ -1590,7 +1590,7 @@
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ do %@";
 
 /* Placeholder text for group name field */
-"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Nazwij tę rozmowę grupową";
+"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Nazwij grupę";
 
 /* a title for the selected section of the 'recipient picker' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Inni użytkownicy";
@@ -1899,10 +1899,10 @@
 "PIN_CREATION_RECREATION_EXPLANATION" = "Wciąż jesteś zalogowany(a), więc możesz wybrać nowy PIN.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Stwórz nowy PIN";
+"PIN_CREATION_RECREATION_TITLE" = "Utwórz nowy PIN";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "Stwórz swój PIN";
+"PIN_CREATION_TITLE" = "Utwórz swój PIN";
 
 /* Label indicating that the attempted PIN is too long */
 "PIN_CREATION_TOO_LONG_ERROR" = "PIN nie może mieć więcej niż 20 cyfr.";
@@ -2865,7 +2865,7 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Brak uprawnień";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Stwórz swój PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Utwórz swój PIN";
 
 /* Button to open a help document explaining more about why a PIN is required */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Dowiedz się więcej o numerach PIN";
