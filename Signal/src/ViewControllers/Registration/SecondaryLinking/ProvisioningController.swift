@@ -5,7 +5,8 @@
 import Foundation
 import PromiseKit
 
-public class ProvisioningController {
+@objc
+public class ProvisioningController: NSObject {
 
     // MARK: - Dependencies
 
@@ -35,12 +36,24 @@ public class ProvisioningController {
 
         provisioningSocket = ProvisioningSocket()
 
+        super.init()
+
         provisioningSocket.delegate = self
     }
 
     public func resetPromises() {
         (self.deviceIdPromise, self.deviceIdResolver) = Promise.pending()
         (self.provisionEnvelopePromise, self.provisionEnvelopeResolver) = Promise.pending()
+    }
+
+    @objc
+    public static func presentRelinkingFlow() {
+        let provisioningController = ProvisioningController(onboardingController: OnboardingController())
+        let vc = SecondaryLinkingQRCodeViewController(provisioningController: provisioningController)
+        let navController = OWSNavigationController(rootViewController: vc)
+        provisioningController.awaitProvisioning(from: vc)
+        navController.isNavigationBarHidden = true
+        CurrentAppContext().mainWindow?.rootViewController = navController
     }
 
     // MARK: -
@@ -53,6 +66,15 @@ public class ProvisioningController {
 
         let qrCodeViewController = SecondaryLinkingQRCodeViewController(provisioningController: self)
         navigationController.pushViewController(qrCodeViewController, animated: true)
+
+        awaitProvisioning(from: qrCodeViewController)
+    }
+
+    func awaitProvisioning(from viewController: SecondaryLinkingQRCodeViewController) {
+        guard let navigationController = viewController.navigationController else {
+            owsFailDebug("navigationController was unexpectedly nil")
+            return
+        }
 
         awaitProvisionMessage.done { [weak self, weak navigationController] _ in
             guard let self = self else { throw PMKError.cancelled }
@@ -67,13 +89,13 @@ public class ProvisioningController {
             default:
                 Logger.warn("error: \(error)")
                 let alert = ActionSheetController(title: NSLocalizedString("SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN", comment: "alert title"),
-                                              message: error.localizedDescription)
+                                                  message: error.localizedDescription)
                 alert.addAction(ActionSheetAction(title: CommonStrings.retryButton,
-                                              accessibilityIdentifier: "alert.retry",
-                                              style: .default,
-                                              handler: { _ in
-                                                self.resetPromises()
-                                                navigationController.popViewController(animated: true)
+                                                  accessibilityIdentifier: "alert.retry",
+                                                  style: .default,
+                                                  handler: { _ in
+                                                    self.resetPromises()
+                                                    navigationController.popViewController(animated: true)
                 }))
                 navigationController.presentActionSheet(alert)
             }

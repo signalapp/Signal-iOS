@@ -153,9 +153,12 @@
                                  cell.textLabel.text = NSLocalizedString(@"NETWORK_STATUS_HEADER", @"");
                                  cell.selectionStyle = UITableViewCellSelectionStyleNone;
                                  UILabel *accessoryLabel = [UILabel new];
-                                 if (TSAccountManager.sharedInstance.isDeregistered) {
-                                     accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_DEREGISTERED",
-                                         @"Error indicating that this device is no longer registered.");
+                                 if (weakSelf.tsAccountManager.isDeregistered) {
+                                     accessoryLabel.text = self.tsAccountManager.isPrimaryDevice
+                                         ? NSLocalizedString(@"NETWORK_STATUS_DEREGISTERED",
+                                             @"Error indicating that this device is no longer registered.")
+                                         : NSLocalizedString(@"NETWORK_STATUS_DELINKED",
+                                             @"Error indicating that this device is no longer linked.");
                                      accessoryLabel.textColor = UIColor.ows_accentRedColor;
                                  } else {
                                      switch (TSSocketManager.shared.highestSocketState) {
@@ -257,23 +260,31 @@
                                               }]];
 #endif
 
-    if (TSAccountManager.sharedInstance.isDeregistered) {
-        [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_REREGISTER_BUTTON",
-                                                                  @"Label for re-registration button.")
-                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"reregister")
-                                                     selector:@selector(reregisterUser)
-                                                        color:UIColor.ows_signalBlueColor]];
+    if (self.tsAccountManager.isDeregistered) {
+        [section
+            addItem:[self destructiveButtonItemWithTitle:self.tsAccountManager.isPrimaryDevice
+                              ? NSLocalizedString(@"SETTINGS_REREGISTER_BUTTON", @"Label for re-registration button.")
+                              : NSLocalizedString(@"SETTINGS_RELINK_BUTTON", @"Label for re-link button.")
+                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"reregister")
+                                                selector:@selector(reregisterUser)
+                                                   color:UIColor.ows_signalBlueColor]];
         [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_DATA_BUTTON",
                                                                   @"Label for 'delete data' button.")
                                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_data")
                                                      selector:@selector(deleteUnregisterUserData)
                                                         color:UIColor.ows_accentRedColor]];
-    } else {
+    } else if (self.tsAccountManager.isRegisteredPrimaryDevice) {
         [section
             addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_account")
                                                 selector:@selector(unregisterUser)
                                                    color:UIColor.ows_accentRedColor]];
+    } else {
+        [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_DATA_BUTTON",
+                                                                  @"Label for 'delete data' button.")
+                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_data")
+                                                     selector:@selector(deleteLinkedData)
+                                                        color:UIColor.ows_accentRedColor]];
     }
 
     [contents addSection:section];
@@ -485,6 +496,23 @@
 - (void)unregisterUser
 {
     [self showDeleteAccountUI:YES];
+}
+
+- (void)deleteLinkedData
+{
+    __weak AppSettingsViewController *weakSelf = self;
+
+    ActionSheetController *actionSheet =
+        [[ActionSheetController alloc] initWithTitle:NSLocalizedString(@"CONFIRM_DELETE_LINKED_DATA_TITLE", @"")
+                                             message:NSLocalizedString(@"CONFIRM_DELETE_LINKED_DATA_TEXT", @"")];
+    [actionSheet addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"PROCEED_BUTTON", @"")
+                                                              style:ActionSheetActionStyleDestructive
+                                                            handler:^(ActionSheetAction *action) {
+                                                                [SignalApp resetAppData];
+                                                            }]];
+    [actionSheet addAction:[OWSActionSheets cancelAction]];
+
+    [self presentActionSheet:actionSheet];
 }
 
 - (void)deleteUnregisterUserData

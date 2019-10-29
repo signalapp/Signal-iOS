@@ -37,6 +37,7 @@ class SecondaryLinkingSetDeviceNameViewController: OnboardingBaseViewController 
         textField.textColor = Theme.primaryTextColor
         textField.font = UIFont.ows_dynamicTypeBodyClamped
         textField.accessibilityIdentifier = "linking.deviceName.textField"
+        textField.text = UIDevice.current.name
         textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         textField.setCompressionResistanceHigh()
 

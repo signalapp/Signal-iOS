@@ -119,7 +119,7 @@ public extension Theme {
         case .messageActionForward:
             return isDarkThemeEnabled ? "forward-solid-24" :  "forward-outline-24"
         case .messageActionCopy:
-            return isDarkThemeEnabled ? "copy-solid-24" :  "forwardic_copy"
+            return isDarkThemeEnabled ? "copy-solid-24" :  "ic_copy"
         case .messageActionDetails:
             return isDarkThemeEnabled ? "info-solid-24" :  "ic_info"
         case .messageActionDelete:
