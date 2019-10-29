@@ -121,6 +121,8 @@ extension MediaGalleryDatabaseObserver: DatabaseSnapshotDelegate {
             guard let deletedAttachmentIds = self.deletedAttachmentIds else {
                 throw OWSErrorMakeAssertionError("deletedAttachmentIds were unexpectedly nil")
             }
+            Logger.verbose("---- deletedAttachmentIds: \(deletedAttachmentIds.count)")
+            Logger.flush()
             self.deletedAttachmentIds = nil
 
             for delegate in snapshotDelegates {

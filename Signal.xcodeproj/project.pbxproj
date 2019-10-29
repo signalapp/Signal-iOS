@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		06289300DC49EDEA6FEC730C /* Pods_SignalPerformanceTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C61A9604F0FC0D258C8CE27F /* Pods_SignalPerformanceTests.framework */; };
 		2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */; };
+		34035D7A2367747400F5215A /* VideoEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34035D782367747300F5215A /* VideoEditorModel.swift */; };
+		34035D7B2367747400F5215A /* VideoEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34035D792367747300F5215A /* VideoEditorView.swift */; };
 		3403B95D20EA9527001A1F44 /* OWSContactShareButtonsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3403B95B20EA9526001A1F44 /* OWSContactShareButtonsView.m */; };
 		34074F61203D0CBE004596AE /* OWSSounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074F5F203D0CBD004596AE /* OWSSounds.m */; };
 		34074F62203D0CBE004596AE /* OWSSounds.h in Headers */ = {isa = PBXBuildFile; fileRef = 34074F60203D0CBE004596AE /* OWSSounds.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -154,6 +156,7 @@
 		346941A2215D2EE400B5BFAD /* OWSConversationColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469419E215D2EE400B5BFAD /* OWSConversationColor.m */; };
 		346941A3215D2EE400B5BFAD /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469419F215D2EE400B5BFAD /* Theme.m */; };
 		346941A4215D2EE400B5BFAD /* OWSConversationColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 346941A0215D2EE400B5BFAD /* OWSConversationColor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		346B4A772369BFC600B56007 /* PermissiveGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B4A762369BFC600B56007 /* PermissiveGestureRecognizer.swift */; };
 		346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */; };
 		346E9D5421B040B700562252 /* RegistrationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346E9D5321B040B600562252 /* RegistrationController.swift */; };
 		347137FC22A1BCE800F43A63 /* OWSMessageViewOnceView.m in Sources */ = {isa = PBXBuildFile; fileRef = 347137FB22A1BCE800F43A63 /* OWSMessageViewOnceView.m */; };
@@ -735,6 +738,8 @@
 		1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.test.xcconfig"; sourceTree = "<group>"; };
 		1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.test.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.test.xcconfig"; sourceTree = "<group>"; };
 		264242150E87D10A357DB07B /* Pods_SignalMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		34035D782367747300F5215A /* VideoEditorModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoEditorModel.swift; sourceTree = "<group>"; };
+		34035D792367747300F5215A /* VideoEditorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoEditorView.swift; sourceTree = "<group>"; };
 		3403B95B20EA9526001A1F44 /* OWSContactShareButtonsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactShareButtonsView.m; sourceTree = "<group>"; };
 		3403B95C20EA9527001A1F44 /* OWSContactShareButtonsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactShareButtonsView.h; sourceTree = "<group>"; };
 		34074F5F203D0CBD004596AE /* OWSSounds.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSounds.m; sourceTree = "<group>"; };
@@ -928,6 +933,7 @@
 		3469419E215D2EE400B5BFAD /* OWSConversationColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSConversationColor.m; sourceTree = "<group>"; };
 		3469419F215D2EE400B5BFAD /* Theme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Theme.m; sourceTree = "<group>"; };
 		346941A0215D2EE400B5BFAD /* OWSConversationColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSConversationColor.h; sourceTree = "<group>"; };
+		346B4A762369BFC600B56007 /* PermissiveGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PermissiveGestureRecognizer.swift; sourceTree = "<group>"; };
 		346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropScaleImageViewController.swift; sourceTree = "<group>"; };
 		346E9D5321B040B600562252 /* RegistrationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationController.swift; sourceTree = "<group>"; };
 		347137FA22A1BCE800F43A63 /* OWSMessageViewOnceView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageViewOnceView.h; sourceTree = "<group>"; };
@@ -1616,6 +1622,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		34035D772367747300F5215A /* VideoEditor */ = {
+			isa = PBXGroup;
+			children = (
+				34035D782367747300F5215A /* VideoEditorModel.swift */,
+				34035D792367747300F5215A /* VideoEditorView.swift */,
+			);
+			path = VideoEditor;
+			sourceTree = "<group>";
+		};
 		34074F54203D0722004596AE /* Sounds */ = {
 			isa = PBXGroup;
 			children = (
@@ -1998,7 +2013,6 @@
 				34AC0A02211B39E700997B47 /* ContactsViewHelper.m */,
 				34AC09FC211B39E700997B47 /* ContactTableViewCell.h */,
 				34AC09FF211B39E700997B47 /* ContactTableViewCell.m */,
-				8821334D2304E72700353626 /* NonContactTableViewCell.swift */,
 				8809CE8022F534B200D38867 /* CustomKeyboard.swift */,
 				4523149F1F7E9E18003A428C /* DirectionalPanGestureRecognizer.swift */,
 				34AC0A00211B39E700997B47 /* DisappearingTimerConfigurationView.swift */,
@@ -2006,6 +2020,7 @@
 				34AC0A08211B39E900997B47 /* GradientView.swift */,
 				34BEDB0C21C405B0007B0EAE /* ImageEditor */,
 				34AC0A06211B39E900997B47 /* OWSActionSheets.swift */,
+				8821334D2304E72700353626 /* NonContactTableViewCell.swift */,
 				4C618198219DF03A009BD6B5 /* OWSButton.swift */,
 				34AC0A09211B39E900997B47 /* OWSFlatButton.swift */,
 				34AC09FE211B39E700997B47 /* OWSLayerView.swift */,
@@ -2022,6 +2037,7 @@
 				34AC0A0B211B39EA00997B47 /* ThreadViewHelper.m */,
 				4CA5F792211E1F06008C2708 /* Toast.swift */,
 				34C758DB228DD81C00802527 /* Tooltips */,
+				34035D772367747300F5215A /* VideoEditor */,
 				34AC0A04211B39E800997B47 /* VideoPlayerView.swift */,
 			);
 			path = Views;
@@ -2193,6 +2209,7 @@
 				34BEDB1221C43F69007B0EAE /* ImageEditorView.swift */,
 				34BBC856220C7ADA00857249 /* OrderedDictionary.swift */,
 				34080F03222858DC0087E99F /* OWSViewController+ImageEditor.swift */,
+				346B4A762369BFC600B56007 /* PermissiveGestureRecognizer.swift */,
 			);
 			path = ImageEditor;
 			sourceTree = "<group>";
@@ -3871,6 +3888,7 @@
 				4CA46F4D219CFDAA0038ABDE /* GalleryRailView.swift in Sources */,
 				4C20B2B720CA0034001BAC90 /* ThreadViewModel.swift in Sources */,
 				34BBC857220C7ADA00857249 /* ImageEditorItem.swift in Sources */,
+				346B4A772369BFC600B56007 /* PermissiveGestureRecognizer.swift in Sources */,
 				34C2EEB22270CC8E00BCA1D0 /* StickerPackCollectionView.swift in Sources */,
 				34480B641FD0A98800BC14EF /* UIView+OWS.m in Sources */,
 				34AC0A1C211B39EA00997B47 /* OWSFlatButton.swift in Sources */,
@@ -3878,6 +3896,7 @@
 				34C3C7932040B0DD0000134C /* OWSAudioPlayer.m in Sources */,
 				34AC09E5211B39B100997B47 /* ScreenLockViewController.m in Sources */,
 				34AC09F7211B39B100997B47 /* MediaMessageView.swift in Sources */,
+				34035D7B2367747400F5215A /* VideoEditorView.swift in Sources */,
 				34BBC858220C7ADA00857249 /* ImageEditorContents.swift in Sources */,
 				3461293A1FD1B47300532771 /* OWSPreferences.m in Sources */,
 				4C858A52212DC5E1001B45D3 /* UIImage+OWS.swift in Sources */,
@@ -3955,6 +3974,7 @@
 				34AC0A19211B39EA00997B47 /* OWSActionSheets.swift in Sources */,
 				340872DA22397FEB00CB25B0 /* AttachmentTextView.swift in Sources */,
 				34FDB29221FF986600A01202 /* UIView+OWS.swift in Sources */,
+				34035D7A2367747400F5215A /* VideoEditorModel.swift in Sources */,
 				34BBC859220C7ADA00857249 /* ImageEditorStrokeItem.swift in Sources */,
 				451F8A351FD710DE005CB9DA /* Searcher.swift in Sources */,
 				451F8A481FD715BA005CB9DA /* OWSContactAvatarBuilder.m in Sources */,

@@ -123,6 +123,13 @@ class ConversationPickerViewController: OWSViewController {
         restoreSelection(tableView: tableView)
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        tableView(tableView, didSelectRowAt: IndexPath(row: 0, section: 0))
+        delegate?.conversationPickerDidCompleteSelection(self)
+    }
+
     // MARK: - ConversationCollection
 
     func restoreSelection(tableView: UITableView) {
@@ -564,7 +571,16 @@ extension ConversationPickerViewController: UISearchBarDelegate {
 
 extension ConversationPickerViewController: ApprovalFooterDelegate {
     public func approvalFooterDelegateDidRequestProceed(_ approvalFooterView: ApprovalFooterView) {
-        delegate?.conversationPickerDidCompleteSelection(self)
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        let conversations = delegate.selectedConversationsForConversationPicker
+        guard conversations.count > 0 else {
+            owsFailDebug("No conversations selected.")
+            return
+        }
+        delegate.conversationPickerDidCompleteSelection(self)
     }
 
     public func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode {

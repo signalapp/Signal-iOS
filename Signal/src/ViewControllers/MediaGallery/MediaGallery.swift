@@ -591,7 +591,6 @@ class MediaGallery {
         AssertIsOnMainThread()
 
         guard items.count > 0 else {
-            owsFailDebug("No items.")
             return
         }
 

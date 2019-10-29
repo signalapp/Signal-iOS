@@ -263,7 +263,7 @@ public class ImageEditorPaletteView: UIView {
         self.previewConstraint = previewConstraint
 
         isUserInteractionEnabled = true
-        addGestureRecognizer(PaletteGestureRecognizer(target: self, action: #selector(didTouch)))
+        addGestureRecognizer(PermissiveGestureRecognizer(target: self, action: #selector(didTouch)))
 
         updateState()
     }
@@ -378,83 +378,5 @@ public class ImageEditorPaletteView: UIView {
         gradientLayer.endPoint = CGPoint(x: 0, y: gradientSize.height)
         gradientLayer.endPoint = CGPoint(x: 0, y: 1.0)
         return gradientView.renderAsImage(opaque: true, scale: UIScreen.main.scale)
-    }
-}
-
-// MARK: -
-
-// The most permissive GR possible. Accepts any number of touches in any locations.
-private class PaletteGestureRecognizer: UIGestureRecognizer {
-
-    @objc
-    public override func canPrevent(_ preventedGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return false
-    }
-
-    @objc
-    public override func canBePrevented(by preventingGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return false
-    }
-
-    @objc
-    public override func shouldRequireFailure(of otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return false
-    }
-
-    @objc
-    public override func shouldBeRequiredToFail(by otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return false
-    }
-
-    @objc
-    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
-        handle(event: event)
-    }
-
-    @objc
-    public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
-        handle(event: event)
-    }
-
-    @objc
-    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
-        handle(event: event)
-    }
-
-    @objc
-    public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
-        handle(event: event)
-    }
-
-    private func handle(event: UIEvent) {
-        var hasValidTouch = false
-        if let allTouches = event.allTouches {
-            for touch in allTouches {
-                switch touch.phase {
-                case .began, .moved, .stationary:
-                    hasValidTouch = true
-                default:
-                    break
-                }
-            }
-        }
-
-        if hasValidTouch {
-            switch self.state {
-            case .possible:
-                self.state = .began
-            case .began, .changed:
-                self.state = .changed
-            default:
-                self.state = .failed
-            }
-        } else {
-            switch self.state {
-            case .began, .changed:
-                self.state = .ended
-            default:
-                self.state = .failed
-            }
-        }
     }
 }

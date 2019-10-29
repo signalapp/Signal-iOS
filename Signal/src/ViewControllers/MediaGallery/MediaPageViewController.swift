@@ -281,6 +281,12 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        didPressForward(self)
+    }
+
     private func makeClearToolbar() -> UIToolbar {
         let toolbar = UIToolbar()
 

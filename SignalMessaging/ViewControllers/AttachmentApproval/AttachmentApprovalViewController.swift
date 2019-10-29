@@ -623,12 +623,32 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return attachmentApprovalItemCollection.attachmentApprovalItems
     }
 
-    var attachments: [SignalAttachment] {
-        return attachmentApprovalItems.map { (attachmentApprovalItem) in
-            autoreleasepool {
-                return self.processedAttachment(forAttachmentItem: attachmentApprovalItem)
-            }
+    func outputAttachmentsPromise() -> Promise<[SignalAttachment]> {
+        var promises = [Promise<SignalAttachment>]()
+        for attachmentApprovalItem in attachmentApprovalItems {
+            promises.append(outputAttachmentPromise(for: attachmentApprovalItem))
         }
+        return when(fulfilled: promises)
+    }
+
+    // For any attachments edited with an editor, returns a
+    // new SignalAttachment that reflects those changes.  Otherwise,
+    // returns the original attachment.
+    //
+    // If any errors occurs in the export process, we fail over to
+    // sending the original attachment.  This seems better than trying
+    // to involve the user in resolving the issue.
+    func outputAttachmentPromise(for attachmentApprovalItem: AttachmentApprovalItem) -> Promise<SignalAttachment> {
+        if let imageEditorModel = attachmentApprovalItem.imageEditorModel {
+            return outputAttachmentPromise(imageEditorModel: imageEditorModel,
+                                           attachmentApprovalItem: attachmentApprovalItem)
+        }
+        if let videoEditorModel = attachmentApprovalItem.videoEditorModel {
+            return outputAttachmentPromise(videoEditorModel: videoEditorModel,
+                                           attachmentApprovalItem: attachmentApprovalItem)
+        }
+        // No editor applies. Use original, un-edited attachment.
+        return Promise.value(attachmentApprovalItem.attachment)
     }
 
     // For any attachments edited with the image editor, returns a
@@ -638,55 +658,98 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     // If any errors occurs in the export process, we fail over to
     // sending the original attachment.  This seems better than trying
     // to involve the user in resolving the issue.
-    func processedAttachment(forAttachmentItem attachmentApprovalItem: AttachmentApprovalItem) -> SignalAttachment {
-        guard let imageEditorModel = attachmentApprovalItem.imageEditorModel else {
-            // Image was not edited.
-            return attachmentApprovalItem.attachment
-        }
+    func outputAttachmentPromise(imageEditorModel: ImageEditorModel,
+                                 attachmentApprovalItem: AttachmentApprovalItem) -> Promise<SignalAttachment> {
         guard imageEditorModel.isDirty() else {
             // Image editor has no changes.
-            return attachmentApprovalItem.attachment
+            return Promise.value(attachmentApprovalItem.attachment)
         }
-        guard let dstImage = imageEditorModel.renderOutput() else {
-            owsFailDebug("Could not render for output.")
-            return attachmentApprovalItem.attachment
-        }
-        var dataUTI = kUTTypeImage as String
-        guard let dstData: Data = {
-            let isLossy: Bool = attachmentApprovalItem.attachment.mimeType.caseInsensitiveCompare(OWSMimeTypeImageJpeg) == .orderedSame
-            if isLossy {
-                dataUTI = kUTTypeJPEG as String
-                return dstImage.jpegData(compressionQuality: 0.9)
-            } else {
-                dataUTI = kUTTypePNG as String
-                return dstImage.pngData()
+        // Currently edited images are exported on the main thread.
+        let promise: Promise<UIImage> = firstly { () -> Promise<UIImage> in
+            guard let dstImage = imageEditorModel.renderOutput() else {
+                throw OWSAssertionError("Could not render for output.")
             }
-            }() else {
-                owsFailDebug("Could not export for output.")
+            return Promise.value(dstImage)
+        }
+        return promise.map(on: .global()) { (dstImage: UIImage) -> SignalAttachment in
+            var dataUTI = kUTTypeImage as String
+            guard let dstData: Data = {
+                let isLossy: Bool = attachmentApprovalItem.attachment.mimeType.caseInsensitiveCompare(OWSMimeTypeImageJpeg) == .orderedSame
+                if isLossy {
+                    dataUTI = kUTTypeJPEG as String
+                    return dstImage.jpegData(compressionQuality: 0.9)
+                } else {
+                    dataUTI = kUTTypePNG as String
+                    return dstImage.pngData()
+                }
+                }() else {
+                    owsFailDebug("Could not export for output.")
+                    return attachmentApprovalItem.attachment
+            }
+            guard let dataSource = DataSourceValue.dataSource(with: dstData, utiType: dataUTI) else {
+                owsFailDebug("Could not prepare data source for output.")
                 return attachmentApprovalItem.attachment
-        }
-        guard let dataSource = DataSourceValue.dataSource(with: dstData, utiType: dataUTI) else {
-            owsFailDebug("Could not prepare data source for output.")
-            return attachmentApprovalItem.attachment
-        }
-
-        // Rewrite the filename's extension to reflect the output file format.
-        var filename: String? = attachmentApprovalItem.attachment.sourceFilename
-        if let sourceFilename = attachmentApprovalItem.attachment.sourceFilename {
-            if let fileExtension: String = MIMETypeUtil.fileExtension(forUTIType: dataUTI) {
-                filename = (sourceFilename as NSString).deletingPathExtension.appendingFileExtension(fileExtension)
             }
-        }
-        dataSource.sourceFilename = filename
 
-        let dstAttachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .original)
-        if let attachmentError = dstAttachment.error {
-            owsFailDebug("Could not prepare attachment for output: \(attachmentError).")
-            return attachmentApprovalItem.attachment
+            // Rewrite the filename's extension to reflect the output file format.
+            var filename: String? = attachmentApprovalItem.attachment.sourceFilename
+            if let sourceFilename = attachmentApprovalItem.attachment.sourceFilename {
+                if let fileExtension: String = MIMETypeUtil.fileExtension(forUTIType: dataUTI) {
+                    filename = (sourceFilename as NSString).deletingPathExtension.appendingFileExtension(fileExtension)
+                }
+            }
+            dataSource.sourceFilename = filename
+
+            let dstAttachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .original)
+            if let attachmentError = dstAttachment.error {
+                owsFailDebug("Could not prepare attachment for output: \(attachmentError).")
+                return attachmentApprovalItem.attachment
+            }
+            // Preserve caption text.
+            dstAttachment.captionText = attachmentApprovalItem.captionText
+            return dstAttachment
         }
-        // Preserve caption text.
-        dstAttachment.captionText = attachmentApprovalItem.captionText
-        return dstAttachment
+    }
+
+    // For any attachments edited with the video editor, returns a
+    // new SignalAttachment that reflects those changes.  Otherwise,
+    // returns the original attachment.
+    //
+    // If any errors occurs in the export process, we fail over to
+    // sending the original attachment.  This seems better than trying
+    // to involve the user in resolving the issue.
+    func outputAttachmentPromise(videoEditorModel: VideoEditorModel,
+                                 attachmentApprovalItem: AttachmentApprovalItem) -> Promise<SignalAttachment> {
+        guard videoEditorModel.isTrimmed else {
+            // Video editor has no changes.
+            return Promise.value(attachmentApprovalItem.attachment)
+        }
+        return videoEditorModel.exportOutput()
+            .map(on: .global()) { filePath in
+
+                guard let fileExtension = filePath.fileExtension else {
+                    throw OWSAssertionError("Missing fileExtension.")
+                }
+                guard let dataUTI = MIMETypeUtil.utiType(forFileExtension: fileExtension) else {
+                    throw OWSAssertionError("Missing dataUTI.")
+                }
+                let dataSource = try DataSourcePath.dataSource(withFilePath: filePath, shouldDeleteOnDeallocation: true)
+                // Rewrite the filename's extension to reflect the output file format.
+                var filename: String? = attachmentApprovalItem.attachment.sourceFilename
+                if let sourceFilename = attachmentApprovalItem.attachment.sourceFilename {
+                    filename = (sourceFilename as NSString).deletingPathExtension.appendingFileExtension(fileExtension)
+                }
+                dataSource.sourceFilename = filename
+
+                let dstAttachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .original)
+                if let attachmentError = dstAttachment.error {
+                    throw OWSAssertionError("Could not prepare attachment for output: \(attachmentError).")
+                }
+                // Preserve caption text.
+                dstAttachment.captionText = attachmentApprovalItem.captionText
+                dstAttachment.isViewOnceAttachment = attachmentApprovalItem.attachment.isViewOnceAttachment
+                return dstAttachment
+        }
     }
 
     func attachmentApprovalItem(before currentItem: AttachmentApprovalItem) -> AttachmentApprovalItem? {
@@ -805,17 +868,31 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
 
         // Generate the attachments once, so that any changes we
         // make below are reflected afterwards.
-        let attachments = self.attachments
+        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modalVC in
+            self.outputAttachmentsPromise()
+                .done { attachments in
+                    AssertIsOnMainThread()
+                    modalVC.dismiss {
+                        AssertIsOnMainThread()
 
-        if options.contains(.canToggleViewOnce),
-            preferences.isViewOnceMessagesEnabled() {
-            for attachment in attachments {
-                attachment.isViewOnceAttachment = true
-            }
-            assert(attachments.count <= 1)
+                        if self.options.contains(.canToggleViewOnce),
+                            self.preferences.isViewOnceMessagesEnabled() {
+                            for attachment in attachments {
+                                attachment.isViewOnceAttachment = true
+                            }
+                            assert(attachments.count <= 1)
+                        }
+
+                        self.approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageText: attachmentTextToolbar.messageText)
+                    }
+                }.catch { error in
+                    AssertIsOnMainThread()
+                    owsFailDebug("Error: \(error)")
+                    modalVC.dismiss {
+                        OWSActionSheets.showErrorAlert(message: NSLocalizedString("ATTACHMENT_APPROVAL_FAILED_TO_EXPORT", comment: "Error that outgoing attachments could not be exported."))
+                    }
+                }.retainUntilComplete()
         }
-
-        approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageText: attachmentTextToolbar.messageText)
     }
 
     func attachmentTextToolbarDidChange(_ attachmentTextToolbar: AttachmentTextToolbar) {

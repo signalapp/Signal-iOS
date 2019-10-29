@@ -37,28 +37,56 @@ public struct AttachmentApprovalItem: Hashable {
 
     // This might be nil if the attachment is not a valid image.
     let imageEditorModel: ImageEditorModel?
+    // This might be nil if the attachment is not a valid video.
+    let videoEditorModel: VideoEditorModel?
     let canSave: Bool
 
     public init(attachment: SignalAttachment, canSave: Bool) {
         self.attachment = attachment
         self.canSave = canSave
 
-        // Try and make a ImageEditorModel.
-        // This will only apply for valid images.
-        if attachment.isValidImage,
-            !attachment.isAnimatedImage,
-            let dataUrl: URL = attachment.dataUrl,
-            dataUrl.isFileURL {
-
-            let path = dataUrl.path
-            do {
-                imageEditorModel = try ImageEditorModel(srcImagePath: path)
-            } catch {
-                owsFailDebug("Could not create image editor: \(error)")
-                imageEditorModel = nil
-            }
+        self.imageEditorModel = AttachmentApprovalItem.imageEditorModel(for: attachment)
+        if self.imageEditorModel == nil {
+            self.videoEditorModel = AttachmentApprovalItem.videoEditorModel(for: attachment)
         } else {
-            imageEditorModel = nil
+            // Make sure we only have one of a video editor and an image editor, not both.
+            self.videoEditorModel = nil
+        }
+    }
+
+    private static func imageEditorModel(for attachment: SignalAttachment) -> ImageEditorModel? {
+        guard attachment.isValidImage, !attachment.isAnimatedImage else {
+            return nil
+        }
+        guard let dataUrl: URL = attachment.dataUrl, dataUrl.isFileURL else {
+            owsFailDebug("Missing dataUrl.")
+            return nil
+        }
+
+        let path = dataUrl.path
+        do {
+            return try ImageEditorModel(srcImagePath: path)
+        } catch {
+            owsFailDebug("Could not create image editor: \(error)")
+            return nil
+        }
+    }
+
+    private static func videoEditorModel(for attachment: SignalAttachment) -> VideoEditorModel? {
+        guard attachment.isValidVideo else {
+            return nil
+        }
+        guard let dataUrl: URL = attachment.dataUrl, dataUrl.isFileURL else {
+            owsFailDebug("Missing dataUrl.")
+            return nil
+        }
+
+        let path = dataUrl.path
+        do {
+            return try VideoEditorModel(srcVideoPath: path)
+        } catch {
+            owsFailDebug("Could not create image editor: \(error)")
+            return nil
         }
     }
 

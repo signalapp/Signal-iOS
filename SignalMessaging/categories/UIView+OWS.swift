@@ -235,8 +235,41 @@ public extension CGFloat {
 
 // MARK: -
 
+public extension Double {
+    func clamp(_ minValue: Double, _ maxValue: Double) -> Double {
+        return max(minValue, min(maxValue, self))
+    }
+
+    func clamp01() -> Double {
+        return clamp(0, 1)
+    }
+
+    // Linear interpolation
+    func lerp(_ minValue: Double, _ maxValue: Double) -> Double {
+        return (minValue * (1 - self)) + (maxValue * self)
+    }
+
+    // Inverse linear interpolation
+    func inverseLerp(_ minValue: Double, _ maxValue: Double, shouldClamp: Bool = false) -> Double {
+        let value = (self - minValue) / (maxValue - minValue)
+        return (shouldClamp ? value.clamp01() : value)
+    }
+}
+
+// MARK: -
+
 public extension Int {
     func clamp(_ minValue: Int, _ maxValue: Int) -> Int {
+        assert(minValue <= maxValue)
+
+        return Swift.max(minValue, Swift.min(maxValue, self))
+    }
+}
+
+// MARK: -
+
+public extension UInt {
+    func clamp(_ minValue: UInt, _ maxValue: UInt) -> UInt {
         assert(minValue <= maxValue)
 
         return Swift.max(minValue, Swift.min(maxValue, self))
@@ -337,6 +370,10 @@ public extension CGSize {
 
     var ceil: CGSize {
         return CGSizeCeil(self)
+    }
+
+    var abs: CGSize {
+        return CGSize(width: Swift.abs(width), height: Swift.abs(height))
     }
 
     init(square: CGFloat) {

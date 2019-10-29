@@ -1171,7 +1171,7 @@ typedef enum : NSUInteger {
 
 - (void)readTimerDidFire
 {
-    [self markVisibleMessagesAsRead];
+    //    [self markVisibleMessagesAsRead];
 }
 
 - (void)cancelReadTimer
@@ -1245,6 +1245,23 @@ typedef enum : NSUInteger {
     [self updateInputToolbarLayout];
     [self ensureScrollDownButton];
     [self.inputToolbar viewDidAppear];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self.viewItems.count < 1) {
+            return;
+        }
+        id<ConversationViewItem> viewItem = [self.viewItems lastObject];
+        OWSAssertDebug(viewItem);
+        if (viewItem.mediaAlbumItems.count < 1) {
+            return;
+        }
+        ConversationMediaAlbumItem *mediaAlbumItem = viewItem.mediaAlbumItems[0];
+        if (mediaAlbumItem.attachmentStream == nil) {
+            return;
+        }
+
+        [self didTapImageViewItem:viewItem attachmentStream:mediaAlbumItem.attachmentStream imageView:self.view];
+    });
 }
 
 // `viewWillDisappear` is called whenever the view *starts* to disappear,

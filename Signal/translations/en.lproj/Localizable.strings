@@ -128,6 +128,9 @@
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Caption";
 
+/* Error that outgoing attachments could not be exported. */
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Attachment failed to export.";
+
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Failed to Save";
 
@@ -962,6 +965,9 @@
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Could not access contacts.";
+
+/* Error indicating that 'save video' failed. */
+"ERROR_COULD_NOT_SAVE_VIDEO" = "Could not save video.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Failed to send message.";

@@ -30,19 +30,29 @@ public class OWSLayerView: UIView {
 
     public override var bounds: CGRect {
         didSet {
-            layoutCallback(self)
+            if !oldValue.equalTo(bounds) {
+                layoutCallback(self)
+            }
         }
     }
 
     public override var frame: CGRect {
         didSet {
-            layoutCallback(self)
+            if !oldValue.equalTo(frame) {
+                layoutCallback(self)
+            }
         }
     }
 
     public override var center: CGPoint {
         didSet {
-            layoutCallback(self)
+            if !oldValue.equalTo(center) {
+                layoutCallback(self)
+            }
         }
+    }
+
+    public func updateContent() {
+        layoutCallback(self)
     }
 }

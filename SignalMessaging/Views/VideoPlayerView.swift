@@ -6,14 +6,38 @@ import Foundation
 import AVFoundation
 
 @objc
+public protocol VideoPlayerViewDelegate {
+    func videoPlayerViewStatusDidChange(_ view: VideoPlayerView)
+    func videoPlayerViewPlaybackTimeDidChange(_ view: VideoPlayerView)
+}
+
+// MARK: -
+
+@objc
 public class VideoPlayerView: UIView {
+
+    // MARK: - Properties
+
+    public weak var delegate: VideoPlayerViewDelegate?
+
+    @objc
+    public var videoPlayer: OWSVideoPlayer? {
+        didSet {
+            player = videoPlayer?.avPlayer
+        }
+    }
+
     @objc
     public var player: AVPlayer? {
         get {
             return playerLayer.player
         }
         set {
+            removeKVO(player: playerLayer.player)
+
             playerLayer.player = newValue
+
+            addKVO(player: playerLayer.player)
         }
     }
 
@@ -25,7 +49,127 @@ public class VideoPlayerView: UIView {
     override public static var layerClass: AnyClass {
         return AVPlayerLayer.self
     }
+
+    public var isPlaying: Bool {
+        guard let player = player else {
+            return false
+        }
+        return player.timeControlStatus == .playing
+    }
+
+    public var currentTimeSeconds: Double {
+        guard let videoPlayer = videoPlayer else {
+            return 0
+        }
+        return videoPlayer.currentTimeSeconds
+    }
+
+    // MARK: - Initializers
+
+    public init() {
+        super.init(frame: .zero)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    deinit {
+        removeKVO(player: player)
+    }
+
+    // MARK: - KVO
+
+    private var periodicTimeObserver: Any?
+
+    private func addKVO(player: AVPlayer?) {
+        guard let player = player else {
+            return
+        }
+        // Observe status changes: anything that might affect "isPlaying".
+        player.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
+        player.addObserver(self, forKeyPath: "timeControlStatus", options: [.new, .initial], context: nil)
+        player.addObserver(self, forKeyPath: "rate", options: [.new, .initial], context: nil)
+
+        // Observe playback progress.
+        let interval = CMTime(seconds: 0.01, preferredTimescale: 1000)
+        periodicTimeObserver = player.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main) { [weak self] _ in
+            self?.playbackTimeDidChange()
+        }
+    }
+
+    private func removeKVO(player: AVPlayer?) {
+        guard let player = player else {
+            return
+        }
+        player.removeObserver(self, forKeyPath: "status")
+        player.removeObserver(self, forKeyPath: "timeControlStatus")
+        player.removeObserver(self, forKeyPath: "rate")
+        if let periodicTimeObserver = periodicTimeObserver {
+            player.removeTimeObserver(periodicTimeObserver)
+        }
+        periodicTimeObserver = nil
+    }
+
+    public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
+
+        if !isPlaying,
+            let videoPlayer = videoPlayer {
+            videoPlayer.endAudioActivity()
+        }
+
+        delegate?.videoPlayerViewStatusDidChange(self)
+    }
+
+    private func playbackTimeDidChange() {
+        delegate?.videoPlayerViewPlaybackTimeDidChange(self)
+    }
+
+    // MARK: - Playback
+
+    @objc
+    public func pause() {
+        guard let videoPlayer = videoPlayer else {
+            owsFailDebug("Missing videoPlayer.")
+            return
+        }
+
+        videoPlayer.pause()
+    }
+
+    @objc
+    public func play() {
+        guard let videoPlayer = videoPlayer else {
+            owsFailDebug("Missing videoPlayer.")
+            return
+        }
+
+        videoPlayer.play()
+    }
+
+    @objc
+    public func stop() {
+        guard let videoPlayer = videoPlayer else {
+            owsFailDebug("Missing videoPlayer.")
+            return
+        }
+
+        videoPlayer.stop()
+
+    }
+
+    @objc(seekToTime:)
+    public func seek(to time: CMTime) {
+        guard let videoPlayer = videoPlayer else {
+            owsFailDebug("Missing videoPlayer.")
+            return
+        }
+
+        videoPlayer.seek(to: time)
+    }
 }
+
+// MARK: -
 
 @objc
 public protocol PlayerProgressBarDelegate {
