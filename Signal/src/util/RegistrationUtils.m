@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [Environment.shared.preferences unsetRecordedAPNSTokens];
 
-    [SecondaryLinkingQRCodeViewController presentRelinkingFlow];
+    [ProvisioningController presentRelinkingFlow];
 }
 
 + (void)showReregistrationUIFromViewController:(UIViewController *)fromViewController

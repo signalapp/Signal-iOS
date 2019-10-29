@@ -5,7 +5,8 @@
 import Foundation
 import PromiseKit
 
-public class ProvisioningController {
+@objc
+public class ProvisioningController: NSObject {
 
     // MARK: - Dependencies
 
@@ -35,12 +36,24 @@ public class ProvisioningController {
 
         provisioningSocket = ProvisioningSocket()
 
+        super.init()
+
         provisioningSocket.delegate = self
     }
 
     public func resetPromises() {
         (self.deviceIdPromise, self.deviceIdResolver) = Promise.pending()
         (self.provisionEnvelopePromise, self.provisionEnvelopeResolver) = Promise.pending()
+    }
+
+    @objc
+    public static func presentRelinkingFlow() {
+        let provisioningController = ProvisioningController(onboardingController: OnboardingController())
+        let vc = SecondaryLinkingQRCodeViewController(provisioningController: provisioningController)
+        let navController = OWSNavigationController(rootViewController: vc)
+        provisioningController.awaitProvisioning(from: vc)
+        navController.isNavigationBarHidden = true
+        CurrentAppContext().mainWindow?.rootViewController = navController
     }
 
     // MARK: -

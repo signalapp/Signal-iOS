@@ -153,7 +153,7 @@
                                  cell.textLabel.text = NSLocalizedString(@"NETWORK_STATUS_HEADER", @"");
                                  cell.selectionStyle = UITableViewCellSelectionStyleNone;
                                  UILabel *accessoryLabel = [UILabel new];
-                                 if (self.tsAccountManager.isDeregistered) {
+                                 if (weakSelf.tsAccountManager.isDeregistered) {
                                      accessoryLabel.text = self.tsAccountManager.isPrimaryDevice
                                          ? NSLocalizedString(@"NETWORK_STATUS_DEREGISTERED",
                                              @"Error indicating that this device is no longer registered.")
