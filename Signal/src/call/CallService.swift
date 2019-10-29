@@ -255,6 +255,7 @@ private class SignalCallData: NSObject {
 
     private func tryToSendIceUpdates() {
         AssertIsOnMainThread()
+        Logger.info("")
 
         guard !outgoingIceUpdatesInFlight else {
             Logger.verbose("Enqueued outgoing ice update")
@@ -279,6 +280,7 @@ private class SignalCallData: NSObject {
         let sendPromise = self.messageSender.sendMessage(.promise, callMessage.asPreparer)
             .done { [weak self] in
                 AssertIsOnMainThread()
+                Logger.info("sent ice update call message")
 
                 guard let strongSelf = self else {
                     return
@@ -806,7 +808,7 @@ private class SignalCallData: NSObject {
      */
     public func handleRemoteAddedIceCandidate(thread: TSContactThread, callId: UInt64, sdp: String, lineIndex: Int32, mid: String) {
         AssertIsOnMainThread()
-        Logger.debug("for callId: \(callId)")
+        Logger.info("for callId: \(callId)")
 
         guard let callData = self.callData,
          callData.call.signalingId == callId else {
@@ -913,6 +915,7 @@ private class SignalCallData: NSObject {
      */
     private func handleRinging() {
         AssertIsOnMainThread()
+        Logger.info("")
 
         guard let callData = self.callData else {
             // This will only be called for the current callConnection, so
@@ -1207,7 +1210,7 @@ private class SignalCallData: NSObject {
                 let callMessage = OWSOutgoingCallMessage(thread: call.thread, hangupMessage: try hangupBuilder.build())
                 let sendPromise = messageSender.sendMessage(.promise, callMessage.asPreparer)
                     .done {
-                        Logger.debug("sent hangup call message to \(call.thread.contactAddress)")
+                        Logger.info("sent hangup call message to \(call.thread.contactAddress)")
                     }.ensure {
                         self.terminate(callData: callData)
                     }.catch { error in
@@ -1393,6 +1396,7 @@ private class SignalCallData: NSObject {
 
     public func callConnection(_ callConnectionParam: CallConnection, onCallEvent event: CallEvent, callId: UInt64) {
         AssertIsOnMainThread()
+        Logger.info("")
 
         guard FeatureFlags.calling else {
             Logger.info("Ignoring call event on unsupported device.")
@@ -1471,7 +1475,7 @@ private class SignalCallData: NSObject {
 
     public func callConnection(_ callConnectionParam: CallConnection, onCallError error: String, callId: UInt64) {
         AssertIsOnMainThread()
-        Logger.debug("Got an error from RingRTC: \(error)")
+        Logger.info("Got an error from RingRTC: \(error)")
 
         guard let callData = self.callData,
             callConnectionParam == callData.callConnection else {
@@ -1494,7 +1498,7 @@ private class SignalCallData: NSObject {
             let callMessage = OWSOutgoingCallMessage(thread: call.thread, hangupMessage: try hangupBuilder.build())
             let sendPromise = messageSender.sendMessage(.promise, callMessage.asPreparer)
                 .done {
-                    Logger.debug("sent hangup call message to \(call.thread.contactAddress)")
+                    Logger.info("sent hangup call message to \(call.thread.contactAddress)")
 
                     guard self.callData === callData else {
                         Logger.debug("Ignoring hangup send success for obsolete call.")
@@ -1522,6 +1526,7 @@ private class SignalCallData: NSObject {
 
     public func callConnection(_ callConnectionParam: CallConnection, onAddRemoteVideoTrack track: RTCVideoTrack, callId: UInt64) {
         AssertIsOnMainThread()
+        Logger.info("")
 
         guard let callData = self.callData,
             callConnectionParam == callData.callConnection else {
@@ -1543,6 +1548,7 @@ private class SignalCallData: NSObject {
 
     public func callConnection(_ callConnectionParam: CallConnection, onUpdateLocalVideoSession session: AVCaptureSession?, callId: UInt64) {
         AssertIsOnMainThread()
+        Logger.info("")
 
         guard let callData = self.callData,
             callConnectionParam == callData.callConnection else {
@@ -1564,7 +1570,7 @@ private class SignalCallData: NSObject {
 
     public func callConnection(_ callConnectionParam: CallConnection, shouldSendOffer sdp: String, callId: UInt64) {
         AssertIsOnMainThread()
-        Logger.debug("Got onSendOffer")
+        Logger.info("")
 
         guard let callData = self.callData,
             callConnectionParam == callData.callConnection else {
@@ -1592,7 +1598,7 @@ private class SignalCallData: NSObject {
             let callMessage = OWSOutgoingCallMessage(thread: call.thread, offerMessage: try offerBuilder.build())
             let sendPromise = messageSender.sendMessage(.promise, callMessage.asPreparer)
                 .done {
-                    Logger.debug("sent offer call message to \(call.thread.contactAddress)")
+                    Logger.info("sent offer call message to \(call.thread.contactAddress)")
 
                     guard self.callData === callData else {
                         Logger.debug("Ignoring call offer send success for obsolete call.")
@@ -1626,7 +1632,7 @@ private class SignalCallData: NSObject {
 
     public func callConnection(_ callConnectionParam: CallConnection, shouldSendAnswer sdp: String, callId: UInt64) {
         AssertIsOnMainThread()
-        Logger.debug("Got onSendAnswer")
+        Logger.info("")
 
         guard let callData = self.callData, callConnectionParam == callData.callConnection else {
             Logger.debug("Ignoring event from obsolete call.")
@@ -1646,7 +1652,7 @@ private class SignalCallData: NSObject {
             let callMessage = OWSOutgoingCallMessage(thread: call.thread, answerMessage: try answerBuilder.build())
             let sendPromise = messageSender.sendMessage(.promise, callMessage.asPreparer)
                 .done {
-                    Logger.debug("sent answer call message to \(call.thread.contactAddress)")
+                    Logger.info("sent answer call message to \(call.thread.contactAddress)")
 
                     guard self.callData === callData else {
                         Logger.debug("Ignoring call answer send success for obsolete call.")
@@ -1680,6 +1686,7 @@ private class SignalCallData: NSObject {
 
     public func callConnection(_ callConnectionParam: CallConnection, shouldSendIceCandidates candidates: [RTCIceCandidate], callId: UInt64) {
         AssertIsOnMainThread()
+        Logger.info("")
 
         guard let callData = self.callData, callConnectionParam == callData.callConnection else {
             Logger.debug("Ignoring event from obsolete call.")
@@ -1704,7 +1711,7 @@ private class SignalCallData: NSObject {
 
     public func callConnection(_ callConnectionParam: CallConnection, shouldSendHangup callId: UInt64) {
         AssertIsOnMainThread()
-        Logger.debug("Got onSendHangup")
+        Logger.info("")
 
         guard let callData = deferredHangupList.removeValue(forKey: callId) else {
             owsFailDebug("obsolete call: \(callId)")
@@ -1725,7 +1732,7 @@ private class SignalCallData: NSObject {
             let callMessage = OWSOutgoingCallMessage(thread: call.thread, hangupMessage: try hangupBuilder.build())
             let sendPromise = messageSender.sendMessage(.promise, callMessage.asPreparer)
                 .done {
-                    Logger.debug("sent hangup call message to \(call.thread.contactAddress)")
+                    Logger.info("sent hangup call message to \(call.thread.contactAddress)")
                 }.ensure {
                     self.terminate(callData: callData)
                 }.catch { error in
@@ -1837,7 +1844,7 @@ private class SignalCallData: NSObject {
      */
     private func terminate(callData: SignalCallData?) {
         AssertIsOnMainThread()
-        Logger.debug("")
+        Logger.info("")
 
         callData?.terminate()
 
