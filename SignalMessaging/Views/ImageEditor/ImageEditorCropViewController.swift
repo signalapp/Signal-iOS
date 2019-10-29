@@ -122,6 +122,7 @@ class ImageEditorCropViewController: OWSViewController {
             strongSelf.updateCropViewLayout()
         }
         wrapperView.addSubview(clipView)
+        clipView.setContentHuggingLow()
 
         croppedImageLayer.contents = previewImage.cgImage
         croppedImageLayer.contentsScale = previewImage.scale
@@ -149,6 +150,7 @@ class ImageEditorCropViewController: OWSViewController {
         uncroppedContentView.layer.addSublayer(uncroppedImageLayer)
         wrapperView.addSubview(uncroppedContentView)
         uncroppedContentView.autoPin(toEdgesOf: croppedContentView)
+        wrapperView.setContentHuggingLow()
 
         // MARK: - Footer
 
@@ -158,10 +160,16 @@ class ImageEditorCropViewController: OWSViewController {
             UIView.hStretchingSpacer(),
             cropLockButton
             ])
+        for button in footer.subviews {
+            button.setContentHuggingVerticalHigh()
+            button.setCompressionResistanceVerticalHigh()
+        }
         footer.axis = .horizontal
         footer.spacing = 16
         footer.backgroundColor = .clear
         footer.isOpaque = false
+        footer.setContentHuggingVerticalHigh()
+        footer.setCompressionResistanceVerticalHigh()
 
         let imageMargin: CGFloat = 20
         let stackView = UIStackView(arrangedSubviews: [

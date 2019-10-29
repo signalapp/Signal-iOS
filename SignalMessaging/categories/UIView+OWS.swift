@@ -134,6 +134,11 @@ public extension UIView {
         constraints.append(subview.autoPin(toAspectRatio: aspectRatio))
         constraints.append(subview.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual))
         constraints.append(subview.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual))
+        NSLayoutConstraint.autoSetPriority(UILayoutPriority.defaultHigh) {
+            constraints.append(subview.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .equal))
+            constraints.append(subview.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .equal))
+        }
+
         return constraints
     }
 
