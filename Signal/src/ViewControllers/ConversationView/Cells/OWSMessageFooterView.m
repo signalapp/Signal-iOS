@@ -16,8 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UILabel *timestampLabel;
 @property (nonatomic) UIImageView *statusIndicatorImageView;
 @property (nonatomic) OWSMessageTimerView *messageTimerView;
-@property (nonatomic) UIView *leadingSpacer;
-@property (nonatomic) UIView *trailingSpacer;
 @property (nonatomic) UIStackView *contentStack;
 
 @end
@@ -51,12 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
     contentStack.alignment = UIStackViewAlignmentCenter;
     contentStack.spacing = self.hSpacing;
 
-    self.leadingSpacer = [UIView hStretchingSpacer];
-    self.trailingSpacer = [UIView hStretchingSpacer];
-
-    [self addArrangedSubview:self.leadingSpacer];
+    [self addArrangedSubview:[UIView hStretchingSpacer]];
     [self addArrangedSubview:self.contentStack];
-    [self addArrangedSubview:self.trailingSpacer];
 
     self.userInteractionEnabled = NO;
 }
@@ -103,9 +97,6 @@ NS_ASSUME_NONNULL_BEGIN
         textColor = [conversationStyle bubbleSecondaryTextColorWithIsIncoming:isIncoming];
     }
     self.timestampLabel.textColor = textColor;
-
-    self.leadingSpacer.hidden = isIncoming;
-    self.trailingSpacer.hidden = !isIncoming;
 
     if (viewItem.hasPerConversationExpiration) {
         TSMessage *message = (TSMessage *)viewItem.interaction;
