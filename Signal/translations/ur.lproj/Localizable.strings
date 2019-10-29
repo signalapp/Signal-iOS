@@ -1881,7 +1881,7 @@
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "اپنے نئے پن کی تصدیق کریں۔";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Your PIN adds and extra layer of security and backs up your account.";
+"PIN_CREATION_EXPLANATION" = "اپنے سیکیورٹی پن میں اضافی پرت شامل کریں اور اپنے اکاؤنٹ کو بیک اپ کریں۔";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "پن میچ نہیں ہوا۔ دوبارہ کوشش کریں۔";
@@ -1911,7 +1911,7 @@
 "PIN_CREATION_TOO_SHORT_ERROR" = "پن کم از کم 4 ہندسوں کا ہونا چاہیے۔";
 
 /* The explanation for the 'pin reminder' dialog. */
-"PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
+"PIN_REMINDER_EXPLANATION" = "اپنا پن یاد رکھنے میں مدد کیلئے،ہم وقتآ فوقتآ داخل کرنے کا کہیں گے۔ہم وقت کیساتھ کم کہیں گے۔";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
 "PIN_REMINDER_FORGOT_PIN" = "اپنا پن بھول گیا؟";
@@ -1968,7 +1968,7 @@
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "سکین کیا گیا کوڈ حفاظتی نمبر سے نہیں ملتا۔کیا آپ دونوں Signal کے اپ ٹو ڈیٹ ورژن پر ہیں؟";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "If you wish to verify the security of your end-to-end encryption with %@, compare the numbers above with the numbers on their device.\n\nAlternatively, you can scan the code on their phone, or ask them to scan your code.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "اگر آپ%@کے ساتھ اپنے end-to-end encryption کی حفاظت کی تصدیق کرنا چاہتے ہیں تو ، مندرجہ بالا نمبروں کا ان کی ڈیوائس پر موجود نمبروں سے موازنہ کریں۔\n\nمتبادل کے طور پر،آپ ان کے فون پر کوڈ سکین کر سکتے ہیں،یا ان سے اپنا کوڈ سکین کرنے کا کہ سکتے ہیں۔";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "حفاظتی نمبر کی تصدیق کریں";
@@ -2127,13 +2127,13 @@
 "REGISTRATION_PHONENUMBER_BUTTON" = "فون نمبر";
 
 /* No comment provided by engineer. */
-"REGISTRATION_RESTRICTED_MESSAGE" = "You need to register before you can send a message.";
+"REGISTRATION_RESTRICTED_MESSAGE" = "پیغام بھیجنے سے پہلے آپ کو رجسٹر کرنے کی ضرورت ہے۔";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "توثیق ناکام ہوگئی";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "The numbers you submitted don't match what we sent. Want to double check?";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "آپ نے جو نمبرز شامل کیے ہیں وہ میچ نہیں ہو رہے جو ہم نے بھیجے تھے۔دوبارہ چیک کرنا چاہتے ہیں؟";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "رجسٹریشن لاک پن درست نہیں۔";
@@ -2163,7 +2163,7 @@
 "REMINDER_2FA_BODY_HEADER" = "یاد دہانی کرانا";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration Lock helps protect your phone number from unauthorized registration attempts. This feature can be disabled at any time in your Signal privacy settings.";
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "رجسٹریشن لاک غیر مجاز رجسٹریشن کوششوں سے آپ کے فون نمبر کو محفوظ رکھنے میں مدد کرے گا۔ یہ خصوصیت کبی بھی آپ کی Signal رازداری ترتیبات کو غیر فعال کر سکتے ہیں۔";
 
 /* Navbar title for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_NAV_TITLE" = "اپنا رجسٹریشن لاک پن داخل کریں";
@@ -2268,13 +2268,13 @@
 "SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "منسلک ہونا ختم کریں";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "To get started, open the Signal app on your phone.";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "شروع کرنے کیلئے، اپنے فون پر Signal ایپ کھولیں۔";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "میں اپنے فون پر Signal نہیں رکھتا۔";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "To use Signal on your iPad, you need to download and register an account on your phone first.\n\nGo to your phone’s app store, install Signal, and then you’ll be able to link your iPad.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "اپنے iPad پر Signal استعمال کرنے کیلئے،آپ کو پہلے اپنے فون پر ایک اکاؤنٹ ڈاؤن لوڈ اور رجسٹر کرنے کی ضرورت ہے۔\n\nاپنے فون کے ایپ سٹور میں جائیں،Signal نصب کریں،اور تب آپ اپنے iPad کو منسلک کرنے کے قابل ہوں گے۔";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "اپنے فون پر Signal نصب کریں";
@@ -2616,7 +2616,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "کسی سے اجازت دیں";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Enable sealed sender for incoming messages from non-contacts and people with whom you have not shared your profile.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "غیر رابطوں اور ان لوگوں کی طرف سے آنے والے پیغامات کے لئے مہر بند مرسل کو اہل بنائیں جن کے ساتھ آپ نے اپنا پروفائل اشتراک نہیں کیا ہے۔";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "ورژن";
@@ -2859,7 +2859,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "آپ کی ڈیوائس اس خصوصیت کو سپورٹ نہیں کر رہی۔";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "You cannot remove group members. They will either have to leave, or you can create a new group without this member.";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "آپ گروپ کے اراکین کو مٹا نہیں سکتے۔وہ یا تو گروپ چھوڑیں گے،یا آپ اس اراکین کے بغیر ایک نیا گروپ بنا سکتے ہیں۔";
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "سپورٹ نہیں کر رہا";

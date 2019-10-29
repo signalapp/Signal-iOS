@@ -2250,13 +2250,13 @@
 "SEARCH_SECTION_MESSAGES" = "İletiler";
 
 /* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Bağlama Kodu Alınamadı";
 
 /* alert title */
-"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Failed to Link Your Device";
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Cihazınıza Bağlanamadı";
 
 /* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choose a name for this device";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Bu cihaza bir isim verin";
 
 /* label text */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Bu ismi \"Bağlı Cihazlar\" altında göreceksiniz.";
