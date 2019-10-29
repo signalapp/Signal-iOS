@@ -71,7 +71,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         // The presenting view contrtoller may not directly be in the nav stack
         // (like with the compose flow). So make sure we referenve the top view
         // controller.
-        if let parentViewController = presentingViewController.parent {
+        if let parentViewController = presentingViewController.parent, parentViewController != presentingNavController {
             presentingViewController = parentViewController
         }
 
