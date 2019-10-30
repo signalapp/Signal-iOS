@@ -66,6 +66,11 @@ class AttachmentKeyboard: CustomKeyboard {
         setupRecentPhotos()
         setupGalleryButton()
         setupFormatPicker()
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardFrameDidChange),
+                                               name: UIResponder.keyboardDidChangeFrameNotification,
+                                               object: nil)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -155,9 +160,7 @@ class AttachmentKeyboard: CustomKeyboard {
         attachmentFormatPickerView.stopCameraPreview()
     }
 
-    override func orientationDidChange() {
-        super.orientationDidChange()
-
+    @objc func keyboardFrameDidChange() {
         updateItemSizes()
     }
 
