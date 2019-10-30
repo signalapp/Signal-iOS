@@ -898,7 +898,7 @@
 "EDIT_TXT" = "ترتیب دیں";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the conversations on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "Hey\n\nحال ہی میں میں اپنے آئی فون پر پرائیویٹ گفتگو رکھنے کیلئے Signal استعمال کر رہا ہوں۔ میں چاہتا ہوں کہ آپ بھی اسے نصب کریں،لہذا ہم پر اعتماد ہو سکتے ہیں کی صرف آپ اور میں اپنے پیغامات پڑھ اور اپنی کالیں سن سکتے ہیں۔\n\nSignal آئی فون اور انڈروئد کیلئے دستیاب ہے۔اسے یہاں حاصل کریں:%@\n\nSignal آپ کے موجودہ پیغام رسانی ایپ کی طرح کام کرتا ہے۔ہم تصاویر اور ویڈیوز بھیج سکتے ہیں،کالیں کر سکتے ہیں،اور گروپ چیٹ شروع کر سکتے ہیں۔ بیسٹ حصہ یہ ہے ان میں سے کوئی بھی نہیں دیکھ سکتا،نہ ہی وہ لوگ جو Signal بناتے ہیں!\n\nآپ اوپن وسپر سسٹم کے بارے میں مزید پڑھ سکتے ہیں،کہ کون لوگ Signal بناتے ہیں،یہاں:%@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "signal کو سو ئچ کریں";
@@ -2112,7 +2112,7 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "جب تک آپ تصدیقی کوڈ جو ھم نے آپ کو بھیجا ہے تصدیق نہیں کرتے ہم اکاؤنٹ ایکٹو نہیں کر سکتے۔";
 
 /* alert body when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_BODY" = "Registering now will disable Signal on any other device currently registered with this phone number.";
+"REGISTRATION_IPAD_CONFIRM_BODY" = "اب اندراج کرنے سے Signal ہر اس دوسری ڈیوائس سے چلا جائے گا جو اس فون نمبر کیساتھ رجسٹر ہے۔";
 
 /* button text to proceed with registration when on an iPad */
 "REGISTRATION_IPAD_CONFIRM_BUTTON" = "اس ipad کو رجسٹر کریں";
@@ -2280,7 +2280,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "اپنے فون پر Signal نصب کریں";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "In Signal on your iPhone, tap Settings -> Linked Devices -> Add, then point the camera at this screen.";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "اپنے آئی فون پر Signal میں،ترتیبات پر کلک کریں->منسلک ڈیوائسز-< جمع کریں، تب ب کیمرہ کا پوائنٹ اس سکرین پر کریں۔";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "مشکل ہورہی ہے؟";
@@ -2343,7 +2343,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "مقام:%@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "If enabled, Signal will attempt to circumvent censorship. Do not enable this feature unless you are in a location where Signal is censored.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "اگر فعال کریں،Signal بائی پاس سنسرشپ کی کوشش کے گا۔ اس خصوصیت کو تب تک فعال نہ کریں جب تک آپ ایک لوکیشن میں ہیں جہاں Signal سنسر ہے۔";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "بائی پاس سنسرشپ آپ کے اکاؤنٹ فون نمبر کی بنا پر چالو کر دیا گیا ہے۔";
@@ -2445,13 +2445,13 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "ہمیشہ کالیں نشر کریں";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through a Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "اپنے رابطوں پر اپنا IP ایڈریس ظاہر کرنے سے بچنے کیلئے Signal سرور کے ذریعے تمام کالوں کو ریلے کریں۔ فعال کرنے سے کال کا معیار کم ہوجائے گا۔";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "گفتگو ہسٹری صاف کریں";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \n Licensed under the GPLv3";
+"SETTINGS_COPYRIGHT" = "کاپی رائٹ Signal میسنجر\nGPLv3 کے تحت لائسنس یافتہ ہے";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "اکاؤنٹ حذف کریں";
@@ -2514,7 +2514,7 @@
 "SETTINGS_NOTIFICATIONS" = "اطلاعات";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security and backs up your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+"SETTINGS_PINS_FOOTER" = "آپ کا پن ایک سیکیورٹی لیئر بڑھاتا ہے اور اکاؤنٹ کو بیک اپ کرتا ہے۔جب آپ Signal کو اپنے نمبر کیساتھ رجسٹر کر رہے ہون تو آپ سے یہ پوچھا جائے گا۔اگر آپ اپنا پن بھول گئے ،آپ کا اکاؤنٹ 7 دنوں کیلئے لاکڈ آؤٹ ہو جائے گا۔";
 
 /* Label for the 'pins' item of the privacy settings. */
 "SETTINGS_PINS_ITEM" = "اپنا پن تبدیل کریں";
@@ -2565,7 +2565,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Signal پیش نظارہ کو روکنے کیلئے ایپ سوئچر متعارف ہو رہا ہے۔";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS کال انٹیگریشن Signal کال کو آپ کے لاک سکرین اور سسٹم کال ہسٹری میں دکھاتی ہے۔ آپ اختیاری طور پر اپنے رابطوں کا نام اور نمبر دیکھ سکتے ہیں۔ اگر iCloud فعال ہے، اس کال ہسٹری کا ایپل کیساتھ اشتراک ہو گا۔";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "اطلاعات";
@@ -2610,7 +2610,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "ڈسپلے انڈیکیٹرز";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Show a status icon when you select \"More Info\" on messages that were delivered using sealed sender.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "جب آپ مہر بند مرسل کو استعمال کرکے بھیجے گئے پیغامات پر \"پیغام کی تفصیلات\" منتخب کرتے ہیں تو اس وقت ایک سٹیٹس آئیکن دکھائیں۔";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "کسی سے اجازت دیں";
@@ -2871,7 +2871,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "پن ز کے بارے میں مزید پڑھیں";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock now does more. With PINs you can take your contacts with you when you switch devices.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "آپ کا رجسٹریشن لاک مزید نہیں کر سکتا۔ پن کیستاتھ آپ اپنے رابطے لے سکتے ہیں جب ڈیوائسز سوئچ ہوں۔";
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "رجسٹریشن لاک=پن";

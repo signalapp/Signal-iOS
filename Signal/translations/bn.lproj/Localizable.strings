@@ -663,7 +663,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "বিদ্যমান কন্টাক্ট এর সাথে যুক্ত করুন";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "সিস্টেম কন্টাক্ট সমূহে যুক্ত করুন";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "এই গ্রুপটিকে অবরুদ্ধ করুন";
@@ -2250,43 +2250,43 @@
 "SEARCH_SECTION_MESSAGES" = "বার্তা সমূহ";
 
 /* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "সংযুক্তিকরণ কোড আনতে অক্ষম";
 
 /* alert title */
-"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Failed to Link Your Device";
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "আপনার ডিভাইস সংযুক্ত করতে ব্যর্থ";
 
 /* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choose a name for this device";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "এই ডিভাইসের জন্য একটি নাম চয়ন করুন";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "You'll see this name under \"Linked Devices.\"";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "আপনি এই নামটি \"সংযুক্ত ডিভাইসগুলি\" এর নীচে দেখতে পাবেন।";
 
 /* text field placeholder */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Choose a name";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "একটি নাম চয়ন করুন";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Finish Linking";
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "সংযুক্তিকরণ সম্পন্ন";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "To get started, open the Signal app on your phone.";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "শুরু করতে, আপনার ফোনে Signal অ্যাপ খুলুন।";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone.";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "আমার ফোনে Signal নেই।";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "To use Signal on your iPad, you need to download and register an account on your phone first.\n\nGo to your phone’s app store, install Signal, and then you’ll be able to link your iPad.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "আপনার আইপ্যাডে Signal ব্যবহার করতে, আপনাকে প্রথমে আপনার ফোনে ডাউনলোড এবং একটি অ্যাকাউন্ট  নিবন্ধন করতে হবে।\n\nআপনার ফোনের অ্যাপ স্টোরটিতে যান, Signal ইনস্টল করুন এবং তারপরে আপনি আপনার আইপ্যাডকে সংযুক্ত করতে সক্ষম হবেন।";
 
 /* alert title */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Install Signal on Your Phone";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "আপনার ফোনে Signal ইনস্টল করুন";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "In Signal on your iPhone, tap Settings -> Linked Devices -> Add, then point the camera at this screen.";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "আপনার আইফোনের Signal থেকে, সেটিংস -> সংযুক্ত ডিভাইসগুলি -> যুক্ত করুন আলতো চাপুন, তারপরে এই স্ক্রিনে ক্যামেরা নির্দেশ করুন।";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Having Trouble?";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "সমস্যা হচ্ছে?";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan the QR Code";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "কিউআর কোড স্ক্যান করুন";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "নিরাপদ সেশন পুনঃস্থাপিত হয়েছে।";
@@ -2934,10 +2934,10 @@
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "ব্যবহারকারীর নাম আপডেট ব্যর্থ।";
 
 /* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Device name cannot be blank";
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "ডিভাইস এর নাম খালি থাকা যাবেনা";
 
 /* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "Device name is too long";
+"VALIDATION_ERROR_TOO_LONG" = "ডিভাইস এর নাম অনেক বড়";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "আপনি %@ কে অযাচাইকৃত হিসেবে চিহ্নিত করেছেন";
