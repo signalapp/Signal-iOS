@@ -52,6 +52,7 @@ class AttachmentFormatPickerView: UICollectionView {
         guard photoCapture == nil else { return }
 
         let photoCapture = PhotoCapture()
+        photoCapture.delegate = self
         self.photoCapture = photoCapture
 
         photoCapture.startVideoCapture().done { [weak self] in
@@ -108,6 +109,58 @@ extension AttachmentFormatPickerView: UICollectionViewDelegate {
         case .location:
             attachmentFormatPickerDelegate?.didTapLocation()
         }
+    }
+}
+
+extension AttachmentFormatPickerView: PhotoCaptureDelegate {
+    func photoCaptureDidStartPhotoCapture(_ photoCapture: PhotoCapture) {
+        owsFailDebug("\(#function) should never be called")
+    }
+
+    func photoCapture(_ photoCapture: PhotoCapture, didFinishProcessingAttachment attachment: SignalAttachment) {
+        owsFailDebug("\(#function) should never be called")
+    }
+
+    func photoCapture(_ photoCapture: PhotoCapture, processingDidError error: Error) {
+        owsFailDebug("\(#function) should never be called")
+    }
+
+    func photoCaptureDidBeginVideo(_ photoCapture: PhotoCapture) {
+        owsFailDebug("\(#function) should never be called")
+    }
+
+    func photoCaptureDidCompleteVideo(_ photoCapture: PhotoCapture) {
+        owsFailDebug("\(#function) should never be called")
+    }
+
+    func photoCaptureDidCancelVideo(_ photoCapture: PhotoCapture) {
+        owsFailDebug("\(#function) should never be called")
+    }
+
+    func photoCaptureCanCaptureMoreItems(_ photoCapture: PhotoCapture) -> Bool {
+        owsFailDebug("\(#function) should never be called")
+        return false
+    }
+
+    func photoCaptureDidTryToCaptureTooMany(_ photoCapture: PhotoCapture) {
+        owsFailDebug("\(#function) should never be called")
+    }
+
+    var zoomScaleReferenceHeight: CGFloat? {
+        owsFailDebug("\(#function) should never be called")
+        return nil
+    }
+
+    var captureOrientation: AVCaptureVideoOrientation {
+        return AVCaptureVideoOrientation(interfaceOrientation: CurrentAppContext().interfaceOrientation) ?? .portrait
+    }
+
+    func beginCaptureButtonAnimation(_ duration: TimeInterval) {
+        owsFailDebug("\(#function) should never be called")
+    }
+
+    func endCaptureButtonAnimation(_ duration: TimeInterval) {
+        owsFailDebug("\(#function) should never be called")
     }
 }
 
