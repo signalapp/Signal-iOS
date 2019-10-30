@@ -58,7 +58,7 @@
     PreKeyRecord *lastPreKeyRecord = [generatedKeys lastObject];
     PreKeyRecord *firstPreKeyRecord = [generatedKeys firstObject];
 
-    [self.preKeyStore removePreKey:lastPreKeyRecord.Id];
+    [self.preKeyStore removePreKey:lastPreKeyRecord.Id protocolContext:nil];
 
     XCTAssertNil([self.preKeyStore loadPreKey:lastPreKeyRecord.Id]);
     XCTAssertNotNil([self.preKeyStore loadPreKey:firstPreKeyRecord.Id]);

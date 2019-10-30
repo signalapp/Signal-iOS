@@ -10,6 +10,7 @@
 #import "SSKSignedPreKeyStore.h"
 #import "TSNetworkManager.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/SSKPreKeyStore.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -50,6 +51,16 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 + (SSKSignedPreKeyStore *)signedPreKeyStore
 {
     return SSKEnvironment.shared.signedPreKeyStore;
+}
+
++ (SSKPreKeyStore *)preKeyStore
+{
+    return SSKEnvironment.shared.preKeyStore;
+}
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
 }
 
 #pragma mark - State Tracking
@@ -240,10 +251,10 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     dateFormatter.dateStyle = NSDateFormatterMediumStyle;
     dateFormatter.timeStyle = NSDateFormatterMediumStyle;
     dateFormatter.locale = [NSLocale systemLocale];
-
+    
     // Sort the signed prekeys in ascending order of generation time.
     oldSignedPrekeys = [oldSignedPrekeys sortedArrayUsingComparator:^NSComparisonResult(
-        SignedPreKeyRecord *_Nonnull left, SignedPreKeyRecord *_Nonnull right) {
+                                                                                        SignedPreKeyRecord *_Nonnull left, SignedPreKeyRecord *_Nonnull right) {
         return [left.generatedAt compare:right.generatedAt];
     }];
 
@@ -286,6 +297,44 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
         oldSignedPreKeyCount--;
         [self.signedPreKeyStore removeSignedPreKey:signedPrekey.Id];
     }
+}
+
++ (void)cullPreKeyRecords {
+    NSTimeInterval expirationInterval = kDayInterval * 30;
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        NSMutableArray<NSString *> *keys = [[self.preKeyStore.keyStore allKeysWithTransaction:transaction] mutableCopy];
+        NSMutableSet<NSString *> *keysToRemove = [NSMutableSet new];
+        [Batching loopObjcWithBatchSize:Batching.kDefaultBatchSize
+                              loopBlock:^(BOOL *stop) {
+                                  NSString *_Nullable key = [keys lastObject];
+                                  if (key == nil) {
+                                      *stop = YES;
+                                      return;
+                                  }
+                                  [keys removeLastObject];
+                                  PreKeyRecord *_Nullable record = [self.preKeyStore.keyStore getObject:key transaction:transaction];
+                                  if (![record isKindOfClass:[PreKeyRecord class]]) {
+                                      OWSFailDebug(@"Unexpected value: %@", [record class]);
+                                      return;
+                                  }
+                                  if (record.createdAt == nil) {
+                                      OWSFailDebug(@"Missing createdAt.");
+                                      [keysToRemove addObject:key];
+                                      return;
+                                  }
+                                  BOOL shouldRemove = fabs(record.createdAt.timeIntervalSinceNow) > expirationInterval;
+                                  if (shouldRemove) {
+                                      [keysToRemove addObject:key];
+                                  }
+                              }];
+        if (keysToRemove.count < 1) {
+            return;
+        }
+        OWSLogInfo(@"Culling prekeys: %lu", (unsigned long) keysToRemove.count);
+        for (NSString *key in keysToRemove) {
+            [self.preKeyStore.keyStore removeValueForKey:key];
+        }
+    }];
 }
 
 + (NSArray *)removeCurrentRecord:(SignedPreKeyRecord *)currentRecord fromRecords:(NSArray *)allRecords {
