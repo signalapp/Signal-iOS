@@ -587,6 +587,7 @@ typedef enum : NSUInteger {
     }
 
     [self addNotificationListeners];
+    [self loadDraftInCompose];
     [self applyTheme];
     [self.conversationViewModel viewDidLoad];
 }
