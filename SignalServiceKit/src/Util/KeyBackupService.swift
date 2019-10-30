@@ -267,7 +267,7 @@ public class KeyBackupService: NSObject {
             }
         }.recover { error in
             guard let kbsError = error as? KBSError else {
-                owsFailDebug("Unexpectedly surfacing a non KBS error")
+                owsFailDebug("Unexpectedly surfacing a non KBS error: \(error)")
                 throw error
             }
 
