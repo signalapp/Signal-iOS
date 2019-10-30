@@ -46,7 +46,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 
 #define keyBackupEnclaveName @"281b2220946102e8447b1d72a02b52d413c390780bae3e3a5aad27398999e7a3"
 #define keyBackupMrEnclave @"94029382f0a8947a72df682e6972f58bbb6dda2f5ec51ab0974bd40c781b719b"
-#define keyBackupServiceId @"281b2220946102e8447b1d72a02b52d413c390780bae3e3a5aad27398999e7a3"
+#define keyBackupServiceId keyBackupEnclaveName
 
 #define USING_PRODUCTION_SERVICE
 
@@ -72,9 +72,9 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 //#define contactDiscoveryEnclaveName @"e0f7dee77dc9d705ccc1376859811da12ecec3b6119a19dc39bdfbf97173aa18"
 //#define contactDiscoveryMrEnclave contactDiscoveryEnclaveName
 //
-//#define keyBackupEnclaveName @"281b2220946102e8447b1d72a02b52d413c390780bae3e3a5aad27398999e7a3"
-//#define keyBackupMrEnclave @"94029382f0a8947a72df682e6972f58bbb6dda2f5ec51ab0974bd40c781b719b"
-//#define keyBackupServiceId @"281b2220946102e8447b1d72a02b52d413c390780bae3e3a5aad27398999e7a3"
+//#define keyBackupEnclaveName @"2709220be70c8e45e9e92131512f74358625ea7b25b353f148488d5aadf3e87a"
+//#define keyBackupMrEnclave @"0038324960141c82f1b30f3df41a87a4c9d3a00f0143e2d6ea934871c6f93dfc"
+//#define keyBackupServiceId keyBackupEnclaveName
 
 //#endif
 
