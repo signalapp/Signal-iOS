@@ -246,7 +246,7 @@ public class ManageStickersViewController: OWSTableViewController {
             guard source.getStickerPack() == nil else {
                 // Already loaded.
                 loadedKnownStickerPackSources.append(source)
-                return
+                continue
             }
             guard let info = source.info else {
                 owsFailDebug("Known source missing info.")
@@ -407,7 +407,7 @@ public class ManageStickersViewController: OWSTableViewController {
         stack.spacing = 12
 
         cell.contentView.addSubview(stack)
-        stack.ows_autoPinToSuperviewMargins()
+        stack.autoPinEdgesToSuperviewMargins()
 
         return cell
     }
