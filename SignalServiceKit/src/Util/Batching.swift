@@ -52,7 +52,7 @@ public class Batching: NSObject {
 
         // With batching.
         var batchIndex = 0
-        while true {
+        while !stop.boolValue {
             if batchIndex > 0 {
                 Logger.verbose("batch: \(batchIndex)")
             }

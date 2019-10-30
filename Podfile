@@ -12,7 +12,8 @@ def shared_pods
   pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', testspecs: ["Tests"]
   # pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
 
-  pod 'AxolotlKit', git: 'https://github.com/signalapp/SignalProtocolKit.git', branch: 'master', testspecs: ["Tests"]
+  # pod 'AxolotlKit', git: 'https://github.com/signalapp/SignalProtocolKit.git', branch: 'master', testspecs: ["Tests"]
+  pod 'AxolotlKit', git: 'https://github.com/signalapp/SignalProtocolKit-Private.git', branch: 'charlesmchen/prekeyManagement', testspecs: ["Tests"]
   # pod 'AxolotlKit', path: '../SignalProtocolKit', testspecs: ["Tests"]
 
   pod 'HKDFKit', git: 'https://github.com/signalapp/HKDFKit.git', testspecs: ["Tests"]

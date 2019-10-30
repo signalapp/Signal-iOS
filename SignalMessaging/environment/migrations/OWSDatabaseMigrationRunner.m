@@ -46,7 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWS112TypingIndicatorsMigration alloc] init],
         [[OWS113MultiAttachmentMediaMessages alloc] init],
         [[OWS114RemoveDynamicInteractions alloc] init],
-        [OWS115EnsureProfileAvatars new]
+        [OWS115EnsureProfileAvatars new],
+        [OWS116UpdatePrekeys new]
     ];
 
     if (StorageCoordinator.dataStoreForUI == DataStoreGrdb) {

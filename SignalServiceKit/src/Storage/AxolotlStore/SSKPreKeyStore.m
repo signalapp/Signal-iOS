@@ -45,9 +45,10 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
 @interface SSKPreKeyStore ()
 
 @property (nonatomic, readonly) SDSKeyValueStore *metadataStore;
-@property (nonatomic, readonly) SDSKeyValueStore *keyStore;
 
 @end
+
+#pragma mark - 
 
 @implementation SSKPreKeyStore
 
@@ -63,6 +64,7 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
 
     return self;
 }
+
 #pragma mark - Dependencies
 
 - (SDSDatabaseStorage *)databaseStorage
@@ -82,7 +84,9 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
         OWSLogInfo(@"building %d new preKeys starting from preKeyId: %d", BATCH_SIZE, preKeyId);
         for (int i = 0; i < BATCH_SIZE; i++) {
             ECKeyPair *keyPair = [Curve25519 generateKeyPair];
-            PreKeyRecord *record = [[PreKeyRecord alloc] initWithId:preKeyId keyPair:keyPair];
+            PreKeyRecord *record = [[PreKeyRecord alloc] initWithId:preKeyId
+                                                            keyPair:keyPair
+                                                          createdAt:[NSDate date]];
 
             [preKeyRecords addObject:record];
             preKeyId++;
@@ -122,22 +126,13 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
     }];
 }
 
-- (BOOL)containsPreKey:(int)preKeyId
-{
-    __block PreKeyRecord *_Nullable preKeyRecord;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        preKeyRecord =
-            [self.keyStore preKeyRecordForKey:[SDSKeyValueStore keyWithInt:preKeyId] transaction:transaction];
-    }];
-
-    return (preKeyRecord != nil);
-}
-
 - (void)removePreKey:(int)preKeyId
+     protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self.keyStore removeValueForKey:[SDSKeyValueStore keyWithInt:preKeyId] transaction:transaction];
-    }];
+    OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
+    SDSAnyWriteTransaction *transaction = (SDSAnyWriteTransaction *)protocolContext;
+    
+    [self.keyStore removeValueForKey:[SDSKeyValueStore keyWithInt:preKeyId] transaction:transaction];
 }
 
 - (NSInteger)nextPreKeyId
