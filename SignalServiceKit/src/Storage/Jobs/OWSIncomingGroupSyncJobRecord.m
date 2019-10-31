@@ -6,6 +6,11 @@
 
 @implementation OWSIncomingGroupSyncJobRecord
 
++ (NSString *)defaultLabel
+{
+    return @"IncomingGroupSync";
+}
+
 - (instancetype)initWithAttachmentId:(NSString *)attachmentId label:(NSString *)label
 {
     self = [super initWithLabel:label];

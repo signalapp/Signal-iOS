@@ -8,6 +8,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSBroadcastMediaMessageJobRecord
 
++ (NSString *)defaultLabel
+{
+    return @"BroadcastMediaMessage";
+}
+
 - (instancetype)initWithAttachmentIdMap:(NSDictionary<NSString *, NSArray<NSString *> *> *)attachmentIdMap
                                   label:(NSString *)label
 {

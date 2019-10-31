@@ -11,7 +11,7 @@ public class BroadcastMediaMessageJobQueue: NSObject, JobQueue {
     public let requiresInternet: Bool = true
     public static let maxRetries: UInt = 4
     @objc
-    public static let jobRecordLabel: String = "BroadcastMediaMessage"
+    public static let jobRecordLabel: String = OWSBroadcastMediaMessageJobRecord.defaultLabel
     public var jobRecordLabel: String {
         return type(of: self).jobRecordLabel
     }
