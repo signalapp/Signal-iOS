@@ -38,6 +38,10 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 // This will return an instance of SignalAccount for _known_ signal accounts.
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address;
+
+- (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address
+                                             transaction:(SDSAnyReadTransaction *)transaction;
+
 // This will always return an instance of SignalAccount.
 - (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address;
 - (BOOL)hasSignalAccountForAddress:(SignalServiceAddress *)address;
