@@ -9,7 +9,6 @@ import Photos
 
 @objc
 public protocol VideoEditorViewDelegate: class {
-    //    func videoEditorUpdateNavigationBar()
         func videoEditorViewController() -> UIViewController
 }
 
@@ -90,6 +89,8 @@ public class VideoEditorView: UIView {
     public func configureSubviews() {
         let aspectRatio: CGFloat = model.displaySize.width / model.displaySize.height
         addSubviewWithScaleAspectFitLayout(view: playerView, aspectRatio: aspectRatio)
+        playerView.setContentHuggingLow()
+        playerView.setCompressionResistanceLow()
 
         let pauseGesture = UITapGestureRecognizer(target: self, action: #selector(didTapPlayerView(_:)))
         playerView.addGestureRecognizer(pauseGesture)
@@ -270,10 +271,6 @@ public class VideoEditorView: UIView {
 
     // MARK: - Navigation Bar
 
-//    private func updateNavigationBar() {
-//        delegate?.videoEditorUpdateNavigationBar()
-//    }
-
     public func navigationBarItems() -> [UIView] {
         guard !shouldHideControls else {
             return []
@@ -292,8 +289,6 @@ public class VideoEditorView: UIView {
 
     @objc
     func didTapSave(sender: UIButton) {
-        Logger.verbose("")
-
         playerView.stop()
 
         guard let delegate = delegate else {
@@ -803,8 +798,6 @@ class TrimVideoTimelineView: UIView {
             return
         }
 
-        Logger.info("")
-
         let timeBubbleView = OWSLayerView()
         timeBubbleView.backgroundColor = UIColor(white: 0, alpha: 0.6)
         timeBubbleView.layoutCallback = { view in
@@ -838,7 +831,6 @@ class TrimVideoTimelineView: UIView {
     }
 
     private func hideTimeBubble() {
-        Logger.info("")
         timeBubbleView?.removeFromSuperview()
         timeBubbleView = nil
     }
