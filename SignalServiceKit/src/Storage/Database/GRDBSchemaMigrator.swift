@@ -27,6 +27,7 @@ public class GRDBSchemaMigrator: NSObject {
     private enum MigrationId: String, CaseIterable {
         case createInitialSchema
         case signalAccount_add_contactAvatars
+        case signalAccount_add_contactAvatars_indices
     }
 
     // For new users, we import the latest schema with the first migration
@@ -81,6 +82,9 @@ public class GRDBSchemaMigrator: NSObject {
                         );
             """
             try database.execute(sql: sql)
+        }
+        migrator.registerMigration(MigrationId.signalAccount_add_contactAvatars_indices.rawValue) { db in
+            try db.create(index: "index_model_SignalAccount_on_uniqueId", on: "model_SignalAccount", columns: ["uniqueId"])
         }
 
         return migrator
