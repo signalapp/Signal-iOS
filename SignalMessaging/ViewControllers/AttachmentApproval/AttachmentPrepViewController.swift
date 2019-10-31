@@ -14,10 +14,7 @@ protocol AttachmentPrepViewControllerDelegate: class {
 
 // MARK: -
 
-public class AttachmentPrepViewController: OWSViewController
-//    , PlayerProgressBarDelegate,
-//OWSVideoPlayerDelegate
-{
+public class AttachmentPrepViewController: OWSViewController {
     // We sometimes shrink the attachment view so that it remains somewhat visible
     // when the keyboard is presented.
     public enum AttachmentViewScale {
@@ -33,11 +30,8 @@ public class AttachmentPrepViewController: OWSViewController
         return attachmentApprovalItem.attachment
     }
 
-//    private var videoPlayer: OWSVideoPlayer?
-
     private(set) var scrollView: UIScrollView!
     private(set) var contentContainer: UIView!
-//    private(set) var playVideoButton: UIView?
 
     private var imageEditorView: ImageEditorView?
     private var videoEditorView: VideoEditorView?
@@ -122,64 +116,12 @@ public class AttachmentPrepViewController: OWSViewController
 
             view.addSubview(videoEditorView)
             videoEditorView.autoPinEdgesToSuperviewEdges()
-
-                // TODO:
-//                imageEditorUpdateNavigationBar()
         } else {
             let mediaMessageView = MediaMessageView(attachment: attachment, mode: .attachmentApproval)
             containerView.addSubview(mediaMessageView)
             mediaMessageView.autoPinEdgesToSuperviewEdges()
             self.mediaMessageView = mediaMessageView
         }
-
-        // Hide the play button embedded in the MediaView and replace it with our own.
-        // This allows us to zoom in on the media view without zooming in on the button
-//        if attachment.isVideo {
-//
-//            guard let videoURL = attachment.dataUrl else {
-//                owsFailDebug("Missing videoURL")
-//                return
-//            }
-//
-//            let player = OWSVideoPlayer(url: videoURL)
-//            self.videoPlayer = player
-//            player.delegate = self
-//
-//            let playerView = VideoPlayerView()
-//            playerView.player = player.avPlayer
-//            self.mediaMessageView.addSubview(playerView)
-//            playerView.autoPinEdgesToSuperviewEdges()
-//
-//            let pauseGesture = UITapGestureRecognizer(target: self, action: #selector(didTapPlayerView(_:)))
-//            playerView.addGestureRecognizer(pauseGesture)
-//
-//            let progressBar = PlayerProgressBar()
-//            progressBar.player = player.avPlayer
-//            progressBar.delegate = self
-//
-//            // we don't want the progress bar to zoom during "pinch-to-zoom"
-//            // but we do want it to shrink with the media content when the user
-//            // pops the keyboard.
-//            contentContainer.addSubview(progressBar)
-//
-//            progressBar.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-//            progressBar.autoPinWidthToSuperview()
-//            progressBar.autoSetDimension(.height, toSize: 44)
-//
-//            self.mediaMessageView.videoPlayButton?.isHidden = true
-//            let playButton = UIButton()
-//            self.playVideoButton = playButton
-//            playButton.accessibilityLabel = NSLocalizedString("PLAY_BUTTON_ACCESSABILITY_LABEL", comment: "Accessibility label for button to start media playback")
-//            playButton.setBackgroundImage(#imageLiteral(resourceName: "play_button"), for: .normal)
-//            playButton.contentMode = .scaleAspectFit
-//
-//            let playButtonWidth = ScaleFromIPhone5(70)
-//            playButton.autoSetDimensions(to: CGSize(width: playButtonWidth, height: playButtonWidth))
-//            self.contentContainer.addSubview(playButton)
-//
-//            playButton.addTarget(self, action: #selector(playButtonTapped), for: .touchUpInside)
-//            playButton.autoCenterInSuperview()
-//        }
     }
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -221,96 +163,6 @@ public class AttachmentPrepViewController: OWSViewController
         }
         return []
     }
-
-    // MARK: - Event Handlers
-
-//    @objc
-//    public func didTapPlayerView(_ gestureRecognizer: UIGestureRecognizer) {
-//        assert(self.videoPlayer != nil)
-//        self.pauseVideo()
-//    }
-//
-//    @objc
-//    public func playButtonTapped() {
-//        self.playVideo()
-//    }
-//
-//    // MARK: - Video
-//
-//    private func playVideo() {
-//        Logger.info("")
-//
-//        guard let videoPlayer = self.videoPlayer else {
-//            owsFailDebug("video player was unexpectedly nil")
-//            return
-//        }
-//
-//        guard let playVideoButton = self.playVideoButton else {
-//            owsFailDebug("playVideoButton was unexpectedly nil")
-//            return
-//        }
-//        UIView.animate(withDuration: 0.1) {
-//            playVideoButton.alpha = 0.0
-//        }
-//        videoPlayer.play()
-//    }
-//
-//    private func pauseVideo() {
-//        guard let videoPlayer = self.videoPlayer else {
-//            owsFailDebug("video player was unexpectedly nil")
-//            return
-//        }
-//
-//        videoPlayer.pause()
-//        guard let playVideoButton = self.playVideoButton else {
-//            owsFailDebug("playVideoButton was unexpectedly nil")
-//            return
-//        }
-//        UIView.animate(withDuration: 0.1) {
-//            playVideoButton.alpha = 1.0
-//        }
-//    }
-//
-//    @objc
-//    public func videoPlayerDidPlayToCompletion(_ videoPlayer: OWSVideoPlayer) {
-//        guard let playVideoButton = self.playVideoButton else {
-//            owsFailDebug("playVideoButton was unexpectedly nil")
-//            return
-//        }
-//
-//        UIView.animate(withDuration: 0.1) {
-//            playVideoButton.alpha = 1.0
-//        }
-//    }
-//
-//    public func playerProgressBarDidStartScrubbing(_ playerProgressBar: PlayerProgressBar) {
-//        guard let videoPlayer = self.videoPlayer else {
-//            owsFailDebug("video player was unexpectedly nil")
-//            return
-//        }
-//        videoPlayer.pause()
-//    }
-//
-//    public func playerProgressBar(_ playerProgressBar: PlayerProgressBar, scrubbedToTime time: CMTime) {
-//        guard let videoPlayer = self.videoPlayer else {
-//            owsFailDebug("video player was unexpectedly nil")
-//            return
-//        }
-//
-//        videoPlayer.seek(to: time)
-//    }
-//
-//    public func playerProgressBar(_ playerProgressBar: PlayerProgressBar, didFinishScrubbingAtTime time: CMTime, shouldResumePlayback: Bool) {
-//        guard let videoPlayer = self.videoPlayer else {
-//            owsFailDebug("video player was unexpectedly nil")
-//            return
-//        }
-//
-//        videoPlayer.seek(to: time)
-//        if (shouldResumePlayback) {
-//            videoPlayer.play()
-//        }
-//    }
 
     // MARK: - Helpers
 
@@ -391,7 +243,6 @@ extension AttachmentPrepViewController: UIScrollViewDelegate {
         Logger.debug("")
 
         guard let mediaMessageView = mediaMessageView else {
-//            owsFailDebug("No media message view.")
             return
         }
 
@@ -490,29 +341,4 @@ extension AttachmentPrepViewController: VideoEditorViewDelegate {
     public func videoEditorViewController() -> UIViewController {
         return self
     }
-//    c func imageEditor(presentFullScreenView viewController: UIViewController,
-//                            isTransparent: Bool) {
-//
-//        let navigationController = OWSNavigationController(rootViewController: viewController)
-//        navigationController.modalPresentationStyle = (isTransparent
-//            ? .overFullScreen
-//            : .fullScreen)
-//        navigationController.ows_prefersStatusBarHidden = true
-//
-//        if let navigationBar = navigationController.navigationBar as? OWSNavigationBar {
-//            navigationBar.switchToStyle(.clear)
-//        } else {
-//            owsFailDebug("navigationBar was nil or unexpected class")
-//        }
-//
-//        self.presentFullScreen(navigationController, animated: false)
-//    }
-//
-//    public func imageEditorUpdateNavigationBar() {
-//        prepDelegate?.prepViewControllerUpdateNavigationBar()
-//    }
-//
-//    public func imageEditorUpdateControls() {
-//        prepDelegate?.prepViewControllerUpdateControls()
-//    }
 }

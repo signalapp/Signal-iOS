@@ -57,6 +57,7 @@ public class VideoPlayerView: UIView {
         return player.timeControlStatus == .playing
     }
 
+    @objc
     public var currentTimeSeconds: Double {
         guard let videoPlayer = videoPlayer else {
             return 0

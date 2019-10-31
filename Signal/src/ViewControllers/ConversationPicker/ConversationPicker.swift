@@ -123,13 +123,6 @@ class ConversationPickerViewController: OWSViewController {
         restoreSelection(tableView: tableView)
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        tableView(tableView, didSelectRowAt: IndexPath(row: 0, section: 0))
-        delegate?.conversationPickerDidCompleteSelection(self)
-    }
-
     // MARK: - ConversationCollection
 
     func restoreSelection(tableView: UITableView) {

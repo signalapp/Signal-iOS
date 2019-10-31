@@ -761,13 +761,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.searchResultsController viewDidAppear:animated];
 
     self.hasEverAppeared = YES;
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        TSThread *thread =
-            [self threadForIndexPath:[NSIndexPath indexPathForRow:0
-                                                        inSection:ConversationListViewControllerSectionConversations]];
-        [self presentThread:thread action:ConversationViewActionNone animated:NO];
-    });
 }
 
 - (void)viewDidDisappear:(BOOL)animated
