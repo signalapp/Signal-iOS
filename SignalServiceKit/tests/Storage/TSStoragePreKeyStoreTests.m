@@ -54,7 +54,7 @@
     PreKeyRecord *lastPreKeyRecord = [generatedKeys lastObject];
     PreKeyRecord *firstPreKeyRecord = [generatedKeys firstObject];
 
-    [[OWSPrimaryStorage sharedManager] removePreKey:lastPreKeyRecord.Id];
+    [[OWSPrimaryStorage sharedManager] removePreKey:lastPreKeyRecord.Id protocolContext:nil];
 
     XCTAssertThrows([[OWSPrimaryStorage sharedManager] throws_loadPreKey:lastPreKeyRecord.Id]);
     XCTAssertNoThrow([[OWSPrimaryStorage sharedManager] throws_loadPreKey:firstPreKeyRecord.Id]);

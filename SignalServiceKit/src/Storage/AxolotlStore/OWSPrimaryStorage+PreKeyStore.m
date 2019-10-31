@@ -82,10 +82,13 @@ NS_ASSUME_NONNULL_BEGIN
     return (preKeyRecord != nil);
 }
 
-- (void)removePreKey:(int)preKeyId
+- (void)removePreKey:(int)preKeyId protocolContext:(nullable id)protocolContext
 {
-    [self.dbReadWriteConnection removeObjectForKey:[self keyFromInt:preKeyId]
-                                      inCollection:OWSPrimaryStoragePreKeyStoreCollection];
+    if ([protocolContext isKindOfClass:YapDatabaseReadWriteTransaction.class]) {
+        [(YapDatabaseReadWriteTransaction *)protocolContext removeObjectForKey:[self keyFromInt:preKeyId] inCollection:OWSPrimaryStoragePreKeyStoreCollection];
+    } else {
+        [self.dbReadWriteConnection removeObjectForKey:[self keyFromInt:preKeyId] inCollection:OWSPrimaryStoragePreKeyStoreCollection];
+    }
 }
 
 - (int)nextPreKeyId:(int)batchSize
