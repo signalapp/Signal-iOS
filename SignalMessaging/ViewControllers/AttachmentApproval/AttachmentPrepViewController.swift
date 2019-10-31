@@ -14,7 +14,7 @@ protocol AttachmentPrepViewControllerDelegate: class {
 
 // MARK: -
 
-public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarDelegate, OWSVideoPlayerDelegate {
+public class AttachmentPrepViewController: OWSViewController {
     // We sometimes shrink the attachment view so that it remains somewhat visible
     // when the keyboard is presented.
     public enum AttachmentViewScale {
@@ -30,19 +30,21 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         return attachmentApprovalItem.attachment
     }
 
-    private var videoPlayer: OWSVideoPlayer?
-
-    private(set) var mediaMessageView: MediaMessageView!
     private(set) var scrollView: UIScrollView!
     private(set) var contentContainer: UIView!
-    private(set) var playVideoButton: UIView?
+
     private var imageEditorView: ImageEditorView?
+    private var videoEditorView: VideoEditorView?
+    private var mediaMessageView: MediaMessageView?
 
     public var shouldHideControls: Bool {
-        guard let imageEditorView = imageEditorView else {
-            return false
+        if let imageEditorView = imageEditorView {
+            return imageEditorView.shouldHideControls
         }
-        return imageEditorView.shouldHideControls
+        if let videoEditorView = videoEditorView {
+            return videoEditorView.shouldHideControls
+        }
+        return false
     }
 
     // MARK: - Initializers
@@ -61,8 +63,6 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
     override public func loadView() {
         self.view = UIView()
-
-        self.mediaMessageView = MediaMessageView(attachment: attachment, mode: .attachmentApproval)
 
         // Anything that should be shrunk when user pops keyboard lives in the contentContainer.
         let contentContainer = UIView()
@@ -98,71 +98,29 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         containerView.autoMatch(.height, to: .height, of: self.view)
         containerView.autoMatch(.width, to: .width, of: self.view)
 
-        containerView.addSubview(mediaMessageView)
-        mediaMessageView.autoPinEdgesToSuperviewEdges()
-
         if let imageEditorModel = attachmentApprovalItem.imageEditorModel {
 
             let imageEditorView = ImageEditorView(model: imageEditorModel, delegate: self)
-            if imageEditorView.configureSubviews() {
-                self.imageEditorView = imageEditorView
+            imageEditorView.configureSubviews()
+            self.imageEditorView = imageEditorView
 
-                mediaMessageView.isHidden = true
+            view.addSubview(imageEditorView)
+            imageEditorView.autoPinEdgesToSuperviewEdges()
 
-                view.addSubview(imageEditorView)
-                imageEditorView.autoPinEdgesToSuperviewEdges()
+            imageEditorUpdateNavigationBar()
+        } else if let videoEditorModel = attachmentApprovalItem.videoEditorModel {
 
-                imageEditorUpdateNavigationBar()
-            }
-        }
+            let videoEditorView = VideoEditorView(model: videoEditorModel, delegate: self)
+            videoEditorView.configureSubviews()
+            self.videoEditorView = videoEditorView
 
-        // Hide the play button embedded in the MediaView and replace it with our own.
-        // This allows us to zoom in on the media view without zooming in on the button
-        if attachment.isVideo {
-
-            guard let videoURL = attachment.dataUrl else {
-                owsFailDebug("Missing videoURL")
-                return
-            }
-
-            let player = OWSVideoPlayer(url: videoURL)
-            self.videoPlayer = player
-            player.delegate = self
-
-            let playerView = VideoPlayerView()
-            playerView.player = player.avPlayer
-            self.mediaMessageView.addSubview(playerView)
-            playerView.autoPinEdgesToSuperviewEdges()
-
-            let pauseGesture = UITapGestureRecognizer(target: self, action: #selector(didTapPlayerView(_:)))
-            playerView.addGestureRecognizer(pauseGesture)
-
-            let progressBar = PlayerProgressBar()
-            progressBar.player = player.avPlayer
-            progressBar.delegate = self
-
-            // we don't want the progress bar to zoom during "pinch-to-zoom"
-            // but we do want it to shrink with the media content when the user
-            // pops the keyboard.
-            contentContainer.addSubview(progressBar)
-
-            progressBar.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-            progressBar.autoPinWidthToSuperview()
-            progressBar.autoSetDimension(.height, toSize: 44)
-
-            self.mediaMessageView.videoPlayButton?.isHidden = true
-            let playButton = UIButton()
-            self.playVideoButton = playButton
-            playButton.accessibilityLabel = NSLocalizedString("PLAY_BUTTON_ACCESSABILITY_LABEL", comment: "Accessibility label for button to start media playback")
-            playButton.setBackgroundImage(#imageLiteral(resourceName: "play_button"), for: .normal)
-            playButton.contentMode = .scaleAspectFit
-
-            let playButtonWidth = ScaleFromIPhone5(70)
-            playButton.autoSetDimensions(to: CGSize(width: playButtonWidth, height: playButtonWidth))
-            self.contentContainer.addSubview(playButton)
-
-            playButton.addTarget(self, action: #selector(playButtonTapped), for: .touchUpInside)
-            playButton.autoCenterInSuperview()
+            view.addSubview(videoEditorView)
+            videoEditorView.autoPinEdgesToSuperviewEdges()
+        } else {
+            let mediaMessageView = MediaMessageView(attachment: attachment, mode: .attachmentApproval)
+            containerView.addSubview(mediaMessageView)
+            mediaMessageView.autoPinEdgesToSuperviewEdges()
+            self.mediaMessageView = mediaMessageView
         }
     }
 
@@ -197,100 +155,13 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     // MARK: - Navigation Bar
 
     public func navigationBarItems() -> [UIView] {
-        guard let imageEditorView = imageEditorView else {
-            return []
+        if let imageEditorView = imageEditorView {
+            return imageEditorView.navigationBarItems()
         }
-        return imageEditorView.navigationBarItems()
-    }
-
-    // MARK: - Event Handlers
-
-    @objc
-    public func didTapPlayerView(_ gestureRecognizer: UIGestureRecognizer) {
-        assert(self.videoPlayer != nil)
-        self.pauseVideo()
-    }
-
-    @objc
-    public func playButtonTapped() {
-        self.playVideo()
-    }
-
-    // MARK: - Video
-
-    private func playVideo() {
-        Logger.info("")
-
-        guard let videoPlayer = self.videoPlayer else {
-            owsFailDebug("video player was unexpectedly nil")
-            return
+        if let videoEditorView = videoEditorView {
+            return videoEditorView.navigationBarItems()
         }
-
-        guard let playVideoButton = self.playVideoButton else {
-            owsFailDebug("playVideoButton was unexpectedly nil")
-            return
-        }
-        UIView.animate(withDuration: 0.1) {
-            playVideoButton.alpha = 0.0
-        }
-        videoPlayer.play()
-    }
-
-    private func pauseVideo() {
-        guard let videoPlayer = self.videoPlayer else {
-            owsFailDebug("video player was unexpectedly nil")
-            return
-        }
-
-        videoPlayer.pause()
-        guard let playVideoButton = self.playVideoButton else {
-            owsFailDebug("playVideoButton was unexpectedly nil")
-            return
-        }
-        UIView.animate(withDuration: 0.1) {
-            playVideoButton.alpha = 1.0
-        }
-    }
-
-    @objc
-    public func videoPlayerDidPlayToCompletion(_ videoPlayer: OWSVideoPlayer) {
-        guard let playVideoButton = self.playVideoButton else {
-            owsFailDebug("playVideoButton was unexpectedly nil")
-            return
-        }
-
-        UIView.animate(withDuration: 0.1) {
-            playVideoButton.alpha = 1.0
-        }
-    }
-
-    public func playerProgressBarDidStartScrubbing(_ playerProgressBar: PlayerProgressBar) {
-        guard let videoPlayer = self.videoPlayer else {
-            owsFailDebug("video player was unexpectedly nil")
-            return
-        }
-        videoPlayer.pause()
-    }
-
-    public func playerProgressBar(_ playerProgressBar: PlayerProgressBar, scrubbedToTime time: CMTime) {
-        guard let videoPlayer = self.videoPlayer else {
-            owsFailDebug("video player was unexpectedly nil")
-            return
-        }
-
-        videoPlayer.seek(to: time)
-    }
-
-    public func playerProgressBar(_ playerProgressBar: PlayerProgressBar, didFinishScrubbingAtTime time: CMTime, shouldResumePlayback: Bool) {
-        guard let videoPlayer = self.videoPlayer else {
-            owsFailDebug("video player was unexpectedly nil")
-            return
-        }
-
-        videoPlayer.seek(to: time)
-        if (shouldResumePlayback) {
-            videoPlayer.play()
-        }
+        return []
     }
 
     // MARK: - Helpers
@@ -371,6 +242,10 @@ extension AttachmentPrepViewController: UIScrollViewDelegate {
     fileprivate func updateMinZoomScaleForSize(_ size: CGSize) {
         Logger.debug("")
 
+        guard let mediaMessageView = mediaMessageView else {
+            return
+        }
+
         // Ensure bounds have been computed
         mediaMessageView.layoutIfNeeded()
         guard mediaMessageView.bounds.width > 0, mediaMessageView.bounds.height > 0 else {
@@ -388,6 +263,11 @@ extension AttachmentPrepViewController: UIScrollViewDelegate {
 
     // Keep the media view centered within the scroll view as you zoom
     public func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        guard let mediaMessageView = mediaMessageView else {
+            owsFailDebug("No media message view.")
+            return
+        }
+
         // The scroll view has zoomed, so you need to re-center the contents
         let scrollViewSize = self.scrollViewVisibleSize
 
@@ -406,7 +286,7 @@ extension AttachmentPrepViewController: UIScrollViewDelegate {
             contentCenter.y = scrollViewCenter.y
         }
 
-        self.mediaMessageView.center = contentCenter
+        mediaMessageView.center = contentCenter
     }
 
     // return the scroll view center
@@ -452,5 +332,13 @@ extension AttachmentPrepViewController: ImageEditorViewDelegate {
 
     public func imageEditorUpdateControls() {
         prepDelegate?.prepViewControllerUpdateControls()
+    }
+}
+
+// MARK: -
+
+extension AttachmentPrepViewController: VideoEditorViewDelegate {
+    public var videoEditorViewController: UIViewController {
+        return self
     }
 }

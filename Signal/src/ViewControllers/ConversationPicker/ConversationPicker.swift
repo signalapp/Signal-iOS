@@ -564,7 +564,16 @@ extension ConversationPickerViewController: UISearchBarDelegate {
 
 extension ConversationPickerViewController: ApprovalFooterDelegate {
     public func approvalFooterDelegateDidRequestProceed(_ approvalFooterView: ApprovalFooterView) {
-        delegate?.conversationPickerDidCompleteSelection(self)
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+        let conversations = delegate.selectedConversationsForConversationPicker
+        guard conversations.count > 0 else {
+            owsFailDebug("No conversations selected.")
+            return
+        }
+        delegate.conversationPickerDidCompleteSelection(self)
     }
 
     public func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode {

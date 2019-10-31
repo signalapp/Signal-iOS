@@ -40,6 +40,10 @@ public class OWSVideoPlayer: NSObject {
                                                object: avPlayer.currentItem)
     }
 
+    deinit {
+        endAudioActivity()
+    }
+
     // MARK: Dependencies
 
     var audioSession: OWSAudioSession {
@@ -48,10 +52,14 @@ public class OWSVideoPlayer: NSObject {
 
     // MARK: Playback Controls
 
+    public func endAudioActivity() {
+        audioSession.endAudioActivity(audioActivity)
+    }
+
     @objc
     public func pause() {
         avPlayer.pause()
-        audioSession.endAudioActivity(self.audioActivity)
+        endAudioActivity()
     }
 
     @objc
@@ -76,12 +84,18 @@ public class OWSVideoPlayer: NSObject {
     public func stop() {
         avPlayer.pause()
         avPlayer.seek(to: CMTime.zero)
-        audioSession.endAudioActivity(self.audioActivity)
+        endAudioActivity()
     }
 
     @objc(seekToTime:)
     public func seek(to time: CMTime) {
-        avPlayer.seek(to: time)
+        // Seek with a tolerance (or precision) of a hundredth of a second.
+        let tolerance = CMTime(seconds: 0.01, preferredTimescale: 1000)
+        avPlayer.seek(to: time, toleranceBefore: tolerance, toleranceAfter: tolerance)
+    }
+
+    public var currentTimeSeconds: Double {
+        return avPlayer.currentTime().seconds
     }
 
     // MARK: private
@@ -93,7 +107,7 @@ public class OWSVideoPlayer: NSObject {
             avPlayer.seek(to: CMTime.zero)
             avPlayer.play()
         } else {
-            audioSession.endAudioActivity(self.audioActivity)
+            endAudioActivity()
         }
     }
 }
