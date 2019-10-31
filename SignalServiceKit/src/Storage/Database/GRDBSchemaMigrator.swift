@@ -84,7 +84,26 @@ public class GRDBSchemaMigrator: NSObject {
             try database.execute(sql: sql)
         }
         migrator.registerMigration(MigrationId.signalAccount_add_contactAvatars_indices.rawValue) { db in
-            try db.create(index: "index_model_SignalAccount_on_uniqueId", on: "model_SignalAccount", columns: ["uniqueId"])
+            let sql = """
+                CREATE
+                    INDEX IF NOT EXISTS "index_model_SignalAccount_on_uniqueId"
+                        ON "model_SignalAccount"("uniqueId"
+                )
+                ;
+
+                CREATE
+                    INDEX IF NOT EXISTS "index_signal_accounts_on_recipientPhoneNumber"
+                        ON "model_SignalAccount"("recipientPhoneNumber"
+                )
+                ;
+
+                CREATE
+                    INDEX IF NOT EXISTS "index_signal_accounts_on_recipientUUID"
+                        ON "model_SignalAccount"("recipientUUID"
+                )
+                ;
+            """
+            try db.execute(sql: sql)
         }
 
         return migrator
