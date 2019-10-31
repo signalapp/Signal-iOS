@@ -208,7 +208,7 @@ private class SignalCallData: NSObject {
             return
         }
 
-        self.isTerminated = true;
+        self.isTerminated = true
 
         self.call.removeAllObservers()
 
@@ -1850,23 +1850,21 @@ private class SignalCallData: NSObject {
     private func terminate(callData: SignalCallData?) {
         AssertIsOnMainThread()
         Logger.info("")
-        
-        let _callData = callData
 
         // If callData is for the current call, clear it out first.
-        if self.callData === _callData {
+        if self.callData === callData {
             Logger.debug("")
 
             // Terminating the current call.
             fireDidUpdateVideoTracks()
-            
+
             // nil self.callData when terminating the current call.
             self.callData = nil
         }
 
-        _callData?.terminate()
+        callData?.terminate()
 
-        callUIAdapter.didTerminateCall(_callData?.call)
+        callUIAdapter.didTerminateCall(callData?.call)
 
         // Apparently WebRTC will sometimes disable device orientation notifications.
         // After every call ends, we need to ensure they are enabled.
