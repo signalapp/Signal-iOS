@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
     _dbConnection = primaryStorage.newDatabaseConnection;
     _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithPrimaryStorage:primaryStorage];
     
-    // Loki: Add observation for new session
+    // Loki: Observe session changes
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleNewSessionAdopted:) name:kNSNotificationName_SessionAdopted object:nil];
 
     OWSSingletonAssert();
@@ -429,7 +429,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         OWSLogInfo(@"handling content: <Content: %@>", [self descriptionForContent:contentProto]);
         
-        // Loki: Handle device linking message
+        // Loki: Handle device linking message if needed
         if (contentProto.lokiDeviceLinkMessage != nil) {
             NSString *masterHexEncodedPublicKey = contentProto.lokiDeviceLinkMessage.masterHexEncodedPublicKey;
             NSString *slaveHexEncodedPublicKey = contentProto.lokiDeviceLinkMessage.slaveHexEncodedPublicKey;
@@ -444,7 +444,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
         
-        // Loki: Handle pre key bundle message
+        // Loki: Handle pre key bundle message if needed
         if (contentProto.prekeyBundleMessage != nil) {
             OWSLogInfo(@"[Loki] Received a pre key bundle message from: %@.", envelope.source);
             PreKeyBundle *_Nullable bundle = [contentProto.prekeyBundleMessage createPreKeyBundleWithTransaction:transaction];
@@ -454,7 +454,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self.primaryStorage setPreKeyBundle:bundle forContact:envelope.source transaction:transaction];
         }
         
-        // Loki: Check if we got a P2P address
+        // Loki: Handle address message if needed
         if (contentProto.lokiAddressMessage) {
             NSString *address = contentProto.lokiAddressMessage.ptpAddress;
             uint32_t port = contentProto.lokiAddressMessage.ptpPort;
@@ -1393,8 +1393,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 serverTimestamp:serverTimestamp
                                                                 wasReceivedByUD:wasReceivedByUD];
                 
+                // Loki: Parse Loki specific properties if needed
                 if (envelope.isPtpMessage) { incomingMessage.isP2P = YES; }
-                if (dataMessage.publicChatInfo && dataMessage.publicChatInfo.hasServerID) { incomingMessage.groupChatServerID = dataMessage.publicChatInfo.serverID; }
+                if (dataMessage.publicChatInfo != nil && dataMessage.publicChatInfo.hasServerID) { incomingMessage.groupChatServerID = dataMessage.publicChatInfo.serverID; }
 
                 NSArray<TSAttachmentPointer *> *attachmentPointers =
                     [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments
@@ -1438,6 +1439,7 @@ NS_ASSUME_NONNULL_BEGIN
         
         // TODO: Do we need to fetch the device mapping here?
         
+        // Loki: Get the master hex encoded public key
         NSString *hexEncodedPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source);
         
         OWSLogDebug(
@@ -1480,6 +1482,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                         serverTimestamp:serverTimestamp
                                                         wasReceivedByUD:wasReceivedByUD];
 
+        // Loki: Handle display name update if needed
         NSString *rawDisplayName = dataMessage.profile.displayName;
         if (rawDisplayName != nil && rawDisplayName.length > 0) {
             NSString *displayName = [NSString stringWithFormat:@"%@ (...%@)", rawDisplayName, [incomingMessage.authorId substringFromIndex:incomingMessage.authorId.length - 8]];
@@ -1488,6 +1491,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self.profileManager setDisplayNameForContactWithID:thread.contactIdentifier to:nil with:transaction];
         }
         
+        // Loki: Parse Loki specific properties if needed
         if (envelope.isPtpMessage) { incomingMessage.isP2P = YES; }
         
         NSArray<TSAttachmentPointer *> *attachmentPointers =
@@ -1556,6 +1560,7 @@ NS_ASSUME_NONNULL_BEGIN
             [thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestReceived withTransaction:transaction];
             message.friendRequestStatus = LKMessageFriendRequestStatusPending; // Don't save yet. This is done in finalizeIncomingMessage:thread:envelope:transaction.
         } else {
+            // This can happen if Alice and Bob have a session, Bob deletes his app, restores from seed, and then sends a friend request to Alice again.
             [self handleEndSessionMessageWithEnvelope:envelope dataMessage:data transaction:transaction];
         }
     }
@@ -1567,7 +1572,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (envelope.isGroupChatMessage || envelope.type == SSKProtoEnvelopeTypeFriendRequest) return;
     // If we're already friends then there's no point in continuing
     // TODO: We'll need to fix this up if we ever start using sync messages
-    // Currently it'll use `envelope.source` but with sync messages we need to use the message sender ID
+    // Currently this uses `envelope.source` but with sync messages we'll need to use the message sender ID
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
     if (thread.isContactFriend) return;
     // Become happy friends and go on great adventures
@@ -1607,7 +1612,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [incomingMessage saveWithTransaction:transaction];
     
-    // Remove any old incoming messages
+    // Loki: Remove any old incoming messages
     if (incomingMessage.isFriendRequest) {
         [thread removeOldIncomingFriendRequestMessagesIfNeededWithTransaction:transaction];
     }
@@ -1780,18 +1785,17 @@ NS_ASSUME_NONNULL_BEGIN
 # pragma mark - Loki Session
 
 - (void)handleNewSessionAdopted:(NSNotification *)notification {
-    NSString *pubKey = notification.userInfo[kNSNotificationKey_ContactPubKey];
-    if (pubKey.length == 0) { return; }
+    NSString *hexEncodedPublicKey = notification.userInfo[kNSNotificationKey_ContactPubKey];
+    if (hexEncodedPublicKey.length == 0) { return; }
     
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        
-        TSContactThread *_Nullable thread = [TSContactThread getThreadWithContactId:pubKey transaction:transaction];
-        if (!thread) {
-            NSLog(@"[Loki] A new session was adopted but we failed to get the thread for %@.", pubKey);
+        TSContactThread *thread = [TSContactThread getThreadWithContactId:hexEncodedPublicKey transaction:transaction];
+        if (thread == nil) {
+            NSLog(@"[Loki] A new session was adopted but the thread couldn't be found for: %@.", hexEncodedPublicKey);
             return;
         }
-        
-        // If we were the ones to initiate the reset then we need to send back an empty message
+
+        // If the current user initiated the reset then send back an empty message to acknowledge the completion of the session reset
         if (thread.sessionResetState == TSContactThreadSessionResetStateInitiated) {
             LKEphemeralMessage *emptyMessage = [[LKEphemeralMessage alloc] initInThread:thread];
             [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
@@ -1802,7 +1806,7 @@ NS_ASSUME_NONNULL_BEGIN
                                          inThread:thread
                                       messageType:TSInfoMessageTypeLokiSessionResetDone] saveWithTransaction:transaction];
         
-        /// Loki: Set our session reset state to none
+        // Clear the session reset state
         thread.sessionResetState = TSContactThreadSessionResetStateNone;
         [thread saveWithTransaction:transaction];
     }];
