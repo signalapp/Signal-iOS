@@ -447,12 +447,13 @@ class TrimVideoTimelineView: UIView {
     private let cursorLayerView = OWSLayerView()
 
     private enum Mode {
+        case none
         case trimmingStart
         case trimmingEnd
         case scrubbing
     }
 
-    private var mode: Mode?
+    private var mode: Mode = .none
 
     private var timeBubbleView: UIView?
 
@@ -626,13 +627,11 @@ class TrimVideoTimelineView: UIView {
     }
 
     private var outerPathColor: UIColor {
-        if let mode = self.mode {
-            switch mode {
-            case .trimmingStart, .trimmingEnd:
-                return .ows_accentYellow
-            default:
-                break
-            }
+        switch mode {
+        case .trimmingStart, .trimmingEnd:
+            return .ows_accentYellow
+        default:
+            break
         }
         if let delegate = delegate, delegate.isTrimmed {
             return .ows_accentYellow
@@ -645,7 +644,7 @@ class TrimVideoTimelineView: UIView {
     }
 
     private var shouldShowCursor: Bool {
-        if let mode = self.mode, mode == .scrubbing {
+        if mode == .scrubbing {
             return true
         }
         if let delegate = delegate, delegate.isPlaying {
@@ -663,7 +662,7 @@ class TrimVideoTimelineView: UIView {
         switch gesture.state {
         case .began:
             mode = modeForNewGesture(location: location)
-            guard let mode = self.mode else {
+            guard mode != .none else {
                 return
             }
             if shouldApplyGestureOnStart(mode: mode) {
@@ -671,12 +670,12 @@ class TrimVideoTimelineView: UIView {
             }
             updateContents()
         case .changed:
-            guard let mode = self.mode else {
+            guard mode != .none else {
                 return
             }
             applyGestures(mode: mode, location: location)
         case .ended:
-            guard let mode = self.mode else {
+            guard mode != .none else {
                 return
             }
             applyGestures(mode: mode, location: location)
@@ -687,9 +686,9 @@ class TrimVideoTimelineView: UIView {
         }
     }
 
-    private func modeForNewGesture(location: CGPoint) -> Mode? {
+    private func modeForNewGesture(location: CGPoint) -> Mode {
         guard let delegate = delegate else {
-            return nil
+            return .none
         }
 
         let outerTrimRect = self.outerTrimRect
@@ -724,7 +723,7 @@ class TrimVideoTimelineView: UIView {
         } else if couldBeScrub {
             return .scrubbing
         } else {
-            return nil
+            return .none
         }
     }
 
@@ -746,6 +745,8 @@ class TrimVideoTimelineView: UIView {
         let untrimmedSeconds = untrimmedDurationSeconds * untrimmedAlpha
 
         switch mode {
+        case .none:
+            owsFailDebug("Unexpected mode.")
         case .trimmingStart:
             // Don't let users trim clip to less than the minimum duration.
             let maxValue = max(0, endSeconds - VideoEditorModel.minimumDurationSeconds)
@@ -764,7 +765,7 @@ class TrimVideoTimelineView: UIView {
     }
 
     private func endGestures() {
-        self.mode = nil
+        self.mode = .none
         delegate?.gestureDidComplete()
         updateContents()
         updateTimeBubble()
@@ -781,19 +782,19 @@ class TrimVideoTimelineView: UIView {
             hideTimeBubble()
             return
         }
-        if let mode = mode {
-            switch mode {
-            case .trimmingStart:
-                showTimeBubble(time: delegate.trimmedStartSeconds, alignment: .left)
-            case .trimmingEnd:
-                showTimeBubble(time: delegate.trimmedEndSeconds, alignment: .right)
-            case .scrubbing:
+        switch mode {
+        case .none:
+            if delegate.isPlaying {
                 showTimeBubble(time: delegate.currentTimeSeconds, alignment: .center)
+            } else {
+                hideTimeBubble()
             }
-        } else if delegate.isPlaying {
+        case .trimmingStart:
+            showTimeBubble(time: delegate.trimmedStartSeconds, alignment: .left)
+        case .trimmingEnd:
+            showTimeBubble(time: delegate.trimmedEndSeconds, alignment: .right)
+        case .scrubbing:
             showTimeBubble(time: delegate.currentTimeSeconds, alignment: .center)
-        } else {
-            hideTimeBubble()
         }
     }
 
@@ -829,10 +830,7 @@ class TrimVideoTimelineView: UIView {
         label.textColor = .ows_white
         label.font = .ows_dynamicTypeCaption1
         timeBubbleView.addSubview(label)
-        label.autoPinEdge(toSuperviewEdge: .top, withInset: 3)
-        label.autoPinEdge(toSuperviewEdge: .bottom, withInset: 3)
-        label.autoPinEdge(toSuperviewEdge: .leading, withInset: 6)
-        label.autoPinEdge(toSuperviewEdge: .trailing, withInset: 6)
+        label.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 3, leading: 6, bottom: 3, trailing: 6))
 
         self.timeBubbleView = timeBubbleView
     }
