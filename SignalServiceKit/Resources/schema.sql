@@ -218,6 +218,7 @@ CREATE
             ,"messageId" TEXT
             ,"removeMessageAfterSending" INTEGER
             ,"threadId" TEXT
+            ,"attachmentId" TEXT
         )
 ;
 
