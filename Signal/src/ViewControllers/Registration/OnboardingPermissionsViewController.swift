@@ -5,9 +5,12 @@
 import UIKit
 import PromiseKit
 import Contacts
+import Lottie
 
 @objc
 public class OnboardingPermissionsViewController: OnboardingBaseViewController {
+
+    private let animationView = AnimationView(name: "notificationPermission")
 
     override public func loadView() {
         view = UIView()
@@ -28,31 +31,37 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
                                                                                   comment: "Explanation in the 'onboarding permissions' view."))
         explanationLabel.accessibilityIdentifier = "onboarding.permissions." + "explanationLabel"
 
+        animationView.loopMode = .playOnce
+        animationView.backgroundBehavior = .pauseAndRestore
+        animationView.contentMode = .scaleAspectFit
+        animationView.setContentHuggingHigh()
+
         let giveAccessButton = self.primaryButton(title: NSLocalizedString("ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON",
                                                                     comment: "Label for the 'give access' button in the 'onboarding permissions' view."),
                                            selector: #selector(giveAccessPressed))
         giveAccessButton.accessibilityIdentifier = "onboarding.permissions." + "giveAccessButton"
         let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: giveAccessButton)
 
-        let notNowButton = self.linkButton(title: NSLocalizedString("ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON",
-                                                                    comment: "Label for the 'not now' button in the 'onboarding permissions' view."),
-                                           selector: #selector(notNowPressed))
-        notNowButton.accessibilityIdentifier = "onboarding.permissions." + "notNowButton"
-
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
             UIView.spacer(withHeight: 20),
             explanationLabel,
-            UIView.vStretchingSpacer(),
-            notNowButton,
-            UIView.spacer(withHeight: 12),
+            UIView.spacer(withHeight: 60),
+            animationView,
+            UIView.vStretchingSpacer(minHeight: 80),
             primaryButtonView
-            ])
+        ])
         stackView.axis = .vertical
         stackView.alignment = .fill
+        stackView.spacing = 0
         primaryView.addSubview(stackView)
 
         stackView.autoPinEdgesToSuperviewMargins()
+    }
+
+    override public func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.animationView.play()
     }
 
     // MARK: Request Access

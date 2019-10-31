@@ -4,11 +4,13 @@
 
 import Foundation
 import PromiseKit
+import Lottie
 
 @objc
 public class SecondaryLinkingPrepViewController: OnboardingBaseViewController {
 
     let provisioningController: ProvisioningController
+    let animationView = AnimationView(name: "launchApp")
 
     public init(provisioningController: ProvisioningController) {
         self.provisioningController = provisioningController
@@ -22,16 +24,10 @@ public class SecondaryLinkingPrepViewController: OnboardingBaseViewController {
 
         view.backgroundColor = Theme.backgroundColor
 
-        // NEEDS_DESIGN - new asset
-        let imageName = Theme.isDarkThemeEnabled ? "introducing-pins-dark" : "introducing-pins-light"
-        let heroImage = UIImage(named: imageName)
-        let heroImageView = UIImageView(image: heroImage)
-        heroImageView.contentMode = .scaleAspectFit
-        heroImageView.layer.minificationFilter = .trilinear
-        heroImageView.layer.magnificationFilter = .trilinear
-        heroImageView.setCompressionResistanceLow()
-        heroImageView.setContentHuggingVerticalLow()
-        heroImageView.accessibilityIdentifier = "onboarding.prelink.heroImageView"
+        animationView.loopMode = .playOnce
+        animationView.backgroundBehavior = .pauseAndRestore
+        animationView.contentMode = .scaleAspectFit
+        animationView.setContentHuggingHigh()
 
         let titleLabel = self.titleLabel(text: NSLocalizedString("SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY", comment: "header text before the user can link this device"))
         primaryView.addSubview(titleLabel)
@@ -56,9 +52,10 @@ public class SecondaryLinkingPrepViewController: OnboardingBaseViewController {
 
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
-            heroImageView,
-            explanationLabel,
             UIView.spacer(withHeight: 12),
+            animationView,
+            explanationLabel,
+            UIView.vStretchingSpacer(minHeight: 12),
             primaryButtonView
             ])
         stackView.axis = .vertical
@@ -67,6 +64,11 @@ public class SecondaryLinkingPrepViewController: OnboardingBaseViewController {
         primaryView.addSubview(stackView)
 
         stackView.autoPinEdgesToSuperviewMargins()
+    }
+
+    override public func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        animationView.play()
     }
 
     // MARK: - Events
