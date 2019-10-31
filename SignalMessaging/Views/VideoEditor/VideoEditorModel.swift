@@ -23,20 +23,20 @@ public class VideoEditorModel: NSObject {
     public let untrimmedDuration: CMTime
 
     @objc
-    public var untrimmedDurationSeconds: Double {
+    public var untrimmedDurationSeconds: TimeInterval {
         return untrimmedDuration.seconds
     }
 
     @objc
-    public var trimmedDurationSeconds: Double {
+    public var trimmedDurationSeconds: TimeInterval {
         return max(0, trimmedEndSeconds - trimmedStartSeconds)
     }
 
     @objc
-    public private(set) var trimmedStartSeconds: Double = 0
+    public private(set) var trimmedStartSeconds: TimeInterval = 0
 
     @objc
-    public private(set) var trimmedEndSeconds: Double = 0
+    public private(set) var trimmedEndSeconds: TimeInterval = 0
 
     @objc
     public let naturalSize: CGSize
@@ -45,9 +45,9 @@ public class VideoEditorModel: NSObject {
     public let displaySize: CGSize
 
     @objc
-    public static let minimumDurationSeconds: Double = 1
+    public static let minimumDurationSeconds: TimeInterval = 1
 
-    private var minimumDurationSeconds: Double {
+    private var minimumDurationSeconds: TimeInterval {
         return VideoEditorModel.minimumDurationSeconds
     }
 
@@ -112,28 +112,28 @@ public class VideoEditorModel: NSObject {
     }
 
     @objc
-    public func trimToStartSeconds(_ value: Double) {
+    public func trimToStartSeconds(_ value: TimeInterval) {
         // Ensure:
         //
         // * Trimmed start > 0
         // * Trimmed start < video duration - minimum duration
         // * Trimmed start < trimmed end - minimum duration
-        let minValue: Double = 0
-        let maxValue: Double = min(untrimmedDurationSeconds, trimmedEndSeconds) - minimumDurationSeconds
+        let minValue: TimeInterval = 0
+        let maxValue: TimeInterval = min(untrimmedDurationSeconds, trimmedEndSeconds) - minimumDurationSeconds
         trimmedStartSeconds = max(minValue, min(maxValue, value))
 
         fireModelDidChange()
     }
 
     @objc
-    public func trimToEndSeconds(_ value: Double) {
+    public func trimToEndSeconds(_ value: TimeInterval) {
         // Ensure:
         //
         // * Trimmed end > 0 + minimum duration
         // * Trimmed end > trimmed start + minimum duration
         // * Trimmed end < video duration
-        let minValue: Double = max(0, trimmedStartSeconds) + minimumDurationSeconds
-        let maxValue: Double = untrimmedDurationSeconds
+        let minValue: TimeInterval = max(0, trimmedStartSeconds) + minimumDurationSeconds
+        let maxValue: TimeInterval = untrimmedDurationSeconds
         trimmedEndSeconds = max(minValue, min(maxValue, value))
 
         fireModelDidChange()

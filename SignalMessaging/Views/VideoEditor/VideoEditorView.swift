@@ -9,7 +9,7 @@ import Photos
 
 @objc
 public protocol VideoEditorViewDelegate: class {
-        func videoEditorViewController() -> UIViewController
+    var videoEditorViewController: UIViewController { get }
 }
 
 // MARK: -
@@ -31,19 +31,19 @@ public class VideoEditorView: UIView {
         return playerView.isPlaying
     }
 
-    internal var currentTimeSeconds: Double {
+    internal var currentTimeSeconds: TimeInterval {
         return playerView.currentTimeSeconds
     }
 
-    internal var untrimmedDurationSeconds: Double {
+    internal var untrimmedDurationSeconds: TimeInterval {
         return model.untrimmedDurationSeconds
     }
 
-    internal var trimmedStartSeconds: Double {
+    internal var trimmedStartSeconds: TimeInterval {
         return model.trimmedStartSeconds
     }
 
-    internal var trimmedEndSeconds: Double {
+    internal var trimmedEndSeconds: TimeInterval {
         return model.trimmedEndSeconds
     }
 
@@ -148,7 +148,7 @@ public class VideoEditorView: UIView {
     private class func thumbnails(forVideoAtPath videoPath: String,
                                   displaySize: CGSize,
                                   timelineHeight: CGFloat,
-                                  untrimmedDurationSeconds: Double) -> Promise<[UIImage]> {
+                                  untrimmedDurationSeconds: TimeInterval) -> Promise<[UIImage]> {
         AssertIsOnMainThread()
 
         let contextSize = CurrentAppContext().frame.size
@@ -232,7 +232,7 @@ public class VideoEditorView: UIView {
         } else {
             // If playback cursor is very near the end of the clipping,
             // restart playback.
-            let toleranceSeconds: Double = 0.1
+            let toleranceSeconds: TimeInterval = 0.1
             if currentTimeSeconds > trimmedEndSeconds - toleranceSeconds {
                 shouldSeekToStart = true
             }
@@ -289,13 +289,13 @@ public class VideoEditorView: UIView {
 
     @objc
     func didTapSave(sender: UIButton) {
-        playerView.stop()
+        playerView.pause()
 
         guard let delegate = delegate else {
             owsFailDebug("Missing delegate.")
             return
         }
-        let viewController = delegate.videoEditorViewController()
+        let viewController = delegate.videoEditorViewController
         viewController.ows_askForMediaLibraryPermissions { isGranted in
             AssertIsOnMainThread()
 
@@ -384,23 +384,23 @@ extension VideoEditorView: VideoPlayerViewDelegate {
 
 extension VideoEditorView: TrimVideoTimelineViewDelegate {
 
-    func setTrimStart(_ seconds: Double) {
-        // Stop playback during trim gestures.
-        playerView.stop()
+    func setTrimStart(_ seconds: TimeInterval) {
+        // Pause playback during trim gestures.
+        pauseIfPlaying()
 
         model.trimToStartSeconds(seconds)
     }
 
-    func setTrimEnd(_ seconds: Double) {
-        // Stop playback during trim gestures.
-        playerView.stop()
+    func setTrimEnd(_ seconds: TimeInterval) {
+        // Pause playback during trim gestures.
+        pauseIfPlaying()
 
         model.trimToEndSeconds(seconds)
     }
 
-    func scrubToTime(_ seconds: Double) {
-        // Stop playback during scrubbing.
-        playerView.stop()
+    func scrubToTime(_ seconds: TimeInterval) {
+        // Pause playback during scrubbing.
+        pauseIfPlaying()
 
         playerView.seek(to: CMTime(seconds: seconds, preferredTimescale: model.untrimmedDuration.timescale))
     }
@@ -408,25 +408,32 @@ extension VideoEditorView: TrimVideoTimelineViewDelegate {
     func gestureDidComplete() {
         ensureSeekReflectsTrimming()
     }
+
+    func pauseIfPlaying() {
+        guard playerView.isPlaying else {
+            return
+        }
+        playerView.pause()
+    }
 }
 
 // MARK: -
 
 protocol TrimVideoTimelineViewDelegate: class {
     var isPlaying: Bool { get }
-    var currentTimeSeconds: Double { get }
-    var untrimmedDurationSeconds: Double { get }
-    var trimmedStartSeconds: Double { get }
-    var trimmedEndSeconds: Double { get }
+    var currentTimeSeconds: TimeInterval { get }
+    var untrimmedDurationSeconds: TimeInterval { get }
+    var trimmedStartSeconds: TimeInterval { get }
+    var trimmedEndSeconds: TimeInterval { get }
     var displaySize: CGSize { get }
     var canBeTrimmed: Bool { get }
     var isTrimmed: Bool { get }
 
     var videoThumbnails: [UIImage]? { get }
 
-    func setTrimStart(_ seconds: Double)
-    func setTrimEnd(_ seconds: Double)
-    func scrubToTime(_ seconds: Double)
+    func setTrimStart(_ seconds: TimeInterval)
+    func setTrimEnd(_ seconds: TimeInterval)
+    func scrubToTime(_ seconds: TimeInterval)
     func gestureDidComplete()
 }
 
@@ -790,7 +797,7 @@ class TrimVideoTimelineView: UIView {
         }
     }
 
-    private func showTimeBubble(time: Double, alignment: TimeBubbleAlignment) {
+    private func showTimeBubble(time: TimeInterval, alignment: TimeBubbleAlignment) {
         hideTimeBubble()
 
         guard let delegate = delegate else {

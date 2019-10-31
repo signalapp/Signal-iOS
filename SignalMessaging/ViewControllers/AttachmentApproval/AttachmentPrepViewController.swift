@@ -338,7 +338,7 @@ extension AttachmentPrepViewController: ImageEditorViewDelegate {
 // MARK: -
 
 extension AttachmentPrepViewController: VideoEditorViewDelegate {
-    public func videoEditorViewController() -> UIViewController {
+    public var videoEditorViewController: UIViewController {
         return self
     }
 }

@@ -30,7 +30,7 @@ public class OWSLayerView: UIView {
 
     public override var bounds: CGRect {
         didSet {
-            if !oldValue.equalTo(bounds) {
+            if oldValue != bounds {
                 layoutCallback(self)
             }
         }
@@ -38,7 +38,7 @@ public class OWSLayerView: UIView {
 
     public override var frame: CGRect {
         didSet {
-            if !oldValue.equalTo(frame) {
+            if oldValue != frame {
                 layoutCallback(self)
             }
         }
@@ -46,7 +46,7 @@ public class OWSLayerView: UIView {
 
     public override var center: CGPoint {
         didSet {
-            if !oldValue.equalTo(center) {
+            if oldValue != center {
                 layoutCallback(self)
             }
         }

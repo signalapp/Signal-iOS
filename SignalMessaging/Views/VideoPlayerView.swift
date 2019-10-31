@@ -114,10 +114,6 @@ public class VideoPlayerView: UIView {
 
     public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
 
-        if !isPlaying,
-            let videoPlayer = videoPlayer {
-            videoPlayer.endAudioActivity()
-        }
 
         delegate?.videoPlayerViewStatusDidChange(self)
     }
