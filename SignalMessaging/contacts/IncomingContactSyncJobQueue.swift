@@ -18,7 +18,7 @@ public class IncomingContactSyncJobQueue: NSObject, JobQueue {
     public let requiresInternet: Bool = true
     public static let maxRetries: UInt = 4
     @objc
-    public static let jobRecordLabel: String = "IncomingContactSync"
+    public static let jobRecordLabel: String = OWSIncomingContactSyncJobRecord.defaultLabel
     public var jobRecordLabel: String {
         return type(of: self).jobRecordLabel
     }

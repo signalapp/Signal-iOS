@@ -8,6 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSIncomingContactSyncJobRecord : SSKJobRecord
 
+@property (class, nonatomic, readonly) NSString *defaultLabel;
+
 @property (nonatomic, readonly) NSString *attachmentId;
 
 - (instancetype)initWithAttachmentId:(NSString *)attachmentId label:(NSString *)label;

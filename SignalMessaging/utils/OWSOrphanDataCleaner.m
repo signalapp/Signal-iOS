@@ -11,6 +11,8 @@
 #import <SignalServiceKit/OWSBroadcastMediaMessageJobRecord.h>
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/OWSFileSystem.h>
+#import <SignalServiceKit/OWSIncomingContactSyncJobRecord.h>
+#import <SignalServiceKit/OWSIncomingGroupSyncJobRecord.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -424,17 +426,45 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                                                            addObjectsFromArray:message.allAttachmentIds];
                                                    }];
 
-        [SSKJobRecord
-            anyEnumerateWithTransaction:transaction
-                                  block:^(SSKJobRecord *jobRecord, BOOL *stopPtr) {
-                                      if (![jobRecord isKindOfClass:OWSBroadcastMediaMessageJobRecord.class]) {
-                                          return;
-                                      }
-                                      OWSBroadcastMediaMessageJobRecord *broadcastJobRecord
-                                          = (OWSBroadcastMediaMessageJobRecord *)jobRecord;
-                                      [allMessageAttachmentIds
-                                          addObjectsFromArray:broadcastJobRecord.attachmentIdMap.allKeys];
-                                  }];
+        [[JobRecordFinderObjC new]
+            enumerateJobRecordsWithLabel:OWSBroadcastMediaMessageJobRecord.defaultLabel
+                             transaction:transaction
+                                   block:^(SSKJobRecord *jobRecord, BOOL *stopPtr) {
+                                       if (![jobRecord isKindOfClass:OWSBroadcastMediaMessageJobRecord.class]) {
+                                           OWSFailDebug(@"unexpected jobRecord: %@", jobRecord);
+                                           return;
+                                       }
+                                       OWSBroadcastMediaMessageJobRecord *broadcastJobRecord
+                                           = (OWSBroadcastMediaMessageJobRecord *)jobRecord;
+                                       [allMessageAttachmentIds
+                                           addObjectsFromArray:broadcastJobRecord.attachmentIdMap.allKeys];
+                                   }];
+
+        [[JobRecordFinderObjC new]
+            enumerateJobRecordsWithLabel:OWSIncomingGroupSyncJobRecord.defaultLabel
+                             transaction:transaction
+                                   block:^(SSKJobRecord *jobRecord, BOOL *stopPtr) {
+                                       if (![jobRecord isKindOfClass:OWSIncomingGroupSyncJobRecord.class]) {
+                                           OWSFailDebug(@"unexpected jobRecord: %@", jobRecord);
+                                           return;
+                                       }
+                                       OWSIncomingGroupSyncJobRecord *groupSyncJobRecord
+                                           = (OWSIncomingGroupSyncJobRecord *)jobRecord;
+                                       [allMessageAttachmentIds addObject:groupSyncJobRecord.attachmentId];
+                                   }];
+
+        [[JobRecordFinderObjC new]
+            enumerateJobRecordsWithLabel:OWSIncomingContactSyncJobRecord.defaultLabel
+                             transaction:transaction
+                                   block:^(SSKJobRecord *jobRecord, BOOL *stopPtr) {
+                                       if (![jobRecord isKindOfClass:OWSIncomingContactSyncJobRecord.class]) {
+                                           OWSFailDebug(@"unexpected jobRecord: %@", jobRecord);
+                                           return;
+                                       }
+                                       OWSIncomingContactSyncJobRecord *contactSyncJobRecord
+                                           = (OWSIncomingContactSyncJobRecord *)jobRecord;
+                                       [allMessageAttachmentIds addObject:contactSyncJobRecord.attachmentId];
+                                   }];
 
         if (shouldAbort) {
             return;
