@@ -15,6 +15,7 @@
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
+#import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -459,7 +460,8 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
     int64_t messageSortId = [self messageSortIdForMessage:message transaction:transaction];
     BOOL needsToMarkAsVisible = !self.shouldThreadBeVisible;
-    BOOL needsToClearArchived = self.isArchived && wasMessageInserted;
+    // Don't clear archived during migrations.
+    BOOL needsToClearArchived = self.isArchived && wasMessageInserted && AppReadiness.isAppReady;
     BOOL needsToUpdateLastInteractionRowId = messageSortId > self.lastInteractionRowId;
     if (needsToMarkAsVisible || needsToClearArchived || needsToUpdateLastInteractionRowId) {
         [self anyOverwritingUpdateWithTransaction:transaction
