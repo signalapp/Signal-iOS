@@ -52,6 +52,11 @@ public class StickerKeyboard: CustomKeyboard {
                                                selector: #selector(stickersOrPacksDidChange),
                                                name: StickerManager.stickersOrPacksDidChange,
                                                object: nil)
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardFrameDidChange),
+                                               name: UIResponder.keyboardDidChangeFrameNotification,
+                                               object: nil)
     }
 
     required public init(coder: NSCoder) {
@@ -173,9 +178,7 @@ public class StickerKeyboard: CustomKeyboard {
         updateHeaderView()
     }
 
-    public override func orientationDidChange() {
-        super.orientationDidChange()
-
+    @objc func keyboardFrameDidChange() {
         Logger.verbose("")
 
         updatePageConstraints(ignoreScrollingState: true)

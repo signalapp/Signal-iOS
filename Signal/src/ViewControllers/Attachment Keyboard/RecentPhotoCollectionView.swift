@@ -12,7 +12,8 @@ protocol RecentPhotosDelegate: class {
 }
 
 class RecentPhotosCollectionView: UICollectionView {
-    let maxRecentPhotos = 48
+    let maxRecentPhotos = 96
+    let spaceBetweenRows: CGFloat = 6
 
     var isReadyForPhotoLibraryAccess: Bool {
         return recentPhotosDelegate?.isMediaLibraryAccessGranted == true
@@ -77,6 +78,7 @@ class RecentPhotosCollectionView: UICollectionView {
 
         collectionViewFlowLayout.scrollDirection = .horizontal
         collectionViewFlowLayout.minimumLineSpacing = 6
+        collectionViewFlowLayout.minimumInteritemSpacing = spaceBetweenRows
 
         updateLayout()
     }
