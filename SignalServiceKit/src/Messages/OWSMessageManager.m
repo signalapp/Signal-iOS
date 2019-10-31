@@ -1498,7 +1498,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         // Loki: Do this before the check below
-        [self handleFriendRequestMessageIfNeededWithEnvelope:envelope message:incomingMessage thread:thread transaction:transaction];
+        [self handleFriendRequestMessageIfNeededWithEnvelope:envelope data:dataMessage message:incomingMessage thread:thread transaction:transaction];
         
         if (body.length == 0 && attachmentPointers.count < 1 && !contact) {
             OWSLogWarn(@"ignoring empty incoming message from: %@ with timestamp: %lu",
@@ -1525,7 +1525,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)handleFriendRequestMessageIfNeededWithEnvelope:(SSKProtoEnvelope *)envelope message:(TSIncomingMessage *)message thread:(TSThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction {
+- (void)handleFriendRequestMessageIfNeededWithEnvelope:(SSKProtoEnvelope *)envelope data:(SSKProtoDataMessage *)data message:(TSIncomingMessage *)message thread:(TSThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction {
     if (envelope.isGroupChatMessage || envelope.type != SSKProtoEnvelopeTypeFriendRequest) return;
     if (thread.hasCurrentUserSentFriendRequest) {
         // This can happen if Alice sent Bob a friend request, Bob declined, but then Bob changed his
@@ -1546,14 +1546,18 @@ NS_ASSUME_NONNULL_BEGIN
         // The two lines below are equivalent to calling [ThreadUtil enqueueFriendRequestAcceptanceMessageInThread:thread]
         LKEphemeralMessage *backgroundMessage = [[LKEphemeralMessage alloc] initInThread:thread];
         [self.messageSenderJobQueue addMessage:backgroundMessage transaction:transaction];
-    } else if (!thread.isContactFriend) {
-        // Checking that the sender of the message isn't already a friend is necessary because otherwise
-        // the following situation can occur: Alice and Bob are friends. Bob loses his database and his
-        // friend request status is reset to LKThreadFriendRequestStatusNone. Bob now sends Alice a friend
-        // request. Alice's thread's friend request status is reset to
-        // LKThreadFriendRequestStatusRequestReceived.
-        [thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestReceived withTransaction:transaction];
-        message.friendRequestStatus = LKMessageFriendRequestStatusPending; // Don't save yet. This is done in finalizeIncomingMessage:thread:envelope:transaction.
+    } else {
+        if (!thread.isContactFriend) {
+            // Checking that the sender of the message isn't already a friend is necessary because otherwise
+            // the following situation can occur: Alice and Bob are friends. Bob loses his database and his
+            // friend request status is reset to LKThreadFriendRequestStatusNone. Bob now sends Alice a friend
+            // request. Alice's thread's friend request status is reset to
+            // LKThreadFriendRequestStatusRequestReceived.
+            [thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestReceived withTransaction:transaction];
+            message.friendRequestStatus = LKMessageFriendRequestStatusPending; // Don't save yet. This is done in finalizeIncomingMessage:thread:envelope:transaction.
+        } else {
+            [self handleEndSessionMessageWithEnvelope:envelope dataMessage:data transaction:transaction];
+        }
     }
 }
 
