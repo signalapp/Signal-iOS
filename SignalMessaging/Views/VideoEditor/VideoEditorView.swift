@@ -303,21 +303,20 @@ public class VideoEditorView: UIView {
                 return
             }
 
-        }
-
-        ModalActivityIndicatorViewController.present(fromViewController: viewController, canCancel: false) { modalVC in
-            self.saveVideoPromise()
-                .done { _ in
-                    modalVC.dismiss {
-                        // Do nothing.
-                    }
-                }.catch { error in
-                    owsFailDebug("Error: \(error)")
-
-                    modalVC.dismiss {
-                        OWSActionSheets.showErrorAlert(message: NSLocalizedString("ERROR_COULD_NOT_SAVE_VIDEO", comment: "Error indicating that 'save video' failed."))
-                    }
-            }.retainUntilComplete()
+            ModalActivityIndicatorViewController.present(fromViewController: viewController, canCancel: false) { modalVC in
+                self.saveVideoPromise()
+                    .done { _ in
+                        modalVC.dismiss {
+                            // Do nothing.
+                        }
+                    }.catch { error in
+                        owsFailDebug("Error: \(error)")
+                        
+                        modalVC.dismiss {
+                            OWSActionSheets.showErrorAlert(message: NSLocalizedString("ERROR_COULD_NOT_SAVE_VIDEO", comment: "Error indicating that 'save video' failed."))
+                        }
+                    }.retainUntilComplete()
+            }
         }
     }
 
