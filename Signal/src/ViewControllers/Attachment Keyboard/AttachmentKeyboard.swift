@@ -170,7 +170,7 @@ class AttachmentKeyboard: CustomKeyboard {
         // If we have space we will show two rows of recent photos (e.g. iPad in landscape).
         if recentPhotosCollectionView.height() > 250 {
             recentPhotosCollectionView.itemSize = CGSize(square:
-                recentPhotosCollectionView.height() / 2 - recentPhotosCollectionView.spaceBetweenRows
+                (recentPhotosCollectionView.height() - recentPhotosCollectionView.spaceBetweenRows) / 2
             )
 
         // Otherwise, assume the recent photos take up the full height of the collection view.

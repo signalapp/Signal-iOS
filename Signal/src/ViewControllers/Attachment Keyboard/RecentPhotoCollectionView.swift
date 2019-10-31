@@ -13,7 +13,7 @@ protocol RecentPhotosDelegate: class {
 
 class RecentPhotosCollectionView: UICollectionView {
     let maxRecentPhotos = 96
-    let spaceBetweenRows: CGFloat = 3
+    let spaceBetweenRows: CGFloat = 6
 
     var isReadyForPhotoLibraryAccess: Bool {
         return recentPhotosDelegate?.isMediaLibraryAccessGranted == true
