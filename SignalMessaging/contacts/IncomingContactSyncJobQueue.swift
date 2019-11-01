@@ -298,14 +298,11 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             }
         }
 
-        let dmConfig = contactThread.disappearingMessagesConfiguration(with: transaction)
-        let isEnabled = contactDetails.expireTimer != 0
-        if dmConfig.durationSeconds != contactDetails.expireTimer || dmConfig.isEnabled != isEnabled {
-            dmConfig
-                .copy(withDurationSeconds: contactDetails.expireTimer)
-                .copy(withIsEnabled: isEnabled)
-                .anyUpsert(transaction: transaction)
-        }
+        OWSDisappearingMessagesJob.shared().becomeConsistent(withDisappearingDuration: contactDetails.expireTimer,
+                                                             thread: contactThread,
+                                                             createdByRemoteRecipient: nil,
+                                                             createdInExistingGroup: false,
+                                                             transaction: transaction)
 
         if let verifiedProto = contactDetails.verifiedProto {
             try self.identityManager.processIncomingVerifiedProto(verifiedProto,
