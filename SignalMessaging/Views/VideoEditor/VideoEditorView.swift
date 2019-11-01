@@ -309,30 +309,43 @@ public class VideoEditorView: UIView {
             }
 
             ModalActivityIndicatorViewController.present(fromViewController: viewController, canCancel: false) { modalVC in
-                self.saveVideoPromise()
-                    .done { _ in
-                        modalVC.dismiss {
-                            // Do nothing.
-                        }
-                    }.catch { error in
-                        owsFailDebug("Error: \(error)")
+                DispatchQueue.main.async(.promise) {
+                    return self.saveVideoPromise()
+                }.done { _ in
+                    modalVC.dismiss {
+                        // Do nothing.
+                    }
+                }.catch { error in
+                    owsFailDebug("Error: \(error)")
 
-                        modalVC.dismiss {
-                            OWSActionSheets.showErrorAlert(message: NSLocalizedString("ERROR_COULD_NOT_SAVE_VIDEO", comment: "Error indicating that 'save video' failed."))
-                        }
-                    }.retainUntilComplete()
+                    modalVC.dismiss {
+                        OWSActionSheets.showErrorAlert(message: NSLocalizedString("ERROR_COULD_NOT_SAVE_VIDEO", comment: "Error indicating that 'save video' failed."))
+                    }
+                }.retainUntilComplete()
             }
         }
     }
 
     private func saveVideoPromise() -> Promise<Void> {
-        return videoForSavePromise().then(on: .global()) { (videoFilePath: String) -> Promise<Void> in
+        AssertIsOnMainThread()
+
+        return model.ensureCurrentRender().consumableFilePromise().then(on: .global()) { (videoFilePath: String) -> Promise<Void> in
             let videoUrl = URL(fileURLWithPath: videoFilePath)
 
             let (promise, resolver) = Promise<Void>.pending()
             PHPhotoLibrary.shared().performChanges({
                 PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: videoUrl)
             }) { didSucceed, error in
+
+                // Clean up the file.
+                DispatchQueue.global().async {
+                    do {
+                        try FileManager.default.removeItem(at: videoUrl)
+                    } catch {
+                        owsFailDebug("Error: \(error)")
+                    }
+                }
+
                 if let error = error {
                     resolver.reject(error)
                     return
@@ -345,14 +358,6 @@ public class VideoEditorView: UIView {
             }
             return promise
         }
-    }
-
-    private func videoForSavePromise() -> Promise<String> {
-        guard model.isTrimmed else {
-            // Video editor has no changes.
-            return Promise.value(model.srcVideoPath)
-        }
-        return model.exportOutput()
     }
 }
 
@@ -411,6 +416,8 @@ extension VideoEditorView: TrimVideoTimelineViewDelegate {
 
     func gestureDidComplete() {
         ensureSeekReflectsTrimming()
+
+        _ = model.ensureCurrentRender()
     }
 
     func pauseIfPlaying() {

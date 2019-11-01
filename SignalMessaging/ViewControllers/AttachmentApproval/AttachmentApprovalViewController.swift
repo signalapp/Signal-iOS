@@ -721,13 +721,16 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     // to involve the user in resolving the issue.
     func outputAttachmentPromise(videoEditorModel: VideoEditorModel,
                                  attachmentApprovalItem: AttachmentApprovalItem) -> Promise<SignalAttachment> {
-        guard videoEditorModel.isTrimmed else {
-            // Video editor has no changes.
-            return Promise.value(attachmentApprovalItem.attachment)
+        let (promise, resolver) = Promise<String>.pending()
+        DispatchQueue.main.async {
+            videoEditorModel.ensureCurrentRender().consumableFilePromise()
+                .done { filePath in
+                    resolver.fulfill(filePath)
+                }.catch { error in
+                    resolver.reject(error)
+            }.retainUntilComplete()
         }
-        return videoEditorModel.exportOutput()
-            .map(on: .global()) { filePath in
-
+        return promise.map(on: .global()) { filePath in
                 guard let fileExtension = filePath.fileExtension else {
                     throw OWSAssertionError("Missing fileExtension.")
                 }
