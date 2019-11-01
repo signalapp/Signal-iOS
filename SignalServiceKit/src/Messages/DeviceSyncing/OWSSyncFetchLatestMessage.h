@@ -1,12 +1,20 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
-// 
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//
 
-#import <Foundation/Foundation.h>
+#import "OWSOutgoingSyncMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSSyncFetchLatestMessage : NSObject
+typedef NS_CLOSED_ENUM(NSUInteger,
+    OWSSyncFetchType) { OWSSyncFetchType_Unknown, OWSSyncFetchType_LocalProfile, OWSSyncFetchType_StorageManifest };
+
+@interface OWSSyncFetchLatestMessage : OWSOutgoingSyncMessage
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread NS_UNAVAILABLE;
+- (instancetype)initWithThread:(TSThread *)thread NS_UNAVAILABLE;
+- (instancetype)initWithThread:(TSThread *)thread fetchType:(OWSSyncFetchType)requestType;
 
 @end
 

@@ -1057,6 +1057,9 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (syncMessage.configuration) {
         OWSLogInfo(@"Received configuration sync message.");
         [SSKEnvironment.shared.syncManager processIncomingConfigurationSyncMessage:syncMessage.configuration transaction:transaction];
+    } else if (syncMessage.fetchLatest) {
+        [SSKEnvironment.shared.syncManager processIncomingFetchLatestSyncMessage:syncMessage.fetchLatest
+                                                                     transaction:transaction];
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
     }
