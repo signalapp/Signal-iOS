@@ -98,6 +98,13 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
             try Bench(title: "processing synced group file") {
                 try self.process(attachmentStream: attachmentStream)
             }
+            self.databaseStorage.write { transaction in
+                guard let attachmentStream = TSAttachmentStream.anyFetch(uniqueId: self.jobRecord.attachmentId, transaction: transaction) else {
+                    owsFailDebug("attachmentStream was unexpectedly nil")
+                    return
+                }
+                attachmentStream.anyRemove(transaction: transaction)
+            }
             self.reportSuccess()
         }.catch { error in
             self.reportError(withUndefinedRetry: error)

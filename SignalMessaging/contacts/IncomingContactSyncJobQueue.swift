@@ -120,6 +120,13 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             try Bench(title: "processing incoming contact sync file") {
                 try self.process(attachmentStream: attachmentStream)
             }
+            self.databaseStorage.write { transaction in
+                guard let attachmentStream = TSAttachmentStream.anyFetch(uniqueId: self.jobRecord.attachmentId, transaction: transaction) else {
+                    owsFailDebug("attachmentStream was unexpectedly nil")
+                    return
+                }
+                attachmentStream.anyRemove(transaction: transaction)
+            }
             self.reportSuccess()
         }.catch { error in
             self.reportError(withUndefinedRetry: error)
