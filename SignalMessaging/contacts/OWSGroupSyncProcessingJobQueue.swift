@@ -166,7 +166,9 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
 
                 try databaseStorage.write { transaction in
                     while let nextGroup = try groupStream.decodeGroup() {
-                        self.process(groupDetails: nextGroup, transaction: transaction)
+                        autoreleasepool {
+                            self.process(groupDetails: nextGroup, transaction: transaction)
+                        }
                     }
                 }
             }

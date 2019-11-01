@@ -223,7 +223,9 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
 
                 try databaseStorage.write { transaction in
                     while let nextContact = try contactStream.decodeContact() {
-                        try self.process(contactDetails: nextContact, transaction: transaction)
+                        try autoreleasepool {
+                            try self.process(contactDetails: nextContact, transaction: transaction)
+                        }
                     }
 
                     // Always fire just one identity change notification, rather than potentially
