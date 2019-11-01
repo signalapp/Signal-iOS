@@ -264,6 +264,9 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
+    // TODO: We might want to raise this value if we ever want to render large contact avatars
+    // on linked devices (e.g. in a call view).  If so, we should also modify `avatarDataForCNContact`
+    // to _not_ use `thumbnailImageData`.  This would make contact syncs much more expensive, however.
     const CGFloat kMaxAvatarDimensionPixels = 600;
     if (imageData.imageFormat == ImageFormat_Jpeg && imageData.pixelSize.width <= kMaxAvatarDimensionPixels
         && imageData.pixelSize.height <= kMaxAvatarDimensionPixels) {
