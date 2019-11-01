@@ -328,10 +328,11 @@ message SyncMessage {
   }
 
   message Configuration {
-    optional bool readReceipts                   = 1;
-    optional bool unidentifiedDeliveryIndicators = 2;
-    optional bool typingIndicators               = 3;
-    optional bool linkPreviews                   = 4;
+    optional bool   readReceipts                   = 1;
+    optional bool   unidentifiedDeliveryIndicators = 2;
+    optional bool   typingIndicators               = 3;
+    optional bool   linkPreviews                   = 4;
+    optional uint32 provisioningVersion            = 5;
   }
 
   message StickerPackOperation {
@@ -353,6 +354,16 @@ message SyncMessage {
       optional uint64 timestamp  = 2;
   }
 
+  message FetchLatest {
+    enum Type {
+      UNKNOWN          = 0;
+      LOCAL_PROFILE    = 1;
+      STORAGE_MANIFEST = 2;
+    }
+
+    optional Type type = 1;
+  }
+
   optional Sent                 sent                 =  1;
   optional Contacts             contacts             =  2;
   optional Groups               groups               =  3;
@@ -364,6 +375,7 @@ message SyncMessage {
   optional bytes                padding              =  8;
   repeated StickerPackOperation stickerPackOperation = 10;
   optional ViewOnceOpen         viewOnceOpen         = 11;
+  optional FetchLatest          fetchLatest          = 12;
 }
 
 message AttachmentPointer {
