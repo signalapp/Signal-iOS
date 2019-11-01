@@ -153,10 +153,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     // Record metadata for all items, so that we can re-use them in incremental backups after the restore.
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         for (OWSBackupFragment *item in allItems) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
             [item anyUpsertWithTransaction:transaction];
-#pragma clang diagnostic pop
         }
     }];
 

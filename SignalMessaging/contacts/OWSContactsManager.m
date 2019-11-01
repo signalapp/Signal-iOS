@@ -665,10 +665,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                 OWSLogInfo(@"Saving %lu SignalAccounts", (unsigned long)signalAccountsToUpsert.count);
                 for (SignalAccount *signalAccount in signalAccountsToUpsert) {
                     OWSLogVerbose(@"Saving SignalAccount: %@", signalAccount);
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                     [signalAccount anyUpsertWithTransaction:transaction];
-#pragma clang diagnostic pop
                 }
             }
 

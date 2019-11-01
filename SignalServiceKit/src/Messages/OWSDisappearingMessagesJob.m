@@ -238,10 +238,7 @@ void AssertIsOnDisappearingMessagesQueue()
     OWSLogInfo(@"becoming consistent with disappearing message configuration: %@",
         disappearingMessagesConfiguration.dictionaryValue);
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [disappearingMessagesConfiguration anyUpsertWithTransaction:transaction];
-#pragma clang diagnostic pop
 
     // MJK TODO - should be safe to remove this senderTimestamp
     OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =

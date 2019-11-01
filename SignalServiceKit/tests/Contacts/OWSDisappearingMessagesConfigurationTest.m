@@ -43,10 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [configuration anyUpsertWithTransaction:transaction];
-#pragma clang diagnostic pop
 
         XCTAssertNotNil([OWSDisappearingMessagesConfiguration fetchWithThread:thread transaction:transaction]);
         XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
@@ -70,10 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
         configuration = [configuration copyWithIsEnabled:YES];
         XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [configuration anyUpsertWithTransaction:transaction];
-#pragma clang diagnostic pop
 
         XCTAssertNotNil([OWSDisappearingMessagesConfiguration fetchWithThread:thread transaction:transaction]);
         XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
@@ -97,10 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
         configuration = [configuration copyWithDurationSeconds:kWeekInterval];
         XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [configuration anyUpsertWithTransaction:transaction];
-#pragma clang diagnostic pop
 
         XCTAssertNotNil([OWSDisappearingMessagesConfiguration fetchWithThread:thread transaction:transaction]);
         XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
@@ -124,10 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
         configuration = [configuration copyAsEnabledWithDurationSeconds:kWeekInterval];
         XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [configuration anyUpsertWithTransaction:transaction];
-#pragma clang diagnostic pop
 
         XCTAssertNotNil([OWSDisappearingMessagesConfiguration fetchWithThread:thread transaction:transaction]);
         XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
@@ -151,10 +139,7 @@ NS_ASSUME_NONNULL_BEGIN
         configuration = [configuration copyWithIsEnabled:NO];
         XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [configuration anyUpsertWithTransaction:transaction];
-#pragma clang diagnostic pop
 
         XCTAssertNotNil([OWSDisappearingMessagesConfiguration fetchWithThread:thread transaction:transaction]);
         XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
@@ -179,10 +164,7 @@ NS_ASSUME_NONNULL_BEGIN
             [configuration copyWithDurationSeconds:OWSDisappearingMessagesConfigurationDefaultExpirationDuration];
         XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [configuration anyUpsertWithTransaction:transaction];
-#pragma clang diagnostic pop
 
         XCTAssertNotNil([OWSDisappearingMessagesConfiguration fetchWithThread:thread transaction:transaction]);
         XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
@@ -205,10 +187,7 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread transaction:transaction];
         XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [configuration anyUpsertWithTransaction:transaction];
-#pragma clang diagnostic pop
 
         XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
 
@@ -216,10 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [configuration anyUpsertWithTransaction:transaction];
-#pragma clang diagnostic pop
 
         XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
 
@@ -227,10 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [configuration anyUpsertWithTransaction:transaction];
-#pragma clang diagnostic pop
 
         XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
     }];
@@ -244,10 +217,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [configuration anyUpsertWithTransaction:transaction];
-#pragma clang diagnostic pop
 
         XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
     }];
@@ -261,10 +231,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         XCTAssertTrue([configuration hasChangedWithTransaction:transaction]);
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [configuration anyUpsertWithTransaction:transaction];
-#pragma clang diagnostic pop
 
         XCTAssertFalse([configuration hasChangedWithTransaction:transaction]);
     }];

@@ -1933,12 +1933,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     if (message.groupMetaMessage == TSGroupMetaMessageDeliver) {
         // TODO: Why is this necessary?
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             [message anyUpsertWithTransaction:transaction];
         }];
-#pragma clang diagnostic pop
     } else if (message.groupMetaMessage == TSGroupMetaMessageQuit) {
         // MJK TODO - remove senderTimestamp
         TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:message.timestamp

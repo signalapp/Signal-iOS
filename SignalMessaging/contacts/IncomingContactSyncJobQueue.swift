@@ -251,10 +251,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         if let existingAccount = self.contactsManager.fetchSignalAccount(for: contactDetails.address, transaction: transaction) {
             if existingAccount.contact.isFromContactSync {
                 existingAccount.contact = try self.buildContact(contactDetails, transaction: transaction)
-                existingAccount.anyOverwritingUpdate(transaction: transaction) { _ in
-                    // nothing to do in this block, because the object was already mutated outside of
-                    // the block.
-                }
+                existingAccount.anyOverwritingUpdate(transaction: transaction)
             }
         } else {
             let contact = try self.buildContact(contactDetails, transaction: transaction)
@@ -292,10 +289,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         if isNewThread {
             contactThread.anyInsert(transaction: transaction)
         } else if threadDidChange {
-            contactThread.anyOverwritingUpdate(transaction: transaction) { _ in
-                // nothing to do in this block, because the object was already mutated outside of
-                // the block.
-            }
+            contactThread.anyOverwritingUpdate(transaction: transaction)
         }
 
         OWSDisappearingMessagesJob.shared().becomeConsistent(withDisappearingDuration: contactDetails.expireTimer,
