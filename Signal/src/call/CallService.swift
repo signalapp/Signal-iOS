@@ -435,6 +435,9 @@ private class SignalCallData: NSObject {
         AssertIsOnMainThread()
 
         guard FeatureFlags.calling else {
+            // The CallUIAdapter creates the callkit adaptee which in turn adds calling buttons
+            // to the contacts app. They don't do anything, but it seems like they shouldn't be
+            // there.
             Logger.info("not creating call UI adapter for device that doesn't support calling")
             return
         }

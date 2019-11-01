@@ -110,7 +110,15 @@ import SignalMessaging
 
     @objc
     public func setup() {
-        callService.createCallUIAdapter()
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
+            // For now, we can't create createCallUIAdapter until
+            // storage is ready, because the FeatureFlag.calling
+            // consults storage.
+
+            // TODO MULTIRING - once calling is enabled on all devices
+            // we can move this back to an inline call.
+            self.callService.createCallUIAdapter()
+        }
 
         // Hang certain singletons on SSKEnvironment too.
         SSKEnvironment.shared.notificationsManager = notificationPresenter
