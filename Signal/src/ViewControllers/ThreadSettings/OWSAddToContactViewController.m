@@ -185,6 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
     CNContact *_Nullable cnContact;
     if (contact.cnContactId != nil) {
         cnContact = [self.contactsManager cnContactWithId:contact.cnContactId];
+        OWSAssertDebug(cnContact != nil);
     }
     CNContactViewController *_Nullable contactViewController =
         [self.contactsViewHelper contactViewControllerForAddress:self.address
