@@ -298,6 +298,10 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         //       since that _may have_ affected service state.
         [[self.syncManager syncLocalContact] retainUntilComplete];
 
+        // Notify all our devices that the profile has changed.
+        // Older linked devices may not handle this message.
+        [self.syncManager sendFetchLatestProfileSyncMessage];
+
         dispatch_async(dispatch_get_main_queue(), ^{
             failureBlockParameter();
         });
@@ -309,6 +313,10 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         // that we've changed our profile and that it should do a
         // profile fetch for "self".
         [[self.syncManager syncLocalContact] retainUntilComplete];
+
+        // Notify all our devices that the profile has changed.
+        // Older linked devices may not handle this message.
+        [self.syncManager sendFetchLatestProfileSyncMessage];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             successBlockParameter();
