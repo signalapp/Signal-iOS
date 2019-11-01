@@ -219,9 +219,7 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
         if isNewThread {
             groupThread.anyInsert(transaction: transaction)
         } else if threadDidChange {
-            groupThread.anyOverwritingUpdate(transaction: transaction) { _ in
-                // no-op changes already done.
-            }
+            groupThread.anyOverwritingUpdate(transaction: transaction)
         }
 
         OWSDisappearingMessagesJob.shared().becomeConsistent(withDisappearingDuration: groupDetails.expireTimer,

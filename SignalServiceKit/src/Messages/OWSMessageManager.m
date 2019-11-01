@@ -1152,11 +1152,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // NOTE: We always update the configuration here, even if it hasn't changed
     //       to leave an audit trail.
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [disappearingMessagesConfiguration anyUpsertWithTransaction:transaction];
-#pragma clang diagnostic pop
 
     NSString *name = [self.contactsManager displayNameForAddress:envelope.sourceAddress transaction:transaction];
 
