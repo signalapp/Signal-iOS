@@ -224,13 +224,10 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
             }
         }
 
-        let dmConfig = groupThread.disappearingMessagesConfiguration(with: transaction)
-        let isEnabled = groupDetails.expireTimer != 0
-        if dmConfig.durationSeconds != groupDetails.expireTimer || dmConfig.isEnabled != isEnabled {
-            dmConfig
-                .copy(withDurationSeconds: groupDetails.expireTimer)
-                .copy(withIsEnabled: isEnabled)
-                .anyUpsert(transaction: transaction)
-        }
+        OWSDisappearingMessagesJob.shared().becomeConsistent(withDisappearingDuration: groupDetails.expireTimer,
+                                                             thread: groupThread,
+                                                             createdByRemoteRecipient: nil,
+                                                             createdInExistingGroup: !isNewThread,
+                                                             transaction: transaction)
     }
 }
