@@ -42,7 +42,7 @@
 "ACTION_VIDEO_CALL" = "व्हिडीओ कॉल";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "या गट सोबत आपल्याला आपली प्रोफाईल सामायिक करायला आवडेल का?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "या गटासोबत आपल्याला आपली प्रोफाईल सामायिक करायला आवडेल का?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "ADD_TO_CONTACTS_OFFER" = "हा वापरकर्ता आपल्याला आपल्या संपर्कांमध्ये जोडण्यास आवडेल का?";
@@ -105,7 +105,7 @@
 "APPEARANCE_SETTINGS_DARK_THEME_NAME" = "गडद";
 
 /* Name indicating that the light theme is enabled. */
-"APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "प्रकाश";
+"APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "फिकट";
 
 /* Name indicating that the system theme is enabled. */
 "APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "सिस्टिम";
@@ -171,7 +171,7 @@
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "संलग्न खूप मोठे आहे.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "संलग्नन मध्ये अवैध मजकूर समाविष्ट आहे.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "संलग्न मध्ये अवैध मजकूर समाविष्ट आहे.";
 
 /* Attachment error message for attachments with an invalid file format */
 "ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "संलग्नाचे स्वरूपन अवैध आहे.";
@@ -420,10 +420,10 @@
 "CALL_VIEW_MUTE_LABEL" = "म्यूट करा";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "आपल्या लॉकस्क्रीनवरून कॉल यांना उत्तर देण्यासाठी आपण Signal गोपनीयता सेटिंग मधून iOS कॉल एकत्रीकरण सक्षम करू शकता.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "आपल्या लॉकस्क्रीनवरून कॉलना उत्तर देण्यासाठी आपण Signal गोपनीयता सेटिंग मधून iOS कॉल एकत्रीकरण सक्षम करू शकता.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "येणाऱ्या कॉल यांचे नाव आणि नंबर पहाण्यासाठी आपण Signal गोपनीयता सेटिंग मधून iOS कॉल एकत्रीकरण सक्षम करू शकता.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "येणाऱ्या कॉलचे नाव आणि नंबर पहाण्यासाठी आपण Signal गोपनीयता सेटिंग मधून iOS कॉल एकत्रीकरण सक्षम करू शकता.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "आता नाही";
@@ -663,7 +663,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "अस्तित्वात असलेल्या संपर्कात जोडा";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "सिस्टिम संपर्कामध्ये जोडा";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "हा गट अवरोधित करा";
@@ -850,7 +850,7 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "%@ नंतर या संभाषणातील संदेश हरवतील.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "सक्षम केल्यानंतर, या संभाषणातील पाठविलेले आणि प्राप्त झालेले संदेश ते पाहिल्यानंतर हरवतील.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "सक्षम केल्यानंतर, या संभाषणातील पाठविलेले आणि प्राप्त झालेले संदेश पाहिल्यानंतर हरवतील.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "सध्या %@ नंतर संदेश हरवतात. ";
@@ -1710,19 +1710,19 @@
 "ONBOARDING_PIN_TITLE" = "आपला PIN प्रविष्ट करा";
 
 /* header text when this device is being added as a secondary */
-"ONBOARDING_SECONDARY_CHOOSE_DEVICE_NAME" = "ONBOARDING_SECONDARY_CHOOSE_DEVICE_NAME";
+"ONBOARDING_SECONDARY_CHOOSE_DEVICE_NAME" = "दुय्यम ऑनबोर्ड करत आहे डिव्हाईस नाव निवडा";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"ONBOARDING_SECONDARY_COMPLETE_LINKING_PROCESS" = "ONBOARDING_SECONDARY_COMPLETE_LINKING_PROCESS";
+"ONBOARDING_SECONDARY_COMPLETE_LINKING_PROCESS" = "दुय्यम ऑनबोर्ड करत आहे लिंक करणे प्रक्रिया पूर्ण करा";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"ONBOARDING_SECONDARY_SCAN_CODE_BODY" = "ONBOARDING_SECONDARY_SCAN_CODE_BODY";
+"ONBOARDING_SECONDARY_SCAN_CODE_BODY" = "दुय्यम ऑनबोर्ड करत आहे कोड बॉडी स्कॅन करा";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"ONBOARDING_SECONDARY_SCAN_CODE_HELP_TEXT" = "ONBOARDING_SECONDARY_SCAN_CODE_HELP_TEXT";
+"ONBOARDING_SECONDARY_SCAN_CODE_HELP_TEXT" = "दुय्यम ऑनबोर्ड करत आहे कोड स्कॅन करा मदत मजकूर";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"ONBOARDING_SECONDARY_SCAN_CODE_TITLE" = "ONBOARDING_SECONDARY_SCAN_CODE_TITLE";
+"ONBOARDING_SECONDARY_SCAN_CODE_TITLE" = "दुय्यम ऑनबोर्ड करत आहे कोड स्कॅन करा शीर्षक";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "अटी आणि गोपनीयता धोरण";
@@ -1947,7 +1947,7 @@
 "PRIVACY_UNVERIFY_BUTTON" = "सत्यापन साफ करा";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "हा %@सोबतचा आपला सुरक्षितता नंबर दिसत नाही. आपण योग्य संपर्काला व्यवस्थापित करत आहात ना?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "हा %@सोबतचा आपला सुरक्षितता नंबर दिसत नाही. आपण योग्य संपर्काला सत्यापित करत आहात ना?";
 
 /* Alert body */
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "आपल्या क्लिपबोर्ड मधील नंबर या संभाषणासाठी योग्य सुरक्षितता नंबर दिसत नाही.";
@@ -1956,13 +1956,13 @@
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal ला आपल्या क्लिपबोर्ड मध्ये कुठलाही सुरक्षितता नंबर सापडला नाही. आपण त्यास योग्यरीत्या कॉपी केले आहे ना?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Signal वापरकर्त्यांच्या प्रत्येक जोडीचा एक वेगळा सुरक्षितता नंबर असतो. *आपला* वेगळा सुरक्षितता नंबर प्रदर्शित करण्यापूर्वी %@ तो दोनदा-तपासा.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Signal वापरकर्त्यांच्या प्रत्येक जोडीचा एक वेगळा सुरक्षितता नंबर असतो. %@ आपलाच वेगळा सुरक्षितता नंबर दर्शवत आहे याची पुनर्तपासणी करा.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "आपण Signal ची जुनी आवृत्ती चालवता आहात. आपण सत्यापित करण्यापूर्वी आपल्याला अद्यतन करायला हवे.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "आपण Signal ची जुनी आवृत्ती चालवता आहात. त्यांनी सत्यापित करण्यापूर्वी आपल्याला अद्यतन करायला हवे.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "आपले सहकारी Signal ची जुनी आवृत्ती चालवत आहेत. आपण सत्यापित करण्यापूर्वी त्यांनी अद्यतन करायला हवे.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "स्कॅन केलेला कोड सुरक्षितता नंबर सारखा दिसत नाही.आपण दोघेही Signal ची अद्यतनित आवृत्ती चालवत आहात ना?";
@@ -2250,43 +2250,43 @@
 "SEARCH_SECTION_MESSAGES" = "संदेश";
 
 /* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "लिंकिंग कोड मिळवण्यात अक्षम";
 
 /* alert title */
-"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Failed to Link Your Device";
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "आपला डिव्हाईस लिंक करण्यात अक्षम";
 
 /* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choose a name for this device";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "या डिव्हाईस करिता एक नाव निवडा";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "You'll see this name under \"Linked Devices.\"";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "आपण हे नाव \"लिंक केलेले डिव्हाईस\" मध्ये बघाल";
 
 /* text field placeholder */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Choose a name";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "एक नाव निवडा";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Finish Linking";
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "लिंक करणे संपवा";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "To get started, open the Signal app on your phone.";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "सुरू करण्यासाठी, आपल्या फोन वर Signal अॅप उघडा.";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone.";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "माझ्या फोनवर Signal नाही.";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "To use Signal on your iPad, you need to download and register an account on your phone first.\n\nGo to your phone’s app store, install Signal, and then you’ll be able to link your iPad.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "आपल्या iPad वर Signal वापरण्यासाठी, प्रथम आपल्या फोन वर डाऊनलोड करून एक खाते नोंदणी करावे लागेल.\n\nआपल्या फोनच्या अॅप स्टोर वर जा, Signal स्थापित करा, आणि नंतर आपण आपला iPad लिंक करू शकाल.";
 
 /* alert title */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Install Signal on Your Phone";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "आपल्या फोनवर Signal स्थापन करा ";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "In Signal on your iPhone, tap Settings -> Linked Devices -> Add, then point the camera at this screen.";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "आपल्या iPhone वरील Signal मध्ये, सेटिंग -> लिंक केलेले डिव्हाईस -> जोडा, नंतर कॅमेरा या स्क्रीनकडे वळवा.";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Having Trouble?";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "समस्या येत आहे?";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan the QR Code";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "QR कोड स्कॅन करा";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "सुरक्षित सत्र रीसेट केले गेले.";
@@ -2313,7 +2313,7 @@
 "SEND_INVITE_SUCCESS" = "आपण आपल्या मित्राला Signal वापरण्यास आमंत्रित केले!";
 
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
-"SEND_MEDIA_ABANDON_TITLE" = "मिडिया टाकून द्याचे?";
+"SEND_MEDIA_ABANDON_TITLE" = "मिडिया टाकून द्यायचा?";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "मिडिया टाकून द्या";
@@ -2538,10 +2538,10 @@
 "SETTINGS_PRIVACY_TITLE" = "गोपनीयता";
 
 /* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "वाचले पावत्या";
+"SETTINGS_READ_RECEIPT" = "वाचन पावत्या";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "संदेश वाचल्या गेल्यावर ते बघा आणि सामायिक करा. ही सेटिंग पर्यायी आङे आणि सर्व संभाषणांना लागू होते.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "संदेश कधी पहिले ते पहा आणि सामायिक करा ही सेटिंग पर्यायी आहे आणि सर्व संभाषणांना लागू होते.";
 
 /* Label for re-registration button. */
 "SETTINGS_REREGISTER_BUTTON" = "पुनर्नोंदणी";
@@ -2565,7 +2565,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "अॅप स्विचर मध्ये Signal पुनरावलोकन येण्यापासून प्रतिबंधित करा.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS कॉल एकत्रीकरण आपल्या लॉक स्क्रीन वर Signal कॉल दाखवते आणि ते सिस्टिमच्या कॉल इतिहासात आहेत. आपण पर्यायीरीत्या आपल्या  संपर्काचे नाव आणि नंबर दाखवू शकता. जर iCloud सक्षम केलेले असेल, तर हा कॉल इतिहास Apple सोबत सामायिक केले जाईल.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS कॉल एकत्रीकरण आपल्या लॉक स्क्रीन आणि सिस्टिमच्या कॉल इतिहासात Signal कॉल दाखवते. आपण पर्यायीरीत्या आपल्या  संपर्काचे नाव आणि नंबर दाखवू शकता. जर iCloud सक्षम केलेले असेल, तर हा कॉल इतिहास Apple सोबत सामायिक केले जाईल.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "सूचना";
@@ -2934,10 +2934,10 @@
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "वापरकर्तानाव अद्यतन अयशस्वी.";
 
 /* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Device name cannot be blank";
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "डिव्हाईस नाव रिक्त असू शकत नाही";
 
 /* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "Device name is too long";
+"VALIDATION_ERROR_TOO_LONG" = "डिव्हाईस नाव खूप मोठे आहे";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "%@ यास आपण सत्यापित नाही म्हणून चिन्हांकित केेले.";

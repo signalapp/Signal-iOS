@@ -114,6 +114,8 @@ private class SignalCallData: NSObject {
 
     public let call: SignalCall
 
+    public var isTerminated: Bool
+
     public var backgroundTask: OWSBackgroundTask?
 
     // Used to ensure any received ICE messages wait until the callConnection is set up.
@@ -175,6 +177,7 @@ private class SignalCallData: NSObject {
     required init(call: SignalCall, delegate: SignalCallDataDelegate) {
         self.call = call
         self.delegate = delegate
+        self.isTerminated = false
 
         let (callConnectionPromise, callConnectionResolver) = Promise<Void>.pending()
         self.callConnectionPromise = callConnectionPromise
@@ -199,6 +202,13 @@ private class SignalCallData: NSObject {
         AssertIsOnMainThread()
 
         Logger.debug("")
+
+        if (self.isTerminated) {
+            owsFailDebug("Already terminated!")
+            return
+        }
+
+        self.isTerminated = true
 
         self.call.removeAllObservers()
 
@@ -1728,6 +1738,11 @@ private class SignalCallData: NSObject {
             return
         }
 
+        guard !callData.isTerminated else {
+            owsFailDebug("Call was already terminated!")
+            return
+        }
+
         let call = callData.call
 
         do {
@@ -1849,17 +1864,20 @@ private class SignalCallData: NSObject {
         AssertIsOnMainThread()
         Logger.info("")
 
-        callData?.terminate()
-
-        callUIAdapter.didTerminateCall(callData?.call)
-
+        // If callData is for the current call, clear it out first.
         if self.callData === callData {
+            Logger.debug("")
+
             // Terminating the current call.
             fireDidUpdateVideoTracks()
 
             // nil self.callData when terminating the current call.
             self.callData = nil
         }
+
+        callData?.terminate()
+
+        callUIAdapter.didTerminateCall(callData?.call)
 
         // Apparently WebRTC will sometimes disable device orientation notifications.
         // After every call ends, we need to ensure they are enabled.

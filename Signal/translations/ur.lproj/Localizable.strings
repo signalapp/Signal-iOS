@@ -20,13 +20,13 @@
 "ACCESSIBILITY_LABEL_MESSAGE" = "پیغام";
 
 /* Accessibility label for messages sent by you. */
-"ACCESSIBILITY_LABEL_SENDER_SELF" = "تم";
+"ACCESSIBILITY_LABEL_SENDER_SELF" = "آپ";
 
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "اسٹیکر";
 
 /* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "signal  کال";
+"ACTION_AUDIO_CALL" = "Signal  کال";
 
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Signal میں مدعو کریں";
@@ -54,10 +54,10 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "یہ مل گیا";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "مسترد";
+"ALERT_DISCARD_BUTTON" = "مسترد کیجئے";
 
 /* The label for the 'don't save' button in action sheets. */
-"ALERT_DONT_SAVE" = "محفوظ نہ کریں";
+"ALERT_DONT_SAVE" = "محفوظ مت کریں";
 
 /* No comment provided by engineer. */
 "ALERT_ERROR_TITLE" = "غلطی";
@@ -66,13 +66,13 @@
 "ALERT_SAVE" = "محفوظ کریں";
 
 /* notification action */
-"ANSWER_CALL_BUTTON_TITLE" = "جواب";
+"ANSWER_CALL_BUTTON_TITLE" = "جواب دیں";
 
 /* notification body */
-"APN_Message" = "نیا پیغام !";
+"APN_Message" = "نیا پیغام!";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal چل نہیں سکتا۔براہ کرم ڈیبگ لاگ کو support@signal.org پر بھیجیں۔لہذا ہم اس معاملے کی خرابی دور کرسکتے ہیں۔";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal چل نہیں سکتا۔براہ کرم ڈیبگ لاگ کو support@signal.org پر بھیجیں۔تاکہ ہم اس خرابی کو دور کرسکیں۔";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "غلطی";
@@ -99,10 +99,10 @@
 "APP_UPDATE_NAG_ALERT_TITLE" = "Signal کا نیا ورژن دستیاب ہے";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "تازہ ترین";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "اَپ ڈیٹ";
 
 /* Name indicating that the dark theme is enabled. */
-"APPEARANCE_SETTINGS_DARK_THEME_NAME" = "اندھیرا";
+"APPEARANCE_SETTINGS_DARK_THEME_NAME" = "تاریک";
 
 /* Name indicating that the light theme is enabled. */
 "APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "روشنی";
@@ -114,13 +114,13 @@
 "APPLICATION_NAME" = "Signal";
 
 /* Pressing this button moves a thread from the inbox to the archive */
-"ARCHIVE_ACTION" = "حفاظتی خانہ";
+"ARCHIVE_ACTION" = "پوشیدہ خانہ";
 
 /* No comment provided by engineer. */
-"ATTACHMENT" = "منسلک چیزیں";
+"ATTACHMENT" = "منسلک مواد";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "ہدایات کاحجم ختم ہو گیا۔";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "عنوان میں حجم پورا ہوگیا۔";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "ہدایات جمح کریں۔۔۔";
@@ -2970,13 +2970,13 @@
 "VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "وائس پیغام ریکارڈ کرنے کیلئے ٹیپ کریں اور پکڑ کر رکھیں۔";
 
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "آواز کے ذریعے پیغام";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "پیغام بذریعہ آواز";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal Desktop سیٹ اپ مکمل ہو گیا۔";
 
 /* Info Message when you disable disappearing messages */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "آپ نے غائب پیغامات غیر فعال کیے ہیں۔";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "آپ نے نظروں سے اوجھل پیغامات غیر فعال کیے ہیں۔";
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "آپ %@ٹائم کو پیغام غائب کرنے کیلئے ترتیب دے رہے ہیں۔";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "آپ %@وقت تک پیغام غائب کرنے کیلئے ترتیب دے رہے ہیں۔";
