@@ -1,8 +1,27 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import PromiseKit
+
+public extension Promise {
+    func nilTimeout(seconds: TimeInterval) -> Promise<T?> {
+        let timeout: Promise<T?> = after(seconds: seconds).map {
+            return nil
+        }
+
+        return race(self.map { $0 }, timeout)
+    }
+
+    func timeout(seconds: TimeInterval, substituteValue: T) -> Promise<T> {
+        let timeout: Promise<T> = after(seconds: seconds).map {
+            Logger.info("Timed out, returning substitute value.")
+            return substituteValue
+        }
+
+        return race(self, timeout)
+    }
+}
 
 @objc
 public extension AnyPromise {
@@ -10,7 +29,6 @@ public extension AnyPromise {
      * Sometimes there isn't a straight forward candidate to retain a promise, in that case we tell the
      * promise to self retain, until it completes to avoid the risk it's GC'd before completion.
      */
-    @objc
     func retainUntilComplete() {
         var retainCycle: AnyPromise? = self
         _ = self.ensure {
