@@ -95,7 +95,7 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
         firstly { () -> Promise<TSAttachmentStream> in
             try self.getAttachmentStream()
         }.done(on: .global()) { attachmentStream in
-            try Bench(title: "processing synced group file") {
+            try Bench(title: "processing incoming group sync file") {
                 try self.process(attachmentStream: attachmentStream)
             }
             self.databaseStorage.write { transaction in
