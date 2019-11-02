@@ -270,7 +270,7 @@
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Memulihkan Berkas-berkas";
 
 /* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Cadangan (Backup) Tersedia";
+"BACKUP_RESTORE_DECISION_TITLE" = "Cadangan Tersedia";
 
 /* Label for the backup restore description. */
 "BACKUP_RESTORE_DESCRIPTION" = "Mengembalikan Cadangan";
@@ -285,7 +285,7 @@
 "BACKUP_UNEXPECTED_ERROR" = "Kesalahan Cadangan Tidak Terduga";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Kamu tidak akan lagi menerima pesan dan pembaharuan dari grup ini";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Anda tidak akan lagi menerima pesan dan pembaruan dari grup ini.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Blokir";
@@ -306,7 +306,7 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Buka blokir";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Anggota aktif lainnya dapat menambahkan Anda ke grup lagi";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Anggota lainnya akan mampu menambahkan Anda ke grup lagi.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Buka Blokir Grup Ini?";
@@ -333,7 +333,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Galat";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ telah dibuka blokirnya";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ telah dibuka blokirnya.";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Anggota yang ada sekarang dapat menambahkan Anda ke dalam grup lagi.";
@@ -345,7 +345,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Blokir %@?";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Pengguna terblokir tidak bisa menghubungi atau mengirimkan pesan kepada Anda.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Pengguna yang diblokir tidak dapat melakukan panggilan atau mengirimkan pesan kepada Anda.";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Lanjut";
@@ -363,7 +363,7 @@
 "BUTTON_SELECT" = "Pilih";
 
 /* Label for the 'submit' button. */
-"BUTTON_SUBMIT" = "Kirim";
+"BUTTON_SUBMIT" = "Kirimkan";
 
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Telepon lagi";
@@ -381,7 +381,7 @@
 "CALL_LABEL" = "Panggil";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Panggilan tidak terjawab karena nomor keamanan pemanggil berubah.";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Panggilan tidak terjawab karena nomor keamanan penelepon berubah.";
 
 /* notification body */
 "CALL_MISSED_NOTIFICATION_BODY" = "☎️ Panggilan Tidak Terjawab";
@@ -423,7 +423,7 @@
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Anda dapat mengaktifkan Integrasi Panggilan iOS pada pengaturan privasi Signal untuk menjawab panggilan masuk dari layar kunci Anda.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Anda dapat mengaktifkan Integrasi Panggilan iOS pada pengaturan privasi Signal untuk melihat nama dan nomor telepon dari panggilan masuk.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Anda dapat mengaktifkan Integrasi Panggilan iOS pada pengaturan privasi Signal untuk melihat nama dan nomor telepon pada panggilan masuk.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Tidak Sekarang";
@@ -474,7 +474,7 @@
 "CHECK_FOR_BACKUP_FAILED_TITLE" = "Galat";
 
 /* The label for the 'restore backup' button. */
-"CHECK_FOR_BACKUP_RESTORE" = "Pulihkan";
+"CHECK_FOR_BACKUP_RESTORE" = "Kembalikan";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
 "CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal tidak dapat menentukan status akun iCloud Anda. Masuk ke Akun iCloud pada pengaturan iOS untuk mencadangkan data Signal Anda.";
@@ -483,7 +483,7 @@
 "CLOUDKIT_STATUS_NO_ACCOUNT" = "Tidak ada Akun iCloud. Masuk ke Akun iCloud Anda pada pengaturan iOS untuk mencadangkan data Signal Anda.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Akses Signal untuk mencadangkan ke akun iCloud Anda ditolak. Berikan akses Signal kepada Akun iCloud Anda pada pengaturan iOS untuk mencadangkan data Signal Anda.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Akses Signal untuk mencadangkan ke akun iCloud Anda ditolak. Berikan akses Signal ke Akun iCloud Anda pada pengaturan iOS untuk mencadangkan data Signal Anda.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Pilih warna pesan keluar dalam percakapan ini.";
@@ -510,7 +510,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Pencarian nama pengguna";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Anda dapat mengaktifkan akses kontak pada pengaturan iOS untuk melihat kontak Anda yang mana yang merupakan pengguna Signal.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Anda dapat mengaktifkan akses kontak pada pengaturan iOS untuk melihat siapa saja kontak Anda yang merupakan pengguna Signal.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Ini akan mengulang aplikasi dengan cara menghapus pesan-pesan Anda dan membatalkan registrasi Anda ke peladen. Aplikasi akan tertutup setelah proses ini selesai.";
@@ -639,7 +639,7 @@
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Grup";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "Percakapan Lainnya";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "Percakapan Terbaru";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Orang-orang";
@@ -931,10 +931,10 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN tidak sesuai.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too long. */
-"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN tidak dapat lebih dari 20 digit.";
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN tidak boleh lebih dari 20 digit.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too short. */
-"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN harus terdiri dari minimal 4 digit.";
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN harus berisi minimal 4 digit.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Masukkan PIN Kunci Pendaftaran. Anda akan diminta untuk memasukkan lagi PIN ini ketika Anda mendaftarkan nomor telpon dengan Signal.";
@@ -964,7 +964,7 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Gagal mengirim pesan.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale prekey data.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Tidak dapat mengirim karena data kunci sementara yang usang.";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Gagal mengirim pesan ke pengguna karena Anda memblokir mereka.";
@@ -1042,13 +1042,13 @@
 "EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Ayo";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Versi Signal Anda telah kedaluwarsa! Pesan-pesan tidak lagi dapat dikirim. Ketuk untuk memperbarui ke versi yang terbaru.";
+"EXPIRATION_ERROR" = "Versi Signal Anda telah kedaluwarsa! Pesan-pesan tidak lagi dapat dikirim. Ketuk untuk memperbarui ke versi terbaru.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Versi Signal Anda akan berakhir dalam %d hari. Ketuk untuk memperbarui versi terbaru.";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "Versi Signal Anda akan berakhir hari ini. Ketuk untuk memperbarui versi terbaru.";
+"EXPIRATION_WARNING_TODAY" = "Versi Signal Anda akan berakhir hari ini. Ketuk untuk memperbarui ke versi terbaru.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Terlalu banyak kegagalan dengan kontak ini. Mohon coba lagi nanti.";
@@ -1213,7 +1213,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Percakapan-percakapan ini diarsipkan dan hanya akan muncul di kotak masuk jika pesan baru diterima.";
 
 /* Message shown in the home view when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Tuliskan pesan melalui kotak pesan Anda. Mulailah dengan menulis kepada seorang kawan.";
+"INBOX_VIEW_EMPTY_INBOX" = "Tuliskan pesan melalui kotak pesan Anda. Mulailah dengan mengirim pesan kepada seorang kawan.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Anda dapat mengaktifkan akses kontak pada Pengaturan iOS untuk melihat nama-nama kontak pada daftar percakapan Signal Anda.";
@@ -1243,7 +1243,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Berkas audio tidak valid.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Anda dapat mengaktifkan akses kontak pada Pengaturan iOS untuk mengundang teman-teman Anda untuk bergabung menggunakan Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Anda dapat mengaktifkan akses kontak pada Pengaturan iOS untuk mengundang teman-teman Anda bergabung menggunakan Signal.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Perbolehkan Akses Kontak";
@@ -1438,7 +1438,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "Anda harus membagikan profil untuk melanjutkan percakapan Anda dalam %@.";
 
 /* A button used to learn more about why you must share your profile. */
-"MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Lebih Lanjut";
+"MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Pelajari Lebih Lanjut";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Apakah Anda ingin membiarkan %@ mengirimkan pesan kepada Anda? Mereka tidak akan tahu bahwa Anda telah membaca pesannya sampai Anda menerimanya.";
@@ -1650,13 +1650,13 @@
 "OK" = "OK";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "PIN salah. Upaya telah habis.";
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "PIN salah. Percobaan telah habis.";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Nomor telepon ini dilengkapi dengan Kunci Pendaftaran. Silakan masukkan PIN Kunci Pendaftaran.";
 
 /* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_2" = "PIN Kunci Pendaftaran Anda berbeda dari kode verifikasi otomatis yang telah dikirimkan ke telepon Anda pada langkah terakhir.";
+"ONBOARDING_2FA_EXPLANATION_2" = "PIN Kunci Pendaftaran Anda berbeda dari kode verifikasi otomatis yang dikirimkan ke telepon Anda pada langkah terakhir.";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_FORGOT_PIN_LINK" = "Lupa PIN Anda?";
@@ -1695,10 +1695,10 @@
 "ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "Tidak Sekarang";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Signal dapat memberitahu saat Anda mendapat sebuah pesan (dan dari mana asalnya)";
+"ONBOARDING_PERMISSIONS_TITLE" = "Signal dapat memberitahu saat Anda mendapat sebuah pesan (dan siapa pengirimnya)";
 
 /* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "masukkan nomor telepon untuk memulai";
+"ONBOARDING_PHONE_NUMBER_TITLE" = "Masukkan nomor telepon Anda untuk memulai";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Nomor salah";
