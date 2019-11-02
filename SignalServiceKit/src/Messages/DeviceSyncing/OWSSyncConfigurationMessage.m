@@ -3,6 +3,7 @@
 //
 
 #import "OWSSyncConfigurationMessage.h"
+#import <SignalServiceKit/OWSProvisioningMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -49,6 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
     configurationBuilder.unidentifiedDeliveryIndicators = self.showUnidentifiedDeliveryIndicators;
     configurationBuilder.typingIndicators = self.showTypingIndicators;
     configurationBuilder.linkPreviews = self.sendLinkPreviews;
+    configurationBuilder.provisioningVersion = OWSProvisioningVersion;
 
     NSError *error;
     SSKProtoSyncMessageConfiguration *_Nullable configurationProto = [configurationBuilder buildAndReturnError:&error];

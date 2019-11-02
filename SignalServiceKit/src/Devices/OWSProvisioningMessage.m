@@ -12,6 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const OWSUserAgent = @"OWI";
+uint32_t const OWSProvisioningVersion = 1;
 
 @interface OWSProvisioningMessage ()
 
@@ -60,6 +61,8 @@ NSString *const OWSUserAgent = @"OWI";
                                                               userAgent:OWSUserAgent
                                                              profileKey:self.profileKey
                                                            readReceipts:self.areReadReceiptsEnabled];
+
+    messageBuilder.provisioningVersion = OWSProvisioningVersion;
 
     NSString *_Nullable phoneNumber = self.accountAddress.phoneNumber;
     if (!phoneNumber) {

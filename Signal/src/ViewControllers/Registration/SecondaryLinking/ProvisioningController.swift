@@ -76,9 +76,27 @@ public class ProvisioningController: NSObject {
             return
         }
 
-        awaitProvisionMessage.done { [weak self, weak navigationController] _ in
+        awaitProvisionMessage.done { [weak self, weak navigationController] message in
             guard let self = self else { throw PMKError.cancelled }
             guard let navigationController = navigationController else { throw PMKError.cancelled }
+
+            // Verify the primary device is new enough to link us. Right now this is a simple check
+            // of >= the latest version, but when we bump the version we may need to be more specific
+            // if we have some backwards compatible support and allow a limited linking with an old
+            // version of the app.
+            guard let provisioningVersion = message.provisioningVersion,
+                provisioningVersion >= OWSProvisioningVersion else {
+                    OWSActionSheets.showActionSheet(
+                        title: NSLocalizedString("SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE",
+                                                 comment: "alert title for outdated linking device"),
+                        message: NSLocalizedString("SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE",
+                                                   comment: "alert message for outdated linking device")
+                    ) { _ in
+                        self.resetPromises()
+                        navigationController.popViewController(animated: true)
+                    }
+                return
+            }
 
             let confirmVC = SecondaryLinkingSetDeviceNameViewController(provisioningController: self)
             navigationController.pushViewController(confirmVC, animated: true)
@@ -137,12 +155,12 @@ public class ProvisioningController: NSObject {
         }
     }
 
-    public lazy var awaitProvisionMessage: Promise<ProvisionMessage> = {
+    public var awaitProvisionMessage: Promise<ProvisionMessage> {
         return provisionEnvelopePromise.map { [weak self] envelope in
             guard let self = self else { throw PMKError.cancelled }
             return try self.provisioningCipher.decrypt(envelope: envelope)
         }
-    }()
+    }
 
     public func completeLinking(deviceName: String) -> Promise<Void> {
         return awaitProvisionMessage.then { [weak self] provisionMessage -> Promise<Void> in
@@ -173,7 +191,7 @@ public class ProvisioningController: NSObject {
     }
 
     private func getDeviceId() -> Promise<String> {
-        assert(provisioningSocket.state == .connecting)
+        assert(provisioningSocket.state != .open)
         // TODO send Keep-Alive or ping frames at regular intervals
         // iOS uses ping frames elsewhere, but moxie seemed surprised we weren't
         // using the keepalive endpoint. Waiting to here back from him before proceeding.

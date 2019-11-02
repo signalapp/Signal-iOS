@@ -24,7 +24,19 @@ public class OWSMockSyncManager: NSObject, OWSSyncManagerProtocol {
         Logger.info("")
     }
 
+    public func sendFetchLatestProfileSyncMessage() {
+        Logger.info("")
+    }
+
+    public func sendFetchLatestStorageManifestSyncMessage() {
+        Logger.info("")
+    }
+
     public func processIncomingConfigurationSyncMessage(_ syncMessage: SSKProtoSyncMessageConfiguration, transaction: SDSAnyWriteTransaction) {
+        Logger.info("")
+    }
+
+    public func processIncomingFetchLatestSyncMessage(_ syncMessage: SSKProtoSyncMessageFetchLatest, transaction: SDSAnyWriteTransaction) {
         Logger.info("")
     }
 

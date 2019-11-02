@@ -20,6 +20,7 @@
 #import <SignalServiceKit/OWSSyncConfigurationMessage.h>
 #import <SignalServiceKit/OWSSyncConfigurationRequestMessage.h>
 #import <SignalServiceKit/OWSSyncContactsMessage.h>
+#import <SignalServiceKit/OWSSyncFetchLatestMessage.h>
 #import <SignalServiceKit/OWSSyncGroupsMessage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalAccount.h>
@@ -484,6 +485,76 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         [[OWSSyncConfigurationRequestMessage alloc] initWithThread:thread];
 
     [self.messageSenderJobQueue addMessage:syncConfigurationRequestMessage.asPreparer transaction:transaction];
+}
+
+#pragma mark - Fetch Latest
+
+- (void)sendFetchLatestProfileSyncMessage
+{
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        if (!self.tsAccountManager.isRegisteredAndReady) {
+            return;
+        }
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self sendFetchLatestSyncMessageWithType:OWSSyncFetchType_LocalProfile];
+        });
+    }];
+}
+
+- (void)sendFetchLatestStorageManifestSyncMessage
+{
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        if (!self.tsAccountManager.isRegisteredAndReady) {
+            return;
+        }
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self sendFetchLatestSyncMessageWithType:OWSSyncFetchType_StorageManifest];
+        });
+    }];
+}
+
+- (void)sendFetchLatestSyncMessageWithType:(OWSSyncFetchType)fetchType
+{
+    DDLogInfo(@"");
+
+    if (!self.tsAccountManager.isRegisteredAndReady) {
+        OWSFailDebug(@"Unexpectedly tried to send sync message before registration.");
+        return;
+    }
+
+    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
+        if (thread == nil) {
+            OWSFailDebug(@"Missing thread.");
+            return;
+        }
+
+        OWSSyncFetchLatestMessage *syncFetchLatestMessage =
+            [[OWSSyncFetchLatestMessage alloc] initWithThread:thread fetchType:fetchType];
+
+        [self.messageSenderJobQueue addMessage:syncFetchLatestMessage.asPreparer transaction:transaction];
+    }];
+}
+
+- (void)processIncomingFetchLatestSyncMessage:(SSKProtoSyncMessageFetchLatest *)syncMessage
+                                  transaction:(SDSAnyWriteTransaction *)transaction
+{
+    switch (syncMessage.unwrappedType) {
+        case SSKProtoSyncMessageFetchLatestTypeUnknown:
+            OWSFailDebug(@"Unknown fetch latest type");
+            break;
+        case SSKProtoSyncMessageFetchLatestTypeLocalProfile: {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.profileManager fetchLocalUsersProfile];
+            });
+            break;
+        }
+        case SSKProtoSyncMessageFetchLatestTypeStorageManifest:
+            [SSKEnvironment.shared.storageServiceManager restoreOrCreateManifestIfNecessary];
+            break;
+    }
 }
 
 @end
