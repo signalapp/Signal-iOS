@@ -157,6 +157,7 @@
 		346941A3215D2EE400B5BFAD /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469419F215D2EE400B5BFAD /* Theme.m */; };
 		346941A4215D2EE400B5BFAD /* OWSConversationColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 346941A0215D2EE400B5BFAD /* OWSConversationColor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346B4A772369BFC600B56007 /* PermissiveGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B4A762369BFC600B56007 /* PermissiveGestureRecognizer.swift */; };
+		346B4A79236A138C00B56007 /* OWS116UpdatePrekeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B4A78236A138C00B56007 /* OWS116UpdatePrekeys.swift */; };
 		346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */; };
 		346E9D5421B040B700562252 /* RegistrationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346E9D5321B040B600562252 /* RegistrationController.swift */; };
 		347137FC22A1BCE800F43A63 /* OWSMessageViewOnceView.m in Sources */ = {isa = PBXBuildFile; fileRef = 347137FB22A1BCE800F43A63 /* OWSMessageViewOnceView.m */; };
@@ -934,6 +935,7 @@
 		3469419F215D2EE400B5BFAD /* Theme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Theme.m; sourceTree = "<group>"; };
 		346941A0215D2EE400B5BFAD /* OWSConversationColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSConversationColor.h; sourceTree = "<group>"; };
 		346B4A762369BFC600B56007 /* PermissiveGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PermissiveGestureRecognizer.swift; sourceTree = "<group>"; };
+		346B4A78236A138C00B56007 /* OWS116UpdatePrekeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWS116UpdatePrekeys.swift; sourceTree = "<group>"; };
 		346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropScaleImageViewController.swift; sourceTree = "<group>"; };
 		346E9D5321B040B600562252 /* RegistrationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationController.swift; sourceTree = "<group>"; };
 		347137FA22A1BCE800F43A63 /* OWSMessageViewOnceView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageViewOnceView.h; sourceTree = "<group>"; };
@@ -1940,6 +1942,7 @@
 		346129921FD1E30000532771 /* migrations */ = {
 			isa = PBXGroup;
 			children = (
+				4C9B4F22225025F100DD5B9A /* OWS1XXGRDBMigration.swift */,
 				346129ED1FD5F31300532771 /* OWS100RemoveTSRecipientsMigration.h */,
 				346129EB1FD5F31300532771 /* OWS100RemoveTSRecipientsMigration.m */,
 				346129EF1FD5F31400532771 /* OWS101ExistingUsersBlockOnIdentityChange.h */,
@@ -1965,7 +1968,7 @@
 				4C7537882193779700DF5E37 /* OWS113MultiAttachmentMediaMessages.swift */,
 				34BEDB0A21C2FA3D007B0EAE /* OWS114RemoveDynamicInteractions.swift */,
 				4CBF6F7A230B03C000549FFC /* OWS115CleanupProfileAvatars.swift */,
-				4C9B4F22225025F100DD5B9A /* OWS1XXGRDBMigration.swift */,
+				346B4A78236A138C00B56007 /* OWS116UpdatePrekeys.swift */,
 				346129931FD1E30000532771 /* OWSDatabaseMigration.h */,
 				346129941FD1E30000532771 /* OWSDatabaseMigration.m */,
 				346129E51FD5C0C600532771 /* OWSDatabaseMigrationRunner.h */,
@@ -3864,6 +3867,7 @@
 				346941A2215D2EE400B5BFAD /* OWSConversationColor.m in Sources */,
 				34AC0A17211B39EA00997B47 /* VideoPlayerView.swift in Sources */,
 				34BEDB1321C43F6A007B0EAE /* ImageEditorView.swift in Sources */,
+				346B4A79236A138C00B56007 /* OWS116UpdatePrekeys.swift in Sources */,
 				34AC09EE211B39B100997B47 /* EditContactShareNameViewController.swift in Sources */,
 				346129F71FD5F31400532771 /* OWS105AttachmentFilePaths.m in Sources */,
 				450998681FD8C0FF00D89EB3 /* AttachmentSharing.m in Sources */,

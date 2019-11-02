@@ -663,7 +663,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "இருக்கும் தொடர்புக்குச் சேர்க்கவும்";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "கணினி தொடர்புகளில் சேர்";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "இந்த குழுவைத் தடு";
@@ -2250,43 +2250,43 @@
 "SEARCH_SECTION_MESSAGES" = "செய்திகள்";
 
 /* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "இணைப்புக் குறியீட்டைப் பெற முடியவில்லை";
 
 /* alert title */
-"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Failed to Link Your Device";
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "உங்கள் சாதனத்தை இணைப்பதில் தோல்வி";
 
 /* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choose a name for this device";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "இந்த சாதனத்திற்கு ஒரு பெயரைத் தேர்வுசெய்க";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "You'll see this name under \"Linked Devices.\"";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "இந்த பெயரை \"இணைக்கப்பட்ட சாதனங்கள்\" என்பதன் கீழ் காண்பீர்கள்.";
 
 /* text field placeholder */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Choose a name";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "பெயரைத் தேர்வுசெய்க";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Finish Linking";
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "இணைப்பதை முடிக்கவும்";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "To get started, open the Signal app on your phone.";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "தொடங்க, உங்கள் தொலைபேசியில் Signal பயன்பாடு திறக்கவும்.";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone.";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "எனது தொலைபேசியில் Signal இல்லை.";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "To use Signal on your iPad, you need to download and register an account on your phone first.\n\nGo to your phone’s app store, install Signal, and then you’ll be able to link your iPad.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "உங்கள் ஐபாடில் Signal பயன்படுத்த, முதலில் உங்கள் தொலைபேசியில் ஒரு கணக்கு பதிவிறக்கம் செய்து பதிவு செய்ய வேண்டும்\n\nஉங்கள் தொலைபேசியின் பயன்பாடு கடைக்குச் சென்று, Signal நிறுவவும், பின்னர் உங்கள் ஐபாட் இணைக்க முடியும்.";
 
 /* alert title */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Install Signal on Your Phone";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "உங்கள் தொலைபேசியில் Signal நிறுவவும்";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "In Signal on your iPhone, tap Settings -> Linked Devices -> Add, then point the camera at this screen.";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "உங்கள் ஐபோனில் Signal, அமைப்புகள் -> இணைக்கப்பட்ட சாதனங்கள் -> சேர் என்பதைத் தட்டவும், பின்னர் இந்த திரையில் கேமராவை சுட்டிக்காட்டவும்.";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Having Trouble?";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "சிக்கல் உள்ளதா?";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan the QR Code";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "QR குறியீட்டை ஸ்கேன் செய்யுங்கள்";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "பாதுகாப்பான அமர்வு மீட்டமைக்கப்பட்டது.";
@@ -2934,10 +2934,10 @@
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "பயனர்பெயர் புதுப்பிப்பு தோல்வியுற்றது.";
 
 /* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Device name cannot be blank";
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "சாதனத்தின் பெயர் காலியாக இருக்க முடியாது";
 
 /* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "Device name is too long";
+"VALIDATION_ERROR_TOO_LONG" = "சாதனத்தின் பெயர் மிக நீளமானது";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "சரிபார்க்கப்படவில்லை என %@ எனக் குறித்தீர்கள்.";

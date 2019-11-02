@@ -27,9 +27,9 @@ PODS:
     - SignalCoreKit
     - SwiftProtobuf
   - blurhash (0.0.1)
-  - CocoaLumberjack (3.5.3):
-    - CocoaLumberjack/Core (= 3.5.3)
-  - CocoaLumberjack/Core (3.5.3)
+  - CocoaLumberjack (3.6.0):
+    - CocoaLumberjack/Core (= 3.6.0)
+  - CocoaLumberjack/Core (3.6.0)
   - Curve25519Kit (2.1.0):
     - CocoaLumberjack
     - SignalCoreKit
@@ -153,7 +153,7 @@ PODS:
     - SQLCipher/common
   - SSZipArchive (2.1.4)
   - Starscream (3.0.6)
-  - SwiftProtobuf (1.6.0)
+  - SwiftProtobuf (1.7.0)
   - YapDatabase/SQLCipher (3.1.1):
     - YapDatabase/SQLCipher/Core (= 3.1.1)
     - YapDatabase/SQLCipher/Extensions (= 3.1.1)
@@ -296,7 +296,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: 4a4899ea145a446403cd31549b11df847a3ee9e2
+    :commit: 905c5d0e0cd22dc290e6992b3d4790d07e347c41
     :git: https://github.com/signalapp/SignalProtocolKit.git
   blurhash:
     :commit: e2b1540fc24867c83971045542483b91a46eb115
@@ -330,7 +330,7 @@ SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
   AxolotlKit: ac03e4d79486b62d08282c840da410116227683e
   blurhash: 150e9ffe986f028a38f7b469b5a279eab45352df
-  CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
+  CocoaLumberjack: 78b0c238666f4f58db069738ec176f4519557516
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
   GRDB.swift: 083ec261ce573888d8ed2eae1b49bc0bf40d9e2c
   GRKOpenSSLFramework: 4abc733a8fcbc37060619a86a54202d2938dd70e
@@ -349,7 +349,7 @@ SPEC CHECKSUMS:
   SQLCipher: 4636a257060f6f1b4e143a143028b61a2b462d0d
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
-  SwiftProtobuf: e905ca1366405696411aaf174411c4b19c0ef73d
+  SwiftProtobuf: 4fd9645e69b72cbae6ec8da5be0cdd20ca6565dd
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 

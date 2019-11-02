@@ -2253,7 +2253,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Bağlama Kodu Alınamadı";
 
 /* alert title */
-"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Cihazınıza Bağlanamadı";
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Cihazınız Bağlanamadı";
 
 /* header text when this device is being added as a secondary */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Bu cihaza bir isim verin";
@@ -2280,7 +2280,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Telefonunuza Signal Yükleyin";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "iPhone'unuzdaki Signalde, Ayarlar -> Bağlı Cihazlar -> Ekle yolunu izleyip kamerayı bu ekrana çevirin.";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "iPhone'unuzdaki Signal'de, Ayarlar -> Bağlı Cihazlar -> Ekle yolunu izleyip kamerayı bu ekrana çevirin.";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Sorun mu Yaşıyorsunuz?";

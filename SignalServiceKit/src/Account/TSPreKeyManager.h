@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)clearSignedPreKeyRecords;
 
++ (void)cullPreKeyRecords;
+
 // This should only be called from the TSPreKeyManager.operationQueue
 + (void)refreshPreKeysDidSucceed;
 
