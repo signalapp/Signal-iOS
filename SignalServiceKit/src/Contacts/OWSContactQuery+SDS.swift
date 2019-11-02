@@ -27,7 +27,7 @@ public struct ContactQueryRecord: SDSRecord {
     public let recordType: SDSRecordType
     public let uniqueId: String
 
-    // Base class properties
+    // Properties
     public let lastQueried: Double
     public let nonce: Data
 
@@ -147,7 +147,7 @@ extension OWSContactQuerySerializer {
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
-    // Base class properties
+    // Properties
     static let lastQueriedColumn = SDSColumnMetadata(columnName: "lastQueried", columnType: .double, columnIndex: 3)
     static let nonceColumn = SDSColumnMetadata(columnName: "nonce", columnType: .blob, columnIndex: 4)
 
