@@ -324,28 +324,6 @@ CREATE
 
 CREATE
     TABLE
-        IF NOT EXISTS "model_SignalAccount" (
-            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
-            ,"recordType" INTEGER NOT NULL
-            ,"uniqueId" TEXT NOT NULL UNIQUE
-                ON CONFLICT FAIL
-            ,"contact" BLOB
-            ,"contactAvatarHash" BLOB
-            ,"contactAvatarJpegData" BLOB
-            ,"multipleAccountLabelText" TEXT NOT NULL
-            ,"recipientPhoneNumber" TEXT
-            ,"recipientUUID" TEXT
-        )
-;
-
-CREATE
-    INDEX "index_model_SignalAccount_on_uniqueId"
-        ON "model_SignalAccount"("uniqueId"
-)
-;
-
-CREATE
-    TABLE
         IF NOT EXISTS "model_OWSUserProfile" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
             ,"recordType" INTEGER NOT NULL
@@ -527,18 +505,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_signal_accounts_on_recipientPhoneNumber"
-        ON "model_SignalAccount"("recipientPhoneNumber"
-)
-;
-
-CREATE
-    INDEX "index_signal_accounts_on_recipientUUID"
-        ON "model_SignalAccount"("recipientUUID"
-)
-;
-
-CREATE
     INDEX "index_signal_recipients_on_recipientPhoneNumber"
         ON "model_SignalRecipient"("recipientPhoneNumber"
 )
@@ -710,4 +676,38 @@ CREATE
             k PRIMARY KEY
             ,v
         ) WITHOUT ROWID
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_SignalAccount" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"contact" BLOB
+            ,"contactAvatarHash" BLOB
+            ,"contactAvatarJpegData" BLOB
+            ,"multipleAccountLabelText" TEXT NOT NULL
+            ,"recipientPhoneNumber" TEXT
+            ,"recipientUUID" TEXT
+        )
+;
+
+CREATE
+    INDEX "index_model_SignalAccount_on_uniqueId"
+        ON "model_SignalAccount"("uniqueId"
+)
+;
+
+CREATE
+    INDEX "index_signal_accounts_on_recipientPhoneNumber"
+        ON "model_SignalAccount"("recipientPhoneNumber"
+)
+;
+
+CREATE
+    INDEX "index_signal_accounts_on_recipientUUID"
+        ON "model_SignalAccount"("recipientUUID"
+)
 ;
