@@ -5,6 +5,10 @@
 import Foundation
 import PromiseKit
 
+public extension Notification.Name {
+    static let IncomingGroupSyncDidComplete = Notification.Name("IncomingGroupSyncDidComplete")
+}
+
 @objc(OWSIncomingGroupSyncJobQueue)
 public class IncomingGroupSyncJobQueue: NSObject, JobQueue {
 
@@ -95,7 +99,7 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
         firstly { () -> Promise<TSAttachmentStream> in
             try self.getAttachmentStream()
         }.done(on: .global()) { attachmentStream in
-            try Bench(title: "processing synced group file") {
+            try Bench(title: "processing incoming group sync file") {
                 try self.process(attachmentStream: attachmentStream)
             }
             self.databaseStorage.write { transaction in
@@ -115,6 +119,7 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
         self.databaseStorage.write { transaction in
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
         }
+        NotificationCenter.default.post(name: .IncomingGroupSyncDidComplete, object: nil)
     }
 
     public override func didReportError(_ error: Error) {

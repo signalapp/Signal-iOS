@@ -399,13 +399,3 @@ public class AccountManager: NSObject {
         return Cryptography.generateRandomBytes(16).hexadecimalString
     }
 }
-
-extension Promise {
-    func nilTimeout(seconds: TimeInterval) -> Promise<T?> {
-        let timeout: Promise<T?> = after(seconds: seconds).map {
-            return nil
-        }
-
-        return race(self.map { $0 }, timeout)
-    }
-}

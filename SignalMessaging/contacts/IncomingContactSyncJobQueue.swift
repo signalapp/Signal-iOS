@@ -11,6 +11,10 @@ import Foundation
 import Foundation
 import PromiseKit
 
+public extension Notification.Name {
+    static let IncomingContactSyncDidComplete = Notification.Name("IncomingContactSyncDidComplete")
+}
+
 @objc(OWSIncomingContactSyncJobQueue)
 public class IncomingContactSyncJobQueue: NSObject, JobQueue {
 
@@ -137,6 +141,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         self.databaseStorage.write { transaction in
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
         }
+        NotificationCenter.default.post(name: .IncomingContactSyncDidComplete, object: nil)
     }
 
     public override func didReportError(_ error: Error) {
