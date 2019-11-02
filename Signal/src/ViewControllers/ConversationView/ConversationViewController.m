@@ -2335,7 +2335,8 @@ typedef enum : NSUInteger {
                           style:ActionSheetActionStyleDestructive
                         handler:^(ActionSheetAction *action) {
                             OWSLogInfo(@"Blocking an unknown user.");
-                            [self.blockingManager addBlockedAddress:contactThread.contactAddress];
+                            [self.blockingManager addBlockedAddress:contactThread.contactAddress
+                                                wasLocallyInitiated:YES];
                             // Delete the offers.
                             [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                                 [contactThread anyUpdateContactThreadWithTransaction:transaction
@@ -4608,6 +4609,7 @@ typedef enum : NSUInteger {
 - (void)contactsPicker:(ContactsPicker *)contactsPicker didSelectContact:(Contact *)contact
 {
     OWSAssertDebug(contact);
+    OWSAssertDebug(contact.cnContactId);
 
     CNContact *_Nullable cnContact = [self.contactsManager cnContactWithId:contact.cnContactId];
     if (!cnContact) {
@@ -5151,7 +5153,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    [self.blockingManager addBlockedThread:self.thread];
+    [self.blockingManager addBlockedThread:self.thread wasLocallyInitiated:YES];
     [self messageRequestViewDidTapDelete];
 }
 

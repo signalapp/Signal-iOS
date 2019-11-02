@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIImage *)imageWithColor:(UIColor *)color;
 + (UIImage *)imageWithColor:(UIColor *)color size:(CGSize)size;
++ (nullable NSData *)validJpegDataFromAvatarData:(NSData *)avatarData;
 
 - (size_t)pixelWidth;
 - (size_t)pixelHeight;

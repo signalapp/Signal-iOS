@@ -247,10 +247,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self.thread disappearingMessagesDurationWithTransaction:transaction];
         configuration = [configuration copyAsEnabledWithDurationSeconds:10];
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [configuration anyUpsertWithTransaction:transaction];
-#pragma clang diagnostic pop
     }];
 
     OWSMessageSender *messageSender = self.successfulMessageSender;
@@ -292,10 +289,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self.thread disappearingMessagesDurationWithTransaction:transaction];
         configuration = [configuration copyAsEnabledWithDurationSeconds:10];
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [configuration anyUpsertWithTransaction:transaction];
-#pragma clang diagnostic pop
     }];
 
     OWSMessageSender *messageSender = self.successfulMessageSender;

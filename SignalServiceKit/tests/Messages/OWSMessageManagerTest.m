@@ -112,10 +112,8 @@ NSString *const kAliceRecipientId = @"+13213214321";
 - (void)test_GroupUpdate
 {
     NSData *groupIdData = [Cryptography generateRandomBytes:kGroupIdLength];
-    NSString *groupThreadId = [TSGroupThread threadIdFromGroupId:groupIdData];
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        TSGroupThread *groupThread
-            = (TSGroupThread *)[TSGroupThread anyFetchWithUniqueId:groupThreadId transaction:transaction];
+        TSGroupThread *groupThread = [TSGroupThread getThreadWithGroupId:groupIdData transaction:transaction];
         XCTAssertNil(groupThread);
     }];
 
@@ -139,8 +137,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
     }];
 
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        TSGroupThread *groupThread
-            = (TSGroupThread *)[TSGroupThread anyFetchWithUniqueId:groupThreadId transaction:transaction];
+        TSGroupThread *groupThread = [TSGroupThread getThreadWithGroupId:groupIdData transaction:transaction];
         XCTAssertNotNil(groupThread);
         XCTAssertEqualObjects(@"Newly created Group Name", groupThread.groupNameOrDefault);
     }];
@@ -150,10 +147,8 @@ NSString *const kAliceRecipientId = @"+13213214321";
 - (void)test_GroupUpdateWithAvatar
 {
     NSData *groupIdData = [Cryptography generateRandomBytes:kGroupIdLength];
-    NSString *groupThreadId = [TSGroupThread threadIdFromGroupId:groupIdData];
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        TSGroupThread *groupThread
-            = (TSGroupThread *)[TSGroupThread anyFetchWithUniqueId:groupThreadId transaction:transaction];
+        TSGroupThread *groupThread = [TSGroupThread getThreadWithGroupId:groupIdData transaction:transaction];
         XCTAssertNil(groupThread);
     }];
 
@@ -183,8 +178,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
     }];
 
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        TSGroupThread *groupThread
-            = (TSGroupThread *)[TSGroupThread anyFetchWithUniqueId:groupThreadId transaction:transaction];
+        TSGroupThread *groupThread = [TSGroupThread getThreadWithGroupId:groupIdData transaction:transaction];
         XCTAssertNotNil(groupThread);
         XCTAssertEqualObjects(@"Newly created Group Name", groupThread.groupNameOrDefault);
     }];

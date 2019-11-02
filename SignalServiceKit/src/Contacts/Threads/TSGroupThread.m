@@ -107,13 +107,21 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return [TSGroupThread anyFetchGroupThreadWithUniqueId:uniqueId transaction:transaction];
 }
 
-+ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId transaction:(SDSAnyWriteTransaction *)transaction
++ (nullable instancetype)getThreadWithGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(groupId.length > 0);
     OWSAssertDebug(transaction);
 
     NSString *uniqueId = [self threadIdFromGroupId:groupId];
-    TSGroupThread *thread = [TSGroupThread anyFetchGroupThreadWithUniqueId:uniqueId transaction:transaction];
+    return [TSGroupThread anyFetchGroupThreadWithUniqueId:uniqueId transaction:transaction];
+}
+
++ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(groupId.length > 0);
+    OWSAssertDebug(transaction);
+
+    TSGroupThread *thread = [self getThreadWithGroupId:groupId transaction:transaction];
     if (!thread) {
         thread = [[self alloc] initWithGroupId:groupId];
         [thread anyInsertWithTransaction:transaction];

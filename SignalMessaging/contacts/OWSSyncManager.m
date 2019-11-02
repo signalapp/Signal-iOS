@@ -8,20 +8,21 @@
 #import "OWSPreferences.h"
 #import "OWSProfileManager.h"
 #import "OWSReadReceiptManager.h"
+#import <Contacts/Contacts.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/DataSource.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSSyncBlockedRequestMessage.h>
 #import <SignalServiceKit/OWSSyncConfigurationMessage.h>
-#import <SignalServiceKit/OWSSyncConfigurationRequestMessage.h>
 #import <SignalServiceKit/OWSSyncContactsMessage.h>
 #import <SignalServiceKit/OWSSyncFetchLatestMessage.h>
 #import <SignalServiceKit/OWSSyncGroupsMessage.h>
+#import <SignalServiceKit/OWSSyncRequestMessage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -145,6 +146,16 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     return SDSDatabaseStorage.shared;
 }
 
+- (OWSIncomingContactSyncJobQueue *)incomingContactSyncJobQueue
+{
+    return Environment.shared.incomingContactSyncJobQueue;
+}
+
+- (OWSIncomingGroupSyncJobQueue *)incomingGroupSyncJobQueue
+{
+    return Environment.shared.incomingGroupSyncJobQueue;
+}
+
 #pragma mark - Notifications
 
 - (void)signalAccountsDidChange:(id)notification {
@@ -232,6 +243,23 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     }];
 }
 
+- (void)processIncomingGroupsSyncMessage:(SSKProtoSyncMessageGroups *)syncMessage transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSLogInfo(@"");
+
+    TSAttachmentPointer *attachmentPointer = [TSAttachmentPointer attachmentPointerFromProto:syncMessage.blob albumMessage:nil];
+    [attachmentPointer anyInsertWithTransaction:transaction];
+    [self.incomingGroupSyncJobQueue addWithAttachmentId:attachmentPointer.uniqueId transaction:transaction];
+}
+
+- (void)processIncomingContactsSyncMessage:(SSKProtoSyncMessageContacts *)syncMessage transaction:(SDSAnyWriteTransaction *)transaction
+{
+    TSAttachmentPointer *attachmentPointer = [TSAttachmentPointer attachmentPointerFromProto:syncMessage.blob
+                                                                                albumMessage:nil];
+    [attachmentPointer anyInsertWithTransaction:transaction];
+    [self.incomingContactSyncJobQueue addWithAttachmentId:attachmentPointer.uniqueId transaction:transaction];
+}
+
 #pragma mark - Groups Sync
 
 - (void)syncGroupsWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -267,7 +295,8 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 {
     SignalAccount *signalAccount =
         [[SignalAccount alloc] initWithSignalServiceAddress:self.tsAccountManager.localAddress];
-    signalAccount.contact = [Contact new];
+    // OWSContactsOutputStream requires all signalAccount to have a contact.
+    signalAccount.contact = [[Contact alloc] initWithSystemContact:[CNContact new]];
 
     return [self syncContactsForSignalAccounts:@[ signalAccount ] skipIfRedundant:NO debounce:NO];
 }
@@ -430,12 +459,14 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     }
 
     [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self sendBlockListSyncRequestMessageTransaction:transaction];
-        [self sendConfigurationSyncRequestMessageTransaction:transaction];
+        [self sendSyncRequestMessage:OWSSyncRequestType_Blocked transaction:transaction];
+        [self sendSyncRequestMessage:OWSSyncRequestType_Configuration transaction:transaction];
+        [self sendSyncRequestMessage:OWSSyncRequestType_Groups transaction:transaction];
+        [self sendSyncRequestMessage:OWSSyncRequestType_Contacts transaction:transaction];
     }];
 }
 
-- (void)sendBlockListSyncRequestMessageTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)sendSyncRequestMessage:(OWSSyncRequestType)requestType transaction:(SDSAnyWriteTransaction *)transaction
 {
     DDLogInfo(@"");
 
@@ -455,36 +486,10 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         return;
     }
 
-    OWSSyncBlockedRequestMessage *syncConfigurationRequestMessage =
-        [[OWSSyncBlockedRequestMessage alloc] initWithThread:thread];
+    OWSSyncRequestMessage *syncRequestMessage = [[OWSSyncRequestMessage alloc] initWithThread:thread
+                                                                                  requestType:requestType];
 
-    [self.messageSenderJobQueue addMessage:syncConfigurationRequestMessage.asPreparer transaction:transaction];
-}
-
-- (void)sendConfigurationSyncRequestMessageTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    DDLogInfo(@"");
-
-    if (!self.tsAccountManager.isRegisteredAndReady) {
-        OWSFailDebug(@"Unexpectedly tried to send sync request before registration.");
-        return;
-    }
-
-    if (self.tsAccountManager.isRegisteredPrimaryDevice) {
-        OWSFailDebug(@"Sync request should only be sent from a linked device");
-        return;
-    }
-
-    TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
-    if (thread == nil) {
-        OWSFailDebug(@"Missing thread.");
-        return;
-    }
-
-    OWSSyncConfigurationRequestMessage *syncConfigurationRequestMessage =
-        [[OWSSyncConfigurationRequestMessage alloc] initWithThread:thread];
-
-    [self.messageSenderJobQueue addMessage:syncConfigurationRequestMessage.asPreparer transaction:transaction];
+    [self.messageSenderJobQueue addMessage:syncRequestMessage.asPreparer transaction:transaction];
 }
 
 #pragma mark - Fetch Latest

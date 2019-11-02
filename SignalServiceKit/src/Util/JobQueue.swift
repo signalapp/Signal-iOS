@@ -330,6 +330,21 @@ extension JobRecordFinder {
     }
 }
 
+@objc
+public class JobRecordFinderObjC: NSObject {
+    private let jobRecordFinder = AnyJobRecordFinder<SSKJobRecord>()
+
+    @objc
+    public func enumerateJobRecords(label: String, transaction: SDSAnyReadTransaction, block: @escaping (SSKJobRecord, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        jobRecordFinder.enumerateJobRecords(label: label, transaction: transaction, block: block)
+    }
+
+    @objc
+    public func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: SDSAnyReadTransaction, block: @escaping (SSKJobRecord, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        jobRecordFinder.enumerateJobRecords(label: label, status: status, transaction: transaction, block: block)
+    }
+}
+
 public class AnyJobRecordFinder<JobRecordType> where JobRecordType: SSKJobRecord {
     lazy var grdbAdapter = GRDBJobRecordFinder<JobRecordType>()
     lazy var yapAdapter = YAPDBJobRecordFinder<JobRecordType>()

@@ -43,7 +43,6 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 @interface TSThread ()
 
 @property (nonatomic, nullable) NSDate *creationDate;
-@property (nonatomic) NSString *conversationColorName;
 @property (nonatomic) BOOL isArchived;
 @property (nonatomic, copy, nullable) NSString *messageDraft;
 @property (atomic, nullable) NSDate *mutedUntilDate;
@@ -464,16 +463,13 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     BOOL needsToClearArchived = self.isArchived && wasMessageInserted && AppReadiness.isAppReady;
     BOOL needsToUpdateLastInteractionRowId = messageSortId > self.lastInteractionRowId;
     if (needsToMarkAsVisible || needsToClearArchived || needsToUpdateLastInteractionRowId) {
-        [self anyOverwritingUpdateWithTransaction:transaction
-                                            block:^(TSThread *thread) {
-                                                thread.shouldThreadBeVisible = YES;
-                                                thread.lastInteractionRowId
-                                                    = MAX(thread.lastInteractionRowId, messageSortId);
-                                                if (thread.isArchived && wasMessageInserted) {
-                                                    // No longer archived.
-                                                    thread.isArchived = NO;
-                                                }
-                                            }];
+        self.shouldThreadBeVisible = YES;
+        self.lastInteractionRowId = MAX(self.lastInteractionRowId, messageSortId);
+        if (self.isArchived && wasMessageInserted) {
+            // No longer archived.
+            self.isArchived = NO;
+        }
+        [self anyOverwritingUpdateWithTransaction:transaction];
     } else {
         [self.databaseStorage touchThread:self transaction:transaction];
     }
@@ -491,13 +487,9 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     int64_t messageSortId = [self messageSortIdForMessage:message transaction:transaction];
     BOOL needsToUpdateLastInteractionRowId = messageSortId == self.lastInteractionRowId;
     if (needsToUpdateLastInteractionRowId) {
-        [self anyOverwritingUpdateWithTransaction:transaction
-                                            block:^(TSThread *thread) {
-                                                TSInteraction *_Nullable latestInteraction =
-                                                    [thread lastInteractionForInboxWithTransaction:transaction];
-                                                thread.lastInteractionRowId
-                                                    = latestInteraction ? latestInteraction.sortId : 0;
-                                            }];
+        TSInteraction *_Nullable latestInteraction = [self lastInteractionForInboxWithTransaction:transaction];
+        self.lastInteractionRowId = latestInteraction ? latestInteraction.sortId : 0;
+        [self anyOverwritingUpdateWithTransaction:transaction];
     } else {
         [self.databaseStorage touchThread:self transaction:transaction];
     }

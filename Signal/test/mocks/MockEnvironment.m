@@ -24,18 +24,22 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // TODO: We should probably mock this out.
     OWSAudioSession *audioSession = [OWSAudioSession new];
+    OWSIncomingContactSyncJobQueue *incomingContactSyncJobQueue = [OWSIncomingContactSyncJobQueue new];
+    OWSIncomingGroupSyncJobQueue *incomingGroupSyncJobQueue = [OWSIncomingGroupSyncJobQueue new];
+    LaunchJobs *launchJobs = [LaunchJobs new];
     OWSPreferences *preferences = [OWSPreferences new];
     OWSSounds *sounds = [OWSSounds new];
     id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
     OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
-    LaunchJobs *launchJobs = [LaunchJobs new];
 
     self = [super initWithAudioSession:audioSession
+           incomingContactSyncJobQueue:incomingContactSyncJobQueue
+             incomingGroupSyncJobQueue:incomingGroupSyncJobQueue
+                            launchJobs:launchJobs
                            preferences:preferences
             proximityMonitoringManager:proximityMonitoringManager
                                 sounds:sounds
-                         windowManager:windowManager
-                            launchJobs:launchJobs];
+                         windowManager:windowManager];
 
     OWSAssertDebug(self);
     return self;

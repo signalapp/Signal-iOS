@@ -206,7 +206,7 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 
     for (SignalServiceAddress *address in addresses) {
         OWSAssertDebug(address.isValid);
-        [blockingManager addBlockedAddress:address];
+        [blockingManager addBlockedAddress:address wasLocallyInitiated:YES];
     }
 
     [self showOkAlertWithTitle:NSLocalizedString(
@@ -231,7 +231,7 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
     OWSAssertDebug(blockingManager);
 
     // block the group regardless of the ability to deliver the "leave group" message.
-    [blockingManager addBlockedGroup:groupThread.groupModel];
+    [blockingManager addBlockedGroup:groupThread.groupModel wasLocallyInitiated:YES];
 
     // blockingManager.addBlocked* creates sneaky transactions, so we can't pass in a transaction
     // via params and instead have to create our own sneaky transaction here.
@@ -369,7 +369,7 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 
     for (SignalServiceAddress *address in addresses) {
         OWSAssertDebug(address.isValid);
-        [blockingManager removeBlockedAddress:address];
+        [blockingManager removeBlockedAddress:address wasLocallyInitiated:YES];
     }
 
     NSString *titleFormat = NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT",
@@ -434,7 +434,7 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
     OWSAssertDebug(fromViewController);
     OWSAssertDebug(blockingManager);
 
-    [blockingManager removeBlockedGroupId:groupModel.groupId];
+    [blockingManager removeBlockedGroupId:groupModel.groupId wasLocallyInitiated:YES];
 
     NSString *titleFormat = NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT",
         @"Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}.");
