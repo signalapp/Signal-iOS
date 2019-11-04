@@ -50,7 +50,7 @@
 		"OWSEndSessionMessage",
 		"OWSDynamicOutgoingMessage",
 		"OWSDisappearingMessagesConfigurationMessage",
-		"OWSSyncGroupsRequestMessage",
+		"OWSGroupInfoRequestMessage",
 		"OWSProfileKeyMessage",
 		"OWSOutgoingNullMessage",
 		"OWSOutgoingCallMessage",

@@ -35,6 +35,9 @@ import Foundation
 
     @objc
     static public let searchPlaceholder = NSLocalizedString("SEARCH_FIELD_PLACE_HOLDER_TEXT", comment: "placeholder text in an empty search field")
+
+    @objc
+    static public let mainPhoneNumberLabel = NSLocalizedString("PHONE_NUMBER_TYPE_MAIN", comment: "Label for 'Main' phone numbers.")
 }
 
 @objc

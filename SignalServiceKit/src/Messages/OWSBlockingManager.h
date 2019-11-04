@@ -22,14 +22,22 @@ extern NSString *const kNSNotificationName_BlockListDidChange;
 
 + (instancetype)sharedManager;
 
-- (void)addBlockedAddress:(SignalServiceAddress *)address;
-- (void)addBlockedAddress:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)addBlockedAddress:(SignalServiceAddress *)address wasLocallyInitiated:(BOOL)wasLocallyInitiated;
 
-- (void)removeBlockedAddress:(SignalServiceAddress *)address;
-- (void)removeBlockedAddress:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)addBlockedAddress:(SignalServiceAddress *)address
+      wasLocallyInitiated:(BOOL)wasLocallyInitiated
+              transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)processIncomingBlockedSyncMessage:(SSKProtoSyncMessageBlocked *)syncMessage
-                              transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)removeBlockedAddress:(SignalServiceAddress *)address wasLocallyInitiated:(BOOL)wasLocallyInitiated;
+
+- (void)removeBlockedAddress:(SignalServiceAddress *)address
+         wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                 transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (void)processIncomingSyncWithBlockedPhoneNumbers:(nullable NSSet<NSString *> *)blockedPhoneNumbers
+                                      blockedUUIDs:(nullable NSSet<NSUUID *> *)blockedUUIDs
+                                   blockedGroupIds:(nullable NSSet<NSData *> *)blockedGroupIds
+                                       transaction:(SDSAnyWriteTransaction *)transaction;
 
 @property (readonly) NSSet<SignalServiceAddress *> *blockedAddresses;
 @property (readonly) NSArray<NSString *> *blockedPhoneNumbers;
@@ -38,12 +46,24 @@ extern NSString *const kNSNotificationName_BlockListDidChange;
 @property (readonly) NSArray<NSData *> *blockedGroupIds;
 @property (readonly) NSArray<TSGroupModel *> *blockedGroups;
 
-- (void)addBlockedGroup:(TSGroupModel *)group;
-- (void)removeBlockedGroupId:(NSData *)groupId;
+- (void)addBlockedGroup:(TSGroupModel *)groupModel wasLocallyInitiated:(BOOL)wasLocallyInitiated;
+
+- (void)addBlockedGroup:(TSGroupModel *)groupModel
+    wasLocallyInitiated:(BOOL)wasLocallyInitiated
+            transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (void)removeBlockedGroupId:(NSData *)groupId wasLocallyInitiated:(BOOL)wasLocallyInitiated;
+
+- (void)removeBlockedGroupId:(NSData *)groupId
+         wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                 transaction:(SDSAnyWriteTransaction *)transaction;
+
 - (nullable TSGroupModel *)cachedGroupDetailsWithGroupId:(NSData *)groupId;
 
-- (void)addBlockedThread:(TSThread *)thread;
-- (void)removeBlockedThread:(TSThread *)thread;
+- (void)addBlockedThread:(TSThread *)thread wasLocallyInitiated:(BOOL)wasLocallyInitiated;
+
+- (void)removeBlockedThread:(TSThread *)thread wasLocallyInitiated:(BOOL)wasLocallyInitiated;
+
 - (BOOL)isThreadBlocked:(TSThread *)thread;
 
 - (BOOL)isAddressBlocked:(SignalServiceAddress *)address;

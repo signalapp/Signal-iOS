@@ -179,14 +179,14 @@ public extension SignalRecipient {
         sdsSave(saveMode: .insert, transaction: transaction)
     }
 
-    // This method is private; we should never use it directly.
-    // Instead, use anyUpdate(transaction:block:), so that we
-    // use the "update with" pattern.
-    private func anyUpdate(transaction: SDSAnyWriteTransaction) {
-        sdsSave(saveMode: .update, transaction: transaction)
-    }
-
-    @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
+    // Avoid this method whenever feasible.
+    //
+    // If the record has previously been saved, this method does an overwriting
+    // update of the corresponding row, otherwise if it's a new record, this
+    // method inserts a new row.
+    //
+    // For performance, when possible, you should explicitly specify whether
+    // you are inserting or updating rather than calling this method.
     func anyUpsert(transaction: SDSAnyWriteTransaction) {
         let isInserting: Bool
         if SignalRecipient.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil {
@@ -237,20 +237,20 @@ public extension SignalRecipient {
             block(dbCopy)
         }
 
-        dbCopy.anyUpdate(transaction: transaction)
+        dbCopy.sdsSave(saveMode: .update, transaction: transaction)
     }
 
-    // This method is an alternative to the "updateWith..." methods.
-    // We should usually use "updateWith...".  There are cases where
-    // this doesn't make sense, e.g. perf hotspots where we know
-    // we've just loaded the model in the same transaction.  In
-    // these cases it is both safe and advantageous to an "overwriting"
-    // update.
-    func anyOverwritingUpdate(transaction: SDSAnyWriteTransaction, block: (SignalRecipient) -> Void) {
-
-        block(self)
-
-        anyUpdate(transaction: transaction)
+    // This method is an alternative to `anyUpdate(transaction:block:)` methods.
+    //
+    // We should generally use `anyUpdate` to ensure we're not unintentionally
+    // clobbering other columns in the database when another concurrent update
+    // has occured.
+    //
+    // There are cases when this doesn't make sense, e.g. when  we know we've
+    // just loaded the model in the same transaction. In those cases it is
+    // safe and faster to do a "overwriting" update
+    func anyOverwritingUpdate(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .update, transaction: transaction)
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {

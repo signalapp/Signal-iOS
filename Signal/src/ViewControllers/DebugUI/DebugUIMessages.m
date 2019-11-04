@@ -16,8 +16,8 @@
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalServiceKit/OWSGroupInfoRequestMessage.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
-#import <SignalServiceKit/OWSSyncGroupsRequestMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SSKSessionStore.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -268,11 +268,11 @@ NS_ASSUME_NONNULL_BEGIN
             itemWithTitle:@"Request Bogus group info"
               actionBlock:^{
                   OWSLogInfo(@"Requesting bogus group info for thread: %@", thread);
-                  OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
-                      [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread
+                  OWSGroupInfoRequestMessage *groupInfoRequestMessage =
+                      [[OWSGroupInfoRequestMessage alloc] initWithThread:thread
                                                                   groupId:[TSGroupModel generateRandomGroupId]];
                   [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
-                      [self.messageSenderJobQueue addMessage:syncGroupsRequestMessage.asPreparer
+                      [self.messageSenderJobQueue addMessage:groupInfoRequestMessage.asPreparer
                                                  transaction:transaction];
                   }];
               }],
@@ -4946,9 +4946,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         for (SignalServiceAddress *address in groupThread.groupModel.groupMembers) {
             TSThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:address transaction:transaction];
             OWSLogInfo(@"Requesting group info for group thread from: %@", address);
-            OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
-                [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread groupId:groupThread.groupModel.groupId];
-            [self.messageSenderJobQueue addMessage:syncGroupsRequestMessage.asPreparer transaction:transaction];
+            OWSGroupInfoRequestMessage *groupInfoRequestMessage =
+                [[OWSGroupInfoRequestMessage alloc] initWithThread:thread groupId:groupThread.groupModel.groupId];
+            [self.messageSenderJobQueue addMessage:groupInfoRequestMessage.asPreparer transaction:transaction];
         }
     }];
 }

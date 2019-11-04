@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 BIN_NAME=$0
 
 function usage() {
