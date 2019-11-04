@@ -296,7 +296,13 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         //
         // NOTE: We also inform the desktop in the failure case,
         //       since that _may have_ affected service state.
-        [[self.syncManager syncLocalContact] retainUntilComplete];
+        if (self.tsAccountManager.isRegisteredPrimaryDevice) {
+            [[self.syncManager syncLocalContact] retainUntilComplete];
+        }
+
+        // Notify all our devices that the profile has changed.
+        // Older linked devices may not handle this message.
+        [self.syncManager sendFetchLatestProfileSyncMessage];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             failureBlockParameter();
@@ -308,7 +314,13 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         // We use a "self-only" contact sync to indicate to desktop
         // that we've changed our profile and that it should do a
         // profile fetch for "self".
-        [[self.syncManager syncLocalContact] retainUntilComplete];
+        if (self.tsAccountManager.isRegisteredPrimaryDevice) {
+            [[self.syncManager syncLocalContact] retainUntilComplete];
+        }
+
+        // Notify all our devices that the profile has changed.
+        // Older linked devices may not handle this message.
+        [self.syncManager sendFetchLatestProfileSyncMessage];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             successBlockParameter();
@@ -821,9 +833,11 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         });
 
         // Sync local profile key.
-        promise = promise.thenInBackground(^(id value) {
-            return [self.syncManager syncLocalContact];
-        });
+        if (self.tsAccountManager.isRegisteredPrimaryDevice) {
+            promise = promise.thenInBackground(^(id value) {
+                return [self.syncManager syncLocalContact];
+            });
+        }
 
         promise = promise.thenInBackground(^(id value) {
             [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_ProfileKeyDidChange

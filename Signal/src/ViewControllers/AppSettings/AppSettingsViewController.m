@@ -614,7 +614,7 @@
     self.navigationItem.rightBarButtonItem = [self darkThemeBarButton];
 }
 
-#pragma mark - Socket Status Notifications
+#pragma mark - Notifications
 
 - (void)observeNotifications
 {
@@ -622,9 +622,21 @@
                                              selector:@selector(socketStateDidChange)
                                                  name:kNSNotification_OWSWebSocketStateDidChange
                                                object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(localProfileDidChange:)
+                                                 name:kNSNotificationName_LocalProfileDidChange
+                                               object:nil];
 }
 
 - (void)socketStateDidChange
+{
+    OWSAssertIsOnMainThread();
+
+    [self updateTableContents];
+}
+
+- (void)localProfileDidChange:(id)notification
 {
     OWSAssertIsOnMainThread();
 

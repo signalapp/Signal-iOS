@@ -5565,6 +5565,9 @@ extension SSKProtoSyncMessageRead.SSKProtoSyncMessageReadBuilder {
         if hasLinkPreviews {
             builder.setLinkPreviews(linkPreviews)
         }
+        if hasProvisioningVersion {
+            builder.setProvisioningVersion(provisioningVersion)
+        }
         return builder
     }
 
@@ -5592,6 +5595,11 @@ extension SSKProtoSyncMessageRead.SSKProtoSyncMessageReadBuilder {
         @objc
         public func setLinkPreviews(_ valueParam: Bool) {
             proto.linkPreviews = valueParam
+        }
+
+        @objc
+        public func setProvisioningVersion(_ valueParam: UInt32) {
+            proto.provisioningVersion = valueParam
         }
 
         @objc public func build() throws -> SSKProtoSyncMessageConfiguration {
@@ -5631,6 +5639,13 @@ extension SSKProtoSyncMessageRead.SSKProtoSyncMessageReadBuilder {
     }
     @objc public var hasLinkPreviews: Bool {
         return proto.hasLinkPreviews
+    }
+
+    @objc public var provisioningVersion: UInt32 {
+        return proto.provisioningVersion
+    }
+    @objc public var hasProvisioningVersion: Bool {
+        return proto.hasProvisioningVersion
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.Configuration) {
@@ -6042,6 +6057,133 @@ extension SSKProtoSyncMessageViewOnceOpen.SSKProtoSyncMessageViewOnceOpenBuilder
 
 #endif
 
+// MARK: - SSKProtoSyncMessageFetchLatest
+
+@objc public class SSKProtoSyncMessageFetchLatest: NSObject {
+
+    // MARK: - SSKProtoSyncMessageFetchLatestType
+
+    @objc public enum SSKProtoSyncMessageFetchLatestType: Int32 {
+        case unknown = 0
+        case localProfile = 1
+        case storageManifest = 2
+    }
+
+    private class func SSKProtoSyncMessageFetchLatestTypeWrap(_ value: SignalServiceProtos_SyncMessage.FetchLatest.TypeEnum) -> SSKProtoSyncMessageFetchLatestType {
+        switch value {
+        case .unknown: return .unknown
+        case .localProfile: return .localProfile
+        case .storageManifest: return .storageManifest
+        }
+    }
+
+    private class func SSKProtoSyncMessageFetchLatestTypeUnwrap(_ value: SSKProtoSyncMessageFetchLatestType) -> SignalServiceProtos_SyncMessage.FetchLatest.TypeEnum {
+        switch value {
+        case .unknown: return .unknown
+        case .localProfile: return .localProfile
+        case .storageManifest: return .storageManifest
+        }
+    }
+
+    // MARK: - SSKProtoSyncMessageFetchLatestBuilder
+
+    @objc public class func builder() -> SSKProtoSyncMessageFetchLatestBuilder {
+        return SSKProtoSyncMessageFetchLatestBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoSyncMessageFetchLatestBuilder {
+        let builder = SSKProtoSyncMessageFetchLatestBuilder()
+        if let _value = type {
+            builder.setType(_value)
+        }
+        return builder
+    }
+
+    @objc public class SSKProtoSyncMessageFetchLatestBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_SyncMessage.FetchLatest()
+
+        @objc fileprivate override init() {}
+
+        @objc
+        public func setType(_ valueParam: SSKProtoSyncMessageFetchLatestType) {
+            proto.type = SSKProtoSyncMessageFetchLatestTypeUnwrap(valueParam)
+        }
+
+        @objc public func build() throws -> SSKProtoSyncMessageFetchLatest {
+            return try SSKProtoSyncMessageFetchLatest.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageFetchLatest.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.FetchLatest
+
+    public var type: SSKProtoSyncMessageFetchLatestType? {
+        guard proto.hasType else {
+            return nil
+        }
+        return SSKProtoSyncMessageFetchLatest.SSKProtoSyncMessageFetchLatestTypeWrap(proto.type)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc public var unwrappedType: SSKProtoSyncMessageFetchLatestType {
+        if !hasType {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: FetchLatest.type.")
+        }
+        return SSKProtoSyncMessageFetchLatest.SSKProtoSyncMessageFetchLatestTypeWrap(proto.type)
+    }
+    @objc public var hasType: Bool {
+        return proto.hasType
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.FetchLatest) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageFetchLatest {
+        let proto = try SignalServiceProtos_SyncMessage.FetchLatest(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.FetchLatest) throws -> SSKProtoSyncMessageFetchLatest {
+        // MARK: - Begin Validation Logic for SSKProtoSyncMessageFetchLatest -
+
+        // MARK: - End Validation Logic for SSKProtoSyncMessageFetchLatest -
+
+        let result = SSKProtoSyncMessageFetchLatest(proto: proto)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoSyncMessageFetchLatest {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessageFetchLatest.SSKProtoSyncMessageFetchLatestBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageFetchLatest? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoSyncMessage
 
 @objc public class SSKProtoSyncMessage: NSObject {
@@ -6083,6 +6225,9 @@ extension SSKProtoSyncMessageViewOnceOpen.SSKProtoSyncMessageViewOnceOpenBuilder
         builder.setStickerPackOperation(stickerPackOperation)
         if let _value = viewOnceOpen {
             builder.setViewOnceOpen(_value)
+        }
+        if let _value = fetchLatest {
+            builder.setFetchLatest(_value)
         }
         return builder
     }
@@ -6212,6 +6357,17 @@ extension SSKProtoSyncMessageViewOnceOpen.SSKProtoSyncMessageViewOnceOpenBuilder
             proto.viewOnceOpen = valueParam.proto
         }
 
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setFetchLatest(_ valueParam: SSKProtoSyncMessageFetchLatest?) {
+            guard let valueParam = valueParam else { return }
+            proto.fetchLatest = valueParam.proto
+        }
+
+        public func setFetchLatest(_ valueParam: SSKProtoSyncMessageFetchLatest) {
+            proto.fetchLatest = valueParam.proto
+        }
+
         @objc public func build() throws -> SSKProtoSyncMessage {
             return try SSKProtoSyncMessage.parseProto(proto)
         }
@@ -6243,6 +6399,8 @@ extension SSKProtoSyncMessageViewOnceOpen.SSKProtoSyncMessageViewOnceOpenBuilder
 
     @objc public let viewOnceOpen: SSKProtoSyncMessageViewOnceOpen?
 
+    @objc public let fetchLatest: SSKProtoSyncMessageFetchLatest?
+
     @objc public var padding: Data? {
         guard proto.hasPadding else {
             return nil
@@ -6263,7 +6421,8 @@ extension SSKProtoSyncMessageViewOnceOpen.SSKProtoSyncMessageViewOnceOpenBuilder
                  verified: SSKProtoVerified?,
                  configuration: SSKProtoSyncMessageConfiguration?,
                  stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation],
-                 viewOnceOpen: SSKProtoSyncMessageViewOnceOpen?) {
+                 viewOnceOpen: SSKProtoSyncMessageViewOnceOpen?,
+                 fetchLatest: SSKProtoSyncMessageFetchLatest?) {
         self.proto = proto
         self.sent = sent
         self.contacts = contacts
@@ -6275,6 +6434,7 @@ extension SSKProtoSyncMessageViewOnceOpen.SSKProtoSyncMessageViewOnceOpenBuilder
         self.configuration = configuration
         self.stickerPackOperation = stickerPackOperation
         self.viewOnceOpen = viewOnceOpen
+        self.fetchLatest = fetchLatest
     }
 
     @objc
@@ -6334,6 +6494,11 @@ extension SSKProtoSyncMessageViewOnceOpen.SSKProtoSyncMessageViewOnceOpenBuilder
             viewOnceOpen = try SSKProtoSyncMessageViewOnceOpen.parseProto(proto.viewOnceOpen)
         }
 
+        var fetchLatest: SSKProtoSyncMessageFetchLatest?
+        if proto.hasFetchLatest {
+            fetchLatest = try SSKProtoSyncMessageFetchLatest.parseProto(proto.fetchLatest)
+        }
+
         // MARK: - Begin Validation Logic for SSKProtoSyncMessage -
 
         // MARK: - End Validation Logic for SSKProtoSyncMessage -
@@ -6348,7 +6513,8 @@ extension SSKProtoSyncMessageViewOnceOpen.SSKProtoSyncMessageViewOnceOpenBuilder
                                          verified: verified,
                                          configuration: configuration,
                                          stickerPackOperation: stickerPackOperation,
-                                         viewOnceOpen: viewOnceOpen)
+                                         viewOnceOpen: viewOnceOpen,
+                                         fetchLatest: fetchLatest)
         return result
     }
 

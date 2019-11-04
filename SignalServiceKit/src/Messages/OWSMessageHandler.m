@@ -191,6 +191,15 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
         }
         [description appendFormat:@"StickerPackOperation: %@", [operationTypes componentsJoinedByString:@", "]];
         return description;
+    } else if (syncMessage.fetchLatest) {
+        switch (syncMessage.fetchLatest.unwrappedType) {
+            case SSKProtoSyncMessageFetchLatestTypeUnknown:
+                return @"FetchLatest_Unknown";
+            case SSKProtoSyncMessageFetchLatestTypeLocalProfile:
+                return @"FetchLatest_LocalProfile";
+            case SSKProtoSyncMessageFetchLatestTypeStorageManifest:
+                return @"FetchLatest_StorageManifest";
+        }
     } else {
         OWSFailDebug(@"Unknown sync message type");
         return @"Unknown";

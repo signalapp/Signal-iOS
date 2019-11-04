@@ -16,6 +16,7 @@ public struct ProvisionMessage {
     public let areReadReceiptsEnabled: Bool
     public let primaryUserAgent: String
     public let provisioningCode: String
+    public let provisioningVersion: UInt32?
 }
 
 public enum ProvisioningError: Error {
@@ -107,6 +108,7 @@ public class ProvisioningCipher {
         let areReadReceiptsEnabled = proto.readReceipts
         let primaryUserAgent = proto.userAgent
         let provisioningCode = proto.provisioningCode
+        let provisioningVersion = proto.hasProvisioningVersion ? proto.provisioningVersion : nil
 
         guard let phoneNumber = proto.number, phoneNumber.count > 1 else {
             throw ProvisioningError.invalidProvisionMessage("missing number from provisioning message")
@@ -122,6 +124,7 @@ public class ProvisioningCipher {
                                 profileKey: profileKey,
                                 areReadReceiptsEnabled: areReadReceiptsEnabled,
                                 primaryUserAgent: primaryUserAgent,
-                                provisioningCode: provisioningCode)
+                                provisioningCode: provisioningCode,
+                                provisioningVersion: provisioningVersion)
     }
 }

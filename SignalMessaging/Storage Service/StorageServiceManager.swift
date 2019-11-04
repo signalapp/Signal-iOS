@@ -379,6 +379,9 @@ class StorageServiceOperation: OWSOperation {
                     StorageServiceOperation.setAccountToIdentifierMap(identifierMap, transaction: transaction)
                 }
 
+                // Notify our other devices that the storage manifest has changed.
+                OWSSyncManager.shared().sendFetchLatestStorageManifestSyncMessage()
+
                 return self.reportSuccess()
             }
 

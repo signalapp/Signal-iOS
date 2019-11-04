@@ -260,6 +260,9 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
         if let _value = uuid {
             builder.setUuid(_value)
         }
+        if hasProvisioningVersion {
+            builder.setProvisioningVersion(provisioningVersion)
+        }
         return builder
     }
 
@@ -362,6 +365,11 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
             proto.readReceipts = valueParam
         }
 
+        @objc
+        public func setProvisioningVersion(_ valueParam: UInt32) {
+            proto.provisioningVersion = valueParam
+        }
+
         @objc public func build() throws -> ProvisioningProtoProvisionMessage {
             return try ProvisioningProtoProvisionMessage.parseProto(proto)
         }
@@ -403,6 +411,13 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
     }
     @objc public var hasUuid: Bool {
         return proto.hasUuid
+    }
+
+    @objc public var provisioningVersion: UInt32 {
+        return proto.provisioningVersion
+    }
+    @objc public var hasProvisioningVersion: Bool {
+        return proto.hasProvisioningVersion
     }
 
     private init(proto: ProvisioningProtos_ProvisionMessage,
