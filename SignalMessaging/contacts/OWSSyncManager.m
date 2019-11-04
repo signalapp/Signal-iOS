@@ -491,28 +491,20 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (void)sendFetchLatestProfileSyncMessage
 {
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (!self.tsAccountManager.isRegisteredAndReady) {
-            return;
-        }
+    if (!self.tsAccountManager.isRegisteredAndReady) {
+        return;
+    }
 
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self sendFetchLatestSyncMessageWithType:OWSSyncFetchType_LocalProfile];
-        });
-    }];
+    [self sendFetchLatestSyncMessageWithType:OWSSyncFetchType_LocalProfile];
 }
 
 - (void)sendFetchLatestStorageManifestSyncMessage
 {
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (!self.tsAccountManager.isRegisteredAndReady) {
-            return;
-        }
+    if (!self.tsAccountManager.isRegisteredAndReady) {
+        return;
+    }
 
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self sendFetchLatestSyncMessageWithType:OWSSyncFetchType_StorageManifest];
-        });
-    }];
+    [self sendFetchLatestSyncMessageWithType:OWSSyncFetchType_StorageManifest];
 }
 
 - (void)sendFetchLatestSyncMessageWithType:(OWSSyncFetchType)fetchType

@@ -42,6 +42,7 @@ public class ProvisioningController: NSObject {
     }
 
     public func resetPromises() {
+        _awaitProvisionMessage = nil
         (self.deviceIdPromise, self.deviceIdResolver) = Promise.pending()
         (self.provisionEnvelopePromise, self.provisionEnvelopeResolver) = Promise.pending()
     }
@@ -155,11 +156,15 @@ public class ProvisioningController: NSObject {
         }
     }
 
+    private var _awaitProvisionMessage: Promise<ProvisionMessage>?
     public var awaitProvisionMessage: Promise<ProvisionMessage> {
-        return provisionEnvelopePromise.map { [weak self] envelope in
-            guard let self = self else { throw PMKError.cancelled }
-            return try self.provisioningCipher.decrypt(envelope: envelope)
+        if _awaitProvisionMessage == nil {
+            _awaitProvisionMessage = provisionEnvelopePromise.map { [weak self] envelope in
+                guard let self = self else { throw PMKError.cancelled }
+                return try self.provisioningCipher.decrypt(envelope: envelope)
+            }
         }
+        return _awaitProvisionMessage!
     }
 
     public func completeLinking(deviceName: String) -> Promise<Void> {
