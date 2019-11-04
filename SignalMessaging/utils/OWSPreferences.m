@@ -50,6 +50,14 @@ NSString *const OWSPreferencesKey_IsAudibleErrorLoggingEnabled = @"IsAudibleErro
 NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySystemCallLogEnabled";
 NSString *const OWSPreferencesKeyIsViewOnceMessagesEnabled = @"OWSPreferencesKeyIsViewOnceMessagesEnabled";
 
+@interface OWSPreferences ()
+
+@property (atomic, nullable) NSNumber *notificationPreviewTypeCache;
+
+@end
+
+#pragma mark -
+
 @implementation OWSPreferences
 
 #pragma mark - Dependencies
@@ -503,12 +511,21 @@ NSString *const OWSPreferencesKeyIsViewOnceMessagesEnabled = @"OWSPreferencesKey
 - (void)setNotificationPreviewType:(NotificationType)value
 {
     [self setUInt:(NSUInteger)value forKey:OWSPreferencesKeyNotificationPreviewType];
+
+    self.notificationPreviewTypeCache = @(value);
 }
 
 - (NotificationType)notificationPreviewType
 {
-    return (NotificationType)
-        [self uintForKey:OWSPreferencesKeyNotificationPreviewType defaultValue:(NSUInteger)NotificationNamePreview];
+    NSNumber *_Nullable cachedValue = self.notificationPreviewTypeCache;
+    if (cachedValue != nil) {
+        return (NotificationType)cachedValue.unsignedIntegerValue;
+    }
+
+    NotificationType result = (NotificationType)[self uintForKey:OWSPreferencesKeyNotificationPreviewType
+                                                    defaultValue:(NSUInteger)NotificationNamePreview];
+    self.notificationPreviewTypeCache = @(result);
+    return result;
 }
 
 - (NSString *)nameForNotificationPreviewType:(NotificationType)notificationType
