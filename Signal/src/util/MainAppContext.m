@@ -114,7 +114,14 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
     OWSLogInfo(@"");
 
-    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillEnterForegroundNotification object:nil];
+    [BenchManager benchWithTitle:@"Slow post WillEnterForeground"
+                 logIfLongerThan:0.01
+                 logInProduction:YES
+                           block:^{
+                               [NSNotificationCenter.defaultCenter
+                                   postNotificationName:OWSApplicationWillEnterForegroundNotification
+                                                 object:nil];
+                           }];
 }
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
@@ -126,7 +133,14 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     OWSLogInfo(@"");
     [DDLog flushLog];
 
-    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationDidEnterBackgroundNotification object:nil];
+    [BenchManager benchWithTitle:@"Slow post DidEnterBackground"
+                 logIfLongerThan:0.01
+                 logInProduction:YES
+                           block:^{
+                               [NSNotificationCenter.defaultCenter
+                                   postNotificationName:OWSApplicationDidEnterBackgroundNotification
+                                                 object:nil];
+                           }];
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
@@ -138,7 +152,14 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     OWSLogInfo(@"");
     [DDLog flushLog];
 
-    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillResignActiveNotification object:nil];
+    [BenchManager benchWithTitle:@"Slow post WillResignActive"
+                 logIfLongerThan:0.01
+                 logInProduction:YES
+                           block:^{
+                               [NSNotificationCenter.defaultCenter
+                                   postNotificationName:OWSApplicationWillResignActiveNotification
+                                                 object:nil];
+                           }];
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
@@ -149,7 +170,14 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
     OWSLogInfo(@"");
 
-    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationDidBecomeActiveNotification object:nil];
+    [BenchManager benchWithTitle:@"Slow post DidBecomeActive"
+                 logIfLongerThan:0.01
+                 logInProduction:YES
+                           block:^{
+                               [NSNotificationCenter.defaultCenter
+                                   postNotificationName:OWSApplicationDidBecomeActiveNotification
+                                                 object:nil];
+                           }];
 
     [self runAppActiveBlocks];
 }

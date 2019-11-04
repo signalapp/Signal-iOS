@@ -157,13 +157,13 @@ extension ConversationListDatabaseObserver: DatabaseSnapshotDelegate {
     public func databaseSnapshotDidUpdate() {
         AssertIsOnMainThread()
         do {
-            guard let commitedThreadChanges = self.committedThreadChanges else {
+            guard let committedThreadChanges = self.committedThreadChanges else {
                 throw OWSErrorMakeAssertionError("committedThreadChanges was unexpectedly nil")
             }
             self.committedThreadChanges = nil
 
             for delegate in snapshotDelegates {
-                delegate.conversationListDatabaseSnapshotDidUpdate(updatedThreadIds: commitedThreadChanges)
+                delegate.conversationListDatabaseSnapshotDidUpdate(updatedThreadIds: committedThreadChanges)
             }
         } catch DatabaseObserverError.changeTooLarge {
             for delegate in snapshotDelegates {

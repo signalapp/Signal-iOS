@@ -1644,6 +1644,7 @@ NS_ASSUME_NONNULL_BEGIN
     [OWSReadReceiptManager.sharedManager applyEarlyReadReceiptsForIncomingMessage:incomingMessage
                                                                       transaction:transaction];
 
+    // TODO: Is this still necessary?
     [self.databaseStorage touchThread:thread transaction:transaction];
 
     [ViewOnceMessages applyEarlyReadReceiptsForIncomingMessage:incomingMessage transaction:transaction];

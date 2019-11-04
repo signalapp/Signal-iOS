@@ -1806,6 +1806,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     OWSAssertIsOnMainThread();
 
+    if (updatedItemIds.count < 1) {
+        [self updateViewState];
+        return;
+    }
+
     __block ThreadMappingDiff *mappingDiff;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         mappingDiff =
