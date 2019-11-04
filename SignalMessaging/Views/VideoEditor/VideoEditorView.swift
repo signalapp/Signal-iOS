@@ -311,7 +311,7 @@ public class VideoEditorView: UIView {
                         }
                     }.catch { error in
                         owsFailDebug("Error: \(error)")
-                        
+
                         modalVC.dismiss {
                             OWSActionSheets.showErrorAlert(message: NSLocalizedString("ERROR_COULD_NOT_SAVE_VIDEO", comment: "Error indicating that 'save video' failed."))
                         }
@@ -456,6 +456,9 @@ class TrimVideoTimelineView: UIView {
 
     private var timeBubbleView: UIView?
 
+    private let leftIcon = UIImage(named: "trim-video-left")
+    private let rightIcon = UIImage(named: "trim-video-right")
+
     @objc
     public required init() {
         super.init(frame: .zero)
@@ -470,6 +473,10 @@ class TrimVideoTimelineView: UIView {
 
     private func createContents() {
         self.backgroundColor = .black
+        self.layer.shadowColor = UIColor.ows_black.cgColor
+        self.layer.shadowOpacity = 0.35
+        self.layer.shadowRadius = 14
+        self.layer.shadowOffset = CGSize(width: 0, height: 2)
 
         addSubview(thumbnailLayerView)
         thumbnailLayerView.clipsToBounds = true
@@ -478,31 +485,53 @@ class TrimVideoTimelineView: UIView {
             self?.updateThumbnailView()
         }
 
+        trimLayerView.shouldAnimate = false
         addSubview(trimLayerView)
         trimLayerView.autoPinEdgesToSuperviewEdges()
+        let overlayLayer = CAShapeLayer()
+        trimLayerView.layer.addSublayer(overlayLayer)
         let trimLayer = CAShapeLayer()
         trimLayerView.layer.addSublayer(trimLayer)
+        let leftIconLayer = CALayer()
+        leftIconLayer.contents = leftIcon?.cgImage
+        trimLayerView.layer.addSublayer(leftIconLayer)
+        let rightIconLayer = CALayer()
+        rightIconLayer.contents = rightIcon?.cgImage
+        trimLayerView.layer.addSublayer(rightIconLayer)
         trimLayerView.layoutCallback = { [weak self] view in
             guard let self = self else {
                 return
             }
-            let bezierPath = UIBezierPath()
-            bezierPath.append(UIBezierPath(rect: self.outerTrimRect))
-            bezierPath.append(UIBezierPath(rect: self.innerTrimRect))
 
-            trimLayer.path = bezierPath.cgPath
+            let overlayPath = UIBezierPath()
+            overlayPath.append(UIBezierPath(rect: self.leftOverlayRect))
+            overlayPath.append(UIBezierPath(rect: self.rightOverlayRect))
+
+            overlayLayer.path = overlayPath.cgPath
+            overlayLayer.frame = view.bounds
+            overlayLayer.fillColor = self.overlayColor.cgColor
+            overlayLayer.fillRule = .evenOdd
+
+            let trimPath = UIBezierPath()
+            trimPath.append(UIBezierPath(rect: self.outerTrimRect))
+            trimPath.append(UIBezierPath(rect: self.innerTrimRect))
+
+            trimLayer.path = trimPath.cgPath
             trimLayer.frame = view.bounds
             trimLayer.fillColor = self.outerPathColor.cgColor
             trimLayer.fillRule = .evenOdd
+
+            leftIconLayer.frame = self.leftIconRect
+            rightIconLayer.frame = self.rightIconRect
         }
 
         addSubview(cursorLayerView)
         cursorLayerView.autoPinEdgesToSuperviewEdges()
         let cursorLayer = CAShapeLayer()
-                cursorLayer.shadowColor = UIColor.black.cgColor
-                cursorLayer.shadowOffset = CGSize(width: 0, height: 2)
-                cursorLayer.shadowRadius = 4
-                cursorLayer.shadowOpacity = 0.5
+        cursorLayer.shadowColor = UIColor.black.cgColor
+        cursorLayer.shadowOffset = CGSize(width: 0, height: 2)
+        cursorLayer.shadowRadius = 4
+        cursorLayer.shadowOpacity = 0.5
         cursorLayerView.layer.addSublayer(cursorLayer)
         cursorLayerView.layoutCallback = { [weak self] view in
             guard let self = self else {
@@ -615,6 +644,43 @@ class TrimVideoTimelineView: UIView {
         return result
     }
 
+    private var leftOverlayRect: CGRect {
+        var result = CGRect.zero
+        result.size.width = outerTrimRect.minX
+        result.size.height = bounds.height
+        return result
+    }
+
+    private var rightOverlayRect: CGRect {
+        var result = CGRect.zero
+        result.origin.x = outerTrimRect.maxX
+        result.size.width = bounds.width - result.minX
+        result.size.height = bounds.height
+        return result
+    }
+
+    private var leftIconRect: CGRect {
+        guard let leftIcon = self.leftIcon else {
+            return .zero
+        }
+        var result = CGRect.zero
+        result.origin.x = (outerTrimRect.minX + innerTrimRect.minX - leftIcon.size.width) * 0.5
+        result.origin.y = (bounds.height - leftIcon.size.height) * 0.5
+        result.size = leftIcon.size
+        return result
+    }
+
+    private var rightIconRect: CGRect {
+        guard let rightIcon = self.rightIcon else {
+            return .zero
+        }
+        var result = CGRect.zero
+        result.origin.x = (outerTrimRect.maxX + innerTrimRect.maxX - rightIcon.size.width) * 0.5
+        result.origin.y = (bounds.height - rightIcon.size.height) * 0.5
+        result.size = rightIcon.size
+        return result
+    }
+
     fileprivate func updateContents() {
         trimLayerView.updateContent()
         cursorLayerView.updateContent()
@@ -623,6 +689,10 @@ class TrimVideoTimelineView: UIView {
 
     fileprivate func updateCursor() {
         cursorLayerView.updateContent()
+    }
+
+    private var overlayColor: UIColor {
+        return UIColor(white: 0, alpha: 0.5)
     }
 
     private var outerPathColor: UIColor {
@@ -783,11 +853,7 @@ class TrimVideoTimelineView: UIView {
         }
         switch mode {
         case .none:
-            if delegate.isPlaying {
-                showTimeBubble(time: delegate.currentTimeSeconds, alignment: .center)
-            } else {
-                hideTimeBubble()
-            }
+            hideTimeBubble()
         case .trimmingStart:
             showTimeBubble(time: delegate.trimmedStartSeconds, alignment: .left)
         case .trimmingEnd:
