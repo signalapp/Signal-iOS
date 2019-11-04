@@ -581,10 +581,15 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)usernameRowTapped:(UIGestureRecognizer *)sender
 {
-    UIViewController *usernameVC = [UsernameViewController new];
-    [self presentViewController:[[OWSNavigationController alloc] initWithRootViewController:usernameVC]
-                       animated:YES
-                     completion:nil];
+    UsernameViewController *usernameVC = [UsernameViewController new];
+    if (self.profileViewMode == ProfileViewMode_Registration) {
+        usernameVC.modalPresentation = YES;
+        [self presentFormSheetViewController:[[OWSNavigationController alloc] initWithRootViewController:usernameVC]
+                                    animated:YES
+                                  completion:nil];
+    } else {
+        [self.navigationController pushViewController:usernameVC animated:YES];
+    }
 }
 
 - (void)avatarViewTapped:(UIGestureRecognizer *)sender
