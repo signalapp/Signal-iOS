@@ -2981,6 +2981,9 @@
 /* A prefix appeneded to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
+/* An error indicating that the supplied username cannot start with a number. */
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Usernames may not begin with a number.";
+
 /* The title for the username view. */
 "USERNAME_TITLE" = "Username";
 

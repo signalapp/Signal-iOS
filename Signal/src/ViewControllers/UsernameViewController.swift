@@ -35,6 +35,7 @@ class UsernameViewController: OWSViewController {
         case tooShort
         case invalidCharacters
         case inUse
+        case startsWithNumber
     }
     private var validationState: ValidationState = .valid {
         didSet { updateValidationError() }
@@ -161,6 +162,10 @@ class UsernameViewController: OWSViewController {
                                                            comment: "An error indicating that the supplied username is in use by another user. Embeds {{requested username}}.")
 
             errorLabel.text = String(format: unavailableErrorFormat, pendingUsername)
+        case .startsWithNumber:
+            errorRow.isHidden = false
+            errorLabel.text = NSLocalizedString("USERNAME_STARTS_WITH_NUMBER_ERROR",
+                                                comment: "An error indicating that the supplied username cannot start with a number.")
         }
     }
 
