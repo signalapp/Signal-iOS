@@ -381,7 +381,7 @@ public class AccountManager: NSObject {
             return Promise.value(existingUuid)
         }
 
-        return accountServiceClient.getUuid().map { uuid in
+        return accountServiceClient.getUuid().map(on: DispatchQueue.global()) { uuid in
             // It's possible this method could be called multiple times, so we check
             // again if it's been set. We dont bother serializing access since it should
             // be idempotent.
