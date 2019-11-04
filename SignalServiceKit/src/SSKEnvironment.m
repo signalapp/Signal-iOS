@@ -42,6 +42,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) StickerManager *stickerManager;
 @property (nonatomic) SDSDatabaseStorage *databaseStorage;
 @property (nonatomic) StorageCoordinator *storageCoordinator;
+@property (nonatomic) SSKPreferences *sskPreferences;
 
 @end
 
@@ -88,6 +89,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                    accountServiceClient:(AccountServiceClient *)accountServiceClient
                   storageServiceManager:(id<StorageServiceManagerProtocol>)storageServiceManager
                      storageCoordinator:(StorageCoordinator *)storageCoordinator
+                         sskPreferences:(SSKPreferences *)sskPreferences
 {
     self = [super init];
     if (!self) {
@@ -128,6 +130,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(accountServiceClient);
     OWSAssertDebug(storageServiceManager);
     OWSAssertDebug(storageCoordinator);
+    OWSAssertDebug(sskPreferences);
 
     _contactsManager = contactsManager;
     _linkPreviewManager = linkPreviewManager;
@@ -164,6 +167,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _accountServiceClient = accountServiceClient;
     _storageServiceManager = storageServiceManager;
     _storageCoordinator = storageCoordinator;
+    _sskPreferences = sskPreferences;
 
     return self;
 }

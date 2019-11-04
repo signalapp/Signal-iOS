@@ -6,10 +6,15 @@ import Foundation
 
 @objc
 public class SSKPreferences: NSObject {
-    // Never instantiate this class.
-    private override init() {}
+    private static var shared: SSKPreferences {
+        return SSKEnvironment.shared.sskPreferences
+    }
 
     public static let store = SDSKeyValueStore(collection: "SSKPreferences")
+
+    private var store: SDSKeyValueStore {
+        return SSKPreferences.store
+    }
 
     // MARK: -
 
@@ -33,16 +38,34 @@ public class SSKPreferences: NSObject {
 
     // MARK: -
 
-    private static let hasSavedThreadKey = "hasSavedThread"
-
     @objc
     public static func hasSavedThread(transaction: SDSAnyReadTransaction) -> Bool {
-        return store.getBool(hasSavedThreadKey, defaultValue: false, transaction: transaction)
+        return shared.hasSavedThread(transaction: transaction)
     }
 
     @objc
     public static func setHasSavedThread(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
+        shared.setHasSavedThread(newValue, transaction: transaction)
+    }
+
+    private let hasSavedThreadKey = "hasSavedThread"
+    // Only access this queue within db transactions.
+    private var hasSavedThreadCache: Bool?
+
+    @objc
+    public func hasSavedThread(transaction: SDSAnyReadTransaction) -> Bool {
+        if let value = hasSavedThreadCache {
+            return value
+        }
+        let value = store.getBool(hasSavedThreadKey, defaultValue: false, transaction: transaction)
+        hasSavedThreadCache = value
+        return value
+    }
+
+    @objc
+    public func setHasSavedThread(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
         store.setBool(newValue, key: hasSavedThreadKey, transaction: transaction)
+        hasSavedThreadCache = newValue
     }
 
     // MARK: -
