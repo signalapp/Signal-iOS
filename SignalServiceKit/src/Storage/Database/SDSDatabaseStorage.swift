@@ -375,7 +375,9 @@ public class SDSDatabaseStorage: SDSTransactable {
 
     @objc
     public override func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
-        if Thread.isMainThread {
+        if OWSIsDebugBuild() &&
+            Thread.isMainThread &&
+            AppReadiness.isAppReady() {
             Logger.verbose("Database write on main thread.")
         }
 
