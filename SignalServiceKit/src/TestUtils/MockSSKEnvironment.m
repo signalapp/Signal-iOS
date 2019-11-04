@@ -97,6 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
     SignalServiceAddressCache *signalServiceAddressCache = [SignalServiceAddressCache new];
     AccountServiceClient *accountServiceClient = [FakeAccountServiceClient new];
     OWSFakeStorageServiceManager *storageServiceManager = [OWSFakeStorageServiceManager new];
+    SSKPreferences *sskPreferences = [SSKPreferences new];
 
     self = [super initWithContactsManager:contactsManager
                        linkPreviewManager:linkPreviewManager
@@ -132,7 +133,8 @@ NS_ASSUME_NONNULL_BEGIN
                 signalServiceAddressCache:signalServiceAddressCache
                      accountServiceClient:accountServiceClient
                     storageServiceManager:storageServiceManager
-                       storageCoordinator:storageCoordinator];
+                       storageCoordinator:storageCoordinator
+                           sskPreferences:sskPreferences];
 
     if (!self) {
         return nil;

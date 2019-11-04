@@ -97,6 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
         SignalServiceAddressCache *signalServiceAddressCache = [SignalServiceAddressCache new];
         AccountServiceClient *accountServiceClient = [AccountServiceClient new];
         OWSStorageServiceManager *storageServiceManager = OWSStorageServiceManager.shared;
+        SSKPreferences *sskPreferences = [SSKPreferences new];
 
         OWSAudioSession *audioSession = [OWSAudioSession new];
         OWSSounds *sounds = [OWSSounds new];
@@ -147,7 +148,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                         signalServiceAddressCache:signalServiceAddressCache
                                                              accountServiceClient:accountServiceClient
                                                             storageServiceManager:storageServiceManager
-                                                               storageCoordinator:storageCoordinator]];
+                                                               storageCoordinator:storageCoordinator
+                                                                   sskPreferences:sskPreferences]];
 
         appSpecificSingletonBlock();
 

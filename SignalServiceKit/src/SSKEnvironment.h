@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSDatabaseStorage;
 @class SSKMessageDecryptJobQueue;
 @class SSKPreKeyStore;
+@class SSKPreferences;
 @class SSKSessionStore;
 @class SSKSignedPreKeyStore;
 @class SignalServiceAddressCache;
@@ -84,7 +85,8 @@ NS_ASSUME_NONNULL_BEGIN
               signalServiceAddressCache:(SignalServiceAddressCache *)signalServiceAddressCache
                    accountServiceClient:(AccountServiceClient *)accountServiceClient
                   storageServiceManager:(id<StorageServiceManagerProtocol>)storageServiceManager
-                     storageCoordinator:(StorageCoordinator *)storageCoordinator NS_DESIGNATED_INITIALIZER;
+                     storageCoordinator:(StorageCoordinator *)storageCoordinator
+                         sskPreferences:(SSKPreferences *)sskPreferences NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
@@ -132,6 +134,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) StickerManager *stickerManager;
 @property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
 @property (nonatomic, readonly) StorageCoordinator *storageCoordinator;
+@property (nonatomic, readonly) SSKPreferences *sskPreferences;
 
 @property (nonatomic, readonly, nullable) OWSPrimaryStorage *primaryStorage;
 
