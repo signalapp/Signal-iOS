@@ -177,6 +177,9 @@ public class VideoEditorModel: NSObject {
         fileprivate let promise: Promise<String>
         fileprivate let resolver: Resolver<String>
 
+        // This property should only be accessed on VideoEditorModel.serialQueue.
+        private var exportSession: AVAssetExportSession?
+
         required init(model: VideoEditorModel) {
             // The model's properties can only be accessed on the main thread.
             AssertIsOnMainThread()
@@ -214,6 +217,21 @@ public class VideoEditorModel: NSObject {
             }
         }
 
+        fileprivate func set(exportSession: AVAssetExportSession) {
+            assertOnQueue(VideoEditorModel.serialQueue)
+
+            self.exportSession = exportSession
+        }
+
+        // This method should only be accessed on VideoEditorModel.serialQueue.
+        fileprivate func cancel() {
+            assertOnQueue(VideoEditorModel.serialQueue)
+
+            guard let exportSession = self.exportSession else {
+                return
+            }
+            exportSession.cancelExport()
+        }
     }
 
     fileprivate static let serialQueue: DispatchQueue = DispatchQueue(label: "VideoEditorModel.serialQueue")
@@ -231,6 +249,10 @@ public class VideoEditorModel: NSObject {
     // Whenever the model state changes, we need to discard any ongoing render.
     private func clearRender() {
         VideoEditorModel.serialQueue.sync {
+            guard let render = self.currentRender else {
+                return
+            }
+            render.cancel()
             self.currentRender = nil
         }
     }
@@ -299,6 +321,9 @@ private class TrimVideoOperation: OWSOperation {
             guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) else {
                 resolver.reject(OWSAssertionError("Could not create export session."))
                 return
+            }
+            VideoEditorModel.serialQueue.sync {
+                render.set(exportSession: exportSession)
             }
 
             exportSession.outputURL = URL(fileURLWithPath: dstFilePath)
