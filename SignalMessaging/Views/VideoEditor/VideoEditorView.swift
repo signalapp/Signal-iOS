@@ -607,6 +607,21 @@ class TrimVideoTimelineView: UIView {
     private let cursorHeight: CGFloat = 44
 
     private var outerTrimRect: CGRect {
+        return innerTrimRect.inset(by: UIEdgeInsets(top: -trimRectVThickness, leading: -trimRectHThickness, bottom: -trimRectVThickness, trailing: -trimRectHThickness))
+    }
+
+    // We need to ensure that "trim rect" always reflects the
+    // trim state in a coherent way.
+    //
+    // * When the video is untrimmed, the trim rect should fully
+    //   fully occupy the timeline.
+    // * When the video is trimmed down to the shortest valid
+    //   snippet, the trim rect should be proportionally "small".
+    //
+    // Therefore we scale in _inner_ trim rect to reflect the
+    // ratio of the trimmed video length to the original,
+    // untrimmed video length.
+    private var innerTrimRect: CGRect {
         guard let delegate = delegate else {
             return bounds
         }
@@ -614,14 +629,11 @@ class TrimVideoTimelineView: UIView {
         let startSeconds = CGFloat(delegate.trimmedStartSeconds)
         let endSeconds = CGFloat(delegate.trimmedEndSeconds)
 
-        var result = bounds
-        result.origin.x = startSeconds / untrimmedDurationSeconds * bounds.width
-        result.size.width = (endSeconds - startSeconds) / untrimmedDurationSeconds * bounds.width
+        let maxTrimRect = bounds.inset(by: UIEdgeInsets(top: trimRectVThickness, leading: trimRectHThickness, bottom: trimRectVThickness, trailing: trimRectHThickness))
+        var result = maxTrimRect
+        result.origin.x += startSeconds / untrimmedDurationSeconds * maxTrimRect.width
+        result.size.width *= (endSeconds - startSeconds) / untrimmedDurationSeconds
         return result
-    }
-
-    private var innerTrimRect: CGRect {
-        return outerTrimRect.inset(by: UIEdgeInsets(top: trimRectVThickness, leading: trimRectHThickness, bottom: trimRectVThickness, trailing: trimRectHThickness))
     }
 
     private var cursorRect: CGRect {
