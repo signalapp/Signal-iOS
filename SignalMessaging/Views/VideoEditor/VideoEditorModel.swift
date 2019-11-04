@@ -180,6 +180,10 @@ public class VideoEditorModel: NSObject {
         // This property should only be accessed on VideoEditorModel.serialQueue.
         private var exportSession: AVAssetExportSession?
 
+        // Until the render is consumed, it is the responsibility of this
+        // class to clean up its temp files.
+        private let isConsumed = AtomicBool(false)
+
         required init(model: VideoEditorModel) {
             // The model's properties can only be accessed on the main thread.
             AssertIsOnMainThread()
@@ -196,6 +200,10 @@ public class VideoEditorModel: NSObject {
         }
 
         deinit {
+            guard !isConsumed.get() else {
+                return
+            }
+
             promise.done(on: DispatchQueue.global()) { filePath in
                 do {
                     try FileManager.default.removeItem(at: URL(fileURLWithPath: filePath))
@@ -205,16 +213,27 @@ public class VideoEditorModel: NSObject {
             }.retainUntilComplete()
         }
 
+        // consumableFilePromise
+
         // Returns a promise that yields a file path
         // for the output video file path.  The caller
         // has responsibility for cleaning up this file.
-        public func consumableFilePromise() -> Promise<String> {
-            return promise.map(on: DispatchQueue.global()) { (filePath: String) -> String in
-                // Make a copy of the rendered output.
-                let copyFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: "mp4")
-                try FileManager.default.copyItem(at: URL(fileURLWithPath: filePath), to: URL(fileURLWithPath: copyFilePath))
-                return copyFilePath
+        public func consumingFilePromise() -> Promise<String> {
+            if isConsumed.get() {
+                owsFailDebug("File is already consumed.")
             }
+            isConsumed.set(true)
+            return promise
+        }
+
+        // Returns a promise that yields a file path
+        // for the output video file path.  The caller
+        // does not have responsibility for cleaning up this file.
+        public func nonconsumingFilePromise() -> Promise<String> {
+            if isConsumed.get() {
+                owsFailDebug("File is already consumed.")
+            }
+            return promise
         }
 
         fileprivate func set(exportSession: AVAssetExportSession) {

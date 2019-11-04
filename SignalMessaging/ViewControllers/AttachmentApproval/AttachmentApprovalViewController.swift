@@ -723,7 +723,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                                  attachmentApprovalItem: AttachmentApprovalItem) -> Promise<SignalAttachment> {
         let (promise, resolver) = Promise<String>.pending()
         DispatchQueue.main.async {
-            videoEditorModel.ensureCurrentRender().consumableFilePromise()
+            videoEditorModel.ensureCurrentRender().consumingFilePromise()
                 .done { filePath in
                     resolver.fulfill(filePath)
                 }.catch { error in

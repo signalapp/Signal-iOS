@@ -329,23 +329,13 @@ public class VideoEditorView: UIView {
     private func saveVideoPromise() -> Promise<Void> {
         AssertIsOnMainThread()
 
-        return model.ensureCurrentRender().consumableFilePromise().then(on: .global()) { (videoFilePath: String) -> Promise<Void> in
+        return model.ensureCurrentRender().nonconsumingFilePromise().then(on: .global()) { (videoFilePath: String) -> Promise<Void> in
             let videoUrl = URL(fileURLWithPath: videoFilePath)
 
             let (promise, resolver) = Promise<Void>.pending()
             PHPhotoLibrary.shared().performChanges({
                 PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: videoUrl)
             }) { didSucceed, error in
-
-                // Clean up the file.
-                DispatchQueue.global().async {
-                    do {
-                        try FileManager.default.removeItem(at: videoUrl)
-                    } catch {
-                        owsFailDebug("Error: \(error)")
-                    }
-                }
-
                 if let error = error {
                     resolver.reject(error)
                     return
