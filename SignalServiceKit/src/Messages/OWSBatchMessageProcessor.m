@@ -268,10 +268,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
-    NSArray<OWSMessageContentJob *> *processedJobs = [self processJobs:batchJobs];
-
+    __block NSArray<OWSMessageContentJob *> *processedJobs;
     __block NSUInteger jobCount;
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        processedJobs = [self processJobs:batchJobs transaction:transaction];
+
         [self.finder removeJobsWithUniqueIds:processedJobs.uniqueIds transaction:transaction];
 
         jobCount = [self.finder jobCountWithTransaction:transaction];
@@ -295,46 +296,46 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSArray<OWSMessageContentJob *> *)processJobs:(NSArray<OWSMessageContentJob *> *)jobs
+                                     transaction:(SDSAnyWriteTransaction *)transaction
 {
-    AssertOnDispatchQueue(self.serialQueue);
+    OWSAssertDebug(jobs.count > 0);
+    OWSAssertDebug(transaction != nil);
 
     NSMutableArray<OWSMessageContentJob *> *processedJobs = [NSMutableArray new];
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        for (OWSMessageContentJob *job in jobs) {
+    for (OWSMessageContentJob *job in jobs) {
 
-            void (^reportFailure)(SDSAnyWriteTransaction *transaction) = ^(SDSAnyWriteTransaction *transaction) {
-                // TODO: Add analytics.
-                ThreadlessErrorMessage *errorMessage = [ThreadlessErrorMessage corruptedMessageInUnknownThread];
-                [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
-                                                                                    transaction:transaction];
-            };
+        void (^reportFailure)(SDSAnyWriteTransaction *transaction) = ^(SDSAnyWriteTransaction *transaction) {
+            // TODO: Add analytics.
+            ThreadlessErrorMessage *errorMessage = [ThreadlessErrorMessage corruptedMessageInUnknownThread];
+            [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
+                                                                                transaction:transaction];
+        };
 
-            @try {
-                SSKProtoEnvelope *_Nullable envelope = job.envelope;
-                if (!envelope) {
-                    reportFailure(transaction);
-                } else {
-                    [self.messageManager throws_processEnvelope:envelope
-                                                  plaintextData:job.plaintextData
-                                                wasReceivedByUD:job.wasReceivedByUD
-                                                    transaction:transaction];
-                }
-            } @catch (NSException *exception) {
-                OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
+        @try {
+            SSKProtoEnvelope *_Nullable envelope = job.envelope;
+            if (!envelope) {
                 reportFailure(transaction);
+            } else {
+                [self.messageManager throws_processEnvelope:envelope
+                                              plaintextData:job.plaintextData
+                                            wasReceivedByUD:job.wasReceivedByUD
+                                                transaction:transaction];
             }
-            [processedJobs addObject:job];
-
-            if (self.isAppInBackground) {
-                // If the app is in the background, stop processing this batch.
-                //
-                // Since this check is done after processing jobs, we'll continue
-                // to process jobs in batches of 1.  This reduces the cost of
-                // being interrupted and rolled back if app is suspended.
-                break;
-            }
+        } @catch (NSException *exception) {
+            OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
+            reportFailure(transaction);
         }
-    }];
+        [processedJobs addObject:job];
+
+        if (self.isAppInBackground) {
+            // If the app is in the background, stop processing this batch.
+            //
+            // Since this check is done after processing jobs, we'll continue
+            // to process jobs in batches of 1.  This reduces the cost of
+            // being interrupted and rolled back if app is suspended.
+            break;
+        }
+    }
     return processedJobs;
 }
 
