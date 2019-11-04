@@ -496,19 +496,11 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (void)sendFetchLatestProfileSyncMessage
 {
-    if (!self.tsAccountManager.isRegisteredAndReady) {
-        return;
-    }
-
     [self sendFetchLatestSyncMessageWithType:OWSSyncFetchType_LocalProfile];
 }
 
 - (void)sendFetchLatestStorageManifestSyncMessage
 {
-    if (!self.tsAccountManager.isRegisteredAndReady) {
-        return;
-    }
-
     [self sendFetchLatestSyncMessageWithType:OWSSyncFetchType_StorageManifest];
 }
 
