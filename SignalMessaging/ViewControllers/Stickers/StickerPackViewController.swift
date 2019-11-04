@@ -319,6 +319,7 @@ public class StickerPackViewController: OWSViewController {
 
         databaseStorage.write { (transaction) in
             StickerManager.installStickerPack(stickerPack: stickerPack,
+                                              wasLocallyInitiated: true,
                                               transaction: transaction)
         }
 
@@ -353,6 +354,7 @@ public class StickerPackViewController: OWSViewController {
 
         databaseStorage.write { (transaction) in
             StickerManager.uninstallStickerPack(stickerPackInfo: self.stickerPackInfo,
+                                                wasLocallyInitiated: true,
                                                 transaction: transaction)
         }
 

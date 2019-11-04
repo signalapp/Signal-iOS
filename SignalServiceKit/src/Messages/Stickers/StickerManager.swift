@@ -212,14 +212,17 @@ public class StickerManager: NSObject {
 
     @objc
     public class func uninstallStickerPack(stickerPackInfo: StickerPackInfo,
+                                           wasLocallyInitiated: Bool,
                                            transaction: SDSAnyWriteTransaction) {
         uninstallStickerPack(stickerPackInfo: stickerPackInfo,
                              uninstallEverything: false,
+                             wasLocallyInitiated: wasLocallyInitiated,
                              transaction: transaction)
     }
 
     private class func uninstallStickerPack(stickerPackInfo: StickerPackInfo,
                                             uninstallEverything: Bool,
+                                            wasLocallyInitiated: Bool,
                                             transaction: SDSAnyWriteTransaction) {
 
         guard let stickerPack = fetchStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction) else {
@@ -250,18 +253,22 @@ public class StickerManager: NSObject {
             stickerPack.update(withIsInstalled: false, transaction: transaction)
         }
 
-        enqueueStickerSyncMessage(operationType: .remove,
-                                  packs: [stickerPackInfo],
-                                  transaction: transaction)
+        if wasLocallyInitiated {
+            enqueueStickerSyncMessage(operationType: .remove,
+                                      packs: [stickerPackInfo],
+                                      transaction: transaction)
+        }
 
         NotificationCenter.default.postNotificationNameAsync(stickersOrPacksDidChange, object: nil)
     }
 
     @objc
     public class func installStickerPack(stickerPack: StickerPack,
+                                         wasLocallyInitiated: Bool,
                                          transaction: SDSAnyWriteTransaction) {
         upsertStickerPack(stickerPack: stickerPack,
                           installMode: .install,
+                          wasLocallyInitiated: wasLocallyInitiated,
                           transaction: transaction)
     }
 
@@ -283,11 +290,13 @@ public class StickerManager: NSObject {
     }
 
     private class func tryToDownloadAndSaveStickerPack(stickerPackInfo: StickerPackInfo,
-                                                       installMode: InstallMode) {
+                                                       installMode: InstallMode,
+                                                       wasLocallyInitiated: Bool) {
         return tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo)
             .done(on: DispatchQueue.global()) { (stickerPack) in
                 self.upsertStickerPack(stickerPack: stickerPack,
-                                       installMode: installMode)
+                                       installMode: installMode,
+                                       wasLocallyInitiated: wasLocallyInitiated)
             }.retainUntilComplete()
     }
 
@@ -302,17 +311,20 @@ public class StickerManager: NSObject {
     }
 
     private class func upsertStickerPack(stickerPack: StickerPack,
-                                         installMode: InstallMode) {
+                                         installMode: InstallMode,
+                                         wasLocallyInitiated: Bool) {
 
         databaseStorage.write { (transaction) in
             upsertStickerPack(stickerPack: stickerPack,
                               installMode: installMode,
+                              wasLocallyInitiated: wasLocallyInitiated,
                               transaction: transaction)
         }
     }
 
     private class func upsertStickerPack(stickerPack: StickerPack,
                                          installMode: InstallMode,
+                                         wasLocallyInitiated: Bool,
                                          transaction: SDSAnyWriteTransaction) {
 
         let oldCopy = fetchStickerPack(stickerPackInfo: stickerPack.info, transaction: transaction)
@@ -327,7 +339,7 @@ public class StickerManager: NSObject {
 
         self.shared.stickerPackWasInstalled(transaction: transaction)
 
-        if stickerPack.isInstalled {
+        if stickerPack.isInstalled, wasLocallyInitiated {
             enqueueStickerSyncMessage(operationType: .install,
                                       packs: [stickerPack.info],
                                       transaction: transaction)
@@ -341,10 +353,14 @@ public class StickerManager: NSObject {
             case .doNotInstall:
                 break
             case .install:
-                self.markSavedStickerPackAsInstalled(stickerPack: stickerPack, transaction: transaction)
+                self.markSavedStickerPackAsInstalled(stickerPack: stickerPack,
+                                                     wasLocallyInitiated: wasLocallyInitiated,
+                                                     transaction: transaction)
             case .installIfUnsaved:
                 if !wasSaved {
-                    self.markSavedStickerPackAsInstalled(stickerPack: stickerPack, transaction: transaction)
+                    self.markSavedStickerPackAsInstalled(stickerPack: stickerPack,
+                                                         wasLocallyInitiated: wasLocallyInitiated,
+                                                         transaction: transaction)
                 }
             }
         }
@@ -353,6 +369,7 @@ public class StickerManager: NSObject {
     }
 
     private class func markSavedStickerPackAsInstalled(stickerPack: StickerPack,
+                                                       wasLocallyInitiated: Bool,
                                                        transaction: SDSAnyWriteTransaction) {
 
         if stickerPack.isInstalled {
@@ -369,9 +386,11 @@ public class StickerManager: NSObject {
 
         installStickerPackContents(stickerPack: stickerPack, transaction: transaction).retainUntilComplete()
 
-        enqueueStickerSyncMessage(operationType: .install,
-                                  packs: [stickerPack.info],
-                                  transaction: transaction)
+        if wasLocallyInitiated {
+            enqueueStickerSyncMessage(operationType: .install,
+                                      packs: [stickerPack.info],
+                                      transaction: transaction)
+        }
     }
 
     private class func installStickerPackContents(stickerPack: StickerPack,
@@ -789,7 +808,8 @@ public class StickerManager: NSObject {
 
         for stickerPackInfo in stickerPacksToDownload {
             StickerManager.tryToDownloadAndSaveStickerPack(stickerPackInfo: stickerPackInfo,
-                                                           installMode: installMode)
+                                                           installMode: installMode,
+                                                           wasLocallyInitiated: true)
         }
     }
 
@@ -1138,9 +1158,10 @@ public class StickerManager: NSObject {
         switch type {
         case .install:
             tryToDownloadAndSaveStickerPack(stickerPackInfo: stickerPackInfo,
-                                            installMode: .install)
+                                            installMode: .install,
+                                            wasLocallyInitiated: false)
         case .remove:
-            uninstallStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction)
+            uninstallStickerPack(stickerPackInfo: stickerPackInfo, wasLocallyInitiated: false, transaction: transaction)
         @unknown default:
             owsFailDebug("Unknown type.")
             return
@@ -1157,6 +1178,7 @@ public class StickerManager: NSObject {
             let stickerPacks = installedStickerPacks(transaction: transaction)
             for stickerPack in stickerPacks {
                 uninstallStickerPack(stickerPackInfo: stickerPack.info,
+                                     wasLocallyInitiated: true,
                                      transaction: transaction)
             }
         }
@@ -1169,6 +1191,7 @@ public class StickerManager: NSObject {
             for stickerPack in stickerPacks {
                 uninstallStickerPack(stickerPackInfo: stickerPack.info,
                                      uninstallEverything: true,
+                                     wasLocallyInitiated: true,
                                      transaction: transaction)
                 stickerPack.anyRemove(transaction: transaction)
             }
@@ -1179,7 +1202,7 @@ public class StickerManager: NSObject {
     public class func tryToInstallAllAvailableStickerPacks() {
         databaseStorage.write { (transaction) in
             for stickerPack in self.availableStickerPacks(transaction: transaction) {
-                self.installStickerPack(stickerPack: stickerPack, transaction: transaction)
+                self.installStickerPack(stickerPack: stickerPack, wasLocallyInitiated: true, transaction: transaction)
             }
         }
 

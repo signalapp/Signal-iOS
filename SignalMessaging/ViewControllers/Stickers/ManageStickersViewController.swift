@@ -500,6 +500,7 @@ public class ManageStickersViewController: OWSTableViewController {
 
         databaseStorage.write { (transaction) in
             StickerManager.installStickerPack(stickerPack: stickerPack,
+                                              wasLocallyInitiated: true,
                                               transaction: transaction)
         }
     }
