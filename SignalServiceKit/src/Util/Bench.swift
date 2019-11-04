@@ -170,6 +170,11 @@ public class BenchManager: NSObject {
     public class func bench(title: String, block: () -> Void) {
         Bench(title: title, block: block)
     }
+
+    @objc
+    public class func bench(title: String, logIfLongerThan intervalLimit: TimeInterval, logInProduction: Bool, block: () -> Void) {
+        Bench(title: title, logIfLongerThan: intervalLimit, logInProduction: logInProduction, block: block)
+    }
 }
 
 // MARK: Memory
