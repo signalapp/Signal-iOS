@@ -5321,6 +5321,15 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
+    // Don't update the bottom bar position if an interactive pop is in progress
+    switch (self.navigationController.interactivePopGestureRecognizer.state) {
+        case UIGestureRecognizerStatePossible:
+        case UIGestureRecognizerStateFailed:
+            break;
+        default:
+            return;
+    }
+
     self.bottomBarBottomConstraint.constant = -self.inputAccessoryPlaceholder.keyboardOverlap;
 
     // We always want to apply the new bottom bar position immediately,
@@ -5331,15 +5340,6 @@ typedef enum : NSUInteger {
 - (void)updateContentInsetsAnimated:(BOOL)animated
 {
     OWSAssertIsOnMainThread();
-
-    // Don't update the collection view insets if an interactive pop is in progress.
-    switch (self.navigationController.interactivePopGestureRecognizer.state) {
-        case UIGestureRecognizerStatePossible:
-        case UIGestureRecognizerStateFailed:
-            break;
-        default:
-            return;
-    }
 
     [self.view layoutIfNeeded];
 
