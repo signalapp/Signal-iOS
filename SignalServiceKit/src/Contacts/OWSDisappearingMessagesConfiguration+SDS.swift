@@ -27,7 +27,7 @@ public struct DisappearingMessagesConfigurationRecord: SDSRecord {
     public let recordType: SDSRecordType
     public let uniqueId: String
 
-    // Base class properties
+    // Properties
     public let durationSeconds: UInt32
     public let enabled: Bool
 
@@ -146,7 +146,7 @@ extension OWSDisappearingMessagesConfigurationSerializer {
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
-    // Base class properties
+    // Properties
     static let durationSecondsColumn = SDSColumnMetadata(columnName: "durationSeconds", columnType: .int64, columnIndex: 3)
     static let enabledColumn = SDSColumnMetadata(columnName: "enabled", columnType: .int, columnIndex: 4)
 
@@ -568,7 +568,7 @@ class OWSDisappearingMessagesConfigurationSerializer: SDSSerializer {
         let recordType: SDSRecordType = .disappearingMessagesConfiguration
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let durationSeconds: UInt32 = model.durationSeconds
         let enabled: Bool = model.isEnabled
 

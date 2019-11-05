@@ -60,7 +60,7 @@ class TSAttachmentStreamSerializer: SDSSerializer {
         let recordType: SDSRecordType = .attachmentStream
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let albumMessageId: String? = model.albumMessageId
         let attachmentType: TSAttachmentType = model.attachmentType
         let blurHash: String? = model.blurHash
@@ -70,8 +70,6 @@ class TSAttachmentStreamSerializer: SDSSerializer {
         let encryptionKey: Data? = model.encryptionKey
         let serverId: UInt64 = model.serverId
         let sourceFilename: String? = model.sourceFilename
-
-        // Subclass properties
         let cachedAudioDurationSeconds: Double? = archiveOptionalNSNumber(model.cachedAudioDurationSeconds, conversion: { $0.doubleValue })
         let cachedImageHeight: Double? = archiveOptionalNSNumber(model.cachedImageHeight, conversion: { $0.doubleValue })
         let cachedImageWidth: Double? = archiveOptionalNSNumber(model.cachedImageWidth, conversion: { $0.doubleValue })

@@ -27,7 +27,7 @@ public struct SignalRecipientRecord: SDSRecord {
     public let recordType: SDSRecordType
     public let uniqueId: String
 
-    // Base class properties
+    // Properties
     public let devices: Data
     public let recipientPhoneNumber: String?
     public let recipientUUID: String?
@@ -152,7 +152,7 @@ extension SignalRecipientSerializer {
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
-    // Base class properties
+    // Properties
     static let devicesColumn = SDSColumnMetadata(columnName: "devices", columnType: .blob, columnIndex: 3)
     static let recipientPhoneNumberColumn = SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 4)
     static let recipientUUIDColumn = SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true, columnIndex: 5)
@@ -576,7 +576,7 @@ class SignalRecipientSerializer: SDSSerializer {
         let recordType: SDSRecordType = .signalRecipient
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let devices: Data = requiredArchive(model.devices)
         let recipientPhoneNumber: String? = model.recipientPhoneNumber
         let recipientUUID: String? = model.recipientUUID

@@ -27,7 +27,7 @@ public struct RecipientReadReceiptRecord: SDSRecord {
     public let recordType: SDSRecordType
     public let uniqueId: String
 
-    // Base class properties
+    // Properties
     public let recipientMap: Data
     public let sentTimestamp: UInt64
 
@@ -147,7 +147,7 @@ extension TSRecipientReadReceiptSerializer {
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
-    // Base class properties
+    // Properties
     static let recipientMapColumn = SDSColumnMetadata(columnName: "recipientMap", columnType: .blob, columnIndex: 3)
     static let sentTimestampColumn = SDSColumnMetadata(columnName: "sentTimestamp", columnType: .int64, columnIndex: 4)
 
@@ -569,7 +569,7 @@ class TSRecipientReadReceiptSerializer: SDSSerializer {
         let recordType: SDSRecordType = .recipientReadReceipt
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let recipientMap: Data = requiredArchive(model.recipientMap)
         let sentTimestamp: UInt64 = model.sentTimestamp
 

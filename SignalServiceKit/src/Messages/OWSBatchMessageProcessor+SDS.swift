@@ -27,7 +27,7 @@ public struct MessageContentJobRecord: SDSRecord {
     public let recordType: SDSRecordType
     public let uniqueId: String
 
-    // Base class properties
+    // Properties
     public let createdAt: Double
     public let envelopeData: Data
     public let plaintextData: Data?
@@ -157,7 +157,7 @@ extension OWSMessageContentJobSerializer {
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
-    // Base class properties
+    // Properties
     static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .double, columnIndex: 3)
     static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob, columnIndex: 4)
     static let plaintextDataColumn = SDSColumnMetadata(columnName: "plaintextData", columnType: .blob, isOptional: true, columnIndex: 5)
@@ -583,7 +583,7 @@ class OWSMessageContentJobSerializer: SDSSerializer {
         let recordType: SDSRecordType = .messageContentJob
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let createdAt: Double = archiveDate(model.createdAt)
         let envelopeData: Data = model.envelopeData
         let plaintextData: Data? = model.plaintextData

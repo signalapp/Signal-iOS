@@ -27,12 +27,10 @@ public struct InteractionRecord: SDSRecord {
     public let recordType: SDSRecordType
     public let uniqueId: String
 
-    // Base class properties
+    // Properties
     public let receivedAtTimestamp: UInt64
     public let timestamp: UInt64
     public let threadUniqueId: String
-
-    // Subclass properties
     public let attachmentIds: Data?
     public let authorId: String?
     public let authorPhoneNumber: String?
@@ -1194,11 +1192,10 @@ extension TSInteractionSerializer {
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
-    // Base class properties
+    // Properties
     static let receivedAtTimestampColumn = SDSColumnMetadata(columnName: "receivedAtTimestamp", columnType: .int64, columnIndex: 3)
     static let timestampColumn = SDSColumnMetadata(columnName: "timestamp", columnType: .int64, columnIndex: 4)
     static let uniqueThreadIdColumn = SDSColumnMetadata(columnName: "uniqueThreadId", columnType: .unicodeString, columnIndex: 5)
-    // Subclass properties
     static let attachmentIdsColumn = SDSColumnMetadata(columnName: "attachmentIds", columnType: .blob, isOptional: true, columnIndex: 6)
     static let authorIdColumn = SDSColumnMetadata(columnName: "authorId", columnType: .unicodeString, isOptional: true, columnIndex: 7)
     static let authorPhoneNumberColumn = SDSColumnMetadata(columnName: "authorPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 8)
@@ -1711,12 +1708,10 @@ class TSInteractionSerializer: SDSSerializer {
         let recordType: SDSRecordType = .interaction
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let receivedAtTimestamp: UInt64 = model.receivedAtTimestamp
         let timestamp: UInt64 = model.timestamp
         let threadUniqueId: String = model.uniqueThreadId
-
-        // Subclass properties
         let attachmentIds: Data? = nil
         let authorId: String? = nil
         let authorPhoneNumber: String? = nil

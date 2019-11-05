@@ -27,7 +27,7 @@ public struct UserProfileRecord: SDSRecord {
     public let recordType: SDSRecordType
     public let uniqueId: String
 
-    // Base class properties
+    // Properties
     public let avatarFileName: String?
     public let avatarUrlPath: String?
     public let profileKey: Data?
@@ -172,7 +172,7 @@ extension OWSUserProfileSerializer {
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
-    // Base class properties
+    // Properties
     static let avatarFileNameColumn = SDSColumnMetadata(columnName: "avatarFileName", columnType: .unicodeString, isOptional: true, columnIndex: 3)
     static let avatarUrlPathColumn = SDSColumnMetadata(columnName: "avatarUrlPath", columnType: .unicodeString, isOptional: true, columnIndex: 4)
     static let profileKeyColumn = SDSColumnMetadata(columnName: "profileKey", columnType: .blob, isOptional: true, columnIndex: 5)
@@ -604,7 +604,7 @@ class OWSUserProfileSerializer: SDSSerializer {
         let recordType: SDSRecordType = .userProfile
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let avatarFileName: String? = model.avatarFileName
         let avatarUrlPath: String? = model.avatarUrlPath
         let profileKey: Data? = optionalArchive(model.profileKey)

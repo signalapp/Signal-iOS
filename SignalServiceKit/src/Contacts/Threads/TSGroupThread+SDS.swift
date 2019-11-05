@@ -60,7 +60,7 @@ class TSGroupThreadSerializer: SDSSerializer {
         let recordType: SDSRecordType = .groupThread
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let conversationColorName: String = model.conversationColorName.rawValue
         let creationDate: Double? = archiveOptionalDate(model.creationDate)
         let isArchived: Bool = model.isArchived
@@ -68,8 +68,6 @@ class TSGroupThreadSerializer: SDSSerializer {
         let messageDraft: String? = model.messageDraft
         let mutedUntilDate: Double? = archiveOptionalDate(model.mutedUntilDate)
         let shouldThreadBeVisible: Bool = model.shouldThreadBeVisible
-
-        // Subclass properties
         let contactPhoneNumber: String? = nil
         let contactUUID: String? = nil
         let groupModel: Data? = optionalArchive(model.groupModel)

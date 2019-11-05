@@ -27,7 +27,7 @@ public struct StickerPackRecord: SDSRecord {
     public let recordType: SDSRecordType
     public let uniqueId: String
 
-    // Base class properties
+    // Properties
     public let author: String?
     public let cover: Data
     public let dateCreated: Double
@@ -175,7 +175,7 @@ extension StickerPackSerializer {
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
-    // Base class properties
+    // Properties
     static let authorColumn = SDSColumnMetadata(columnName: "author", columnType: .unicodeString, isOptional: true, columnIndex: 3)
     static let coverColumn = SDSColumnMetadata(columnName: "cover", columnType: .blob, columnIndex: 4)
     static let dateCreatedColumn = SDSColumnMetadata(columnName: "dateCreated", columnType: .double, columnIndex: 5)
@@ -607,7 +607,7 @@ class StickerPackSerializer: SDSSerializer {
         let recordType: SDSRecordType = .stickerPack
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let author: String? = model.author
         let cover: Data = requiredArchive(model.cover)
         let dateCreated: Double = archiveDate(model.dateCreated)

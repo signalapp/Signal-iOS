@@ -215,7 +215,67 @@ class ParsedClass:
 
        return True
         
+    def record_name(self):
+        return remove_prefix_from_class_name(self.name) + 'Record'
         
+    def sorted_model_properties(self):
+        
+        record_name = self.record_name()
+        # If a property has a custom column source, we don't redundantly create a column for that column 
+        base_properties = [property for property in self.properties() if not property.has_custom_column_source()]
+        # If a property has a custom column source, we don't redundantly create a column for that column 
+        subclass_properties = [property for property in self.database_subclass_properties() if not property.has_custom_column_source()]
+        
+        # We need to maintain a stable ordering of record properties 
+        # across migrations, e.g. adding new columns to the tables.
+        #
+        # First, we build a list of "model" properties.  This is the
+        # the superset of properties in the model base class and all
+        # of its subclasses.
+        #
+        # NOTE: We punch two values onto these properties:
+        #       force_optional and property_order.
+        model_properties = []
+        for property in base_properties:
+            property.force_optional=False
+            model_properties.append(property)
+        for property in subclass_properties:
+            # We must "force" subclass properties to be optional
+            # since they don't apply to the base model and other
+            # subclasses.
+            property.force_optional=True
+            model_properties.append(property)
+        for property in model_properties:
+            # Try to load the known "order" for each property.
+            #
+            # "Orders" are indices used to ensure a stable ordering.
+            # We find the "orders" of all properties that already have
+            # one.
+            #
+            # This will initially be nil for new properties
+            # which have not yet been assigned an order.
+            property.property_order = property_order_for_property(property, record_name)
+        all_property_orders = [property.property_order for property in model_properties]
+        # We determine the "next" order we would assign to any
+        # new property without an order.
+        next_property_order = 1 + (max(all_property_orders) if len(all_property_orders) > 0 else 0)
+        # Pre-sort model properties by name, so that if we add more
+        # than one at a time they are nicely (and stable-y) sorted
+        # in an attractive way.
+        model_properties.sort(key=lambda value: value.name)
+        # Now iterate over all model properties and assign an order
+        # to any new properties without one.
+        for property in model_properties:
+            if property.property_order is None:
+                property.property_order = next_property_order
+                # We "set" the order in the mapping which is persisted
+                # as JSON to ensure continuity.
+                set_property_order_for_property(property, record_name, next_property_order)
+                next_property_order = next_property_order + 1
+        # Now sort the model properties, applying the ordering.
+        model_properties.sort(key=lambda value: value.property_order)
+        return model_properties        
+		        
         
 class TypeInfo:
     def __init__(self, swift_type, objc_type, should_use_blob = False, is_codable = False, is_enum = False):
@@ -745,7 +805,7 @@ import SignalCoreKit
 '''
 
 
-        record_name = remove_prefix_from_class_name(clazz.name) + 'Record'
+        record_name = clazz.record_name()
         swift_body += '''
 public struct %s: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
@@ -781,56 +841,7 @@ public struct %s: SDSRecord {
             return '''    public let %s: %s%s
 ''' % ( str(column_name), record_field_type, optional_split, )
         
-        # ----- Property Ordering -----
-        
-        # We need to maintain a stable ordering of record properties 
-        # across migrations, e.g. adding new columns to the tables.
-        #
-        # First, we build a list of "model" properties.  This is the
-        # the superset of properties in the model base class and all
-        # of its subclasses.
-        #
-        # NOTE: We punch two values onto these properties:
-        #       force_optional and property_order.
-        model_properties = []
-        for property in base_properties:
-            property.force_optional=False
-            model_properties.append(property)
-        for property in subclass_properties:
-            # We must "force" subclass properties to be optional
-            # since they don't apply to the base model and other
-            # subclasses.
-            property.force_optional=True
-            model_properties.append(property)
-        for property in model_properties:
-            # Try to load the known "order" for each property.
-            #
-            # "Orders" are indices used to ensure a stable ordering.
-            # We find the "orders" of all properties that already have
-            # one.
-            #
-            # This may initially be nil for new properties
-            # which have not yet been assigned an order.
-            property.property_order = property_order_for_property(property, record_name)
-        all_property_orders = [property.property_order for property in model_properties]
-        # We determine the "next" order we would assign to any
-        # new property without an order.
-        next_property_order = 1 + (max(all_property_orders) if len(all_property_orders) > 0 else 0)
-        # Pre-sort model properties by name, so that if we add more
-        # than one at a time they are nicely (and stable-y) sorted
-        # in an attractive way.
-        model_properties.sort(key=lambda value: value.name)
-        # Now iterate over all model properties and assign an order
-        # to any new properties without one.
-        for property in model_properties:
-            if property.property_order is None:
-                property.property_order = next_property_order
-                # We "set" the order in the mapping which is persisted
-                # as JSON to ensure continuity.
-                set_property_order_for_property(property, record_name, next_property_order)
-                next_property_order = next_property_order + 1
-        # Now sort the model properties, applying the ordering.
-        model_properties.sort(key=lambda value: value.property_order)
+        model_properties = clazz.sorted_model_properties()
         
         # Declare the model properties in the record.
         if len(model_properties) > 0:
@@ -1182,13 +1193,10 @@ extension %sSerializer {
         for property in sds_properties:
             swift_body += write_column_metadata(property)
  
-        # If a property has a custom column source, we don't redundantly create a column for that column 
         if len(model_properties) > 0:
             swift_body += '    // Properties \n'
             for property in model_properties:
                 swift_body += write_column_metadata(property, force_optional=property.force_optional)
-                
-        # If a property has a custom column source, we don't redundantly create a column for that column 
     
         database_table_name = 'model_%s' % str(clazz.name)
         swift_body += '''
@@ -1753,19 +1761,13 @@ class %sSerializer: SDSSerializer {
     
         return '''        let %s: %s%s%s
 ''' % ( str(property.column_name()), record_field_type, optional_split, optional_value, )
-
-    if len(root_base_properties) > 0:
-        swift_body += '\n        // Base class properties \n'
-        for property in root_base_properties:
-            # print 'base_properties:', property.name
-            swift_body += write_record_property(property)
-
-    if len(root_subclass_properties) > 0:
-        swift_body += '\n        // Subclass properties \n'
-        for property in root_subclass_properties:
-            # print 'subclass_properties:', property.name
-            swift_body += write_record_property(property, force_optional=True)
-
+ 
+    root_model_properties = root_class.sorted_model_properties()
+ 
+    if len(root_model_properties) > 0:
+        swift_body += '\n        // Properties \n'
+        for property in root_model_properties:
+            swift_body += write_record_property(property, force_optional=property.force_optional)
 
 
     initializer_args = ['%s: %s' % ( arg, arg, ) for arg in initializer_args]

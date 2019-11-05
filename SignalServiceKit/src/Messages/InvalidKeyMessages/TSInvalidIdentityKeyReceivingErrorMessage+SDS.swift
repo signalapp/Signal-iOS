@@ -60,12 +60,10 @@ class TSInvalidIdentityKeyReceivingErrorMessageSerializer: SDSSerializer {
         let recordType: SDSRecordType = .invalidIdentityKeyReceivingErrorMessage
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let receivedAtTimestamp: UInt64 = model.receivedAtTimestamp
         let timestamp: UInt64 = model.timestamp
         let threadUniqueId: String = model.uniqueThreadId
-
-        // Subclass properties
         let attachmentIds: Data? = optionalArchive(model.attachmentIds)
         let authorId: String? = model.authorId
         let authorPhoneNumber: String? = nil

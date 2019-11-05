@@ -569,7 +569,7 @@ class OWSContactQuerySerializer: SDSSerializer {
         let recordType: SDSRecordType = .contactQuery
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let lastQueried: Double = archiveDate(model.lastQueried)
         let nonce: Data = model.nonce
 
