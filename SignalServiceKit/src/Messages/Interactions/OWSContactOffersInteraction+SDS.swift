@@ -60,12 +60,10 @@ class OWSContactOffersInteractionSerializer: SDSSerializer {
         let recordType: SDSRecordType = .contactOffersInteraction
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let receivedAtTimestamp: UInt64 = model.receivedAtTimestamp
         let timestamp: UInt64 = model.timestamp
         let threadUniqueId: String = model.uniqueThreadId
-
-        // Subclass properties
         let attachmentIds: Data? = nil
         let authorId: String? = nil
         let authorPhoneNumber: String? = nil

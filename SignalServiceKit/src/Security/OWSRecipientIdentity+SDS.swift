@@ -27,7 +27,7 @@ public struct RecipientIdentityRecord: SDSRecord {
     public let recordType: SDSRecordType
     public let uniqueId: String
 
-    // Base class properties
+    // Properties
     public let accountId: String
     public let createdAt: Double
     public let identityKey: Data
@@ -162,7 +162,7 @@ extension OWSRecipientIdentitySerializer {
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
-    // Base class properties
+    // Properties
     static let accountIdColumn = SDSColumnMetadata(columnName: "accountId", columnType: .unicodeString, columnIndex: 3)
     static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .double, columnIndex: 4)
     static let identityKeyColumn = SDSColumnMetadata(columnName: "identityKey", columnType: .blob, columnIndex: 5)
@@ -590,7 +590,7 @@ class OWSRecipientIdentitySerializer: SDSSerializer {
         let recordType: SDSRecordType = .recipientIdentity
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let accountId: String = model.accountId
         let createdAt: Double = archiveDate(model.createdAt)
         let identityKey: Data = model.identityKey

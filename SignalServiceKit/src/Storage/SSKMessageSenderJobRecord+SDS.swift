@@ -60,13 +60,10 @@ class SSKMessageSenderJobRecordSerializer: SDSSerializer {
         let recordType: SDSRecordType = .messageSenderJobRecord
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let failureCount: UInt = model.failureCount
         let label: String = model.label
         let status: SSKJobRecordStatus = model.status
-
-        // Subclass properties
-        let attachmentId: String? = nil
         let attachmentIdMap: Data? = nil
         let contactThreadId: String? = nil
         let envelopeData: Data? = nil
@@ -74,6 +71,7 @@ class SSKMessageSenderJobRecordSerializer: SDSSerializer {
         let messageId: String? = model.messageId
         let removeMessageAfterSending: Bool? = model.removeMessageAfterSending
         let threadId: String? = model.threadId
+        let attachmentId: String? = nil
 
         return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId)
     }

@@ -27,7 +27,7 @@ public struct AttachmentRecord: SDSRecord {
     public let recordType: SDSRecordType
     public let uniqueId: String
 
-    // Base class properties
+    // Properties
     public let albumMessageId: String?
     public let attachmentType: TSAttachmentType
     public let blurHash: String?
@@ -37,8 +37,6 @@ public struct AttachmentRecord: SDSRecord {
     public let encryptionKey: Data?
     public let serverId: UInt64
     public let sourceFilename: String?
-
-    // Subclass properties
     public let cachedAudioDurationSeconds: Double?
     public let cachedImageHeight: Double?
     public let cachedImageWidth: Double?
@@ -314,7 +312,7 @@ extension TSAttachmentSerializer {
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
-    // Base class properties
+    // Properties
     static let albumMessageIdColumn = SDSColumnMetadata(columnName: "albumMessageId", columnType: .unicodeString, isOptional: true, columnIndex: 3)
     static let attachmentTypeColumn = SDSColumnMetadata(columnName: "attachmentType", columnType: .int, columnIndex: 4)
     static let blurHashColumn = SDSColumnMetadata(columnName: "blurHash", columnType: .unicodeString, isOptional: true, columnIndex: 5)
@@ -324,7 +322,6 @@ extension TSAttachmentSerializer {
     static let encryptionKeyColumn = SDSColumnMetadata(columnName: "encryptionKey", columnType: .blob, isOptional: true, columnIndex: 9)
     static let serverIdColumn = SDSColumnMetadata(columnName: "serverId", columnType: .int64, columnIndex: 10)
     static let sourceFilenameColumn = SDSColumnMetadata(columnName: "sourceFilename", columnType: .unicodeString, isOptional: true, columnIndex: 11)
-    // Subclass properties
     static let cachedAudioDurationSecondsColumn = SDSColumnMetadata(columnName: "cachedAudioDurationSeconds", columnType: .double, isOptional: true, columnIndex: 12)
     static let cachedImageHeightColumn = SDSColumnMetadata(columnName: "cachedImageHeight", columnType: .double, isOptional: true, columnIndex: 13)
     static let cachedImageWidthColumn = SDSColumnMetadata(columnName: "cachedImageWidth", columnType: .double, isOptional: true, columnIndex: 14)
@@ -777,7 +774,7 @@ class TSAttachmentSerializer: SDSSerializer {
         let recordType: SDSRecordType = .attachment
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let albumMessageId: String? = model.albumMessageId
         let attachmentType: TSAttachmentType = model.attachmentType
         let blurHash: String? = model.blurHash
@@ -787,8 +784,6 @@ class TSAttachmentSerializer: SDSSerializer {
         let encryptionKey: Data? = model.encryptionKey
         let serverId: UInt64 = model.serverId
         let sourceFilename: String? = model.sourceFilename
-
-        // Subclass properties
         let cachedAudioDurationSeconds: Double? = nil
         let cachedImageHeight: Double? = nil
         let cachedImageWidth: Double? = nil

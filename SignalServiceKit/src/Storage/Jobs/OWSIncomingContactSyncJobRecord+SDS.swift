@@ -60,13 +60,10 @@ class OWSIncomingContactSyncJobRecordSerializer: SDSSerializer {
         let recordType: SDSRecordType = .incomingContactSyncJobRecord
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let failureCount: UInt = model.failureCount
         let label: String = model.label
         let status: SSKJobRecordStatus = model.status
-
-        // Subclass properties
-        let attachmentId: String? = model.attachmentId
         let attachmentIdMap: Data? = nil
         let contactThreadId: String? = nil
         let envelopeData: Data? = nil
@@ -74,6 +71,7 @@ class OWSIncomingContactSyncJobRecordSerializer: SDSSerializer {
         let messageId: String? = nil
         let removeMessageAfterSending: Bool? = nil
         let threadId: String? = nil
+        let attachmentId: String? = model.attachmentId
 
         return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId)
     }

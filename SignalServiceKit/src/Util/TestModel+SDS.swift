@@ -27,7 +27,7 @@ public struct TestModelRecord: SDSRecord {
     public let recordType: SDSRecordType
     public let uniqueId: String
 
-    // Base class properties
+    // Properties
     public let dateValue: Double?
     public let doubleValue: Double
     public let floatValue: Float
@@ -182,7 +182,7 @@ extension TestModelSerializer {
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
-    // Base class properties
+    // Properties
     static let dateValueColumn = SDSColumnMetadata(columnName: "dateValue", columnType: .double, isOptional: true, columnIndex: 3)
     static let doubleValueColumn = SDSColumnMetadata(columnName: "doubleValue", columnType: .double, columnIndex: 4)
     static let floatValueColumn = SDSColumnMetadata(columnName: "floatValue", columnType: .double, columnIndex: 5)
@@ -618,7 +618,7 @@ class TestModelSerializer: SDSSerializer {
         let recordType: SDSRecordType = .testModel
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let dateValue: Double? = archiveOptionalDate(model.dateValue)
         let doubleValue: Double = model.doubleValue
         let floatValue: Float = model.floatValue

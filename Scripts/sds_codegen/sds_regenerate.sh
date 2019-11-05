@@ -26,8 +26,10 @@ REPO_ROOT=`git rev-parse --show-toplevel`
 RECORD_TYPE_SWIFT="SignalServiceKit/src/Storage/Database/SDSRecordType.swift"
 RECORD_TYPE_JSON="$REPO_ROOT/Scripts/sds_codegen/sds_config/sds_record_type_map.json"
 CONFIG_JSON="$REPO_ROOT/Scripts/sds_codegen/sds_config/sds-config.json"
-$REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path SignalServiceKit/  --search-path . --record-type-swift-path $RECORD_TYPE_SWIFT  --record-type-json-path $RECORD_TYPE_JSON --config-json-path $CONFIG_JSON
-$REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path SignalShareExtension/  --search-path . --record-type-swift-path $RECORD_TYPE_SWIFT  --record-type-json-path $RECORD_TYPE_JSON --config-json-path $CONFIG_JSON
-$REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path SignalMessaging/  --search-path . --record-type-swift-path $RECORD_TYPE_SWIFT  --record-type-json-path $RECORD_TYPE_JSON --config-json-path $CONFIG_JSON
-$REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path Signal  --search-path . --record-type-swift-path $RECORD_TYPE_SWIFT  --record-type-json-path $RECORD_TYPE_JSON --config-json-path $CONFIG_JSON
+PROPERTY_ORDER_JSON="$REPO_ROOT/Scripts/sds_codegen/sds_config/sds-property_order.json"
+GENERATE_ARGS="--record-type-swift-path $RECORD_TYPE_SWIFT  --record-type-json-path $RECORD_TYPE_JSON --config-json-path $CONFIG_JSON --property-order-json-path $PROPERTY_ORDER_JSON"
+$REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path SignalServiceKit/  --search-path .  $GENERATE_ARGS
+$REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path SignalShareExtension/  --search-path .  $GENERATE_ARGS
+$REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path SignalMessaging/  --search-path .  $GENERATE_ARGS
+$REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path Signal  --search-path .  $GENERATE_ARGS
  

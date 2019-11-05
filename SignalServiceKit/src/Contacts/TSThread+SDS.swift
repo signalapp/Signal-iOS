@@ -27,7 +27,7 @@ public struct ThreadRecord: SDSRecord {
     public let recordType: SDSRecordType
     public let uniqueId: String
 
-    // Base class properties
+    // Properties
     public let conversationColorName: String
     public let creationDate: Double?
     public let isArchived: Bool
@@ -35,8 +35,6 @@ public struct ThreadRecord: SDSRecord {
     public let messageDraft: String?
     public let mutedUntilDate: Double?
     public let shouldThreadBeVisible: Bool
-
-    // Subclass properties
     public let contactPhoneNumber: String?
     public let contactUUID: String?
     public let groupModel: Data?
@@ -254,7 +252,7 @@ extension TSThreadSerializer {
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
-    // Base class properties
+    // Properties
     static let conversationColorNameColumn = SDSColumnMetadata(columnName: "conversationColorName", columnType: .unicodeString, columnIndex: 3)
     static let creationDateColumn = SDSColumnMetadata(columnName: "creationDate", columnType: .double, isOptional: true, columnIndex: 4)
     static let isArchivedColumn = SDSColumnMetadata(columnName: "isArchived", columnType: .int, columnIndex: 5)
@@ -262,7 +260,6 @@ extension TSThreadSerializer {
     static let messageDraftColumn = SDSColumnMetadata(columnName: "messageDraft", columnType: .unicodeString, isOptional: true, columnIndex: 7)
     static let mutedUntilDateColumn = SDSColumnMetadata(columnName: "mutedUntilDate", columnType: .double, isOptional: true, columnIndex: 8)
     static let shouldThreadBeVisibleColumn = SDSColumnMetadata(columnName: "shouldThreadBeVisible", columnType: .int, columnIndex: 9)
-    // Subclass properties
     static let contactPhoneNumberColumn = SDSColumnMetadata(columnName: "contactPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 10)
     static let contactUUIDColumn = SDSColumnMetadata(columnName: "contactUUID", columnType: .unicodeString, isOptional: true, columnIndex: 11)
     static let groupModelColumn = SDSColumnMetadata(columnName: "groupModel", columnType: .blob, isOptional: true, columnIndex: 12)
@@ -695,7 +692,7 @@ class TSThreadSerializer: SDSSerializer {
         let recordType: SDSRecordType = .thread
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let conversationColorName: String = model.conversationColorName.rawValue
         let creationDate: Double? = archiveOptionalDate(model.creationDate)
         let isArchived: Bool = model.isArchived
@@ -703,8 +700,6 @@ class TSThreadSerializer: SDSSerializer {
         let messageDraft: String? = model.messageDraft
         let mutedUntilDate: Double? = archiveOptionalDate(model.mutedUntilDate)
         let shouldThreadBeVisible: Bool = model.shouldThreadBeVisible
-
-        // Subclass properties
         let contactPhoneNumber: String? = nil
         let contactUUID: String? = nil
         let groupModel: Data? = nil

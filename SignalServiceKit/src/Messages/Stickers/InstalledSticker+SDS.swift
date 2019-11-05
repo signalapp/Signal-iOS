@@ -27,7 +27,7 @@ public struct InstalledStickerRecord: SDSRecord {
     public let recordType: SDSRecordType
     public let uniqueId: String
 
-    // Base class properties
+    // Properties
     public let emojiString: String?
     public let info: Data
 
@@ -147,7 +147,7 @@ extension InstalledStickerSerializer {
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
-    // Base class properties
+    // Properties
     static let emojiStringColumn = SDSColumnMetadata(columnName: "emojiString", columnType: .unicodeString, isOptional: true, columnIndex: 3)
     static let infoColumn = SDSColumnMetadata(columnName: "info", columnType: .blob, columnIndex: 4)
 
@@ -569,7 +569,7 @@ class InstalledStickerSerializer: SDSSerializer {
         let recordType: SDSRecordType = .installedSticker
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let emojiString: String? = model.emojiString
         let info: Data = requiredArchive(model.info)
 

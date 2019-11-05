@@ -27,7 +27,7 @@ public struct LinkedDeviceReadReceiptRecord: SDSRecord {
     public let recordType: SDSRecordType
     public let uniqueId: String
 
-    // Base class properties
+    // Properties
     public let messageIdTimestamp: UInt64
     public let readTimestamp: UInt64
     public let senderPhoneNumber: String?
@@ -156,7 +156,7 @@ extension OWSLinkedDeviceReadReceiptSerializer {
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
-    // Base class properties
+    // Properties
     static let messageIdTimestampColumn = SDSColumnMetadata(columnName: "messageIdTimestamp", columnType: .int64, columnIndex: 3)
     static let readTimestampColumn = SDSColumnMetadata(columnName: "readTimestamp", columnType: .int64, columnIndex: 4)
     static let senderPhoneNumberColumn = SDSColumnMetadata(columnName: "senderPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 5)
@@ -582,7 +582,7 @@ class OWSLinkedDeviceReadReceiptSerializer: SDSSerializer {
         let recordType: SDSRecordType = .linkedDeviceReadReceipt
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let messageIdTimestamp: UInt64 = model.messageIdTimestamp
         let readTimestamp: UInt64 = model.readTimestamp
         let senderPhoneNumber: String? = model.senderPhoneNumber

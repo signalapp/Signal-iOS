@@ -60,7 +60,7 @@ class TSAttachmentPointerSerializer: SDSSerializer {
         let recordType: SDSRecordType = .attachmentPointer
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let albumMessageId: String? = model.albumMessageId
         let attachmentType: TSAttachmentType = model.attachmentType
         let blurHash: String? = model.blurHash
@@ -70,8 +70,6 @@ class TSAttachmentPointerSerializer: SDSSerializer {
         let encryptionKey: Data? = model.encryptionKey
         let serverId: UInt64 = model.serverId
         let sourceFilename: String? = model.sourceFilename
-
-        // Subclass properties
         let cachedAudioDurationSeconds: Double? = nil
         let cachedImageHeight: Double? = nil
         let cachedImageWidth: Double? = nil

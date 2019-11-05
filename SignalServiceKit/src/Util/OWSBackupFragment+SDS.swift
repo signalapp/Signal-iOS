@@ -27,7 +27,7 @@ public struct BackupFragmentRecord: SDSRecord {
     public let recordType: SDSRecordType
     public let uniqueId: String
 
-    // Base class properties
+    // Properties
     public let attachmentId: String?
     public let downloadFilePath: String?
     public let encryptionKey: Data
@@ -166,7 +166,7 @@ extension OWSBackupFragmentSerializer {
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
-    // Base class properties
+    // Properties
     static let attachmentIdColumn = SDSColumnMetadata(columnName: "attachmentId", columnType: .unicodeString, isOptional: true, columnIndex: 3)
     static let downloadFilePathColumn = SDSColumnMetadata(columnName: "downloadFilePath", columnType: .unicodeString, isOptional: true, columnIndex: 4)
     static let encryptionKeyColumn = SDSColumnMetadata(columnName: "encryptionKey", columnType: .blob, columnIndex: 5)
@@ -596,7 +596,7 @@ class OWSBackupFragmentSerializer: SDSSerializer {
         let recordType: SDSRecordType = .backupFragment
         let uniqueId: String = model.uniqueId
 
-        // Base class properties
+        // Properties
         let attachmentId: String? = model.attachmentId
         let downloadFilePath: String? = model.downloadFilePath
         let encryptionKey: Data = model.encryptionKey
