@@ -309,7 +309,7 @@ public class VideoEditorView: UIView {
             }
 
             ModalActivityIndicatorViewController.present(fromViewController: viewController, canCancel: false) { modalVC in
-                DispatchQueue.main.async(.promise) {
+                DispatchQueue.global().async(.promise) {
                     return self.saveVideoPromise()
                 }.done { _ in
                     modalVC.dismiss {
@@ -327,8 +327,6 @@ public class VideoEditorView: UIView {
     }
 
     private func saveVideoPromise() -> Promise<Void> {
-        AssertIsOnMainThread()
-
         return model.ensureCurrentRender().nonconsumingFilePromise().then(on: .global()) { (videoFilePath: String) -> Promise<Void> in
             let videoUrl = URL(fileURLWithPath: videoFilePath)
 
@@ -407,7 +405,10 @@ extension VideoEditorView: TrimVideoTimelineViewDelegate {
     func gestureDidComplete() {
         ensureSeekReflectsTrimming()
 
-        _ = model.ensureCurrentRender()
+        let model = self.model
+        DispatchQueue.global().async {
+            _ = model.ensureCurrentRender()
+        }
     }
 
     func pauseIfPlaying() {

@@ -280,8 +280,6 @@ public class VideoEditorModel: NSObject {
     // It can also be used to eagerly initiate a render (if
     // necessary) to reduce perceived render time.
     public func ensureCurrentRender() -> Render {
-        AssertIsOnMainThread()
-
         return VideoEditorModel.serialQueue.sync {
             if let currentRender = self.currentRender {
                 return currentRender

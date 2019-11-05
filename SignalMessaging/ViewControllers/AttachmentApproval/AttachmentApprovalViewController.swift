@@ -721,16 +721,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     // to involve the user in resolving the issue.
     func outputAttachmentPromise(videoEditorModel: VideoEditorModel,
                                  attachmentApprovalItem: AttachmentApprovalItem) -> Promise<SignalAttachment> {
-        let (promise, resolver) = Promise<String>.pending()
-        DispatchQueue.main.async {
-            videoEditorModel.ensureCurrentRender().consumingFilePromise()
-                .done { filePath in
-                    resolver.fulfill(filePath)
-                }.catch { error in
-                    resolver.reject(error)
-            }.retainUntilComplete()
-        }
-        return promise.map(on: .global()) { filePath in
+        return videoEditorModel.ensureCurrentRender().consumingFilePromise()
+            .map(on: DispatchQueue.global()) { filePath in
                 guard let fileExtension = filePath.fileExtension else {
                     throw OWSAssertionError("Missing fileExtension.")
                 }
