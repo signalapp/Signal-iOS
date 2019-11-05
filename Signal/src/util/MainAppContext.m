@@ -318,6 +318,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
 - (UIInterfaceOrientation)interfaceOrientation
 {
+    OWSAssertIsOnMainThread();
     return [UIApplication sharedApplication].statusBarOrientation;
 }
 

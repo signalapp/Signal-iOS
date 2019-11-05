@@ -341,7 +341,10 @@ class PhotoCaptureViewController: OWSViewController {
         }
 
         // If the session is already running, we're good to go.
-        guard !photoCapture.session.isRunning else { return captureReady() }
+        guard !photoCapture.session.isRunning else {
+            photoCapture.updateVideoConnectionOrientation()
+            return captureReady()
+        }
 
         photoCapture.startVideoCapture()
             .done(captureReady)

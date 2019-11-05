@@ -59,6 +59,10 @@ class AttachmentFormatPickerView: UICollectionView {
         photoCapture.delegate = self
         self.photoCapture = photoCapture
 
+        // Force the preview view to load, otherwise it might
+        // load on the background thread while starting the session
+        _ = photoCapture.previewView
+
         photoCapture.startVideoCapture().done { [weak self] in
             self?.reloadData()
         }.retainUntilComplete()
@@ -156,9 +160,11 @@ extension AttachmentFormatPickerView: PhotoCaptureDelegate {
     }
 
     var captureOrientation: AVCaptureVideoOrientation {
-        // On phones, the camera is portrait only.
-        let orientation = UIDevice.current.isIPad ? CurrentAppContext().interfaceOrientation : .portrait
-        return AVCaptureVideoOrientation(interfaceOrientation: orientation) ?? .portrait
+        let interfaceOrientation: UIInterfaceOrientation = {
+            guard !Thread.isMainThread else { return CurrentAppContext().interfaceOrientation }
+            return DispatchQueue.main.sync { CurrentAppContext().interfaceOrientation }
+        }()
+        return AVCaptureVideoOrientation(interfaceOrientation: interfaceOrientation) ?? .portrait
     }
 
     func beginCaptureButtonAnimation(_ duration: TimeInterval) {
