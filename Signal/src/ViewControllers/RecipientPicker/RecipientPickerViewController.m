@@ -700,7 +700,16 @@ const NSUInteger kMinimumSearchLength = 2;
         NSString *usernameMatch = self.searchText;
         NSString *_Nullable localUsername = helper.profileManager.localUsername;
 
-        if (usernameMatch.length > 0 && ![NSObject isNullableObject:usernameMatch equalTo:localUsername]
+        NSError *error;
+        NSRegularExpression *startsWithNumberRegex = [[NSRegularExpression alloc] initWithPattern:@"^[0-9]+"
+                                                                                          options:0
+                                                                                            error:&error];
+        if (!startsWithNumberRegex || error) {
+            OWSFailDebug(@"Unexpected error creating regex %@", error.localizedDescription);
+        }
+
+        if (usernameMatch.length > 0 && ![startsWithNumberRegex hasMatchWithInput:usernameMatch]
+            && ![NSObject isNullableObject:usernameMatch equalTo:localUsername]
             && ![matchedAccountUsernames containsObject:usernameMatch]) {
             hasSearchResults = YES;
 

@@ -647,9 +647,9 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 
                     // Check if we received KBS credentials, if so pass them on.
                     // This should only ever be returned if the user was using registration lock v2
-                    NSDictionary *_Nullable storageCredentials = responseDict[@"storageCredentials"];
-                    if ([storageCredentials isKindOfClass:[NSDictionary class]]) {
-                        RemoteAttestationAuth *_Nullable auth = [RemoteAttestation parseAuthParams:storageCredentials];
+                    NSDictionary *_Nullable backupCredentials = responseDict[@"backupCredentials"];
+                    if ([backupCredentials isKindOfClass:[NSDictionary class]]) {
+                        RemoteAttestationAuth *_Nullable auth = [RemoteAttestation parseAuthParams:backupCredentials];
                         if (!auth) {
                             OWSFailDebug(@"remote attestation auth could not be parsed: %@", responseDict);
                             return failureBlock(OWSErrorMakeUnableToProcessServerResponseError());

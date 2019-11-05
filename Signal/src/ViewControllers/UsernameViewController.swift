@@ -15,6 +15,14 @@ class UsernameViewController: OWSViewController {
 
     // MARK: -
 
+    @objc
+    public var modalPresentation = false {
+        didSet {
+            guard isViewLoaded else { return }
+            owsFailDebug("modalPresentation may only be set before the view has loaded.")
+        }
+    }
+
     private static let minimumUsernameLength = 4
     private static let maximumUsernameLength: UInt = 26
 
@@ -35,6 +43,7 @@ class UsernameViewController: OWSViewController {
         case tooShort
         case invalidCharacters
         case inUse
+        case startsWithNumber
     }
     private var validationState: ValidationState = .valid {
         didSet { updateValidationError() }
@@ -47,10 +56,14 @@ class UsernameViewController: OWSViewController {
 
         title = NSLocalizedString("USERNAME_TITLE", comment: "The title for the username view.")
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: CommonStrings.cancelButton,
-                                                           style: .plain,
-                                                           target: self,
-                                                           action: #selector(didTapCancel))
+        if modalPresentation {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(title: CommonStrings.cancelButton,
+                                                               style: .plain,
+                                                               target: self,
+                                                               action: #selector(didTapCancel))
+        } else {
+            navigationItem.leftBarButtonItem = createOWSBackButton()
+        }
 
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -161,6 +174,10 @@ class UsernameViewController: OWSViewController {
                                                            comment: "An error indicating that the supplied username is in use by another user. Embeds {{requested username}}.")
 
             errorLabel.text = String(format: unavailableErrorFormat, pendingUsername)
+        case .startsWithNumber:
+            errorRow.isHidden = false
+            errorLabel.text = NSLocalizedString("USERNAME_STARTS_WITH_NUMBER_ERROR",
+                                                comment: "An error indicating that the supplied username cannot start with a number.")
         }
     }
 
@@ -224,15 +241,34 @@ class UsernameViewController: OWSViewController {
             return false
         }
 
+        let startsWithNumberRegex = try! NSRegularExpression(pattern: "^[0-9]+", options: [])
+        guard !startsWithNumberRegex.hasMatch(input: pendingUsername) else {
+            validationState = .startsWithNumber
+            return false
+        }
+
         return true
     }
 
     func usernameSavedOrCanceled() {
         usernameTextField.resignFirstResponder()
-        dismiss(animated: true, completion: nil)
+
+        if modalPresentation {
+            dismiss(animated: true, completion: nil)
+        } else {
+            navigationController?.popViewController(animated: true)
+        }
     }
 
     // MARK: -
+
+    @objc func backButtonPressed(_ sender: UIBarButtonItem) {
+        guard hasPendingChanges else {
+            return usernameSavedOrCanceled()
+        }
+
+        OWSActionSheets.showPendingChangesActionSheet { [weak self] in self?.usernameSavedOrCanceled() }
+    }
 
     @objc func didTapCancel() {
         guard hasPendingChanges else {
