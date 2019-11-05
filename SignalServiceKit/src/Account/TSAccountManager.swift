@@ -15,6 +15,20 @@ public extension TSAccountManager {
 
     // MARK: -
 
+    private class func getLocalThread(transaction: SDSAnyReadTransaction) -> TSThread? {
+        guard let localAddress = self.localAddress(with: transaction) else {
+            owsFailDebug("Missing localAddress.")
+            return nil
+        }
+        return TSContactThread.getWithContactAddress(localAddress, transaction: transaction)
+    }
+
+    private class func getLocalThreadWithSneakyTransaction() -> TSThread? {
+        return databaseStorage.readReturningResult { transaction in
+            return getLocalThread(transaction: transaction)
+        }
+    }
+
     class func getOrCreateLocalThread(transaction: SDSAnyWriteTransaction) -> TSThread? {
         guard let localAddress = self.localAddress(with: transaction) else {
             owsFailDebug("Missing localAddress.")
@@ -26,11 +40,13 @@ public extension TSAccountManager {
     class func getOrCreateLocalThreadWithSneakyTransaction() -> TSThread? {
         assert(!Thread.isMainThread)
 
-        var thread: TSThread?
-        databaseStorage.write { transaction in
-            thread = getOrCreateLocalThread(transaction: transaction)
+        if let thread = getLocalThreadWithSneakyTransaction() {
+            return thread
         }
-        return thread
+
+        return databaseStorage.writeReturningResult { transaction in
+            return getOrCreateLocalThread(transaction: transaction)
+        }
     }
 
     var isRegisteredPrimaryDevice: Bool {
