@@ -7406,6 +7406,12 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
         if hasExpireTimer {
             builder.setExpireTimer(expireTimer)
         }
+        if hasInboxPosition {
+            builder.setInboxPosition(inboxPosition)
+        }
+        if hasArchived {
+            builder.setArchived(archived)
+        }
         return builder
     }
 
@@ -7502,6 +7508,16 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
             proto.expireTimer = valueParam
         }
 
+        @objc
+        public func setInboxPosition(_ valueParam: UInt32) {
+            proto.inboxPosition = valueParam
+        }
+
+        @objc
+        public func setArchived(_ valueParam: Bool) {
+            proto.archived = valueParam
+        }
+
         @objc public func build() throws -> SSKProtoContactDetails {
             return try SSKProtoContactDetails.parseProto(proto)
         }
@@ -7579,6 +7595,20 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
     }
     @objc public var hasExpireTimer: Bool {
         return proto.hasExpireTimer
+    }
+
+    @objc public var inboxPosition: UInt32 {
+        return proto.inboxPosition
+    }
+    @objc public var hasInboxPosition: Bool {
+        return proto.hasInboxPosition
+    }
+
+    @objc public var archived: Bool {
+        return proto.archived
+    }
+    @objc public var hasArchived: Bool {
+        return proto.hasArchived
     }
 
     private init(proto: SignalServiceProtos_ContactDetails,
@@ -7915,6 +7945,12 @@ extension SSKProtoGroupDetailsMember.SSKProtoGroupDetailsMemberBuilder {
             builder.setBlocked(blocked)
         }
         builder.setMembers(members)
+        if hasInboxPosition {
+            builder.setInboxPosition(inboxPosition)
+        }
+        if hasArchived {
+            builder.setArchived(archived)
+        }
         return builder
     }
 
@@ -8009,6 +8045,16 @@ extension SSKProtoGroupDetailsMember.SSKProtoGroupDetailsMemberBuilder {
             proto.members = wrappedItems.map { $0.proto }
         }
 
+        @objc
+        public func setInboxPosition(_ valueParam: UInt32) {
+            proto.inboxPosition = valueParam
+        }
+
+        @objc
+        public func setArchived(_ valueParam: Bool) {
+            proto.archived = valueParam
+        }
+
         @objc public func build() throws -> SSKProtoGroupDetails {
             return try SSKProtoGroupDetails.parseProto(proto)
         }
@@ -8069,6 +8115,20 @@ extension SSKProtoGroupDetailsMember.SSKProtoGroupDetailsMemberBuilder {
     }
     @objc public var hasBlocked: Bool {
         return proto.hasBlocked
+    }
+
+    @objc public var inboxPosition: UInt32 {
+        return proto.inboxPosition
+    }
+    @objc public var hasInboxPosition: Bool {
+        return proto.hasInboxPosition
+    }
+
+    @objc public var archived: Bool {
+        return proto.archived
+    }
+    @objc public var hasArchived: Bool {
+        return proto.hasArchived
     }
 
     private init(proto: SignalServiceProtos_GroupDetails,
