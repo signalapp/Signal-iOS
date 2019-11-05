@@ -7,7 +7,7 @@ import XCTest
 
 class GroupAndContactStreamTest: SignalBaseTest {
 
-    let outputContactSyncData = "HwoMKzEzMjMxMTExMTExEgdBbGljZS0xIgRibHVlQAA3EgdBbGljZS0yIgRibHVlQABKJDMxQ0UxNDEyLTlBMjgtNEU2Ri1CNEVFLTIyMjIyMjIyMjIyMkUKDCsxMzIxMzMzMzMzMxIHQWxpY2UtMyIEYmx1ZUAASiQxRDRBQjA0NS04OEZCLTRDNEUtOUY2QS0zMzMzMzMzMzMzMzM="
+    let outputContactSyncData = "IQoMKzEzMjMxMTExMTExEgdBbGljZS0xIgRibHVlQABYADkSB0FsaWNlLTIiBGJsdWVAAEokMzFDRTE0MTItOUEyOC00RTZGLUI0RUUtMjIyMjIyMjIyMjIyWABHCgwrMTMyMTMzMzMzMzMSB0FsaWNlLTMiBGJsdWVAAEokMUQ0QUIwNDUtODhGQi00QzRFLTlGNkEtMzMzMzMzMzMzMzMzWAA="
 
     func test_writeContactSync() throws {
         let signalAccounts = [
@@ -52,6 +52,8 @@ class GroupAndContactStreamTest: SignalBaseTest {
             XCTAssertEqual(false, contact.isBlocked)
             XCTAssertEqual(0, contact.expireTimer)
             XCTAssertNil(contact.avatarData)
+            XCTAssertEqual(false, contact.isArchived)
+            XCTAssertNil(contact.inboxSortOrder)
         }
 
         do {
@@ -65,6 +67,8 @@ class GroupAndContactStreamTest: SignalBaseTest {
             XCTAssertEqual(false, contact.isBlocked)
             XCTAssertEqual(0, contact.expireTimer)
             XCTAssertNil(contact.avatarData)
+            XCTAssertEqual(false, contact.isArchived)
+            XCTAssertNil(contact.inboxSortOrder)
         }
 
         do {
@@ -78,10 +82,12 @@ class GroupAndContactStreamTest: SignalBaseTest {
             XCTAssertEqual(false, contact.isBlocked)
             XCTAssertEqual(0, contact.expireTimer)
             XCTAssertNil(contact.avatarData)
+            XCTAssertEqual(false, contact.isArchived)
+            XCTAssertNil(contact.inboxSortOrder)
         }
     }
 
-    let outputGroupSyncData = "pQEKEHNddRc9sZVW92G7XH8DdEgaDCsxMzIxMzIxNDMyMRoMKzEzMjEzMjE0MzIzMAA6BWJyb3duSg4SDCsxMzIxMzIxNDMyMUomCiQzMUNFMTQxMi05QTI4LTRFNkYtQjRFRS1BMjVDMzE3OUQwODVKNAokMUQ0QUIwNDUtODhGQi00QzRFLTlGNkEtRjkyMTEyNEJENTI5EgwrMTMyMTMyMTQzMjOMAQoQc222Fz2xlVb3YbtcfwN0SBIJQm9vayBDbHViGgwrMTMyMTMyMTQzMjEaDCsxNTU1MzIxNDMyMzAAOglibHVlX2dyZXlKDhIMKzEzMjEzMjE0MzIxSjQKJDU1NTU1NTU1LTg4RkItNEM0RS05RjZBLUY5MjExMjRCRDUyORIMKzE1NTUzMjE0MzIz"
+    let outputGroupSyncData = "pwEKEHNddRc9sZVW92G7XH8DdEgaDCsxMzIxMzIxNDMyMRoMKzEzMjEzMjE0MzIzMAA6BWJyb3duSg4SDCsxMzIxMzIxNDMyMUomCiQzMUNFMTQxMi05QTI4LTRFNkYtQjRFRS1BMjVDMzE3OUQwODVKNAokMUQ0QUIwNDUtODhGQi00QzRFLTlGNkEtRjkyMTEyNEJENTI5EgwrMTMyMTMyMTQzMjNYAJABChBzbbYXPbGVVvdhu1x/A3RIEglCb29rIENsdWIaDCsxMzIxMzIxNDMyMRoMKzE1NTUzMjE0MzIzMAA6CWJsdWVfZ3JleUoOEgwrMTMyMTMyMTQzMjFKNAokNTU1NTU1NTUtODhGQi00QzRFLTlGNkEtRjkyMTEyNEJENTI5EgwrMTU1NTMyMTQzMjNQAFgB"
     func test_writeGroupSync() throws {
         let group1: TSGroupThread = {
             let groupId = Data(base64Encoded: "c111Fz2xlVb3YbtcfwN0SA==")!
@@ -112,8 +118,10 @@ class GroupAndContactStreamTest: SignalBaseTest {
 
             let thread = TSGroupThread(groupModel: model)
             write {
+                thread.shouldThreadBeVisible = true
                 thread.anyInsert(transaction: $0)
                 thread.updateConversationColorName(.taupe, transaction: $0)
+                thread.archiveThread(with: $0)
             }
             return thread
         }()
@@ -143,30 +151,39 @@ class GroupAndContactStreamTest: SignalBaseTest {
             return
         }
 
-        let group1 = groups[0]
-        XCTAssertEqual(group1.groupId, Data(base64Encoded: "c111Fz2xlVb3YbtcfwN0SA==")!)
-        XCTAssertEqual(group1.name, nil)
-        XCTAssertEqual(group1.memberAddresses, [
-            SignalServiceAddress(phoneNumber: "+13213214321"),
-            SignalServiceAddress(uuidString: "31ce1412-9a28-4e6f-b4ee-a25c3179d085"),
-            SignalServiceAddress(uuidString: "1d4ab045-88fb-4c4e-9f6a-f921124bd529", phoneNumber: "+13213214323")
-        ])
-        XCTAssertEqual(group1.conversationColorName, ConversationColorName.burlap.rawValue)
-        XCTAssertEqual(group1.isBlocked, false)
-        XCTAssertEqual(group1.expireTimer, 0)
-        XCTAssertEqual(group1.avatarData, nil)
+        do {
+            let group = groups[0]
+            XCTAssertEqual(group.groupId, Data(base64Encoded: "c111Fz2xlVb3YbtcfwN0SA==")!)
+            XCTAssertEqual(group.name, nil)
+            XCTAssertEqual(group.memberAddresses, [
+                SignalServiceAddress(phoneNumber: "+13213214321"),
+                SignalServiceAddress(uuidString: "31ce1412-9a28-4e6f-b4ee-a25c3179d085"),
+                SignalServiceAddress(uuidString: "1d4ab045-88fb-4c4e-9f6a-f921124bd529", phoneNumber: "+13213214323")
+            ])
 
-        let group2 = groups[1]
-        XCTAssertEqual(group2.groupId, Data(base64Encoded: "c222Fz2xlVb3YbtcfwN0SA==")!)
-        XCTAssertEqual(group2.name, "Book Club")
-        XCTAssertEqual(group2.memberAddresses, [
-            SignalServiceAddress(phoneNumber: "+13213214321"),
-            SignalServiceAddress(uuidString: "55555555-88fb-4c4e-9f6a-f921124bd529", phoneNumber: "+15553214323")
-        ])
-        XCTAssertEqual(group2.conversationColorName, ConversationColorName.taupe.rawValue)
-        XCTAssertEqual(group2.isBlocked, false)
-        XCTAssertEqual(group2.expireTimer, 0)
-        XCTAssertEqual(group2.avatarData, nil)
+            XCTAssertEqual(group.conversationColorName, ConversationColorName.burlap.rawValue)
+            XCTAssertEqual(group.isBlocked, false)
+            XCTAssertEqual(group.expireTimer, 0)
+            XCTAssertEqual(group.avatarData, nil)
+            XCTAssertEqual(false, group.isArchived)
+            XCTAssertNil(group.inboxSortOrder)
+        }
+
+        do {
+            let group = groups[1]
+            XCTAssertEqual(group.groupId, Data(base64Encoded: "c222Fz2xlVb3YbtcfwN0SA==")!)
+            XCTAssertEqual(group.name, "Book Club")
+            XCTAssertEqual(group.memberAddresses, [
+                SignalServiceAddress(phoneNumber: "+13213214321"),
+                SignalServiceAddress(uuidString: "55555555-88fb-4c4e-9f6a-f921124bd529", phoneNumber: "+15553214323")
+            ])
+            XCTAssertEqual(group.conversationColorName, ConversationColorName.taupe.rawValue)
+            XCTAssertEqual(group.isBlocked, false)
+            XCTAssertEqual(group.expireTimer, 0)
+            XCTAssertEqual(group.avatarData, nil)
+            XCTAssertEqual(true, group.isArchived)
+            XCTAssertEqual(0, group.inboxSortOrder)
+        }
     }
 
     func buildContactSyncData(signalAccounts: [SignalAccount]) throws -> Data {
@@ -190,7 +207,9 @@ class GroupAndContactStreamTest: SignalBaseTest {
                                        profileKeyData: nil,
                                        contactsManager: contactsManager,
                                        conversationColorName: ConversationColorName.blue.rawValue,
-                                       disappearingMessagesConfiguration: nil)
+                                       disappearingMessagesConfiguration: nil,
+                                       isArchived: false,
+                                       inboxPosition: nil)
         }
 
         dataOutputStream.close()

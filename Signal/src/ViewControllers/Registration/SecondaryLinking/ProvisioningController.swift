@@ -167,11 +167,6 @@ public class ProvisioningController: NSObject {
         return _awaitProvisionMessage!
     }
 
-    public let awaitContactAndGroupSync: Promise<Void> = when(fulfilled: [
-        NotificationCenter.default.observe(once: .IncomingContactSyncDidComplete).asVoid(),
-        NotificationCenter.default.observe(once: .IncomingGroupSyncDidComplete).asVoid()
-    ])
-
     public func completeLinking(deviceName: String) -> Promise<Void> {
         return awaitProvisionMessage.then { [weak self] provisionMessage -> Promise<Void> in
             guard let self = self else { throw PMKError.cancelled }

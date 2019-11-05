@@ -130,7 +130,12 @@ NS_ASSUME_NONNULL_BEGIN
 
         TSContactThread *_Nullable contactThread =
             [TSContactThread getThreadWithContactAddress:signalAccount.recipientAddress transaction:transaction];
+
+        NSNumber *_Nullable isArchived;
+        NSNumber *_Nullable inboxPosition;
         if (contactThread) {
+            isArchived = [NSNumber numberWithBool:contactThread.isArchived];
+            inboxPosition = [[AnyThreadFinder new] sortIndexObjcWithThread:contactThread transaction:transaction];
             conversationColorName = contactThread.conversationColorName;
             disappearingMessagesConfiguration =
                 [contactThread disappearingMessagesConfigurationWithTransaction:transaction];
@@ -144,7 +149,9 @@ NS_ASSUME_NONNULL_BEGIN
                                   profileKeyData:profileKeyData
                                  contactsManager:self.contactsManager
                            conversationColorName:conversationColorName
-               disappearingMessagesConfiguration:disappearingMessagesConfiguration];
+               disappearingMessagesConfiguration:disappearingMessagesConfiguration
+                                      isArchived:isArchived
+                                   inboxPosition:inboxPosition];
     }
     
     [dataOutputStream close];

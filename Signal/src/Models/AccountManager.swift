@@ -232,11 +232,28 @@ public class AccountManager: NSObject {
             // because we want to present the inbox already populated with groups and contacts,
             // rather than have the trickle in moments later.
             BenchEventStart(title: "waiting for initial contact and group sync", eventId: "initial-contact-sync")
-            return OWSSyncManager.shared().sendAllSyncRequestMessages(timeout: 20)
-                .asVoid()
-                .done { _ in
-                    BenchEventComplete(eventId: "initial-contact-sync")
+
+            return firstly {
+                OWSSyncManager.shared().sendInitialSyncRequestsAwaitingCreatedThreadOrdering(timeoutSeconds: 500)
+            }.done(on: .global() ) { orderedThreadIds in
+                Logger.debug("orderedThreadIds: \(orderedThreadIds)")
+                // Maintain the remote sort ordering of threads by inserting `syncedThread` messages
+                // in that thread order.
+                self.databaseStorage.write { transaction in
+                    for threadId in orderedThreadIds.reversed() {
+                        guard let thread = TSThread.anyFetch(uniqueId: threadId, transaction: transaction) else {
+                            owsFailDebug("thread was unexpectedly nil")
+                            continue
+                        }
+                        let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
+                                                    in: thread,
+                                                    messageType: .syncedThread)
+                        message.anyInsert(transaction: transaction)
+                    }
                 }
+            }.ensure {
+                BenchEventComplete(eventId: "initial-contact-sync")
+            }
         }
     }
 

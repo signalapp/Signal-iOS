@@ -15,12 +15,13 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSContactsOutputStream : OWSChunkedOutputStream
 
 - (void)writeSignalAccount:(SignalAccount *)signalAccount
-         recipientIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
-            profileKeyData:(nullable NSData *)profileKeyData
-           contactsManager:(id<ContactsManagerProtocol>)contactsManager
-     conversationColorName:(NSString *)conversationColorName
-disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration;
-
+                    recipientIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
+                       profileKeyData:(nullable NSData *)profileKeyData
+                      contactsManager:(id<ContactsManagerProtocol>)contactsManager
+                conversationColorName:(NSString *)conversationColorName
+    disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
+                           isArchived:(nullable NSNumber *)isArchived
+                        inboxPosition:(nullable NSNumber *)inboxPosition;
 
 @end
 

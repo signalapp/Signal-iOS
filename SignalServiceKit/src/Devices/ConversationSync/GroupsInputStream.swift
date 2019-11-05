@@ -12,6 +12,8 @@ public struct GroupDetails {
     public let isBlocked: Bool
     public let expireTimer: UInt32
     public let avatarData: Data?
+    public let isArchived: Bool?
+    public let inboxSortOrder: UInt32?
 }
 
 public class GroupsInputStream {
@@ -49,6 +51,8 @@ public class GroupsInputStream {
                             conversationColorName: groupDetails.color,
                             isBlocked: groupDetails.blocked,
                             expireTimer: groupDetails.expireTimer,
-                            avatarData: avatarData)
+                            avatarData: avatarData,
+                            isArchived: groupDetails.hasArchived ? groupDetails.archived : nil,
+                            inboxSortOrder: groupDetails.hasInboxPosition ? groupDetails.inboxPosition : nil)
     }
 }

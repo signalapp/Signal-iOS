@@ -79,14 +79,14 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         if ([self.tsAccountManager isRegisteredAndReady]) {
             OWSAssertDebug(self.contactsManager.isSetup);
 
-            if (self.tsAccountManager.isRegisteredPrimaryDevice) {
+            if (self.tsAccountManager.isPrimaryDevice) {
                 // Flush any pending changes.
                 //
                 // sendSyncContactsMessageIfNecessary will skipIfRedundant,
                 // so this won't yield redundant traffic.
                 [self sendSyncContactsMessageIfNecessary];
             } else {
-                [self sendAllSyncRequestMessages];
+                [[self objc_sendAllSyncRequestMessages] retainUntilComplete];
             }
         }
     }];
@@ -449,14 +449,14 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 # pragma mark - Sync Requests
 
-- (AnyPromise *)sendAllSyncRequestMessages
+- (AnyPromise *)objc_sendAllSyncRequestMessages
 {
-    return [self objc_sendAllSyncRequestMessages];
+    return [self _objc_sendAllSyncRequestMessages];
 }
 
-- (AnyPromise *)sendAllSyncRequestMessagesWithTimeout:(NSTimeInterval)timeout
+- (AnyPromise *)objc_sendAllSyncRequestMessagesWithTimeout:(NSTimeInterval)timeout
 {
-    return [self objc_sendAllSyncRequestMessagesWithTimeout:timeout];
+    return [self _objc_sendAllSyncRequestMessagesWithTimeout:timeout];
 }
 
 #pragma mark - Fetch Latest

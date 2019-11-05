@@ -22,11 +22,13 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSContactsOutputStream
 
 - (void)writeSignalAccount:(SignalAccount *)signalAccount
-         recipientIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
-            profileKeyData:(nullable NSData *)profileKeyData
-           contactsManager:(id<ContactsManagerProtocol>)contactsManager
-     conversationColorName:(NSString *)conversationColorName
-disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
+                    recipientIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
+                       profileKeyData:(nullable NSData *)profileKeyData
+                      contactsManager:(id<ContactsManagerProtocol>)contactsManager
+                conversationColorName:(NSString *)conversationColorName
+    disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
+                           isArchived:(nullable NSNumber *)isArchived
+                        inboxPosition:(nullable NSNumber *)inboxPosition
 {
     OWSAssertDebug(signalAccount);
     OWSAssertDebug(signalAccount.contact);
@@ -37,6 +39,14 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     [contactBuilder setUuid:signalAccount.recipientAddress.uuidString];
     [contactBuilder setName:signalAccount.contact.fullName];
     [contactBuilder setColor:conversationColorName];
+
+    if (isArchived != nil) {
+        [contactBuilder setArchived:isArchived.boolValue];
+    }
+
+    if (inboxPosition != nil) {
+        [contactBuilder setInboxPosition:inboxPosition.intValue];
+    }
 
     if (recipientIdentity != nil) {
         SSKProtoVerified *_Nullable verified = BuildVerifiedProtoWithAddress(signalAccount.recipientAddress,

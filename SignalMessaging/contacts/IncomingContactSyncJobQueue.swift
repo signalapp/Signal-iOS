@@ -79,6 +79,8 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         return self
     }
 
+    public var newThreads: [(threadId: String, sortOrder: UInt32)] = []
+
     // MARK: -
 
     init(jobRecord: OWSIncomingContactSyncJobRecord) {
@@ -121,6 +123,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         firstly { () -> Promise<TSAttachmentStream> in
             try self.getAttachmentStream()
         }.done(on: .global()) { attachmentStream in
+            self.newThreads = []
             try Bench(title: "processing incoming contact sync file") {
                 try self.process(attachmentStream: attachmentStream)
             }
@@ -141,7 +144,8 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         self.databaseStorage.write { transaction in
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
         }
-        NotificationCenter.default.post(name: .IncomingContactSyncDidComplete, object: nil)
+        // add user info for thread ordering
+        NotificationCenter.default.post(name: .IncomingContactSyncDidComplete, object: self)
     }
 
     public override func didReportError(_ error: Error) {
@@ -295,11 +299,11 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
 
         if isNewThread {
             contactThread.anyInsert(transaction: transaction)
-
-            let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                        in: contactThread,
-                                        messageType: .syncedThread)
-            message.anyInsert(transaction: transaction)
+            let inboxSortOrder = contactDetails.inboxSortOrder ?? UInt32.max
+            newThreads.append((threadId: contactThread.uniqueId, sortOrder: inboxSortOrder))
+            if let isArchived = contactDetails.isArchived, isArchived == true {
+                contactThread.archiveThread(with: transaction)
+            }
         } else if threadDidChange {
             contactThread.anyOverwritingUpdate(transaction: transaction)
         }

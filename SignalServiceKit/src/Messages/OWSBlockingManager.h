@@ -11,8 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSGroupModel;
 @class TSThread;
 
-extern NSString *const kNSNotificationName_BlockListDidChange;
-extern NSString *const OWSBlockingManagerBlockedSyncDidComplete;
+extern NSNotificationName const kNSNotificationName_BlockListDidChange;
+extern NSNotificationName const OWSBlockingManagerBlockedSyncDidComplete;
 
 // This class can be safely accessed and used from any thread.
 @interface OWSBlockingManager : NSObject

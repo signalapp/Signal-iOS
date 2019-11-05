@@ -58,6 +58,14 @@ NS_ASSUME_NONNULL_BEGIN
         [groupBuilder setBlocked:YES];
     }
 
+    [groupBuilder setArchived:groupThread.isArchived];
+    NSNumber *_Nullable sortIndex = [[AnyThreadFinder new] sortIndexObjcWithThread:groupThread transaction:transaction];
+    if (sortIndex != nil) {
+        [groupBuilder setInboxPosition:sortIndex.intValue];
+    }
+
+    // TODO setActive based on soft delete?
+
     NSData *groupAvatarData;
     if (group.groupAvatarData.length > 0) {
         SSKProtoGroupDetailsAvatarBuilder *avatarBuilder = [SSKProtoGroupDetailsAvatar builder];
