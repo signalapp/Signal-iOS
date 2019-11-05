@@ -48,6 +48,10 @@ class AttachmentFormatPickerView: UICollectionView {
         stopCameraPreview()
     }
 
+    func updateCameraOrientation() {
+        photoCapture?.updateVideoConnectionOrientation()
+    }
+
     func startCameraPreview() {
         guard photoCapture == nil else { return }
 
@@ -152,7 +156,9 @@ extension AttachmentFormatPickerView: PhotoCaptureDelegate {
     }
 
     var captureOrientation: AVCaptureVideoOrientation {
-        return AVCaptureVideoOrientation(interfaceOrientation: CurrentAppContext().interfaceOrientation) ?? .portrait
+        // On phones, the camera is portrait only.
+        let orientation = UIDevice.current.isIPad ? CurrentAppContext().interfaceOrientation : .portrait
+        return AVCaptureVideoOrientation(interfaceOrientation: orientation) ?? .portrait
     }
 
     func beginCaptureButtonAnimation(_ duration: TimeInterval) {

@@ -164,6 +164,12 @@ class AttachmentKeyboard: CustomKeyboard {
         updateItemSizes()
     }
 
+    override func orientationDidChange() {
+        super.orientationDidChange()
+
+        attachmentFormatPickerView.updateCameraOrientation()
+    }
+
     func updateItemSizes() {
         // The items should always expand to fit the height of their collection view.
 
