@@ -7,6 +7,9 @@ import Foundation
 @objc
 public class OWSLayerView: UIView {
     @objc
+    public var shouldAnimate = true
+
+    @objc
     public var layoutCallback: ((UIView) -> Void)
 
     @objc
@@ -53,6 +56,13 @@ public class OWSLayerView: UIView {
     }
 
     public func updateContent() {
-        layoutCallback(self)
+        if shouldAnimate {
+            layoutCallback(self)
+        } else {
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            layoutCallback(self)
+            CATransaction.commit()
+        }
     }
 }
