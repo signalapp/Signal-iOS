@@ -218,7 +218,7 @@ class ParsedClass:
     def record_name(self):
         return remove_prefix_from_class_name(self.name) + 'Record'
         
-    def sorted_model_properties(self):
+    def sorted_record_properties(self):
         
         record_name = self.record_name()
         # If a property has a custom column source, we don't redundantly create a column for that column 
@@ -235,17 +235,17 @@ class ParsedClass:
         #
         # NOTE: We punch two values onto these properties:
         #       force_optional and property_order.
-        model_properties = []
+        record_properties = []
         for property in base_properties:
             property.force_optional=False
-            model_properties.append(property)
+            record_properties.append(property)
         for property in subclass_properties:
             # We must "force" subclass properties to be optional
             # since they don't apply to the base model and other
             # subclasses.
             property.force_optional=True
-            model_properties.append(property)
-        for property in model_properties:
+            record_properties.append(property)
+        for property in record_properties:
             # Try to load the known "order" for each property.
             #
             # "Orders" are indices used to ensure a stable ordering.
@@ -255,17 +255,17 @@ class ParsedClass:
             # This will initially be nil for new properties
             # which have not yet been assigned an order.
             property.property_order = property_order_for_property(property, record_name)
-        all_property_orders = [property.property_order for property in model_properties]
+        all_property_orders = [property.property_order for property in record_properties]
         # We determine the "next" order we would assign to any
         # new property without an order.
         next_property_order = 1 + (max(all_property_orders) if len(all_property_orders) > 0 else 0)
         # Pre-sort model properties by name, so that if we add more
         # than one at a time they are nicely (and stable-y) sorted
         # in an attractive way.
-        model_properties.sort(key=lambda value: value.name)
+        record_properties.sort(key=lambda value: value.name)
         # Now iterate over all model properties and assign an order
         # to any new properties without one.
-        for property in model_properties:
+        for property in record_properties:
             if property.property_order is None:
                 property.property_order = next_property_order
                 # We "set" the order in the mapping which is persisted
@@ -273,8 +273,8 @@ class ParsedClass:
                 set_property_order_for_property(property, record_name, next_property_order)
                 next_property_order = next_property_order + 1
         # Now sort the model properties, applying the ordering.
-        model_properties.sort(key=lambda value: value.property_order)
-        return model_properties        
+        record_properties.sort(key=lambda value: value.property_order)
+        return record_properties        
 		        
         
 class TypeInfo:
@@ -841,12 +841,12 @@ public struct %s: SDSRecord {
             return '''    public let %s: %s%s
 ''' % ( str(column_name), record_field_type, optional_split, )
         
-        model_properties = clazz.sorted_model_properties()
+        record_properties = clazz.sorted_record_properties()
         
         # Declare the model properties in the record.
-        if len(model_properties) > 0:
+        if len(record_properties) > 0:
             swift_body += '\n    // Properties \n'
-            for property in model_properties:
+            for property in record_properties:
                 swift_body += write_record_property(property, force_optional=property.force_optional)
         
         sds_properties = [
@@ -854,13 +854,13 @@ public struct %s: SDSRecord {
             ParsedProperty({"name": "recordType", "is_optional": False, "objc_type": "NSUInteger", "class_name": clazz.name}),
             ParsedProperty({"name": "uniqueId", "is_optional": False, "objc_type": "NSString *", "class_name": clazz.name})
         ]
-        # We use the pre-sorted collection model_properties so that
+        # We use the pre-sorted collection record_properties so that
         # we use the correct property order when generating:
         #
         # * CodingKeys
         # * init(row: Row)
         # * The table/column metadata.
-        persisted_properties = sds_properties + model_properties
+        persisted_properties = sds_properties + record_properties
 
         swift_body += '''
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
@@ -1193,9 +1193,9 @@ extension %sSerializer {
         for property in sds_properties:
             swift_body += write_column_metadata(property)
  
-        if len(model_properties) > 0:
+        if len(record_properties) > 0:
             swift_body += '    // Properties \n'
-            for property in model_properties:
+            for property in record_properties:
                 swift_body += write_column_metadata(property, force_optional=property.force_optional)
     
         database_table_name = 'model_%s' % str(clazz.name)
@@ -1762,11 +1762,11 @@ class %sSerializer: SDSSerializer {
         return '''        let %s: %s%s%s
 ''' % ( str(property.column_name()), record_field_type, optional_split, optional_value, )
  
-    root_model_properties = root_class.sorted_model_properties()
+    root_record_properties = root_class.sorted_record_properties()
  
-    if len(root_model_properties) > 0:
+    if len(root_record_properties) > 0:
         swift_body += '\n        // Properties \n'
-        for property in root_model_properties:
+        for property in root_record_properties:
             swift_body += write_record_property(property, force_optional=property.force_optional)
 
 
@@ -2114,34 +2114,27 @@ def parse_property_order_json(property_order_json_path):
     global property_order_json
     property_order_json = json_data
 
-
 # It's critical that our "property order" is consistent, even if we add columns. 
 # Therefore we persist the "property order" for all known properties in a JSON file that is under source control.
 def update_property_order_json(property_order_json_path):
-    print 'update_property_order_json'
-
     property_order_json['#comment'] = 'NOTE: This file is generated by %s. Do not manually edit it, instead run `sds_codegen.sh`.' % ( sds_common.pretty_module_path(__file__), )
 
     json_string = json.dumps(property_order_json, sort_keys=True, indent=4)
 
     sds_common.write_text_file_if_changed(property_order_json_path, json_string)
 
-
 def property_order_key(property, record_name):
     return record_name + '.' + property.name
 
 def property_order_for_property(property, record_name):
     key = property_order_key(property, record_name)
-    # print '--?--', key, custom_accessors.get(key, property.name)
     result = property_order_json.get(key)
-    print 'get property_order[%s]: %s (%s)' % (key, str(result), type(key))
     return result
 
 def set_property_order_for_property(property, record_name, value):
     key = property_order_key(property, record_name)
-    # print '--?--', key, custom_accessors.get(key, property.name)
     property_order_json[key] = value
-    print 'set property_order[%s]: %s (%s)' % (key, str(value), type(value))
+
 
 if __name__ == "__main__":
     
