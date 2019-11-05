@@ -225,6 +225,11 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
 
         if isNewThread {
             groupThread.anyInsert(transaction: transaction)
+
+            let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
+                                        in: groupThread,
+                                        messageType: .syncedThread)
+            message.anyInsert(transaction: transaction)
         } else if threadDidChange {
             groupThread.anyOverwritingUpdate(transaction: transaction)
         }

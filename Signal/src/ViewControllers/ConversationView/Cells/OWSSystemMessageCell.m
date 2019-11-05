@@ -314,6 +314,9 @@ typedef void (^SystemMessageActionBlock)(void);
             case TSInfoMessageUserJoinedSignal:
                 result = [UIImage imageNamed:@"emoji-heart-filled-28"];
                 break;
+            case TSInfoMessageSyncedThread:
+                result = [Theme iconImage:ThemeIconInfo];
+                break;
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
         result = [Theme iconImage:ThemeIconPhone];
@@ -536,6 +539,8 @@ typedef void (^SystemMessageActionBlock)(void);
                                   }
                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_safety_number")];
         case TSInfoMessageUserJoinedSignal:
+            return nil;
+        case TSInfoMessageSyncedThread:
             return nil;
     }
 

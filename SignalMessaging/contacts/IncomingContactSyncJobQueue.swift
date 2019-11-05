@@ -295,6 +295,11 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
 
         if isNewThread {
             contactThread.anyInsert(transaction: transaction)
+
+            let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
+                                        in: contactThread,
+                                        messageType: .syncedThread)
+            message.anyInsert(transaction: transaction)
         } else if threadDidChange {
             contactThread.anyOverwritingUpdate(transaction: transaction)
         }

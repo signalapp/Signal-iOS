@@ -243,6 +243,10 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                     @"name}}");
                 return [NSString stringWithFormat:format, recipientName];
         }
+        case TSInfoMessageSyncedThread:
+            return NSLocalizedString(@"INFO_MESSAGE_SYNCED_THREAD",
+                @"Shown in inbox and conversation after syncing as a placeholder indicating why your message history "
+                @"is missing.");
     }
 
     OWSFailDebug(@"Unknown info message type");
@@ -265,6 +269,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         case TSInfoMessageAddUserToProfileWhitelistOffer:
         case TSInfoMessageAddGroupToProfileWhitelistOffer:
         case TSInfoMessageUnknownProtocolVersion:
+        case TSInfoMessageSyncedThread:
             return NO;
         case TSInfoMessageUserJoinedSignal:
             // In the conversation list, we want conversations with an unread "new user" notification to
