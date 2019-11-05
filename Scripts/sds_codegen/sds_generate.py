@@ -1724,16 +1724,6 @@ class %sSerializer: SDSSerializer {
 ''' % { "record_type": get_record_type_enum_name(clazz.name), "record_id_source": record_id_source }
     
     initializer_args = ['id', 'recordType', 'uniqueId', ]
-    
-    # If a property has a custom column source, we don't redundantly create a column for that column 
-    root_base_properties = [property for property in root_class.properties() if not property.has_custom_column_source()]
-    # If a property has a custom column source, we don't redundantly create a column for that column 
-    root_subclass_properties = [property for property in root_class.database_subclass_properties() if not property.has_custom_column_source()]
-    root_base_property_names = set()
-    for property in root_base_properties:
-        root_base_property_names.add(property.name)
-
-    # record_name = remove_prefix_from_class_name(clazz.name) + 'Record'
 
     initializer_value_names = []
     for property in properties_and_inherited_properties(clazz):
@@ -1743,7 +1733,7 @@ class %sSerializer: SDSSerializer {
     def write_record_property(property, force_optional=False):
         optional_value = ''
         if property.swift_identifier() in initializer_value_names:
-            did_force_optional = (property.name not in root_base_property_names) and (not property.is_optional)
+            did_force_optional = property.force_optional
             model_accessor = accessor_name_for_property(property)
             value_expr = property.serialize_record_invocation('model.%s' % ( model_accessor, ), did_force_optional)
                         
