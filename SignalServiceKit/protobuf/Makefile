@@ -5,7 +5,7 @@ PROTOC=protoc \
 WRAPPER_SCRIPT=../../Scripts/ProtoWrappers.py \
 		--proto-dir='./' --verbose
 
-all: signal_service_protos provisioning_protos fingerprint_protos websocket_protos signal_ios_protos key_backup_protos storage_service_protos
+all: signal_service_protos provisioning_protos fingerprint_protos websocket_protos signal_ios_protos key_backup_protos storage_service_protos groups_protos
 
 signal_service_protos: SignalService.proto
 	$(PROTOC) --swift_out=../src/Protos/Generated \
@@ -48,3 +48,15 @@ storage_service_protos: StorageService.proto
 		StorageService.proto
 	$(WRAPPER_SCRIPT) --dst-dir=../src/Protos/Generated \
 		--wrapper-prefix=StorageServiceProto --proto-prefix=StorageServiceProtos --proto-file=StorageService.proto
+
+# TODO: Copy schema from zkgroup repository.
+# TODO: Insert the following lines into the schema:
+#
+# // iOS - package name determines class prefix
+# package GroupsProtos;
+#
+groups_protos: Groups.proto
+	$(PROTOC) --swift_out=../src/Protos/Generated \
+		Groups.proto
+	$(WRAPPER_SCRIPT) --dst-dir=../src/Protos/Generated \
+		--wrapper-prefix=GroupsProto --proto-prefix=GroupsProtos --proto-file=Groups.proto

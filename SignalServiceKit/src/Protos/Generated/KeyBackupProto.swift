@@ -113,17 +113,17 @@ public enum KeyBackupProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: KeyBackupProtos_Request) throws -> KeyBackupProtoRequest {
-        var backup: KeyBackupProtoBackupRequest?
+        var backup: KeyBackupProtoBackupRequest? = nil
         if proto.hasBackup {
             backup = try KeyBackupProtoBackupRequest.parseProto(proto.backup)
         }
 
-        var restore: KeyBackupProtoRestoreRequest?
+        var restore: KeyBackupProtoRestoreRequest? = nil
         if proto.hasRestore {
             restore = try KeyBackupProtoRestoreRequest.parseProto(proto.restore)
         }
 
-        var delete: KeyBackupProtoDeleteRequest?
+        var delete: KeyBackupProtoDeleteRequest? = nil
         if proto.hasDelete {
             delete = try KeyBackupProtoDeleteRequest.parseProto(proto.delete)
         }
@@ -262,17 +262,17 @@ extension KeyBackupProtoRequest.KeyBackupProtoRequestBuilder {
     }
 
     fileprivate class func parseProto(_ proto: KeyBackupProtos_Response) throws -> KeyBackupProtoResponse {
-        var backup: KeyBackupProtoBackupResponse?
+        var backup: KeyBackupProtoBackupResponse? = nil
         if proto.hasBackup {
             backup = try KeyBackupProtoBackupResponse.parseProto(proto.backup)
         }
 
-        var restore: KeyBackupProtoRestoreResponse?
+        var restore: KeyBackupProtoRestoreResponse? = nil
         if proto.hasRestore {
             restore = try KeyBackupProtoRestoreResponse.parseProto(proto.restore)
         }
 
-        var delete: KeyBackupProtoDeleteResponse?
+        var delete: KeyBackupProtoDeleteResponse? = nil
         if proto.hasDelete {
             delete = try KeyBackupProtoDeleteResponse.parseProto(proto.delete)
         }
