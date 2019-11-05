@@ -200,7 +200,7 @@ public extension JobQueue {
             // Don't process queues.
             return
         }
-        databaseStorage.asyncWrite { transaction in
+        databaseStorage.write { transaction in
             let runningRecords = self.finder.allRecords(label: self.jobRecordLabel, status: .running, transaction: transaction)
             Logger.info("marking old `running` \(self.jobRecordLabel) JobRecords as ready: \(runningRecords.count)")
             for jobRecord in runningRecords {
@@ -229,25 +229,30 @@ public extension JobQueue {
             owsFailDebug("already ready already")
             return
         }
-        self.restartOldJobs()
 
-        if self.requiresInternet {
-            NotificationCenter.default.addObserver(forName: .reachabilityChanged,
-                                                   object: self.reachabilityManager.observationContext,
-                                                   queue: nil) { _ in
-
-                                                    if self.reachabilityManager.isReachable {
-                                                        Logger.verbose("isReachable: true")
-                                                        self.becameReachable()
-                                                    } else {
-                                                        Logger.verbose("isReachable: false")
-                                                    }
+        DispatchQueue.global().async(.promise) {
+            self.restartOldJobs()
+        }.done { [weak self] in
+            guard let self = self else {
+                return
             }
-        }
+            if self.requiresInternet {
+                NotificationCenter.default.addObserver(forName: .reachabilityChanged,
+                                                       object: self.reachabilityManager.observationContext,
+                                                       queue: nil) { _ in
 
-        self.isSetup = true
+                                                        if self.reachabilityManager.isReachable {
+                                                            Logger.verbose("isReachable: true")
+                                                            self.becameReachable()
+                                                        } else {
+                                                            Logger.verbose("isReachable: false")
+                                                        }
+                }
+            }
 
-        self.startWorkWhenAppIsReady()
+            self.isSetup = true
+            self.startWorkWhenAppIsReady()
+        }.retainUntilComplete()
     }
 
     func remainingRetries(durableOperation: DurableOperationType) -> UInt {
