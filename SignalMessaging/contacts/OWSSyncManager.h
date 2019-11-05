@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const OWSSyncManagerConfigurationDidChangeNotification;
+extern NSString *const OWSSyncManagerConfigurationSyncDidCompleteNotification;
 
 @class AnyPromise;
 @class OWSContactsManager;

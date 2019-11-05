@@ -47,7 +47,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                                  name:OWSScreenLock.ScreenLockDidChange
                                                object:nil];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(configurationSettingsDidChange:) name:OWSSyncManagerConfigurationDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(configurationSettingsDidChange:) name:OWSSyncManagerConfigurationSyncDidCompleteNotification object:nil];
 }
 
 - (void)dealloc

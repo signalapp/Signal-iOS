@@ -38,7 +38,7 @@ struct MessageActionBuilder {
     }
 
     static func showDetails(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-        let image = Theme.iconImage(.messageActionDetails)
+        let image = Theme.iconImage(.info)
         return MenuAction(image: image,
                           title: NSLocalizedString("MESSAGE_ACTION_DETAILS", comment: "Action sheet button title"),
                           subtitle: nil,

@@ -11,6 +11,7 @@
 #import "SignalApp.h"
 #import "UIView+OWS.h"
 #import <MessageUI/MessageUI.h>
+#import <PromiseKit/AnyPromise.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/AppVersion.h>
@@ -190,13 +191,18 @@ const NSUInteger kMinimumSearchLength = 2;
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
 {
     OWSAssertIsOnMainThread();
+    OWSLogInfo(@"beggining refreshing.");
 
-    [self.contactsManager userRequestedSystemContactsRefreshWithCompletion:^(NSError *_Nullable error) {
-        if (error) {
-            OWSLogError(@"refreshing contacts failed with error: %@", error);
+    [[self.contactsManager userRequestedSystemContactsRefresh].then(^{
+        if (TSAccountManager.sharedInstance.isRegisteredPrimaryDevice) {
+            return [AnyPromise promiseWithValue:nil];
         }
+
+        return [SSKEnvironment.shared.syncManager sendAllSyncRequestMessagesWithTimeout:20];
+    }).ensure(^{
+        OWSLogInfo(@"ending refreshing.");
         [refreshControl endRefreshing];
-    }];
+    }) retainUntilComplete];
 }
 
 - (UIView *)createNoSignalContactsView

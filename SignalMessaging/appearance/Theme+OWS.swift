@@ -36,7 +36,6 @@ public enum ThemeIcon: UInt {
     case messageActionReply
     case messageActionForward
     case messageActionCopy
-    case messageActionDetails
     case messageActionDelete
     case messageActionSave
 
@@ -45,6 +44,7 @@ public enum ThemeIcon: UInt {
     case checkCircle
     case message
     case call
+    case info
 }
 
 @objc
@@ -120,8 +120,6 @@ public extension Theme {
             return isDarkThemeEnabled ? "forward-solid-24" :  "forward-outline-24"
         case .messageActionCopy:
             return isDarkThemeEnabled ? "copy-solid-24" :  "ic_copy"
-        case .messageActionDetails:
-            return isDarkThemeEnabled ? "info-solid-24" :  "ic_info"
         case .messageActionDelete:
             // TODO: We're missing dark theme version of this icon.
             return "ic_trash"
@@ -139,6 +137,8 @@ public extension Theme {
             return isDarkThemeEnabled ? "message-solid-24" : "message-outline-24"
         case .call:
             return isDarkThemeEnabled ? "button_phone_white" : "phone-right-outline-24"
+        case .info:
+            return isDarkThemeEnabled ? "info-solid-24" :  "ic_info"
         }
     }
 }

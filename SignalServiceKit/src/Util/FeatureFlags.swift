@@ -208,7 +208,7 @@ public class FeatureFlags: NSObject {
     public static let usernames = !IsUsingProductionService() && build.includes(.dev)
 
     @objc
-    public static let messageRequest = build.includes(.qa)
+    public static let messageRequest = build.includes(.qa) && socialGraphOnServer
 
     @objc
     public static let profileDisplayChanges = build.includes(.qa)

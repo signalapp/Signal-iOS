@@ -20,8 +20,17 @@ public class OWSMockSyncManager: NSObject, OWSSyncManagerProtocol {
     }
 
     @objc
-    public func sendAllSyncRequestMessages() {
+    public func sendAllSyncRequestMessages() -> AnyPromise {
         Logger.info("")
+
+        return AnyPromise()
+    }
+
+    @objc
+    public func sendAllSyncRequestMessages(timeout: TimeInterval) -> AnyPromise {
+        Logger.info("")
+
+        return AnyPromise()
     }
 
     public func sendFetchLatestProfileSyncMessage() {
