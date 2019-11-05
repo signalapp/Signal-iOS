@@ -63,7 +63,6 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 {
     OWSAssertDebug(groupModel);
     OWSAssertDebug(groupModel.groupId.length > 0);
-    OWSAssertDebug(groupModel.groupMembers.count > 0);
     for (SignalServiceAddress *address in groupModel.groupMembers) {
         OWSAssertDebug(address.isValid);
     }

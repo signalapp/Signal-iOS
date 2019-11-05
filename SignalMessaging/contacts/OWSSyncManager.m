@@ -30,7 +30,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const OWSSyncManagerConfigurationDidChangeNotification = @"OWSSyncManagerConfigurationDidChangeNotification";
+NSString *const OWSSyncManagerConfigurationSyncDidCompleteNotification = @"OWSSyncManagerConfigurationSyncDidCompleteNotification";
 
 NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManagerLastMessageKey";
 
@@ -238,7 +238,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     [SSKPreferences setAreLinkPreviewsEnabled:syncMessage.linkPreviews transaction:transaction];
 
     [transaction addCompletionWithBlock:^{
-        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:OWSSyncManagerConfigurationDidChangeNotification
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:OWSSyncManagerConfigurationSyncDidCompleteNotification
                                                                  object:nil];
     }];
 }
@@ -449,47 +449,14 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 # pragma mark - Sync Requests
 
-- (void)sendAllSyncRequestMessages
+- (AnyPromise *)sendAllSyncRequestMessages
 {
-    DDLogInfo(@"");
-
-    if (!self.tsAccountManager.isRegisteredAndReady) {
-        OWSFailDebug(@"Unexpectedly tried to send sync request before registration.");
-        return;
-    }
-
-    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self sendSyncRequestMessage:OWSSyncRequestType_Blocked transaction:transaction];
-        [self sendSyncRequestMessage:OWSSyncRequestType_Configuration transaction:transaction];
-        [self sendSyncRequestMessage:OWSSyncRequestType_Groups transaction:transaction];
-        [self sendSyncRequestMessage:OWSSyncRequestType_Contacts transaction:transaction];
-    }];
+    return [self objc_sendAllSyncRequestMessages];
 }
 
-- (void)sendSyncRequestMessage:(OWSSyncRequestType)requestType transaction:(SDSAnyWriteTransaction *)transaction
+- (AnyPromise *)sendAllSyncRequestMessagesWithTimeout:(NSTimeInterval)timeout
 {
-    DDLogInfo(@"");
-
-    if (!self.tsAccountManager.isRegisteredAndReady) {
-        OWSFailDebug(@"Unexpectedly tried to send sync request before registration.");
-        return;
-    }
-
-    if (self.tsAccountManager.isRegisteredPrimaryDevice) {
-        OWSFailDebug(@"Sync request should only be sent from a linked device");
-        return;
-    }
-
-    TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
-    if (thread == nil) {
-        OWSFailDebug(@"Missing thread.");
-        return;
-    }
-
-    OWSSyncRequestMessage *syncRequestMessage = [[OWSSyncRequestMessage alloc] initWithThread:thread
-                                                                                  requestType:requestType];
-
-    [self.messageSenderJobQueue addMessage:syncRequestMessage.asPreparer transaction:transaction];
+    return [self objc_sendAllSyncRequestMessagesWithTimeout:timeout];
 }
 
 #pragma mark - Fetch Latest

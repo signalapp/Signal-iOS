@@ -16,6 +16,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const kNSNotificationName_BlockListDidChange = @"kNSNotificationName_BlockListDidChange";
+NSString *const OWSBlockingManagerBlockedSyncDidComplete = @"OWSBlockingManagerBlockedSyncDidComplete";
 
 // These keys are used to persist the current local "block list" state.
 NSString *const kOWSBlockingManager_BlockedPhoneNumbersKey = @"kOWSBlockingManager_BlockedPhoneNumbersKey";
@@ -248,6 +249,10 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     OWSAssertDebug(transaction);
 
     OWSLogInfo(@"");
+
+    [transaction addCompletionWithBlock:^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:OWSBlockingManagerBlockedSyncDidComplete object:nil];
+    }];
 
     BOOL hasGroupChanges = NO;
 

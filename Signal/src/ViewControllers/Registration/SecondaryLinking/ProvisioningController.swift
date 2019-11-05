@@ -178,15 +178,6 @@ public class ProvisioningController: NSObject {
 
             return self.accountManager.completeSecondaryLinking(provisionMessage: provisionMessage,
                                                                 deviceName: deviceName)
-        }.then { _ -> Promise<Void> in
-            BenchEventStart(title: "waiting for initial contact and group sync", eventId: "initial-contact-sync")
-
-            // we wait a bit for the initial group and contact syncs to come in before
-            // proceeding to the inbox because we want to present the inbox already
-            // populated with groups and contacts, rather than have the trickle in moments later.
-            return self.awaitContactAndGroupSync.timeout(seconds: 20, substituteValue: ())
-        }.done { _ -> Void in
-            BenchEventComplete(eventId: "initial-contact-sync")
         }
     }
 

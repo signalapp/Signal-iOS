@@ -225,9 +225,18 @@ public class AccountManager: NSObject {
                     throw error
                 }
             }
-        }.done { (_) -> Void in
+        }.then { _ -> Promise<Void> in
             self.completeRegistration()
-            OWSSyncManager.shared().sendAllSyncRequestMessages()
+
+            // we wait a bit for the initial syncs to come in before proceeding to the inbox
+            // because we want to present the inbox already populated with groups and contacts,
+            // rather than have the trickle in moments later.
+            BenchEventStart(title: "waiting for initial contact and group sync", eventId: "initial-contact-sync")
+            return OWSSyncManager.shared().sendAllSyncRequestMessages(timeout: 20)
+                .asVoid()
+                .done { _ in
+                    BenchEventComplete(eventId: "initial-contact-sync")
+                }
         }
     }
 
