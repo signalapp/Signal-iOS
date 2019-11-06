@@ -713,32 +713,32 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_Content) throws -> SSKProtoContent {
-        var dataMessage: SSKProtoDataMessage? = nil
+        var dataMessage: SSKProtoDataMessage?
         if proto.hasDataMessage {
             dataMessage = try SSKProtoDataMessage.parseProto(proto.dataMessage)
         }
 
-        var syncMessage: SSKProtoSyncMessage? = nil
+        var syncMessage: SSKProtoSyncMessage?
         if proto.hasSyncMessage {
             syncMessage = try SSKProtoSyncMessage.parseProto(proto.syncMessage)
         }
 
-        var callMessage: SSKProtoCallMessage? = nil
+        var callMessage: SSKProtoCallMessage?
         if proto.hasCallMessage {
             callMessage = try SSKProtoCallMessage.parseProto(proto.callMessage)
         }
 
-        var nullMessage: SSKProtoNullMessage? = nil
+        var nullMessage: SSKProtoNullMessage?
         if proto.hasNullMessage {
             nullMessage = try SSKProtoNullMessage.parseProto(proto.nullMessage)
         }
 
-        var receiptMessage: SSKProtoReceiptMessage? = nil
+        var receiptMessage: SSKProtoReceiptMessage?
         if proto.hasReceiptMessage {
             receiptMessage = try SSKProtoReceiptMessage.parseProto(proto.receiptMessage)
         }
 
-        var typingMessage: SSKProtoTypingMessage? = nil
+        var typingMessage: SSKProtoTypingMessage?
         if proto.hasTypingMessage {
             typingMessage = try SSKProtoTypingMessage.parseProto(proto.typingMessage)
         }
@@ -1531,12 +1531,12 @@ extension SSKProtoCallMessageHangup.SSKProtoCallMessageHangupBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_CallMessage) throws -> SSKProtoCallMessage {
-        var offer: SSKProtoCallMessageOffer? = nil
+        var offer: SSKProtoCallMessageOffer?
         if proto.hasOffer {
             offer = try SSKProtoCallMessageOffer.parseProto(proto.offer)
         }
 
-        var answer: SSKProtoCallMessageAnswer? = nil
+        var answer: SSKProtoCallMessageAnswer?
         if proto.hasAnswer {
             answer = try SSKProtoCallMessageAnswer.parseProto(proto.answer)
         }
@@ -1544,12 +1544,12 @@ extension SSKProtoCallMessageHangup.SSKProtoCallMessageHangupBuilder {
         var iceUpdate: [SSKProtoCallMessageIceUpdate] = []
         iceUpdate = try proto.iceUpdate.map { try SSKProtoCallMessageIceUpdate.parseProto($0) }
 
-        var hangup: SSKProtoCallMessageHangup? = nil
+        var hangup: SSKProtoCallMessageHangup?
         if proto.hasHangup {
             hangup = try SSKProtoCallMessageHangup.parseProto(proto.hangup)
         }
 
-        var busy: SSKProtoCallMessageBusy? = nil
+        var busy: SSKProtoCallMessageBusy?
         if proto.hasBusy {
             busy = try SSKProtoCallMessageBusy.parseProto(proto.busy)
         }
@@ -1735,7 +1735,7 @@ extension SSKProtoCallMessage.SSKProtoCallMessageBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Quote.QuotedAttachment) throws -> SSKProtoDataMessageQuoteQuotedAttachment {
-        var thumbnail: SSKProtoAttachmentPointer? = nil
+        var thumbnail: SSKProtoAttachmentPointer?
         if proto.hasThumbnail {
             thumbnail = try SSKProtoAttachmentPointer.parseProto(proto.thumbnail)
         }
@@ -2982,7 +2982,7 @@ extension SSKProtoDataMessageContactPostalAddress.SSKProtoDataMessageContactPost
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Contact.Avatar) throws -> SSKProtoDataMessageContactAvatar {
-        var avatar: SSKProtoAttachmentPointer? = nil
+        var avatar: SSKProtoAttachmentPointer?
         if proto.hasAvatar {
             avatar = try SSKProtoAttachmentPointer.parseProto(proto.avatar)
         }
@@ -3170,7 +3170,7 @@ extension SSKProtoDataMessageContactAvatar.SSKProtoDataMessageContactAvatarBuild
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Contact) throws -> SSKProtoDataMessageContact {
-        var name: SSKProtoDataMessageContactName? = nil
+        var name: SSKProtoDataMessageContactName?
         if proto.hasName {
             name = try SSKProtoDataMessageContactName.parseProto(proto.name)
         }
@@ -3184,7 +3184,7 @@ extension SSKProtoDataMessageContactAvatar.SSKProtoDataMessageContactAvatarBuild
         var address: [SSKProtoDataMessageContactPostalAddress] = []
         address = try proto.address.map { try SSKProtoDataMessageContactPostalAddress.parseProto($0) }
 
-        var avatar: SSKProtoDataMessageContactAvatar? = nil
+        var avatar: SSKProtoDataMessageContactAvatar?
         if proto.hasAvatar {
             avatar = try SSKProtoDataMessageContactAvatar.parseProto(proto.avatar)
         }
@@ -3339,7 +3339,7 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
         }
         let url = proto.url
 
-        var image: SSKProtoAttachmentPointer? = nil
+        var image: SSKProtoAttachmentPointer?
         if proto.hasImage {
             image = try SSKProtoAttachmentPointer.parseProto(proto.image)
         }
@@ -3863,12 +3863,12 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         var attachments: [SSKProtoAttachmentPointer] = []
         attachments = try proto.attachments.map { try SSKProtoAttachmentPointer.parseProto($0) }
 
-        var group: SSKProtoGroupContext? = nil
+        var group: SSKProtoGroupContext?
         if proto.hasGroup {
             group = try SSKProtoGroupContext.parseProto(proto.group)
         }
 
-        var quote: SSKProtoDataMessageQuote? = nil
+        var quote: SSKProtoDataMessageQuote?
         if proto.hasQuote {
             quote = try SSKProtoDataMessageQuote.parseProto(proto.quote)
         }
@@ -3879,7 +3879,7 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         var preview: [SSKProtoDataMessagePreview] = []
         preview = try proto.preview.map { try SSKProtoDataMessagePreview.parseProto($0) }
 
-        var sticker: SSKProtoDataMessageSticker? = nil
+        var sticker: SSKProtoDataMessageSticker?
         if proto.hasSticker {
             sticker = try SSKProtoDataMessageSticker.parseProto(proto.sticker)
         }
@@ -4834,7 +4834,7 @@ extension SSKProtoSyncMessageSentUnidentifiedDeliveryStatus.SSKProtoSyncMessageS
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Sent) throws -> SSKProtoSyncMessageSent {
-        var message: SSKProtoDataMessage? = nil
+        var message: SSKProtoDataMessage?
         if proto.hasMessage {
             message = try SSKProtoDataMessage.parseProto(proto.message)
         }
@@ -5058,7 +5058,7 @@ extension SSKProtoSyncMessageContacts.SSKProtoSyncMessageContactsBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Groups) throws -> SSKProtoSyncMessageGroups {
-        var blob: SSKProtoAttachmentPointer? = nil
+        var blob: SSKProtoAttachmentPointer?
         if proto.hasBlob {
             blob = try SSKProtoAttachmentPointer.parseProto(proto.blob)
         }
@@ -6448,22 +6448,22 @@ extension SSKProtoSyncMessageFetchLatest.SSKProtoSyncMessageFetchLatestBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage) throws -> SSKProtoSyncMessage {
-        var sent: SSKProtoSyncMessageSent? = nil
+        var sent: SSKProtoSyncMessageSent?
         if proto.hasSent {
             sent = try SSKProtoSyncMessageSent.parseProto(proto.sent)
         }
 
-        var contacts: SSKProtoSyncMessageContacts? = nil
+        var contacts: SSKProtoSyncMessageContacts?
         if proto.hasContacts {
             contacts = try SSKProtoSyncMessageContacts.parseProto(proto.contacts)
         }
 
-        var groups: SSKProtoSyncMessageGroups? = nil
+        var groups: SSKProtoSyncMessageGroups?
         if proto.hasGroups {
             groups = try SSKProtoSyncMessageGroups.parseProto(proto.groups)
         }
 
-        var request: SSKProtoSyncMessageRequest? = nil
+        var request: SSKProtoSyncMessageRequest?
         if proto.hasRequest {
             request = try SSKProtoSyncMessageRequest.parseProto(proto.request)
         }
@@ -6471,17 +6471,17 @@ extension SSKProtoSyncMessageFetchLatest.SSKProtoSyncMessageFetchLatestBuilder {
         var read: [SSKProtoSyncMessageRead] = []
         read = try proto.read.map { try SSKProtoSyncMessageRead.parseProto($0) }
 
-        var blocked: SSKProtoSyncMessageBlocked? = nil
+        var blocked: SSKProtoSyncMessageBlocked?
         if proto.hasBlocked {
             blocked = try SSKProtoSyncMessageBlocked.parseProto(proto.blocked)
         }
 
-        var verified: SSKProtoVerified? = nil
+        var verified: SSKProtoVerified?
         if proto.hasVerified {
             verified = try SSKProtoVerified.parseProto(proto.verified)
         }
 
-        var configuration: SSKProtoSyncMessageConfiguration? = nil
+        var configuration: SSKProtoSyncMessageConfiguration?
         if proto.hasConfiguration {
             configuration = try SSKProtoSyncMessageConfiguration.parseProto(proto.configuration)
         }
@@ -6489,12 +6489,12 @@ extension SSKProtoSyncMessageFetchLatest.SSKProtoSyncMessageFetchLatestBuilder {
         var stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation] = []
         stickerPackOperation = try proto.stickerPackOperation.map { try SSKProtoSyncMessageStickerPackOperation.parseProto($0) }
 
-        var viewOnceOpen: SSKProtoSyncMessageViewOnceOpen? = nil
+        var viewOnceOpen: SSKProtoSyncMessageViewOnceOpen?
         if proto.hasViewOnceOpen {
             viewOnceOpen = try SSKProtoSyncMessageViewOnceOpen.parseProto(proto.viewOnceOpen)
         }
 
-        var fetchLatest: SSKProtoSyncMessageFetchLatest? = nil
+        var fetchLatest: SSKProtoSyncMessageFetchLatest?
         if proto.hasFetchLatest {
             fetchLatest = try SSKProtoSyncMessageFetchLatest.parseProto(proto.fetchLatest)
         }
@@ -7210,7 +7210,7 @@ extension SSKProtoGroupContextMember.SSKProtoGroupContextMemberBuilder {
         }
         let id = proto.id
 
-        var avatar: SSKProtoAttachmentPointer? = nil
+        var avatar: SSKProtoAttachmentPointer?
         if proto.hasAvatar {
             avatar = try SSKProtoAttachmentPointer.parseProto(proto.avatar)
         }
@@ -7600,12 +7600,12 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_ContactDetails) throws -> SSKProtoContactDetails {
-        var avatar: SSKProtoContactDetailsAvatar? = nil
+        var avatar: SSKProtoContactDetailsAvatar?
         if proto.hasAvatar {
             avatar = try SSKProtoContactDetailsAvatar.parseProto(proto.avatar)
         }
 
-        var verified: SSKProtoVerified? = nil
+        var verified: SSKProtoVerified?
         if proto.hasVerified {
             verified = try SSKProtoVerified.parseProto(proto.verified)
         }
@@ -8097,7 +8097,7 @@ extension SSKProtoGroupDetailsMember.SSKProtoGroupDetailsMemberBuilder {
         }
         let id = proto.id
 
-        var avatar: SSKProtoGroupDetailsAvatar? = nil
+        var avatar: SSKProtoGroupDetailsAvatar?
         if proto.hasAvatar {
             avatar = try SSKProtoGroupDetailsAvatar.parseProto(proto.avatar)
         }
@@ -8388,7 +8388,7 @@ extension SSKProtoPackSticker.SSKProtoPackStickerBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_Pack) throws -> SSKProtoPack {
-        var cover: SSKProtoPackSticker? = nil
+        var cover: SSKProtoPackSticker?
         if proto.hasCover {
             cover = try SSKProtoPackSticker.parseProto(proto.cover)
         }
