@@ -1826,6 +1826,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self updateViewState];
 
     if (mappingDiff == nil) {
+        // Diffing failed, reload to get back to a known good state.
         [self.tableView reloadData];
         return;
     }
