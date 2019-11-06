@@ -24,6 +24,7 @@ class AttachmentFormatPickerView: UICollectionView {
 
     private let collectionViewFlowLayout = UICollectionViewFlowLayout()
     private var photoCapture: PhotoCapture?
+    private var interfaceOrientation: UIInterfaceOrientation?
 
     init() {
         super.init(frame: .zero, collectionViewLayout: collectionViewFlowLayout)
@@ -48,12 +49,23 @@ class AttachmentFormatPickerView: UICollectionView {
         stopCameraPreview()
     }
 
+    func updateCameraOrientation() {
+        interfaceOrientation = CurrentAppContext().interfaceOrientation
+        photoCapture?.updateVideoConnectionOrientation()
+    }
+
     func startCameraPreview() {
         guard photoCapture == nil else { return }
 
         let photoCapture = PhotoCapture()
         photoCapture.delegate = self
         self.photoCapture = photoCapture
+
+        interfaceOrientation = CurrentAppContext().interfaceOrientation
+
+        // Force the preview view to load, otherwise it might
+        // load on the background thread while starting the session
+        _ = photoCapture.previewView
 
         photoCapture.startVideoCapture().done { [weak self] in
             self?.reloadData()
@@ -152,7 +164,12 @@ extension AttachmentFormatPickerView: PhotoCaptureDelegate {
     }
 
     var captureOrientation: AVCaptureVideoOrientation {
-        return AVCaptureVideoOrientation(interfaceOrientation: CurrentAppContext().interfaceOrientation) ?? .portrait
+        guard let interfaceOrientation = interfaceOrientation,
+            let avCaptureOrientation = AVCaptureVideoOrientation(interfaceOrientation: interfaceOrientation) else {
+                owsFailDebug("unexpectedly missing interface orientation")
+                return .portrait
+        }
+        return avCaptureOrientation
     }
 
     func beginCaptureButtonAnimation(_ duration: TimeInterval) {
