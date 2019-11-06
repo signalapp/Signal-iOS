@@ -477,8 +477,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     if (needsToMarkAsVisible || needsToClearArchived || needsToUpdateLastInteractionRowId) {
         self.shouldThreadBeVisible = YES;
         self.lastInteractionRowId = MAX(self.lastInteractionRowId, messageSortId);
-        if (self.isArchived && wasMessageInserted) {
-            // No longer archived.
+        if (needsToClearArchived) {
             self.isArchived = NO;
         }
         [self anyOverwritingUpdateWithTransaction:transaction];
