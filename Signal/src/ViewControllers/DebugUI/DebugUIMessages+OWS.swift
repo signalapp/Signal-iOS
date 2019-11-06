@@ -80,13 +80,8 @@ public extension DebugUIMessages {
         let groupName = "UUID Group"
 
         GroupManager.createGroup(members: members, name: groupName)
-        .done(on: .global()) { thread in
-            self.databaseStorage.write { transaction in
-                let message = TSOutgoingMessage.init(in: thread, groupMetaMessage: .new, expiresInSeconds: 0)
-                message.update(withCustomMessage: NSLocalizedString("GROUP_CREATED", comment: ""), transaction: transaction)
-                SSKEnvironment.shared.messageSenderJobQueue.add(message: message.asPreparer,
-                                                                transaction: transaction)
-            }
+        .then(on: .global()) { thread in
+            return GroupManager.sendDurableNewGroupMessage(forThread: thread)
         }.retainUntilComplete()
     }
 }

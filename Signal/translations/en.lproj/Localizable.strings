@@ -1646,6 +1646,9 @@
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "Create";
 
+/* Error indicating that a new group could not be created. */
+"NEW_GROUP_CREATION_FAILED" = "New group could not be created.";
+
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "New Group";
 

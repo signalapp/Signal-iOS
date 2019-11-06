@@ -18,6 +18,14 @@ public class GroupManager: NSObject {
         return SDSDatabaseStorage.shared
     }
 
+    private class var messageSenderJobQueue: MessageSenderJobQueue {
+        return SSKEnvironment.shared.messageSenderJobQueue
+    }
+
+    private class var messageSender: MessageSender {
+        return SSKEnvironment.shared.messageSender
+    }
+
     // MARK: -
 
     // Never instantiate this class.
@@ -106,33 +114,123 @@ public class GroupManager: NSObject {
         }
     }
 
-    // Completion will be called on the main thread.
+    // success and failure are invoked on the main thread.
     @objc
     public static func createGroupObjc(members: [SignalServiceAddress],
                                        groupId: Data?,
                                        name: String,
                                        avatarImage: UIImage?,
-                                       completion: @escaping (TSGroupThread) -> Void) {
+                                       success: @escaping (TSGroupThread) -> Void,
+                                       failure: @escaping (Error) -> Void) {
         createGroup(members: members,
                     groupId: groupId,
                     name: name,
                     avatarImage: avatarImage).done { thread in
-                        completion(thread)
+                        success(thread)
+            }.catch { error in
+                failure(error)
             }.retainUntilComplete()
     }
 
-    // Completion will be called on the main thread.
+    // success and failure are invoked on the main thread.
     @objc
     public static func createGroupObjc(members: [SignalServiceAddress],
                                        groupId: Data?,
                                        name: String,
                                        avatarData: Data?,
-                                       completion: @escaping (TSGroupThread) -> Void) {
+                                       success: @escaping (TSGroupThread) -> Void,
+                                       failure: @escaping (Error) -> Void) {
         createGroup(members: members,
                     groupId: groupId,
                     name: name,
                     avatarData: avatarData).done { thread in
-                        completion(thread)
+                        success(thread)
+            }.catch { error in
+                failure(error)
+            }.retainUntilComplete()
+    }
+
+    // MARK: - Messages
+
+    public static func sendDurableNewGroupMessage(forThread thread: TSGroupThread) -> Promise<Void> {
+        return DispatchQueue.global().async(.promise) { () -> Void in
+            self.databaseStorage.write { transaction in
+                let message = TSOutgoingMessage.init(in: thread, groupMetaMessage: .new, expiresInSeconds: 0)
+                message.update(withCustomMessage: NSLocalizedString("GROUP_CREATED", comment: ""), transaction: transaction)
+                self.messageSenderJobQueue.add(message: message.asPreparer,
+                                               transaction: transaction)
+            }
+            return ()
+        }
+    }
+
+    // success and failure are invoked on the main thread.
+    @objc
+    public static func sendDurableNewGroupMessageObjc(forThread thread: TSGroupThread,
+                                                      success: @escaping () -> Void,
+                                                      failure: @escaping (Error) -> Void) {
+        sendDurableNewGroupMessage(forThread: thread).done { _ in
+            success()
+            }.catch { error in
+                failure(error)
+            }.retainUntilComplete()
+    }
+
+    public static func sendTemporaryNewGroupMessage(forThread thread: TSGroupThread) -> Promise<Void> {
+        let (promise, resolver) = Promise<Void>.pending()
+        DispatchQueue.global().async {
+            let message: TSOutgoingMessage = self.databaseStorage.writeReturningResult { transaction in
+                let message = TSOutgoingMessage.init(in: thread, groupMetaMessage: .new, expiresInSeconds: 0)
+                message.update(withCustomMessage: NSLocalizedString("GROUP_CREATED", comment: ""), transaction: transaction)
+                return message
+            }
+
+            let groupModel = thread.groupModel
+            var dataSource: DataSource?
+            if let groupAvatarData = groupModel.groupAvatarData,
+                groupAvatarData.count > 0 {
+                let imageData = (groupAvatarData as NSData).imageData(withPath: nil, mimeType: OWSMimeTypeImagePng)
+                if imageData.isValid && imageData.imageFormat == .png {
+                    dataSource = DataSourceValue.dataSource(with: groupAvatarData, fileExtension: "png")
+                    assert(dataSource != nil)
+                } else {
+                    owsFailDebug("Avatar is not a valid PNG.")
+                }
+            }
+
+            if let dataSource = dataSource {
+                // CLEANUP DURABLE - Replace with a durable operation e.g. `GroupCreateJob`, which creates
+                // an error in the thread if group creation fails
+                self.messageSender.sendTemporaryAttachment(dataSource,
+                                                           contentType: OWSMimeTypeImagePng,
+                                                           in: message, success: {
+                                                            resolver.fulfill(())
+                }, failure: { error in
+                    resolver.reject(error)
+                })
+            } else {
+                // CLEANUP DURABLE - Replace with a durable operation e.g. `GroupCreateJob`, which creates
+                // an error in the thread if group creation fails
+                self.messageSender.sendMessage(message.asPreparer,
+                                               success: {
+                                                resolver.fulfill(())
+                }, failure: { error in
+                    resolver.reject(error)
+                })
+            }
+        }
+        return promise
+    }
+
+    // success and failure are invoked on the main thread.
+    @objc
+    public static func sendTemporaryNewGroupMessageObjc(forThread thread: TSGroupThread,
+                                                        success: @escaping () -> Void,
+                                                        failure: @escaping (Error) -> Void) {
+        sendTemporaryNewGroupMessage(forThread: thread).done { _ in
+            success()
+            }.catch { error in
+                failure(error)
             }.retainUntilComplete()
     }
 }

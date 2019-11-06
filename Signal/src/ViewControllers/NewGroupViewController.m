@@ -184,8 +184,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self updateAvatarView];
 
-    [avatarView
-        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarTouched:)]];
+    [avatarView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                             action:@selector(avatarTouched:)]];
     avatarView.userInteractionEnabled = YES;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, avatarView);
 
@@ -287,22 +287,44 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.groupNameTextField acceptAutocorrectSuggestion];
 
-    TSGroupModel *model = [self makeGroup];
-
-    __block TSGroupThread *thread;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
+    NSArray<SignalServiceAddress *> *members = [self.memberRecipients.allObjects map:^(PickedRecipient *recipient) {
+        OWSAssertDebug(recipient.address.isValid);
+        return recipient.address;
     }];
-    OWSAssertDebug(thread);
-    
-    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+    [ModalActivityIndicatorViewController
+        presentFromViewController:self
+                        canCancel:NO
+                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
+                      [GroupManager createGroupObjcWithMembers:members
+                          groupId:self.groupId
+                          name:self.groupNameTextField.text
+                          avatarImage:self.groupAvatar
+                          success:^(TSGroupThread *thread) {
+                              [self groupWasCreated:thread modalActivityIndicator:modalActivityIndicator];
+                          }
+                          failure:^(NSError *error) {
+                              OWSFailDebug(@"Error: %@", error);
+                              [modalActivityIndicator dismissWithCompletion:^{
+                                  [OWSActionSheets showErrorAlertWithMessage:
+                                                       NSLocalizedString(@"NEW_GROUP_CREATION_FAILED",
+                                                           @"Error indicating that a new group could not be created.")];
+                              }];
+                          }];
+                  }];
+}
 
+- (void)groupWasCreated:(TSGroupThread *)thread
+    modalActivityIndicator:(ModalActivityIndicatorViewController *)modalActivityIndicator
+{
     void (^successHandler)(void) = ^{
         OWSLogError(@"Group creation successful.");
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            [SignalApp.sharedApp presentConversationForThread:thread action:ConversationViewActionCompose animated:NO];
-            [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+            [modalActivityIndicator dismissWithCompletion:^{
+                [SignalApp.sharedApp presentConversationForThread:thread
+                                                           action:ConversationViewActionCompose
+                                                         animated:NO];
+            }];
         });
     };
 
@@ -320,60 +342,19 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            [SignalApp.sharedApp presentConversationForThread:thread action:ConversationViewActionCompose animated:NO];
-            [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+            [modalActivityIndicator dismissWithCompletion:^{
+                [SignalApp.sharedApp presentConversationForThread:thread
+                                                           action:ConversationViewActionCompose
+                                                         animated:NO];
+            }];
         });
     };
 
-    [ModalActivityIndicatorViewController
-        presentFromViewController:self
-                        canCancel:NO
-                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
-                                                                             groupMetaMessage:TSGroupMetaMessageNew
-                                                                             expiresInSeconds:0];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
 
-                      [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
-
-                      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                          _Nullable id<DataSource> dataSource;
-                          if (model.groupAvatarData.length > 0) {
-                              dataSource = [DataSourceValue dataSourceWithData:model.groupAvatarData
-                                                                 fileExtension:@"png"];
-                              OWSAssertDebug(dataSource != nil);
-                          }
-                          if (dataSource != nil) {
-                              // CLEANUP DURABLE - Replace with a durable operation e.g. `GroupCreateJob`, which creates
-                              // an error in the thread if group creation fails
-                              [self.messageSender sendTemporaryAttachment:dataSource
-                                                              contentType:OWSMimeTypeImagePng
-                                                                inMessage:message
-                                                                  success:successHandler
-                                                                  failure:failureHandler];
-                          } else {
-                              // CLEANUP DURABLE - Replace with a durable operation e.g. `GroupCreateJob`, which creates
-                              // an error in the thread if group creation fails
-                              [self.messageSender sendMessage:message.asPreparer
-                                                      success:successHandler
-                                                      failure:failureHandler];
-                          }
-                      });
-                  }];
-}
-
-- (TSGroupModel *)makeGroup
-{
-    NSString *groupName = [self.groupNameTextField.text ows_stripped];
-    NSMutableArray<SignalServiceAddress *> *recipientAddresses =
-        [[self.memberRecipients.allObjects map:^(PickedRecipient *recipient) {
-            OWSAssertDebug(recipient.address.isValid);
-            return recipient.address;
-        }] mutableCopy];
-    [recipientAddresses addObject:[self.recipientPicker.contactsViewHelper localAddress]];
-    return [[TSGroupModel alloc] initWithTitle:groupName
-                                       members:recipientAddresses
-                              groupAvatarImage:self.groupAvatar
-                                       groupId:self.groupId];
+        [GroupManager sendTemporaryNewGroupMessageObjcForThread:thread success:successHandler failure:failureHandler];
+    });
 }
 
 #pragma mark - Group Avatar

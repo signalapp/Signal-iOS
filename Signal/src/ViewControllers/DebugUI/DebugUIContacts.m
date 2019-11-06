@@ -123,12 +123,15 @@ NS_ASSUME_NONNULL_BEGIN
     ] mutableCopy];
 
     [GroupManager createGroupObjcWithMembers:recipientAddresses
-                                     groupId:nil
-                                        name:groupName
-                                  avatarData:nil
-                                  completion:^(TSGroupThread *thread) {
-                                      [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
-                                  }];
+        groupId:nil
+        name:groupName
+        avatarData:nil
+        success:^(TSGroupThread *thread) {
+            [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
+        }
+        failure:^(NSError *error) {
+            OWSFailDebug(@"Error: %@", error);
+        }];
 }
 
 @end
