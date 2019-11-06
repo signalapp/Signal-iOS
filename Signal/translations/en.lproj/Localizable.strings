@@ -350,6 +350,9 @@
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
 
+/* browse files option from file sharing menu */
+"BROWSE_FILES_BUTTON" = "Browse";
+
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Continue";
 

@@ -2840,29 +2840,45 @@ typedef enum : NSUInteger {
 
 - (void)showAttachmentDocumentPickerMenu
 {
+    ActionSheetController *actionSheet = [ActionSheetController new];
+
+    ActionSheetAction *mediaAction = [[ActionSheetAction alloc]
+        initWithTitle:NSLocalizedString(@"MEDIA_FROM_LIBRARY_BUTTON", @"media picker option to choose from library")
+                style:ActionSheetActionStyleDefault
+              handler:^(ActionSheetAction *action) {
+                  [self chooseFromLibraryAsDocument:YES];
+              }];
+    [actionSheet addAction:mediaAction];
+
+    ActionSheetAction *browseAction = [[ActionSheetAction alloc]
+        initWithTitle:NSLocalizedString(@"BROWSE_FILES_BUTTON", @"browse files option from file sharing menu")
+                style:ActionSheetActionStyleDefault
+              handler:^(ActionSheetAction *action) {
+                  [self showDocumentPicker];
+              }];
+    [actionSheet addAction:browseAction];
+
+    [actionSheet addAction:OWSActionSheets.cancelAction];
+
+    [self dismissKeyBoard];
+    [self presentActionSheet:actionSheet];
+}
+
+- (void)showDocumentPicker
+{
     NSString *allItems = (__bridge NSString *)kUTTypeItem;
     NSArray<NSString *> *documentTypes = @[ allItems ];
+
     // UIDocumentPickerModeImport copies to a temp file within our container.
     // It uses more memory than "open" but lets us avoid working with security scoped URLs.
     UIDocumentPickerMode pickerMode = UIDocumentPickerModeImport;
-    // TODO: UIDocumentMenuViewController is deprecated; we should use UIDocumentPickerViewController
-    //       instead.
-    UIDocumentMenuViewController *menuController =
-        [[UIDocumentMenuViewController alloc] initWithDocumentTypes:documentTypes inMode:pickerMode];
-    menuController.delegate = self;
 
-    UIImage *takeMediaImage = [UIImage imageNamed:@"camera-outline-24"];
-    OWSAssertDebug(takeMediaImage);
-    [menuController addOptionWithTitle:NSLocalizedString(
-                                           @"MEDIA_FROM_LIBRARY_BUTTON", @"media picker option to choose from library")
-                                 image:takeMediaImage
-                                 order:UIDocumentMenuOrderFirst
-                               handler:^{
-                                   [self chooseFromLibraryAsDocument:YES];
-                               }];
+    UIDocumentPickerViewController *pickerController =
+        [[UIDocumentPickerViewController alloc] initWithDocumentTypes:documentTypes inMode:pickerMode];
+    pickerController.delegate = self;
 
     [self dismissKeyBoard];
-    [self presentViewController:menuController animated:YES completion:nil];
+    [self presentFormSheetViewController:pickerController animated:YES completion:nil];
 }
 
 #pragma mark - Attachment Picking: GIFs
