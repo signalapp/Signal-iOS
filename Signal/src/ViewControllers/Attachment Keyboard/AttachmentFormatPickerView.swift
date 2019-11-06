@@ -50,6 +50,8 @@ class AttachmentFormatPickerView: UICollectionView {
     }
 
     func updateCameraOrientation() {
+        AssertIsOnMainThread()
+
         interfaceOrientation = CurrentAppContext().interfaceOrientation
         photoCapture?.updateVideoConnectionOrientation()
     }
