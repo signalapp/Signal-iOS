@@ -181,8 +181,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)uniqueId
 {
     if (_uniqueId == nil) {
+        if (_cnContactId) {
+            return _cnContactId;
+        }
         OWSFailDebug(@"failure: uniqueId was unexpectedly nil");
-        return _cnContactId ?: [NSUUID new].UUIDString;
+        return [NSUUID new].UUIDString;
     }
 
     return _uniqueId;
