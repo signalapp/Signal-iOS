@@ -1535,7 +1535,12 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)handleFriendRequestMessageIfNeededWithEnvelope:(SSKProtoEnvelope *)envelope data:(SSKProtoDataMessage *)data message:(TSIncomingMessage *)message thread:(TSThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    if (envelope.isGroupChatMessage || envelope.type != SSKProtoEnvelopeTypeFriendRequest) return;
+    if (envelope.isGroupChatMessage) {
+        return NSLog(@"[Loki] Ignoring friend request in group chat.", @"");
+    }
+    if (envelope.type != SSKProtoEnvelopeTypeFriendRequest) {
+        return NSLog(@"[Loki] handleFriendRequestMessageIfNeededWithEnvelope:data:message:thread:transaction was called with an envelope that isn't of type SSKProtoEnvelopeTypeFriendRequest.");
+    }
     if (thread.hasCurrentUserSentFriendRequest) {
         // This can happen if Alice sent Bob a friend request, Bob declined, but then Bob changed his
         // mind and sent a friend request to Alice. In this case we want Alice to auto-accept the request
@@ -1563,6 +1568,28 @@ NS_ASSUME_NONNULL_BEGIN
             // request. Alice's thread's friend request status is reset to
             // LKThreadFriendRequestStatusRequestReceived.
             [thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestReceived withTransaction:transaction];
+            // Except for the message.friendRequestStatus = LKMessageFriendRequestStatusPending line below, all of this is to ensure that
+            // there's only ever one message with status LKMessageFriendRequestStatusPending in a thread (where a thread is the combination
+            // of all threads belonging to the linked devices of a user).
+            NSString *senderID = ((TSIncomingMessage *)message).authorId;
+            NSMutableSet<TSContactThread *> *threads = [NSMutableSet new];
+            [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:senderID in:transaction] ?: senderID;
+                NSSet<LKDeviceLink *> *deviceLinks = [LKDatabaseUtilities getDeviceLinksFor:masterHexEncodedPublicKey in:transaction];
+                for (LKDeviceLink *deviceLink in deviceLinks) {
+                    [threads addObject:[TSContactThread getThreadWithContactId:deviceLink.master.hexEncodedPublicKey transaction:transaction]];
+                    [threads addObject:[TSContactThread getThreadWithContactId:deviceLink.slave.hexEncodedPublicKey transaction:transaction]];
+                }
+            }];
+            for (TSContactThread *thread in threads) {
+                [thread enumerateInteractionsWithTransaction:transaction usingBlock:^(TSInteraction *interaction, YapDatabaseReadTransaction *transaction) {
+                    if (![interaction isKindOfClass:TSIncomingMessage.class]) { return; }
+                    TSIncomingMessage *message = (TSIncomingMessage *)interaction;
+                    if (message.friendRequestStatus != LKMessageFriendRequestStatusNone) {
+                        [message saveFriendRequestStatus:LKMessageFriendRequestStatusNone withTransaction:transaction];
+                    }
+                }];
+            }
             message.friendRequestStatus = LKMessageFriendRequestStatusPending; // Don't save yet. This is done in finalizeIncomingMessage:thread:masterThread:envelope:transaction.
         } else {
             // This can happen if Alice and Bob have a session, Bob deletes his app, restores from seed, and then sends a friend request to Alice again.

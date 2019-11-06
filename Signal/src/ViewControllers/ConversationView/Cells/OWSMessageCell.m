@@ -213,6 +213,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     
+    // Loki: Attach the friend request view if needed
     if ([self shouldShowFriendRequestUIForMessage:self.message]) {
         self.friendRequestView = [[LKFriendRequestView alloc] initWithMessage:self.message];
         self.friendRequestView.delegate = self.friendRequestViewDelegate;
@@ -298,6 +299,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.avatarView.image = authorAvatarImage;
     [self.contentView addSubview:self.avatarView];
     
+    // Loki: Show the moderator icon if needed
     if (self.viewItem.isGroupThread && !self.viewItem.isRSSFeed) {
         __block LKPublicChat *publicChat;
         [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -383,6 +385,7 @@ NS_ASSUME_NONNULL_BEGIN
         cellSize.width += self.sendFailureBadgeSize + self.sendFailureBadgeSpacing;
     }
 
+    // Loki: Include the friend request view if needed
     if ([self shouldShowFriendRequestUIForMessage:self.message]) {
         cellSize.height += [LKFriendRequestView calculateHeightWithMessage:self.message conversationStyle:self.conversationStyle];
     }
@@ -542,7 +545,8 @@ NS_ASSUME_NONNULL_BEGIN
             NSString *senderID = ((TSIncomingMessage *)message).authorId;
             NSMutableSet<TSContactThread *> *threads = [NSMutableSet new];
             [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                NSSet<LKDeviceLink *> *deviceLinks = [LKDatabaseUtilities getDeviceLinksFor:senderID in:transaction];
+                NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:senderID in:transaction] ?: senderID;
+                NSSet<LKDeviceLink *> *deviceLinks = [LKDatabaseUtilities getDeviceLinksFor:masterHexEncodedPublicKey in:transaction];
                 for (LKDeviceLink *deviceLink in deviceLinks) {
                     [threads addObject:[TSContactThread getThreadWithContactId:deviceLink.master.hexEncodedPublicKey transaction:transaction]];
                     [threads addObject:[TSContactThread getThreadWithContactId:deviceLink.slave.hexEncodedPublicKey transaction:transaction]];

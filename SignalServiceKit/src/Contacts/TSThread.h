@@ -102,6 +102,10 @@ typedef NS_ENUM(NSInteger, LKThreadFriendRequestStatus) {
 
 #pragma mark Interactions
 
+- (void)enumerateInteractionsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction usingBlock:(void (^)(TSInteraction *interaction, YapDatabaseReadTransaction *transaction))block;
+
+- (void)enumerateInteractionsUsingBlock:(void (^)(TSInteraction *interaction))block;
+
 /**
  *  @return The number of interactions in this thread.
  */
