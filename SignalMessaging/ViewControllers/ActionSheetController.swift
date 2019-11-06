@@ -277,6 +277,18 @@ public class ActionSheetAction: NSObject {
     fileprivate let handler: Handler?
     public typealias Handler = (ActionSheetAction) -> Void
 
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setTrailingIcon(_ icon: ThemeIcon) {
+        trailingIcon = icon
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func clearTrailingIcon() {
+        trailingIcon = nil
+    }
+
     public var trailingIcon: ThemeIcon? {
         set {
             button.trailingIcon = newValue
@@ -284,6 +296,18 @@ public class ActionSheetAction: NSObject {
         get {
             return button.trailingIcon
         }
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setLeadingIcon(_ icon: ThemeIcon) {
+        leadingIcon = icon
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func clearLeadingIcon() {
+        leadingIcon = nil
     }
 
     public var leadingIcon: ThemeIcon? {
