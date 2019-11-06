@@ -1440,6 +1440,9 @@ NS_ASSUME_NONNULL_BEGIN
         
         // TODO: Do we need to fetch the device mapping here?
         
+        // Loki: A message from a secondary device should appear as if it came from the primary device; the underlying
+        // friend request logic, however, should still be specific to the secondary device.
+        
         // Loki: Get the master hex encoded public key and thread
         NSString *hexEncodedPublicKey = envelope.source;
         NSString *masterHexEncodedPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source);
