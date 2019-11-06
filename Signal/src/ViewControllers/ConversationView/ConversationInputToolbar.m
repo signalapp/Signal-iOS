@@ -33,6 +33,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 const CGFloat kMinTextViewHeight = 38;
 const CGFloat kMinToolbarItemHeight = 44;
 const CGFloat kMaxTextViewHeight = 98;
+const CGFloat kMaxIPadTextViewHeight = 142;
 
 #pragma mark -
 
@@ -1267,7 +1268,9 @@ const CGFloat kMaxTextViewHeight = 98;
     // `textView.contentSize` isn't accurate when restoring a multiline draft, so we compute it here.
     textView.contentSize = contentSize;
 
-    CGFloat newHeight = CGFloatClamp(contentSize.height, kMinTextViewHeight, kMaxTextViewHeight);
+    CGFloat newHeight = CGFloatClamp(contentSize.height,
+        kMinTextViewHeight,
+        UIDevice.currentDevice.isIPad ? kMaxIPadTextViewHeight : kMaxTextViewHeight);
 
     if (newHeight != self.textViewHeight) {
         self.textViewHeight = newHeight;
