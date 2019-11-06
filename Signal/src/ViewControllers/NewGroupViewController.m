@@ -364,14 +364,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (TSGroupModel *)makeGroup
 {
     NSString *groupName = [self.groupNameTextField.text ows_stripped];
-    NSMutableArray<SignalServiceAddress *> *recipientAddressess =
+    NSMutableArray<SignalServiceAddress *> *recipientAddresses =
         [[self.memberRecipients.allObjects map:^(PickedRecipient *recipient) {
             OWSAssertDebug(recipient.address.isValid);
             return recipient.address;
         }] mutableCopy];
-    [recipientAddressess addObject:[self.recipientPicker.contactsViewHelper localAddress]];
+    [recipientAddresses addObject:[self.recipientPicker.contactsViewHelper localAddress]];
     return [[TSGroupModel alloc] initWithTitle:groupName
-                                       members:recipientAddressess
+                                       members:recipientAddresses
                               groupAvatarImage:self.groupAvatar
                                        groupId:self.groupId];
 }

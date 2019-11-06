@@ -26,44 +26,14 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
 @implementation TSGroupModel
 
 #if TARGET_OS_IOS
-- (instancetype)initWithTitle:(nullable NSString *)title
-                      members:(NSArray<SignalServiceAddress *> *)members
-             groupAvatarImage:(nullable UIImage *)groupAvatarImage
-                      groupId:(NSData *)groupId
-{
-    return [self initWithTitle:title
-                       members:members
-               groupAvatarData:[TSGroupModel dataForGroupAvatar:groupAvatarImage]
-                       groupId:groupId];
-}
-
-- (instancetype)initWithTitle:(nullable NSString *)title
-                      members:(NSArray<SignalServiceAddress *> *)members
-              groupAvatarData:(nullable NSData *)groupAvatarData
-                      groupId:(NSData *)groupId
-{
-    OWSAssertDebug(members);
-    OWSAssertDebug(groupId.length == kGroupIdLength);
-
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    _groupName = title;
-    _groupMembers = [members copy];
-    _groupAvatarData = groupAvatarData;
-    _groupId = groupId;
-    _groupModelSchemaVersion = TSGroupModelSchemaVersion;
-
-    return self;
-}
 
 - (instancetype)initWithGroupId:(NSData *)groupId
-                   groupMembers:(NSArray<SignalServiceAddress *> *)groupMembers
-                      groupName:(nullable NSString *)groupName
+                           name:(nullable NSString *)name
+                     avatarData:(nullable NSData *)avatarData
+                        members:(NSArray<SignalServiceAddress *> *)members
+                  groupsVersion:(GroupsVersion)groupsVersion
 {
-    OWSAssertDebug(groupMembers);
+    OWSAssertDebug(members.count > 0);
     OWSAssertDebug(groupId.length == kGroupIdLength);
 
     self = [super init];
@@ -71,10 +41,12 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
         return self;
     }
 
+    _groupName = name;
+    _groupMembers = [members copy];
+    _groupAvatarData = avatarData;
     _groupId = groupId;
-    _groupMembers = [groupMembers copy];
-    _groupName = groupName;
     _groupModelSchemaVersion = TSGroupModelSchemaVersion;
+    _groupsVersion = groupsVersion;
 
     return self;
 }
