@@ -3,23 +3,12 @@
 //
 
 import Foundation
+import PromiseKit
 
 @objc
 public class GroupManager: NSObject {
 
     // MARK: - Dependencies
-
-//    private class var networkManager: TSNetworkManager {
-//        return SSKEnvironment.shared.networkManager
-//    }
-//
-//    private class var messageReceiver: OWSMessageReceiver {
-//        return SSKEnvironment.shared.messageReceiver
-//    }
-//
-//    private class var signalService: OWSSignalService {
-//        return OWSSignalService.sharedInstance()
-//    }
 
     private class var tsAccountManager: TSAccountManager {
         return TSAccountManager.sharedInstance()
@@ -34,67 +23,10 @@ public class GroupManager: NSObject {
     // Never instantiate this class.
     private override init() {}
 
-    private static func buildGroupModel(groupId: Data,
-                                        name nameParam: String,
-                                        recipientAddresses recipientAddressesParam: [SignalServiceAddress],
+    private static func buildGroupModel(groupId groupIdParam: Data?,
+                                        name nameParam: String?,
+                                        members membersParam: [SignalServiceAddress],
                                         avatarData: Data?) throws -> TSGroupModel {
-        guard groupId.count == kGroupIdLength else {
-            throw OWSErrorMakeAssertionError("Invalid groupId.")
-        }
-        for recipientAddress in recipientAddressesParam {
-            guard recipientAddress.isValid else {
-                throw OWSErrorMakeAssertionError("Invalid address.")
-            }
-        }
-        guard let localAddress = tsAccountManager.localAddress else {
-            throw OWSErrorMakeAssertionError("Missing localAddress.")
-        }
-        let name = nameParam.stripped
-        let recipientAddresses = Array(Set(recipientAddressesParam + [localAddress]))
-            .sorted(by: { (l, r) in l.compare(r) == .orderedAscending })
-        let groupsVersion = self.groupsVersion(for: recipientAddresses)
-        return TSGroupModel(groupId: groupId, name: name, avatarData: avatarData, members: recipientAddresses, groupsVersion: groupsVersion)
-    }
-
-    private static func groupsVersion(for recipientAddresses: [SignalServiceAddress]) -> GroupsVersion {
-        guard FeatureFlags.tryToCreateGroupsV2 else {
-            return .groupsV1
-        }
-        for recipientAddress in recipientAddresses {
-            guard recipientAddress.uuid != nil else {
-                Logger.warn("Creating legacy group; member without UUID.")
-                return .groupsV1
-            }
-            // TODO: Check whether recipient supports Groups v2.
-        }
-
-        // TODO:
-        return .groupsV2
-    }
-
-    // TODO: Return promise.
-    @objc
-    public static func createGroup(groupId: Data?,
-                                   name: String,
-                                   recipientAddresses: [SignalServiceAddress],
-                                   avatarImage: UIImage?) throws -> TSGroupThread {
-        AssertIsOnMainThread()
-
-        let avatarData = TSGroupModel.data(forGroupAvatar: avatarImage)
-
-        return try createGroup(groupId: groupId,
-                               name: name,
-                               recipientAddresses: recipientAddresses,
-                               avatarData: avatarData)
-    }
-
-    // TODO: Return promise.
-    @objc
-    public static func createGroup(groupId groupIdParam: Data?,
-                                   name: String,
-                                   recipientAddresses: [SignalServiceAddress],
-                                   avatarData: Data? = nil) throws -> TSGroupThread {
-        AssertIsOnMainThread()
 
         let groupId: Data
         if let groupIdParam = groupIdParam {
@@ -102,13 +34,105 @@ public class GroupManager: NSObject {
         } else {
             groupId = TSGroupModel.generateRandomGroupId()
         }
-
-        let model = try buildGroupModel(groupId: groupId, name: name, recipientAddresses: recipientAddresses, avatarData: avatarData)
-
-        let thread = databaseStorage.writeReturningResult { _ in
-            return TSGroupThread.getOrCreateThread(with: model)
+        guard groupId.count == kGroupIdLength else {
+            throw OWSErrorMakeAssertionError("Invalid groupId.")
         }
+        for recipientAddress in membersParam {
+            guard recipientAddress.isValid else {
+                throw OWSErrorMakeAssertionError("Invalid address.")
+            }
+        }
+        guard let localAddress = tsAccountManager.localAddress else {
+            throw OWSErrorMakeAssertionError("Missing localAddress.")
+        }
+        var name: String?
+        if let strippedName = nameParam?.stripped,
+            strippedName.count > 0 {
+            name = strippedName
+        }
+        let members = Array(Set(membersParam + [localAddress]))
+            .sorted(by: { (l, r) in l.compare(r) == .orderedAscending })
+        let groupsVersion = self.groupsVersion(for: members)
+        return TSGroupModel(groupId: groupId, name: name, avatarData: avatarData, members: members, groupsVersion: groupsVersion)
+    }
 
-        return thread
+    private static func groupsVersion(for members: [SignalServiceAddress]) -> GroupsVersion {
+        for recipientAddress in members {
+            guard recipientAddress.uuid != nil else {
+                Logger.warn("Creating legacy group; member without UUID.")
+                return .V1
+            }
+            // TODO: Check whether recipient supports Groups v2.
+        }
+        return defaultGroupsVersion
+    }
+
+    @objc
+    public static var defaultGroupsVersion: GroupsVersion {
+        guard FeatureFlags.tryToCreateGroupsV2 else {
+            return .V1
+        }
+        return .V2
+    }
+
+    public static func createGroup(members: [SignalServiceAddress],
+                                   groupId: Data? = nil,
+                                   name: String? = nil,
+                                   avatarImage: UIImage?) -> Promise<TSGroupThread> {
+
+        return DispatchQueue.global().async(.promise) {
+            return TSGroupModel.data(forGroupAvatar: avatarImage)
+            }.then(on: .global()) { avatarData in
+                return createGroup(members: members,
+                                   groupId: groupId,
+                                   name: name,
+                                   avatarData: avatarData)
+        }
+    }
+
+    public static func createGroup(members: [SignalServiceAddress],
+                                   groupId: Data? = nil,
+                                   name: String? = nil,
+                                   avatarData: Data? = nil) -> Promise<TSGroupThread> {
+
+        return DispatchQueue.global().async(.promise) {
+            let model = try buildGroupModel(groupId: groupId, name: name, members: members, avatarData: avatarData)
+
+            let thread = databaseStorage.writeReturningResult { _ in
+                return TSGroupThread.getOrCreateThread(with: model)
+            }
+
+            return thread
+        }
+    }
+
+    // Completion will be called on the main thread.
+    @objc
+    public static func createGroupObjc(members: [SignalServiceAddress],
+                                       groupId: Data?,
+                                       name: String,
+                                       avatarImage: UIImage?,
+                                       completion: @escaping (TSGroupThread) -> Void) {
+        createGroup(members: members,
+                    groupId: groupId,
+                    name: name,
+                    avatarImage: avatarImage).done { thread in
+                        completion(thread)
+            }.retainUntilComplete()
+    }
+
+    // Completion will be called on the main thread.
+    @objc
+    public static func createGroupObjc(members: [SignalServiceAddress],
+                                       groupId: Data?,
+                                       name: String,
+                                       avatarData: Data?,
+                                       completion: @escaping (TSGroupThread) -> Void) {
+        createGroup(members: members,
+                    groupId: groupId,
+                    name: name,
+                    avatarData: avatarData).done { thread in
+                        completion(thread)
+            }.retainUntilComplete()
     }
 }

@@ -164,7 +164,13 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     }
     NSSet<SignalServiceAddress *> *myGroupMembersSet = [NSSet setWithArray:_groupMembers];
     NSSet<SignalServiceAddress *> *otherGroupMembersSet = [NSSet setWithArray:other.groupMembers];
-    return [myGroupMembersSet isEqualToSet:otherGroupMembersSet];
+    if (![myGroupMembersSet isEqualToSet:otherGroupMembersSet]) {
+        return NO;
+    }
+    if (_groupsVersion != other.groupsVersion) {
+        return NO;
+    }
+    return YES;
 }
 
 - (NSString *)getInfoStringAboutUpdateTo:(TSGroupModel *)newModel contactsManager:(id<ContactsManagerProtocol>)contactsManager {

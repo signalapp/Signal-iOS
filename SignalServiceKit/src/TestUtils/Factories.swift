@@ -395,10 +395,11 @@ public class GroupThreadFactory: NSObject, Factory {
 
     @objc
     public var groupModelBuilder: (GroupThreadFactory) -> TSGroupModel = { groupThreadFactory in
-        return TSGroupModel(title: groupThreadFactory.titleBuilder(),
+        return TSGroupModel(groupId: groupThreadFactory.groupIdBuilder(),
+                            name: groupThreadFactory.titleBuilder(),
+                            avatarData: groupThreadFactory.groupAvatarDataBuilder(),
                             members: groupThreadFactory.memberAddressesBuilder(),
-                            groupAvatarData: groupThreadFactory.groupAvatarDataBuilder(),
-                            groupId: groupThreadFactory.groupIdBuilder())
+                            groupsVersion: groupThreadFactory.groupsVersionBuilder())
     }
 
     @objc
@@ -409,6 +410,11 @@ public class GroupThreadFactory: NSObject, Factory {
     @objc
     public var groupIdBuilder: () -> Data = {
         return Randomness.generateRandomBytes(Int32(kGroupIdLength))
+    }
+
+    @objc
+    public var groupsVersionBuilder: () -> GroupsVersion = {
+        return GroupManager.defaultGroupsVersion
     }
 
     @objc

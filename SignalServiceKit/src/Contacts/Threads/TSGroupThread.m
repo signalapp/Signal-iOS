@@ -85,10 +85,12 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     SignalServiceAddress *localAddress = TSAccountManager.localAddress;
     OWSAssertDebug(localAddress.isValid);
 
-    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:nil
-                                                           members:@[ localAddress ]
-                                                   groupAvatarData:nil
-                                                           groupId:groupId];
+    // GroupsV2 TODO: Move to group manager.
+    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithGroupId:groupId
+                                                                name:nil
+                                                          avatarData:nil
+                                                             members:@[ localAddress ]
+                                                       groupsVersion:GroupManager.defaultGroupsVersion];
 
     self = [self initWithGroupModel:groupModel];
     if (!self) {
