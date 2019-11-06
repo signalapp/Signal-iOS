@@ -294,11 +294,26 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         return;
     }
 
-    [self.tableView reloadData];
+    // There is a subtle difference in when the split view controller
+    // transitions between collapsed and expanded state on iPad vs
+    // when it does on iPhone. We reloadData here in order to ensure
+    // the background color of all of our cells is updated to reflect
+    // the current state, so it's important that we're only doing this
+    // once the state is ready, otherwise there will be a flash of the
+    // wrong background color. For iPad, this moment is _before_ the
+    // transition occurs. For iPhone, this moment is _during_ the
+    // transition. We reload in the right places accordingly.
+
+    if (UIDevice.currentDevice.isIPad) {
+        [self.tableView reloadData];
+    }
 
     [coordinator
         animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
             [self applyTheme];
+            if (!UIDevice.currentDevice.isIPad) {
+                [self.tableView reloadData];
+            }
         }
                         completion:nil];
 }
@@ -1278,6 +1293,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         cell.selectedBackgroundView.backgroundColor
             = Theme.isDarkThemeEnabled ? UIColor.ows_gray65Color : UIColor.ows_gray15Color;
         cell.contentView.backgroundColor = Theme.secondaryBackgroundColor;
+        cell.backgroundColor = Theme.secondaryBackgroundColor;
     }
 
     return cell;
