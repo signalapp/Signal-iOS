@@ -1813,7 +1813,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         return;
     }
 
-    __block ThreadMappingDiff *mappingDiff;
+    __block ThreadMappingDiff *_Nullable mappingDiff;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         mappingDiff =
             [self.threadMapping updateAndCalculateDiffSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
@@ -1824,6 +1824,12 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     // We want this regardless of if we're currently viewing the archive.
     // So we run it before the early return
     [self updateViewState];
+
+    if (mappingDiff == nil) {
+        // Diffing failed, reload to get back to a known good state.
+        [self.tableView reloadData];
+        return;
+    }
 
     if (mappingDiff.sectionChanges.count == 0 && mappingDiff.rowChanges.count == 0) {
         return;
@@ -1854,6 +1860,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                 break;
             }
             case ThreadMappingChangeMove: {
+                // NOTE: we perform moves using a "delete" and "insert"
+                //       rather than a "move".  This ensures that moved
+                //       items are also reloaded.  This is how UICollectionView
+                //       performs reloads internally.
                 [self.tableView deleteRowsAtIndexPaths:@[ rowChange.oldIndexPath ]
                                       withRowAnimation:UITableViewRowAnimationAutomatic];
                 [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]

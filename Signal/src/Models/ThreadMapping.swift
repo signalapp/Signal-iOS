@@ -52,8 +52,7 @@ public class ThreadMappingRowChange: NSObject {
             assert(newIndexPath != nil)
         case .update:
             assert(oldIndexPath != nil)
-            assert(newIndexPath != nil)
-            assert(oldIndexPath == newIndexPath)
+            assert(newIndexPath == nil)
         case .move:
             assert(oldIndexPath != nil)
             assert(newIndexPath != nil)
@@ -182,14 +181,14 @@ class ThreadMapping: NSObject {
     @objc
     func updateAndCalculateDiffSwallowingErrors(isViewingArchive: Bool,
                                                 updatedItemIds: Set<String>,
-                                                transaction: SDSAnyReadTransaction) -> ThreadMappingDiff {
+                                                transaction: SDSAnyReadTransaction) -> ThreadMappingDiff? {
         do {
             return try updateAndCalculateDiff(isViewingArchive: isViewingArchive,
                                               updatedItemIds: updatedItemIds,
                                               transaction: transaction)
         } catch {
             owsFailDebug("error: \(error)")
-            return ThreadMappingDiff(sectionChanges: [], rowChanges: [])
+            return nil
         }
     }
 
@@ -218,13 +217,24 @@ class ThreadMapping: NSObject {
         try update(isViewingArchive: isViewingArchive, transaction: transaction)
         let newThreadIds: [String] = threads.map { $0.uniqueId }
 
+        // We want to be economical and issue as few changes as possible.
+        // We can skip some "moves".  E.g. if we "delete" the first item,
+        // we don't need to explicitly "move" the other items up an index.
+        // In an effort to use as few "moves" as possible, we calculate
+        // the "naive" ordering that will occur after the "deletes" and
+        // "inserts," then only "move up" items that are not in their
+        // final position.  We leverage the fact that items in the
+        // conversation view only move upwards when modified.
+        var naiveThreadIdOrdering: [String] = oldThreadIds
+
         var rowChanges: [ThreadMappingRowChange] = []
 
         // 1. Deletes - Always perform deletes before inserts and updates.
         //
-        // NOTE: We use `reversed` to ensure that items
-        //       are deleted in reverse order, to avoid confusion around
-        //       each deletion affecting the indices of subsequent deletions.
+        // * The indexPath for deletes uses pre-update indices.
+        // * We use `reversed` to ensure that items
+        //   are deleted in reverse order, to avoid confusion around
+        //   each deletion affecting the indices of subsequent deletions.
         let deletedThreadIds = oldThreadIds.filter { !newThreadIds.contains($0) }
         for deletedThreadId in deletedThreadIds.reversed() {
             guard let oldIndex = oldThreadIds.firstIndexAsInt(of: deletedThreadId) else {
@@ -235,11 +245,20 @@ class ThreadMapping: NSObject {
                                                      uniqueRowId: deletedThreadId,
                                                      oldIndexPath: IndexPath(row: oldIndex, section: kSection),
                                                      newIndexPath: nil))
+
+            // Update naive ordering to reflect the delete.
+            if oldIndex >= 0 && oldIndex < naiveThreadIdOrdering.count {
+                assert(naiveThreadIdOrdering[oldIndex] == deletedThreadId)
+                naiveThreadIdOrdering.remove(at: oldIndex)
+            } else {
+                throw assertionError("Could not delete item.")
+            }
         }
 
         // 2. Inserts - Always perform inserts before updates.
         //
-        // NOTE: We DO NOT use `reversed`
+        // * The indexPath for inserts uses post-update indices.
+        // * We insert in ascending order.
         let insertedThreadIds = newThreadIds.filter { !oldThreadIds.contains($0) }
         for insertedThreadId in insertedThreadIds {
             assert(oldThreadIds.firstIndexAsInt(of: insertedThreadId) == nil)
@@ -250,44 +269,77 @@ class ThreadMapping: NSObject {
                                                uniqueRowId: insertedThreadId,
                                                oldIndexPath: nil,
                                                newIndexPath: IndexPath(row: newIndex, section: kSection)))
+
+            // Update naive ordering to reflect the insert.
+            if newIndex >= 0 && newIndex <= naiveThreadIdOrdering.count {
+                naiveThreadIdOrdering.insert(insertedThreadId, at: newIndex)
+            } else {
+                throw assertionError("Could not insert item.")
+            }
         }
 
-        let exlusivelyUpdatedThreadIds = updatedItemIds.subtracting(insertedThreadIds).subtracting(deletedThreadIds)
-        for updatedThreadId in exlusivelyUpdatedThreadIds {
+        // 3. Moves
+        //
+        // * As noted above, we only need to "move" items whose
+        //   naive ordering doesn't reflect the final ordering.
+        // * The old indexPath for moves uses pre-update indices.
+        // * The new indexPath for moves uses post-update indices.
+        // * UICollectionView cannot reload and move an item in the same
+        //   PerformBatchUpdates, so ConversationListViewController
+        //   performs moves using an insert and a delete to ensure that
+        //   the moved item is reloaded.  This is how UICollectionView
+        //   performs reloads internally.
+        // * We move in ascending "new" order.
+        guard Set<String>(newThreadIds) == Set<String>(naiveThreadIdOrdering) else {
+            throw assertionError("Could not map contents.")
+        }
+
+        var movedThreadIds = [String]()
+        for threadId in newThreadIds {
+            guard let oldIndex = oldThreadIds.firstIndexAsInt(of: threadId) else {
+                continue
+            }
+            guard let newIndex = newThreadIds.firstIndexAsInt(of: threadId) else {
+                throw assertionError("newIndex was unexpectedly nil.")
+            }
+            guard let naiveIndex = naiveThreadIdOrdering.firstIndexAsInt(of: threadId) else {
+                throw assertionError("threadId not in newThreadIdOrdering.")
+            }
+            guard newIndex != naiveIndex else {
+                continue
+            }
+            rowChanges.append(ThreadMappingRowChange(type: .move,
+                                                     uniqueRowId: threadId,
+                                                     oldIndexPath: IndexPath(row: oldIndex, section: kSection),
+                                                     newIndexPath: IndexPath(row: newIndex, section: kSection)))
+            movedThreadIds.append(threadId)
+            // Update naive ordering.
+            naiveThreadIdOrdering.remove(at: naiveIndex)
+            if newIndex >= 0 && newIndex <= naiveThreadIdOrdering.count {
+                naiveThreadIdOrdering.insert(threadId, at: newIndex)
+            } else {
+                throw assertionError("Could not insert item.")
+            }
+        }
+        // Once the moves are complete, the new ordering should be correct.
+        guard newThreadIds == naiveThreadIdOrdering else {
+            throw assertionError("Could not reorder contents.")
+        }
+
+        // 4. Updates
+        //
+        // * The indexPath for updates uses pre-update indices.
+        // * We cannot and should not update any item that was inserted, deleted or moved.
+        // * Updated items that also moved use "move" changes (above).
+        let updatedThreadIds = updatedItemIds.subtracting(insertedThreadIds).subtracting(deletedThreadIds).subtracting(movedThreadIds)
+        for updatedThreadId in updatedThreadIds {
             guard let oldIndex = oldThreadIds.firstIndexAsInt(of: updatedThreadId) else {
                 throw assertionError("oldIndex was unexpectedly nil")
             }
-            guard let newIndex = newThreadIds.firstIndexAsInt(of: updatedThreadId) else {
-                throw assertionError("newIndex was unexpectedly nil")
-            }
-            if oldIndex != newIndex {
-                rowChanges.append(ThreadMappingRowChange(type: .move,
-                                                   uniqueRowId: updatedThreadId,
-                                                   oldIndexPath: IndexPath(row: oldIndex, section: kSection),
-                                                   newIndexPath: IndexPath(row: newIndex, section: kSection)))
-            } else {
-                rowChanges.append(ThreadMappingRowChange(type: .update,
-                                                   uniqueRowId: updatedThreadId,
-                                                   oldIndexPath: IndexPath(row: oldIndex, section: kSection),
-                                                   newIndexPath: IndexPath(row: newIndex, section: kSection)))
-            }
-        }
-        let possiblyMovedThreadIds = newThreadIds.filter {
-            oldThreadIds.contains($0) && !exlusivelyUpdatedThreadIds.contains($0)
-        }
-        for threadId in possiblyMovedThreadIds {
-            guard let oldIndex = oldThreadIds.firstIndexAsInt(of: threadId) else {
-                throw assertionError("oldIndex was unexpectedly nil")
-            }
-            guard let newIndex = newThreadIds.firstIndexAsInt(of: threadId) else {
-                throw assertionError("newIndex was unexpectedly nil")
-            }
-            if oldIndex != newIndex {
-                rowChanges.append(ThreadMappingRowChange(type: .move,
-                                                         uniqueRowId: threadId,
-                                                         oldIndexPath: IndexPath(row: oldIndex, section: kSection),
-                                                         newIndexPath: IndexPath(row: newIndex, section: kSection)))
-            }
+            rowChanges.append(ThreadMappingRowChange(type: .update,
+                                                     uniqueRowId: updatedThreadId,
+                                                     oldIndexPath: IndexPath(row: oldIndex, section: kSection),
+                                                     newIndexPath: nil))
         }
 
         return ThreadMappingDiff(sectionChanges: [], rowChanges: rowChanges)
