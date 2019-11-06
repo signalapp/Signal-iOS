@@ -1348,15 +1348,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // have a valid Signal account.
             [SignalRecipient markRecipientAsRegisteredAndGet:recipient.recipientId transaction:transaction];
         }];
-        
-        // Loki: Check if we need to generate a link preview
-        TSMessage *message = messageSend.message;
-        if (message.linkPreview == nil && !message.hasAttachments) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSString *linkPreviewURL = [OWSLinkPreview previewURLForRawBodyText:message.body];
-                if (linkPreviewURL) { [message generateLinkPreviewIfNeededFromURL:linkPreviewURL]; }
-            });
-        }
 
         messageSend.success();
     });
@@ -1733,7 +1724,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
     
     PreKeyBundle *_Nullable bundle = [storage getPreKeyBundleForContact:recipientId];
-    __block NSException *_Nullable exception;
+    __block NSException *exception;
 
     /** Loki: Original code
      * ================
@@ -1782,7 +1773,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             @try {
                 [builder throws_processPrekeyBundle:bundle protocolContext:transaction];
                 
-                // Loki: Discard the prekey bundle here since the session is initiated
+                // Loki: Discard the pre key bundle here since the session has been established
                 [storage removePreKeyBundleForContact:recipientId transaction:transaction];
             } @catch (NSException *caughtException) {
                 exception = caughtException;
