@@ -250,11 +250,7 @@
     [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Show QR Code", @"") actionBlock:^{ [weakSelf showQRCode]; }]];
     if (isMasterDevice) {
         [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Link Device", @"") actionBlock:^{
-            UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Coming Soon" message:nil preferredStyle:UIAlertControllerStyleAlert];
-            [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { }]];
-            [self presentViewController:alert animated:YES completion:nil];
-            // TODO: Enable this again later
-//            [weakSelf linkDevice];
+            [weakSelf linkDevice];
         }]];
         [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Show Seed", @"") actionBlock:^{ [weakSelf showSeed]; }]];
     }
