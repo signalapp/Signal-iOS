@@ -4430,8 +4430,27 @@ typedef enum : NSUInteger {
 {
     // Update the thread's friend request status
     [self.thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:nil];
-    // Send a friend request accepted message
-    [ThreadUtil enqueueFriendRequestAcceptanceMessageInThread:self.thread];
+    // Accept all outstanding friend requests associated with this user and try to establish sessions with the
+    // subset of their devices that haven't sent a friend request.
+    NSString *senderID = friendRequest.authorId;
+    NSMutableSet<TSContactThread *> *threads = [NSMutableSet new];
+    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:senderID in:transaction] ?: senderID;
+        NSSet<LKDeviceLink *> *deviceLinks = [LKDatabaseUtilities getDeviceLinksFor:masterHexEncodedPublicKey in:transaction];
+        for (LKDeviceLink *deviceLink in deviceLinks) {
+            [threads addObject:[TSContactThread getThreadWithContactId:deviceLink.master.hexEncodedPublicKey transaction:transaction]];
+            [threads addObject:[TSContactThread getThreadWithContactId:deviceLink.slave.hexEncodedPublicKey transaction:transaction]];
+        }
+    }];
+    for (TSContactThread *thread in threads) {
+        if (thread.hasPendingFriendRequest) {
+            [ThreadUtil enqueueFriendRequestAcceptanceMessageInThread:self.thread];
+        } else {
+            OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
+            OWSMessageSend *automatedFriendRequestMessage = [messageSender getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:thread.contactIdentifier];
+            [messageSender sendMessage:automatedFriendRequestMessage];
+        }
+    }
 }
 
 - (void)declineFriendRequest:(TSIncomingMessage *)friendRequest
