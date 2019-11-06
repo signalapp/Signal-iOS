@@ -257,7 +257,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSLogInfo(@"modifiedReturnPressed: %@", sender.input);
 
-    self.text = [self.text stringByAppendingString:@"\n"];
+    [self replaceRange:self.selectedTextRange withText:@"\n"];
 
     [self.inputTextViewDelegate textViewDidChange:self];
     [self.textViewToolbarDelegate textViewDidChange:self];
