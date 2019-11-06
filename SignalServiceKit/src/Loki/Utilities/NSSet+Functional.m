@@ -20,4 +20,13 @@
     return result;
 }
 
+- (NSSet *)map:(NSObject *(^)(NSObject *))transform {
+    NSMutableSet *result = [NSMutableSet new];
+    for (NSObject *object in self) {
+        NSObject *transformedObject = transform(object);
+        [result addObject:transformedObject];
+    }
+    return result;
+}
+
 @end

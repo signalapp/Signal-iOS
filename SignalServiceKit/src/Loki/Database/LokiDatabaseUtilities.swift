@@ -27,6 +27,11 @@ public final class LokiDatabaseUtilities : NSObject {
         return OWSPrimaryStorage.shared().getMasterHexEncodedPublicKey(for: slaveHexEncodedPublicKey, in: transaction)
     }
     
+    @objc(getDeviceLinksFor:in:)
+    public static func objc_getDeviceLinks(for masterHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> Set<DeviceLink> {
+        return OWSPrimaryStorage.shared().getDeviceLinks(for: masterHexEncodedPublicKey, in: transaction)
+    }
+    
     // MARK: Public Chats
     private static let publicChatCollection = "LokiPublicChatCollection"
     
