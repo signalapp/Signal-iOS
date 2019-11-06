@@ -249,13 +249,14 @@ extension UIDatabaseObserver: TransactionObserver {
 
         let result = try GRDBDatabaseStorageAdapter.checkpointWal(db: db, mode: mode)
 
-        Logger.info("walSizePages: \(result.walSizePages), pagesCheckpointed: \(result.pagesCheckpointed).")
-
         let pageSize: Int32 = 4 * 1024
         let walFileSizeBytes = result.walSizePages * pageSize
         let maxWalFileSizeBytes = 4 * 1024 * 1024
         if walFileSizeBytes > maxWalFileSizeBytes {
             Logger.info("walFileSizeBytes: \(walFileSizeBytes).")
+            Logger.info("walSizePages: \(result.walSizePages), pagesCheckpointed: \(result.pagesCheckpointed).")
+        } else {
+            Logger.verbose("walSizePages: \(result.walSizePages), pagesCheckpointed: \(result.pagesCheckpointed).")
         }
 
         checkPointQueue.sync {
