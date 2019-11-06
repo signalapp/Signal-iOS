@@ -12,6 +12,8 @@ import re
 
 git_repo_path = os.path.abspath(subprocess.check_output(['git', 'rev-parse', '--show-toplevel']).strip())
 
+proto_syntax = None
+
 def lowerCamelCase(name):
     result = name
 
@@ -225,7 +227,7 @@ class BaseContext(object):
 
     def swift_type_for_field(self, field, suppress_optional=False):
         base_type = self.base_swift_type_for_field(field)
-
+        
         if field.rules == 'optional':
             if suppress_optional:
                 return base_type
@@ -1205,7 +1207,9 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
         #
         # optional bytes  id          = 1;
         # optional bool              isComplete = 2 [default = false];
-        item_regex = re.compile(r'^(optional|required|repeated)?\s*([\w\d]+?)\s+([\w\d]+?)\s*=\s*(\d+?)\s*(\[default = (.+)\])?;$')
+        #
+        # NOTE: optional and required are not valid in proto3.
+        item_regex = re.compile(r'^(optional|required|repeated)?\s*([\w\d\.]+?\s)\s*([\w\d]+?)\s*=\s*(\d+?)\s*(\[default = (.+)\])?;$')
         item_match = item_regex.search(line)
         if item_match:
             # print 'item_rules:', item_match.groups()
@@ -1215,6 +1219,14 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
             item_index = optional_match_group(item_match, 4)
             # item_defaults_1 = optional_match_group(item_match, 5)
             item_default = optional_match_group(item_match, 6)
+
+            if proto_syntax == 'proto3':
+                if item_rules is None:
+                    item_rules = 'optional'
+                elif item_rules == 'repeated':
+                    pass
+                else:
+                    raise Exception('Unexpected rule[%s]: %s' % (proto_file_path, item_rules))
 
             # print 'item_rules:', item_rules
             # print 'item_type:', item_type
@@ -1246,6 +1258,7 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
             is_required = '@required' in field_comments
             # if is_required:
             #     print 'is_required:', item_name
+            # print 'item_name:', item_name, 'item_type:', item_type
             context.field_map[item_index] = MessageField(item_name, item_index, item_rules, item_type, item_default, sort_index, is_required)
 
             sort_index = sort_index + 1
@@ -1300,7 +1313,7 @@ def process_proto_file(args, proto_file_path, dst_file_path):
     multiline_comment_regex = re.compile(r'/\*.*?\*/', re.MULTILINE|re.DOTALL)
     text = multiline_comment_regex.sub('', text)
 
-    syntax_regex = re.compile(r'^syntax ')
+    syntax_regex = re.compile(r'^syntax\s+=\s+"(.+)";')
     package_regex = re.compile(r'^package\s+(.+);')
     option_regex = re.compile(r'^option ')
 
@@ -1316,9 +1329,12 @@ def process_proto_file(args, proto_file_path, dst_file_path):
         except StopIteration:
             break
 
-        if syntax_regex.search(line):
+        syntax_match = syntax_regex.search(line)
+        if syntax_match:
+            global proto_syntax
+            proto_syntax = syntax_match.group(1).strip()
             if args.verbose:
-                print '# Ignoring syntax'
+                print 'Syntax:', proto_syntax
             continue
 
         if option_regex.search(line):
