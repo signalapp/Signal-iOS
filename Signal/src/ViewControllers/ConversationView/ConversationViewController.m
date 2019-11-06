@@ -1644,12 +1644,43 @@ typedef enum : NSUInteger {
 #pragma mark - Updating
 
 - (void)updateInputToolbar {
-    BOOL hasPendingFriendRequest = self.thread.hasPendingFriendRequest;
-    [self.inputToolbar setUserInteractionEnabled:!hasPendingFriendRequest];
-    NSString *placeholderText = hasPendingFriendRequest ? NSLocalizedString(@"Pending Friend Request...", "") : NSLocalizedString(@"New Message", "");
+    BOOL isEnabled;
+    BOOL isAttachmentButtonHidden;
+    if ([self.thread isKindOfClass:TSContactThread.class]) {
+        TSContactThread *thread = (TSContactThread *)self.thread;
+        NSMutableSet<TSContactThread *> *linkedDeviceThreads = [NSMutableSet new];
+        NSString *senderID = thread.contactIdentifier;
+        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:senderID in:transaction] ?: senderID;
+            NSSet<LKDeviceLink *> *deviceLinks = [LKDatabaseUtilities getDeviceLinksFor:masterHexEncodedPublicKey in:transaction];
+            for (LKDeviceLink *deviceLink in deviceLinks) {
+                [linkedDeviceThreads addObject:[TSContactThread getThreadWithContactId:deviceLink.master.hexEncodedPublicKey transaction:transaction]];
+                [linkedDeviceThreads addObject:[TSContactThread getThreadWithContactId:deviceLink.slave.hexEncodedPublicKey transaction:transaction]];
+            }
+        }];
+        if ([linkedDeviceThreads contains:^BOOL(NSObject *object) {
+            return ((TSContactThread *)object).isContactFriend;
+        }]) {
+            isEnabled = true;
+            isAttachmentButtonHidden = false;
+        } else if (![linkedDeviceThreads contains:^BOOL(NSObject *object) {
+            return ((TSContactThread *)object).hasPendingFriendRequest;
+        }]) {
+            isEnabled = true;
+            isAttachmentButtonHidden = true;
+        } else {
+            isEnabled = false;
+            isAttachmentButtonHidden = true;
+        }
+    } else {
+        isEnabled = true;
+        isAttachmentButtonHidden = false;
+    }
+    [self.inputToolbar setUserInteractionEnabled:isEnabled];
+    NSString *placeholderText = isEnabled ? NSLocalizedString(@"New Message", "") : NSLocalizedString(@"Pending Friend Request...", "");
     [self.inputToolbar setPlaceholderText:placeholderText];
     BOOL isContactFriend = self.thread.isContactFriend;
-    [self.inputToolbar setAttachmentButtonHidden:(!isContactFriend && !self.thread.isGroupThread)];
+    [self.inputToolbar setAttachmentButtonHidden:isAttachmentButtonHidden];
 }
 
 #pragma mark - Identity
