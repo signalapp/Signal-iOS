@@ -31,6 +31,10 @@ enum DatabaseObserverError: Error {
     case changeTooLarge
 }
 
+enum AtomicError: Error {
+    case invalidTransition
+}
+
 @objc
 public class AtomicBool: NSObject {
     private var value: Bool
@@ -54,6 +58,18 @@ public class AtomicBool: NSObject {
     public func set(_ value: Bool) {
         return AtomicBool.serialQueue.sync {
             self.value = value
+        }
+    }
+
+    // Sets value to "toValue" IFF it currently has "fromValue",
+    // otherwise throws.
+    @objc
+    public func transition(from fromValue: Bool, to toValue: Bool) throws {
+        return try AtomicBool.serialQueue.sync {
+            guard self.value == fromValue else {
+                throw AtomicError.invalidTransition
+            }
+            self.value = toValue
         }
     }
 }
@@ -106,9 +122,6 @@ public class UIDatabaseObserver: NSObject {
     }
 
     let pool: DatabasePool
-
-    var isRunningCheckpoint = false
-    let checkPointQueue = DispatchQueue(label: "checkpointQueue")
 
     internal var latestSnapshot: DatabaseSnapshot {
         didSet {
@@ -222,12 +235,11 @@ extension UIDatabaseObserver: TransactionObserver {
         //   It will probably not succeed often in truncating the database, but
         //   we only need it to succeed periodically. This might have an
         //   unacceptable perf cost, and it might not succeed often enough.
+        //
+        //   We periodically try to perform a restart checkpoint which
+        //   can limit WAL size when truncation isn't possible.
         do {
-            try pool.writeWithoutTransaction { db in
-                try Bench(title: "Slow Passive Checkpoint", logIfLongerThan: 0.025, logInProduction: true) {
-                    try self.checkpointWal(db: db, mode: .passive)
-                }
-            }
+            try self.checkpoint()
         } catch {
             owsFailDebug("error \(error)")
         }
@@ -239,15 +251,25 @@ extension UIDatabaseObserver: TransactionObserver {
         _ = try Row.fetchCursor(db, sql: "SELECT rootpage FROM sqlite_master LIMIT 1").next()
     }
 
-    func checkpointWal(db: Database, mode: Database.CheckpointMode) throws {
-        checkPointQueue.sync {
-            guard !isRunningCheckpoint else {
-                return
-            }
-            isRunningCheckpoint = true
+    private static let isRunningCheckpoint = AtomicBool(false)
+
+    func checkpoint() throws {
+        do {
+            try UIDatabaseObserver.isRunningCheckpoint.transition(from: false, to: true)
+        } catch {
+            Logger.warn("Skipping checkpoint; already running checkpoint.")
+            return
+        }
+        defer {
+            UIDatabaseObserver.isRunningCheckpoint.set(false)
         }
 
-        let result = try GRDBDatabaseStorageAdapter.checkpointWal(db: db, mode: mode)
+        // Try to restart after every Nth write.
+        let restartFrequency: UInt32 = 10
+        let shouldTryToRestart = arc4random_uniform(restartFrequency) == 0
+        let mode: Database.CheckpointMode = shouldTryToRestart ? .restart : .passive
+
+        let result = try GRDBDatabaseStorageAdapter.checkpoint(pool: pool, mode: mode)
 
         let pageSize: Int32 = 4 * 1024
         let walFileSizeBytes = result.walSizePages * pageSize
@@ -257,10 +279,6 @@ extension UIDatabaseObserver: TransactionObserver {
             Logger.info("walSizePages: \(result.walSizePages), pagesCheckpointed: \(result.pagesCheckpointed).")
         } else {
             Logger.verbose("walSizePages: \(result.walSizePages), pagesCheckpointed: \(result.pagesCheckpointed).")
-        }
-
-        checkPointQueue.sync {
-            isRunningCheckpoint = false
         }
     }
 }
