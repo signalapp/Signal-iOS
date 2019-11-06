@@ -152,11 +152,19 @@ public class GroupManager: NSObject {
 
     // MARK: - Messages
 
+    private static func buildNewGroupMessage(forThread thread: TSGroupThread,
+                                             transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage {
+        let message = TSOutgoingMessage.init(in: thread, groupMetaMessage: .new, expiresInSeconds: 0)
+        message.update(withCustomMessage: NSLocalizedString("GROUP_CREATED", comment: ""), transaction: transaction)
+        return message
+    }
+
     public static func sendDurableNewGroupMessage(forThread thread: TSGroupThread) -> Promise<Void> {
+        assert(thread.groupModel.groupAvatarData == nil)
+
         return DispatchQueue.global().async(.promise) { () -> Void in
             self.databaseStorage.write { transaction in
-                let message = TSOutgoingMessage.init(in: thread, groupMetaMessage: .new, expiresInSeconds: 0)
-                message.update(withCustomMessage: NSLocalizedString("GROUP_CREATED", comment: ""), transaction: transaction)
+                let message = self.buildNewGroupMessage(forThread: thread, transaction: transaction)
                 self.messageSenderJobQueue.add(message: message.asPreparer,
                                                transaction: transaction)
             }
@@ -180,9 +188,7 @@ public class GroupManager: NSObject {
         let (promise, resolver) = Promise<Void>.pending()
         DispatchQueue.global().async {
             let message: TSOutgoingMessage = self.databaseStorage.writeReturningResult { transaction in
-                let message = TSOutgoingMessage.init(in: thread, groupMetaMessage: .new, expiresInSeconds: 0)
-                message.update(withCustomMessage: NSLocalizedString("GROUP_CREATED", comment: ""), transaction: transaction)
-                return message
+                return self.buildNewGroupMessage(forThread: thread, transaction: transaction)
             }
 
             let groupModel = thread.groupModel
