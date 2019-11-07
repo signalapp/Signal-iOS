@@ -111,11 +111,19 @@ class YDBFullTextSearcherTest: SignalBaseTest {
         SSKEnvironment.shared.contactsManager = YDBFullTextSearcherContactsManager()
 
         self.yapWrite { transaction in
-            let bookModel = TSGroupModel(title: "Book Club", members: [aliceRecipient, bobRecipient], groupAvatarData: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
+            let bookModel = TSGroupModel(groupId: TSGroupModel.generateRandomGroupId(),
+                                          name: "Book Club",
+                                          avatarData: nil,
+                                          members: [aliceRecipient, bobRecipient],
+                                          groupsVersion: GroupManager.defaultGroupsVersion)
             let bookClubGroupThread = TSGroupThread.getOrCreateThread(with: bookModel, transaction: transaction.asAnyWrite)
             self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction.asAnyRead)
 
-            let snackModel = TSGroupModel(title: "Snack Club", members: [aliceRecipient], groupAvatarData: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
+            let snackModel = TSGroupModel(groupId: TSGroupModel.generateRandomGroupId(),
+                                         name: "Snack Club",
+                                         avatarData: nil,
+                                         members: [aliceRecipient],
+                                         groupsVersion: GroupManager.defaultGroupsVersion)
             let snackClubGroupThread = TSGroupThread.getOrCreateThread(with: snackModel, transaction: transaction.asAnyWrite)
             self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction.asAnyRead)
 
@@ -336,7 +344,11 @@ class YDBFullTextSearcherTest: SignalBaseTest {
 
         Bench(title: "Populate Index", memorySamplerRatio: 1) { _ in
             self.yapWrite { transaction in
-                let groupModel = TSGroupModel(title: "Perf", members: [aliceRecipient, bobRecipient], groupAvatarData: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
+                let groupModel = TSGroupModel(groupId: TSGroupModel.generateRandomGroupId(),
+                                              name: "Perf",
+                                              avatarData: nil,
+                                              members: [aliceRecipient, bobRecipient],
+                                              groupsVersion: GroupManager.defaultGroupsVersion)
                 let thread = TSGroupThread.getOrCreateThread(with: groupModel, transaction: transaction.asAnyWrite)
 
                 TSOutgoingMessage(in: thread, messageBody: string1, attachmentId: nil).anyInsert(transaction: transaction.asAnyWrite)

@@ -147,15 +147,16 @@
           @"privacy matters; privacy is what allows us to determine who we are and who we want to be.";
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        NSData *groupId = [TSGroupModel generateRandomGroupId];
+        TSGroupModel *groupModel = [[TSGroupModel alloc] initWithGroupId:[TSGroupModel generateRandomGroupId]
+                                                                    name:@"fdsfsd"
+                                                              avatarData:nil
+                                                                 members:@[
+                                                                           self.localAddress,
+                                                                           self.otherAddress,
+                                                                           ]
+                                                           groupsVersion:GroupManager.defaultGroupsVersion];
         TSGroupThread *thread;
-        thread = [TSGroupThread getOrCreateThreadWithGroupModel:[[TSGroupModel alloc] initWithTitle:@"fdsfsd"
-                                                                                            members:@[
-                                                                                                self.localAddress,
-                                                                                                self.otherAddress,
-                                                                                            ]
-                                                                                    groupAvatarData:nil
-                                                                                            groupId:groupId]
+        thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel
                                                     transaction:transaction];
 
         NSMutableArray<TSIncomingMessage *> *messages = [NSMutableArray new];

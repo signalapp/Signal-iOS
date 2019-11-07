@@ -43,11 +43,11 @@ class GRDBFinderTest: SignalBaseTest {
         let contactThread4 = TSContactThread(contactAddress: address4)
         // Group Threads
         let createGroupThread: () -> TSGroupThread = {
-            let groupId = Randomness.generateRandomBytes(Int32(kGroupIdLength))
-            let groupModel = TSGroupModel(title: "Test Group",
+            let groupModel = TSGroupModel(groupId: TSGroupModel.generateRandomGroupId(),
+                                          name: "Test Group",
+                                          avatarData: nil,
                                           members: [address1],
-                                          groupAvatarData: nil,
-                                          groupId: groupId)
+                                          groupsVersion: GroupManager.defaultGroupsVersion)
             let groupThread = TSGroupThread(groupModel: groupModel)
             return groupThread
         }
