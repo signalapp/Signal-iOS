@@ -218,7 +218,7 @@ NS_ASSUME_NONNULL_BEGIN
         timestampLabelText = [DateUtil formatMessageTimestamp:viewItem.interaction.timestamp];
     }
 
-    TSMessage *message = (TSMessage *)[viewItem.interaction as:TSMessage.class];
+    TSMessage *message = [viewItem.interaction as:TSMessage.class];
     if (message != nil && message.isP2P) {
         NSString *string = [timestampLabelText.localizedUppercaseString stringByAppendingString:@" · P2P"];
         NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:string];

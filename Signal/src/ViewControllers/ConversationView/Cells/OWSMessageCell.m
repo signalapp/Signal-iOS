@@ -547,8 +547,7 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 linkedDeviceThreads = [LKDatabaseUtilities getLinkedDeviceThreadsFor:senderID in:transaction];
             }];
-            BOOL isFriend = [linkedDeviceThreads contains:^BOOL(NSObject *object) {
-                TSContactThread *thread = (TSContactThread *)object;
+            BOOL isFriend = [linkedDeviceThreads contains:^BOOL(TSContactThread *thread) {
                 return thread.isContactFriend;
             }];
             return !isFriend;

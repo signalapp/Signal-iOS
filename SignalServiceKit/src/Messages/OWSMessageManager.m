@@ -1557,8 +1557,7 @@ NS_ASSUME_NONNULL_BEGIN
         return YES;
     }
     NSSet<TSContactThread *> *senderLinkedDeviceThreads = [LKDatabaseUtilities getLinkedDeviceThreadsFor:senderHexEncodedPublicKey in:transaction];
-    if ([senderLinkedDeviceThreads contains:^BOOL(NSObject *object) {
-        TSContactThread *thread = (TSContactThread *)object;
+    if ([senderLinkedDeviceThreads contains:^BOOL(TSContactThread *thread) {
         return thread.isContactFriend;
     }]) {
         // Auto-accept if the user is friends with any of the sender's linked devices.
@@ -1631,7 +1630,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (thread.isContactFriend) return;
     // Become happy friends and go on great adventures
     [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];
-    TSOutgoingMessage *existingFriendRequestMessage = (TSOutgoingMessage *)[thread.lastInteraction as:TSOutgoingMessage.class];
+    TSOutgoingMessage *existingFriendRequestMessage = [thread.lastInteraction as:TSOutgoingMessage.class];
     if (existingFriendRequestMessage != nil && existingFriendRequestMessage.isFriendRequest) {
         [existingFriendRequestMessage saveFriendRequestStatus:LKMessageFriendRequestStatusAccepted withTransaction:transaction];
     }

@@ -1,8 +1,8 @@
 
 @interface NSSet (Functional)
 
-- (BOOL)contains:(BOOL (^)(NSObject *))predicate;
-- (NSSet *)filtered:(BOOL (^)(NSObject *))isIncluded;
-- (NSSet *)map:(NSObject *(^)(NSObject *))transform;
+- (BOOL)contains:(BOOL (^)(id))predicate;
+- (NSSet *)filtered:(BOOL (^)(id))isIncluded;
+- (NSSet *)map:(id (^)(id))transform;
 
 @end

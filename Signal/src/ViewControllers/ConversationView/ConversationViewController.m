@@ -1652,13 +1652,13 @@ typedef enum : NSUInteger {
         [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             linkedDeviceThreads = [LKDatabaseUtilities getLinkedDeviceThreadsFor:senderID in:transaction];
         }];
-        if ([linkedDeviceThreads contains:^BOOL(NSObject *object) {
-            return ((TSContactThread *)object).isContactFriend;
+        if ([linkedDeviceThreads contains:^BOOL(TSContactThread *thread) {
+            return thread.isContactFriend;
         }]) {
             isEnabled = true;
             isAttachmentButtonHidden = false;
-        } else if (![linkedDeviceThreads contains:^BOOL(NSObject *object) {
-            return ((TSContactThread *)object).hasPendingFriendRequest;
+        } else if (![linkedDeviceThreads contains:^BOOL(TSContactThread *thread) {
+            return thread.hasPendingFriendRequest;
         }]) {
             isEnabled = true;
             isAttachmentButtonHidden = true;
@@ -3817,8 +3817,7 @@ typedef enum : NSUInteger {
     if (isBackspace) {
         self.currentMentionStartIndex = -1;
         [self.inputToolbar hideMentionCandidateSelectionView];
-        NSArray *mentionsToRemove = [self.mentions filtered:^BOOL(NSObject *object) {
-            LKMention *mention = (LKMention *)object;
+        NSArray *mentionsToRemove = [self.mentions filtered:^BOOL(LKMention *mention) {
             return ![mention isContainedIn:newText];
         }];
         [self.mentions removeObjectsInArray:mentionsToRemove];

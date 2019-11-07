@@ -942,8 +942,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [[LKAPI getDestinationsFor:contactID]
         .thenOn(OWSDispatch.sendingQueue, ^(NSArray<LKDestination *> *destinations) {
             // Get master destination
-            LKDestination *masterDestination = [destinations filtered:^BOOL(NSObject *object) {
-                LKDestination *destination = [object as:LKDestination.class];
+            LKDestination *masterDestination = [destinations filtered:^BOOL(LKDestination *destination) {
                 return [destination.kind isEqual:@"master"];
             }].firstObject;
             // Send to master destination
@@ -958,8 +957,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 }
             }
             // Get slave destinations
-            NSArray *slaveDestinations = [destinations filtered:^BOOL(NSObject *object) {
-                LKDestination *destination = [object as:LKDestination.class];
+            NSArray *slaveDestinations = [destinations filtered:^BOOL(LKDestination *destination) {
                 return [destination.kind isEqual:@"slave"];
             }];
             // Send to slave destinations (using a best attempt approach (i.e. ignoring the message send result) for now)
@@ -1962,7 +1960,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     BOOL isSilent = message.isSilent;
     BOOL isOnline = message.isOnline;
     
-    LKAddressMessage *_Nullable addressMessage = [message as:[LKAddressMessage class]];
+    LKAddressMessage *addressMessage = [message as:[LKAddressMessage class]];
     BOOL isPing = addressMessage != nil && addressMessage.isPing;
     OWSMessageServiceParams *messageParams =
         [[OWSMessageServiceParams alloc] initWithType:messageType
