@@ -447,7 +447,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Loki: Handle pre key bundle message if needed
         if (contentProto.prekeyBundleMessage != nil) {
             OWSLogInfo(@"[Loki] Received a pre key bundle message from: %@.", envelope.source);
-            PreKeyBundle *_Nullable bundle = [contentProto.prekeyBundleMessage createPreKeyBundleWithTransaction:transaction];
+            PreKeyBundle *_Nullable bundle = [contentProto.prekeyBundleMessage getPreKeyBundleWithTransaction:transaction];
             if (bundle == nil) {
                 OWSFailDebug(@"Failed to create a pre key bundle.");
             }
