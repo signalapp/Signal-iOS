@@ -18,7 +18,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
+let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .beta
 
 // MARK: -
 
@@ -99,7 +99,7 @@ public class FeatureFlags: NSObject {
         if CurrentAppContext().isRunningTests {
             // We should be running the tests using both .ydbTests or .grdbTests.
             return .ydbTests
-        } else if build.includes(.qa) {
+        } else if build.includes(.beta) {
             return .grdbForAll
         } else {
             return .grdbForAlreadyMigrated
