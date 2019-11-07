@@ -123,8 +123,8 @@ public extension Theme {
         case .messageActionDelete:
             return isDarkThemeEnabled ? "trash-solid-24" :  "trash-outline-24"
         case .messageActionSave:
-            // TODO: We're missing dark theme version of this icon.
-            return "download-filled-24"
+            // There is no separate dark theme version of this icon, by design.
+            return "save-24"
 
         case .compose:
             return isDarkThemeEnabled ? "compose-solid-24" : "compose-outline-24"
