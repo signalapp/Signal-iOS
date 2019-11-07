@@ -463,7 +463,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     BOOL needsToClearArchived = self.isArchived && wasMessageInserted;
 
     // Don't clear archived during migrations.
-    if (!AppReadiness.isAppReady) {
+    if (!CurrentAppContext().isRunningTests && !AppReadiness.isAppReady) {
         needsToClearArchived = NO;
     }
 

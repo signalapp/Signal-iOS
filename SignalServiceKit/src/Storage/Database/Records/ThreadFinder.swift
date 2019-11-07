@@ -94,13 +94,24 @@ struct YAPDBThreadFinder: ThreadFinder {
         }
 
         var index: UInt = 0
-        let wasFound = view.getGroup(nil,
+        var group: NSString?
+        let wasFound = view.getGroup(&group,
                                      index: &index,
                                      forKey: thread.uniqueId,
                                      inCollection: TSThread.collection())
-
-        if wasFound {
-            return index
+        if wasFound, let group = group {
+            let numberOfItems = view.numberOfItems(inGroup: group as String)
+            guard numberOfItems > 0 else {
+                owsFailDebug("numberOfItems <= 0")
+                return nil
+            }
+            // since in yap our Inbox uses reversed sorting, our index must be reversed
+            let reverseIndex = (Int(numberOfItems) - 1) - Int(index)
+            guard reverseIndex >= 0 else {
+                owsFailDebug("reverseIndex was < 0")
+                return nil
+            }
+            return UInt(reverseIndex)
         } else {
             return nil
         }
@@ -162,15 +173,18 @@ struct GRDBThreadFinder: ThreadFinder {
         SELECT rowNumber
         FROM (
             SELECT
-                ROW_NUMBER() OVER (ORDER BY \(threadColumn: .lastInteractionRowId) DESC) as rowNumber,
+                (ROW_NUMBER() OVER (ORDER BY \(threadColumn: .lastInteractionRowId) DESC) - 1) as rowNumber,
                 \(threadColumn: .id)
             FROM \(ThreadRecord.databaseTableName)
+            WHERE \(threadColumn: .shouldThreadBeVisible) = 1
         )
         WHERE \(threadColumn: .id) = ?
         """
-        assert(thread.rowId > 0)
-        let arguments: StatementArguments = [thread.rowId]
+        guard let grdbId = thread.grdbId, grdbId.intValue > 0 else {
+            throw OWSAssertionError("grdbId was unexpectedly nil")
+        }
 
+        let arguments: StatementArguments = [grdbId.intValue]
         return try UInt.fetchOne(transaction.database, sql: sql, arguments: arguments)
     }
 }
