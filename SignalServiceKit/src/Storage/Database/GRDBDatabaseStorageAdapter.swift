@@ -384,8 +384,9 @@ private struct GRDBStorage {
             Thread.current.threadDictionary[maxBusyTimeoutMsKey] = newValue
         }
     }
+
     fileprivate static func useShortBusyTimeout() {
-        maxBusyTimeoutMs = 100
+        maxBusyTimeoutMs = 50
     }
     fileprivate static func useInfiniteBusyTimeout() {
         maxBusyTimeoutMs = nil
@@ -417,8 +418,8 @@ private struct GRDBStorage {
         configuration.label = "Modern (GRDB) Storage"      // Useful when your app opens multiple databases
         configuration.maximumReaderCount = 10   // The default is 5
         configuration.busyMode = .callback({ (retryCount: Int) -> Bool in
-            // sleep 50 milliseconds
-            let millis = 50
+            // sleep N milliseconds
+            let millis = 25
             usleep(useconds_t(millis * 1000))
 
             Logger.verbose("retryCount: \(retryCount)")
@@ -569,33 +570,46 @@ extension GRDBDatabaseStorageAdapter {
 
         SDSDatabaseStorage.shared.logFileSizes()
 
-        // Use a short busy timeout when trying to truncate the WAL.
+        let result = try GRDBDatabaseStorageAdapter.checkpoint(pool: pool, mode: .truncate)
+
+        Logger.info("walSizePages: \(result.walSizePages), pagesCheckpointed: \(result.pagesCheckpointed)")
+
+        SDSDatabaseStorage.shared.logFileSizes()
+    }
+
+    public static func checkpoint(pool: DatabasePool, mode: Database.CheckpointMode) throws -> GrdbTruncationResult {
+
+        // Use a short busy timeout when checkpointing the WAL.
         // Another process may be active; we don't want to block for long.
+        //
+        // NOTE: This isn't necessary for .passive checkpoints; they never
+        //       block.
         defer {
             // Restore the default busy behavior.
             GRDBStorage.useInfiniteBusyTimeout()
         }
         GRDBStorage.useShortBusyTimeout()
 
-        try Bench(title: "Truncating checkpoint", logIfLongerThan: 0.01, logInProduction: true) {
-            try pool.writeWithoutTransaction { db in
-                let result = try GRDBDatabaseStorageAdapter.checkpointWal(db: db, mode: .truncate)
-                Logger.info("walSizePages: \(result.walSizePages), pagesCheckpointed: \(result.pagesCheckpointed)")
-            }
-        }
-
-        SDSDatabaseStorage.shared.logFileSizes()
-    }
-
-    public static func checkpointWal(db: Database, mode: Database.CheckpointMode) throws -> GrdbTruncationResult {
         var walSizePages: Int32 = 0
         var pagesCheckpointed: Int32 = 0
-
-        let code = sqlite3_wal_checkpoint_v2(db.sqliteConnection, nil, mode.rawValue, &walSizePages, &pagesCheckpointed)
-        guard code == SQLITE_OK else {
-            throw OWSAssertionError("checkpoint sql error with code: \(code)")
+        try Bench(title: "Slow checkpoint: \(mode)", logIfLongerThan: 0.01, logInProduction: true) {
+            try pool.writeWithoutTransaction { db in
+                let code = sqlite3_wal_checkpoint_v2(db.sqliteConnection, nil, mode.rawValue, &walSizePages, &pagesCheckpointed)
+                switch code {
+                case SQLITE_OK:
+                    if mode != .passive {
+                        Logger.info("Checkpoint \(mode) succeeded.")
+                    }
+                    break
+                case SQLITE_BUSY:
+                    // Busy is not an error.
+                    Logger.info("Checkpoint \(mode) failed due to busy.")
+                    break
+                default:
+                    throw OWSAssertionError("checkpoint sql error with code: \(code)")
+                }
+            }
         }
-
         return GrdbTruncationResult(walSizePages: walSizePages, pagesCheckpointed: pagesCheckpointed)
     }
 }
