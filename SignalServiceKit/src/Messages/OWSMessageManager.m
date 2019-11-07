@@ -1598,10 +1598,7 @@ NS_ASSUME_NONNULL_BEGIN
         // there's only ever one message with status LKMessageFriendRequestStatusPending in a thread (where a thread is the combination
         // of all threads belonging to the linked devices of a user).
         NSString *senderID = ((TSIncomingMessage *)message).authorId;
-        __block NSSet<TSContactThread *> *linkedDeviceThreads;
-        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            linkedDeviceThreads = [LKDatabaseUtilities getLinkedDeviceThreadsFor:senderID in:transaction];
-        }];
+        NSSet<TSContactThread *> *linkedDeviceThreads = [LKDatabaseUtilities getLinkedDeviceThreadsFor:senderID in:transaction];
         for (TSContactThread *thread in linkedDeviceThreads) {
             [thread enumerateInteractionsWithTransaction:transaction usingBlock:^(TSInteraction *interaction, YapDatabaseReadTransaction *transaction) {
                 if (![interaction isKindOfClass:TSIncomingMessage.class]) { return; }

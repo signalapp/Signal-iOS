@@ -597,7 +597,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     }
                     resolve(error);
                 }];
-            [self sendMessageToRecipient:messageSend];
+            [self sendMessageToDestinationAndLinkedDevices:messageSend];
         }];
         [sendPromises addObject:sendPromise];
     }
@@ -926,15 +926,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return [[OWSMessageSend alloc] initWithMessage:message thread:thread recipient:recipient senderCertificate:nil udAccess:nil localNumber:userHexEncodedPublicKey success:^{ } failure:^(NSError *error) { }];
 }
 
-- (void)sendMessageToRecipient:(OWSMessageSend *)messageSend
+- (void)sendMessageToDestinationAndLinkedDevices:(OWSMessageSend *)messageSend
 {
     TSOutgoingMessage *message = messageSend.message;
     NSString *contactID = messageSend.recipient.recipientId;
     BOOL isGroupMessage = messageSend.thread.isGroupThread;
     BOOL isDeviceLinkMessage = [message isKindOfClass:LKDeviceLinkMessage.class];
-    BOOL isMessageToSelf = (contactID == OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey);
-    BOOL isSyncMessage = [message isKindOfClass:OWSOutgoingSyncMessage.class];
-    if (isGroupMessage || isDeviceLinkMessage || isMessageToSelf || isSyncMessage) {
+    if (isGroupMessage || isDeviceLinkMessage) {
         [self sendMessage:messageSend];
     } else {
         BOOL isSilentMessage = message.isSilent;
@@ -1377,7 +1375,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
         dispatch_async([OWSDispatch sendingQueue], ^{
             OWSLogDebug(@"Retrying: %@", message.debugDescription);
-            [self sendMessageToRecipient:messageSend];
+            [self sendMessage:messageSend];
         });
     };
 
@@ -1608,7 +1606,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             failure(error);
         }];
-    [self sendMessageToRecipient:messageSend];
+    [self sendMessage:messageSend];
 }
 
 - (NSArray<NSDictionary *> *)throws_deviceMessagesForMessageSend:(OWSMessageSend *)messageSend
