@@ -122,6 +122,8 @@ public class VideoEditorModel: NSObject {
         let maxValue: TimeInterval = min(untrimmedDurationSeconds, trimmedEndSeconds) - minimumDurationSeconds
         trimmedStartSeconds = max(minValue, min(maxValue, value))
 
+        clearRender()
+
         fireModelDidChange()
     }
 
@@ -135,6 +137,8 @@ public class VideoEditorModel: NSObject {
         let minValue: TimeInterval = max(0, trimmedStartSeconds) + minimumDurationSeconds
         let maxValue: TimeInterval = untrimmedDurationSeconds
         trimmedEndSeconds = max(minValue, min(maxValue, value))
+
+        clearRender()
 
         fireModelDidChange()
     }
@@ -158,38 +162,222 @@ public class VideoEditorModel: NSObject {
         }
     }
 
-    public func exportOutput() -> Promise<String> {
-        assert(isTrimmed)
+    // MARK: - Rendering
 
-        let asset = AVURLAsset(url: URL(fileURLWithPath: srcVideoPath))
+    // Represents an attempt to render the output.
+    // Contains a copy of the model state at the
+    // time the render is enqueued.
+    public class Render {
+        fileprivate let srcVideoPath: String
+        fileprivate let untrimmedDuration: CMTime
+        fileprivate let trimmedStartSeconds: TimeInterval
+        fileprivate let trimmedDurationSeconds: TimeInterval
+        fileprivate let isTrimmed: Bool
 
-        // AVAssetExportPresetPassthrough maintains the source quality.
-        guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) else {
-            return Promise(error: OWSAssertionError("Could not create export session."))
+        fileprivate let promise: Promise<String>
+        fileprivate let resolver: Resolver<String>
+
+        // This property should only be accessed on VideoEditorModel.serialQueue.
+        private var exportSession: AVAssetExportSession?
+
+        // Until the render is consumed, it is the responsibility of this
+        // class to clean up its temp files.
+        private let isConsumed = AtomicBool(false)
+
+        required init(model: VideoEditorModel) {
+            // The model's properties can only be accessed on the main thread.
+            AssertIsOnMainThread()
+
+            self.srcVideoPath = model.srcVideoPath
+            self.untrimmedDuration = model.untrimmedDuration
+            self.trimmedStartSeconds = model.trimmedStartSeconds
+            self.trimmedDurationSeconds = model.trimmedDurationSeconds
+            self.isTrimmed = model.isTrimmed
+
+            let (promise, resolver) = Promise<String>.pending()
+            self.promise = promise
+            self.resolver = resolver
         }
 
-        let dstFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: "mp4")
-        exportSession.outputURL = URL(fileURLWithPath: dstFilePath)
-        // This will ensure that the MP4 moov atom (movie atom)
-        // is located at the beginning of the file. That may help
-        // recipients validate incoming videos.
-        exportSession.shouldOptimizeForNetworkUse = true
-        exportSession.outputFileType = AVFileType.mp4
-        // Preserve the original timescale.
-        let cmStart: CMTime = CMTime(seconds: trimmedStartSeconds, preferredTimescale: untrimmedDuration.timescale)
-        let cmDuration: CMTime = CMTime(seconds: trimmedDurationSeconds, preferredTimescale: untrimmedDuration.timescale)
-        let cmRange: CMTimeRange = CMTimeRange(start: cmStart, duration: cmDuration)
-        exportSession.timeRange = cmRange
+        deinit {
+            guard !isConsumed.get() else {
+                return
+            }
+
+            promise.done(on: DispatchQueue.global()) { filePath in
+                do {
+                    try FileManager.default.removeItem(at: URL(fileURLWithPath: filePath))
+                } catch {
+                    owsFailDebug("Error: \(error)")
+                }
+            }.retainUntilComplete()
+        }
+
+        // consumableFilePromise
+
+        // Returns a promise that yields a file path
+        // for the output video file path.  The caller
+        // has responsibility for cleaning up this file.
+        public func consumingFilePromise() -> Promise<String> {
+            if isConsumed.get() {
+                owsFailDebug("File is already consumed.")
+            }
+            isConsumed.set(true)
+            return promise
+        }
+
+        // Returns a promise that yields a file path
+        // for the output video file path.  The caller
+        // does not have responsibility for cleaning up this file.
+        public func nonconsumingFilePromise() -> Promise<String> {
+            if isConsumed.get() {
+                owsFailDebug("File is already consumed.")
+            }
+            return promise
+        }
+
+        fileprivate func set(exportSession: AVAssetExportSession) {
+            assertOnQueue(VideoEditorModel.serialQueue)
+
+            self.exportSession = exportSession
+        }
+
+        // This method should only be accessed on VideoEditorModel.serialQueue.
+        fileprivate func cancel() {
+            assertOnQueue(VideoEditorModel.serialQueue)
+
+            guard let exportSession = self.exportSession else {
+                return
+            }
+            exportSession.cancelExport()
+        }
+    }
+
+    fileprivate static let serialQueue: DispatchQueue = DispatchQueue(label: "VideoEditorModel.serialQueue")
+    // This property should only be accessed on serialQueue.
+    fileprivate var currentRender: Render?
+    // This operation queue ensures that only one render operation is
+    // running at a given time.
+    private static let renderOperationQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        operationQueue.name = "VideoEditorModel.renderOperationQueue"
+        operationQueue.maxConcurrentOperationCount = 1
+        return operationQueue
+    }()
+
+    // Whenever the model state changes, we need to discard any ongoing render.
+    private func clearRender() {
+        VideoEditorModel.serialQueue.sync {
+            guard let render = self.currentRender else {
+                return
+            }
+            render.cancel()
+            self.currentRender = nil
+        }
+    }
+
+    // This method can be used to access the rendered output.
+    // It can also be used to eagerly initiate a render (if
+    // necessary) to reduce perceived render time.
+    public func ensureCurrentRender() -> Render {
+        return VideoEditorModel.serialQueue.sync {
+            if let currentRender = self.currentRender {
+                return currentRender
+            }
+            let render = Render(model: self)
+            self.currentRender = render
+
+            // Enqueue an operation to process the render.
+            let operationQueue = VideoEditorModel.renderOperationQueue
+            let operation = TrimVideoOperation(model: self, render: render)
+            operationQueue.addOperation(operation)
+
+            return render
+        }
+    }
+}
+
+// MARK: -
+
+private class TrimVideoOperation: OWSOperation {
+
+    private let model: VideoEditorModel
+    private let render: VideoEditorModel.Render
+
+    fileprivate required init(model: VideoEditorModel,
+                              render: VideoEditorModel.Render) {
+        self.model = model
+        self.render = render
+    }
+
+    public override func run() {
+        Logger.debug("")
 
         let (promise, resolver) = Promise<String>.pending()
-        exportSession.exportAsynchronously {
-            switch exportSession.status {
-            case .completed:
-                resolver.fulfill(dstFilePath)
-            default:
-                resolver.reject(OWSAssertionError("Status: \(exportSession.status)"))
+        DispatchQueue.global().async {
+            let currentRender = VideoEditorModel.serialQueue.sync {
+                return self.model.currentRender
+            }
+            guard self.render === currentRender else {
+                // Renders can take quite a while, so it's important to skip
+                // renders that are no longer necessary.
+                resolver.reject(OWSAssertionError("Skipping stale render."))
+                return
+            }
+            let render = self.render
+            guard render.isTrimmed else {
+                // Video editor has no changes.
+                resolver.fulfill(render.srcVideoPath)
+                return
+            }
+
+            let asset = AVURLAsset(url: URL(fileURLWithPath: render.srcVideoPath))
+            let dstFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: "mp4")
+
+            // AVAssetExportPresetPassthrough maintains the source quality.
+            guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) else {
+                resolver.reject(OWSAssertionError("Could not create export session."))
+                return
+            }
+            VideoEditorModel.serialQueue.sync {
+                render.set(exportSession: exportSession)
+            }
+
+            exportSession.outputURL = URL(fileURLWithPath: dstFilePath)
+            // This will ensure that the MP4 moov atom (movie atom)
+            // is located at the beginning of the file. That may help
+            // recipients validate incoming videos.
+            exportSession.shouldOptimizeForNetworkUse = true
+            exportSession.outputFileType = AVFileType.mp4
+            // Preserve the original timescale.
+            let cmStart: CMTime = CMTime(seconds: render.trimmedStartSeconds, preferredTimescale: render.untrimmedDuration.timescale)
+            let cmDuration: CMTime = CMTime(seconds: render.trimmedDurationSeconds, preferredTimescale: render.untrimmedDuration.timescale)
+            let cmRange: CMTimeRange = CMTimeRange(start: cmStart, duration: cmDuration)
+            exportSession.timeRange = cmRange
+
+            exportSession.exportAsynchronously {
+                switch exportSession.status {
+                case .completed:
+                    resolver.fulfill(dstFilePath)
+                default:
+                    resolver.reject(OWSAssertionError("Status: \(exportSession.status)"))
+                }
             }
         }
-        return promise
+        promise.done { filePath in
+            Logger.debug("done")
+            self.render.resolver.fulfill(filePath)
+            self.reportSuccess()
+        }.catch { error in
+            owsFailDebug("Error: \(error)")
+            self.render.resolver.reject(error)
+            VideoEditorModel.serialQueue.sync {
+                // Discard failed render.
+                if self.model.currentRender === self.render {
+                   self.model.currentRender = nil
+                }
+            }
+            self.reportError(withUndefinedRetry: error)
+        }.retainUntilComplete()
     }
 }

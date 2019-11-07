@@ -309,24 +309,25 @@ public class VideoEditorView: UIView {
             }
 
             ModalActivityIndicatorViewController.present(fromViewController: viewController, canCancel: false) { modalVC in
-                self.saveVideoPromise()
-                    .done { _ in
-                        modalVC.dismiss {
-                            // Do nothing.
-                        }
-                    }.catch { error in
-                        owsFailDebug("Error: \(error)")
+                DispatchQueue.global().async(.promise) {
+                    return self.saveVideoPromise()
+                }.done { _ in
+                    modalVC.dismiss {
+                        // Do nothing.
+                    }
+                }.catch { error in
+                    owsFailDebug("Error: \(error)")
 
-                        modalVC.dismiss {
-                            OWSActionSheets.showErrorAlert(message: NSLocalizedString("ERROR_COULD_NOT_SAVE_VIDEO", comment: "Error indicating that 'save video' failed."))
-                        }
-                    }.retainUntilComplete()
+                    modalVC.dismiss {
+                        OWSActionSheets.showErrorAlert(message: NSLocalizedString("ERROR_COULD_NOT_SAVE_VIDEO", comment: "Error indicating that 'save video' failed."))
+                    }
+                }.retainUntilComplete()
             }
         }
     }
 
     private func saveVideoPromise() -> Promise<Void> {
-        return videoForSavePromise().then(on: .global()) { (videoFilePath: String) -> Promise<Void> in
+        return model.ensureCurrentRender().nonconsumingFilePromise().then(on: .global()) { (videoFilePath: String) -> Promise<Void> in
             let videoUrl = URL(fileURLWithPath: videoFilePath)
 
             let (promise, resolver) = Promise<Void>.pending()
@@ -345,14 +346,6 @@ public class VideoEditorView: UIView {
             }
             return promise
         }
-    }
-
-    private func videoForSavePromise() -> Promise<String> {
-        guard model.isTrimmed else {
-            // Video editor has no changes.
-            return Promise.value(model.srcVideoPath)
-        }
-        return model.exportOutput()
     }
 }
 
@@ -411,6 +404,11 @@ extension VideoEditorView: TrimVideoTimelineViewDelegate {
 
     func gestureDidComplete() {
         ensureSeekReflectsTrimming()
+
+        let model = self.model
+        DispatchQueue.global().async {
+            _ = model.ensureCurrentRender()
+        }
     }
 
     func pauseIfPlaying() {
