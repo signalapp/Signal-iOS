@@ -260,7 +260,8 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         }
 
         if let existingAccount = self.contactsManager.fetchSignalAccount(for: contactDetails.address, transaction: transaction) {
-            if existingAccount.contact.isFromContactSync {
+            if let contact = existingAccount.contact,
+                contact.isFromContactSync {
                 existingAccount.contact = try self.buildContact(contactDetails, transaction: transaction)
                 existingAccount.anyOverwritingUpdate(transaction: transaction)
             }

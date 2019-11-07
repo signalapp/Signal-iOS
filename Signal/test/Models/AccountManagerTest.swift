@@ -96,6 +96,13 @@ class AccountManagerTest: SignalBaseTest {
     func testRegisterWhenVerificationFails() {
         let accountManager = AccountManager()
 
+        do {
+            try KeyBackupService.storeKeysForTests()
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return
+        }
+
         let expectation = self.expectation(description: "should fail")
 
         firstly {
@@ -121,6 +128,13 @@ class AccountManagerTest: SignalBaseTest {
         AppEnvironment.shared.pushRegistrationManager = VerifyingPushRegistrationManager()
 
         let accountManager = AccountManager()
+
+        do {
+            try KeyBackupService.storeKeysForTests()
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return
+        }
 
         let expectation = self.expectation(description: "should succeed")
 

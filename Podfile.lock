@@ -296,13 +296,13 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: 905c5d0e0cd22dc290e6992b3d4790d07e347c41
+    :commit: 97bc4ea1014c0cfac539e87444e3d0bb98a264ba
     :git: https://github.com/signalapp/SignalProtocolKit.git
   blurhash:
     :commit: e2b1540fc24867c83971045542483b91a46eb115
     :git: https://github.com/signalapp/blurhash
   Curve25519Kit:
-    :commit: 877c48f4bc46feccb952f198de743c8525aa8e94
+    :commit: 4fc1c10e98fff2534b5379a9bb587430fdb8e577
     :git: https://github.com/signalapp/Curve25519Kit
   GRKOpenSSLFramework:
     :commit: 4d9944de35ed56a95879c5a8a1b410ae03f71d57
@@ -317,7 +317,7 @@ CHECKOUT OPTIONS:
     :commit: 2794df474414736d9deca3ff1011b7841850c4a0
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
-    :commit: b572f728d015d40cdb1e50ed790fb36c972dec0c
+    :commit: 33dc101ee66b25ba6f4310dce04d48276a934781
     :git: "git@github.com:signalapp/SignalMetadataKit"
   Starscream:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735

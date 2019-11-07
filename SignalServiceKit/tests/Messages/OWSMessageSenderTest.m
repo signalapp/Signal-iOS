@@ -475,18 +475,19 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSMessageSender *messageSender = self.successfulMessageSender;
 
-
-    NSData *groupIdData = [Cryptography generateRandomBytes:32];
     SignalRecipient *successfulRecipient =
         [[SignalRecipient alloc] initWithTextSecureIdentifier:@"successful-recipient-id" relay:nil];
     SignalRecipient *successfulRecipient2 =
         [[SignalRecipient alloc] initWithTextSecureIdentifier:@"successful-recipient-id2" relay:nil];
 
-    TSGroupModel *groupModel =
-        [[TSGroupModel alloc] initWithTitle:@"group title"
-                                    members:[@[ successfulRecipient.address, successfulRecipient2.address ] mutableCopy]
-                            groupAvatarData:nil
-                                    groupId:groupIdData];
+    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithGroupId:groupId
+                                                                name:@"group title"
+                                                          avatarData:nil
+                                                             members:@[
+                                                                       successfulRecipient.address,
+                                                                       successfulRecipient2.address,
+                                                                       ]
+                                                       groupsVersion:GroupManager.defaultGroupsVersion];
     TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel];
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:1
                                                                      inThread:groupThread

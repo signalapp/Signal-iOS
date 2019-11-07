@@ -97,7 +97,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
                 .init(uuidString: "1d4ab045-88fb-4c4e-9f6a-f921124bd529", phoneNumber: "+13213214323")
             ]
 
-            let model = TSGroupModel(groupId: groupId, groupMembers: groupMembers, groupName: nil)
+            let model = TSGroupModel(groupId: groupId, name: nil, avatarData: nil, members: groupMembers, groupsVersion: GroupManager.defaultGroupsVersion)
 
             let thread = TSGroupThread(groupModel: model)
             write {
@@ -114,7 +114,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
                 .init(uuidString: "55555555-88fb-4c4e-9f6a-f921124bd529", phoneNumber: "+15553214323")
             ]
 
-            let model = TSGroupModel(groupId: groupId, groupMembers: groupMembers, groupName: "Book Club")
+            let model = TSGroupModel(groupId: groupId, name: "Book Club", avatarData: nil, members: groupMembers, groupsVersion: GroupManager.defaultGroupsVersion)
 
             let thread = TSGroupThread(groupModel: model)
             write {
@@ -133,7 +133,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
                 .init(uuidString: "55555555-88fb-4c4e-9f6a-222222222222", phoneNumber: "+15553212222")
             ]
 
-            let model = TSGroupModel(groupId: groupId, groupMembers: groupMembers, groupName: "Cook Blub")
+            let model = TSGroupModel(groupId: groupId, name: "Cook Blub", avatarData: nil, members: groupMembers, groupsVersion: GroupManager.defaultGroupsVersion)
 
             let thread = TSGroupThread(groupModel: model)
             write {
