@@ -58,7 +58,9 @@
     PreKeyRecord *lastPreKeyRecord = [generatedKeys lastObject];
     PreKeyRecord *firstPreKeyRecord = [generatedKeys firstObject];
 
-    [self.preKeyStore removePreKey:lastPreKeyRecord.Id protocolContext:nil];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.preKeyStore removePreKey:lastPreKeyRecord.Id protocolContext:transaction];
+    }];
 
     XCTAssertNil([self.preKeyStore loadPreKey:lastPreKeyRecord.Id]);
     XCTAssertNotNil([self.preKeyStore loadPreKey:firstPreKeyRecord.Id]);

@@ -184,6 +184,31 @@ public class KeyBackupService: NSObject {
         }
     }
 
+    #if DEBUG
+    public static func storeKeysForTests() throws {
+        let pin: String = "blah blah"
+
+        guard let stretchedPin = self.deriveStretchedPin(from: pin) else {
+            owsFailDebug("failed to derive stretched pin")
+            throw KBSError.assertion
+        }
+
+        guard let pinKey1 = derivePinKey1(from: stretchedPin) else {
+            owsFailDebug("failed to derive stretched pin")
+            throw KBSError.assertion
+        }
+
+        let pinKey2 = pinKey1
+
+        guard let masterKey = deriveMasterKey(from: pinKey1, and: pinKey2) else {
+            throw KBSError.assertion
+        }
+
+        storePinKey2(pinKey2)
+        storeMasterKey(masterKey)
+    }
+    #endif
+
     @objc(generateAndBackupKeysWithPin:)
     static func objc_generateAndBackupKeys(with pin: String) -> AnyPromise {
         return AnyPromise(generateAndBackupKeys(with: pin))
@@ -306,7 +331,9 @@ public class KeyBackupService: NSObject {
     }
 
     private static func deriveStretchedPin(from pin: String) -> Data? {
-        assertIsOnBackgroundQueue()
+        if !CurrentAppContext().isRunningTests {
+            assertIsOnBackgroundQueue()
+        }
 
         guard let pinData = pin.ensureArabicNumerals.data(using: .utf8) else {
             owsFailDebug("Failed to encode pin data")
@@ -322,7 +349,9 @@ public class KeyBackupService: NSObject {
     }
 
     private static func derivePinKey1(from stretchedPin: Data) -> Data? {
-        assertIsOnBackgroundQueue()
+        if !CurrentAppContext().isRunningTests {
+            assertIsOnBackgroundQueue()
+        }
 
         guard let data = "Master Key Encryption".data(using: .utf8) else {
             owsFailDebug("Failed to encode data")
@@ -338,7 +367,9 @@ public class KeyBackupService: NSObject {
     }
 
     private static func deriveMasterKey(from pinKey1: Data, and pinKey2: Data) -> Data? {
-        assertIsOnBackgroundQueue()
+        if !CurrentAppContext().isRunningTests {
+            assertIsOnBackgroundQueue()
+        }
 
         return Cryptography.computeSHA256HMAC(pinKey2, withHMACKey: pinKey1)
     }
