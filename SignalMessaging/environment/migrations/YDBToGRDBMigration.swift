@@ -173,6 +173,13 @@ extension YDBToGRDBMigration {
             owsFail("Missing primaryStorage.")
         }
         let ydbReadConnection = primaryStorage.newDatabaseConnection()
+        if let owsDatabaseConnection = ydbReadConnection as? OWSDatabaseConnection {
+            // Bless this connection to make YDB writes despite migration
+            // being complete.
+            owsDatabaseConnection.isCleanupConnection = true
+        } else {
+            owsFailDebug("Unexpected connection type.")
+        }
         ydbReadConnection.readWrite { ydbTransaction in
             // Note: we deliberately _DO NOT_ deserialize the
             // models as we delete them from YDB. That would

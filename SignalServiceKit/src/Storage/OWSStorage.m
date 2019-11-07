@@ -175,8 +175,9 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 // Specifically, it causes YDB's "view version" checks to fail.
 - (void)readWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
 {
-    OWSAssertCanWriteYDB();
-    OWSAssertDebug(self.databaseStorage.canWriteToYdb);
+    if (!self.isCleanupConnection) {
+        OWSAssertCanWriteYDB();
+    }
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
     OWSAssertDebug(delegate);
     OWSAssertDebug(delegate.areAllRegistrationsComplete);
