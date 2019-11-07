@@ -114,7 +114,10 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
-    public static let preserveYdb = false
+    public static var preserveYdb: Bool {
+        // GRDB TODO: Set to false
+        return !build.includes(.qa)
+    }
 
     @objc
     public static let uuidCapabilities = !IsUsingProductionService()
