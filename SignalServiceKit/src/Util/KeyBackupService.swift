@@ -184,7 +184,7 @@ public class KeyBackupService: NSObject {
         }
     }
 
-    #if DEBUG
+    #if TESTABLE_BUILD
     public static func storeKeysForTests() throws {
         let pin: String = "blah blah"
 
