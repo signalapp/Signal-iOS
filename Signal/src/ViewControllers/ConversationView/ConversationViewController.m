@@ -5357,6 +5357,15 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
+    // Don't update the content insets if an interactive pop is in progress
+    switch (self.navigationController.interactivePopGestureRecognizer.state) {
+        case UIGestureRecognizerStatePossible:
+        case UIGestureRecognizerStateFailed:
+            break;
+        default:
+            return;
+    }
+
     [self.view layoutIfNeeded];
 
     UIEdgeInsets oldInsets = self.collectionView.contentInset;
