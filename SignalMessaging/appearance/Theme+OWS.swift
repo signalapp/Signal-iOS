@@ -121,8 +121,7 @@ public extension Theme {
         case .messageActionCopy:
             return isDarkThemeEnabled ? "copy-solid-24" :  "ic_copy"
         case .messageActionDelete:
-            // TODO: We're missing dark theme version of this icon.
-            return "ic_trash"
+            return isDarkThemeEnabled ? "trash-solid-24" :  "trash-outline-24"
         case .messageActionSave:
             // TODO: We're missing dark theme version of this icon.
             return "download-filled-24"
