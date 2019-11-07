@@ -208,10 +208,10 @@ public class FeatureFlags: NSObject {
     public static let usernames = !IsUsingProductionService() && build.includes(.dev)
 
     @objc
-    public static let messageRequest = build.includes(.qa) && socialGraphOnServer
+    public static let messageRequest = build.includes(.dev) && socialGraphOnServer
 
     @objc
-    public static let profileDisplayChanges = build.includes(.qa)
+    public static let profileDisplayChanges = build.includes(.dev)
 
     // This can be used to shut down various background operations.
     @objc
