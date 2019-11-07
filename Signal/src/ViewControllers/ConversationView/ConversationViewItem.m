@@ -1009,7 +1009,8 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     }
 
     OWSFailDebug(@"Invalid media for view-once message.");
-    self.messageCellType = OWSMessageCellType_Unknown;
+    self.messageCellType = OWSMessageCellType_ViewOnce;
+    self.viewOnceMessageState = ViewOnceMessageState_IncomingInvalidContent;
 }
 
 - (NSArray<ConversationMediaAlbumItem *> *)albumItemsForMediaAttachments:(NSArray<TSAttachment *> *)attachments
