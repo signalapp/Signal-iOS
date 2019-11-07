@@ -281,11 +281,12 @@ NS_ASSUME_NONNULL_BEGIN
         return recipient.address;
     }];
 
-    NSString *groupName = [self.groupNameTextField.text ows_stripped];
-    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
-                                                           members:newMembersList
-                                                   groupAvatarData:self.groupAvatarData
-                                                           groupId:self.thread.groupModel.groupId];
+    // GroupsV2 TODO: Use GroupManager.
+    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithGroupId:self.thread.groupModel.groupId
+                                                                name:self.groupNameTextField.text
+                                                          avatarData:self.groupAvatarData
+                                                             members:newMembersList
+                                                       groupsVersion:self.thread.groupModel.groupsVersion];
     [self.conversationSettingsViewDelegate groupWasUpdated:groupModel];
 }
 

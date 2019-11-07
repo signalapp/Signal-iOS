@@ -3950,42 +3950,23 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         return;
     }
 
-    NSString *groupName = [NSUUID UUID].UUIDString;
-    NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
-        recipientAddress,
-        TSAccountManager.localAddress,
-    ] mutableCopy];
-    NSData *groupId = [TSGroupModel generateRandomGroupId];
-    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
-                                                           members:recipientAddresses
-                                                  groupAvatarImage:nil
-                                                           groupId:groupId];
-
-    __block TSGroupThread *thread;
-    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
-        OWSAssertDebug(thread);
-
-        TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
-                                                               groupMetaMessage:TSGroupMetaMessageNew
-                                                               expiresInSeconds:0];
-        [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil) transaction:transaction];
-
-        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
-    }];
-
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            [ThreadUtil enqueueMessageWithText:[@(counter) description]
-                                      inThread:thread
-                              quotedReplyModel:nil
-                              linkPreviewDraft:nil
-                                   transaction:transaction];
-        }];
+    void (^completion)(TSGroupThread *) = ^(TSGroupThread *thread) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [self createNewGroups:counter - 1 recipientAddress:recipientAddress];
+            [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                [ThreadUtil enqueueMessageWithText:[@(counter) description]
+                                          inThread:thread
+                                  quotedReplyModel:nil
+                                  linkPreviewDraft:nil
+                                       transaction:transaction];
+            }];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                [self createNewGroups:counter - 1 recipientAddress:recipientAddress];
+            });
         });
-    });
+    };
+
+    NSString *groupName = [NSUUID UUID].UUIDString;
+    [self createRandomGroupWithName:groupName member:recipientAddress success:completion];
 }
 
 + (void)injectFakeIncomingMessages:(NSUInteger)counter thread:(TSThread *)thread
@@ -4438,33 +4419,46 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             // DO NOT log these strings with the debugger attached.
             //        OWSLogInfo(@"%@", string);
 
-            {
-                [self createFakeIncomingMessage:thread
-                                    messageBody:string
-                                fakeAssetLoader:nil
-                         isAttachmentDownloaded:NO
-                                  quotedMessage:nil
-                                    transaction:transaction];
-            }
-            {
-                SignalServiceAddress *recipientAddress =
-                    [[SignalServiceAddress alloc] initWithPhoneNumber:@"+1323555555"];
-                NSString *groupName = string;
-                NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
-                    recipientAddress,
-                    TSAccountManager.localAddress,
-                ] mutableCopy];
-                NSData *groupId = [TSGroupModel generateRandomGroupId];
-                TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
-                                                                       members:recipientAddresses
-                                                              groupAvatarImage:nil
-                                                                       groupId:groupId];
-                TSGroupThread *groupThread =
-                    [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
-                OWSAssertDebug(groupThread);
-            }
+            [self createFakeIncomingMessage:thread
+                                messageBody:string
+                            fakeAssetLoader:nil
+                     isAttachmentDownloaded:NO
+                              quotedMessage:nil
+                                transaction:transaction];
+
+            SignalServiceAddress *member = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+1323555555"];
+            [self createRandomGroupWithName:string
+                                     member:member
+                                    success:^(TSGroupThread *thread) {
+                                        // Do nothing.
+                                    }];
         }
     }];
+}
+
++ (void)createRandomGroupWithName:(NSString *)groupName
+                           member:(SignalServiceAddress *)member
+                          success:(void (^)(TSGroupThread *))success
+{
+    NSArray<SignalServiceAddress *> *members = @[
+        member,
+    ];
+    [GroupManager createGroupObjcWithMembers:members
+        groupId:nil
+        name:groupName
+        avatarData:nil
+        success:^(TSGroupThread *thread) {
+            [GroupManager sendDurableNewGroupMessageObjcForThread:thread
+                success:^{
+                    success(thread);
+                }
+                failure:^(NSError *error) {
+                    OWSFailDebug(@"Error: %@", error);
+                }];
+        }
+        failure:^(NSError *error) {
+            OWSFailDebug(@"Error: %@", error);
+        }];
 }
 
 + (void)testIndicScriptsInThread:(TSThread *)thread
@@ -4480,31 +4474,19 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             // DO NOT log these strings with the debugger attached.
             //        OWSLogInfo(@"%@", string);
 
-            {
-                [self createFakeIncomingMessage:thread
-                                    messageBody:string
-                                fakeAssetLoader:nil
-                         isAttachmentDownloaded:NO
-                                  quotedMessage:nil
-                                    transaction:transaction];
-            }
-            {
-                SignalServiceAddress *recipientAddress =
-                    [[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"];
-                NSString *groupName = string;
-                NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
-                    recipientAddress,
-                    TSAccountManager.localAddress,
-                ] mutableCopy];
-                NSData *groupId = [TSGroupModel generateRandomGroupId];
-                TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
-                                                                       members:recipientAddresses
-                                                              groupAvatarImage:nil
-                                                                       groupId:groupId];
-                TSGroupThread *groupThread =
-                    [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
-                OWSAssertDebug(groupThread);
-            }
+            [self createFakeIncomingMessage:thread
+                                messageBody:string
+                            fakeAssetLoader:nil
+                     isAttachmentDownloaded:NO
+                              quotedMessage:nil
+                                transaction:transaction];
+
+            SignalServiceAddress *member = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+1323555555"];
+            [self createRandomGroupWithName:string
+                                     member:member
+                                    success:^(TSGroupThread *thread) {
+                                        // Do nothing.
+                                    }];
         }
     }];
 }
@@ -4521,31 +4503,20 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             for (NSString *string in strings) {
                 OWSLogInfo(@"sending zalgo");
 
-                {
-                    [self createFakeIncomingMessage:thread
-                                        messageBody:string
-                                    fakeAssetLoader:nil
-                             isAttachmentDownloaded:NO
-                                      quotedMessage:nil
-                                        transaction:transaction];
-                }
-                {
-                    SignalServiceAddress *recipientAddress =
-                        [[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"];
-                    NSString *groupName = string;
-                    NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
-                        recipientAddress,
-                        TSAccountManager.localAddress,
-                    ] mutableCopy];
-                    NSData *groupId = [TSGroupModel generateRandomGroupId];
-                    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
-                                                                           members:recipientAddresses
-                                                                  groupAvatarImage:nil
-                                                                           groupId:groupId];
-                    TSGroupThread *groupThread =
-                        [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
-                    OWSAssertDebug(groupThread);
-                }
+                [self createFakeIncomingMessage:thread
+                                    messageBody:string
+                                fakeAssetLoader:nil
+                         isAttachmentDownloaded:NO
+                                  quotedMessage:nil
+                                    transaction:transaction];
+
+
+                SignalServiceAddress *member = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+1323555555"];
+                [self createRandomGroupWithName:string
+                                         member:member
+                                        success:^(TSGroupThread *thread) {
+                                            // Do nothing.
+                                        }];
             }
         }];
 }

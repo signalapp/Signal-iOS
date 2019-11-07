@@ -833,15 +833,18 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     switch (dataMessage.group.unwrappedType) {
+            // GroupsV2 TODO
         case SSKProtoGroupContextTypeUpdate: {
             // Ensures that the thread exists but doesn't update it.
             TSGroupThread *newGroupThread = [TSGroupThread getOrCreateThreadWithGroupId:groupId
                                                                             transaction:transaction];
 
-            TSGroupModel *newGroupModel = [[TSGroupModel alloc] initWithTitle:dataMessage.group.name
-                                                                      members:newMembers.allObjects
-                                                              groupAvatarData:oldGroupThread.groupModel.groupAvatarData
-                                                                      groupId:dataMessage.group.id];
+            TSGroupModel *newGroupModel =
+                [[TSGroupModel alloc] initWithGroupId:dataMessage.group.id
+                                                 name:dataMessage.group.name
+                                           avatarData:oldGroupThread.groupModel.groupAvatarData
+                                              members:newMembers.allObjects
+                                        groupsVersion:oldGroupThread.groupModel.groupsVersion];
             NSString *updateGroupInfo = [newGroupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel
                                                                               contactsManager:self.contactsManager];
             [newGroupThread anyUpdateGroupThreadWithTransaction:transaction

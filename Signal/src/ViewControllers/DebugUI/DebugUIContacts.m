@@ -120,16 +120,18 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
         self.unregisteredRecipient,
         validRecipient,
-        TSAccountManager.localAddress,
     ] mutableCopy];
-    NSData *groupId = [TSGroupModel generateRandomGroupId];
-    TSGroupModel *model = [[TSGroupModel alloc] initWithTitle:groupName
-                                                      members:recipientAddresses
-                                              groupAvatarData:nil
-                                                      groupId:groupId];
-    TSGroupThread *thread = [TSGroupThread getOrCreateThreadWithGroupModel:model];
 
-    [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
+    [GroupManager createGroupObjcWithMembers:recipientAddresses
+        groupId:nil
+        name:groupName
+        avatarData:nil
+        success:^(TSGroupThread *thread) {
+            [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
+        }
+        failure:^(NSError *error) {
+            OWSFailDebug(@"Error: %@", error);
+        }];
 }
 
 @end

@@ -9,7 +9,6 @@
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/PhoneNumber.h>
-#import <SignalServiceKit/TSGroupModel.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSThread.h>
 

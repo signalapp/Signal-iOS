@@ -231,4 +231,7 @@ public class FeatureFlags: NSObject {
         // TODO MULTIRING
         return TSAccountManager.sharedInstance().isRegisteredPrimaryDevice
     }
+
+    @objc
+    public static let tryToCreateGroupsV2 = false
 }

@@ -185,14 +185,18 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
 
     private func process(groupDetails: GroupDetails, transaction: SDSAnyWriteTransaction) {
         var threadDidChange = false
-        let groupModel = TSGroupModel(title: groupDetails.name,
-                                      members: groupDetails.memberAddresses,
-                                      groupAvatarData: groupDetails.avatarData,
-                                      groupId: groupDetails.groupId)
+
+        // GroupsV2 TODO: Use GroupManager
 
         let groupThread: TSGroupThread
         let isNewThread: Bool
+        let groupModel: TSGroupModel
         if let existingThread = TSGroupThread.getWithGroupId(groupDetails.groupId, transaction: transaction) {
+            groupModel = TSGroupModel(groupId: groupDetails.groupId,
+                                      name: groupDetails.name,
+                                      avatarData: groupDetails.avatarData,
+                                      members: groupDetails.memberAddresses,
+                                      groupsVersion: existingThread.groupModel.groupsVersion)
             if !groupModel.isEqual(to: existingThread.groupModel) {
                 threadDidChange = true
                 existingThread.groupModel = groupModel
@@ -201,6 +205,11 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
             groupThread = existingThread
             isNewThread = false
         } else {
+            groupModel = TSGroupModel(groupId: groupDetails.groupId,
+                                      name: groupDetails.name,
+                                      avatarData: groupDetails.avatarData,
+                                      members: groupDetails.memberAddresses,
+                                      groupsVersion: GroupManager.defaultGroupsVersion)
             let newThread = TSGroupThread(groupModel: groupModel)
             newThread.shouldThreadBeVisible = true
 

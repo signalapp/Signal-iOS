@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern const int32_t kGroupIdLength;
 
+typedef NS_CLOSED_ENUM(NSUInteger, GroupsVersion) { GroupsVersionV1 = 0, GroupsVersionV2 };
+
 @interface TSGroupModel : MTLModel
 
 @property (nonatomic) NSArray<SignalServiceAddress *> *groupMembers;
@@ -22,23 +24,22 @@ extern const int32_t kGroupIdLength;
 // This data should always be in PNG format.
 @property (nullable, nonatomic) NSData *groupAvatarData;
 
+@property (nonatomic) GroupsVersion groupsVersion;
+
 - (void)setGroupAvatarDataWithImage:(nullable UIImage *)image;
 
 + (nullable NSData *)dataForGroupAvatar:(nullable UIImage *)image;
 
-- (instancetype)initWithTitle:(nullable NSString *)title
-                      members:(NSArray<SignalServiceAddress *> *)members
-             groupAvatarImage:(nullable UIImage *)groupAvatarImage
-                      groupId:(NSData *)groupId;
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
 
-- (instancetype)initWithTitle:(nullable NSString *)title
-                      members:(NSArray<SignalServiceAddress *> *)members
-              groupAvatarData:(nullable NSData *)groupAvatarData
-                      groupId:(NSData *)groupId;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithGroupId:(NSData *)groupId
-                   groupMembers:(NSArray<SignalServiceAddress *> *)groupMembers
-                      groupName:(nullable NSString *)groupName;
+                           name:(nullable NSString *)name
+                     avatarData:(nullable NSData *)avatarData
+                        members:(NSArray<SignalServiceAddress *> *)members
+                  groupsVersion:(GroupsVersion)groupsVersion NS_DESIGNATED_INITIALIZER;
 
 - (BOOL)isEqual:(id)other;
 - (BOOL)isEqualToGroupModel:(TSGroupModel *)model;
