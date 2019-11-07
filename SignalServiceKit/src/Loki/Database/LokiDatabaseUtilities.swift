@@ -22,6 +22,21 @@ public final class LokiDatabaseUtilities : NSObject {
     }
     
     // MARK: Device Links
+    @objc(getLinkedDeviceHexEncodedPublicKeysFor:in:)
+    public static func getLinkedDeviceHexEncodedPublicKeys(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction) -> Set<String> {
+        var result = Set<TSContactThread>()
+        let storage = OWSPrimaryStorage.shared()
+        let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
+        return Set(storage.getDeviceLinks(for: masterHexEncodedPublicKey, in: transaction).flatMap { deviceLink in
+            return [ deviceLink.master.hexEncodedPublicKey, deviceLink.slave.hexEncodedPublicKey ]
+        })
+    }
+
+    @objc(getLinkedDeviceThreadsFor:in:)
+    public static func getLinkedDeviceThreads(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction) -> Set<TSContactThread> {
+        return Set(getLinkedDeviceHexEncodedPublicKeys(for: hexEncodedPublicKey, in: transaction).compactMap { TSContactThread.getWithContactId($0, transaction: transaction) })
+    }
+
     @objc(getMasterHexEncodedPublicKeyFor:in:)
     public static func objc_getMasterHexEncodedPublicKey(for slaveHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> String? {
         return OWSPrimaryStorage.shared().getMasterHexEncodedPublicKey(for: slaveHexEncodedPublicKey, in: transaction)

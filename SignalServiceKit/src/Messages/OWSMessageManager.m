@@ -1536,6 +1536,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)canFriendRequestBeAutoAcceptedForThread:(TSContactThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    NSString *senderHexEncodedPublicKey = thread.contactIdentifier;
     if (thread.hasCurrentUserSentFriendRequest) {
         // This can happen if Alice sent Bob a friend request, Bob declined, but then Bob changed his
         // mind and sent a friend request to Alice. In this case we want Alice to auto-accept the request
@@ -1549,26 +1550,13 @@ NS_ASSUME_NONNULL_BEGIN
         // LKThreadFriendRequestStatusRequestSent.
         return YES;
     }
-    NSString *senderHexEncodedPublicKey = thread.contactIdentifier;
     NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-    NSString *userMasterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:userHexEncodedPublicKey in:transaction];
-    NSMutableSet<NSString *> *userLinkedDeviceHexEncodedPublicKeys = [NSMutableSet new];
-    NSSet<LKDeviceLink *> *userDeviceLinks = [LKDatabaseUtilities getDeviceLinksFor:userMasterHexEncodedPublicKey in:transaction];
-    for (LKDeviceLink *deviceLink in userDeviceLinks) {
-        [userLinkedDeviceHexEncodedPublicKeys addObject:deviceLink.master.hexEncodedPublicKey];
-        [userLinkedDeviceHexEncodedPublicKeys addObject:deviceLink.slave.hexEncodedPublicKey];
-    }
+    NSSet<NSString *> *userLinkedDeviceHexEncodedPublicKeys = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction];
     if ([userLinkedDeviceHexEncodedPublicKeys containsObject:senderHexEncodedPublicKey]) {
         // Auto-accept any friend requests from the user's own linked devices
         return YES;
     }
-    NSString *senderMasterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:senderHexEncodedPublicKey in:transaction];
-    NSMutableSet<TSContactThread *> *senderLinkedDeviceThreads = [NSMutableSet new];
-    NSSet<LKDeviceLink *> *senderDeviceLinks = [LKDatabaseUtilities getDeviceLinksFor:senderMasterHexEncodedPublicKey in:transaction];
-    for (LKDeviceLink *deviceLink in senderDeviceLinks) {
-        [senderLinkedDeviceThreads addObject:[TSContactThread getThreadWithContactId:deviceLink.master.hexEncodedPublicKey transaction:transaction]];
-        [senderLinkedDeviceThreads addObject:[TSContactThread getThreadWithContactId:deviceLink.slave.hexEncodedPublicKey transaction:transaction]];
-    }
+    NSSet<TSContactThread *> *senderLinkedDeviceThreads = [LKDatabaseUtilities getLinkedDeviceThreadsFor:senderHexEncodedPublicKey in:transaction];
     if ([senderLinkedDeviceThreads contains:^BOOL(NSObject *object) {
         TSContactThread *thread = (TSContactThread *)object;
         return thread.isContactFriend;
@@ -1611,16 +1599,11 @@ NS_ASSUME_NONNULL_BEGIN
         // there's only ever one message with status LKMessageFriendRequestStatusPending in a thread (where a thread is the combination
         // of all threads belonging to the linked devices of a user).
         NSString *senderID = ((TSIncomingMessage *)message).authorId;
-        NSMutableSet<TSContactThread *> *threads = [NSMutableSet new];
+        __block NSSet<TSContactThread *> *linkedDeviceThreads;
         [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:senderID in:transaction] ?: senderID;
-            NSSet<LKDeviceLink *> *deviceLinks = [LKDatabaseUtilities getDeviceLinksFor:masterHexEncodedPublicKey in:transaction];
-            for (LKDeviceLink *deviceLink in deviceLinks) {
-                [threads addObject:[TSContactThread getThreadWithContactId:deviceLink.master.hexEncodedPublicKey transaction:transaction]];
-                [threads addObject:[TSContactThread getThreadWithContactId:deviceLink.slave.hexEncodedPublicKey transaction:transaction]];
-            }
+            linkedDeviceThreads = [LKDatabaseUtilities getLinkedDeviceThreadsFor:senderID in:transaction];
         }];
-        for (TSContactThread *thread in threads) {
+        for (TSContactThread *thread in linkedDeviceThreads) {
             [thread enumerateInteractionsWithTransaction:transaction usingBlock:^(TSInteraction *interaction, YapDatabaseReadTransaction *transaction) {
                 if (![interaction isKindOfClass:TSIncomingMessage.class]) { return; }
                 TSIncomingMessage *message = (TSIncomingMessage *)interaction;

@@ -543,16 +543,11 @@ NS_ASSUME_NONNULL_BEGIN
         if (message.isFriendRequest) {
             // Only show an incoming friend request if the user isn't yet friends with any of the other user's devices
             NSString *senderID = ((TSIncomingMessage *)message).authorId;
-            NSMutableSet<TSContactThread *> *threads = [NSMutableSet new];
+            __block NSSet<TSContactThread *> *linkedDeviceThreads;
             [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:senderID in:transaction] ?: senderID;
-                NSSet<LKDeviceLink *> *deviceLinks = [LKDatabaseUtilities getDeviceLinksFor:masterHexEncodedPublicKey in:transaction];
-                for (LKDeviceLink *deviceLink in deviceLinks) {
-                    [threads addObject:[TSContactThread getThreadWithContactId:deviceLink.master.hexEncodedPublicKey transaction:transaction]];
-                    [threads addObject:[TSContactThread getThreadWithContactId:deviceLink.slave.hexEncodedPublicKey transaction:transaction]];
-                }
+                linkedDeviceThreads = [LKDatabaseUtilities getLinkedDeviceThreadsFor:senderID in:transaction];
             }];
-            BOOL isFriend = [threads contains:^BOOL(NSObject *object) {
+            BOOL isFriend = [linkedDeviceThreads contains:^BOOL(NSObject *object) {
                 TSContactThread *thread = (TSContactThread *)object;
                 return thread.isContactFriend;
             }];

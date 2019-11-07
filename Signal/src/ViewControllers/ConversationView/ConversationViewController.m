@@ -1647,16 +1647,10 @@ typedef enum : NSUInteger {
     BOOL isEnabled;
     BOOL isAttachmentButtonHidden;
     if ([self.thread isKindOfClass:TSContactThread.class]) {
-        TSContactThread *thread = (TSContactThread *)self.thread;
-        NSMutableSet<TSContactThread *> *linkedDeviceThreads = [NSMutableSet new];
-        NSString *senderID = thread.contactIdentifier;
+        NSString *senderID = ((TSContactThread *)self.thread).contactIdentifier;
+        __block NSSet<TSContactThread *> *linkedDeviceThreads;
         [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:senderID in:transaction] ?: senderID;
-            NSSet<LKDeviceLink *> *deviceLinks = [LKDatabaseUtilities getDeviceLinksFor:masterHexEncodedPublicKey in:transaction];
-            for (LKDeviceLink *deviceLink in deviceLinks) {
-                [linkedDeviceThreads addObject:[TSContactThread getThreadWithContactId:deviceLink.master.hexEncodedPublicKey transaction:transaction]];
-                [linkedDeviceThreads addObject:[TSContactThread getThreadWithContactId:deviceLink.slave.hexEncodedPublicKey transaction:transaction]];
-            }
+            linkedDeviceThreads = [LKDatabaseUtilities getLinkedDeviceThreadsFor:senderID in:transaction];
         }];
         if ([linkedDeviceThreads contains:^BOOL(NSObject *object) {
             return ((TSContactThread *)object).isContactFriend;
@@ -4463,16 +4457,11 @@ typedef enum : NSUInteger {
     // Accept all outstanding friend requests associated with this user and try to establish sessions with the
     // subset of their devices that haven't sent a friend request.
     NSString *senderID = friendRequest.authorId;
-    NSMutableSet<TSContactThread *> *threads = [NSMutableSet new];
+    __block NSSet<TSContactThread *> *linkedDeviceThreads;
     [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:senderID in:transaction] ?: senderID;
-        NSSet<LKDeviceLink *> *deviceLinks = [LKDatabaseUtilities getDeviceLinksFor:masterHexEncodedPublicKey in:transaction];
-        for (LKDeviceLink *deviceLink in deviceLinks) {
-            [threads addObject:[TSContactThread getThreadWithContactId:deviceLink.master.hexEncodedPublicKey transaction:transaction]];
-            [threads addObject:[TSContactThread getThreadWithContactId:deviceLink.slave.hexEncodedPublicKey transaction:transaction]];
-        }
+        linkedDeviceThreads = [LKDatabaseUtilities getLinkedDeviceThreadsFor:senderID in:transaction];
     }];
-    for (TSContactThread *thread in threads) {
+    for (TSContactThread *thread in linkedDeviceThreads) {
         if (thread.hasPendingFriendRequest) {
             [ThreadUtil enqueueFriendRequestAcceptanceMessageInThread:self.thread];
         } else {
