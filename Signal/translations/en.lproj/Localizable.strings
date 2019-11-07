@@ -1680,7 +1680,7 @@
 "ONBOARDING_2FA_TITLE" = "Registration Lock";
 
 /* Explanation of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. If you reregister without a PIN, all content will be wiped.";
 
 /* Label for the 'learn more' link in the 'onboarding account locked' view. */
 "ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Learn more about locked accounts";
@@ -2135,8 +2135,8 @@
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Reject";
 
-/* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "The phone number you are trying to register has already been registered on another server, please unregister from there and try again.";
+/* Instruct user what to do when the phone number is already registrerd */
+"RELAY_REGISTERED_ERROR_RECOVERY" = "The phone number you are trying to register has already been registered on another another device. Please unregister Signal on your previous device using this webpage: https://signal.org/signal/unregister/";
 
 /* Body text for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY" = "Registration Lock is enabled for your phone number. To help you memorize your Registration Lock PIN, Signal will periodically ask you to confirm it.";
