@@ -110,7 +110,9 @@ public class AttachmentPrepViewController: OWSViewController {
             imageEditorUpdateNavigationBar()
         } else if let videoEditorModel = attachmentApprovalItem.videoEditorModel {
 
-            let videoEditorView = VideoEditorView(model: videoEditorModel, delegate: self)
+            let videoEditorView = VideoEditorView(model: videoEditorModel,
+                                                  attachmentApprovalItem: attachmentApprovalItem,
+                                                  delegate: self)
             videoEditorView.configureSubviews()
             self.videoEditorView = videoEditorView
 
@@ -162,6 +164,10 @@ public class AttachmentPrepViewController: OWSViewController {
             return videoEditorView.navigationBarItems()
         }
         return []
+    }
+
+    public var hasCustomSaveButton: Bool {
+        return videoEditorView != nil
     }
 
     // MARK: - Helpers

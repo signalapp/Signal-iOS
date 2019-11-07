@@ -21,6 +21,7 @@ public class VideoEditorView: UIView {
     weak var delegate: VideoEditorViewDelegate?
 
     private let model: VideoEditorModel
+    private let attachmentApprovalItem: AttachmentApprovalItem
 
     private let playerView: VideoPlayerView
     private let playButton = UIButton()
@@ -61,9 +62,11 @@ public class VideoEditorView: UIView {
 
     private let timelineHeight: CGFloat = 40
 
-    @objc
-    public required init(model: VideoEditorModel, delegate: VideoEditorViewDelegate) {
+    public required init(model: VideoEditorModel,
+                         attachmentApprovalItem: AttachmentApprovalItem,
+                         delegate: VideoEditorViewDelegate) {
         self.model = model
+        self.attachmentApprovalItem = attachmentApprovalItem
         self.delegate = delegate
         playerView = VideoPlayerView()
         playerView.videoPlayer = OWSVideoPlayer(url: URL(fileURLWithPath: model.srcVideoPath))
@@ -275,7 +278,9 @@ public class VideoEditorView: UIView {
         guard !shouldHideControls else {
             return []
         }
-
+        guard attachmentApprovalItem.canSave else {
+            return []
+        }
         let saveButton = navigationBarButton(imageName: Theme.iconName(.messageActionSave),
                                              selector: #selector(didTapSave(sender:)))
         return [saveButton]

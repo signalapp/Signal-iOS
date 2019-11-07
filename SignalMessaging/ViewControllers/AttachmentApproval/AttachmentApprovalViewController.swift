@@ -330,7 +330,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             viewControllers.count == 1,
             let firstViewController = viewControllers.first as? AttachmentPrepViewController {
             navigationBarItems.append(contentsOf: firstViewController.navigationBarItems())
-            if firstViewController.attachmentApprovalItem.canSave {
+            if firstViewController.attachmentApprovalItem.canSave &&
+                !firstViewController.hasCustomSaveButton {
                 navigationBarItems.append(saveButton)
             }
 
