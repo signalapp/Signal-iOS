@@ -300,7 +300,7 @@ public class ManageStickersViewController: OWSTableViewController {
 
     private func buildTableCell(availableStickerPack dataSource: StickerPackDataSource) -> UITableViewCell {
         if let stickerPack = dataSource.getStickerPack() {
-            let actionIconName = "download-filled-24"
+            let actionIconName = Theme.iconName(.messageActionSave)
             return buildTableCell(dataSource: dataSource,
                                   actionIconName: actionIconName) { [weak self] in
                                     self?.install(stickerPack: stickerPack)
