@@ -90,11 +90,11 @@ public class GroupManager: NSObject {
 
         return DispatchQueue.global().async(.promise) {
             return TSGroupModel.data(forGroupAvatar: avatarImage)
-            }.then(on: .global()) { avatarData in
-                return createGroup(members: members,
-                                   groupId: groupId,
-                                   name: name,
-                                   avatarData: avatarData)
+        }.then(on: .global()) { avatarData in
+            return createGroup(members: members,
+                               groupId: groupId,
+                               name: name,
+                               avatarData: avatarData)
         }
     }
 
