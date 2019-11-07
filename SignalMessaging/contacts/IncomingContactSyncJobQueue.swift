@@ -269,7 +269,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             let newAccount = SignalAccount(contact: contact,
                                            contactAvatarHash: contactAvatarHash,
                                            contactAvatarJpegData: contactAvatarJpegData,
-                                           multipleAccountLabelText: CommonStrings.mainPhoneNumberLabel,
+                                           multipleAccountLabelText: "",
                                            recipientPhoneNumber: contactDetails.address.phoneNumber,
                                            recipientUUID: contactDetails.address.uuidString)
             newAccount.anyInsert(transaction: transaction)
