@@ -73,6 +73,8 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
         return self
     }
 
+    public var newThreads: [(threadId: String, sortOrder: UInt32)] = []
+
     // MARK: -
 
     init(jobRecord: OWSIncomingGroupSyncJobRecord) {
@@ -99,6 +101,7 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
         firstly { () -> Promise<TSAttachmentStream> in
             try self.getAttachmentStream()
         }.done(on: .global()) { attachmentStream in
+            self.newThreads = []
             try Bench(title: "processing incoming group sync file") {
                 try self.process(attachmentStream: attachmentStream)
             }
@@ -119,7 +122,7 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
         self.databaseStorage.write { transaction in
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
         }
-        NotificationCenter.default.post(name: .IncomingGroupSyncDidComplete, object: nil)
+        NotificationCenter.default.post(name: .IncomingGroupSyncDidComplete, object: self)
     }
 
     public override func didReportError(_ error: Error) {
@@ -226,10 +229,12 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
         if isNewThread {
             groupThread.anyInsert(transaction: transaction)
 
-            let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                        in: groupThread,
-                                        messageType: .syncedThread)
-            message.anyInsert(transaction: transaction)
+            let inboxSortOrder = groupDetails.inboxSortOrder ?? UInt32.max
+            newThreads.append((threadId: groupThread.uniqueId, sortOrder: inboxSortOrder))
+
+            if let isArchived = groupDetails.isArchived, isArchived == true {
+                groupThread.archiveThread(with: transaction)
+            }
         } else if threadDidChange {
             groupThread.anyOverwritingUpdate(transaction: transaction)
         }

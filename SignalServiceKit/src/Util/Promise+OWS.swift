@@ -23,6 +23,47 @@ public extension Promise {
     }
 }
 
+public extension Promise where T == Void {
+    func timeout(seconds: TimeInterval) -> Promise<Void> {
+        let timeout: Promise<Void> = after(seconds: seconds).map {
+            Logger.info("Timed out, returning substitute value.")
+            return ()
+        }
+
+        return race(self, timeout)
+    }
+}
+
+public extension Guarantee {
+    func nilTimeout(seconds: TimeInterval) -> Guarantee<T?> {
+        let timeout: Guarantee<T?> = after(seconds: seconds).map {
+            return nil
+        }
+
+        return race(self.map { $0 }, timeout)
+    }
+
+    func timeout(seconds: TimeInterval, substituteValue: T) -> Guarantee<T> {
+        let timeout: Guarantee<T> = after(seconds: seconds).map {
+            Logger.info("Timed out, returning substitute value.")
+            return substituteValue
+        }
+
+        return race(self, timeout)
+    }
+}
+
+public extension Guarantee where T == Void {
+    func timeout(seconds: TimeInterval) -> Guarantee<Void> {
+        let timeout: Guarantee<Void> = after(seconds: seconds).map {
+            Logger.info("Timed out, returning substitute value.")
+            return ()
+        }
+
+        return race(self, timeout)
+    }
+}
+
 @objc
 public extension AnyPromise {
     /**

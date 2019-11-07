@@ -16,8 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)sendConfigurationSyncMessage;
 
-- (AnyPromise *)sendAllSyncRequestMessages __attribute__((warn_unused_result));
-- (AnyPromise *)sendAllSyncRequestMessagesWithTimeout:(NSTimeInterval)timeout __attribute__((warn_unused_result)) NS_SWIFT_NAME(sendAllSyncRequestMessages(timeout:));
+- (AnyPromise *)objc_sendAllSyncRequestMessages __attribute__((warn_unused_result));
+- (AnyPromise *)objc_sendAllSyncRequestMessagesWithTimeout:(NSTimeInterval)timeout __attribute__((warn_unused_result))
+                                                           NS_SWIFT_NAME(objc_sendAllSyncRequestMessages(timeout:));
 
 - (AnyPromise *)syncLocalContact __attribute__((warn_unused_result));
 

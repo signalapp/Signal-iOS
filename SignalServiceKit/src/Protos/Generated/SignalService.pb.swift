@@ -2573,6 +2573,24 @@ struct SignalServiceProtos_ContactDetails {
   /// Clears the value of `expireTimer`. Subsequent reads from it will return its default value.
   mutating func clearExpireTimer() {_uniqueStorage()._expireTimer = nil}
 
+  var inboxPosition: UInt32 {
+    get {return _storage._inboxPosition ?? 0}
+    set {_uniqueStorage()._inboxPosition = newValue}
+  }
+  /// Returns true if `inboxPosition` has been explicitly set.
+  var hasInboxPosition: Bool {return _storage._inboxPosition != nil}
+  /// Clears the value of `inboxPosition`. Subsequent reads from it will return its default value.
+  mutating func clearInboxPosition() {_uniqueStorage()._inboxPosition = nil}
+
+  var archived: Bool {
+    get {return _storage._archived ?? false}
+    set {_uniqueStorage()._archived = newValue}
+  }
+  /// Returns true if `archived` has been explicitly set.
+  var hasArchived: Bool {return _storage._archived != nil}
+  /// Clears the value of `archived`. Subsequent reads from it will return its default value.
+  mutating func clearArchived() {_uniqueStorage()._archived = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   struct Avatar {
@@ -2692,6 +2710,24 @@ struct SignalServiceProtos_GroupDetails {
     get {return _storage._members}
     set {_uniqueStorage()._members = newValue}
   }
+
+  var inboxPosition: UInt32 {
+    get {return _storage._inboxPosition ?? 0}
+    set {_uniqueStorage()._inboxPosition = newValue}
+  }
+  /// Returns true if `inboxPosition` has been explicitly set.
+  var hasInboxPosition: Bool {return _storage._inboxPosition != nil}
+  /// Clears the value of `inboxPosition`. Subsequent reads from it will return its default value.
+  mutating func clearInboxPosition() {_uniqueStorage()._inboxPosition = nil}
+
+  var archived: Bool {
+    get {return _storage._archived ?? false}
+    set {_uniqueStorage()._archived = newValue}
+  }
+  /// Returns true if `archived` has been explicitly set.
+  var hasArchived: Bool {return _storage._archived != nil}
+  /// Clears the value of `archived`. Subsequent reads from it will return its default value.
+  mutating func clearArchived() {_uniqueStorage()._archived = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -5374,7 +5410,9 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
     5: .same(proto: "verified"),
     6: .same(proto: "profileKey"),
     7: .same(proto: "blocked"),
-    8: .same(proto: "expireTimer")
+    8: .same(proto: "expireTimer"),
+    10: .same(proto: "inboxPosition"),
+    11: .same(proto: "archived")
   ]
 
   fileprivate class _StorageClass {
@@ -5387,6 +5425,8 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
     var _profileKey: Data?
     var _blocked: Bool?
     var _expireTimer: UInt32?
+    var _inboxPosition: UInt32?
+    var _archived: Bool?
 
     static let defaultInstance = _StorageClass()
 
@@ -5402,6 +5442,8 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
       _profileKey = source._profileKey
       _blocked = source._blocked
       _expireTimer = source._expireTimer
+      _inboxPosition = source._inboxPosition
+      _archived = source._archived
     }
   }
 
@@ -5426,6 +5468,8 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
         case 7: try decoder.decodeSingularBoolField(value: &_storage._blocked)
         case 8: try decoder.decodeSingularUInt32Field(value: &_storage._expireTimer)
         case 9: try decoder.decodeSingularStringField(value: &_storage._uuid)
+        case 10: try decoder.decodeSingularUInt32Field(value: &_storage._inboxPosition)
+        case 11: try decoder.decodeSingularBoolField(value: &_storage._archived)
         default: break
         }
       }
@@ -5461,6 +5505,12 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
       if let v = _storage._uuid {
         try visitor.visitSingularStringField(value: v, fieldNumber: 9)
       }
+      if let v = _storage._inboxPosition {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 10)
+      }
+      if let v = _storage._archived {
+        try visitor.visitSingularBoolField(value: v, fieldNumber: 11)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -5479,6 +5529,8 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
         if _storage._profileKey != rhs_storage._profileKey {return false}
         if _storage._blocked != rhs_storage._blocked {return false}
         if _storage._expireTimer != rhs_storage._expireTimer {return false}
+        if _storage._inboxPosition != rhs_storage._inboxPosition {return false}
+        if _storage._archived != rhs_storage._archived {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -5534,7 +5586,9 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
     6: .same(proto: "expireTimer"),
     7: .same(proto: "color"),
     8: .same(proto: "blocked"),
-    9: .same(proto: "members")
+    9: .same(proto: "members"),
+    10: .same(proto: "inboxPosition"),
+    11: .same(proto: "archived")
   ]
 
   fileprivate class _StorageClass {
@@ -5547,6 +5601,8 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
     var _color: String?
     var _blocked: Bool?
     var _members: [SignalServiceProtos_GroupDetails.Member] = []
+    var _inboxPosition: UInt32?
+    var _archived: Bool?
 
     static let defaultInstance = _StorageClass()
 
@@ -5562,6 +5618,8 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
       _color = source._color
       _blocked = source._blocked
       _members = source._members
+      _inboxPosition = source._inboxPosition
+      _archived = source._archived
     }
   }
 
@@ -5586,6 +5644,8 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
         case 7: try decoder.decodeSingularStringField(value: &_storage._color)
         case 8: try decoder.decodeSingularBoolField(value: &_storage._blocked)
         case 9: try decoder.decodeRepeatedMessageField(value: &_storage._members)
+        case 10: try decoder.decodeSingularUInt32Field(value: &_storage._inboxPosition)
+        case 11: try decoder.decodeSingularBoolField(value: &_storage._archived)
         default: break
         }
       }
@@ -5621,6 +5681,12 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
       if !_storage._members.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._members, fieldNumber: 9)
       }
+      if let v = _storage._inboxPosition {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 10)
+      }
+      if let v = _storage._archived {
+        try visitor.visitSingularBoolField(value: v, fieldNumber: 11)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -5639,6 +5705,8 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
         if _storage._color != rhs_storage._color {return false}
         if _storage._blocked != rhs_storage._blocked {return false}
         if _storage._members != rhs_storage._members {return false}
+        if _storage._inboxPosition != rhs_storage._inboxPosition {return false}
+        if _storage._archived != rhs_storage._archived {return false}
         return true
       }
       if !storagesAreEqual {return false}

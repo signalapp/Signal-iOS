@@ -12,8 +12,6 @@ protocol InteractionFinderAdapter {
 
     static func fetch(uniqueId: String, transaction: ReadTransaction) throws -> TSInteraction?
 
-    static func mostRecentSortId(transaction: ReadTransaction) -> UInt64
-
     static func existsIncomingMessage(timestamp: UInt64, address: SignalServiceAddress, sourceDeviceId: UInt32, transaction: ReadTransaction) -> Bool
 
     static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction]
@@ -33,7 +31,6 @@ protocol InteractionFinderAdapter {
 
     // MARK: - instance methods
 
-    func mostRecentInteraction(transaction: ReadTransaction) -> TSInteraction?
     func mostRecentInteractionForInbox(transaction: ReadTransaction) -> TSInteraction?
 
     func sortIndex(interactionUniqueId: String, transaction: ReadTransaction) throws -> UInt?
@@ -91,16 +88,6 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             return YAPDBInteractionFinderAdapter.fetch(uniqueId: uniqueId, transaction: yapRead)
         case .grdbRead(let grdbRead):
             return try GRDBInteractionFinderAdapter.fetch(uniqueId: uniqueId, transaction: grdbRead)
-        }
-    }
-
-    @objc
-    public class func mostRecentSortId(transaction: SDSAnyReadTransaction) -> UInt64 {
-        switch transaction.readTransaction {
-        case .yapRead(let yapRead):
-            return YAPDBInteractionFinderAdapter.mostRecentSortId(transaction: yapRead)
-        case .grdbRead(let grdbRead):
-            return GRDBInteractionFinderAdapter.mostRecentSortId(transaction: grdbRead)
         }
     }
 
@@ -190,16 +177,6 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     // MARK: - instance methods
-
-    @objc
-    public func mostRecentInteraction(transaction: SDSAnyReadTransaction) -> TSInteraction? {
-        switch transaction.readTransaction {
-        case .yapRead(let yapRead):
-            return yapAdapter.mostRecentInteraction(transaction: yapRead)
-        case .grdbRead(let grdbRead):
-            return grdbAdapter.mostRecentInteraction(transaction: grdbRead)
-        }
-    }
 
     @objc
     func mostRecentInteractionForInbox(transaction: SDSAnyReadTransaction) -> TSInteraction? {
@@ -360,10 +337,6 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         return transaction.object(forKey: uniqueId, inCollection: TSInteraction.collection()) as? TSInteraction
     }
 
-    static func mostRecentSortId(transaction: YapDatabaseReadTransaction) -> UInt64 {
-        return SSKIncrementingIdFinder.previousId(key: TSInteraction.collection(), transaction: transaction)
-    }
-
     static func existsIncomingMessage(timestamp: UInt64, address: SignalServiceAddress, sourceDeviceId: UInt32, transaction: YapDatabaseReadTransaction) -> Bool {
         return OWSIncomingMessageFinder().existsMessage(withTimestamp: timestamp, address: address, sourceDeviceId: sourceDeviceId, transaction: transaction)
     }
@@ -403,13 +376,6 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
     }
 
     // MARK: - instance methods
-
-    func mostRecentInteraction(transaction: YapDatabaseReadTransaction) -> TSInteraction? {
-        guard let view = interactionExt(transaction) else {
-            return nil
-        }
-        return view.lastObject(inGroup: threadUniqueId) as? TSInteraction
-    }
 
     func mostRecentInteractionForInbox(transaction: YapDatabaseReadTransaction) -> TSInteraction? {
         var last: TSInteraction?
@@ -643,23 +609,6 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         return TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction.asAnyRead)
     }
 
-    static func mostRecentSortId(transaction: GRDBReadTransaction) -> UInt64 {
-        do {
-            let sql = """
-                SELECT seq
-                FROM sqlite_sequence
-                WHERE name = ?
-            """
-            guard let value = try UInt64.fetchOne(transaction.database, sql: sql, arguments: [InteractionRecord.databaseTableName]) else {
-                return 0
-            }
-            return value
-        } catch {
-            owsFailDebug("Read failed: \(error).")
-            return 0
-        }
-    }
-
     static func existsIncomingMessage(timestamp: UInt64, address: SignalServiceAddress, sourceDeviceId: UInt32, transaction: GRDBReadTransaction) -> Bool {
         var exists = false
         if let uuidString = address.uuidString {
@@ -849,18 +798,6 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
     }
 
     // MARK: - instance methods
-
-    func mostRecentInteraction(transaction: GRDBReadTransaction) -> TSInteraction? {
-        let sql = """
-        SELECT *
-        FROM \(InteractionRecord.databaseTableName)
-        WHERE \(interactionColumn: .threadUniqueId) = ?
-        ORDER BY \(interactionColumn: .id) DESC
-        LIMIT 1
-        """
-        let arguments: StatementArguments = [threadUniqueId]
-        return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
-    }
 
     func mostRecentInteractionForInbox(transaction: GRDBReadTransaction) -> TSInteraction? {
         let sql = """

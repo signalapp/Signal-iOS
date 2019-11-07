@@ -13,6 +13,8 @@ public struct ContactDetails {
     public let isBlocked: Bool
     public let expireTimer: UInt32
     public let avatarData: Data?
+    public let isArchived: Bool?
+    public let inboxSortOrder: UInt32?
 }
 
 public class ContactsInputStream {
@@ -56,6 +58,8 @@ public class ContactsInputStream {
                               profileKey: contactDetails.profileKey,
                               isBlocked: contactDetails.blocked,
                               expireTimer: contactDetails.expireTimer,
-                              avatarData: avatarData)
+                              avatarData: avatarData,
+                              isArchived: contactDetails.hasArchived ? contactDetails.archived : nil,
+                              inboxSortOrder: contactDetails.hasInboxPosition ? contactDetails.inboxPosition : nil)
     }
 }

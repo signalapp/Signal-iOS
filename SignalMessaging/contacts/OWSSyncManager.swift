@@ -24,18 +24,17 @@ public extension OWSSyncManager {
     // MARK: - Sync Requests
 
     @objc
-    func objc_sendAllSyncRequestMessages() -> AnyPromise {
-        return AnyPromise(_sendAllSyncRequestMessages())
+    func _objc_sendAllSyncRequestMessages() -> AnyPromise {
+        return AnyPromise(sendAllSyncRequestMessages())
     }
 
     @objc
-    func objc_sendAllSyncRequestMessages(timeout: TimeInterval) -> AnyPromise {
-        return AnyPromise(_sendAllSyncRequestMessages()
-            .asVoid()
+    func _objc_sendAllSyncRequestMessages(timeout: TimeInterval) -> AnyPromise {
+        return AnyPromise(sendAllSyncRequestMessages()
             .timeout(seconds: timeout, substituteValue: ()))
     }
 
-    private func _sendAllSyncRequestMessages() -> Promise<Void> {
+    private func sendAllSyncRequestMessages() -> Promise<Void> {
         Logger.info("")
 
         guard tsAccountManager.isRegisteredAndReady else {
@@ -53,8 +52,47 @@ public extension OWSSyncManager {
             NotificationCenter.default.observe(once: .IncomingContactSyncDidComplete).asVoid(),
             NotificationCenter.default.observe(once: .IncomingGroupSyncDidComplete).asVoid(),
             NotificationCenter.default.observe(once: .OWSSyncManagerConfigurationSyncDidComplete).asVoid(),
-            NotificationCenter.default.observe(once: Notification.Name(OWSBlockingManagerBlockedSyncDidComplete)).asVoid()
+            NotificationCenter.default.observe(once: .OWSBlockingManagerBlockedSyncDidComplete).asVoid()
         ])
+    }
+
+    func sendInitialSyncRequestsAwaitingCreatedThreadOrdering(timeoutSeconds: TimeInterval) -> Promise<[String]> {
+        Logger.info("")
+        guard tsAccountManager.isRegisteredAndReady else {
+            return Promise(error: OWSAssertionError("Unexpectedly tried to send sync request before registration."))
+        }
+
+        databaseStorage.asyncWrite { transaction in
+            self.sendSyncRequestMessage(.blocked, transaction: transaction)
+            self.sendSyncRequestMessage(.configuration, transaction: transaction)
+            self.sendSyncRequestMessage(.groups, transaction: transaction)
+            self.sendSyncRequestMessage(.contacts, transaction: transaction)
+        }
+
+        let notificationsPromise: Promise<([(threadId: String, sortOrder: UInt32)], [(threadId: String, sortOrder: UInt32)], Void, Void)> = when(fulfilled:
+            NotificationCenter.default.observe(once: .IncomingContactSyncDidComplete).map { $0.newThreads }.timeout(seconds: timeoutSeconds, substituteValue: []),
+            NotificationCenter.default.observe(once: .IncomingGroupSyncDidComplete).map { $0.newThreads }.timeout(seconds: timeoutSeconds, substituteValue: []),
+            NotificationCenter.default.observe(once: .OWSSyncManagerConfigurationSyncDidComplete).asVoid().timeout(seconds: timeoutSeconds),
+            NotificationCenter.default.observe(once: .OWSBlockingManagerBlockedSyncDidComplete).asVoid().timeout(seconds: timeoutSeconds)
+        )
+
+        return notificationsPromise.map { (newContactThreads, newGroupThreads, _, _) -> [String] in
+            var newThreads: [String: UInt32] = [:]
+
+            for newThread in newContactThreads {
+                assert(newThreads[newThread.threadId] == nil)
+                newThreads[newThread.threadId] = newThread.sortOrder
+            }
+
+            for newThread in newGroupThreads {
+                assert(newThreads[newThread.threadId] == nil)
+                newThreads[newThread.threadId] = newThread.sortOrder
+            }
+
+            return newThreads.sorted { (lhs: (key: String, value: UInt32), rhs: (key: String, value: UInt32)) -> Bool in
+                lhs.value < rhs.value
+            }.map { $0.key }
+        }
     }
 
     private func sendSyncRequestMessage(_ requestType: OWSSyncRequestType, transaction: SDSAnyWriteTransaction) {
@@ -74,5 +112,19 @@ public extension OWSSyncManager {
 
         let syncRequestMessage = OWSSyncRequestMessage(thread: thread, requestType: requestType)
         messageSenderJobQueue.add(message: syncRequestMessage.asPreparer, transaction: transaction)
+    }
+}
+
+private extension Notification {
+    var newThreads: [(threadId: String, sortOrder: UInt32)] {
+        switch self.object {
+        case let groupSync as IncomingGroupSyncOperation:
+            return groupSync.newThreads
+        case let contactSync as IncomingContactSyncOperation:
+            return contactSync.newThreads
+        default:
+            owsFailDebug("unexpected object: \(String(describing: self.object))")
+            return []
+        }
     }
 }
