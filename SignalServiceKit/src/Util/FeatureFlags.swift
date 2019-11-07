@@ -114,7 +114,7 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
-    public static let preserveYdb = true
+    public static let preserveYdb = false
 
     @objc
     public static let uuidCapabilities = !IsUsingProductionService()

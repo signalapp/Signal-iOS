@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSDatabaseConnection : YapDatabaseConnection
 
 @property (atomic, weak) id<OWSDatabaseConnectionDelegate> delegate;
+@property (atomic) BOOL isCleanupConnection;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithDatabase:(YapDatabase *)database
