@@ -138,7 +138,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     @objc private func authorizeDeviceLink() {
         let deviceLink = self.deviceLink!
         let linkingAuthorizationMessage = DeviceLinkingUtilities.getLinkingAuthorizationMessage(for: deviceLink)
-        (0..<4).forEach { _ in ThreadUtil.enqueue(linkingAuthorizationMessage) }
+        ThreadUtil.enqueue(linkingAuthorizationMessage)
         let session = DeviceLinkingSession.current!
         session.stopListeningForLinkingRequests()
         session.markLinkingRequestAsProcessed()

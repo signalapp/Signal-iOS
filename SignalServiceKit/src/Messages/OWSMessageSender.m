@@ -498,9 +498,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(message);
     OWSAssertDebug(errorHandle);
 
-    NSMutableSet<NSString *> *recipientIds = [NSMutableSet new];
+    __block NSMutableSet<NSString *> *recipientIds = [NSMutableSet new];
     if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
         [recipientIds addObject:self.tsAccountManager.localNumber];
+        NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        if ([message isKindOfClass:OWSOutgoingSyncMessage.class]) {
+            [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:userHexEncodedPublicKey in:transaction] ?: userHexEncodedPublicKey;
+                NSSet<NSString *> *linkedDeviceHexEncodedPublicKeys = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction];
+                recipientIds = [recipientIds setByAddingObjectsFromSet:linkedDeviceHexEncodedPublicKeys].mutableCopy;
+            }];
+        }
     } else if (thread.isGroupThread) {
         [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             LKPublicChat *publicChat = [LKDatabaseUtilities getPublicChatForThreadID:thread.uniqueId transaction:transaction];
@@ -1652,7 +1660,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             BOOL isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
             BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class];
             if (!isFriendRequest && !isDeviceLinkMessage) {
-                [self throws_ensureRecipientHasSessionForMessageSend:messageSend deviceId:@(OWSDevicePrimaryDeviceId)];
+                [self throws_ensureRecipientHasSessionForMessageSend:messageSend recipientID:recipientID deviceId:@(OWSDevicePrimaryDeviceId)];
             }
 
             __block NSDictionary *_Nullable messageDict;
@@ -1695,19 +1703,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return [messagesArray copy];
 }
 
-- (void)throws_ensureRecipientHasSessionForMessageSend:(OWSMessageSend *)messageSend deviceId:(NSNumber *)deviceId
+- (void)throws_ensureRecipientHasSessionForMessageSend:(OWSMessageSend *)messageSend recipientID:(NSString *)recipientID deviceId:(NSNumber *)deviceId
 {
     OWSAssertDebug(messageSend);
     OWSAssertDebug(deviceId);
 
     OWSPrimaryStorage *storage = self.primaryStorage;
     SignalRecipient *recipient = messageSend.recipient;
-    NSString *recipientId = recipient.recipientId;
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(recipientID.length > 0);
 
     __block BOOL hasSession;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        hasSession = [storage containsSession:recipientId deviceId:[deviceId intValue] protocolContext:transaction];
+        hasSession = [storage containsSession:recipientID deviceId:[deviceId intValue] protocolContext:transaction];
     }];
     if (hasSession) {
         return;
@@ -1718,7 +1725,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSRaiseException(NoSessionForTransientMessageException, @"No session for transient message.");
     }
     
-    PreKeyBundle *_Nullable bundle = [storage getPreKeyBundleForContact:recipientId];
+    PreKeyBundle *_Nullable bundle = [storage getPreKeyBundleForContact:recipientID];
     __block NSException *exception;
 
     /** Loki: Original code
@@ -1762,14 +1769,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                    preKeyStore:storage
                                                              signedPreKeyStore:storage
                                                               identityKeyStore:self.identityManager
-                                                                   recipientId:recipientId
+                                                                   recipientId:recipientID
                                                                       deviceId:[deviceId intValue]];
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             @try {
                 [builder throws_processPrekeyBundle:bundle protocolContext:transaction];
                 
                 // Loki: Discard the pre key bundle here since the session has been established
-                [storage removePreKeyBundleForContact:recipientId transaction:transaction];
+                [storage removePreKeyBundleForContact:recipientID transaction:transaction];
             } @catch (NSException *caughtException) {
                 exception = caughtException;
             }
@@ -1777,7 +1784,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         if (exception) {
             if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
                 OWSRaiseExceptionWithUserInfo(UntrustedIdentityKeyException,
-                    (@{ TSInvalidPreKeyBundleKey : bundle, TSInvalidRecipientKey : recipientId }),
+                    (@{ TSInvalidPreKeyBundleKey : bundle, TSInvalidRecipientKey : recipientID }),
                     @"");
             }
             @throw exception;

@@ -902,11 +902,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSString *localNumber = self.tsAccountManager.localNumber;
-    if (![localNumber isEqualToString:envelope.source]) {
-        // Sync messages should only come from linked devices.
-        OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorSyncMessageFromUnknownSource], envelope);
-        return;
-    }
+//    if (![localNumber isEqualToString:envelope.source]) {
+//        // Sync messages should only come from linked devices.
+//        OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorSyncMessageFromUnknownSource], envelope);
+//        return;
+//    }
 
     if (syncMessage.sent) {
         OWSIncomingSentMessageTranscript *transcript =
