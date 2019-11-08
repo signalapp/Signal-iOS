@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface OWSIncomingSentMessageTranscript : NSObject
 
-- (instancetype)initWithProto:(SSKProtoSyncMessageSent *)sentProto transaction:(SDSAnyWriteTransaction *)transaction;
+- (nullable instancetype)initWithProto:(SSKProtoSyncMessageSent *)sentProto transaction:(SDSAnyWriteTransaction *)transaction;
 
 @property (nonatomic, readonly) SignalServiceAddress *recipientAddress;
 @property (nonatomic, readonly) uint64_t timestamp;
