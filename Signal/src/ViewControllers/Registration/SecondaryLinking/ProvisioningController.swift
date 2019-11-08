@@ -183,20 +183,20 @@ public class ProvisioningController: NSObject {
             .secondaryDevicePublicKey
             .serialized
             .base64EncodedString()
-            // Convert this to a URL safe base64 encoding.
-            .replacingOccurrences(of: "+", with: "-")
-            .replacingOccurrences(of: "/", with: "_")
 
-        var urlComponents = URLComponents()
-        urlComponents.scheme = "tsdevice"
-        urlComponents.path = "/"
-        urlComponents.queryItems = [
-            URLQueryItem(name: "uuid", value: deviceId),
-            URLQueryItem(name: "pub_key", value: base64PubKey)
-        ]
+        // Match behavior of encodeURIComponent used by desktop.
+        var characterSet = CharacterSet.alphanumerics
+        characterSet.insert(charactersIn: "-_.!~*'()")
 
-        guard let url = urlComponents.url else {
-            throw OWSAssertionError("invalid urlComponents: \(urlComponents)")
+        guard let encodedPubKey = base64PubKey.addingPercentEncoding(withAllowedCharacters: characterSet) else {
+            throw OWSAssertionError("Failed to url encode query params")
+        }
+
+        // We don't use URLComponents to generate this URL as it encodes '+' and '/'
+        // in the base64 pub_key in a way the Android doesn't tolerate.
+        let urlString = "tsdevice:/?uuid=\(deviceId)&pub_key=\(encodedPubKey)"
+        guard let url = URL(string: urlString) else {
+            throw OWSAssertionError("invalid url: \(urlString)")
         }
 
         return url
