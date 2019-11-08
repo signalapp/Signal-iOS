@@ -466,6 +466,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.thread = nil;
     self.overrideSnippet = nil;
     self.avatarView.image = nil;
+    self.messageStatusView.hidden = NO;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
