@@ -287,13 +287,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.groupNameTextField acceptAutocorrectSuggestion];
 
-    NSArray<SignalServiceAddress *> *members = [self.memberRecipients.allObjects map:^(PickedRecipient *recipient) {
+    NSMutableArray<SignalServiceAddress *> *members = [[self.memberRecipients.allObjects map:^(PickedRecipient *recipient) {
         OWSAssertDebug(recipient.address.isValid);
         return recipient.address;
-    }];
-    
+    }] mutableCopy];
+    [members addObject:[self.recipientPicker.contactsViewHelper localAddress]];
+
     NSString *groupName = self.groupNameTextField.text;
-    
+
     [ModalActivityIndicatorViewController
         presentFromViewController:self
                         canCancel:NO

@@ -541,6 +541,7 @@ NS_ASSUME_NONNULL_BEGIN
         [recipientAddresses addObject:[[SignalServiceAddress alloc] initWithUuid:[NSUUID UUID]
                                                                      phoneNumber:recipientNumber]];
     }
+    [recipientAddresses addObject:self.tsAccountManager.localAddress];
 
     if (SSKFeatureFlags.allowUUIDOnlyContacts) {
         for (int i = 0; i < 3; i++) {

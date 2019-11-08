@@ -4442,6 +4442,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 {
     NSArray<SignalServiceAddress *> *members = @[
         member,
+        TSAccountManager.localAddress,
     ];
     [GroupManager createGroupObjcWithMembers:members
         groupId:nil

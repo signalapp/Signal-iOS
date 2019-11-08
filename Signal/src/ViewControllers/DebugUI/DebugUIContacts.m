@@ -120,6 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
         self.unregisteredRecipient,
         validRecipient,
+        TSAccountManager.localAddress,
     ] mutableCopy];
 
     [GroupManager createGroupObjcWithMembers:recipientAddresses
