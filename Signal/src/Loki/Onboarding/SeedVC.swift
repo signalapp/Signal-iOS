@@ -347,7 +347,7 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
             present(deviceLinkingModal, animated: true, completion: nil)
             let masterHexEncodedPublicKey = masterHexEncodedPublicKeyTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces)
             let linkingRequestMessage = DeviceLinkingUtilities.getLinkingRequestMessage(for: masterHexEncodedPublicKey)
-            linkingRequestMessageSendingTimer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
+            linkingRequestMessageSendingTimer = Timer.scheduledTimer(withTimeInterval: 4, repeats: true) { [weak self] _ in
                 self?.sendLinkingRequestMessage(linkingRequestMessage)
             }
             sendLinkingRequestMessage(linkingRequestMessage)
