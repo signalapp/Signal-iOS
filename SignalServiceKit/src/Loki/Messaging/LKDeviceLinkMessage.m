@@ -33,22 +33,18 @@
 #pragma mark Building
 - (SSKProtoContentBuilder *)prepareCustomContentBuilder:(SignalRecipient *)recipient {
     SSKProtoContentBuilder *contentBuilder = SSKProtoContent.builder;
-    // If this is a request then we should attach a pre key bundle
-    if (self.kind == LKDeviceLinkMessageKindRequest) {
-        PreKeyBundle *bundle = [OWSPrimaryStorage.sharedManager generatePreKeyBundleForContact:recipient.recipientId];
-        SSKProtoPrekeyBundleMessageBuilder *preKeyBuilder = [SSKProtoPrekeyBundleMessage builderFromPreKeyBundle:bundle];
-        // Build the pre key bundle message
-        NSError *error;
-        SSKProtoPrekeyBundleMessage *message = [preKeyBuilder buildAndReturnError:&error];
-        if (error || !message) {
-            OWSFailDebug(@"Failed to build pre key bundle for: %@ due to error: %@.", recipient.recipientId, error);
-            return nil;
-        } else {
-            [contentBuilder setPrekeyBundleMessage:message];
-        }
+    NSError *error;
+    // Build the pre key bundle message
+    PreKeyBundle *preKeyBundle = [OWSPrimaryStorage.sharedManager generatePreKeyBundleForContact:recipient.recipientId];
+    SSKProtoPrekeyBundleMessageBuilder *preKeyBundleMessageBuilder = [SSKProtoPrekeyBundleMessage builderFromPreKeyBundle:preKeyBundle];
+    SSKProtoPrekeyBundleMessage *preKeyBundleMessage = [preKeyBundleMessageBuilder buildAndReturnError:&error];
+    if (error || preKeyBundleMessage == nil) {
+        OWSFailDebug(@"Failed to build pre key bundle message for: %@ due to error: %@.", recipient.recipientId, error);
+        return nil;
+    } else {
+        [contentBuilder setPrekeyBundleMessage:preKeyBundleMessage];
     }
     // Build the device link message
-    NSError *error;
     SSKProtoLokiDeviceLinkMessageBuilder *deviceLinkMessageBuilder = [SSKProtoLokiDeviceLinkMessage builder];
     [deviceLinkMessageBuilder setMasterHexEncodedPublicKey:self.masterHexEncodedPublicKey];
     [deviceLinkMessageBuilder setSlaveHexEncodedPublicKey:self.slaveHexEncodedPublicKey];

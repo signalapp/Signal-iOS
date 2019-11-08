@@ -34,7 +34,7 @@
     [addressMessageBuilder setPtpPort:portAsUInt32];
     NSError *error;
     SSKProtoLokiAddressMessage *addressMessage = [addressMessageBuilder buildAndReturnError:&error];
-    if (error || !addressMessage) {
+    if (error || addressMessage == nil) {
         OWSFailDebug(@"Failed to build Loki address message for: %@ due to error: %@.", recipient.recipientId, error);
         return nil;
     } else {
