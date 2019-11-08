@@ -13,6 +13,8 @@ public protocol ConversationListDatabaseSnapshotDelegate: AnyObject {
     func conversationListDatabaseSnapshotDidReset()
 }
 
+// MARK: -
+
 @objc
 public class ConversationListDatabaseObserver: NSObject {
 
@@ -29,21 +31,7 @@ public class ConversationListDatabaseObserver: NSObject {
     }
 
     private typealias RowId = Int64
-    private struct CollectionChanges {
-        var rowIds: Set<RowId> = Set()
-        var uniqueIds: Set<String> = Set()
-    }
-    private var _pendingThreadChanges = CollectionChanges()
-    private var pendingThreadChanges: CollectionChanges {
-        get {
-            AssertIsOnUIDatabaseObserverSerialQueue()
-            return _pendingThreadChanges
-        }
-        set {
-            AssertIsOnUIDatabaseObserverSerialQueue()
-            _pendingThreadChanges = newValue
-        }
-    }
+    private var threadChangeCollector = ThreadChangeCollector()
 
     private typealias ThreadUniqueId = String
     private var _committedThreadChanges: Set<ThreadUniqueId>?
@@ -59,55 +47,14 @@ public class ConversationListDatabaseObserver: NSObject {
         }
     }
 
-    private func threadUniqueIds(forChanges changes: CollectionChanges, db: Database) throws -> Set<String> {
-        guard changes.rowIds.count < UIDatabaseObserver.kMaxIncrementalRowChanges else {
-            throw DatabaseObserverError.changeTooLarge
-        }
-
-        guard changes.uniqueIds.count < UIDatabaseObserver.kMaxIncrementalRowChanges else {
-            throw DatabaseObserverError.changeTooLarge
-        }
-
-        guard changes.rowIds.count > 0 else {
-            return changes.uniqueIds
-        }
-
-        let commaSeparatedRowIds = changes.rowIds.map { String($0) }.joined(separator: ", ")
-        let rowIdsSQL = "(\(commaSeparatedRowIds))"
-
-        let sql = """
-        SELECT \(threadColumn: .uniqueId)
-        FROM \(ThreadRecord.databaseTableName)
-        WHERE rowid IN \(rowIdsSQL)
-        """
-
-        let fetchedUniqueIds = try String.fetchAll(db, sql: sql)
-        let result = changes.uniqueIds.union(fetchedUniqueIds)
-
-        guard result.count < UIDatabaseObserver.kMaxIncrementalRowChanges else {
-            throw DatabaseObserverError.changeTooLarge
-        }
-
-        return result
-    }
-
     // internal - should only be called by DatabaseStorage
     func didTouch(thread: TSThread, transaction: GRDBWriteTransaction) {
         // Note: We don't actually use the `transaction` param, but touching must happen within
         // a write transaction in order for the touch machinery to notify it's observers
         // in the expected way.
         AssertIsOnUIDatabaseObserverSerialQueue()
-        let rowId = RowId(thread.rowId)
-        pendingThreadChanges.rowIds.insert(rowId)
-    }
 
-    // internal - should only be called by DatabaseStorage
-    func didTouch(threadId: String, transaction: GRDBWriteTransaction) {
-        // Note: We don't actually use the `transaction` param, but touching must happen within
-        // a write transaction in order for the touch machinery to notify it's observers
-        // in the expected way.
-        AssertIsOnUIDatabaseObserverSerialQueue()
-        pendingThreadChanges.uniqueIds.insert(threadId)
+        threadChangeCollector.insert(thread: thread)
     }
 }
 
@@ -117,18 +64,20 @@ extension ConversationListDatabaseObserver: DatabaseSnapshotDelegate {
 
     public func snapshotTransactionDidChange(with event: DatabaseEvent) {
         AssertIsOnUIDatabaseObserverSerialQueue()
+
         if event.tableName == ThreadRecord.databaseTableName {
-            _ = pendingThreadChanges.rowIds.insert(event.rowID)
+            threadChangeCollector.insert(rowId: event.rowID)
         }
     }
 
     public func snapshotTransactionDidCommit(db: Database) {
         AssertIsOnUIDatabaseObserverSerialQueue()
-        do {
-            let pendingThreadChanges = self.pendingThreadChanges
-            self.pendingThreadChanges = CollectionChanges()
 
-            let committedThreadChanges = try threadUniqueIds(forChanges: pendingThreadChanges, db: db)
+        do {
+            let threadChangeCollector = self.threadChangeCollector
+            self.threadChangeCollector = ThreadChangeCollector()
+            let committedThreadChanges = try threadChangeCollector.threadUniqueIds(db: db)
+
             DispatchQueue.main.async {
                 self.committedThreadChanges = committedThreadChanges
             }
@@ -142,7 +91,8 @@ extension ConversationListDatabaseObserver: DatabaseSnapshotDelegate {
     public func snapshotTransactionDidRollback(db: Database) {
         owsFailDebug("test this if we ever use it")
         AssertIsOnUIDatabaseObserverSerialQueue()
-        pendingThreadChanges = CollectionChanges()
+
+        threadChangeCollector = ThreadChangeCollector()
     }
 
     // MARK: - Snapshot LifeCycle (Post Commit)
@@ -182,5 +132,82 @@ extension ConversationListDatabaseObserver: DatabaseSnapshotDelegate {
         for delegate in snapshotDelegates {
             delegate.conversationListDatabaseSnapshotDidUpdateExternally()
         }
+    }
+}
+
+// MARK: -
+
+class ThreadChangeCollector {
+
+    typealias RowId = Int64
+    private var rowIds: Set<RowId> = Set()
+    private var uniqueIds: Set<String> = Set()
+    private var rowIdToUniqueIdMap = [RowId: String]()
+
+    func insert(rowId: RowId) {
+        AssertIsOnUIDatabaseObserverSerialQueue()
+
+        rowIds.insert(rowId)
+    }
+
+    func insert(thread: TSThread) {
+        AssertIsOnUIDatabaseObserverSerialQueue()
+
+        uniqueIds.insert(thread.uniqueId)
+
+        if let grdbId = thread.grdbId {
+            rowIdToUniqueIdMap[grdbId.int64Value] = thread.uniqueId
+        } else {
+            owsFailDebug("Missing grdbId.")
+        }
+    }
+
+    func threadUniqueIds(db: Database) throws -> Set<String> {
+        AssertIsOnUIDatabaseObserverSerialQueue()
+
+        // We try to avoid the query below by leveraging the
+        // fact that we know the uniqueId and rowId for
+        // touched threads.
+        //
+        // If a thread was touched _and_ modified, we
+        // can convert its rowId to a uniqueId without a query.
+        var uniqueIds: Set<String> = self.uniqueIds
+        var unresolvedRowIds = [RowId]()
+        for rowId in rowIds {
+            if let uniqueId = rowIdToUniqueIdMap[rowId] {
+                uniqueIds.insert(uniqueId)
+            } else {
+                unresolvedRowIds.append(rowId)
+            }
+        }
+
+        guard uniqueIds.count < UIDatabaseObserver.kMaxIncrementalRowChanges else {
+            throw DatabaseObserverError.changeTooLarge
+        }
+        guard unresolvedRowIds.count < UIDatabaseObserver.kMaxIncrementalRowChanges else {
+            throw DatabaseObserverError.changeTooLarge
+        }
+
+        guard unresolvedRowIds.count > 0 else {
+            return uniqueIds
+        }
+
+        let commaSeparatedRowIds = unresolvedRowIds.map { String($0) }.joined(separator: ", ")
+        let rowIdsSQL = "(\(commaSeparatedRowIds))"
+
+        let sql = """
+            SELECT \(threadColumn: .uniqueId)
+            FROM \(ThreadRecord.databaseTableName)
+            WHERE rowid IN \(rowIdsSQL)
+        """
+
+        let fetchedUniqueIds = try String.fetchAll(db, sql: sql)
+        let allUniqueIds = uniqueIds.union(fetchedUniqueIds)
+
+        guard allUniqueIds.count < UIDatabaseObserver.kMaxIncrementalRowChanges else {
+            throw DatabaseObserverError.changeTooLarge
+        }
+
+        return allUniqueIds
     }
 }
