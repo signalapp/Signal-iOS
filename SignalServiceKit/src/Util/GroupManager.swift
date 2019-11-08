@@ -50,15 +50,12 @@ public class GroupManager: NSObject {
                 throw OWSErrorMakeAssertionError("Invalid address.")
             }
         }
-        guard let localAddress = tsAccountManager.localAddress else {
-            throw OWSErrorMakeAssertionError("Missing localAddress.")
-        }
         var name: String?
         if let strippedName = nameParam?.stripped,
             strippedName.count > 0 {
             name = strippedName
         }
-        let members = Array(Set(membersParam + [localAddress]))
+        let members = Array(Set(membersParam))
             .sorted(by: { (l, r) in l.compare(r) == .orderedAscending })
         let groupsVersion = self.groupsVersion(for: members)
         return TSGroupModel(groupId: groupId, name: name, avatarData: avatarData, members: members, groupsVersion: groupsVersion)

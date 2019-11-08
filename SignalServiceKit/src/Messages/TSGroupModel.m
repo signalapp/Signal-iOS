@@ -33,7 +33,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
                         members:(NSArray<SignalServiceAddress *> *)members
                   groupsVersion:(GroupsVersion)groupsVersion
 {
-    OWSAssertDebug(members.count > 0);
+    OWSAssertDebug(members != nil);
     OWSAssertDebug(groupId.length == kGroupIdLength);
 
     self = [super init];

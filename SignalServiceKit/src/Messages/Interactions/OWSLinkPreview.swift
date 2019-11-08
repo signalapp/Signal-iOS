@@ -535,10 +535,8 @@ public class OWSLinkPreviewManager: NSObject {
         return serialQueue.sync {
             guard let linkPreviewDraft = linkPreviewDraftCache,
                 linkPreviewDraft.urlString == previewUrl else {
-                    Logger.verbose("----- Cache miss.")
                 return nil
             }
-            Logger.verbose("----- Cache hit.")
             return linkPreviewDraft
         }
     }
