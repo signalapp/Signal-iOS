@@ -39,12 +39,12 @@ NS_ASSUME_NONNULL_BEGIN
     _dataMessage = sentProto.message;
 
     if (sentProto.timestamp < 1) {
-        OWSFailDebug(@"Missing timestamp.");
+        OWSFailDebug(@"Sent missing timestamp.");
         return nil;
     }
     _timestamp = sentProto.timestamp;
     _expirationStartedAt = sentProto.expirationStartTimestamp;
-    _expirationDuration = sentProto.message.expireTimer;
+    _expirationDuration = _dataMessage.expireTimer;
     _body = _dataMessage.body;
     _dataMessageTimestamp = _dataMessage.timestamp;
     SSKProtoGroupContext *_Nullable group = _dataMessage.group;
@@ -62,13 +62,16 @@ NS_ASSUME_NONNULL_BEGIN
         }
         _recipientAddress = sentProto.destinationAddress;
     }
-    _isExpirationTimerUpdate = (_dataMessage.flags & SSKProtoDataMessageFlagsExpirationTimerUpdate) != 0;
-    _isEndSessionMessage = (_dataMessage.flags & SSKProtoDataMessageFlagsEndSession) != 0;
-    _isRecipientUpdate = sentProto.isRecipientUpdate;
+    if (_dataMessage.hasFlags) {
+        uint32_t flags = _dataMessage.flags;
+        _isExpirationTimerUpdate = (flags & SSKProtoDataMessageFlagsExpirationTimerUpdate) != 0;
+        _isEndSessionMessage = (flags & SSKProtoDataMessageFlagsEndSession) != 0;
+    }
+    _isRecipientUpdate = sentProto.hasIsRecipientUpdate && sentProto.isRecipientUpdate;
     _isViewOnceMessage = _dataMessage.hasIsViewOnce && _dataMessage.isViewOnce;
 
-    if (self.dataMessage.hasRequiredProtocolVersion) {
-        _requiredProtocolVersion = @(self.dataMessage.requiredProtocolVersion);
+    if (_dataMessage.hasRequiredProtocolVersion) {
+        _requiredProtocolVersion = @(_dataMessage.requiredProtocolVersion);
     }
 
     if (self.isRecipientUpdate) {
