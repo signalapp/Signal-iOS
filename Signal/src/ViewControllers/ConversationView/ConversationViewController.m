@@ -2301,6 +2301,15 @@ typedef enum : NSUInteger {
 
     menuActionsViewController.delegate = self;
 
+    // If we're not running full screen, dismiss the keyboard. Normally, we render
+    // the message actions in a window that sits above the keyboard to avoid too
+    // much context switching. However, when multi-tasking, the keyboard lives
+    // outside of our window hierarchy and we cannot render above it, so we must
+    // dismiss it in order for this to be fully visible.
+    if (!CGRectEqualToRect(CurrentAppContext().frame, UIScreen.mainScreen.bounds)) {
+        [self dismissKeyBoard];
+    }
+
     [[OWSWindowManager sharedManager] showMenuActionsWindow:menuActionsViewController];
 }
 
