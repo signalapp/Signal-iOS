@@ -196,6 +196,18 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     return OWSInteractionType_Info;
 }
 
+- (NSString *)systemMessageTextWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    switch (self.messageType) {
+        case TSInfoMessageSyncedThread:
+            return NSLocalizedString(@"INFO_MESSAGE_SYNCED_THREAD",
+                                     @"Shown in inbox and conversation after syncing as a placeholder indicating why your message history "
+                                     @"is missing.");
+        default:
+            return [self previewTextWithTransaction:transaction];
+    }
+}
+
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     switch (_messageType) {
@@ -244,9 +256,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                 return [NSString stringWithFormat:format, recipientName];
         }
         case TSInfoMessageSyncedThread:
-            return NSLocalizedString(@"INFO_MESSAGE_SYNCED_THREAD",
-                @"Shown in inbox and conversation after syncing as a placeholder indicating why your message history "
-                @"is missing.");
+            return @"";
     }
 
     OWSFailDebug(@"Unknown info message type");
