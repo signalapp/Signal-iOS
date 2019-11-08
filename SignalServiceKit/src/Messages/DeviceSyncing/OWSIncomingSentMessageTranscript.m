@@ -54,8 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
         _groupId = group.id;
-        _isGroupUpdate = (group != nil && group.hasType
-                          && group.unwrappedType == SSKProtoGroupContextTypeUpdate);
+        _isGroupUpdate = (group.hasType && group.unwrappedType == SSKProtoGroupContextTypeUpdate);
     } else {
         if (sentProto.destinationAddress == nil) {
             OWSFailDebug(@"Missing destinationAddress.");
