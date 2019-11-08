@@ -128,6 +128,9 @@
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "ক্যাপশন";
 
+/* Error that outgoing attachments could not be exported. */
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Attachment failed to export.";
+
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "সংরক্ষণ করতে ব্যর্থ হয়েছে";
 
@@ -347,6 +350,9 @@
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "অবরুদ্ধ ব্যবহারকারীরা আপনাকে কল করতে বা আপনাকে বার্তা প্রেরণ করতে পারবেন না।";
 
+/* browse files option from file sharing menu */
+"BROWSE_FILES_BUTTON" = "Browse";
+
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "চলতে থাকুন";
 
@@ -517,6 +523,12 @@
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "আপনি কি নিশ্চিত, আপনি আপনার অ্যাকাউন্ট মুছে ফেলতে চান ?";
+
+/* No comment provided by engineer. */
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "This will reset the application by deleting all of your messages from this device. You can always link with your phone again, but that will not restore deleted messages. The app will close after this process is complete.";
+
+/* No comment provided by engineer. */
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Are you sure you want to delete all data?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "আপনি আর এই গ্রুপে বার্তা প্রেরণ বা গ্রহণ করতে সক্ষম হবেন না।";
@@ -894,9 +906,6 @@
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "অনুলিপি";
 
-/* No comment provided by engineer. */
-"EDIT_TXT" = "সম্পাদনা";
-
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
 "EMAIL_INVITE_BODY" = "এই যে,\n\nইদানীং আমি আমার আইফোনে আলাপ সমুহ ব্যক্তিগত রাখতে Signal ব্যবহার করছি। আমি চাই আপনিও এটিও ইনস্টল করুন, যার ফলে আমরা নিশ্চিত হতে পারি যে কেবল আপনি এবং আমি আমাদের বার্তা পড়তে বা আমাদের কল সমূহ শুনতে পারি।\n\nসিগন্যাল আইফোন এবং অ্যানড্রয়েড এর জন্য পাওয়া যাচ্ছে। এটি এখানে পাবেন: %@\n\nSignal আপনার বিদ্যমান মেসেজিং অ্যাপ এর মতোই কাজ করে। আমরা ছবি এবং ভিডিও পাঠাতে পারি, কল সমূহ করতে পারি এবং গ্রুপ চ্যাট শুরু করতে পারি। সর্বোত্তম অংশটি হ'ল, এটির আর কেউ দেখতে পাচ্ছে না, এমনকি Signal যারা বানিয়েছেন তারাও নয়!\n\nআপনি এখানে ওপেন হুইসপার সিস্টেমগুলি সম্পর্কে আরও পড়তে পারেন, যারা Signal তৈরি করেছেন, তারা এখানে: %@";
 
@@ -959,6 +968,9 @@
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "কন্টাক্ট অ্যাক্সেস করতে পারেনি।";
+
+/* Error indicating that 'save video' failed. */
+"ERROR_COULD_NOT_SAVE_VIDEO" = "Could not save video.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "বার্তা প্রেরণে ব্যর্থ।";
@@ -1029,6 +1041,12 @@
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "নিরাপত্তা নম্বর পরিবর্তন হয়েছে।";
 
+/* Error indicating a send failure due to a delinked application. */
+"ERROR_SENDING_DELINKED" = "Your device is no longer linked. Please re-link to send further messages.";
+
+/* Error indicating a send failure due to a deregistered application. */
+"ERROR_SENDING_DEREGISTERED" = "Your device is no longer registered. Please re-register to send further messages.";
+
 /* Error indicating a send failure due to an expired application. */
 "ERROR_SENDING_EXPIRED" = "আপনার Signal সংস্করণটির মেয়াদ শেষ হয়ে গেছে। আরও বার্তা প্রেরণ করতে চাইলে আপডেট করুন।";
 
@@ -1067,6 +1085,12 @@
 
 /* Accessibility label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "গ্রুপ তৈরি শেষ করুন";
+
+/* Label and title for 'contact forwarding' views. */
+"FORWARD_CONTACT" = "Forward Contact";
+
+/* Label and title for 'message forwarding' views. */
+"FORWARD_MESSAGE" = "Forward Message";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "এই আলাপ এ আপনার কোনও মিডিয়া নেই।";
@@ -1122,9 +1146,6 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ গ্রুপ ত্যাগ করেছে";
 
-/* Button label to add information to an unknown contact */
-"GROUP_MEMBERS_ADD_CONTACT_INFO" = "কন্টাক্ট যোগ করুন";
-
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "কল";
 
@@ -1141,10 +1162,7 @@
 "GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "এখন পর্যন্ত যাচাইকৃত হিসাবে চিহ্নিত করা হয়নি";
 
 /* Button label for the 'send message to group member' button */
-"GROUP_MEMBERS_SEND_MESSAGE" = "বার্তা পাঠান";
-
-/* Button label for the 'show contact info' button */
-"GROUP_MEMBERS_VIEW_CONTACT_INFO" = "কন্টাক্ট এর তথ্য";
+"GROUP_MEMBERS_SEND_MESSAGE" = "বার্তা";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "শিরোনাম এখন '%@'।";
@@ -1182,10 +1200,10 @@
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "'%@' এর জন্য কোনও ফলাফল পাওয়া যায়নি";
 
-/* Title for the home view's 'archive' mode. */
+/* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "সংরক্ষাণাগার";
 
-/* Title for the home view's default mode. */
+/* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
@@ -1212,7 +1230,7 @@
 /* Label reminding the user that they are in archive mode. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "এই আলাপ সমুহ সংরক্ষণাগারভুক্ত করা হয়েছে এবং নতুন বার্তা প্রাপ্ত হলে কেবল ইনবক্সে উপস্থিত হবে।";
 
-/* Message shown in the home view when the inbox is empty. */
+/* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "আপনারহোমে ইনবক্স বিষয়ে কিছু লেখার জন্য কিছু দিন। একজন বন্ধুকে বার্তা দিয়ে শুরু করুন।";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
@@ -1229,6 +1247,9 @@
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "মিস কল, কারণ তাদের নিরাপত্তা নম্বর পরিবর্তিত হয়েছে।";
+
+/* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
+"INFO_MESSAGE_SYNCED_THREAD" = "For your security, conversation history isn’t synced when you link a new device.\nIf you continue the conversation, it will be synced with your active devices.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ Signal এ যোগ দিয়েছে!";
@@ -1265,6 +1286,48 @@
 
 /* Slider label when disappearing messages is off */
 "KEEP_MESSAGES_FOREVER" = "বার্তাগুলি অদৃশ্য হয়ে যায় না।";
+
+/* A keyboard command to open the current conversation's all media view. */
+"KEY_COMMAND_ALL_MEDIA" = "Go to All Media";
+
+/* A keyboard command to archive the current coversation. */
+"KEY_COMMAND_ARCHIVE" = "আলাপ সযরক্ষনাগারে পাঠান";
+
+/* A keyboard command to open the current conversation's attachment picker. */
+"KEY_COMMAND_ATTACHMENTS" = "Show Attachments";
+
+/* A keyboard command to open the current conversation's settings. */
+"KEY_COMMAND_CONVERSATION_INFO" = "Go to Conversation Info";
+
+/* A keyboard command to focus the current conversation's input field. */
+"KEY_COMMAND_FOCUS_COMPOSER" = "Focus Input Bar";
+
+/* A keyboard command to open the current conversations GIF picker. */
+"KEY_COMMAND_GIF_SEARCH" = "Go to GIF Search";
+
+/* A keyboard command to present the new group dialog. */
+"KEY_COMMAND_NEW_GROUP" = "নতুন গ্রুপ";
+
+/* A keyboard command to present the new message dialog. */
+"KEY_COMMAND_NEW_MESSAGE" = "নতুন বার্তা";
+
+/* A keyboard command to jump to the next conversation in the list. */
+"KEY_COMMAND_NEXT_CONVERSATION" = "Go to Next Conversation";
+
+/* A keyboard command to jump to the previous conversation in the list. */
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Conversation";
+
+/* A keyboard command to begin a search on the conversation list. */
+"KEY_COMMAND_SEARCH" = "অনুসন্ধান";
+
+/* A keyboard command to present the application settings dialog. */
+"KEY_COMMAND_SETTINGS" = "সেটিংস";
+
+/* A keyboard command to open the current conversation's sticker picker. */
+"KEY_COMMAND_STICKERS" = "Show Stickers";
+
+/* A keyboard command to unarchive the current coversation. */
+"KEY_COMMAND_UNARCHIVE" = "Unarchive Conversation";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "ত্যাগ করুন";
@@ -1335,9 +1398,6 @@
 /* Confirmation button text to delete selected media message from the gallery */
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "বার্তা মুছে দিন";
 
-/* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
-"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@এ %@";
-
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+ %@";
 
@@ -1361,6 +1421,9 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "আরও তথ্য";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "এই বার্তার জবাব দিন";
@@ -1562,6 +1625,9 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_CONNECTING" = "সংযুক্ত হচ্ছে ...";
 
+/* Error indicating that this device is no longer linked. */
+"NETWORK_STATUS_DELINKED" = "No Longer Linked";
+
 /* Error indicating that this device is no longer registered. */
 "NETWORK_STATUS_DEREGISTERED" = "আর নিবন্ধিত নেই";
 
@@ -1579,6 +1645,9 @@
 
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "সৃষ্টি করুন";
+
+/* Error indicating that a new group could not be created. */
+"NEW_GROUP_CREATION_FAILED" = "New group could not be created.";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "নতুন গ্রুপ";
@@ -1612,6 +1681,12 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "ফোন নম্বর দ্বারা কন্টাক্ট খুঁজুন";
+
+/* Explanation of how to see a conversation. */
+"NO_SELECTED_CONVERSATION_DESCRIPTION" = "চ্যাট শুরু করতে একটি কন্টাক্ট বা গ্রুপ নির্বাচন করুন।";
+
+/* Title welcoming to the app */
+"NO_SELECTED_CONVERSATION_TITLE" = "Signal এ স্বাগতম!";
 
 /* A string prompting the user to send a new mesaage to a user */
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "নতুন বার্তা:";
@@ -1689,13 +1764,10 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "অনুমতিগুলি সক্ষম করুন";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "আপনার যোগাযোগের তথ্য সর্বদা সুরক্ষিতভাবে প্রেরণ করা হয়।";
-
-/* Label for the 'not now' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "এখন নয়";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifications let you see when messages arrive and receive updates about new conversation activity.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Signal  আপনাকে জানাতে পারে কখন আপনি একটি বার্তা পেয়েছেন (এবং এটি কার কাছ থেকে এসেছে)";
+"ONBOARDING_PERMISSIONS_TITLE" = "Get the message";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "শুরু করতে আপনার ফোন নম্বর লিখুন";
@@ -1708,21 +1780,6 @@
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_TITLE" = "আপনার পিন প্রবেশ করান";
-
-/* header text when this device is being added as a secondary */
-"ONBOARDING_SECONDARY_CHOOSE_DEVICE_NAME" = "ONBOARDING_SECONDARY_CHOOSE_DEVICE_NAME";
-
-/* body text while displaying a QR code which, when scanned, will link this device. */
-"ONBOARDING_SECONDARY_COMPLETE_LINKING_PROCESS" = "ONBOARDING_SECONDARY_COMPLETE_LINKING_PROCESS";
-
-/* body text while displaying a QR code which, when scanned, will link this device. */
-"ONBOARDING_SECONDARY_SCAN_CODE_BODY" = "ONBOARDING_SECONDARY_SCAN_CODE_BODY";
-
-/* Link text for page with troubleshooting info shown on the QR scanning screen */
-"ONBOARDING_SECONDARY_SCAN_CODE_HELP_TEXT" = "ONBOARDING_SECONDARY_SCAN_CODE_HELP_TEXT";
-
-/* header text while displaying a QR code which, when scanned, will link this device. */
-"ONBOARDING_SECONDARY_SCAN_CODE_TITLE" = "ONBOARDING_SECONDARY_SCAN_CODE_TITLE";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "শর্তাদি এবং গোপনীয়তা নীতি";
@@ -2252,6 +2309,12 @@
 /* alert title */
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "সংযুক্তিকরণ কোড আনতে অক্ষম";
 
+/* alert message for outdated linking device */
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "The linking device is running an older version of Signal. Update it and try again.";
+
+/* alert title for outdated linking device */
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "আপনার ডিভাইস সংযুক্ত করতে ব্যর্থ";
+
 /* alert title */
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "আপনার ডিভাইস সংযুক্ত করতে ব্যর্থ";
 
@@ -2268,25 +2331,25 @@
 "SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "সংযুক্তিকরণ সম্পন্ন";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "শুরু করতে, আপনার ফোনে Signal অ্যাপ খুলুন।";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Launch Signal on your phone to link this iPad to your account";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "আমার ফোনে Signal নেই।";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone...";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "আপনার আইপ্যাডে Signal ব্যবহার করতে, আপনাকে প্রথমে আপনার ফোনে ডাউনলোড এবং একটি অ্যাকাউন্ট  নিবন্ধন করতে হবে।\n\nআপনার ফোনের অ্যাপ স্টোরটিতে যান, Signal ইনস্টল করুন এবং তারপরে আপনি আপনার আইপ্যাডকে সংযুক্ত করতে সক্ষম হবেন।";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Go to the App Store on your phone, install Signal, complete the registration process, and then you can link your iPad to the same account.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "আপনার ফোনে Signal ইনস্টল করুন";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "আপনার আইফোনের Signal থেকে, সেটিংস -> সংযুক্ত ডিভাইসগুলি -> যুক্ত করুন আলতো চাপুন, তারপরে এই স্ক্রিনে ক্যামেরা নির্দেশ করুন।";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tap on your profile picture to open Signal Settings on your phone. Then \"Linked Devices\" and \"Link New Device\" to scan this code with your phone:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "সমস্যা হচ্ছে?";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Get help linking your iPad here";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "কিউআর কোড স্ক্যান করুন";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan the QR Code with your phone";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "নিরাপদ সেশন পুনঃস্থাপিত হয়েছে।";
@@ -2543,6 +2606,9 @@
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "বার্তা কখন পড়া হয়েছে দেখুন এবং শেয়ার করুন। এই সেটিংস ঐচ্ছিক এবং সমস্ত আলাপ সমুহ এর জন্য প্রযোজ্য।";
 
+/* Label for re-link button. */
+"SETTINGS_RELINK_BUTTON" = "Re-link";
+
 /* Label for re-registration button. */
 "SETTINGS_REREGISTER_BUTTON" = "পূনঃ নিবন্ধন করুন";
 
@@ -2672,7 +2738,7 @@
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "কিছুই না";
 
-/* Preview text shown in notifications and home view for sticker messages. */
+/* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "স্টিকার বার্তা";
 
 /* Tooltip indicating that a sticker pack was installed. */
@@ -2843,6 +2909,9 @@
 /* Alert title for confirming device deletion */
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "\"%@\" বিযুক্ত করবেন?";
 
+/* Label warning the user that they have been unlinked from their primary device. */
+"UNLINKED_WARNING" = "Device no longer linked. Re-link Signal with your phone to continue messaging.";
+
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal আপনার ডিভাইস বিযুক্ত করতে ব্যর্থ হয়েছিল।";
 
@@ -2920,6 +2989,9 @@
 
 /* A prefix appeneded to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
+
+/* An error indicating that the supplied username cannot start with a number. */
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Usernames may not begin with a number.";
 
 /* The title for the username view. */
 "USERNAME_TITLE" = "ব্যবহারকারীর নাম";

@@ -332,7 +332,8 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
         }
         OWSLogInfo(@"Culling prekeys: %lu", (unsigned long) keysToRemove.count);
         for (NSString *key in keysToRemove) {
-            [self.preKeyStore.keyStore removeValueForKey:key];
+            [self.preKeyStore.keyStore removeValueForKey:key
+                                             transaction:transaction];
         }
     }];
 }
