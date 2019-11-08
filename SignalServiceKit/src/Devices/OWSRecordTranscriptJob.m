@@ -199,7 +199,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (!outgoingMessage.hasRenderableContent) {
+    if (!outgoingMessage.hasRenderableContent && !outgoingMessage.isViewOnceMessage) {
         OWSFailDebug(@"Ignoring message transcript for empty message.");
         return;
     }

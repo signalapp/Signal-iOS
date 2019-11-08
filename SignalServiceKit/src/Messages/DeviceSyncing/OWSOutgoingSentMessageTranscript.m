@@ -30,6 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) TSOutgoingMessage *message;
 
+@property (nonatomic, readonly) TSThread *messageThread;
+
 // sentRecipientAddress is the recipient of message, for contact thread messages.
 // It is used to identify the thread/conversation to desktop.
 @property (nonatomic, readonly, nullable) SignalServiceAddress *sentRecipientAddress;
@@ -59,6 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _message = message;
+    _messageThread = messageThread;
     _isRecipientUpdate = isRecipientUpdate;
 
     if ([messageThread isKindOfClass:[TSContactThread class]]) {
@@ -103,6 +106,19 @@ NS_ASSUME_NONNULL_BEGIN
         [dataBuilder setIsViewOnce:YES];
         [dataBuilder setRequiredProtocolVersion:(uint32_t)SSKProtoDataMessageProtocolVersionViewOnceVideo];
 
+        if (_messageThread.isGroupThread) {
+            TSGroupThread *groupThread = (TSGroupThread *)_messageThread;
+            SSKProtoGroupContextBuilder *groupBuilder = [SSKProtoGroupContext builderWithId:groupThread.groupModel.groupId];
+            [groupBuilder setType:SSKProtoGroupContextTypeDeliver];
+            NSError *error;
+            SSKProtoGroupContext *_Nullable groupContextProto = [groupBuilder buildAndReturnError:&error];
+            if (error || !groupContextProto) {
+                OWSFailDebug(@"could not build protobuf: %@.", error);
+                return nil;
+            }
+            [dataBuilder setGroup:groupContextProto];
+        }
+        
         NSError *error;
         dataMessage = [dataBuilder buildAndReturnError:&error];
         if (error || !dataMessage) {
@@ -110,11 +126,8 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
     } else {
-        // TODO we could hang messageThread on `self` like we do with `self.message`
-        // to avoid this fetch.
-        TSThread *messageThread = [self.message threadWithTransaction:transaction];
         dataMessage = [self.message buildDataMessage:self.sentRecipientAddress
-                                              thread:messageThread
+                                              thread:_messageThread
                                          transaction:transaction];
     }
 

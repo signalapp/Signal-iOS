@@ -37,13 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
     _dataMessage = sentProto.message;
-    
-    OWSLogInfo(@"hasDestinationE164: %d, hasDestinationUuid: %d, hasValidDestination: %d, hasGroup: %d, ",
-               sentProto.hasDestinationE164,
-               sentProto.hasDestinationUuid,
-               sentProto.hasValidDestination,
-               _dataMessage.group != nil);
-    
+
     if (sentProto.timestamp < 1) {
         OWSFailDebug(@"Missing timestamp.");
         return nil;
