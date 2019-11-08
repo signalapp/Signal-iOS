@@ -591,6 +591,15 @@ public class StickerManager: NSObject {
 
             let installedSticker = InstalledSticker(info: stickerInfo, emojiString: emojiString)
             databaseStorage.write { (transaction) in
+                guard nil == fetchInstalledSticker(stickerInfo: stickerInfo, transaction: transaction) else {
+                    // RACE: sticker has already been installed between now and when we last checked.
+                    //
+                    // Initially we check for a stickers presence with a read transaction, to avoid opening
+                    // an unecessary write transaction. However, it's possible a race has occurred and the
+                    // sticker has since been installed, in which case there's nothing more for us to do.
+                    return
+                }
+
                 installedSticker.anyInsert(transaction: transaction)
 
                 #if DEBUG
