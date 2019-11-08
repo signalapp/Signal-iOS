@@ -232,7 +232,7 @@ void AssertIsOnSendingQueue()
 - (void)didSucceed
 {
     if (self.message.messageState != TSOutgoingMessageStateSent) {
-        OWSFailDebug(@"unexpected message status: %@", self.message.statusDescription);
+//        OWSFailDebug(@"unexpected message status: %@", self.message.statusDescription);
     }
 
     self.successHandler();
@@ -498,17 +498,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(message);
     OWSAssertDebug(errorHandle);
 
-    __block NSMutableSet<NSString *> *recipientIds = [NSMutableSet new];
+    NSMutableSet<NSString *> *recipientIds = [NSMutableSet new];
     if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
         [recipientIds addObject:self.tsAccountManager.localNumber];
-        NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-        if ([message isKindOfClass:OWSOutgoingSyncMessage.class]) {
-            [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:userHexEncodedPublicKey in:transaction] ?: userHexEncodedPublicKey;
-                NSSet<NSString *> *linkedDeviceHexEncodedPublicKeys = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction];
-                recipientIds = [recipientIds setByAddingObjectsFromSet:linkedDeviceHexEncodedPublicKeys].mutableCopy;
-            }];
-        }
     } else if (thread.isGroupThread) {
         [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             LKPublicChat *publicChat = [LKDatabaseUtilities getPublicChatForThreadID:thread.uniqueId transaction:transaction];
@@ -1642,7 +1634,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     if ([messageSend.message isKindOfClass:OWSOutgoingSyncMessage.class]) {
         [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:userHexEncodedPublicKey in:transaction] ?: userHexEncodedPublicKey;
-            NSSet<NSString *> *linkedDeviceHexEncodedPublicKeys = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction];
+            NSMutableSet<NSString *> *linkedDeviceHexEncodedPublicKeys = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction].mutableCopy;
+            [linkedDeviceHexEncodedPublicKeys removeObject:userHexEncodedPublicKey];
             recipientIDs = [recipientIDs setByAddingObjectsFromSet:linkedDeviceHexEncodedPublicKeys].mutableCopy;
         }];
     }
