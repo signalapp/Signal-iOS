@@ -179,10 +179,17 @@ public class ProvisioningController: NSObject {
     // MARK: -
 
     private func buildProvisioningUrl(deviceId: String) throws -> URL {
-        let base64PubKey: String = provisioningCipher.secondaryDevicePublicKey.serialized.base64EncodedString()
+        let base64PubKey: String = provisioningCipher
+            .secondaryDevicePublicKey
+            .serialized
+            .base64EncodedString()
+            // Convert this to a URL safe base64 encoding.
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
 
         var urlComponents = URLComponents()
         urlComponents.scheme = "tsdevice"
+        urlComponents.path = "/"
         urlComponents.queryItems = [
             URLQueryItem(name: "uuid", value: deviceId),
             URLQueryItem(name: "pub_key", value: base64PubKey)

@@ -34,11 +34,9 @@ message ProvisionMessage {
   optional string uuid                = 8;
   // @required
   optional string provisioningCode    = 4;
-  // @required 
   optional string userAgent           = 5;
   // @required
   optional bytes  profileKey          = 6;
-  // @required
   optional bool   readReceipts        = 7;
   optional uint32 provisioningVersion = 9;
 }

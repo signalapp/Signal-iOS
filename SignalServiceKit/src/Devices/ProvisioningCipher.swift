@@ -13,8 +13,8 @@ public struct ProvisionMessage {
     public let phoneNumber: String
     public let identityKeyPair: ECKeyPair
     public let profileKey: OWSAES256Key
-    public let areReadReceiptsEnabled: Bool
-    public let primaryUserAgent: String
+    public let areReadReceiptsEnabled: Bool?
+    public let primaryUserAgent: String?
     public let provisioningCode: String
     public let provisioningVersion: UInt32?
 }
@@ -105,8 +105,8 @@ public class ProvisioningCipher {
         guard let profileKey = OWSAES256Key(data: proto.profileKey) else {
             throw ProvisioningError.invalidProvisionMessage("invalid profileKey - count: \(proto.profileKey.count)")
         }
-        let areReadReceiptsEnabled = proto.readReceipts
-        let primaryUserAgent = proto.userAgent
+        let areReadReceiptsEnabled = proto.hasReadReceipts ? proto.readReceipts : nil
+        let primaryUserAgent = proto.hasUserAgent ? proto.userAgent : nil
         let provisioningCode = proto.provisioningCode
         let provisioningVersion = proto.hasProvisioningVersion ? proto.provisioningVersion : nil
 
