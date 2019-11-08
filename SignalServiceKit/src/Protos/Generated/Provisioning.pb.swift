@@ -131,7 +131,6 @@ struct ProvisioningProtos_ProvisionMessage {
   /// Clears the value of `provisioningCode`. Subsequent reads from it will return its default value.
   mutating func clearProvisioningCode() {self._provisioningCode = nil}
 
-  /// @required 
   var userAgent: String {
     get {return _userAgent ?? String()}
     set {_userAgent = newValue}

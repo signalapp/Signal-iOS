@@ -58,10 +58,10 @@ uint32_t const OWSProvisioningVersion = 1;
         [ProvisioningProtoProvisionMessage builderWithIdentityKeyPublic:self.myPublicKey
                                                      identityKeyPrivate:self.myPrivateKey
                                                        provisioningCode:self.provisioningCode
-                                                              userAgent:OWSUserAgent
                                                              profileKey:self.profileKey
                                                            readReceipts:self.areReadReceiptsEnabled];
 
+    messageBuilder.userAgent = OWSUserAgent;
     messageBuilder.provisioningVersion = OWSProvisioningVersion;
 
     NSString *_Nullable phoneNumber = self.accountAddress.phoneNumber;

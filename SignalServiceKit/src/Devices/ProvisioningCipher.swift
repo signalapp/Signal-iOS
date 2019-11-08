@@ -14,7 +14,7 @@ public struct ProvisionMessage {
     public let identityKeyPair: ECKeyPair
     public let profileKey: OWSAES256Key
     public let areReadReceiptsEnabled: Bool
-    public let primaryUserAgent: String
+    public let primaryUserAgent: String?
     public let provisioningCode: String
     public let provisioningVersion: UInt32?
 }
