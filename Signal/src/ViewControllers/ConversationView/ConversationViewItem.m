@@ -976,7 +976,13 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         self.viewOnceMessageState = ViewOnceMessageState_IncomingExpired;
         return;
     }
-
+    if (message.attachmentIds.count > 1 || message.body.length > 0) {
+        // Refuse to render incoming "view once" messages if they
+        // have more than one attachment or any body text.
+        self.messageCellType = OWSMessageCellType_ViewOnce;
+        self.viewOnceMessageState = ViewOnceMessageState_IncomingInvalidContent;
+        return;
+    }
     NSArray<TSAttachment *> *mediaAttachments = [message mediaAttachmentsWithTransaction:transaction];
     // TODO: We currently only support single attachments for
     //       view-once messages.
@@ -1003,7 +1009,8 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     }
 
     OWSFailDebug(@"Invalid media for view-once message.");
-    self.messageCellType = OWSMessageCellType_Unknown;
+    self.messageCellType = OWSMessageCellType_ViewOnce;
+    self.viewOnceMessageState = ViewOnceMessageState_IncomingInvalidContent;
 }
 
 - (NSArray<ConversationMediaAlbumItem *> *)albumItemsForMediaAttachments:(NSArray<TSAttachment *> *)attachments
