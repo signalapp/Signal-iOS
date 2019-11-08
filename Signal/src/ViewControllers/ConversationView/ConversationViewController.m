@@ -207,7 +207,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL isShowingSearchUI;
 @property (nonatomic, nullable) MenuActionsViewController *menuActionsViewController;
 @property (nonatomic) CGFloat extraContentInsetPadding;
-@property (nonatomic) CGFloat contentOffsetAdjustment;
+@property (nonatomic) CGPoint originalContentOffset;
 
 @property (nonatomic, nullable) MessageRequestView *messageRequestView;
 
@@ -2069,6 +2069,11 @@ typedef enum : NSUInteger {
 {
     OWSLogVerbose(@"");
 
+    // While presenting menu actions, cache the original content offset.
+    // This allows us to restore the user to their original scroll position
+    // when they dismiss the menu.
+    self.originalContentOffset = self.collectionView.contentOffset;
+
     // While the menu actions are presented, temporarily use extra content
     // inset padding so that interactions near the top or bottom of the
     // collection view can be scrolled anywhere within the viewport.
@@ -2133,16 +2138,14 @@ typedef enum : NSUInteger {
         return;
     }
 
-    CGPoint contentOffset = self.collectionView.contentOffset;
-    contentOffset.y -= self.contentOffsetAdjustment;
-    self.collectionView.contentOffset = contentOffset;
-
     UIEdgeInsets contentInset = self.collectionView.contentInset;
     contentInset.top -= self.extraContentInsetPadding;
     contentInset.bottom -= self.extraContentInsetPadding;
     self.collectionView.contentInset = contentInset;
 
-    self.contentOffsetAdjustment = 0;
+    self.collectionView.contentOffset = self.originalContentOffset;
+
+    self.originalContentOffset = CGPointZero;
     self.menuActionsViewController = nil;
     self.extraContentInsetPadding = 0;
 }
@@ -2163,7 +2166,6 @@ typedef enum : NSUInteger {
         OWSFailDebug(@"Missing contentOffset.");
         return;
     }
-    self.contentOffsetAdjustment += contentOffset.CGPointValue.y - self.collectionView.contentOffset.y;
     [self.collectionView setContentOffset:contentOffset.CGPointValue animated:animated];
 }
 
