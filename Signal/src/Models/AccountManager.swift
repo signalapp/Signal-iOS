@@ -198,8 +198,10 @@ public class AccountManager: NSObject {
                 self.profileManager.setLocalProfileKey(provisionMessage.profileKey,
                                                        transaction: transaction)
 
-                self.readReceiptManager.setAreReadReceiptsEnabled(provisionMessage.areReadReceiptsEnabled,
-                                                                  transaction: transaction)
+                if let areReadReceiptsEnabled = provisionMessage.areReadReceiptsEnabled {
+                    self.readReceiptManager.setAreReadReceiptsEnabled(areReadReceiptsEnabled,
+                                                                      transaction: transaction)
+                }
 
                 self.tsAccountManager.setStoredServerAuthToken(serverAuthToken,
                                                                deviceId: deviceId,

@@ -150,7 +150,6 @@ struct ProvisioningProtos_ProvisionMessage {
   /// Clears the value of `profileKey`. Subsequent reads from it will return its default value.
   mutating func clearProfileKey() {self._profileKey = nil}
 
-  /// @required
   var readReceipts: Bool {
     get {return _readReceipts ?? false}
     set {_readReceipts = newValue}
