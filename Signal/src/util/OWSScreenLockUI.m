@@ -204,8 +204,6 @@ NS_ASSUME_NONNULL_BEGIN
             [self startScreenLockCountdownIfNecessary];
         }
     } else {
-        [self tryToActivateScreenLockBasedOnCountdown];
-
         OWSLogInfo(@"setAppIsInactiveOrBackground clear screenLockCountdownDate.");
         self.screenLockCountdownDate = nil;
     }
