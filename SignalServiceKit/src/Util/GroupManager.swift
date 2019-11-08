@@ -147,6 +147,34 @@ public class GroupManager: NSObject {
             }.retainUntilComplete()
     }
 
+    // MARK: - Tests
+
+    #if TESTABLE_BUILD
+
+    public static func createGroupForTests(members: [SignalServiceAddress],
+                                           name: String? = nil,
+                                           avatarData: Data? = nil) throws -> TSGroupThread {
+
+        return try databaseStorage.writeReturningResult { transaction in
+            return try createGroupForTests(transaction: transaction,
+                                           members: members,
+                                           name: name,
+                                           avatarData: avatarData)
+        }
+    }
+
+    public static func createGroupForTests(transaction: SDSAnyWriteTransaction,
+                                           members: [SignalServiceAddress],
+                                           name: String? = nil,
+                                           avatarData: Data? = nil) throws -> TSGroupThread {
+
+        let model = try buildGroupModel(groupId: nil, name: name, members: members, avatarData: avatarData)
+
+        return TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
+    }
+
+    #endif
+
     // MARK: - Messages
 
     private static func buildNewGroupMessage(forThread thread: TSGroupThread,
