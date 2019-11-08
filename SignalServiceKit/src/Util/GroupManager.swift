@@ -168,7 +168,6 @@ public class GroupManager: NSObject {
                 self.messageSenderJobQueue.add(message: message.asPreparer,
                                                transaction: transaction)
             }
-            return ()
         }
     }
 
@@ -185,12 +184,11 @@ public class GroupManager: NSObject {
     }
 
     public static func sendTemporaryNewGroupMessage(forThread thread: TSGroupThread) -> Promise<Void> {
-        let (promise, resolver) = Promise<Void>.pending()
-        DispatchQueue.global().async {
-            let message: TSOutgoingMessage = self.databaseStorage.writeReturningResult { transaction in
+        return DispatchQueue.global().async(.promise) { () -> TSOutgoingMessage in
+            return self.databaseStorage.writeReturningResult { transaction in
                 return self.buildNewGroupMessage(forThread: thread, transaction: transaction)
             }
-
+        }.then(on: DispatchQueue.global()) { (message: TSOutgoingMessage) -> Promise<Void> in
             let groupModel = thread.groupModel
             var dataSource: DataSource?
             if let groupAvatarData = groupModel.groupAvatarData,
@@ -207,25 +205,16 @@ public class GroupManager: NSObject {
             if let dataSource = dataSource {
                 // CLEANUP DURABLE - Replace with a durable operation e.g. `GroupCreateJob`, which creates
                 // an error in the thread if group creation fails
-                self.messageSender.sendTemporaryAttachment(dataSource,
-                                                           contentType: OWSMimeTypeImagePng,
-                                                           in: message, success: {
-                                                            resolver.fulfill(())
-                }, failure: { error in
-                    resolver.reject(error)
-                })
+                return self.messageSender.sendTemporaryAttachment(.promise,
+                                                                  dataSource: dataSource,
+                                                                  contentType: OWSMimeTypeImagePng,
+                                                                  message: message)
             } else {
                 // CLEANUP DURABLE - Replace with a durable operation e.g. `GroupCreateJob`, which creates
                 // an error in the thread if group creation fails
-                self.messageSender.sendMessage(message.asPreparer,
-                                               success: {
-                                                resolver.fulfill(())
-                }, failure: { error in
-                    resolver.reject(error)
-                })
+                return self.messageSender.sendMessage(.promise, message.asPreparer)
             }
         }
-        return promise
     }
 
     // success and failure are invoked on the main thread.

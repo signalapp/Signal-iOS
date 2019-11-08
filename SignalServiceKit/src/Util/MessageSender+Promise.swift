@@ -22,4 +22,18 @@ public extension MessageSender {
 
         return promise
     }
+
+    /**
+     * Wrap message sending in a Promise for easier callback chaining.
+     */
+    func sendTemporaryAttachment(_ namespace: PMKNamespacer,
+                                 dataSource: DataSource,
+                                 contentType: String,
+                                 message: TSOutgoingMessage) -> Promise<Void> {
+        let promise: Promise<Void> = Promise { resolver in
+            self.sendTemporaryAttachment(dataSource, contentType: contentType, in: message, success: { resolver.fulfill(()) }, failure: resolver.reject)
+        }
+
+        return promise
+    }
 }
