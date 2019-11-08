@@ -54,7 +54,7 @@ public class ConversationListDatabaseObserver: NSObject {
         // in the expected way.
         AssertIsOnUIDatabaseObserverSerialQueue()
 
-        threadChangeCollector.append(thread: thread)
+        threadChangeCollector.insert(thread: thread)
     }
 }
 
@@ -66,7 +66,7 @@ extension ConversationListDatabaseObserver: DatabaseSnapshotDelegate {
         AssertIsOnUIDatabaseObserverSerialQueue()
 
         if event.tableName == ThreadRecord.databaseTableName {
-            threadChangeCollector.append(rowId: event.rowID)
+            threadChangeCollector.insert(rowId: event.rowID)
         }
     }
 
@@ -144,19 +144,21 @@ class ThreadChangeCollector {
     private var uniqueIds: Set<String> = Set()
     private var rowIdToUniqueIdMap = [RowId: String]()
 
-    func append(rowId: RowId) {
+    func insert(rowId: RowId) {
         AssertIsOnUIDatabaseObserverSerialQueue()
 
         rowIds.insert(rowId)
     }
 
-    func append(thread: TSThread) {
+    func insert(thread: TSThread) {
         AssertIsOnUIDatabaseObserverSerialQueue()
 
         uniqueIds.insert(thread.uniqueId)
 
         if let grdbId = thread.grdbId {
             rowIdToUniqueIdMap[grdbId.int64Value] = thread.uniqueId
+        } else {
+            owsFailDebug("Missing grdbId.")
         }
     }
 
@@ -167,7 +169,7 @@ class ThreadChangeCollector {
         // fact that we know the uniqueId and rowId for
         // touched threads.
         //
-        // If a thread was touched _and_ modified, we don't need
+        // If a thread was touched _and_ modified, we
         // can convert its rowId to a uniqueId without a query.
         var uniqueIds: Set<String> = self.uniqueIds
         var unresolvedRowIds = [RowId]()
