@@ -1062,8 +1062,13 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Invalid expirationStartTimestamp.");
             return;
         }
-        OWSIncomingSentMessageTranscript *transcript =
+        
+        OWSIncomingSentMessageTranscript *_Nullable transcript =
             [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent transaction:transaction];
+        if (!transcript) {
+            OWSFailDebug(@"Couldn't parse transcript.");
+            return;
+        }
 
         SSKProtoDataMessage *_Nullable dataMessage = syncMessage.sent.message;
         if (!dataMessage) {

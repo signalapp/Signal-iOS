@@ -25,43 +25,66 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSIncomingSentMessageTranscript
 
-- (instancetype)initWithProto:(SSKProtoSyncMessageSent *)sentProto transaction:(SDSAnyWriteTransaction *)transaction
+- (nullable instancetype)initWithProto:(SSKProtoSyncMessageSent *)sentProto transaction:(SDSAnyWriteTransaction *)transaction
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
+    if (sentProto.message == nil) {
+        OWSFailDebug(@"Missing message.");
+        return nil;
+    }
     _dataMessage = sentProto.message;
-    _recipientAddress = sentProto.destinationAddress;
+
+    if (sentProto.timestamp < 1) {
+        OWSFailDebug(@"Sent missing timestamp.");
+        return nil;
+    }
     _timestamp = sentProto.timestamp;
     _expirationStartedAt = sentProto.expirationStartTimestamp;
-    _expirationDuration = sentProto.message.expireTimer;
+    _expirationDuration = _dataMessage.expireTimer;
     _body = _dataMessage.body;
     _dataMessageTimestamp = _dataMessage.timestamp;
-    _groupId = _dataMessage.group.id;
-    _isGroupUpdate = (_dataMessage.group != nil && _dataMessage.group.hasType
-        && _dataMessage.group.unwrappedType == SSKProtoGroupContextTypeUpdate);
-    _isExpirationTimerUpdate = (_dataMessage.flags & SSKProtoDataMessageFlagsExpirationTimerUpdate) != 0;
-    _isEndSessionMessage = (_dataMessage.flags & SSKProtoDataMessageFlagsEndSession) != 0;
-    _isRecipientUpdate = sentProto.isRecipientUpdate;
+    SSKProtoGroupContext *_Nullable group = _dataMessage.group;
+    if (group != nil) {
+        if (group.id.length < 1) {
+            OWSFailDebug(@"Missing groupId.");
+            return nil;
+        }
+        _groupId = group.id;
+        _isGroupUpdate = (group.hasType && group.unwrappedType == SSKProtoGroupContextTypeUpdate);
+    } else {
+        if (sentProto.destinationAddress == nil) {
+            OWSFailDebug(@"Missing destinationAddress.");
+            return nil;
+        }
+        _recipientAddress = sentProto.destinationAddress;
+    }
+    if (_dataMessage.hasFlags) {
+        uint32_t flags = _dataMessage.flags;
+        _isExpirationTimerUpdate = (flags & SSKProtoDataMessageFlagsExpirationTimerUpdate) != 0;
+        _isEndSessionMessage = (flags & SSKProtoDataMessageFlagsEndSession) != 0;
+    }
+    _isRecipientUpdate = sentProto.hasIsRecipientUpdate && sentProto.isRecipientUpdate;
     _isViewOnceMessage = _dataMessage.hasIsViewOnce && _dataMessage.isViewOnce;
 
-    if (self.dataMessage.hasRequiredProtocolVersion) {
-        _requiredProtocolVersion = @(self.dataMessage.requiredProtocolVersion);
+    if (_dataMessage.hasRequiredProtocolVersion) {
+        _requiredProtocolVersion = @(_dataMessage.requiredProtocolVersion);
     }
 
     if (self.isRecipientUpdate) {
         // Fetch, don't create.  We don't want recipient updates to resurrect messages or threads.
-        if (self.dataMessage.group) {
-            _thread = [TSGroupThread threadWithGroupId:_dataMessage.group.id transaction:transaction];
+        if (_groupId != nil) {
+            _thread = [TSGroupThread threadWithGroupId:_groupId transaction:transaction];
         } else {
             OWSFailDebug(@"We should never receive a 'recipient update' for messages in contact threads.");
         }
         // Skip the other processing for recipient updates.
     } else {
-        if (self.dataMessage.group) {
-            _thread = [TSGroupThread getOrCreateThreadWithGroupId:_dataMessage.group.id transaction:transaction];
+        if (_groupId != nil) {
+            _thread = [TSGroupThread getOrCreateThreadWithGroupId:_groupId transaction:transaction];
         } else {
             _thread = [TSContactThread getOrCreateThreadWithContactAddress:_recipientAddress transaction:transaction];
         }
