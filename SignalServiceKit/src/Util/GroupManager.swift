@@ -106,8 +106,8 @@ public class GroupManager: NSObject {
         return DispatchQueue.global().async(.promise) {
             let model = try buildGroupModel(groupId: groupId, name: name, members: members, avatarData: avatarData)
 
-            let thread = databaseStorage.writeReturningResult { _ in
-                return TSGroupThread.getOrCreateThread(with: model)
+            let thread = databaseStorage.writeReturningResult { transaction in
+                return TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
             }
 
             return thread

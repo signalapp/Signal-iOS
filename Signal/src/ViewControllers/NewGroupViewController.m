@@ -291,13 +291,16 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssertDebug(recipient.address.isValid);
         return recipient.address;
     }];
+    
+    NSString *groupName = self.groupNameTextField.text;
+    
     [ModalActivityIndicatorViewController
         presentFromViewController:self
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
                       [GroupManager createGroupObjcWithMembers:members
                           groupId:self.groupId
-                          name:self.groupNameTextField.text
+                          name:groupName
                           avatarImage:self.groupAvatar
                           success:^(TSGroupThread *thread) {
                               [self groupWasCreated:thread modalActivityIndicator:modalActivityIndicator];
@@ -320,7 +323,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogError(@"Group creation successful.");
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            [modalActivityIndicator dismissWithCompletion:^{
+            [self.presentingViewController dismissViewControllerAnimated:YES completion:^{
                 [SignalApp.sharedApp presentConversationForThread:thread
                                                            action:ConversationViewActionCompose
                                                          animated:NO];
@@ -342,7 +345,7 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            [modalActivityIndicator dismissWithCompletion:^{
+            [self.presentingViewController dismissViewControllerAnimated:YES completion:^{
                 [SignalApp.sharedApp presentConversationForThread:thread
                                                            action:ConversationViewActionCompose
                                                          animated:NO];
