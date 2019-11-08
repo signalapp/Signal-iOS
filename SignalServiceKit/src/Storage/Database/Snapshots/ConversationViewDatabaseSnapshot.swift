@@ -37,6 +37,16 @@ public class ConversationViewDatabaseObserver: NSObject {
         pendingInteractionChanges.insert(rowId)
     }
 
+    // internal - should only be called by DatabaseStorage
+    func didTouch(thread: TSThread, transaction: GRDBWriteTransaction) {
+        // Note: We don't actually use the `transaction` param, but touching must happen within
+        // a write transaction in order for the touch machinery to notify it's observers
+        // in the expected way.
+        AssertIsOnUIDatabaseObserverSerialQueue()
+
+        threadChangeCollector.append(thread: thread)
+    }
+
     private typealias RowId = Int64
 
     private var _pendingInteractionChanges: Set<RowId> = Set()
@@ -62,18 +72,36 @@ public class ConversationViewDatabaseObserver: NSObject {
             _committedInteractionChanges = newValue
         }
     }
+
+    private var threadChangeCollector = ThreadChangeCollector()
+
+    private typealias ThreadUniqueId = String
+    private var _committedThreadChanges: Set<ThreadUniqueId>?
+    private var committedThreadChanges: Set<ThreadUniqueId>? {
+        get {
+            AssertIsOnMainThread()
+            return _committedThreadChanges
+        }
+
+        set {
+            AssertIsOnMainThread()
+            _committedThreadChanges = newValue
+        }
+    }
 }
 
 @objc
 public class ConversationViewDatabaseTransactionChanges: NSObject {
     private let updatedRowIds: Set<Int64>
+    private let updatedThreadIds: Set<String>
 
-    init(updatedRowIds: Set<Int64>) throws {
+    init(updatedRowIds: Set<Int64>, updatedThreadIds: Set<String>) throws {
         guard updatedRowIds.count < UIDatabaseObserver.kMaxIncrementalRowChanges else {
             throw DatabaseObserverError.changeTooLarge
         }
 
         self.updatedRowIds = updatedRowIds
+        self.updatedThreadIds = updatedThreadIds
     }
 
     @objc
@@ -112,6 +140,8 @@ extension ConversationViewDatabaseObserver: DatabaseSnapshotDelegate {
         AssertIsOnUIDatabaseObserverSerialQueue()
         if event.tableName == InteractionRecord.databaseTableName {
             _ = pendingInteractionChanges.insert(event.rowID)
+        } else if event.tableName == ThreadRecord.databaseTableName {
+            threadChangeCollector.append(rowId: event.rowID)
         }
     }
 
@@ -120,8 +150,20 @@ extension ConversationViewDatabaseObserver: DatabaseSnapshotDelegate {
         let pendingInteractionChanges = self.pendingInteractionChanges
         self.pendingInteractionChanges = Set()
 
-        DispatchQueue.main.async {
-            self.committedInteractionChanges = pendingInteractionChanges
+        do {
+            let threadChangeCollector = self.threadChangeCollector
+            self.threadChangeCollector = ThreadChangeCollector()
+            let committedThreadChanges = try threadChangeCollector.threadUniqueIds(db: db)
+
+            DispatchQueue.main.async {
+                self.committedInteractionChanges = pendingInteractionChanges
+                self.committedThreadChanges = committedThreadChanges
+            }
+        } catch {
+            DispatchQueue.main.async {
+                self.committedInteractionChanges = pendingInteractionChanges
+                self.committedThreadChanges = nil
+            }
         }
     }
 
@@ -148,7 +190,13 @@ extension ConversationViewDatabaseObserver: DatabaseSnapshotDelegate {
             }
             self.committedInteractionChanges = nil
 
-            let transactionChanges = try ConversationViewDatabaseTransactionChanges(updatedRowIds: committedInteractionChanges)
+            guard let committedThreadChanges = self.committedThreadChanges else {
+                throw OWSErrorMakeAssertionError("committedThreadChanges was unexpectedly nil")
+            }
+            self.committedThreadChanges = nil
+
+            let transactionChanges = try ConversationViewDatabaseTransactionChanges(updatedRowIds: committedInteractionChanges,
+                                                                                    updatedThreadIds: committedThreadChanges)
             for delegate in snapshotDelegates {
                 delegate.conversationViewDatabaseSnapshotDidUpdate(transactionChanges: transactionChanges)
             }

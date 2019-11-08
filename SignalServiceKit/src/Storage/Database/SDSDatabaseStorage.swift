@@ -264,9 +264,14 @@ public class SDSDatabaseStorage: SDSTransactable {
                 }
 
                 if let conversationListDatabaseObserver = grdbStorage.conversationListDatabaseObserver {
-                    conversationListDatabaseObserver.didTouch(threadId: thread.uniqueId, transaction: grdb)
+                    conversationListDatabaseObserver.didTouch(thread: thread, transaction: grdb)
                 } else if AppReadiness.isAppReady() {
                     owsFailDebug("conversationListDatabaseObserver was unexpectedly nil")
+                }
+                if let conversationViewDatabaseObserver = grdbStorage.conversationViewDatabaseObserver {
+                    conversationViewDatabaseObserver.didTouch(thread: thread, transaction: grdb)
+                } else if AppReadiness.isAppReady() {
+                    owsFailDebug("conversationViewDatabaseObserver was unexpectedly nil")
                 }
                 if let genericDatabaseObserver = grdbStorage.genericDatabaseObserver {
                     genericDatabaseObserver.didTouchThread(transaction: grdb)
