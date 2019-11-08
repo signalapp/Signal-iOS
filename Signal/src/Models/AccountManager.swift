@@ -234,7 +234,7 @@ public class AccountManager: NSObject {
             BenchEventStart(title: "waiting for initial contact and group sync", eventId: "initial-contact-sync")
 
             return firstly {
-                OWSSyncManager.shared().sendInitialSyncRequestsAwaitingCreatedThreadOrdering(timeoutSeconds: 20)
+                OWSSyncManager.shared().sendInitialSyncRequestsAwaitingCreatedThreadOrdering(timeoutSeconds: 60)
             }.done(on: .global() ) { orderedThreadIds in
                 Logger.debug("orderedThreadIds: \(orderedThreadIds)")
                 // Maintain the remote sort ordering of threads by inserting `syncedThread` messages
