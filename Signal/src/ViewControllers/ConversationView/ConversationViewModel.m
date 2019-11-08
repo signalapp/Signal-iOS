@@ -599,6 +599,15 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 - (void)conversationViewDatabaseSnapshotDidUpdateWithTransactionChanges:
     (ConversationViewDatabaseTransactionChanges *)transactionChanges
 {
+    if (self.thread.grdbId != nil) {
+        if (![transactionChanges containsThreadRowId:self.thread.grdbId]) {
+            // Ignoring irrelevant update.
+            return;
+        }
+    } else {
+        OWSFailDebug(@"Missing thread.grdbId.");
+    }
+    
     __block NSError *dbError;
     __block NSError *updateError;
     __block NSSet<NSString *> *updatedInteractionIds;

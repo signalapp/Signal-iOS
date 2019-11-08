@@ -1825,6 +1825,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     OWSAssertIsOnMainThread();
 
     if (updatedItemIds.count < 1) {
+        // Ignoring irrelevant update.
         [self updateViewState];
         return;
     }

@@ -44,7 +44,12 @@ public class ConversationViewDatabaseObserver: NSObject {
         // in the expected way.
         AssertIsOnUIDatabaseObserverSerialQueue()
 
-        threadChangeCollector.append(thread: thread)
+        guard let grdbId = thread.grdbId else {
+            owsFailDebug("Missing grdbId.")
+            return
+        }
+
+        pendingThreadChanges.insert(grdbId.int64Value)
     }
 
     private typealias RowId = Int64
@@ -73,16 +78,24 @@ public class ConversationViewDatabaseObserver: NSObject {
         }
     }
 
-    private var threadChangeCollector = ThreadChangeCollector()
+    private var _pendingThreadChanges: Set<RowId> = Set()
+    private var pendingThreadChanges: Set<RowId> {
+        get {
+            AssertIsOnUIDatabaseObserverSerialQueue()
+            return _pendingThreadChanges
+        }
+        set {
+            AssertIsOnUIDatabaseObserverSerialQueue()
+            _pendingThreadChanges = newValue
+        }
+    }
 
-    private typealias ThreadUniqueId = String
-    private var _committedThreadChanges: Set<ThreadUniqueId>?
-    private var committedThreadChanges: Set<ThreadUniqueId>? {
+    private var _committedThreadChanges: Set<RowId>?
+    private var committedThreadChanges: Set<RowId>? {
         get {
             AssertIsOnMainThread()
             return _committedThreadChanges
         }
-
         set {
             AssertIsOnMainThread()
             _committedThreadChanges = newValue
@@ -93,9 +106,9 @@ public class ConversationViewDatabaseObserver: NSObject {
 @objc
 public class ConversationViewDatabaseTransactionChanges: NSObject {
     private let updatedRowIds: Set<Int64>
-    private let updatedThreadIds: Set<String>
+    private let updatedThreadIds: Set<Int64>
 
-    init(updatedRowIds: Set<Int64>, updatedThreadIds: Set<String>) throws {
+    init(updatedRowIds: Set<Int64>, updatedThreadIds: Set<Int64>) throws {
         guard updatedRowIds.count < UIDatabaseObserver.kMaxIncrementalRowChanges else {
             throw DatabaseObserverError.changeTooLarge
         }
@@ -129,6 +142,11 @@ public class ConversationViewDatabaseTransactionChanges: NSObject {
 
         return Set(uniqueIds)
     }
+
+    @objc(containsThreadRowId:)
+    public func contains(threadRowId: NSNumber) -> Bool {
+        return updatedThreadIds.contains(threadRowId.int64Value)
+    }
 }
 
 extension ConversationViewDatabaseObserver: DatabaseSnapshotDelegate {
@@ -141,7 +159,7 @@ extension ConversationViewDatabaseObserver: DatabaseSnapshotDelegate {
         if event.tableName == InteractionRecord.databaseTableName {
             _ = pendingInteractionChanges.insert(event.rowID)
         } else if event.tableName == ThreadRecord.databaseTableName {
-            threadChangeCollector.append(rowId: event.rowID)
+            _ = pendingThreadChanges.insert(event.rowID)
         }
     }
 
@@ -149,21 +167,12 @@ extension ConversationViewDatabaseObserver: DatabaseSnapshotDelegate {
         AssertIsOnUIDatabaseObserverSerialQueue()
         let pendingInteractionChanges = self.pendingInteractionChanges
         self.pendingInteractionChanges = Set()
+        let pendingThreadChanges = self.pendingThreadChanges
+        self.pendingThreadChanges = Set()
 
-        do {
-            let threadChangeCollector = self.threadChangeCollector
-            self.threadChangeCollector = ThreadChangeCollector()
-            let committedThreadChanges = try threadChangeCollector.threadUniqueIds(db: db)
-
-            DispatchQueue.main.async {
-                self.committedInteractionChanges = pendingInteractionChanges
-                self.committedThreadChanges = committedThreadChanges
-            }
-        } catch {
-            DispatchQueue.main.async {
-                self.committedInteractionChanges = pendingInteractionChanges
-                self.committedThreadChanges = nil
-            }
+        DispatchQueue.main.async {
+            self.committedInteractionChanges = pendingInteractionChanges
+            self.committedThreadChanges = pendingThreadChanges
         }
     }
 
@@ -171,6 +180,7 @@ extension ConversationViewDatabaseObserver: DatabaseSnapshotDelegate {
         owsFailDebug("we should verify this works if we ever start to use rollbacks")
         AssertIsOnUIDatabaseObserverSerialQueue()
         pendingInteractionChanges = Set()
+        pendingThreadChanges = Set()
     }
 
     // MARK: - Snapshot LifeCycle (Post Commit)
