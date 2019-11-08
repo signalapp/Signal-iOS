@@ -150,12 +150,6 @@ class ThreadChangeCollector {
         rowIds.insert(rowId)
     }
 
-//    fileprivate func append(uniqueId: String) {
-//        AssertIsOnMainThread()
-//
-//        uniqueIds.insert(uniqueId)
-//    }
-
     func append(thread: TSThread) {
         AssertIsOnUIDatabaseObserverSerialQueue()
 
