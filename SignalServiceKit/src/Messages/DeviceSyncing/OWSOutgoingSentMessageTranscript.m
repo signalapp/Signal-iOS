@@ -106,8 +106,8 @@ NS_ASSUME_NONNULL_BEGIN
         [dataBuilder setIsViewOnce:YES];
         [dataBuilder setRequiredProtocolVersion:(uint32_t)SSKProtoDataMessageProtocolVersionViewOnceVideo];
 
-        if (_messageThread.isGroupThread) {
-            TSGroupThread *groupThread = (TSGroupThread *)_messageThread;
+        if (self.messageThread.isGroupThread) {
+            TSGroupThread *groupThread = (TSGroupThread *)self.messageThread;
             SSKProtoGroupContextBuilder *groupBuilder = [SSKProtoGroupContext builderWithId:groupThread.groupModel.groupId];
             [groupBuilder setType:SSKProtoGroupContextTypeDeliver];
             NSError *error;
@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else {
         dataMessage = [self.message buildDataMessage:self.sentRecipientAddress
-                                              thread:_messageThread
+                                              thread:self.messageThread
                                          transaction:transaction];
     }
 
