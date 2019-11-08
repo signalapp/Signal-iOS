@@ -901,12 +901,14 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSString *localNumber = self.tsAccountManager.localNumber;
-//    if (![localNumber isEqualToString:envelope.source]) {
-//        // Sync messages should only come from linked devices.
-//        OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorSyncMessageFromUnknownSource], envelope);
-//        return;
-//    }
+    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    NSSet<NSString *> *linkedDeviceHexEncodedPublicKeys = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction];
+    if (![linkedDeviceHexEncodedPublicKeys contains:^BOOL(NSString *hexEncodedPublicKey) {
+        return [hexEncodedPublicKey isEqual:envelope.source];
+    }]) {
+        OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorSyncMessageFromUnknownSource], envelope);
+        return;
+    }
 
     if (syncMessage.sent) {
         OWSIncomingSentMessageTranscript *transcript =
