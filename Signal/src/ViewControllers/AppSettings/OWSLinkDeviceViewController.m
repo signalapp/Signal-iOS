@@ -110,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
     [super viewDidAppear:animated];
 
     if (!UIDevice.currentDevice.isIPad) {
-        [UIDevice.currentDevice ows_setOrientation:UIInterfaceOrientationPortrait];
+        [UIDevice.currentDevice ows_setOrientation:UIDeviceOrientationPortrait];
     }
 
     dispatch_async(dispatch_get_main_queue(), ^{

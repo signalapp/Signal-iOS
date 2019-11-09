@@ -435,6 +435,10 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
         self.updateViewState(topViewController: viewController)
     }
 
+    func navigationControllerSupportedInterfaceOrientations(_ navigationController: UINavigationController) -> UIInterfaceOrientationMask {
+        return navigationController.topViewController?.supportedInterfaceOrientations ?? UIDevice.current.defaultSupportedOrienations
+    }
+
     // MARK: - Helpers
 
     private func preferredNavbarStyle(viewController: UIViewController) -> OWSNavigationBar.NavigationBarStyle? {

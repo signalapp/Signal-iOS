@@ -59,7 +59,7 @@ public extension UIDevice {
         return isIPad ? .all : .allButUpsideDown
     }
 
-    func ows_setOrientation(_ orientation: UIInterfaceOrientation) {
+    func ows_setOrientation(_ orientation: UIDeviceOrientation) {
         // XXX - This is not officially supported, but there's no other way to programmatically rotate
         // the interface.
         let orientationKey = "orientation"

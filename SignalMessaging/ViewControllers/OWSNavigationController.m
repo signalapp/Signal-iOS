@@ -213,7 +213,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    if (self.visibleViewController) {
+    if (self.delegate != nil
+        && [self.delegate respondsToSelector:@selector(navigationControllerSupportedInterfaceOrientations:)]) {
+        return [self.delegate navigationControllerSupportedInterfaceOrientations:self];
+    } else if (self.visibleViewController) {
         return self.visibleViewController.supportedInterfaceOrientations;
     } else {
         return UIDevice.currentDevice.defaultSupportedOrienations;

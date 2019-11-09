@@ -21,10 +21,10 @@ protocol PhotoCaptureDelegate: AnyObject {
 
     // MARK: Utility
 
+    func photoCapture(_ photoCapture: PhotoCapture, didChangeOrienation: AVCaptureVideoOrientation)
     func photoCaptureCanCaptureMoreItems(_ photoCapture: PhotoCapture) -> Bool
     func photoCaptureDidTryToCaptureTooMany(_ photoCapture: PhotoCapture)
     var zoomScaleReferenceHeight: CGFloat? { get }
-    var captureOrientation: AVCaptureVideoOrientation { get }
 
     func beginCaptureButtonAnimation(_ duration: TimeInterval)
     func endCaptureButtonAnimation(_ duration: TimeInterval)
@@ -46,6 +46,18 @@ class PhotoCapture: NSObject {
         return currentCaptureInput?.device
     }
     private(set) var desiredPosition: AVCaptureDevice.Position = .back
+
+    private var _captureOrientation: AVCaptureVideoOrientation = .portrait
+    var captureOrientation: AVCaptureVideoOrientation {
+        get {
+            assertIsOnSessionQueue()
+            return _captureOrientation
+        }
+        set {
+            assertIsOnSessionQueue()
+            _captureOrientation = newValue
+        }
+    }
 
     private let recordingAudioActivity = AudioActivity(audioDescription: "PhotoCapture", behavior: .playAndRecord)
 
@@ -107,19 +119,46 @@ class PhotoCapture: NSObject {
         audioSession.endAudioActivity(recordingAudioActivity)
     }
 
-    func updateVideoConnectionOrientation() {
-        guard let delegate = self.delegate else { return }
-
-        guard let videoConnection = previewView.previewLayer.connection else {
-            owsFailDebug("videoConnection was unexpectedly nil")
+    @objc
+    public func orientationDidChange(notification: Notification) {
+        AssertIsOnMainThread()
+        guard let captureOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) else {
             return
         }
-        videoConnection.videoOrientation = delegate.captureOrientation
+
+        sessionQueue.async {
+            guard captureOrientation != self.captureOrientation else {
+                return
+            }
+            self.captureOrientation = captureOrientation
+
+            DispatchQueue.main.async {
+                self.delegate?.photoCapture(self, didChangeOrienation: captureOrientation)
+            }
+        }
+    }
+
+    func updateVideoPreviewConnection(toOrientation orientation: AVCaptureVideoOrientation) {
+        guard let videoConnection = previewView.previewLayer.connection else {
+            Logger.error("videoConnection was unexpectedly nil")
+            return
+        }
+        Logger.verbose("newOrientation: \(orientation), deviceOrientation: \(UIDevice.current.orientation), interfaceOrientation: \(CurrentAppContext().interfaceOrientation)")
+        videoConnection.videoOrientation = orientation
     }
 
     public func startVideoCapture() -> Promise<Void> {
+        AssertIsOnMainThread()
+
         // If the session is already running, no need to do anything.
         guard !self.session.isRunning else { return Promise.value(()) }
+
+        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(orientationDidChange),
+                                               name: UIDevice.orientationDidChangeNotification,
+                                               object: UIDevice.current)
+        let initialCaptureOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) ?? .portrait
 
         return sessionQueue.async(.promise) { [weak self] in
             guard let self = self else { return }
@@ -128,6 +167,7 @@ class PhotoCapture: NSObject {
             self.session.beginConfiguration()
             defer { self.session.commitConfiguration() }
 
+            self.captureOrientation = initialCaptureOrientation
             self.session.sessionPreset = .medium
 
             try self.updateCurrentInput(position: .back)
@@ -140,13 +180,11 @@ class PhotoCapture: NSObject {
                 throw PhotoCaptureError.initializationFailed
             }
 
-            let captureOrientation = delegate.captureOrientation
-
             if let connection = photoOutput.connection(with: .video) {
                 if connection.isVideoStabilizationSupported {
                     connection.preferredVideoStabilizationMode = .auto
                 }
-                connection.videoOrientation = captureOrientation
+                connection.videoOrientation = self.captureOrientation
             }
 
             self.session.addOutput(photoOutput)
@@ -161,7 +199,7 @@ class PhotoCapture: NSObject {
                 if connection.isVideoStabilizationSupported {
                     connection.preferredVideoStabilizationMode = .auto
                 }
-                connection.videoOrientation = captureOrientation
+                connection.videoOrientation = self.captureOrientation
 
                 if #available(iOS 11.0, *) {
                     guard movieOutput.availableVideoCodecTypes.contains(.h264) else {
@@ -173,8 +211,10 @@ class PhotoCapture: NSObject {
                         AVVideoCodecType.h264], for: connection)
                 }
             }
+        }.done {
+            let captureOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) ?? .portrait
+            self.updateVideoPreviewConnection(toOrientation: captureOrientation)
         }.done(on: sessionQueue) {
-            self.updateVideoConnectionOrientation()
             self.session.startRunning()
         }
     }
@@ -482,12 +522,6 @@ extension PhotoCapture: CaptureButtonDelegate {
 
 extension PhotoCapture: CaptureOutputDelegate {
 
-    var captureOrientation: AVCaptureVideoOrientation {
-        guard let delegate = delegate else { return .portrait }
-
-        return delegate.captureOrientation
-    }
-
     // MARK: - Photo
 
     func captureOutputDidFinishProcessing(photoData: Data?, error: Error?) {
@@ -626,7 +660,7 @@ class CaptureOutput {
 
         let videoOrientation = delegate.captureOrientation
         photoVideoConnection.videoOrientation = videoOrientation
-        Logger.verbose("videoOrientation: \(videoOrientation)")
+        Logger.verbose("videoOrientation: \(videoOrientation), deviceOrientation: \(UIDevice.current.orientation)")
 
         return imageOutput.takePhoto(delegate: delegate)
     }
@@ -789,6 +823,23 @@ class StillImageCaptureOutput: ImageCaptureOutput {
 }
 
 extension AVCaptureVideoOrientation {
+    init?(deviceOrientation: UIDeviceOrientation) {
+        switch deviceOrientation {
+        case .unknown:
+            return nil
+        case .portrait: self = .portrait
+        case .portraitUpsideDown: self = .portraitUpsideDown
+        case .landscapeLeft: self = .landscapeRight
+        case .landscapeRight: self = .landscapeLeft
+        case .faceUp:
+            return nil
+        case .faceDown:
+            return nil
+        @unknown default:
+            return nil
+        }
+    }
+
     init?(interfaceOrientation: UIInterfaceOrientation) {
         switch interfaceOrientation {
         case .unknown:
@@ -847,7 +898,7 @@ extension AVCaptureVideoOrientation: CustomStringConvertible {
         case .landscapeLeft:
             return "AVCaptureVideoOrientation.landscapeLeft"
         @unknown default:
-            return "AVCaptureVideoOrientation.unknown"
+            return "AVCaptureVideoOrientation.unknownDefault"
         }
     }
 }
@@ -870,7 +921,26 @@ extension UIDeviceOrientation: CustomStringConvertible {
         case .faceDown:
             return "UIDeviceOrientation.faceDown"
         @unknown default:
-            return "UIDeviceOrientation.unknown"
+            return "UIDeviceOrientation.unknownDefault"
+        }
+    }
+}
+
+extension UIInterfaceOrientation: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .unknown:
+            return "UIInterfaceOrientation.unknown"
+        case .portrait:
+            return "UIInterfaceOrientation.portrait"
+        case .portraitUpsideDown:
+            return "UIInterfaceOrientation.portraitUpsideDown"
+        case .landscapeLeft:
+            return "UIInterfaceOrientation.landscapeLeft"
+        case .landscapeRight:
+            return "UIInterfaceOrientation.landscapeRight"
+        @unknown default:
+            return "UIInterfaceOrientation.unknownDefault"
         }
     }
 }
@@ -895,7 +965,7 @@ extension UIImage.Orientation: CustomStringConvertible {
         case .rightMirrored:
             return "UIImageOrientation.rightMirrored"
         @unknown default:
-            return "UIImageOrientation.unknown"
+            return "UIImageOrientation.unknownDefault"
         }
     }
 }

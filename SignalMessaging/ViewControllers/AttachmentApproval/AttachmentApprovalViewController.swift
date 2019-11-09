@@ -223,6 +223,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         Logger.debug("")
         super.viewWillAppear(animated)
 
+        UIViewController.attemptRotationToDeviceOrientation()
+
         guard let navigationBar = navigationController?.navigationBar as? OWSNavigationBar else {
             owsFailDebug("navigationBar was nil or unexpected class")
             return
