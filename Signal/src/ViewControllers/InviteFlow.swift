@@ -200,8 +200,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
                 let warning = ActionSheetController(title: nil,
                                                 message: NSLocalizedString("INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT",
                                                                            comment: "Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other."))
-                warning.addAction(ActionSheetAction(title: NSLocalizedString("BUTTON_CONTINUE",
-                                                                         comment: "Label for 'continue' button."),
+                warning.addAction(ActionSheetAction(title: CommonStrings.continueButton,
                                                 style: .default, handler: { [weak self] _ in
                                                     self?.sendSMSTo(phoneNumbers: phoneNumbers)
                 }))
