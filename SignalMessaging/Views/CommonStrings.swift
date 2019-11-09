@@ -13,6 +13,9 @@ import Foundation
     static public let backButton = NSLocalizedString("BACK_BUTTON", comment: "return to the previous screen")
 
     @objc
+    static public let continueButton = NSLocalizedString("BUTTON_CONTINUE", comment: "Label for 'continue' button.")
+
+    @objc
     static public let dismissButton = NSLocalizedString("DISMISS_BUTTON_TEXT", comment: "Short text to dismiss current modal / actionsheet / screen")
 
     @objc

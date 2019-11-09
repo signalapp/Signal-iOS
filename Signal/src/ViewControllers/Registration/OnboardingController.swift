@@ -80,6 +80,22 @@ public class OnboardingController: NSObject {
     }
 
     // MARK: -
+    public enum OnboardingMode {
+        case provisioning
+        case registering
+    }
+
+    public let defaultOnboardingMode: OnboardingMode = UIDevice.current.isIPad ? .provisioning : .registering
+    private var onboardingModeOverride: OnboardingMode?
+
+    public var onboardingMode: OnboardingMode {
+        return onboardingModeOverride ?? defaultOnboardingMode
+    }
+    public var isOnboardingModeOverriden: Bool {
+        return onboardingMode != defaultOnboardingMode
+    }
+
+    // MARK: -
 
     @objc
     public override init() {
@@ -103,8 +119,43 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
+        onboardingModeOverride = nil
+
         let view = OnboardingPermissionsViewController(onboardingController: self)
         viewController.navigationController?.pushViewController(view, animated: true)
+    }
+
+    public func onboardingSplashRequestedModeSwitch(viewController: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        let view = OnboardingModeSwitchConfirmationViewController(onboardingController: self)
+        viewController.navigationController?.pushViewController(view, animated: true)
+    }
+
+    public func toggleModeSwitch(viewController: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        if isOnboardingModeOverriden {
+            onboardingModeOverride = nil
+            viewController.navigationController?.popToRootViewController(animated: true)
+        } else {
+            let newMode: OnboardingMode
+            switch defaultOnboardingMode {
+            case .provisioning:
+                newMode = .registering
+            case .registering:
+                newMode = .provisioning
+            }
+
+            onboardingModeOverride = newMode
+
+            let view = OnboardingPermissionsViewController(onboardingController: self)
+            viewController.navigationController?.pushViewController(view, animated: true)
+        }
     }
 
     public func onboardingPermissionsWasSkipped(viewController: UIViewController) {
@@ -136,9 +187,7 @@ public class OnboardingController: NSObject {
     private func pushStartDeviceRegistrationView(onto navigationController: UINavigationController) {
         AssertIsOnMainThread()
 
-        let shouldShowSecondaryLinking = UIDevice.current.isIPad
-
-        if shouldShowSecondaryLinking {
+        if onboardingMode == .provisioning {
             let provisioningController = ProvisioningController(onboardingController: self)
             let prepViewController = SecondaryLinkingPrepViewController(provisioningController: provisioningController)
             navigationController.pushViewController(prepViewController, animated: true)

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SafariServices
 
 @objc
 public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController {
@@ -50,9 +51,6 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
         explanationLabel.accessibilityIdentifier = "onboarding.linking.helpLink"
         explanationLabel.setContentHuggingHigh()
 
-        // NEEDS DESIGN
-        explanationLabel.isHidden = true
-
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
             bodyLabel,
@@ -73,6 +71,12 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
 
     // MARK: - Events
 
+    override func shouldShowBackButton() -> Bool {
+        // Never show the back buton here
+        // TODO: Linked phones, clean up state to allow backing out
+        return false
+    }
+
     @objc
     func didTapExplanationLabel(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else {
@@ -80,15 +84,17 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
             return
         }
 
-        let alert = ActionSheetController(title: "TODO", message: nil)
-        alert.addAction(OWSActionSheets.dismissAction)
-
-        presentActionSheet(alert)
+        let vc = SFSafariViewController(url: URL(string: "https://support.signal.org/hc/en-us/articles/360007320451")!)
+        present(vc, animated: true)
     }
 
     // MARK: -
 
+    private var hasFetchedAndSetQRCode = false
     public func fetchAndSetQRCode() {
+        guard !hasFetchedAndSetQRCode else { return }
+        hasFetchedAndSetQRCode = true
+
         provisioningController.getProvisioningURL().done { url in
             self.qrCodeView.setQRImage(try buildQRImage(url: url))
         }.catch { error in

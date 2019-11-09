@@ -68,6 +68,10 @@ public class OnboardingBaseViewController: OWSViewController {
         return button(title: title, selector: selector, titleColor: .ows_signalBlue, backgroundColor: .white)
     }
 
+    func shouldShowBackButton() -> Bool {
+        return onboardingController.isOnboardingModeOverriden
+    }
+
     private func button(title: String, selector: Selector, titleColor: UIColor, backgroundColor: UIColor) -> OWSFlatButton {
         let font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
         let buttonHeight = OWSFlatButton.heightForFont(font)
@@ -104,6 +108,22 @@ public class OnboardingBaseViewController: OWSViewController {
         super.viewDidLoad()
 
         self.shouldBottomViewReserveSpaceForKeyboard = true
+
+        if (shouldShowBackButton()) {
+            let backButton = UIButton()
+            let backButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
+            backButton.setTemplateImage(backButtonImage, tintColor: Theme.secondaryTextAndIconColor)
+            backButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
+
+            view.addSubview(backButton)
+            backButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
+            backButton.autoPinEdge(toSuperviewMargin: .leading)
+            backButton.autoPinEdge(toSuperviewMargin: .top)
+        }
+    }
+
+    @objc func navigateBack() {
+        navigationController?.popViewController(animated: true)
     }
 
     public override func viewWillAppear(_ animated: Bool) {

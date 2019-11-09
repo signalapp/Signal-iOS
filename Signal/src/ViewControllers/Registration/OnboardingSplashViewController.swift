@@ -9,6 +9,8 @@ import SafariServices
 @objc
 public class OnboardingSplashViewController: OnboardingBaseViewController {
 
+    let modeSwitchButton = UIButton()
+
     override var primaryLayoutMargins: UIEdgeInsets {
         var defaultMargins = super.primaryLayoutMargins
         // we want the hero image a bit closer to the top than most
@@ -21,6 +23,19 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         view = UIView()
         view.addSubview(primaryView)
         primaryView.autoPinEdgesToSuperviewEdges()
+
+        view.addSubview(modeSwitchButton)
+        modeSwitchButton.setTemplateImageName(
+            onboardingController.defaultOnboardingMode == .registering ? "link-24" : "link-broken-24",
+            tintColor: .ows_gray25
+        )
+        modeSwitchButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
+        modeSwitchButton.autoPinEdge(toSuperviewMargin: .trailing)
+        modeSwitchButton.autoPinEdge(toSuperviewMargin: .top)
+        modeSwitchButton.addTarget(self, action: #selector(didTapModeSwitch), for: .touchUpInside)
+        modeSwitchButton.accessibilityIdentifier = "onboarding.splash.modeSwitch"
+
+        modeSwitchButton.isHidden = onboardingController.defaultOnboardingMode == .registering && !FeatureFlags.linkedPhones
 
         view.backgroundColor = Theme.backgroundColor
 
@@ -49,8 +64,7 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         explanationLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(explanationLabelTapped)))
         explanationLabel.accessibilityIdentifier = "onboarding.splash." + "explanationLabel"
 
-        let continueButton = self.primaryButton(title: NSLocalizedString("BUTTON_CONTINUE",
-                                                                 comment: "Label for 'continue' button."),
+        let continueButton = self.primaryButton(title: CommonStrings.continueButton,
                                                     selector: #selector(continuePressed))
         continueButton.accessibilityIdentifier = "onboarding.splash." + "continueButton"
         let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: continueButton)
@@ -72,6 +86,12 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
     }
 
     // MARK: - Events
+
+    @objc func didTapModeSwitch() {
+        Logger.info("")
+
+        onboardingController.onboardingSplashRequestedModeSwitch(viewController: self)
+    }
 
     @objc func explanationLabelTapped(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else {
