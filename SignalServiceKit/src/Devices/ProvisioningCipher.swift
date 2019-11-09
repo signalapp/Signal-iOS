@@ -101,7 +101,7 @@ public class ProvisioningCipher {
         let plaintext = Data(plaintextBuffer.prefix(upTo: bytesDecrypted))
         let proto = try ProvisioningProtoProvisionMessage.parseData(plaintext)
 
-        let identityKeyPair = try ECKeyPair(publicKeyData: proto.identityKeyPublic, privateKeyData: proto.identityKeyPrivate)
+        let identityKeyPair = try ECKeyPair(serializedPublicKeyData: proto.identityKeyPublic, privateKeyData: proto.identityKeyPrivate)
         guard let profileKey = OWSAES256Key(data: proto.profileKey) else {
             throw ProvisioningError.invalidProvisionMessage("invalid profileKey - count: \(proto.profileKey.count)")
         }
@@ -126,5 +126,12 @@ public class ProvisioningCipher {
                                 primaryUserAgent: primaryUserAgent,
                                 provisioningCode: provisioningCode,
                                 provisioningVersion: provisioningVersion)
+    }
+}
+
+private extension ECKeyPair {
+    convenience init(serializedPublicKeyData: Data, privateKeyData: Data) throws {
+        let publicKey = try (serializedPublicKeyData as NSData).removeKeyType() as Data
+        try self.init(publicKeyData: publicKey, privateKeyData: privateKeyData)
     }
 }

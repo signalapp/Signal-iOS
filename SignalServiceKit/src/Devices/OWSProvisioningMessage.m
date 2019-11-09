@@ -55,7 +55,7 @@ uint32_t const OWSProvisioningVersion = 1;
 - (nullable NSData *)buildEncryptedMessageBody
 {
     ProvisioningProtoProvisionMessageBuilder *messageBuilder =
-        [ProvisioningProtoProvisionMessage builderWithIdentityKeyPublic:self.myPublicKey
+        [ProvisioningProtoProvisionMessage builderWithIdentityKeyPublic:[self.myPublicKey prependKeyType]
                                                      identityKeyPrivate:self.myPrivateKey
                                                        provisioningCode:self.provisioningCode
                                                              profileKey:self.profileKey];
