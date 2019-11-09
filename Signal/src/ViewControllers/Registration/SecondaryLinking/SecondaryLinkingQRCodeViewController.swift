@@ -73,6 +73,12 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
 
     // MARK: - Events
 
+    override func shouldShowBackButton() -> Bool {
+        // Never show the back buton here
+        // TODO: Linked phones, clean up state to allow backing out
+        return false
+    }
+
     @objc
     func didTapExplanationLabel(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else {
