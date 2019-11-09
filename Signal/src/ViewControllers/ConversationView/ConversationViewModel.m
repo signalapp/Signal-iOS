@@ -1447,10 +1447,15 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             case OWSInteractionType_Offer:
                 canShowDate = NO;
                 break;
+            case OWSInteractionType_Info: {
+                // Only show the date for non-synced thread messages;
+                TSInfoMessage *infoMessage = (TSInfoMessage *)viewItem.interaction;
+                canShowDate = infoMessage.messageType != TSInfoMessageSyncedThread;
+                break;
+            }
             case OWSInteractionType_IncomingMessage:
             case OWSInteractionType_OutgoingMessage:
             case OWSInteractionType_Error:
-            case OWSInteractionType_Info:
             case OWSInteractionType_Call:
                 canShowDate = YES;
                 break;

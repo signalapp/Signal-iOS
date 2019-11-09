@@ -1109,7 +1109,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
                                         @"another device. Embeds {{user's name or phone number}}.")));
                 return [NSString stringWithFormat:titleFormat, displayName];
             } else {
-                return [infoMessage previewTextWithTransaction:transaction];
+                return [infoMessage systemMessageTextWithTransaction:transaction];
             }
         }
         case OWSInteractionType_Call: {

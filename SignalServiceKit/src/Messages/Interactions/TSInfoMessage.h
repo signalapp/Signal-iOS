@@ -103,6 +103,8 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueTh
                  expiresInSeconds:(uint32_t)expiresInSeconds
                   expireStartedAt:(uint64_t)expireStartedAt NS_UNAVAILABLE;
 
+- (NSString *)systemMessageTextWithTransaction:(SDSAnyReadTransaction *)transaction;
+
 @end
 
 NS_ASSUME_NONNULL_END

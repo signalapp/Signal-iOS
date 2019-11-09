@@ -51,7 +51,7 @@ class MemberActionSheet: NSObject {
         }
 
         actionSheet.contentAlignment = .leading
-        actionSheet.addAction(OWSActionSheets.dismissAction)
+        actionSheet.addAction(OWSActionSheets.cancelAction)
 
         // If blocked, only show unblock as an option
         guard !contactsViewHelper.isSignalServiceAddressBlocked(address) else {
