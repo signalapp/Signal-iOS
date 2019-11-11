@@ -43,18 +43,14 @@ class GRDBFinderTest: SignalBaseTest {
         let contactThread4 = TSContactThread(contactAddress: address4)
         // Group Threads
         let createGroupThread: () -> TSGroupThread = {
-            let groupModel = TSGroupModel(groupId: TSGroupModel.generateRandomGroupId(),
-                                          name: "Test Group",
-                                          avatarData: nil,
-                                          members: [address1],
-                                          groupsVersion: GroupManager.defaultGroupsVersion)
-            let groupThread = TSGroupThread(groupModel: groupModel)
+            var groupThread: TSGroupThread!
+            self.write { transaction in
+                groupThread = try! GroupManager.createGroupForTests(transaction: transaction,
+                                                                    members: [address1],
+                                                                    name: "Test Group")
+            }
             return groupThread
         }
-        let groupThread1 = createGroupThread()
-        let groupThread2 = createGroupThread()
-        let groupThread3 = createGroupThread()
-        let groupThread4 = createGroupThread()
 
         self.read { transaction in
             XCTAssertNil(AnyContactThreadFinder().contactThread(for: address1, transaction: transaction))
@@ -66,15 +62,16 @@ class GRDBFinderTest: SignalBaseTest {
             XCTAssertNil(AnyContactThreadFinder().contactThread(for: address7, transaction: transaction))
         }
 
+        _ = createGroupThread()
+        _ = createGroupThread()
+        _ = createGroupThread()
+        _ = createGroupThread()
+
         self.write { transaction in
             contactThread1.anyInsert(transaction: transaction)
             contactThread2.anyInsert(transaction: transaction)
             contactThread3.anyInsert(transaction: transaction)
             contactThread4.anyInsert(transaction: transaction)
-            groupThread1.anyInsert(transaction: transaction)
-            groupThread2.anyInsert(transaction: transaction)
-            groupThread3.anyInsert(transaction: transaction)
-            groupThread4.anyInsert(transaction: transaction)
         }
 
         self.read { transaction in

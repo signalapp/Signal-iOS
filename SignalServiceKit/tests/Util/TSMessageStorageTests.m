@@ -147,17 +147,18 @@
           @"privacy matters; privacy is what allows us to determine who we are and who we want to be.";
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        TSGroupModel *groupModel = [[TSGroupModel alloc] initWithGroupId:[TSGroupModel generateRandomGroupId]
-                                                                    name:@"fdsfsd"
-                                                              avatarData:nil
-                                                                 members:@[
-                                                                           self.localAddress,
-                                                                           self.otherAddress,
-                                                                           ]
-                                                           groupsVersion:GroupManager.defaultGroupsVersion];
-        TSGroupThread *thread;
-        thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel
-                                                    transaction:transaction];
+        NSError *error;
+        TSGroupThread *thread = [GroupManager createGroupForTestsObjcWithTransaction:transaction
+                                                                             members:@[
+                                                                                       self.localAddress,
+                                                                                       self.otherAddress,
+                                                                                       ]
+                                                                                name:@"fdsfsd"
+                                                                          avatarData:nil
+                                                                               error:&error];
+        if (error != nil) {
+            OWSFailDebug(@"Error: %@", error);
+        }
 
         NSMutableArray<TSIncomingMessage *> *messages = [NSMutableArray new];
         for (uint64_t i = 0; i < 10; i++) {
