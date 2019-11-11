@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
              animated:(BOOL)isAnimated;
 
 // Used by force-touch Springboard icon shortcut
-- (void)showNewConversationView;
+- (void)showNewConversationVC;
 
 @end
 

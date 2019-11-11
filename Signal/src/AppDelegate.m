@@ -874,7 +874,7 @@ static NSTimeInterval launchStartedAt;
             return;
         }
 
-        [SignalApp.sharedApp.homeViewController showNewConversationView];
+        [SignalApp.sharedApp.homeViewController showNewConversationVC];
 
         completionHandler(YES);
     }];
