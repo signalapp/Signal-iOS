@@ -1189,7 +1189,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address transaction:transaction];
     if (signalAccount != nil) {
-        return [self comparableNameForSignalAccount:signalAccount];
+        return [self comparableNameForSignalAccount:signalAccount
+                                        transaction:transaction];
     }
 
     NSString *_Nullable phoneNumber = signalAccount.recipientPhoneNumber;
