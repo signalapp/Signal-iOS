@@ -35,7 +35,7 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         modeSwitchButton.addTarget(self, action: #selector(didTapModeSwitch), for: .touchUpInside)
         modeSwitchButton.accessibilityIdentifier = "onboarding.splash.modeSwitch"
 
-        modeSwitchButton.isHidden = onboardingController.defaultOnboardingMode == .registering && !FeatureFlags.linkedPhones
+        modeSwitchButton.isHidden = !UIDevice.current.isIPad && !FeatureFlags.linkedPhones
 
         view.backgroundColor = Theme.backgroundColor
 
