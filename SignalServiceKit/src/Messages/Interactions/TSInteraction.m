@@ -310,8 +310,10 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 {
     [super anyDidRemoveWithTransaction:transaction];
 
-    TSThread *fetchedThread = [self threadWithTransaction:transaction];
-    [fetchedThread updateWithRemovedMessage:self transaction:transaction];
+    if (![transaction shouldIgnoreInteractionUpdatesForThreadUniqueId:self.uniqueThreadId]) {
+        TSThread *fetchedThread = [self threadWithTransaction:transaction];
+        [fetchedThread updateWithRemovedMessage:self transaction:transaction];
+    }
 }
 
 #pragma mark -

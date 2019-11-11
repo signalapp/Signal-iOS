@@ -218,6 +218,8 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
         OWSFailDebug(@"Error during enumeration: %@", error);
     }
 
+    [transaction ignoreInteractionUpdatesForThreadUniqueId:self.uniqueId];
+    
     for (NSString *interactionId in interactionIds) {
         // We need to fetch each interaction, since [TSInteraction removeWithTransaction:] does important work.
         TSInteraction *_Nullable interaction =
