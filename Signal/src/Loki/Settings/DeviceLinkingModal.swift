@@ -148,6 +148,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         LokiStorageAPI.addDeviceLink(signedDeviceLink).catch { error in
             print("[Loki] Failed to add device link due to error: \(error).")
         }
+        let _ = SSKEnvironment.shared.syncManager.syncAllContacts()
     }
     
     func handleDeviceLinkAuthorized(_ deviceLink: DeviceLink) {
