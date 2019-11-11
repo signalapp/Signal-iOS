@@ -362,20 +362,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         let e164PhoneNumber = localNumber.toE164()
 
         onboardingController.update(phoneNumber: OnboardingPhoneNumber(e164: e164PhoneNumber, userInput: phoneNumberText))
-
-        if UIDevice.current.isIPad || UIDevice.current.isCompatabilityModeIPad {
-            OWSActionSheets.showConfirmationAlert(title: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_TITLE",
-                                                                      comment: "alert title when registering an iPad"),
-                                            message: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_BODY",
-                                                                        comment: "alert body when registering an iPad"),
-                                            proceedTitle: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_BUTTON",
-                                                                             comment: "button text to proceed with registration when on an iPad"),
-                                            proceedAction: { (_) in
-                                                self.onboardingController.requestVerification(fromViewController: self, isSMS: true)
-            })
-        } else {
-            onboardingController.requestVerification(fromViewController: self, isSMS: true)
-        }
+        onboardingController.requestVerification(fromViewController: self, isSMS: true)
     }
 }
 

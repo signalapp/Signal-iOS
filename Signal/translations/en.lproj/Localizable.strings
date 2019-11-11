@@ -1760,6 +1760,30 @@
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Add a touch of humanity to your messages";
 
+/* button indicating that the user will register their ipad */
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Register iPad";
+
+/* button indicating that the user will link their phone */
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link iPhone";
+
+/* explanation to the user they're switching from linking to registering flow */
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
+
+/* explanation to the user they're switching from registering to linking flow */
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link iPhone” will let you connect your phone to an existing account. Linking your phone is generally not recommended and will limit some functionality, such as calling.";
+
+/* header text indicating to the user they're switching from linking to registering flow */
+"ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Register this iPad";
+
+/* header text indicating to the user they're switching from registering to linking flow */
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this iPhone";
+
+/* warning to the user that registering an ipad is not recommended */
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registering this iPad will disable Signal on any other device currently registered with the same phone number.";
+
+/* warning to the user that linking a phone is not recommended */
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Linking your iPhone is not recommended and will limit core functionality.";
+
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Enable Permissions";
 
@@ -2167,15 +2191,6 @@
 
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "We can't activate your account until you verify the code we sent you.";
-
-/* alert body when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_BODY" = "Registering now will disable Signal on any other device currently registered with this phone number.";
-
-/* button text to proceed with registration when on an iPad */
-"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Register this iPad";
-
-/* alert title when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_TITLE" = "Already have a Signal account?";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "This phone number format is not supported, please contact support.";
