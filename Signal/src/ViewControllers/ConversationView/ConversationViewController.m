@@ -4468,7 +4468,6 @@ typedef enum : NSUInteger {
                   cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     id<ConversationViewItem> _Nullable viewItem = [self viewItemForIndex:indexPath.row];
-    [viewItem clearNeedsUpdate];
     ConversationViewCell *cell = [viewItem dequeueCellForCollectionView:self.collectionView indexPath:indexPath];
     if (!cell) {
         OWSFailDebug(@"Could not dequeue cell.");

@@ -1348,6 +1348,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                   return (id<ConversationViewItem>)nil;
               }
 
+            [viewItem clearNeedsUpdate];
+
               [viewItems addObject:viewItem];
 
               return viewItem;
