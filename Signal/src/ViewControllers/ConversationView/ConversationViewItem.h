@@ -116,7 +116,11 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 
 - (void)clearCachedLayoutState;
 
-@property (nonatomic, readonly) BOOL hasCachedLayoutState;
+#pragma mark - Needs Update
+
+@property (nonatomic, readonly) BOOL needsUpdate;
+
+- (void)clearNeedsUpdate;
 
 #pragma mark - Audio Playback
 

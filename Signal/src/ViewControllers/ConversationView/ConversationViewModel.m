@@ -965,7 +965,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             OWSFailDebug(@"Can't find holdover view item.");
             return [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
         }
-        if (!viewItem.hasCachedLayoutState) {
+        if (viewItem.needsUpdate) {
             [updatedItemSet addObject:itemId];
             [updatedNeighborItemSet addObject:itemId];
         }
@@ -1347,6 +1347,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                   && !viewItem.isFailedSticker) {
                   return (id<ConversationViewItem>)nil;
               }
+
+            [viewItem clearNeedsUpdate];
 
               [viewItems addObject:viewItem];
 

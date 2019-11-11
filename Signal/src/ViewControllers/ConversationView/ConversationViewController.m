@@ -879,7 +879,7 @@ typedef enum : NSUInteger {
     self.lastReloadDate = [NSDate new];
     [self.conversationViewModel viewDidResetContentAndLayoutWithTransaction:transaction];
     [self.collectionView.collectionViewLayout invalidateLayout];
-    [self.collectionView reloadData];
+    [self reloadData];
 
     if (self.viewHasEverAppeared) {
         // Try to update the lastKnownDistanceFromBottom; the content size may have changed.
@@ -3787,7 +3787,15 @@ typedef enum : NSUInteger {
     [self updateInputToolbarLayout];
     [self updateBarButtonItems];
 
-    [self.collectionView reloadData];
+    [self reloadData];
+}
+
+- (void)reloadData
+{
+    // [UICollectionView reloadData] sometimes has no effect.
+    // This might be a regression in iOS 13? reloadSections
+    // does not appear to have the same issue.
+    [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:0]];
 }
 
 - (void)createInputToolbar
@@ -4886,10 +4894,6 @@ typedef enum : NSUInteger {
     void (^batchUpdatesCompletion)(BOOL) = ^(BOOL finished) {
         OWSAssertIsOnMainThread();
 
-        if (!finished) {
-            OWSLogInfo(@"performBatchUpdates did not finish");
-        }
-
         // We can't use the transaction parameter; this completion
         // will be run async.
         [self updateLastVisibleSortIdWithSneakyTransaction];
@@ -4900,6 +4904,12 @@ typedef enum : NSUInteger {
 
         // Try to update the lastKnownDistanceFromBottom; the content size may have changed.
         [self updateLastKnownDistanceFromBottom];
+        
+        if (!finished) {
+            OWSLogInfo(@"performBatchUpdates did not finish");
+            // If did not finish, reset to get back to a known good state.
+            [self resetContentAndLayoutWithSneakyTransaction];
+        }
     };
 
     @try {
@@ -5086,7 +5096,7 @@ typedef enum : NSUInteger {
         [viewItem clearCachedLayoutState];
     }
     [self.collectionView.collectionViewLayout invalidateLayout];
-    [self.collectionView reloadData];
+    [self reloadData];
     if (self.viewHasEverAppeared) {
         // Try to update the lastKnownDistanceFromBottom; the content size may have changed.
         [self updateLastKnownDistanceFromBottom];
