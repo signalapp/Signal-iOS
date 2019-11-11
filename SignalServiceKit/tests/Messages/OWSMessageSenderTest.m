@@ -480,22 +480,15 @@ NS_ASSUME_NONNULL_BEGIN
     SignalRecipient *successfulRecipient2 =
         [[SignalRecipient alloc] initWithTextSecureIdentifier:@"successful-recipient-id2" relay:nil];
 
-    __block TSGroupThread *thread;
-    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        NSError *error;
-        thread = [GroupManager createGroupForTestsObjcWithTransaction:transaction
-                                                                             members:@[
-                                                                                       successfulRecipient.address,
-                                                                                       successfulRecipient2.address,
-                                                                                       ]
-                                                                 name:@"group title"
-                                                                          avatarData:nil
-                                                                               error:&error];
-        if (error != nil) {
-            OWSFailDebug(@"Error: %@", error);
-        }
-    }];
-        
+    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithGroupId:groupId
+                                                                name:@"group title"
+                                                          avatarData:nil
+                                                             members:@[
+                                                                       successfulRecipient.address,
+                                                                       successfulRecipient2.address,
+                                                                       ]
+                                                       groupsVersion:GroupManager.defaultGroupsVersion];
+    TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel];
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:1
                                                                      inThread:groupThread
                                                                   messageBody:@"We want punks in the palace."];

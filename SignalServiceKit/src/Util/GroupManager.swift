@@ -34,8 +34,7 @@ public class GroupManager: NSObject {
     private static func buildGroupModel(groupId groupIdParam: Data?,
                                         name nameParam: String?,
                                         members membersParam: [SignalServiceAddress],
-                                        avatarData: Data?,
-                                        groupsVersion groupsVersionParam: GroupsVersion? = nil) throws -> TSGroupModel {
+                                        avatarData: Data?) throws -> TSGroupModel {
 
         let groupId: Data
         if let groupIdParam = groupIdParam {
@@ -58,12 +57,7 @@ public class GroupManager: NSObject {
         }
         let members = Array(Set(membersParam))
             .sorted(by: { (l, r) in l.compare(r) == .orderedAscending })
-        let groupsVersion: GroupsVersion
-        if let groupsVersionParam = groupsVersionParam {
-            groupsVersion = groupsVersionParam
-        } else {
-            groupsVersion = self.groupsVersion(for: members)
-        }
+        let groupsVersion = self.groupsVersion(for: members)
         return TSGroupModel(groupId: groupId, name: name, avatarData: avatarData, members: members, groupsVersion: groupsVersion)
     }
 
@@ -152,48 +146,6 @@ public class GroupManager: NSObject {
                 failure(error)
             }.retainUntilComplete()
     }
-
-    // MARK: - Tests
-
-    #if TESTABLE_BUILD
-
-    public static func createGroupForTests(members: [SignalServiceAddress],
-                                           name: String? = nil,
-                                           avatarData: Data? = nil) throws -> TSGroupThread {
-
-        return try databaseStorage.writeReturningResult { transaction in
-            return try createGroupForTests(transaction: transaction,
-                                           members: members,
-                                           name: name,
-                                           avatarData: avatarData)
-        }
-    }
-
-    public static func createGroupForTests(transaction: SDSAnyWriteTransaction,
-                                           members: [SignalServiceAddress],
-                                           name: String? = nil,
-                                           avatarData: Data? = nil,
-                                           groupId: Data? = nil,
-                                           groupsVersion: GroupsVersion? = nil) throws -> TSGroupThread {
-
-        let model = try buildGroupModel(groupId: groupId, name: name, members: members, avatarData: avatarData, groupsVersion: groupsVersion)
-
-        return TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
-    }
-
-    @objc
-    public static func createGroupForTestsObjc(transaction: SDSAnyWriteTransaction,
-                                               members: [SignalServiceAddress],
-                                               name: String?,
-                                               avatarData: Data?) throws -> TSGroupThread {
-
-        return try createGroupForTests(transaction: transaction,
-                                       members: members,
-                                       name: name,
-                                       avatarData: avatarData)
-    }
-
-    #endif
 
     // MARK: - Messages
 

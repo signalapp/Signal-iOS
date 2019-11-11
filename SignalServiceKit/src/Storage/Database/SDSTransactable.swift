@@ -109,14 +109,6 @@ public extension SDSTransactable {
         return value
     }
 
-    func writeReturningResult<T>(block: @escaping (SDSAnyWriteTransaction) throws -> T) throws-> T {
-        var value: T!
-        try write { (transaction) in
-            value = try block(transaction)
-        }
-        return value
-    }
-
     func write<T>(block: @escaping (SDSAnyWriteTransaction) -> T) -> T {
         var value: T!
         write { (transaction) in

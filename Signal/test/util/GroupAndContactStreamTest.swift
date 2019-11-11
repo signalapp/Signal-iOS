@@ -97,14 +97,12 @@ class GroupAndContactStreamTest: SignalBaseTest {
                 .init(uuidString: "1d4ab045-88fb-4c4e-9f6a-f921124bd529", phoneNumber: "+13213214323")
             ]
 
-            var thread: TSGroupThread!
-            write { transaction in
-                thread = try! GroupManager.createGroupForTests(transaction: transaction,
-                                                               members: groupMembers,
-                                                               groupId: groupId)
+            let model = TSGroupModel(groupId: groupId, name: nil, avatarData: nil, members: groupMembers, groupsVersion: GroupManager.defaultGroupsVersion)
 
-                thread.anyInsert(transaction: transaction)
-                thread.updateConversationColorName(.burlap, transaction: transaction)
+            let thread = TSGroupThread(groupModel: model)
+            write {
+                thread.anyInsert(transaction: $0)
+                thread.updateConversationColorName(.burlap, transaction: $0)
             }
             return thread
         }()
@@ -116,13 +114,12 @@ class GroupAndContactStreamTest: SignalBaseTest {
                 .init(uuidString: "55555555-88fb-4c4e-9f6a-f921124bd529", phoneNumber: "+15553214323")
             ]
 
-            var thread: TSGroupThread!
+            let model = TSGroupModel(groupId: groupId, name: "Book Club", avatarData: nil, members: groupMembers, groupsVersion: GroupManager.defaultGroupsVersion)
+
+            let thread = TSGroupThread(groupModel: model)
             write {
-                thread = try! GroupManager.createGroupForTests(transaction: $0,
-                                                               members: groupMembers,
-                                                               name: "Book Club")
                 thread.shouldThreadBeVisible = true
-                thread.anyOverwritingUpdate(transaction: $0)
+                thread.anyInsert(transaction: $0)
                 thread.updateConversationColorName(.taupe, transaction: $0)
                 thread.archiveThread(with: $0)
             }
@@ -136,21 +133,19 @@ class GroupAndContactStreamTest: SignalBaseTest {
                 .init(uuidString: "55555555-88fb-4c4e-9f6a-222222222222", phoneNumber: "+15553212222")
             ]
 
-            var thread: TSGroupThread!
-            write { transaction in
-                thread = try! GroupManager.createGroupForTests(transaction: transaction,
-                                                               members: groupMembers,
-                                                               name: "Cook Blub",
-                                                               groupId: groupId)
+            let model = TSGroupModel(groupId: groupId, name: "Cook Blub", avatarData: nil, members: groupMembers, groupsVersion: GroupManager.defaultGroupsVersion)
+
+            let thread = TSGroupThread(groupModel: model)
+            write {
                 thread.shouldThreadBeVisible = true
-                thread.anyOverwritingUpdate(transaction: transaction)
-                thread.updateConversationColorName(.blue, transaction: transaction)
+                thread.anyInsert(transaction: $0)
+                thread.updateConversationColorName(.blue, transaction: $0)
 
                 let messageFactory = OutgoingMessageFactory()
                 messageFactory.threadCreator = { _ in return thread }
-                _ = messageFactory.create(transaction: transaction)
+                _ = messageFactory.create(transaction: $0)
 
-                thread.archiveThread(with: transaction)
+                thread.archiveThread(with: $0)
             }
             return thread
         }()
