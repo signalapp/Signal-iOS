@@ -14,7 +14,7 @@ public final class LokiAPI : NSObject {
     private static let maxRetryCount: UInt = 8
     private static let defaultTimeout: TimeInterval = 20
     private static let longPollingTimeout: TimeInterval = 40
-    private static let deviceLinkUpdateInterval: TimeInterval = 8 * 60
+    private static let deviceLinkUpdateInterval: TimeInterval = 60
     private static let receivedMessageHashValuesKey = "receivedMessageHashValuesKey"
     private static let receivedMessageHashValuesCollection = "receivedMessageHashValuesCollection"
     private static var userIDScanLimit: UInt = 4096

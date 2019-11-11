@@ -83,7 +83,7 @@ final class FriendRequestView : UIView {
     // MARK: Updating
     @objc private func handleFriendRequestStatusChangedNotification(_ notification: Notification) {
         let messageID = notification.object as! String
-        guard messageID == message.uniqueId else { return }
+        guard messageID == message.uniqueId && TSMessage.fetch(uniqueId: messageID) != nil else { return } // It's possible for the message to be deleted at this point
         message.reload()
         updateUI()
     }
