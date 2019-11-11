@@ -571,6 +571,10 @@ class TrimVideoTimelineView: UIView {
         }
 
         let thumbnailSize: CGFloat = height()
+        guard thumbnailSize > 0 else {
+            return
+        }
+
         let thumbnailCount = UInt(ceil(width() / thumbnailSize))
 
         for index in 0..<thumbnailCount {
