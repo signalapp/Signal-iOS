@@ -105,7 +105,6 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
             lastInteractionRowId:(int64_t)lastInteractionRowId
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
-                           rowId:(int64_t)rowId
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
 {
     self = [super initWithGrdbId:grdbId
@@ -121,7 +120,6 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     _lastInteractionRowId = lastInteractionRowId;
     _messageDraft = messageDraft;
     _mutedUntilDate = mutedUntilDate;
-    _rowId = rowId;
     _shouldThreadBeVisible = shouldThreadBeVisible;
 
     return self;
