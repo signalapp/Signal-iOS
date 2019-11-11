@@ -141,6 +141,18 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, SPKProtocolWriteCont
             grdbWrite.addCompletion(queue: queue, block: block)
         }
     }
+
+    private var threadUniqueIdsToIgnoreInteractionUpdates = Set<String>()
+
+    @objc
+    public func ignoreInteractionUpdates(forThreadUniqueId threadUniqueId: String) {
+        threadUniqueIdsToIgnoreInteractionUpdates.insert(threadUniqueId)
+    }
+
+    @objc
+    public func shouldIgnoreInteractionUpdates(forThreadUniqueId threadUniqueId: String) -> Bool {
+        return threadUniqueIdsToIgnoreInteractionUpdates.contains(threadUniqueId)
+    }
 }
 
 // MARK: -
