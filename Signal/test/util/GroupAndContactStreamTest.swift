@@ -116,12 +116,13 @@ class GroupAndContactStreamTest: SignalBaseTest {
                 .init(uuidString: "55555555-88fb-4c4e-9f6a-f921124bd529", phoneNumber: "+15553214323")
             ]
 
-            let model = TSGroupModel(groupId: groupId, name: "Book Club", avatarData: nil, members: groupMembers, groupsVersion: GroupManager.defaultGroupsVersion)
-
-            let thread = TSGroupThread(groupModel: model)
+            var thread: TSGroupThread!
             write {
+                thread = try! GroupManager.createGroupForTests(transaction: $0,
+                                                               members: groupMembers,
+                                                               name: "Book Club")
                 thread.shouldThreadBeVisible = true
-                thread.anyInsert(transaction: $0)
+                thread.anyOverwritingUpdate(transaction: $0)
                 thread.updateConversationColorName(.taupe, transaction: $0)
                 thread.archiveThread(with: $0)
             }

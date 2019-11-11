@@ -371,8 +371,12 @@ public class GroupThreadFactory: NSObject, Factory {
 
     @objc
     public func create(transaction: SDSAnyWriteTransaction) -> TSGroupThread {
-        let thread = TSGroupThread.getOrCreateThread(with: groupModelBuilder(self),
-                                                     transaction: transaction)
+        let thread = try! GroupManager.createGroupForTests(transaction: transaction,
+                                                      members: memberAddressesBuilder(),
+                                                      name: titleBuilder(),
+                                                      avatarData: groupAvatarDataBuilder(),
+                                                      groupId: groupIdBuilder(),
+                                                      groupsVersion: groupsVersionBuilder())
 
         let incomingMessageFactory = IncomingMessageFactory()
         incomingMessageFactory.threadCreator = { _ in return thread }
@@ -392,15 +396,6 @@ public class GroupThreadFactory: NSObject, Factory {
     }
 
     // MARK: Generators
-
-    @objc
-    public var groupModelBuilder: (GroupThreadFactory) -> TSGroupModel = { groupThreadFactory in
-        return TSGroupModel(groupId: groupThreadFactory.groupIdBuilder(),
-                            name: groupThreadFactory.titleBuilder(),
-                            avatarData: groupThreadFactory.groupAvatarDataBuilder(),
-                            members: groupThreadFactory.memberAddressesBuilder(),
-                            groupsVersion: groupThreadFactory.groupsVersionBuilder())
-    }
 
     @objc
     public var titleBuilder: () -> String? = {
