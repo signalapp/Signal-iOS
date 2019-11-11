@@ -155,6 +155,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 @synthesize accessibilityAuthorName = _accessibilityAuthorName;
 @synthesize shouldHideFooter = _shouldHideFooter;
 @synthesize audioPlaybackState = _audioPlaybackState;
+@synthesize needsUpdate = _needsUpdate;
 
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
                              thread:(TSThread *)thread
@@ -411,9 +412,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 
     _isFirstInCluster = isFirstInCluster;
 
-    // Although this doesn't affect layout size, the view model use
-    // hasCachedLayoutState to detect which cells needs to be redrawn due to changes.
-    [self clearCachedLayoutState];
+    [self setNeedsUpdate];
 }
 
 - (void)setIsLastInCluster:(BOOL)isLastInCluster
@@ -424,9 +423,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 
     _isLastInCluster = isLastInCluster;
 
-    // Although this doesn't affect layout size, the view model use
-    // hasCachedLayoutState to detect which cells needs to be redrawn due to changes.
-    [self clearCachedLayoutState];
+    [self setNeedsUpdate];
 }
 
 - (void)setUnreadIndicator:(nullable OWSUnreadIndicator *)unreadIndicator
@@ -487,10 +484,21 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 - (void)clearCachedLayoutState
 {
     self.cachedCellSize = nil;
+    
+    // Any change which requires relayout requires cell update.
+    [self setNeedsUpdate];
 }
 
 - (BOOL)hasCachedLayoutState {
     return self.cachedCellSize != nil;
+}
+
+- (void)clearNeedsUpdate {
+    _needsUpdate = NO;
+}
+
+- (void)setNeedsUpdate {
+    _needsUpdate = YES;
 }
 
 - (CGSize)cellSize

@@ -364,7 +364,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var hasBodyTextActionContent: Bool = false
     var hasMediaActionContent: Bool = false
     var mediaAlbumItems: [ConversationMediaAlbumItem]?
-    var hasCachedLayoutState: Bool = false
+    var needsUpdate: Bool = false
     var linkPreview: OWSLinkPreview?
     var linkPreviewAttachment: TSAttachment?
     var stickerInfo: StickerInfo?
@@ -397,6 +397,10 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     func clearCachedLayoutState() {
         owsFailDebug("unexpected invocation")
         return
+    }
+
+    func clearNeedsUpdate() {
+        owsFailDebug("unexpected invocation")
     }
 
     func copyMediaAction() {
