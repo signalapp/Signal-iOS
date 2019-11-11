@@ -111,20 +111,14 @@ class YDBFullTextSearcherTest: SignalBaseTest {
         SSKEnvironment.shared.contactsManager = YDBFullTextSearcherContactsManager()
 
         self.yapWrite { transaction in
-            let bookModel = TSGroupModel(groupId: TSGroupModel.generateRandomGroupId(),
-                                          name: "Book Club",
-                                          avatarData: nil,
-                                          members: [aliceRecipient, bobRecipient],
-                                          groupsVersion: GroupManager.defaultGroupsVersion)
-            let bookClubGroupThread = TSGroupThread.getOrCreateThread(with: bookModel, transaction: transaction.asAnyWrite)
+            let bookClubGroupThread = try! GroupManager.createGroupForTests(transaction: transaction.asAnyWrite,
+                                                                            members: [aliceRecipient, bobRecipient],
+                                                                            name: "Book Club")
             self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction.asAnyRead)
 
-            let snackModel = TSGroupModel(groupId: TSGroupModel.generateRandomGroupId(),
-                                         name: "Snack Club",
-                                         avatarData: nil,
-                                         members: [aliceRecipient],
-                                         groupsVersion: GroupManager.defaultGroupsVersion)
-            let snackClubGroupThread = TSGroupThread.getOrCreateThread(with: snackModel, transaction: transaction.asAnyWrite)
+            let snackClubGroupThread = try! GroupManager.createGroupForTests(transaction: transaction.asAnyWrite,
+                                                                             members: [aliceRecipient],
+                                                                             name: "Snack Club")
             self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction.asAnyRead)
 
             let aliceContactThread = TSContactThread.getOrCreateThread(withContactAddress: aliceRecipient, transaction: transaction.asAnyWrite)
@@ -344,12 +338,9 @@ class YDBFullTextSearcherTest: SignalBaseTest {
 
         Bench(title: "Populate Index", memorySamplerRatio: 1) { _ in
             self.yapWrite { transaction in
-                let groupModel = TSGroupModel(groupId: TSGroupModel.generateRandomGroupId(),
-                                              name: "Perf",
-                                              avatarData: nil,
-                                              members: [aliceRecipient, bobRecipient],
-                                              groupsVersion: GroupManager.defaultGroupsVersion)
-                let thread = TSGroupThread.getOrCreateThread(with: groupModel, transaction: transaction.asAnyWrite)
+                let thread = try! GroupManager.createGroupForTests(transaction: transaction.asAnyWrite,
+                                                                   members: [aliceRecipient, bobRecipient],
+                                                                   name: "Perf")
 
                 TSOutgoingMessage(in: thread, messageBody: string1, attachmentId: nil).anyInsert(transaction: transaction.asAnyWrite)
 
