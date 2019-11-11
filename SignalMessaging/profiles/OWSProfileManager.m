@@ -915,10 +915,18 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 - (void)setLocalProfileKey:(OWSAES256Key *)key transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSUserProfile *localUserProfile =
-        [OWSUserProfile getOrBuildUserProfileForAddress:OWSUserProfile.localProfileAddress transaction:transaction];
+    // We assert on the ivar directly here, as we want this to be cached already
+    // by the time this method is called. If it's not, we've changed our caching
+    // logic and should re-evalulate this method.
+    OWSAssertDebug(_localUserProfile);
 
-    [localUserProfile clearWithProfileKey:key transaction:transaction completion:nil];
+    // If it didn't exist, create it in a safe way as accessing the property
+    // will do a sneaky transaction.
+    if (!_localUserProfile) {
+        _localUserProfile = [OWSUserProfile getOrBuildUserProfileForAddress:OWSUserProfile.localProfileAddress transaction:transaction];
+    }
+
+    [self.localUserProfile clearWithProfileKey:key transaction:transaction completion:nil];
 }
 
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
