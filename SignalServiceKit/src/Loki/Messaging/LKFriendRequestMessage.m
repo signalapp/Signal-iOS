@@ -24,5 +24,6 @@
 
 #pragma mark Settings
 - (uint)ttl { return 4 * kDayInMs; }
+- (BOOL)shouldSyncTranscript { return NO; }
 
 @end
