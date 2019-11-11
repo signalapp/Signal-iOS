@@ -541,16 +541,25 @@ NS_ASSUME_NONNULL_BEGIN
         return message.isFriendRequest;
     } else {
         if (message.isFriendRequest) {
-            // Only show an incoming friend request if the user isn't yet friends with any of the other user's devices
+            // Only show the first friend request that was received
             NSString *senderID = ((TSIncomingMessage *)message).authorId;
-            __block NSSet<TSContactThread *> *linkedDeviceThreads;
+            __block NSMutableSet<TSContactThread *> *linkedDeviceThreads;
             [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                linkedDeviceThreads = [LKDatabaseUtilities getLinkedDeviceThreadsFor:senderID in:transaction];
+                linkedDeviceThreads = [LKDatabaseUtilities getLinkedDeviceThreadsFor:senderID in:transaction].mutableCopy;
             }];
-            BOOL isFriend = [linkedDeviceThreads contains:^BOOL(TSContactThread *thread) {
-                return thread.isContactFriend;
+            NSMutableArray<TSIncomingMessage *> *allFriendRequestMessages = @[].mutableCopy;
+            for (TSContactThread *thread in linkedDeviceThreads) {
+                [thread enumerateInteractionsUsingBlock:^(TSInteraction *interaction) {
+                    TSIncomingMessage *message = [interaction as:TSIncomingMessage.class];
+                    if (message != nil && message.isFriendRequest) {
+                        [allFriendRequestMessages addObject:message];
+                    }
+                }];
+            }
+            [allFriendRequestMessages sortUsingComparator:^NSComparisonResult(TSIncomingMessage *lhs, TSIncomingMessage *rhs) {
+                return [@(lhs.timestamp) compare:@(rhs.timestamp)] == NSOrderedDescending;
             }];
-            return !isFriend;
+            return [message.uniqueId isEqual:allFriendRequestMessages.firstObject.uniqueId];
         } else {
             return NO;
         }

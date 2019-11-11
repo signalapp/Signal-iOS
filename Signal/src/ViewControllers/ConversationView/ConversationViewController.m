@@ -4451,8 +4451,6 @@ typedef enum : NSUInteger {
 
 - (void)acceptFriendRequest:(TSIncomingMessage *)friendRequest
 {
-    // Update the thread's friend request status
-    [self.thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:nil];
     // Accept all outstanding friend requests associated with this user and try to establish sessions with the
     // subset of their devices that haven't sent a friend request.
     NSString *senderID = friendRequest.authorId;
@@ -4466,9 +4464,13 @@ typedef enum : NSUInteger {
         } else {
             OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
             OWSMessageSend *automatedFriendRequestMessage = [messageSender getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:thread.contactIdentifier];
-            [messageSender sendMessage:automatedFriendRequestMessage];
+            dispatch_async(OWSDispatch.sendingQueue, ^{
+                [messageSender sendMessage:automatedFriendRequestMessage];
+            });
         }
     }
+    // Update the thread's friend request status
+    [self.thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:nil];
 }
 
 - (void)declineFriendRequest:(TSIncomingMessage *)friendRequest

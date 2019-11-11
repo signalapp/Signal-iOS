@@ -498,9 +498,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(message);
     OWSAssertDebug(errorHandle);
 
-    NSMutableSet<NSString *> *recipientIds = [NSMutableSet new];
+    __block NSMutableSet<NSString *> *recipientIds = [NSMutableSet new];
     if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-        [recipientIds addObject:self.tsAccountManager.localNumber];
+        NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:userHexEncodedPublicKey in:transaction] ?: userHexEncodedPublicKey;
+            NSMutableSet<NSString *> *linkedDeviceHexEncodedPublicKeys = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction].mutableCopy;
+            [linkedDeviceHexEncodedPublicKeys removeObject:userHexEncodedPublicKey];
+            recipientIds = [recipientIds setByAddingObjectsFromSet:linkedDeviceHexEncodedPublicKeys].mutableCopy;
+        }];
     } else if (thread.isGroupThread) {
         [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             LKPublicChat *publicChat = [LKDatabaseUtilities getPublicChatForThreadID:thread.uniqueId transaction:transaction];
@@ -935,7 +941,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     if (isGroupMessage || isDeviceLinkMessage) {
         [self sendMessage:messageSend];
     } else {
-        BOOL isSilentMessage = message.isSilent || [message isKindOfClass:LKEphemeralMessage.class];
+        BOOL isSilentMessage = message.isSilent || [message isKindOfClass:LKEphemeralMessage.class] || [message isKindOfClass:OWSOutgoingSyncMessage.class];
         BOOL isFriendRequestMessage = [message isKindOfClass:LKFriendRequestMessage.class];
         [[LKAPI getDestinationsFor:contactID]
         .thenOn(OWSDispatch.sendingQueue, ^(NSArray<LKDestination *> *destinations) {
