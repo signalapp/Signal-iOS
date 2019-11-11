@@ -166,9 +166,10 @@ public class GroupManager: NSObject {
     public static func createGroupForTests(transaction: SDSAnyWriteTransaction,
                                            members: [SignalServiceAddress],
                                            name: String? = nil,
-                                           avatarData: Data? = nil) throws -> TSGroupThread {
+                                           avatarData: Data? = nil,
+                                           groupId: Data? = nil) throws -> TSGroupThread {
 
-        let model = try buildGroupModel(groupId: nil, name: name, members: members, avatarData: avatarData)
+        let model = try buildGroupModel(groupId: groupId, name: name, members: members, avatarData: avatarData)
 
         return TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
     }
