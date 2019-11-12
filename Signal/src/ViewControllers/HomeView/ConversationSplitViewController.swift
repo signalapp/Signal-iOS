@@ -451,7 +451,13 @@ extension ConversationSplitViewController: UISplitViewControllerDelegate {
 
         let allViewControllers = primaryNavController.viewControllers
 
-        primaryNavController.viewControllers = Array(allViewControllers[0..<conversationVCIndex])
+        primaryNavController.viewControllers = Array(allViewControllers[0..<conversationVCIndex]).filter { vc in
+            // Don't ever allow a conversation view controller to be transfered on the master
+            // stack when expanding from collapsed mode. This should never happen.
+            guard let vc = vc as? ConversationViewController else { return true }
+            owsFailDebug("Unexpected conversation in view hierarchy: \(vc.thread)")
+            return false
+        }
 
         // Create a new detail nav because reusing the existing one causes
         // some strange behavior around the title view + input accessory view.
