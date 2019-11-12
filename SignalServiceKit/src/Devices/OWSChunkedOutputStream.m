@@ -63,6 +63,11 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
+- (BOOL)writeUInt32:(UInt32)value {
+    NSData *data = [[NSData alloc] initWithBytes:&value length:sizeof(value)];
+    return [self writeData:data];
+}
+
 - (BOOL)writeVariableLengthUInt32:(UInt32)value
 {
     while (YES) {

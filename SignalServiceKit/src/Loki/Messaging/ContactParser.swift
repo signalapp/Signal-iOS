@@ -10,11 +10,13 @@
         var index = 0
         var result: [String] = []
         while index < data.endIndex {
-            let uncheckedSize: Int? = try? data[index..<(index+1)].withUnsafeBytes { $0.pointee }
+            let uncheckedSize: UInt32? = try? data[index..<(index+4)].withUnsafeBytes { $0.pointee }
             guard let size = uncheckedSize else { break }
-            index += 1
-            let protoAsData = data[index..<(index+size)]
+            let sizeAsInt = Int(size)
+            index += 4
+            let protoAsData = data[index..<(index+sizeAsInt)]
             guard let proto = try? SSKProtoContactDetails.parseData(protoAsData) else { break }
+            index += sizeAsInt
             result.append(proto.number)
         }
         return result
