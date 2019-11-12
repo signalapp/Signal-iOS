@@ -452,7 +452,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
                 OWSAssertDebug(uploadData.length > 0);
                 [formData appendPartWithFormData:uploadData name:@"file"];
 
-                OWSLogVerbose(@"constructed body");
+                OWSLogVerbose(@"constructed %@ body", [NSByteCountFormatter stringFromByteCount:uploadData.length countStyle:NSByteCountFormatterCountStyleFile]);
             }
             progress:^(NSProgress *progress) {
                 OWSLogVerbose(@"Upload progress: %.2f%%", progress.fractionCompleted * 100);
