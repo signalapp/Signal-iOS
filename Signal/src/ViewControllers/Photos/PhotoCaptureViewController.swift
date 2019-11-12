@@ -340,11 +340,12 @@ class PhotoCaptureViewController: OWSViewController {
     private func showCaptureUI() {
         Logger.debug("")
         view.addSubview(previewView)
-        if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
+        if UIDevice.current.isIPad {
             previewView.autoPinEdgesToSuperviewEdges()
         } else {
-            let bottomOffset: CGFloat = CaptureButton.recordingDiameter + 16
-            previewView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 0, leading: 0, bottom: bottomOffset, trailing: 0))
+            let bottomOffset: CGFloat = CaptureButton.recordingDiameter + 16 + view.layoutMargins.bottom
+            previewView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 0, leading: 0, bottom: bottomOffset, trailing: 0), excludingEdge: .top)
+            previewView.autoPin(toAspectRatio: 3/4)
         }
 
         view.addSubview(captureButton)
