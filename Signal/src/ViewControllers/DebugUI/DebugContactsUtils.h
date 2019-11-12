@@ -4,6 +4,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#ifdef DEBUG
+
 @class CNContact;
 
 @interface DebugContactsUtils : NSObject
@@ -21,5 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)deleteAllRandomContacts;
 
 @end
+
+#endif
 
 NS_ASSUME_NONNULL_END
