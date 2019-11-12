@@ -34,8 +34,8 @@ public class ConversationListDatabaseObserver: NSObject {
     private var threadChangeCollector = ThreadChangeCollector()
 
     private typealias ThreadUniqueId = String
-    private var _committedThreadChanges: Set<ThreadUniqueId>?
-    private var committedThreadChanges: Set<ThreadUniqueId>? {
+    private var _committedThreadChanges: Result<Set<ThreadUniqueId>, Error>?
+    private var committedThreadChanges: Result<Set<ThreadUniqueId>, Error>? {
         get {
             AssertIsOnMainThread()
             return _committedThreadChanges
@@ -79,11 +79,11 @@ extension ConversationListDatabaseObserver: DatabaseSnapshotDelegate {
             let committedThreadChanges = try threadChangeCollector.threadUniqueIds(db: db)
 
             DispatchQueue.main.async {
-                self.committedThreadChanges = committedThreadChanges
+                self.committedThreadChanges = .success(committedThreadChanges)
             }
         } catch {
             DispatchQueue.main.async {
-                self.committedThreadChanges = nil
+                self.committedThreadChanges = .failure(error)
             }
         }
     }
@@ -106,24 +106,31 @@ extension ConversationListDatabaseObserver: DatabaseSnapshotDelegate {
 
     public func databaseSnapshotDidUpdate() {
         AssertIsOnMainThread()
-        do {
-            guard let committedThreadChanges = self.committedThreadChanges else {
-                throw OWSErrorMakeAssertionError("committedThreadChanges was unexpectedly nil")
-            }
-            self.committedThreadChanges = nil
 
-            for delegate in snapshotDelegates {
-                delegate.conversationListDatabaseSnapshotDidUpdate(updatedThreadIds: committedThreadChanges)
-            }
-        } catch DatabaseObserverError.changeTooLarge {
-            for delegate in snapshotDelegates {
+        let reset = {
+            for delegate in self.snapshotDelegates {
                 delegate.conversationListDatabaseSnapshotDidReset()
             }
-        } catch {
-            owsFailDebug("unknown error: \(error)")
+        }
+
+        guard let committedThreadChanges = self.committedThreadChanges else {
+            owsFailDebug("committedThreadChanges was unexpectedly nil")
+            reset()
+            return
+        }
+
+        switch committedThreadChanges {
+        case .success(let updatedThreadIds):
+            self.committedThreadChanges = nil
             for delegate in snapshotDelegates {
-                delegate.conversationListDatabaseSnapshotDidReset()
+                delegate.conversationListDatabaseSnapshotDidUpdate(updatedThreadIds: updatedThreadIds)
             }
+        case .failure(DatabaseObserverError.changeTooLarge):
+            // no assertionFailure, we expect this sometimes
+            reset()
+        case .failure(let unknownError):
+            owsFailDebug("unknown error: \(unknownError)")
+            reset()
         }
     }
 

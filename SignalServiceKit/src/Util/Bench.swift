@@ -122,7 +122,7 @@ public func Bench(title: String,
 ///
 ///    [BenchManager startEventWithTitle:"message sending" eventId:message.id]
 ///    ...
-///    [BenchManager completeEventWithEventId:eventId:message.id]
+///    [BenchManager completeEventWithEventId:message.id]
 public func BenchEventStart(title: String, eventId: BenchmarkEventId) {
     BenchAsync(title: title) { finish in
         runningEvents[eventId] = Event(title: title, eventId: eventId, completion: finish)
