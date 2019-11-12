@@ -181,7 +181,7 @@ public class GroupManager: NSObject {
         return TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
     }
 
-    @objc
+    @objc(createGroupForTestsObjcWithTransaction:members:name:avatarData:error:)
     public static func createGroupForTestsObjc(transaction: SDSAnyWriteTransaction,
                                                members: [SignalServiceAddress],
                                                name: String?,
