@@ -57,7 +57,6 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
             lastInteractionRowId:(int64_t)lastInteractionRowId
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
-                           rowId:(int64_t)rowId
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
               contactPhoneNumber:(nullable NSString *)contactPhoneNumber
                      contactUUID:(nullable NSString *)contactUUID
@@ -71,7 +70,6 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
               lastInteractionRowId:lastInteractionRowId
                       messageDraft:messageDraft
                     mutedUntilDate:mutedUntilDate
-                             rowId:rowId
              shouldThreadBeVisible:shouldThreadBeVisible];
 
     if (!self) {

@@ -131,7 +131,6 @@ extension TSThread {
             let messageDraft: String? = record.messageDraft
             let mutedUntilDateInterval: Double? = record.mutedUntilDate
             let mutedUntilDate: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateInterval, name: "mutedUntilDate")
-            let rowId: Int64 = Int64(recordId)
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
             let contactPhoneNumber: String? = record.contactPhoneNumber
             let contactUUID: String? = record.contactUUID
@@ -145,7 +144,6 @@ extension TSThread {
                                    lastInteractionRowId: lastInteractionRowId,
                                    messageDraft: messageDraft,
                                    mutedUntilDate: mutedUntilDate,
-                                   rowId: rowId,
                                    shouldThreadBeVisible: shouldThreadBeVisible,
                                    contactPhoneNumber: contactPhoneNumber,
                                    contactUUID: contactUUID,
@@ -162,7 +160,6 @@ extension TSThread {
             let messageDraft: String? = record.messageDraft
             let mutedUntilDateInterval: Double? = record.mutedUntilDate
             let mutedUntilDate: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateInterval, name: "mutedUntilDate")
-            let rowId: Int64 = Int64(recordId)
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
             let groupModelSerialized: Data? = record.groupModel
             let groupModel: TSGroupModel = try SDSDeserialization.unarchive(groupModelSerialized, name: "groupModel")
@@ -175,7 +172,6 @@ extension TSThread {
                                  lastInteractionRowId: lastInteractionRowId,
                                  messageDraft: messageDraft,
                                  mutedUntilDate: mutedUntilDate,
-                                 rowId: rowId,
                                  shouldThreadBeVisible: shouldThreadBeVisible,
                                  groupModel: groupModel)
 
@@ -190,7 +186,6 @@ extension TSThread {
             let messageDraft: String? = record.messageDraft
             let mutedUntilDateInterval: Double? = record.mutedUntilDate
             let mutedUntilDate: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateInterval, name: "mutedUntilDate")
-            let rowId: Int64 = Int64(recordId)
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
 
             return TSThread(grdbId: recordId,
@@ -201,7 +196,6 @@ extension TSThread {
                             lastInteractionRowId: lastInteractionRowId,
                             messageDraft: messageDraft,
                             mutedUntilDate: mutedUntilDate,
-                            rowId: rowId,
                             shouldThreadBeVisible: shouldThreadBeVisible)
 
         default:

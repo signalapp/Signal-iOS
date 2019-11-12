@@ -31,7 +31,6 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
             lastInteractionRowId:(int64_t)lastInteractionRowId
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
-                           rowId:(int64_t)rowId
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
                       groupModel:(TSGroupModel *)groupModel
 {
@@ -43,7 +42,6 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
               lastInteractionRowId:lastInteractionRowId
                       messageDraft:messageDraft
                     mutedUntilDate:mutedUntilDate
-                             rowId:rowId
              shouldThreadBeVisible:shouldThreadBeVisible];
 
     if (!self) {
