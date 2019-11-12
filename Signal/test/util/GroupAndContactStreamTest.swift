@@ -87,7 +87,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
         }
     }
 
-    let outputGroupSyncData = "pwEKEHNddRc9sZVW92G7XH8DdEgaDCsxMzIxMzIxNDMyMRoMKzEzMjEzMjE0MzIzMAA6BWJyb3duSg4SDCsxMzIxMzIxNDMyMUomCiQzMUNFMTQxMi05QTI4LTRFNkYtQjRFRS1BMjVDMzE3OUQwODVKNAokMUQ0QUIwNDUtODhGQi00QzRFLTlGNkEtRjkyMTEyNEJENTI5EgwrMTMyMTMyMTQzMjNYAJABChBzbbYXPbGVVvdhu1x/A3RIEglCb29rIENsdWIaDCsxMzIxMzIxNDMyMRoMKzE1NTUzMjE0MzIzMAA6CWJsdWVfZ3JleUoOEgwrMTMyMTMyMTQzMjFKNAokNTU1NTU1NTUtODhGQi00QzRFLTlGNkEtRjkyMTEyNEJENTI5EgwrMTU1NTMyMTQzMjNQAVgBiwEKEHN99xc9sZVW92G7XH8DdEgSCUNvb2sgQmx1YhoMKzEzMjEzMjEzMzMzGgwrMTU1NTMyMTIyMjIwADoEYmx1ZUoOEgwrMTMyMTMyMTMzMzNKNAokNTU1NTU1NTUtODhGQi00QzRFLTlGNkEtMjIyMjIyMjIyMjIyEgwrMTU1NTMyMTIyMjJQAFgB"
+    let outputGroupSyncData = "pwEKEHNddRc9sZVW92G7XH8DdEgaDCsxMzIxMzIxNDMyMRoMKzEzMjEzMjE0MzIzMAA6BWJyb3duSg4SDCsxMzIxMzIxNDMyMUo0CiQxRDRBQjA0NS04OEZCLTRDNEUtOUY2QS1GOTIxMTI0QkQ1MjkSDCsxMzIxMzIxNDMyM0omCiQzMUNFMTQxMi05QTI4LTRFNkYtQjRFRS1BMjVDMzE3OUQwODVYAJABChBzbbYXPbGVVvdhu1x/A3RIEglCb29rIENsdWIaDCsxMzIxMzIxNDMyMRoMKzE1NTUzMjE0MzIzMAA6CWJsdWVfZ3JleUoOEgwrMTMyMTMyMTQzMjFKNAokNTU1NTU1NTUtODhGQi00QzRFLTlGNkEtRjkyMTEyNEJENTI5EgwrMTU1NTMyMTQzMjNQAVgBiwEKEHN99xc9sZVW92G7XH8DdEgSCUNvb2sgQmx1YhoMKzEzMjEzMjEzMzMzGgwrMTU1NTMyMTIyMjIwADoEYmx1ZUoOEgwrMTMyMTMyMTMzMzNKNAokNTU1NTU1NTUtODhGQi00QzRFLTlGNkEtMjIyMjIyMjIyMjIyEgwrMTU1NTMyMTIyMjJQAFgB"
     func test_writeGroupSync() throws {
         let group1: TSGroupThread = {
             let groupId = Data(base64Encoded: "c111Fz2xlVb3YbtcfwN0SA==")!
@@ -120,7 +120,8 @@ class GroupAndContactStreamTest: SignalBaseTest {
             write {
                 thread = try! GroupManager.createGroupForTests(transaction: $0,
                                                                members: groupMembers,
-                                                               name: "Book Club")
+                                                               name: "Book Club",
+                                                               groupId: groupId)
                 thread.shouldThreadBeVisible = true
                 thread.anyOverwritingUpdate(transaction: $0)
                 thread.updateConversationColorName(.taupe, transaction: $0)
