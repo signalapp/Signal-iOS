@@ -56,7 +56,6 @@ public class ThreadMappingRowChange: NSObject {
         case .move:
             assert(oldIndexPath != nil)
             assert(newIndexPath != nil)
-            assert(oldIndexPath != newIndexPath)
         }
         #endif
 
