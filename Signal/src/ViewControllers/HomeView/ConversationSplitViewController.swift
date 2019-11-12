@@ -173,7 +173,17 @@ class ConversationSplitViewController: UISplitViewController {
         } else {
             viewControllers[1] = vc
         }
-        currentDetailViewController = vc
+
+        // If the detail VC is a nav controller, we want to keep track of
+        // the root view controller. We use this to determine the start
+        // point of the current detail view when replacing it while
+        // collapsed. At that point, this nav controller's view controllers
+        // will have been merged into the primary nav controller.
+        if let vc = vc as? UINavigationController {
+            currentDetailViewController = vc.viewControllers.first
+        } else {
+            currentDetailViewController = vc
+        }
     }
 
     // MARK: - Keyboard Shortcuts
