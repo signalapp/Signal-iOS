@@ -493,11 +493,13 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     return self.cachedCellSize != nil;
 }
 
-- (void)clearNeedsUpdate {
+- (void)clearNeedsUpdate
+{
     _needsUpdate = NO;
 }
 
-- (void)setNeedsUpdate {
+- (void)setNeedsUpdate
+{
     _needsUpdate = YES;
 }
 

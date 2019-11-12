@@ -1331,29 +1331,29 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     __block BOOL hasError = NO;
     _Nullable id<ConversationViewItem> (^tryToAddViewItem)(TSInteraction *)
         = ^(TSInteraction *interaction) {
-              OWSAssertDebug(interaction.uniqueId.length > 0);
-
-              id<ConversationViewItem> _Nullable viewItem = self.viewItemCache[interaction.uniqueId];
-              if (!viewItem) {
-                  viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:interaction
-                                                                                   thread:self.thread
-                                                                              transaction:transaction
-                                                                        conversationStyle:conversationStyle];
-              }
-              OWSAssertDebug(!viewItemCache[interaction.uniqueId]);
-              viewItemCache[interaction.uniqueId] = viewItem;
-
-              if (viewItem.messageCellType == OWSMessageCellType_StickerMessage && viewItem.stickerAttachment == nil
-                  && !viewItem.isFailedSticker) {
-                  return (id<ConversationViewItem>)nil;
-              }
+            OWSAssertDebug(interaction.uniqueId.length > 0);
+            
+            id<ConversationViewItem> _Nullable viewItem = self.viewItemCache[interaction.uniqueId];
+            if (!viewItem) {
+                viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:interaction
+                                                                                 thread:self.thread
+                                                                            transaction:transaction
+                                                                      conversationStyle:conversationStyle];
+            }
+            OWSAssertDebug(!viewItemCache[interaction.uniqueId]);
+            viewItemCache[interaction.uniqueId] = viewItem;
+            
+            if (viewItem.messageCellType == OWSMessageCellType_StickerMessage && viewItem.stickerAttachment == nil
+                && !viewItem.isFailedSticker) {
+                return (id<ConversationViewItem>)nil;
+            }
 
             [viewItem clearNeedsUpdate];
-
-              [viewItems addObject:viewItem];
-
-              return viewItem;
-          };
+            
+            [viewItems addObject:viewItem];
+            
+            return viewItem;
+        };
 
     NSMutableSet<NSString *> *interactionIds = [NSMutableSet new];
     BOOL canLoadMoreItems = self.messageMapping.canLoadMore;
