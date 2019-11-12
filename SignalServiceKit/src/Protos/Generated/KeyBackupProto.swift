@@ -13,16 +13,19 @@ public enum KeyBackupProtoError: Error {
 
 // MARK: - KeyBackupProtoRequest
 
-@objc public class KeyBackupProtoRequest: NSObject {
+@objc
+public class KeyBackupProtoRequest: NSObject {
 
     // MARK: - KeyBackupProtoRequestBuilder
 
-    @objc public class func builder() -> KeyBackupProtoRequestBuilder {
+    @objc
+    public class func builder() -> KeyBackupProtoRequestBuilder {
         return KeyBackupProtoRequestBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> KeyBackupProtoRequestBuilder {
+    @objc
+    public func asBuilder() -> KeyBackupProtoRequestBuilder {
         let builder = KeyBackupProtoRequestBuilder()
         if let _value = backup {
             builder.setBackup(_value)
@@ -36,11 +39,13 @@ public enum KeyBackupProtoError: Error {
         return builder
     }
 
-    @objc public class KeyBackupProtoRequestBuilder: NSObject {
+    @objc
+    public class KeyBackupProtoRequestBuilder: NSObject {
 
         private var proto = KeyBackupProtos_Request()
 
-        @objc fileprivate override init() {}
+        @objc
+        fileprivate override init() {}
 
         @objc
         @available(swift, obsoleted: 1.0)
@@ -75,22 +80,27 @@ public enum KeyBackupProtoError: Error {
             proto.delete = valueParam.proto
         }
 
-        @objc public func build() throws -> KeyBackupProtoRequest {
+        @objc
+        public func build() throws -> KeyBackupProtoRequest {
             return try KeyBackupProtoRequest.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        @objc
+        public func buildSerializedData() throws -> Data {
             return try KeyBackupProtoRequest.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: KeyBackupProtos_Request
 
-    @objc public let backup: KeyBackupProtoBackupRequest?
+    @objc
+    public let backup: KeyBackupProtoBackupRequest?
 
-    @objc public let restore: KeyBackupProtoRestoreRequest?
+    @objc
+    public let restore: KeyBackupProtoRestoreRequest?
 
-    @objc public let delete: KeyBackupProtoDeleteRequest?
+    @objc
+    public let delete: KeyBackupProtoDeleteRequest?
 
     private init(proto: KeyBackupProtos_Request,
                  backup: KeyBackupProtoBackupRequest?,
@@ -107,7 +117,8 @@ public enum KeyBackupProtoError: Error {
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoRequest {
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoRequest {
         let proto = try KeyBackupProtos_Request(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -139,7 +150,8 @@ public enum KeyBackupProtoError: Error {
         return result
     }
 
-    @objc public override var debugDescription: String {
+    @objc
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -147,13 +159,15 @@ public enum KeyBackupProtoError: Error {
 #if DEBUG
 
 extension KeyBackupProtoRequest {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension KeyBackupProtoRequest.KeyBackupProtoRequestBuilder {
-    @objc public func buildIgnoringErrors() -> KeyBackupProtoRequest? {
+    @objc
+    public func buildIgnoringErrors() -> KeyBackupProtoRequest? {
         return try! self.build()
     }
 }
@@ -162,16 +176,19 @@ extension KeyBackupProtoRequest.KeyBackupProtoRequestBuilder {
 
 // MARK: - KeyBackupProtoResponse
 
-@objc public class KeyBackupProtoResponse: NSObject {
+@objc
+public class KeyBackupProtoResponse: NSObject {
 
     // MARK: - KeyBackupProtoResponseBuilder
 
-    @objc public class func builder() -> KeyBackupProtoResponseBuilder {
+    @objc
+    public class func builder() -> KeyBackupProtoResponseBuilder {
         return KeyBackupProtoResponseBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> KeyBackupProtoResponseBuilder {
+    @objc
+    public func asBuilder() -> KeyBackupProtoResponseBuilder {
         let builder = KeyBackupProtoResponseBuilder()
         if let _value = backup {
             builder.setBackup(_value)
@@ -185,11 +202,13 @@ extension KeyBackupProtoRequest.KeyBackupProtoRequestBuilder {
         return builder
     }
 
-    @objc public class KeyBackupProtoResponseBuilder: NSObject {
+    @objc
+    public class KeyBackupProtoResponseBuilder: NSObject {
 
         private var proto = KeyBackupProtos_Response()
 
-        @objc fileprivate override init() {}
+        @objc
+        fileprivate override init() {}
 
         @objc
         @available(swift, obsoleted: 1.0)
@@ -224,22 +243,27 @@ extension KeyBackupProtoRequest.KeyBackupProtoRequestBuilder {
             proto.delete = valueParam.proto
         }
 
-        @objc public func build() throws -> KeyBackupProtoResponse {
+        @objc
+        public func build() throws -> KeyBackupProtoResponse {
             return try KeyBackupProtoResponse.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        @objc
+        public func buildSerializedData() throws -> Data {
             return try KeyBackupProtoResponse.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: KeyBackupProtos_Response
 
-    @objc public let backup: KeyBackupProtoBackupResponse?
+    @objc
+    public let backup: KeyBackupProtoBackupResponse?
 
-    @objc public let restore: KeyBackupProtoRestoreResponse?
+    @objc
+    public let restore: KeyBackupProtoRestoreResponse?
 
-    @objc public let delete: KeyBackupProtoDeleteResponse?
+    @objc
+    public let delete: KeyBackupProtoDeleteResponse?
 
     private init(proto: KeyBackupProtos_Response,
                  backup: KeyBackupProtoBackupResponse?,
@@ -256,7 +280,8 @@ extension KeyBackupProtoRequest.KeyBackupProtoRequestBuilder {
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoResponse {
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoResponse {
         let proto = try KeyBackupProtos_Response(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -288,7 +313,8 @@ extension KeyBackupProtoRequest.KeyBackupProtoRequestBuilder {
         return result
     }
 
-    @objc public override var debugDescription: String {
+    @objc
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -296,13 +322,15 @@ extension KeyBackupProtoRequest.KeyBackupProtoRequestBuilder {
 #if DEBUG
 
 extension KeyBackupProtoResponse {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension KeyBackupProtoResponse.KeyBackupProtoResponseBuilder {
-    @objc public func buildIgnoringErrors() -> KeyBackupProtoResponse? {
+    @objc
+    public func buildIgnoringErrors() -> KeyBackupProtoResponse? {
         return try! self.build()
     }
 }
@@ -311,16 +339,19 @@ extension KeyBackupProtoResponse.KeyBackupProtoResponseBuilder {
 
 // MARK: - KeyBackupProtoBackupRequest
 
-@objc public class KeyBackupProtoBackupRequest: NSObject {
+@objc
+public class KeyBackupProtoBackupRequest: NSObject {
 
     // MARK: - KeyBackupProtoBackupRequestBuilder
 
-    @objc public class func builder() -> KeyBackupProtoBackupRequestBuilder {
+    @objc
+    public class func builder() -> KeyBackupProtoBackupRequestBuilder {
         return KeyBackupProtoBackupRequestBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> KeyBackupProtoBackupRequestBuilder {
+    @objc
+    public func asBuilder() -> KeyBackupProtoBackupRequestBuilder {
         let builder = KeyBackupProtoBackupRequestBuilder()
         if let _value = serviceID {
             builder.setServiceID(_value)
@@ -346,11 +377,13 @@ extension KeyBackupProtoResponse.KeyBackupProtoResponseBuilder {
         return builder
     }
 
-    @objc public class KeyBackupProtoBackupRequestBuilder: NSObject {
+    @objc
+    public class KeyBackupProtoBackupRequestBuilder: NSObject {
 
         private var proto = KeyBackupProtos_BackupRequest()
 
-        @objc fileprivate override init() {}
+        @objc
+        fileprivate override init() {}
 
         @objc
         @available(swift, obsoleted: 1.0)
@@ -417,78 +450,94 @@ extension KeyBackupProtoResponse.KeyBackupProtoResponseBuilder {
             proto.tries = valueParam
         }
 
-        @objc public func build() throws -> KeyBackupProtoBackupRequest {
+        @objc
+        public func build() throws -> KeyBackupProtoBackupRequest {
             return try KeyBackupProtoBackupRequest.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        @objc
+        public func buildSerializedData() throws -> Data {
             return try KeyBackupProtoBackupRequest.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: KeyBackupProtos_BackupRequest
 
-    @objc public var serviceID: Data? {
-        guard proto.hasServiceID else {
+    @objc
+    public var serviceID: Data? {
+        guard hasServiceID else {
             return nil
         }
         return proto.serviceID
     }
-    @objc public var hasServiceID: Bool {
+    @objc
+    public var hasServiceID: Bool {
         return proto.hasServiceID
     }
 
-    @objc public var backupID: Data? {
-        guard proto.hasBackupID else {
+    @objc
+    public var backupID: Data? {
+        guard hasBackupID else {
             return nil
         }
         return proto.backupID
     }
-    @objc public var hasBackupID: Bool {
+    @objc
+    public var hasBackupID: Bool {
         return proto.hasBackupID
     }
 
-    @objc public var token: Data? {
-        guard proto.hasToken else {
+    @objc
+    public var token: Data? {
+        guard hasToken else {
             return nil
         }
         return proto.token
     }
-    @objc public var hasToken: Bool {
+    @objc
+    public var hasToken: Bool {
         return proto.hasToken
     }
 
-    @objc public var validFrom: UInt64 {
+    @objc
+    public var validFrom: UInt64 {
         return proto.validFrom
     }
-    @objc public var hasValidFrom: Bool {
+    @objc
+    public var hasValidFrom: Bool {
         return proto.hasValidFrom
     }
 
-    @objc public var data: Data? {
-        guard proto.hasData else {
+    @objc
+    public var data: Data? {
+        guard hasData else {
             return nil
         }
         return proto.data
     }
-    @objc public var hasData: Bool {
+    @objc
+    public var hasData: Bool {
         return proto.hasData
     }
 
-    @objc public var pin: Data? {
-        guard proto.hasPin else {
+    @objc
+    public var pin: Data? {
+        guard hasPin else {
             return nil
         }
         return proto.pin
     }
-    @objc public var hasPin: Bool {
+    @objc
+    public var hasPin: Bool {
         return proto.hasPin
     }
 
-    @objc public var tries: UInt32 {
+    @objc
+    public var tries: UInt32 {
         return proto.tries
     }
-    @objc public var hasTries: Bool {
+    @objc
+    public var hasTries: Bool {
         return proto.hasTries
     }
 
@@ -501,7 +550,8 @@ extension KeyBackupProtoResponse.KeyBackupProtoResponseBuilder {
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoBackupRequest {
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoBackupRequest {
         let proto = try KeyBackupProtos_BackupRequest(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -515,7 +565,8 @@ extension KeyBackupProtoResponse.KeyBackupProtoResponseBuilder {
         return result
     }
 
-    @objc public override var debugDescription: String {
+    @objc
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -523,55 +574,61 @@ extension KeyBackupProtoResponse.KeyBackupProtoResponseBuilder {
 #if DEBUG
 
 extension KeyBackupProtoBackupRequest {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension KeyBackupProtoBackupRequest.KeyBackupProtoBackupRequestBuilder {
-    @objc public func buildIgnoringErrors() -> KeyBackupProtoBackupRequest? {
+    @objc
+    public func buildIgnoringErrors() -> KeyBackupProtoBackupRequest? {
         return try! self.build()
     }
 }
 
 #endif
 
+// MARK: - KeyBackupProtoBackupResponseStatus
+
+@objc
+public enum KeyBackupProtoBackupResponseStatus: Int32 {
+    case ok = 1
+    case alreadyExists = 2
+    case notYetValid = 3
+}
+
+private func KeyBackupProtoBackupResponseStatusWrap(_ value: KeyBackupProtos_BackupResponse.Status) -> KeyBackupProtoBackupResponseStatus {
+    switch value {
+    case .ok: return .ok
+    case .alreadyExists: return .alreadyExists
+    case .notYetValid: return .notYetValid
+    }
+}
+
+private func KeyBackupProtoBackupResponseStatusUnwrap(_ value: KeyBackupProtoBackupResponseStatus) -> KeyBackupProtos_BackupResponse.Status {
+    switch value {
+    case .ok: return .ok
+    case .alreadyExists: return .alreadyExists
+    case .notYetValid: return .notYetValid
+    }
+}
+
 // MARK: - KeyBackupProtoBackupResponse
 
-@objc public class KeyBackupProtoBackupResponse: NSObject {
-
-    // MARK: - KeyBackupProtoBackupResponseStatus
-
-    @objc public enum KeyBackupProtoBackupResponseStatus: Int32 {
-        case ok = 1
-        case alreadyExists = 2
-        case notYetValid = 3
-    }
-
-    private class func KeyBackupProtoBackupResponseStatusWrap(_ value: KeyBackupProtos_BackupResponse.Status) -> KeyBackupProtoBackupResponseStatus {
-        switch value {
-        case .ok: return .ok
-        case .alreadyExists: return .alreadyExists
-        case .notYetValid: return .notYetValid
-        }
-    }
-
-    private class func KeyBackupProtoBackupResponseStatusUnwrap(_ value: KeyBackupProtoBackupResponseStatus) -> KeyBackupProtos_BackupResponse.Status {
-        switch value {
-        case .ok: return .ok
-        case .alreadyExists: return .alreadyExists
-        case .notYetValid: return .notYetValid
-        }
-    }
+@objc
+public class KeyBackupProtoBackupResponse: NSObject {
 
     // MARK: - KeyBackupProtoBackupResponseBuilder
 
-    @objc public class func builder() -> KeyBackupProtoBackupResponseBuilder {
+    @objc
+    public class func builder() -> KeyBackupProtoBackupResponseBuilder {
         return KeyBackupProtoBackupResponseBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> KeyBackupProtoBackupResponseBuilder {
+    @objc
+    public func asBuilder() -> KeyBackupProtoBackupResponseBuilder {
         let builder = KeyBackupProtoBackupResponseBuilder()
         if let _value = status {
             builder.setStatus(_value)
@@ -582,11 +639,13 @@ extension KeyBackupProtoBackupRequest.KeyBackupProtoBackupRequestBuilder {
         return builder
     }
 
-    @objc public class KeyBackupProtoBackupResponseBuilder: NSObject {
+    @objc
+    public class KeyBackupProtoBackupResponseBuilder: NSObject {
 
         private var proto = KeyBackupProtos_BackupResponse()
 
-        @objc fileprivate override init() {}
+        @objc
+        fileprivate override init() {}
 
         @objc
         public func setStatus(_ valueParam: KeyBackupProtoBackupResponseStatus) {
@@ -604,11 +663,13 @@ extension KeyBackupProtoBackupRequest.KeyBackupProtoBackupRequestBuilder {
             proto.token = valueParam
         }
 
-        @objc public func build() throws -> KeyBackupProtoBackupResponse {
+        @objc
+        public func build() throws -> KeyBackupProtoBackupResponse {
             return try KeyBackupProtoBackupResponse.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        @objc
+        public func buildSerializedData() throws -> Data {
             return try KeyBackupProtoBackupResponse.parseProto(proto).serializedData()
         }
     }
@@ -616,30 +677,34 @@ extension KeyBackupProtoBackupRequest.KeyBackupProtoBackupRequestBuilder {
     fileprivate let proto: KeyBackupProtos_BackupResponse
 
     public var status: KeyBackupProtoBackupResponseStatus? {
-        guard proto.hasStatus else {
+        guard hasStatus else {
             return nil
         }
-        return KeyBackupProtoBackupResponse.KeyBackupProtoBackupResponseStatusWrap(proto.status)
+        return KeyBackupProtoBackupResponseStatusWrap(proto.status)
     }
     // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    @objc public var unwrappedStatus: KeyBackupProtoBackupResponseStatus {
+    @objc
+    public var unwrappedStatus: KeyBackupProtoBackupResponseStatus {
         if !hasStatus {
             // TODO: We could make this a crashing assert.
             owsFailDebug("Unsafe unwrap of missing optional: BackupResponse.status.")
         }
-        return KeyBackupProtoBackupResponse.KeyBackupProtoBackupResponseStatusWrap(proto.status)
+        return KeyBackupProtoBackupResponseStatusWrap(proto.status)
     }
-    @objc public var hasStatus: Bool {
+    @objc
+    public var hasStatus: Bool {
         return proto.hasStatus
     }
 
-    @objc public var token: Data? {
-        guard proto.hasToken else {
+    @objc
+    public var token: Data? {
+        guard hasToken else {
             return nil
         }
         return proto.token
     }
-    @objc public var hasToken: Bool {
+    @objc
+    public var hasToken: Bool {
         return proto.hasToken
     }
 
@@ -652,7 +717,8 @@ extension KeyBackupProtoBackupRequest.KeyBackupProtoBackupRequestBuilder {
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoBackupResponse {
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoBackupResponse {
         let proto = try KeyBackupProtos_BackupResponse(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -666,7 +732,8 @@ extension KeyBackupProtoBackupRequest.KeyBackupProtoBackupRequestBuilder {
         return result
     }
 
-    @objc public override var debugDescription: String {
+    @objc
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -674,13 +741,15 @@ extension KeyBackupProtoBackupRequest.KeyBackupProtoBackupRequestBuilder {
 #if DEBUG
 
 extension KeyBackupProtoBackupResponse {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension KeyBackupProtoBackupResponse.KeyBackupProtoBackupResponseBuilder {
-    @objc public func buildIgnoringErrors() -> KeyBackupProtoBackupResponse? {
+    @objc
+    public func buildIgnoringErrors() -> KeyBackupProtoBackupResponse? {
         return try! self.build()
     }
 }
@@ -689,16 +758,19 @@ extension KeyBackupProtoBackupResponse.KeyBackupProtoBackupResponseBuilder {
 
 // MARK: - KeyBackupProtoRestoreRequest
 
-@objc public class KeyBackupProtoRestoreRequest: NSObject {
+@objc
+public class KeyBackupProtoRestoreRequest: NSObject {
 
     // MARK: - KeyBackupProtoRestoreRequestBuilder
 
-    @objc public class func builder() -> KeyBackupProtoRestoreRequestBuilder {
+    @objc
+    public class func builder() -> KeyBackupProtoRestoreRequestBuilder {
         return KeyBackupProtoRestoreRequestBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> KeyBackupProtoRestoreRequestBuilder {
+    @objc
+    public func asBuilder() -> KeyBackupProtoRestoreRequestBuilder {
         let builder = KeyBackupProtoRestoreRequestBuilder()
         if let _value = serviceID {
             builder.setServiceID(_value)
@@ -718,11 +790,13 @@ extension KeyBackupProtoBackupResponse.KeyBackupProtoBackupResponseBuilder {
         return builder
     }
 
-    @objc public class KeyBackupProtoRestoreRequestBuilder: NSObject {
+    @objc
+    public class KeyBackupProtoRestoreRequestBuilder: NSObject {
 
         private var proto = KeyBackupProtos_RestoreRequest()
 
-        @objc fileprivate override init() {}
+        @objc
+        fileprivate override init() {}
 
         @objc
         @available(swift, obsoleted: 1.0)
@@ -773,61 +847,73 @@ extension KeyBackupProtoBackupResponse.KeyBackupProtoBackupResponseBuilder {
             proto.pin = valueParam
         }
 
-        @objc public func build() throws -> KeyBackupProtoRestoreRequest {
+        @objc
+        public func build() throws -> KeyBackupProtoRestoreRequest {
             return try KeyBackupProtoRestoreRequest.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        @objc
+        public func buildSerializedData() throws -> Data {
             return try KeyBackupProtoRestoreRequest.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: KeyBackupProtos_RestoreRequest
 
-    @objc public var serviceID: Data? {
-        guard proto.hasServiceID else {
+    @objc
+    public var serviceID: Data? {
+        guard hasServiceID else {
             return nil
         }
         return proto.serviceID
     }
-    @objc public var hasServiceID: Bool {
+    @objc
+    public var hasServiceID: Bool {
         return proto.hasServiceID
     }
 
-    @objc public var backupID: Data? {
-        guard proto.hasBackupID else {
+    @objc
+    public var backupID: Data? {
+        guard hasBackupID else {
             return nil
         }
         return proto.backupID
     }
-    @objc public var hasBackupID: Bool {
+    @objc
+    public var hasBackupID: Bool {
         return proto.hasBackupID
     }
 
-    @objc public var token: Data? {
-        guard proto.hasToken else {
+    @objc
+    public var token: Data? {
+        guard hasToken else {
             return nil
         }
         return proto.token
     }
-    @objc public var hasToken: Bool {
+    @objc
+    public var hasToken: Bool {
         return proto.hasToken
     }
 
-    @objc public var validFrom: UInt64 {
+    @objc
+    public var validFrom: UInt64 {
         return proto.validFrom
     }
-    @objc public var hasValidFrom: Bool {
+    @objc
+    public var hasValidFrom: Bool {
         return proto.hasValidFrom
     }
 
-    @objc public var pin: Data? {
-        guard proto.hasPin else {
+    @objc
+    public var pin: Data? {
+        guard hasPin else {
             return nil
         }
         return proto.pin
     }
-    @objc public var hasPin: Bool {
+    @objc
+    public var hasPin: Bool {
         return proto.hasPin
     }
 
@@ -840,7 +926,8 @@ extension KeyBackupProtoBackupResponse.KeyBackupProtoBackupResponseBuilder {
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoRestoreRequest {
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoRestoreRequest {
         let proto = try KeyBackupProtos_RestoreRequest(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -854,7 +941,8 @@ extension KeyBackupProtoBackupResponse.KeyBackupProtoBackupResponseBuilder {
         return result
     }
 
-    @objc public override var debugDescription: String {
+    @objc
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -862,61 +950,67 @@ extension KeyBackupProtoBackupResponse.KeyBackupProtoBackupResponseBuilder {
 #if DEBUG
 
 extension KeyBackupProtoRestoreRequest {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension KeyBackupProtoRestoreRequest.KeyBackupProtoRestoreRequestBuilder {
-    @objc public func buildIgnoringErrors() -> KeyBackupProtoRestoreRequest? {
+    @objc
+    public func buildIgnoringErrors() -> KeyBackupProtoRestoreRequest? {
         return try! self.build()
     }
 }
 
 #endif
 
+// MARK: - KeyBackupProtoRestoreResponseStatus
+
+@objc
+public enum KeyBackupProtoRestoreResponseStatus: Int32 {
+    case ok = 1
+    case tokenMismatch = 2
+    case notYetValid = 3
+    case missing = 4
+    case pinMismatch = 5
+}
+
+private func KeyBackupProtoRestoreResponseStatusWrap(_ value: KeyBackupProtos_RestoreResponse.Status) -> KeyBackupProtoRestoreResponseStatus {
+    switch value {
+    case .ok: return .ok
+    case .tokenMismatch: return .tokenMismatch
+    case .notYetValid: return .notYetValid
+    case .missing: return .missing
+    case .pinMismatch: return .pinMismatch
+    }
+}
+
+private func KeyBackupProtoRestoreResponseStatusUnwrap(_ value: KeyBackupProtoRestoreResponseStatus) -> KeyBackupProtos_RestoreResponse.Status {
+    switch value {
+    case .ok: return .ok
+    case .tokenMismatch: return .tokenMismatch
+    case .notYetValid: return .notYetValid
+    case .missing: return .missing
+    case .pinMismatch: return .pinMismatch
+    }
+}
+
 // MARK: - KeyBackupProtoRestoreResponse
 
-@objc public class KeyBackupProtoRestoreResponse: NSObject {
-
-    // MARK: - KeyBackupProtoRestoreResponseStatus
-
-    @objc public enum KeyBackupProtoRestoreResponseStatus: Int32 {
-        case ok = 1
-        case tokenMismatch = 2
-        case notYetValid = 3
-        case missing = 4
-        case pinMismatch = 5
-    }
-
-    private class func KeyBackupProtoRestoreResponseStatusWrap(_ value: KeyBackupProtos_RestoreResponse.Status) -> KeyBackupProtoRestoreResponseStatus {
-        switch value {
-        case .ok: return .ok
-        case .tokenMismatch: return .tokenMismatch
-        case .notYetValid: return .notYetValid
-        case .missing: return .missing
-        case .pinMismatch: return .pinMismatch
-        }
-    }
-
-    private class func KeyBackupProtoRestoreResponseStatusUnwrap(_ value: KeyBackupProtoRestoreResponseStatus) -> KeyBackupProtos_RestoreResponse.Status {
-        switch value {
-        case .ok: return .ok
-        case .tokenMismatch: return .tokenMismatch
-        case .notYetValid: return .notYetValid
-        case .missing: return .missing
-        case .pinMismatch: return .pinMismatch
-        }
-    }
+@objc
+public class KeyBackupProtoRestoreResponse: NSObject {
 
     // MARK: - KeyBackupProtoRestoreResponseBuilder
 
-    @objc public class func builder() -> KeyBackupProtoRestoreResponseBuilder {
+    @objc
+    public class func builder() -> KeyBackupProtoRestoreResponseBuilder {
         return KeyBackupProtoRestoreResponseBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> KeyBackupProtoRestoreResponseBuilder {
+    @objc
+    public func asBuilder() -> KeyBackupProtoRestoreResponseBuilder {
         let builder = KeyBackupProtoRestoreResponseBuilder()
         if let _value = status {
             builder.setStatus(_value)
@@ -933,11 +1027,13 @@ extension KeyBackupProtoRestoreRequest.KeyBackupProtoRestoreRequestBuilder {
         return builder
     }
 
-    @objc public class KeyBackupProtoRestoreResponseBuilder: NSObject {
+    @objc
+    public class KeyBackupProtoRestoreResponseBuilder: NSObject {
 
         private var proto = KeyBackupProtos_RestoreResponse()
 
-        @objc fileprivate override init() {}
+        @objc
+        fileprivate override init() {}
 
         @objc
         public func setStatus(_ valueParam: KeyBackupProtoRestoreResponseStatus) {
@@ -971,11 +1067,13 @@ extension KeyBackupProtoRestoreRequest.KeyBackupProtoRestoreRequestBuilder {
             proto.tries = valueParam
         }
 
-        @objc public func build() throws -> KeyBackupProtoRestoreResponse {
+        @objc
+        public func build() throws -> KeyBackupProtoRestoreResponse {
             return try KeyBackupProtoRestoreResponse.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        @objc
+        public func buildSerializedData() throws -> Data {
             return try KeyBackupProtoRestoreResponse.parseProto(proto).serializedData()
         }
     }
@@ -983,47 +1081,55 @@ extension KeyBackupProtoRestoreRequest.KeyBackupProtoRestoreRequestBuilder {
     fileprivate let proto: KeyBackupProtos_RestoreResponse
 
     public var status: KeyBackupProtoRestoreResponseStatus? {
-        guard proto.hasStatus else {
+        guard hasStatus else {
             return nil
         }
-        return KeyBackupProtoRestoreResponse.KeyBackupProtoRestoreResponseStatusWrap(proto.status)
+        return KeyBackupProtoRestoreResponseStatusWrap(proto.status)
     }
     // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    @objc public var unwrappedStatus: KeyBackupProtoRestoreResponseStatus {
+    @objc
+    public var unwrappedStatus: KeyBackupProtoRestoreResponseStatus {
         if !hasStatus {
             // TODO: We could make this a crashing assert.
             owsFailDebug("Unsafe unwrap of missing optional: RestoreResponse.status.")
         }
-        return KeyBackupProtoRestoreResponse.KeyBackupProtoRestoreResponseStatusWrap(proto.status)
+        return KeyBackupProtoRestoreResponseStatusWrap(proto.status)
     }
-    @objc public var hasStatus: Bool {
+    @objc
+    public var hasStatus: Bool {
         return proto.hasStatus
     }
 
-    @objc public var token: Data? {
-        guard proto.hasToken else {
+    @objc
+    public var token: Data? {
+        guard hasToken else {
             return nil
         }
         return proto.token
     }
-    @objc public var hasToken: Bool {
+    @objc
+    public var hasToken: Bool {
         return proto.hasToken
     }
 
-    @objc public var data: Data? {
-        guard proto.hasData else {
+    @objc
+    public var data: Data? {
+        guard hasData else {
             return nil
         }
         return proto.data
     }
-    @objc public var hasData: Bool {
+    @objc
+    public var hasData: Bool {
         return proto.hasData
     }
 
-    @objc public var tries: UInt32 {
+    @objc
+    public var tries: UInt32 {
         return proto.tries
     }
-    @objc public var hasTries: Bool {
+    @objc
+    public var hasTries: Bool {
         return proto.hasTries
     }
 
@@ -1036,7 +1142,8 @@ extension KeyBackupProtoRestoreRequest.KeyBackupProtoRestoreRequestBuilder {
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoRestoreResponse {
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoRestoreResponse {
         let proto = try KeyBackupProtos_RestoreResponse(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -1050,7 +1157,8 @@ extension KeyBackupProtoRestoreRequest.KeyBackupProtoRestoreRequestBuilder {
         return result
     }
 
-    @objc public override var debugDescription: String {
+    @objc
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -1058,13 +1166,15 @@ extension KeyBackupProtoRestoreRequest.KeyBackupProtoRestoreRequestBuilder {
 #if DEBUG
 
 extension KeyBackupProtoRestoreResponse {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension KeyBackupProtoRestoreResponse.KeyBackupProtoRestoreResponseBuilder {
-    @objc public func buildIgnoringErrors() -> KeyBackupProtoRestoreResponse? {
+    @objc
+    public func buildIgnoringErrors() -> KeyBackupProtoRestoreResponse? {
         return try! self.build()
     }
 }
@@ -1073,16 +1183,19 @@ extension KeyBackupProtoRestoreResponse.KeyBackupProtoRestoreResponseBuilder {
 
 // MARK: - KeyBackupProtoDeleteRequest
 
-@objc public class KeyBackupProtoDeleteRequest: NSObject {
+@objc
+public class KeyBackupProtoDeleteRequest: NSObject {
 
     // MARK: - KeyBackupProtoDeleteRequestBuilder
 
-    @objc public class func builder() -> KeyBackupProtoDeleteRequestBuilder {
+    @objc
+    public class func builder() -> KeyBackupProtoDeleteRequestBuilder {
         return KeyBackupProtoDeleteRequestBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> KeyBackupProtoDeleteRequestBuilder {
+    @objc
+    public func asBuilder() -> KeyBackupProtoDeleteRequestBuilder {
         let builder = KeyBackupProtoDeleteRequestBuilder()
         if let _value = serviceID {
             builder.setServiceID(_value)
@@ -1093,11 +1206,13 @@ extension KeyBackupProtoRestoreResponse.KeyBackupProtoRestoreResponseBuilder {
         return builder
     }
 
-    @objc public class KeyBackupProtoDeleteRequestBuilder: NSObject {
+    @objc
+    public class KeyBackupProtoDeleteRequestBuilder: NSObject {
 
         private var proto = KeyBackupProtos_DeleteRequest()
 
-        @objc fileprivate override init() {}
+        @objc
+        fileprivate override init() {}
 
         @objc
         @available(swift, obsoleted: 1.0)
@@ -1121,34 +1236,40 @@ extension KeyBackupProtoRestoreResponse.KeyBackupProtoRestoreResponseBuilder {
             proto.backupID = valueParam
         }
 
-        @objc public func build() throws -> KeyBackupProtoDeleteRequest {
+        @objc
+        public func build() throws -> KeyBackupProtoDeleteRequest {
             return try KeyBackupProtoDeleteRequest.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        @objc
+        public func buildSerializedData() throws -> Data {
             return try KeyBackupProtoDeleteRequest.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: KeyBackupProtos_DeleteRequest
 
-    @objc public var serviceID: Data? {
-        guard proto.hasServiceID else {
+    @objc
+    public var serviceID: Data? {
+        guard hasServiceID else {
             return nil
         }
         return proto.serviceID
     }
-    @objc public var hasServiceID: Bool {
+    @objc
+    public var hasServiceID: Bool {
         return proto.hasServiceID
     }
 
-    @objc public var backupID: Data? {
-        guard proto.hasBackupID else {
+    @objc
+    public var backupID: Data? {
+        guard hasBackupID else {
             return nil
         }
         return proto.backupID
     }
-    @objc public var hasBackupID: Bool {
+    @objc
+    public var hasBackupID: Bool {
         return proto.hasBackupID
     }
 
@@ -1161,7 +1282,8 @@ extension KeyBackupProtoRestoreResponse.KeyBackupProtoRestoreResponseBuilder {
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoDeleteRequest {
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoDeleteRequest {
         let proto = try KeyBackupProtos_DeleteRequest(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -1175,7 +1297,8 @@ extension KeyBackupProtoRestoreResponse.KeyBackupProtoRestoreResponseBuilder {
         return result
     }
 
-    @objc public override var debugDescription: String {
+    @objc
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -1183,13 +1306,15 @@ extension KeyBackupProtoRestoreResponse.KeyBackupProtoRestoreResponseBuilder {
 #if DEBUG
 
 extension KeyBackupProtoDeleteRequest {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension KeyBackupProtoDeleteRequest.KeyBackupProtoDeleteRequestBuilder {
-    @objc public func buildIgnoringErrors() -> KeyBackupProtoDeleteRequest? {
+    @objc
+    public func buildIgnoringErrors() -> KeyBackupProtoDeleteRequest? {
         return try! self.build()
     }
 }
@@ -1198,31 +1323,38 @@ extension KeyBackupProtoDeleteRequest.KeyBackupProtoDeleteRequestBuilder {
 
 // MARK: - KeyBackupProtoDeleteResponse
 
-@objc public class KeyBackupProtoDeleteResponse: NSObject {
+@objc
+public class KeyBackupProtoDeleteResponse: NSObject {
 
     // MARK: - KeyBackupProtoDeleteResponseBuilder
 
-    @objc public class func builder() -> KeyBackupProtoDeleteResponseBuilder {
+    @objc
+    public class func builder() -> KeyBackupProtoDeleteResponseBuilder {
         return KeyBackupProtoDeleteResponseBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> KeyBackupProtoDeleteResponseBuilder {
+    @objc
+    public func asBuilder() -> KeyBackupProtoDeleteResponseBuilder {
         let builder = KeyBackupProtoDeleteResponseBuilder()
         return builder
     }
 
-    @objc public class KeyBackupProtoDeleteResponseBuilder: NSObject {
+    @objc
+    public class KeyBackupProtoDeleteResponseBuilder: NSObject {
 
         private var proto = KeyBackupProtos_DeleteResponse()
 
-        @objc fileprivate override init() {}
+        @objc
+        fileprivate override init() {}
 
-        @objc public func build() throws -> KeyBackupProtoDeleteResponse {
+        @objc
+        public func build() throws -> KeyBackupProtoDeleteResponse {
             return try KeyBackupProtoDeleteResponse.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        @objc
+        public func buildSerializedData() throws -> Data {
             return try KeyBackupProtoDeleteResponse.parseProto(proto).serializedData()
         }
     }
@@ -1238,7 +1370,8 @@ extension KeyBackupProtoDeleteRequest.KeyBackupProtoDeleteRequestBuilder {
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoDeleteResponse {
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoDeleteResponse {
         let proto = try KeyBackupProtos_DeleteResponse(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -1252,7 +1385,8 @@ extension KeyBackupProtoDeleteRequest.KeyBackupProtoDeleteRequestBuilder {
         return result
     }
 
-    @objc public override var debugDescription: String {
+    @objc
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -1260,13 +1394,15 @@ extension KeyBackupProtoDeleteRequest.KeyBackupProtoDeleteRequestBuilder {
 #if DEBUG
 
 extension KeyBackupProtoDeleteResponse {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension KeyBackupProtoDeleteResponse.KeyBackupProtoDeleteResponseBuilder {
-    @objc public func buildIgnoringErrors() -> KeyBackupProtoDeleteResponse? {
+    @objc
+    public func buildIgnoringErrors() -> KeyBackupProtoDeleteResponse? {
         return try! self.build()
     }
 }
