@@ -44,7 +44,7 @@ public extension TSAccountManager {
             return thread
         }
 
-        return databaseStorage.writeReturningResult { transaction in
+        return databaseStorage.write { transaction in
             return getOrCreateLocalThread(transaction: transaction)
         }
     }

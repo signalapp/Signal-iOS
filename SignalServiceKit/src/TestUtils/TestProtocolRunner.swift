@@ -202,7 +202,7 @@ public struct FakeService {
 
     public func buildEncryptedContentData(fromSenderClient senderClient: SignalClient, bodyText: String?) throws -> Data {
         let plaintext = try buildContentData(bodyText: bodyText)
-        let cipherMessage: CipherMessage = databaseStorage.writeReturningResult { transaction in
+        let cipherMessage: CipherMessage = databaseStorage.write { transaction in
             return try! self.runner.encrypt(plaintext: plaintext,
                                             senderClient: senderClient,
                                             recipientAccountId: self.localClient.accountId(transaction: transaction),

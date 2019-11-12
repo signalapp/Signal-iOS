@@ -109,7 +109,7 @@ public class GroupManager: NSObject {
         return DispatchQueue.global().async(.promise) {
             let model = try buildGroupModel(groupId: groupId, name: name, members: members, avatarData: avatarData)
 
-            let thread = databaseStorage.writeReturningResult { transaction in
+            let thread = databaseStorage.write { transaction in
                 return TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
             }
 
@@ -161,7 +161,7 @@ public class GroupManager: NSObject {
                                            name: String? = nil,
                                            avatarData: Data? = nil) throws -> TSGroupThread {
 
-        return try databaseStorage.writeReturningResult { transaction in
+        return try databaseStorage.write { transaction in
             return try createGroupForTests(transaction: transaction,
                                            members: members,
                                            name: name,
@@ -230,7 +230,7 @@ public class GroupManager: NSObject {
 
     public static func sendTemporaryNewGroupMessage(forThread thread: TSGroupThread) -> Promise<Void> {
         return DispatchQueue.global().async(.promise) { () -> TSOutgoingMessage in
-            return self.databaseStorage.writeReturningResult { transaction in
+            return self.databaseStorage.write { transaction in
                 return self.buildNewGroupMessage(forThread: thread, transaction: transaction)
             }
         }.then(on: DispatchQueue.global()) { (message: TSOutgoingMessage) -> Promise<Void> in
