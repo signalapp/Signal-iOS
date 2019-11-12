@@ -1598,29 +1598,21 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
     }
 
-    [ModalActivityIndicatorViewController
-     presentFromViewController:self
-     canCancel:NO
-     backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-             if ([thread isKindOfClass:[TSGroupThread class]]) {
-                 TSGroupThread *groupThread = (TSGroupThread *)thread;
-                 if (groupThread.isLocalUserInGroup) {
-                     [groupThread softDeleteThreadWithTransaction:transaction];
-                 } else {
-                     [groupThread anyRemoveWithTransaction:transaction];
-                 }
-             } else {
-                 // contact thread
-                 [thread softDeleteThreadWithTransaction:transaction];
-             }
-         }];
-         dispatch_async(dispatch_get_main_queue(), ^{
-             [modalActivityIndicator dismissWithCompletion:^{
-                 [self updateViewState];
-             }];
-         });
-     }];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        if ([thread isKindOfClass:[TSGroupThread class]]) {
+            TSGroupThread *groupThread = (TSGroupThread *)thread;
+            if (groupThread.isLocalUserInGroup) {
+                [groupThread softDeleteThreadWithTransaction:transaction];
+            } else {
+                [groupThread anyRemoveWithTransaction:transaction];
+            }
+        } else {
+            // contact thread
+            [thread softDeleteThreadWithTransaction:transaction];
+        }
+    }];
+
+    [self updateViewState];
 }
 
 - (void)archiveIndexPath:(NSIndexPath *)indexPath
