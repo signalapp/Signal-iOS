@@ -295,7 +295,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         }
     }
 
-    public func readReturningResultThrows<T>(block: @escaping (GRDBReadTransaction) throws -> T) throws -> T {
+    public func readThrows<T>(block: @escaping (GRDBReadTransaction) throws -> T) throws -> T {
         assertCanRead()
         AssertIsOnMainThread()
         return try pool.read { database in

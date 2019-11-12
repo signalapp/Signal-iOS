@@ -312,7 +312,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // if we have a valid profile key for them.
     @objc
     public func udAccessKey(forAddress address: SignalServiceAddress) -> SMKUDAccessKey? {
-        let profileKeyData = databaseStorage.readReturningResult { transaction in
+        let profileKeyData = databaseStorage.read { transaction in
             return self.profileManager.profileKeyData(for: address,
                                                       transaction: transaction)
         }
@@ -547,7 +547,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     public func shouldAllowUnrestrictedAccessLocal() -> Bool {
-        return databaseStorage.readReturningResult { transaction in
+        return databaseStorage.read { transaction in
             self.keyValueStore.getBool(self.kUDUnrestrictedAccessKey, defaultValue: false, transaction: transaction)
         }
     }

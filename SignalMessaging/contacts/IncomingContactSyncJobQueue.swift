@@ -169,7 +169,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
     private func getAttachmentStream() throws -> Promise<TSAttachmentStream> {
         Logger.debug("attachmentId: \(jobRecord.attachmentId)")
 
-        guard let attachment = (databaseStorage.readReturningResult { transaction in
+        guard let attachment = (databaseStorage.read { transaction in
             return TSAttachment.anyFetch(uniqueId: self.jobRecord.attachmentId, transaction: transaction)
         }) else {
             throw OWSAssertionError("missing attachment")

@@ -562,7 +562,7 @@ class MediaGallery {
     }
 
     func ensureLoadedForMostRecentTileView() -> MediaGalleryItem? {
-        guard let mostRecentItem: MediaGalleryItem = (databaseStorage.uiReadReturningResult { transaction in
+        guard let mostRecentItem: MediaGalleryItem = (databaseStorage.uiread { transaction in
             guard let attachment = self.mediaGalleryFinder.mostRecentMediaAttachment(transaction: transaction)  else {
                 return nil
             }
@@ -728,7 +728,7 @@ class MediaGallery {
     }
 
     var galleryItemCount: Int {
-        let count: UInt = databaseStorage.uiReadReturningResult { transaction in
+        let count: UInt = databaseStorage.uiread { transaction in
             return self.mediaGalleryFinder.mediaCount(transaction: transaction)
         }
         return Int(count) - deletedAttachments.count

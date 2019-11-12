@@ -440,7 +440,7 @@ public class OWSLinkPreviewManager: NSObject {
     public func previewUrl(forMessageBodyText body: String?, selectedRange: NSRange?) -> String? {
         AssertIsOnMainThread()
 
-        let areLinkPreviewsEnabled = databaseStorage.readReturningResult { transaction in
+        let areLinkPreviewsEnabled = databaseStorage.read { transaction in
             SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
         }
         // Exit early if link previews are not enabled in order to avoid
@@ -494,7 +494,7 @@ public class OWSLinkPreviewManager: NSObject {
     }
 
     class func allPreviewUrlMatches(forMessageBodyText body: String) -> [URLMatchResult] {
-        let areLinkPreviewsEnabled = databaseStorage.readReturningResult { transaction in
+        let areLinkPreviewsEnabled = databaseStorage.read { transaction in
             SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
         }
         guard areLinkPreviewsEnabled else {
@@ -545,7 +545,7 @@ public class OWSLinkPreviewManager: NSObject {
                                             forPreviewUrl previewUrl: String) {
         assert(previewUrl == linkPreviewDraft.urlString)
 
-        let areLinkPreviewsEnabled = databaseStorage.readReturningResult { transaction in
+        let areLinkPreviewsEnabled = databaseStorage.read { transaction in
             SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
         }
         // Exit early if link previews are not enabled in order to avoid
@@ -565,7 +565,7 @@ public class OWSLinkPreviewManager: NSObject {
     }
 
     public func tryToBuildPreviewInfo(previewUrl: String?) -> Promise<OWSLinkPreviewDraft> {
-        let areLinkPreviewsEnabled = databaseStorage.readReturningResult { transaction in
+        let areLinkPreviewsEnabled = databaseStorage.read { transaction in
             SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
         }
         guard areLinkPreviewsEnabled else {

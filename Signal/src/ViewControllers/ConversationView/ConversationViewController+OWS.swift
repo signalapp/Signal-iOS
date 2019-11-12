@@ -5,7 +5,7 @@
 extension ConversationViewController {
     @objc
     func ensureIndexPath(of interaction: TSMessage) -> IndexPath? {
-        return databaseStorage.uiReadReturningResult { transaction in
+        return databaseStorage.uiread { transaction in
             self.conversationViewModel.ensureLoadWindowContainsInteractionId(interaction.uniqueId,
                                                                              transaction: transaction)
         }

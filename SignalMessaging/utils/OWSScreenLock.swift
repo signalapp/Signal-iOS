@@ -72,7 +72,7 @@ public class OWSScreenLock: NSObject {
             return false
         }
 
-        return databaseStorage.readReturningResult { transaction in
+        return databaseStorage.read { transaction in
             return self.keyValueStore.getBool(OWSScreenLock.OWSScreenLock_Key_IsScreenLockEnabled,
                                               defaultValue: false,
                                               transaction: transaction)
@@ -102,7 +102,7 @@ public class OWSScreenLock: NSObject {
             return 0
         }
 
-        return databaseStorage.readReturningResult { transaction in
+        return databaseStorage.read { transaction in
             return self.keyValueStore.getDouble(OWSScreenLock.OWSScreenLock_Key_ScreenLockTimeoutSeconds,
                                                 defaultValue: OWSScreenLock.screenLockTimeoutDefault,
                                                 transaction: transaction)
