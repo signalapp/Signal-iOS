@@ -134,6 +134,9 @@ public extension JobQueue {
         }
 
         AppReadiness.runNowOrWhenAppDidBecomeReady {
+            guard self.isSetup else {
+                return
+            }
             DispatchQueue.global().async {
                 self.workStep()
             }
