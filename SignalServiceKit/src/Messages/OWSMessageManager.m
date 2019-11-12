@@ -57,6 +57,7 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import "OWSDispatch.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -1012,7 +1013,30 @@ NS_ASSUME_NONNULL_BEGIN
         NSData *data = syncMessage.contacts.data;
         ContactParser *parser = [[ContactParser alloc] initWithData:data];
         NSArray<NSString *> *hexEncodedPublicKeys = [parser parseHexEncodedPublicKeys];
-        // TODO: Establish sessions
+        // Try to establish sessions
+        for (NSString *hexEncodedPublicKey in hexEncodedPublicKeys) {
+            TSContactThread *thread = [TSContactThread getThreadWithContactId:hexEncodedPublicKey transaction:transaction];
+            if (thread == nil) { return; }
+            LKThreadFriendRequestStatus friendRequestStatus = thread.friendRequestStatus;
+            switch (friendRequestStatus) {
+                case LKThreadFriendRequestStatusNone: {
+                    OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
+                    OWSMessageSend *automatedFriendRequestMessage = [messageSender getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:hexEncodedPublicKey];
+                    dispatch_async(OWSDispatch.sendingQueue, ^{
+                        [messageSender sendMessage:automatedFriendRequestMessage];
+                    });
+                    break;
+                }
+                case LKThreadFriendRequestStatusRequestReceived: {
+                    [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];
+                    // The two lines below are equivalent to calling [ThreadUtil enqueueFriendRequestAcceptanceMessageInThread:thread]
+                    LKEphemeralMessage *backgroundMessage = [[LKEphemeralMessage alloc] initInThread:thread];
+                    [self.messageSenderJobQueue addMessage:backgroundMessage transaction:transaction];
+                    break;
+                }
+                default: break; // Do nothing
+            }
+        }
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
     }
