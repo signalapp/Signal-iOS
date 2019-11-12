@@ -68,7 +68,7 @@ class SSKProtoEnvelopeTest: SignalBaseTest {
 
     func testParse_roundtrip() {
         let builder = SSKProtoEnvelope.builder(timestamp: 123)
-        builder.setType(SSKProtoEnvelope.SSKProtoEnvelopeType.prekeyBundle)
+        builder.setType(SSKProtoEnvelopeType.prekeyBundle)
         builder.setSourceE164("+13213214321")
         builder.setSourceDevice(1)
 
@@ -92,7 +92,7 @@ class SSKProtoEnvelopeTest: SignalBaseTest {
             return
         }
 
-        XCTAssertEqual(envelope.type, SSKProtoEnvelope.SSKProtoEnvelopeType.prekeyBundle)
+        XCTAssertEqual(envelope.type, SSKProtoEnvelopeType.prekeyBundle)
         XCTAssertEqual(envelope.timestamp, 123)
         XCTAssertEqual(envelope.sourceE164, "+13213214321")
         XCTAssertEqual(envelope.sourceDevice, 1)

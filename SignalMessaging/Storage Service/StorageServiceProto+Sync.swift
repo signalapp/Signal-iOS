@@ -192,8 +192,8 @@ extension StorageServiceProtoContactRecord {
 
 // MARK: -
 
-extension StorageServiceProtoContactRecordIdentity.StorageServiceProtoContactRecordIdentityState {
-    static func from(_ state: OWSVerificationState) -> StorageServiceProtoContactRecordIdentity.StorageServiceProtoContactRecordIdentityState {
+extension StorageServiceProtoContactRecordIdentityState {
+    static func from(_ state: OWSVerificationState) -> StorageServiceProtoContactRecordIdentityState {
         switch state {
         case .verified:
             return .verified

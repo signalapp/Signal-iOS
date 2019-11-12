@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalCoreKit
+import SwiftProtobuf
 
 // WARNING: This code is generated. Only edit within the markers.
 
@@ -11,42 +12,68 @@ public enum GroupsProtoError: Error {
     case invalidProtobuf(description: String)
 }
 
+// MARK: - GroupsProtoMemberRole
+
+public enum GroupsProtoMemberRole: SwiftProtobuf.Enum {
+    public typealias RawValue = Int
+    case unknown // 0
+    case `default` // 1
+    case administrator // 2
+    case UNRECOGNIZED(Int)
+
+    public init() {
+        self = .unknown
+    }
+
+    public init?(rawValue: Int) {
+        switch rawValue {
+            case 0: self = .unknown
+            case 1: self = .`default`
+            case 2: self = .administrator
+            default: self = .UNRECOGNIZED(rawValue)
+        }
+    }
+
+    public var rawValue: Int {
+        switch self {
+            case .unknown: return 0
+            case .`default`: return 1
+            case .administrator: return 2
+            case .UNRECOGNIZED(let i): return i
+        }
+    }
+}
+
+private func GroupsProtoMemberRoleWrap(_ value: GroupsProtos_Member.Role) -> GroupsProtoMemberRole {
+    switch value {
+    case .unknown: return .unknown
+    case .default: return .default
+    case .administrator: return .administrator
+    case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
+    }
+}
+
+private func GroupsProtoMemberRoleUnwrap(_ value: GroupsProtoMemberRole) -> GroupsProtos_Member.Role {
+    switch value {
+    case .unknown: return .unknown
+    case .default: return .default
+    case .administrator: return .administrator
+    case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
+    }
+}
+
 // MARK: - GroupsProtoMember
 
-@objc public class GroupsProtoMember: NSObject {
-
-    // MARK: - GroupsProtoMemberRole
-
-    @objc public enum GroupsProtoMemberRole: Int32 {
-        case unknown = 0
-        case `default` = 1
-        case administrator = 2
-    }
-
-    private class func GroupsProtoMemberRoleWrap(_ value: GroupsProtos_Member.Role) -> GroupsProtoMemberRole {
-        switch value {
-        case .unknown: return .unknown
-        case .default: return .default
-        case .administrator: return .administrator
-        }
-    }
-
-    private class func GroupsProtoMemberRoleUnwrap(_ value: GroupsProtoMemberRole) -> GroupsProtos_Member.Role {
-        switch value {
-        case .unknown: return .unknown
-        case .default: return .default
-        case .administrator: return .administrator
-        }
-    }
+public class GroupsProtoMember: NSObject {
 
     // MARK: - GroupsProtoMemberBuilder
 
-    @objc public class func builder() -> GroupsProtoMemberBuilder {
+    public class func builder() -> GroupsProtoMemberBuilder {
         return GroupsProtoMemberBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> GroupsProtoMemberBuilder {
+    public func asBuilder() -> GroupsProtoMemberBuilder {
         let builder = GroupsProtoMemberBuilder()
         if let _value = userID {
             builder.setUserID(_value)
@@ -66,13 +93,12 @@ public enum GroupsProtoError: Error {
         return builder
     }
 
-    @objc public class GroupsProtoMemberBuilder: NSObject {
+    public class GroupsProtoMemberBuilder: NSObject {
 
         private var proto = GroupsProtos_Member()
 
-        @objc fileprivate override init() {}
+        fileprivate override init() {}
 
-        @objc
         @available(swift, obsoleted: 1.0)
         public func setUserID(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
@@ -83,12 +109,10 @@ public enum GroupsProtoError: Error {
             proto.userID = valueParam
         }
 
-        @objc
         public func setRole(_ valueParam: GroupsProtoMemberRole) {
             proto.role = GroupsProtoMemberRoleUnwrap(valueParam)
         }
 
-        @objc
         @available(swift, obsoleted: 1.0)
         public func setProfileKey(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
@@ -99,7 +123,6 @@ public enum GroupsProtoError: Error {
             proto.profileKey = valueParam
         }
 
-        @objc
         @available(swift, obsoleted: 1.0)
         public func setPresentation(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
@@ -110,75 +133,74 @@ public enum GroupsProtoError: Error {
             proto.presentation = valueParam
         }
 
-        @objc
         public func setJoinedAtVersion(_ valueParam: UInt32) {
             proto.joinedAtVersion = valueParam
         }
 
-        @objc public func build() throws -> GroupsProtoMember {
+        public func build() throws -> GroupsProtoMember {
             return try GroupsProtoMember.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        public func buildSerializedData() throws -> Data {
             return try GroupsProtoMember.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: GroupsProtos_Member
 
-    @objc public var userID: Data? {
-        guard proto.hasUserID else {
+    public var userID: Data? {
+        guard hasUserID else {
             return nil
         }
         return proto.userID
     }
-    @objc public var hasUserID: Bool {
-        return proto.hasUserID
+    public var hasUserID: Bool {
+        return proto.userID.count > 0
     }
 
     public var role: GroupsProtoMemberRole? {
-        guard proto.hasRole else {
+        guard hasRole else {
             return nil
         }
-        return GroupsProtoMember.GroupsProtoMemberRoleWrap(proto.role)
+        return GroupsProtoMemberRoleWrap(proto.role)
     }
     // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    @objc public var unwrappedRole: GroupsProtoMemberRole {
+    public var unwrappedRole: GroupsProtoMemberRole {
         if !hasRole {
             // TODO: We could make this a crashing assert.
             owsFailDebug("Unsafe unwrap of missing optional: Member.role.")
         }
-        return GroupsProtoMember.GroupsProtoMemberRoleWrap(proto.role)
+        return GroupsProtoMemberRoleWrap(proto.role)
     }
-    @objc public var hasRole: Bool {
-        return proto.hasRole
+    public var hasRole: Bool {
+        return true
     }
 
-    @objc public var profileKey: Data? {
-        guard proto.hasProfileKey else {
+    public var profileKey: Data? {
+        guard hasProfileKey else {
             return nil
         }
         return proto.profileKey
     }
-    @objc public var hasProfileKey: Bool {
-        return proto.hasProfileKey
+    public var hasProfileKey: Bool {
+        return proto.profileKey.count > 0
     }
 
-    @objc public var presentation: Data? {
-        guard proto.hasPresentation else {
+    public var presentation: Data? {
+        guard hasPresentation else {
             return nil
         }
         return proto.presentation
     }
-    @objc public var hasPresentation: Bool {
-        return proto.hasPresentation
+    public var hasPresentation: Bool {
+        return proto.presentation.count > 0
     }
 
-    @objc public var joinedAtVersion: UInt32 {
+    public var joinedAtVersion: UInt32 {
         return proto.joinedAtVersion
     }
-    @objc public var hasJoinedAtVersion: Bool {
-        return proto.hasJoinedAtVersion
+    public var hasJoinedAtVersion: Bool {
+        return true
     }
 
     private init(proto: GroupsProtos_Member) {
@@ -190,7 +212,7 @@ public enum GroupsProtoError: Error {
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> GroupsProtoMember {
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoMember {
         let proto = try GroupsProtos_Member(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -204,7 +226,7 @@ public enum GroupsProtoError: Error {
         return result
     }
 
-    @objc public override var debugDescription: String {
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -212,58 +234,86 @@ public enum GroupsProtoError: Error {
 #if DEBUG
 
 extension GroupsProtoMember {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension GroupsProtoMember.GroupsProtoMemberBuilder {
-    @objc public func buildIgnoringErrors() -> GroupsProtoMember? {
+    public func buildIgnoringErrors() -> GroupsProtoMember? {
         return try! self.build()
     }
 }
 
 #endif
 
+// MARK: - GroupsProtoAccessControlAccessRequired
+
+public enum GroupsProtoAccessControlAccessRequired: SwiftProtobuf.Enum {
+    public typealias RawValue = Int
+    case unknown // 0
+    case any // 1
+    case member // 2
+    case administrator // 3
+    case UNRECOGNIZED(Int)
+
+    public init() {
+        self = .unknown
+    }
+
+    public init?(rawValue: Int) {
+        switch rawValue {
+            case 0: self = .unknown
+            case 1: self = .any
+            case 2: self = .member
+            case 3: self = .administrator
+            default: self = .UNRECOGNIZED(rawValue)
+        }
+    }
+
+    public var rawValue: Int {
+        switch self {
+            case .unknown: return 0
+            case .any: return 1
+            case .member: return 2
+            case .administrator: return 3
+            case .UNRECOGNIZED(let i): return i
+        }
+    }
+}
+
+private func GroupsProtoAccessControlAccessRequiredWrap(_ value: GroupsProtos_AccessControl.AccessRequired) -> GroupsProtoAccessControlAccessRequired {
+    switch value {
+    case .unknown: return .unknown
+    case .any: return .any
+    case .member: return .member
+    case .administrator: return .administrator
+    case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
+    }
+}
+
+private func GroupsProtoAccessControlAccessRequiredUnwrap(_ value: GroupsProtoAccessControlAccessRequired) -> GroupsProtos_AccessControl.AccessRequired {
+    switch value {
+    case .unknown: return .unknown
+    case .any: return .any
+    case .member: return .member
+    case .administrator: return .administrator
+    case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
+    }
+}
+
 // MARK: - GroupsProtoAccessControl
 
-@objc public class GroupsProtoAccessControl: NSObject {
-
-    // MARK: - GroupsProtoAccessControlAccessRequired
-
-    @objc public enum GroupsProtoAccessControlAccessRequired: Int32 {
-        case unknown = 0
-        case any = 1
-        case member = 2
-        case administrator = 3
-    }
-
-    private class func GroupsProtoAccessControlAccessRequiredWrap(_ value: GroupsProtos_AccessControl.AccessRequired) -> GroupsProtoAccessControlAccessRequired {
-        switch value {
-        case .unknown: return .unknown
-        case .any: return .any
-        case .member: return .member
-        case .administrator: return .administrator
-        }
-    }
-
-    private class func GroupsProtoAccessControlAccessRequiredUnwrap(_ value: GroupsProtoAccessControlAccessRequired) -> GroupsProtos_AccessControl.AccessRequired {
-        switch value {
-        case .unknown: return .unknown
-        case .any: return .any
-        case .member: return .member
-        case .administrator: return .administrator
-        }
-    }
+public class GroupsProtoAccessControl: NSObject {
 
     // MARK: - GroupsProtoAccessControlBuilder
 
-    @objc public class func builder() -> GroupsProtoAccessControlBuilder {
+    public class func builder() -> GroupsProtoAccessControlBuilder {
         return GroupsProtoAccessControlBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> GroupsProtoAccessControlBuilder {
+    public func asBuilder() -> GroupsProtoAccessControlBuilder {
         let builder = GroupsProtoAccessControlBuilder()
         if let _value = title {
             builder.setTitle(_value)
@@ -277,32 +327,29 @@ extension GroupsProtoMember.GroupsProtoMemberBuilder {
         return builder
     }
 
-    @objc public class GroupsProtoAccessControlBuilder: NSObject {
+    public class GroupsProtoAccessControlBuilder: NSObject {
 
         private var proto = GroupsProtos_AccessControl()
 
-        @objc fileprivate override init() {}
+        fileprivate override init() {}
 
-        @objc
         public func setTitle(_ valueParam: GroupsProtoAccessControlAccessRequired) {
             proto.title = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
         }
 
-        @objc
         public func setAvatar(_ valueParam: GroupsProtoAccessControlAccessRequired) {
             proto.avatar = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
         }
 
-        @objc
         public func setMembers(_ valueParam: GroupsProtoAccessControlAccessRequired) {
             proto.members = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
         }
 
-        @objc public func build() throws -> GroupsProtoAccessControl {
+        public func build() throws -> GroupsProtoAccessControl {
             return try GroupsProtoAccessControl.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        public func buildSerializedData() throws -> Data {
             return try GroupsProtoAccessControl.parseProto(proto).serializedData()
         }
     }
@@ -310,57 +357,57 @@ extension GroupsProtoMember.GroupsProtoMemberBuilder {
     fileprivate let proto: GroupsProtos_AccessControl
 
     public var title: GroupsProtoAccessControlAccessRequired? {
-        guard proto.hasTitle else {
+        guard hasTitle else {
             return nil
         }
-        return GroupsProtoAccessControl.GroupsProtoAccessControlAccessRequiredWrap(proto.title)
+        return GroupsProtoAccessControlAccessRequiredWrap(proto.title)
     }
     // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    @objc public var unwrappedTitle: GroupsProtoAccessControlAccessRequired {
+    public var unwrappedTitle: GroupsProtoAccessControlAccessRequired {
         if !hasTitle {
             // TODO: We could make this a crashing assert.
             owsFailDebug("Unsafe unwrap of missing optional: AccessControl.title.")
         }
-        return GroupsProtoAccessControl.GroupsProtoAccessControlAccessRequiredWrap(proto.title)
+        return GroupsProtoAccessControlAccessRequiredWrap(proto.title)
     }
-    @objc public var hasTitle: Bool {
-        return proto.hasTitle
+    public var hasTitle: Bool {
+        return true
     }
 
     public var avatar: GroupsProtoAccessControlAccessRequired? {
-        guard proto.hasAvatar else {
+        guard hasAvatar else {
             return nil
         }
-        return GroupsProtoAccessControl.GroupsProtoAccessControlAccessRequiredWrap(proto.avatar)
+        return GroupsProtoAccessControlAccessRequiredWrap(proto.avatar)
     }
     // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    @objc public var unwrappedAvatar: GroupsProtoAccessControlAccessRequired {
+    public var unwrappedAvatar: GroupsProtoAccessControlAccessRequired {
         if !hasAvatar {
             // TODO: We could make this a crashing assert.
             owsFailDebug("Unsafe unwrap of missing optional: AccessControl.avatar.")
         }
-        return GroupsProtoAccessControl.GroupsProtoAccessControlAccessRequiredWrap(proto.avatar)
+        return GroupsProtoAccessControlAccessRequiredWrap(proto.avatar)
     }
-    @objc public var hasAvatar: Bool {
-        return proto.hasAvatar
+    public var hasAvatar: Bool {
+        return true
     }
 
     public var members: GroupsProtoAccessControlAccessRequired? {
-        guard proto.hasMembers else {
+        guard hasMembers else {
             return nil
         }
-        return GroupsProtoAccessControl.GroupsProtoAccessControlAccessRequiredWrap(proto.members)
+        return GroupsProtoAccessControlAccessRequiredWrap(proto.members)
     }
     // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    @objc public var unwrappedMembers: GroupsProtoAccessControlAccessRequired {
+    public var unwrappedMembers: GroupsProtoAccessControlAccessRequired {
         if !hasMembers {
             // TODO: We could make this a crashing assert.
             owsFailDebug("Unsafe unwrap of missing optional: AccessControl.members.")
         }
-        return GroupsProtoAccessControl.GroupsProtoAccessControlAccessRequiredWrap(proto.members)
+        return GroupsProtoAccessControlAccessRequiredWrap(proto.members)
     }
-    @objc public var hasMembers: Bool {
-        return proto.hasMembers
+    public var hasMembers: Bool {
+        return true
     }
 
     private init(proto: GroupsProtos_AccessControl) {
@@ -372,7 +419,7 @@ extension GroupsProtoMember.GroupsProtoMemberBuilder {
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> GroupsProtoAccessControl {
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoAccessControl {
         let proto = try GroupsProtos_AccessControl(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -386,7 +433,7 @@ extension GroupsProtoMember.GroupsProtoMemberBuilder {
         return result
     }
 
-    @objc public override var debugDescription: String {
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -394,13 +441,13 @@ extension GroupsProtoMember.GroupsProtoMemberBuilder {
 #if DEBUG
 
 extension GroupsProtoAccessControl {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension GroupsProtoAccessControl.GroupsProtoAccessControlBuilder {
-    @objc public func buildIgnoringErrors() -> GroupsProtoAccessControl? {
+    public func buildIgnoringErrors() -> GroupsProtoAccessControl? {
         return try! self.build()
     }
 }
@@ -409,16 +456,16 @@ extension GroupsProtoAccessControl.GroupsProtoAccessControlBuilder {
 
 // MARK: - GroupsProtoGroup
 
-@objc public class GroupsProtoGroup: NSObject {
+public class GroupsProtoGroup: NSObject {
 
     // MARK: - GroupsProtoGroupBuilder
 
-    @objc public class func builder() -> GroupsProtoGroupBuilder {
+    public class func builder() -> GroupsProtoGroupBuilder {
         return GroupsProtoGroupBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> GroupsProtoGroupBuilder {
+    public func asBuilder() -> GroupsProtoGroupBuilder {
         let builder = GroupsProtoGroupBuilder()
         if let _value = publicKey {
             builder.setPublicKey(_value)
@@ -439,13 +486,12 @@ extension GroupsProtoAccessControl.GroupsProtoAccessControlBuilder {
         return builder
     }
 
-    @objc public class GroupsProtoGroupBuilder: NSObject {
+    public class GroupsProtoGroupBuilder: NSObject {
 
         private var proto = GroupsProtos_Group()
 
-        @objc fileprivate override init() {}
+        fileprivate override init() {}
 
-        @objc
         @available(swift, obsoleted: 1.0)
         public func setPublicKey(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
@@ -456,7 +502,6 @@ extension GroupsProtoAccessControl.GroupsProtoAccessControlBuilder {
             proto.publicKey = valueParam
         }
 
-        @objc
         @available(swift, obsoleted: 1.0)
         public func setTitle(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
@@ -467,7 +512,6 @@ extension GroupsProtoAccessControl.GroupsProtoAccessControlBuilder {
             proto.title = valueParam
         }
 
-        @objc
         @available(swift, obsoleted: 1.0)
         public func setAvatar(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
@@ -478,7 +522,6 @@ extension GroupsProtoAccessControl.GroupsProtoAccessControlBuilder {
             proto.avatar = valueParam
         }
 
-        @objc
         @available(swift, obsoleted: 1.0)
         public func setAccessControl(_ valueParam: GroupsProtoAccessControl?) {
             guard let valueParam = valueParam else { return }
@@ -489,71 +532,70 @@ extension GroupsProtoAccessControl.GroupsProtoAccessControlBuilder {
             proto.accessControl = valueParam.proto
         }
 
-        @objc
         public func setVersion(_ valueParam: UInt32) {
             proto.version = valueParam
         }
 
-        @objc public func addMembers(_ valueParam: GroupsProtoMember) {
+        public func addMembers(_ valueParam: GroupsProtoMember) {
             var items = proto.members
             items.append(valueParam.proto)
             proto.members = items
         }
 
-        @objc public func setMembers(_ wrappedItems: [GroupsProtoMember]) {
+        public func setMembers(_ wrappedItems: [GroupsProtoMember]) {
             proto.members = wrappedItems.map { $0.proto }
         }
 
-        @objc public func build() throws -> GroupsProtoGroup {
+        public func build() throws -> GroupsProtoGroup {
             return try GroupsProtoGroup.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        public func buildSerializedData() throws -> Data {
             return try GroupsProtoGroup.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: GroupsProtos_Group
 
-    @objc public let accessControl: GroupsProtoAccessControl?
+    public let accessControl: GroupsProtoAccessControl?
 
-    @objc public let members: [GroupsProtoMember]
+    public let members: [GroupsProtoMember]
 
-    @objc public var publicKey: Data? {
-        guard proto.hasPublicKey else {
+    public var publicKey: Data? {
+        guard hasPublicKey else {
             return nil
         }
         return proto.publicKey
     }
-    @objc public var hasPublicKey: Bool {
-        return proto.hasPublicKey
+    public var hasPublicKey: Bool {
+        return proto.publicKey.count > 0
     }
 
-    @objc public var title: Data? {
-        guard proto.hasTitle else {
+    public var title: Data? {
+        guard hasTitle else {
             return nil
         }
         return proto.title
     }
-    @objc public var hasTitle: Bool {
-        return proto.hasTitle
+    public var hasTitle: Bool {
+        return proto.title.count > 0
     }
 
-    @objc public var avatar: Data? {
-        guard proto.hasAvatar else {
+    public var avatar: Data? {
+        guard hasAvatar else {
             return nil
         }
         return proto.avatar
     }
-    @objc public var hasAvatar: Bool {
-        return proto.hasAvatar
+    public var hasAvatar: Bool {
+        return proto.avatar.count > 0
     }
 
-    @objc public var version: UInt32 {
+    public var version: UInt32 {
         return proto.version
     }
-    @objc public var hasVersion: Bool {
-        return proto.hasVersion
+    public var hasVersion: Bool {
+        return true
     }
 
     private init(proto: GroupsProtos_Group,
@@ -569,7 +611,7 @@ extension GroupsProtoAccessControl.GroupsProtoAccessControlBuilder {
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroup {
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroup {
         let proto = try GroupsProtos_Group(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -593,7 +635,7 @@ extension GroupsProtoAccessControl.GroupsProtoAccessControlBuilder {
         return result
     }
 
-    @objc public override var debugDescription: String {
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -601,13 +643,13 @@ extension GroupsProtoAccessControl.GroupsProtoAccessControlBuilder {
 #if DEBUG
 
 extension GroupsProtoGroup {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension GroupsProtoGroup.GroupsProtoGroupBuilder {
-    @objc public func buildIgnoringErrors() -> GroupsProtoGroup? {
+    public func buildIgnoringErrors() -> GroupsProtoGroup? {
         return try! self.build()
     }
 }
@@ -616,16 +658,16 @@ extension GroupsProtoGroup.GroupsProtoGroupBuilder {
 
 // MARK: - GroupsProtoGroupChangeActionsAddMemberAction
 
-@objc public class GroupsProtoGroupChangeActionsAddMemberAction: NSObject {
+public class GroupsProtoGroupChangeActionsAddMemberAction: NSObject {
 
     // MARK: - GroupsProtoGroupChangeActionsAddMemberActionBuilder
 
-    @objc public class func builder() -> GroupsProtoGroupChangeActionsAddMemberActionBuilder {
+    public class func builder() -> GroupsProtoGroupChangeActionsAddMemberActionBuilder {
         return GroupsProtoGroupChangeActionsAddMemberActionBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> GroupsProtoGroupChangeActionsAddMemberActionBuilder {
+    public func asBuilder() -> GroupsProtoGroupChangeActionsAddMemberActionBuilder {
         let builder = GroupsProtoGroupChangeActionsAddMemberActionBuilder()
         if let _value = added {
             builder.setAdded(_value)
@@ -633,13 +675,12 @@ extension GroupsProtoGroup.GroupsProtoGroupBuilder {
         return builder
     }
 
-    @objc public class GroupsProtoGroupChangeActionsAddMemberActionBuilder: NSObject {
+    public class GroupsProtoGroupChangeActionsAddMemberActionBuilder: NSObject {
 
         private var proto = GroupsProtos_GroupChange.Actions.AddMemberAction()
 
-        @objc fileprivate override init() {}
+        fileprivate override init() {}
 
-        @objc
         @available(swift, obsoleted: 1.0)
         public func setAdded(_ valueParam: GroupsProtoMember?) {
             guard let valueParam = valueParam else { return }
@@ -650,18 +691,18 @@ extension GroupsProtoGroup.GroupsProtoGroupBuilder {
             proto.added = valueParam.proto
         }
 
-        @objc public func build() throws -> GroupsProtoGroupChangeActionsAddMemberAction {
+        public func build() throws -> GroupsProtoGroupChangeActionsAddMemberAction {
             return try GroupsProtoGroupChangeActionsAddMemberAction.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        public func buildSerializedData() throws -> Data {
             return try GroupsProtoGroupChangeActionsAddMemberAction.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.AddMemberAction
 
-    @objc public let added: GroupsProtoMember?
+    public let added: GroupsProtoMember?
 
     private init(proto: GroupsProtos_GroupChange.Actions.AddMemberAction,
                  added: GroupsProtoMember?) {
@@ -674,7 +715,7 @@ extension GroupsProtoGroup.GroupsProtoGroupBuilder {
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsAddMemberAction {
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsAddMemberAction {
         let proto = try GroupsProtos_GroupChange.Actions.AddMemberAction(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -694,7 +735,7 @@ extension GroupsProtoGroup.GroupsProtoGroupBuilder {
         return result
     }
 
-    @objc public override var debugDescription: String {
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -702,13 +743,13 @@ extension GroupsProtoGroup.GroupsProtoGroupBuilder {
 #if DEBUG
 
 extension GroupsProtoGroupChangeActionsAddMemberAction {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension GroupsProtoGroupChangeActionsAddMemberAction.GroupsProtoGroupChangeActionsAddMemberActionBuilder {
-    @objc public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsAddMemberAction? {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsAddMemberAction? {
         return try! self.build()
     }
 }
@@ -717,16 +758,16 @@ extension GroupsProtoGroupChangeActionsAddMemberAction.GroupsProtoGroupChangeAct
 
 // MARK: - GroupsProtoGroupChangeActionsDeleteMemberAction
 
-@objc public class GroupsProtoGroupChangeActionsDeleteMemberAction: NSObject {
+public class GroupsProtoGroupChangeActionsDeleteMemberAction: NSObject {
 
     // MARK: - GroupsProtoGroupChangeActionsDeleteMemberActionBuilder
 
-    @objc public class func builder() -> GroupsProtoGroupChangeActionsDeleteMemberActionBuilder {
+    public class func builder() -> GroupsProtoGroupChangeActionsDeleteMemberActionBuilder {
         return GroupsProtoGroupChangeActionsDeleteMemberActionBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> GroupsProtoGroupChangeActionsDeleteMemberActionBuilder {
+    public func asBuilder() -> GroupsProtoGroupChangeActionsDeleteMemberActionBuilder {
         let builder = GroupsProtoGroupChangeActionsDeleteMemberActionBuilder()
         if let _value = deleted {
             builder.setDeleted(_value)
@@ -734,13 +775,12 @@ extension GroupsProtoGroupChangeActionsAddMemberAction.GroupsProtoGroupChangeAct
         return builder
     }
 
-    @objc public class GroupsProtoGroupChangeActionsDeleteMemberActionBuilder: NSObject {
+    public class GroupsProtoGroupChangeActionsDeleteMemberActionBuilder: NSObject {
 
         private var proto = GroupsProtos_GroupChange.Actions.DeleteMemberAction()
 
-        @objc fileprivate override init() {}
+        fileprivate override init() {}
 
-        @objc
         @available(swift, obsoleted: 1.0)
         public func setDeleted(_ valueParam: GroupsProtoMember?) {
             guard let valueParam = valueParam else { return }
@@ -751,18 +791,18 @@ extension GroupsProtoGroupChangeActionsAddMemberAction.GroupsProtoGroupChangeAct
             proto.deleted = valueParam.proto
         }
 
-        @objc public func build() throws -> GroupsProtoGroupChangeActionsDeleteMemberAction {
+        public func build() throws -> GroupsProtoGroupChangeActionsDeleteMemberAction {
             return try GroupsProtoGroupChangeActionsDeleteMemberAction.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        public func buildSerializedData() throws -> Data {
             return try GroupsProtoGroupChangeActionsDeleteMemberAction.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.DeleteMemberAction
 
-    @objc public let deleted: GroupsProtoMember?
+    public let deleted: GroupsProtoMember?
 
     private init(proto: GroupsProtos_GroupChange.Actions.DeleteMemberAction,
                  deleted: GroupsProtoMember?) {
@@ -775,7 +815,7 @@ extension GroupsProtoGroupChangeActionsAddMemberAction.GroupsProtoGroupChangeAct
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsDeleteMemberAction {
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsDeleteMemberAction {
         let proto = try GroupsProtos_GroupChange.Actions.DeleteMemberAction(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -795,7 +835,7 @@ extension GroupsProtoGroupChangeActionsAddMemberAction.GroupsProtoGroupChangeAct
         return result
     }
 
-    @objc public override var debugDescription: String {
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -803,13 +843,13 @@ extension GroupsProtoGroupChangeActionsAddMemberAction.GroupsProtoGroupChangeAct
 #if DEBUG
 
 extension GroupsProtoGroupChangeActionsDeleteMemberAction {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension GroupsProtoGroupChangeActionsDeleteMemberAction.GroupsProtoGroupChangeActionsDeleteMemberActionBuilder {
-    @objc public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsDeleteMemberAction? {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsDeleteMemberAction? {
         return try! self.build()
     }
 }
@@ -818,16 +858,16 @@ extension GroupsProtoGroupChangeActionsDeleteMemberAction.GroupsProtoGroupChange
 
 // MARK: - GroupsProtoGroupChangeActionsModifyMemberRoleAction
 
-@objc public class GroupsProtoGroupChangeActionsModifyMemberRoleAction: NSObject {
+public class GroupsProtoGroupChangeActionsModifyMemberRoleAction: NSObject {
 
     // MARK: - GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder
 
-    @objc public class func builder() -> GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder {
+    public class func builder() -> GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder {
         return GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder {
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder {
         let builder = GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder()
         if let _value = userID {
             builder.setUserID(_value)
@@ -838,13 +878,12 @@ extension GroupsProtoGroupChangeActionsDeleteMemberAction.GroupsProtoGroupChange
         return builder
     }
 
-    @objc public class GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder: NSObject {
+    public class GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder: NSObject {
 
         private var proto = GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction()
 
-        @objc fileprivate override init() {}
+        fileprivate override init() {}
 
-        @objc
         @available(swift, obsoleted: 1.0)
         public func setUserID(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
@@ -855,46 +894,47 @@ extension GroupsProtoGroupChangeActionsDeleteMemberAction.GroupsProtoGroupChange
             proto.userID = valueParam
         }
 
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setRole(_ valueParam: Member.Role?) {
-            guard let valueParam = valueParam else { return }
-            proto.role = valueParam
+        public func setRole(_ valueParam: GroupsProtoMemberRole) {
+            proto.role = GroupsProtoMemberRoleUnwrap(valueParam)
         }
 
-        public func setRole(_ valueParam: Member.Role) {
-            proto.role = valueParam
-        }
-
-        @objc public func build() throws -> GroupsProtoGroupChangeActionsModifyMemberRoleAction {
+        public func build() throws -> GroupsProtoGroupChangeActionsModifyMemberRoleAction {
             return try GroupsProtoGroupChangeActionsModifyMemberRoleAction.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        public func buildSerializedData() throws -> Data {
             return try GroupsProtoGroupChangeActionsModifyMemberRoleAction.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction
 
-    @objc public var userID: Data? {
-        guard proto.hasUserID else {
+    public var userID: Data? {
+        guard hasUserID else {
             return nil
         }
         return proto.userID
     }
-    @objc public var hasUserID: Bool {
-        return proto.hasUserID
+    public var hasUserID: Bool {
+        return proto.userID.count > 0
     }
 
-    @objc public var role: Member.Role? {
-        guard proto.hasRole else {
+    public var role: GroupsProtoMemberRole? {
+        guard hasRole else {
             return nil
         }
-        return proto.role
+        return GroupsProtoMemberRoleWrap(proto.role)
     }
-    @objc public var hasRole: Bool {
-        return proto.hasRole
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    public var unwrappedRole: GroupsProtoMemberRole {
+        if !hasRole {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: ModifyMemberRoleAction.role.")
+        }
+        return GroupsProtoMemberRoleWrap(proto.role)
+    }
+    public var hasRole: Bool {
+        return true
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction) {
@@ -906,7 +946,7 @@ extension GroupsProtoGroupChangeActionsDeleteMemberAction.GroupsProtoGroupChange
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyMemberRoleAction {
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyMemberRoleAction {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -920,7 +960,7 @@ extension GroupsProtoGroupChangeActionsDeleteMemberAction.GroupsProtoGroupChange
         return result
     }
 
-    @objc public override var debugDescription: String {
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -928,13 +968,13 @@ extension GroupsProtoGroupChangeActionsDeleteMemberAction.GroupsProtoGroupChange
 #if DEBUG
 
 extension GroupsProtoGroupChangeActionsModifyMemberRoleAction {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension GroupsProtoGroupChangeActionsModifyMemberRoleAction.GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder {
-    @objc public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyMemberRoleAction? {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyMemberRoleAction? {
         return try! self.build()
     }
 }
@@ -943,16 +983,16 @@ extension GroupsProtoGroupChangeActionsModifyMemberRoleAction.GroupsProtoGroupCh
 
 // MARK: - GroupsProtoGroupChangeActionsModifyTitleAction
 
-@objc public class GroupsProtoGroupChangeActionsModifyTitleAction: NSObject {
+public class GroupsProtoGroupChangeActionsModifyTitleAction: NSObject {
 
     // MARK: - GroupsProtoGroupChangeActionsModifyTitleActionBuilder
 
-    @objc public class func builder() -> GroupsProtoGroupChangeActionsModifyTitleActionBuilder {
+    public class func builder() -> GroupsProtoGroupChangeActionsModifyTitleActionBuilder {
         return GroupsProtoGroupChangeActionsModifyTitleActionBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> GroupsProtoGroupChangeActionsModifyTitleActionBuilder {
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyTitleActionBuilder {
         let builder = GroupsProtoGroupChangeActionsModifyTitleActionBuilder()
         if let _value = title {
             builder.setTitle(_value)
@@ -960,13 +1000,12 @@ extension GroupsProtoGroupChangeActionsModifyMemberRoleAction.GroupsProtoGroupCh
         return builder
     }
 
-    @objc public class GroupsProtoGroupChangeActionsModifyTitleActionBuilder: NSObject {
+    public class GroupsProtoGroupChangeActionsModifyTitleActionBuilder: NSObject {
 
         private var proto = GroupsProtos_GroupChange.Actions.ModifyTitleAction()
 
-        @objc fileprivate override init() {}
+        fileprivate override init() {}
 
-        @objc
         @available(swift, obsoleted: 1.0)
         public func setTitle(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
@@ -977,25 +1016,25 @@ extension GroupsProtoGroupChangeActionsModifyMemberRoleAction.GroupsProtoGroupCh
             proto.title = valueParam
         }
 
-        @objc public func build() throws -> GroupsProtoGroupChangeActionsModifyTitleAction {
+        public func build() throws -> GroupsProtoGroupChangeActionsModifyTitleAction {
             return try GroupsProtoGroupChangeActionsModifyTitleAction.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        public func buildSerializedData() throws -> Data {
             return try GroupsProtoGroupChangeActionsModifyTitleAction.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyTitleAction
 
-    @objc public var title: Data? {
-        guard proto.hasTitle else {
+    public var title: Data? {
+        guard hasTitle else {
             return nil
         }
         return proto.title
     }
-    @objc public var hasTitle: Bool {
-        return proto.hasTitle
+    public var hasTitle: Bool {
+        return proto.title.count > 0
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyTitleAction) {
@@ -1007,7 +1046,7 @@ extension GroupsProtoGroupChangeActionsModifyMemberRoleAction.GroupsProtoGroupCh
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyTitleAction {
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyTitleAction {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyTitleAction(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -1021,7 +1060,7 @@ extension GroupsProtoGroupChangeActionsModifyMemberRoleAction.GroupsProtoGroupCh
         return result
     }
 
-    @objc public override var debugDescription: String {
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -1029,13 +1068,13 @@ extension GroupsProtoGroupChangeActionsModifyMemberRoleAction.GroupsProtoGroupCh
 #if DEBUG
 
 extension GroupsProtoGroupChangeActionsModifyTitleAction {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension GroupsProtoGroupChangeActionsModifyTitleAction.GroupsProtoGroupChangeActionsModifyTitleActionBuilder {
-    @objc public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyTitleAction? {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyTitleAction? {
         return try! self.build()
     }
 }
@@ -1044,16 +1083,16 @@ extension GroupsProtoGroupChangeActionsModifyTitleAction.GroupsProtoGroupChangeA
 
 // MARK: - GroupsProtoGroupChangeActionsModifyAvatarAction
 
-@objc public class GroupsProtoGroupChangeActionsModifyAvatarAction: NSObject {
+public class GroupsProtoGroupChangeActionsModifyAvatarAction: NSObject {
 
     // MARK: - GroupsProtoGroupChangeActionsModifyAvatarActionBuilder
 
-    @objc public class func builder() -> GroupsProtoGroupChangeActionsModifyAvatarActionBuilder {
+    public class func builder() -> GroupsProtoGroupChangeActionsModifyAvatarActionBuilder {
         return GroupsProtoGroupChangeActionsModifyAvatarActionBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> GroupsProtoGroupChangeActionsModifyAvatarActionBuilder {
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyAvatarActionBuilder {
         let builder = GroupsProtoGroupChangeActionsModifyAvatarActionBuilder()
         if let _value = avatar {
             builder.setAvatar(_value)
@@ -1061,13 +1100,12 @@ extension GroupsProtoGroupChangeActionsModifyTitleAction.GroupsProtoGroupChangeA
         return builder
     }
 
-    @objc public class GroupsProtoGroupChangeActionsModifyAvatarActionBuilder: NSObject {
+    public class GroupsProtoGroupChangeActionsModifyAvatarActionBuilder: NSObject {
 
         private var proto = GroupsProtos_GroupChange.Actions.ModifyAvatarAction()
 
-        @objc fileprivate override init() {}
+        fileprivate override init() {}
 
-        @objc
         @available(swift, obsoleted: 1.0)
         public func setAvatar(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
@@ -1078,25 +1116,25 @@ extension GroupsProtoGroupChangeActionsModifyTitleAction.GroupsProtoGroupChangeA
             proto.avatar = valueParam
         }
 
-        @objc public func build() throws -> GroupsProtoGroupChangeActionsModifyAvatarAction {
+        public func build() throws -> GroupsProtoGroupChangeActionsModifyAvatarAction {
             return try GroupsProtoGroupChangeActionsModifyAvatarAction.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        public func buildSerializedData() throws -> Data {
             return try GroupsProtoGroupChangeActionsModifyAvatarAction.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAction
 
-    @objc public var avatar: Data? {
-        guard proto.hasAvatar else {
+    public var avatar: Data? {
+        guard hasAvatar else {
             return nil
         }
         return proto.avatar
     }
-    @objc public var hasAvatar: Bool {
-        return proto.hasAvatar
+    public var hasAvatar: Bool {
+        return proto.avatar.count > 0
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAction) {
@@ -1108,7 +1146,7 @@ extension GroupsProtoGroupChangeActionsModifyTitleAction.GroupsProtoGroupChangeA
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyAvatarAction {
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyAvatarAction {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyAvatarAction(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -1122,7 +1160,7 @@ extension GroupsProtoGroupChangeActionsModifyTitleAction.GroupsProtoGroupChangeA
         return result
     }
 
-    @objc public override var debugDescription: String {
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -1130,13 +1168,13 @@ extension GroupsProtoGroupChangeActionsModifyTitleAction.GroupsProtoGroupChangeA
 #if DEBUG
 
 extension GroupsProtoGroupChangeActionsModifyAvatarAction {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension GroupsProtoGroupChangeActionsModifyAvatarAction.GroupsProtoGroupChangeActionsModifyAvatarActionBuilder {
-    @objc public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyAvatarAction? {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyAvatarAction? {
         return try! self.build()
     }
 }
@@ -1145,16 +1183,16 @@ extension GroupsProtoGroupChangeActionsModifyAvatarAction.GroupsProtoGroupChange
 
 // MARK: - GroupsProtoGroupChangeActionsModifyTitleAccessControlAction
 
-@objc public class GroupsProtoGroupChangeActionsModifyTitleAccessControlAction: NSObject {
+public class GroupsProtoGroupChangeActionsModifyTitleAccessControlAction: NSObject {
 
     // MARK: - GroupsProtoGroupChangeActionsModifyTitleAccessControlActionBuilder
 
-    @objc public class func builder() -> GroupsProtoGroupChangeActionsModifyTitleAccessControlActionBuilder {
+    public class func builder() -> GroupsProtoGroupChangeActionsModifyTitleAccessControlActionBuilder {
         return GroupsProtoGroupChangeActionsModifyTitleAccessControlActionBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> GroupsProtoGroupChangeActionsModifyTitleAccessControlActionBuilder {
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyTitleAccessControlActionBuilder {
         let builder = GroupsProtoGroupChangeActionsModifyTitleAccessControlActionBuilder()
         if let _value = titleAccess {
             builder.setTitleAccess(_value)
@@ -1162,42 +1200,43 @@ extension GroupsProtoGroupChangeActionsModifyAvatarAction.GroupsProtoGroupChange
         return builder
     }
 
-    @objc public class GroupsProtoGroupChangeActionsModifyTitleAccessControlActionBuilder: NSObject {
+    public class GroupsProtoGroupChangeActionsModifyTitleAccessControlActionBuilder: NSObject {
 
         private var proto = GroupsProtos_GroupChange.Actions.ModifyTitleAccessControlAction()
 
-        @objc fileprivate override init() {}
+        fileprivate override init() {}
 
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setTitleAccess(_ valueParam: AccessControl.AccessRequired?) {
-            guard let valueParam = valueParam else { return }
-            proto.titleAccess = valueParam
+        public func setTitleAccess(_ valueParam: GroupsProtoAccessControlAccessRequired) {
+            proto.titleAccess = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
         }
 
-        public func setTitleAccess(_ valueParam: AccessControl.AccessRequired) {
-            proto.titleAccess = valueParam
-        }
-
-        @objc public func build() throws -> GroupsProtoGroupChangeActionsModifyTitleAccessControlAction {
+        public func build() throws -> GroupsProtoGroupChangeActionsModifyTitleAccessControlAction {
             return try GroupsProtoGroupChangeActionsModifyTitleAccessControlAction.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        public func buildSerializedData() throws -> Data {
             return try GroupsProtoGroupChangeActionsModifyTitleAccessControlAction.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyTitleAccessControlAction
 
-    @objc public var titleAccess: AccessControl.AccessRequired? {
-        guard proto.hasTitleAccess else {
+    public var titleAccess: GroupsProtoAccessControlAccessRequired? {
+        guard hasTitleAccess else {
             return nil
         }
-        return proto.titleAccess
+        return GroupsProtoAccessControlAccessRequiredWrap(proto.titleAccess)
     }
-    @objc public var hasTitleAccess: Bool {
-        return proto.hasTitleAccess
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    public var unwrappedTitleAccess: GroupsProtoAccessControlAccessRequired {
+        if !hasTitleAccess {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: ModifyTitleAccessControlAction.titleAccess.")
+        }
+        return GroupsProtoAccessControlAccessRequiredWrap(proto.titleAccess)
+    }
+    public var hasTitleAccess: Bool {
+        return true
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyTitleAccessControlAction) {
@@ -1209,7 +1248,7 @@ extension GroupsProtoGroupChangeActionsModifyAvatarAction.GroupsProtoGroupChange
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyTitleAccessControlAction {
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyTitleAccessControlAction {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyTitleAccessControlAction(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -1223,7 +1262,7 @@ extension GroupsProtoGroupChangeActionsModifyAvatarAction.GroupsProtoGroupChange
         return result
     }
 
-    @objc public override var debugDescription: String {
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -1231,13 +1270,13 @@ extension GroupsProtoGroupChangeActionsModifyAvatarAction.GroupsProtoGroupChange
 #if DEBUG
 
 extension GroupsProtoGroupChangeActionsModifyTitleAccessControlAction {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension GroupsProtoGroupChangeActionsModifyTitleAccessControlAction.GroupsProtoGroupChangeActionsModifyTitleAccessControlActionBuilder {
-    @objc public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyTitleAccessControlAction? {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyTitleAccessControlAction? {
         return try! self.build()
     }
 }
@@ -1246,16 +1285,16 @@ extension GroupsProtoGroupChangeActionsModifyTitleAccessControlAction.GroupsProt
 
 // MARK: - GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction
 
-@objc public class GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction: NSObject {
+public class GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction: NSObject {
 
     // MARK: - GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder
 
-    @objc public class func builder() -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder {
+    public class func builder() -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder {
         return GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder {
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder {
         let builder = GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder()
         if let _value = avatarAccess {
             builder.setAvatarAccess(_value)
@@ -1263,42 +1302,43 @@ extension GroupsProtoGroupChangeActionsModifyTitleAccessControlAction.GroupsProt
         return builder
     }
 
-    @objc public class GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder: NSObject {
+    public class GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder: NSObject {
 
         private var proto = GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction()
 
-        @objc fileprivate override init() {}
+        fileprivate override init() {}
 
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setAvatarAccess(_ valueParam: AccessControl.AccessRequired?) {
-            guard let valueParam = valueParam else { return }
-            proto.avatarAccess = valueParam
+        public func setAvatarAccess(_ valueParam: GroupsProtoAccessControlAccessRequired) {
+            proto.avatarAccess = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
         }
 
-        public func setAvatarAccess(_ valueParam: AccessControl.AccessRequired) {
-            proto.avatarAccess = valueParam
-        }
-
-        @objc public func build() throws -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction {
+        public func build() throws -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction {
             return try GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        public func buildSerializedData() throws -> Data {
             return try GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction
 
-    @objc public var avatarAccess: AccessControl.AccessRequired? {
-        guard proto.hasAvatarAccess else {
+    public var avatarAccess: GroupsProtoAccessControlAccessRequired? {
+        guard hasAvatarAccess else {
             return nil
         }
-        return proto.avatarAccess
+        return GroupsProtoAccessControlAccessRequiredWrap(proto.avatarAccess)
     }
-    @objc public var hasAvatarAccess: Bool {
-        return proto.hasAvatarAccess
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    public var unwrappedAvatarAccess: GroupsProtoAccessControlAccessRequired {
+        if !hasAvatarAccess {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: ModifyAvatarAccessControlAction.avatarAccess.")
+        }
+        return GroupsProtoAccessControlAccessRequiredWrap(proto.avatarAccess)
+    }
+    public var hasAvatarAccess: Bool {
+        return true
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction) {
@@ -1310,7 +1350,7 @@ extension GroupsProtoGroupChangeActionsModifyTitleAccessControlAction.GroupsProt
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction {
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -1324,7 +1364,7 @@ extension GroupsProtoGroupChangeActionsModifyTitleAccessControlAction.GroupsProt
         return result
     }
 
-    @objc public override var debugDescription: String {
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -1332,13 +1372,13 @@ extension GroupsProtoGroupChangeActionsModifyTitleAccessControlAction.GroupsProt
 #if DEBUG
 
 extension GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction.GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder {
-    @objc public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction? {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction? {
         return try! self.build()
     }
 }
@@ -1347,16 +1387,16 @@ extension GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction.GroupsPro
 
 // MARK: - GroupsProtoGroupChangeActionsModifyMembersAccessControlAction
 
-@objc public class GroupsProtoGroupChangeActionsModifyMembersAccessControlAction: NSObject {
+public class GroupsProtoGroupChangeActionsModifyMembersAccessControlAction: NSObject {
 
     // MARK: - GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder
 
-    @objc public class func builder() -> GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder {
+    public class func builder() -> GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder {
         return GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder {
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder {
         let builder = GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder()
         if let _value = membersAccess {
             builder.setMembersAccess(_value)
@@ -1364,42 +1404,43 @@ extension GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction.GroupsPro
         return builder
     }
 
-    @objc public class GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder: NSObject {
+    public class GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder: NSObject {
 
         private var proto = GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction()
 
-        @objc fileprivate override init() {}
+        fileprivate override init() {}
 
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setMembersAccess(_ valueParam: AccessControl.AccessRequired?) {
-            guard let valueParam = valueParam else { return }
-            proto.membersAccess = valueParam
+        public func setMembersAccess(_ valueParam: GroupsProtoAccessControlAccessRequired) {
+            proto.membersAccess = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
         }
 
-        public func setMembersAccess(_ valueParam: AccessControl.AccessRequired) {
-            proto.membersAccess = valueParam
-        }
-
-        @objc public func build() throws -> GroupsProtoGroupChangeActionsModifyMembersAccessControlAction {
+        public func build() throws -> GroupsProtoGroupChangeActionsModifyMembersAccessControlAction {
             return try GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        public func buildSerializedData() throws -> Data {
             return try GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction
 
-    @objc public var membersAccess: AccessControl.AccessRequired? {
-        guard proto.hasMembersAccess else {
+    public var membersAccess: GroupsProtoAccessControlAccessRequired? {
+        guard hasMembersAccess else {
             return nil
         }
-        return proto.membersAccess
+        return GroupsProtoAccessControlAccessRequiredWrap(proto.membersAccess)
     }
-    @objc public var hasMembersAccess: Bool {
-        return proto.hasMembersAccess
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    public var unwrappedMembersAccess: GroupsProtoAccessControlAccessRequired {
+        if !hasMembersAccess {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: ModifyMembersAccessControlAction.membersAccess.")
+        }
+        return GroupsProtoAccessControlAccessRequiredWrap(proto.membersAccess)
+    }
+    public var hasMembersAccess: Bool {
+        return true
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction) {
@@ -1411,7 +1452,7 @@ extension GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction.GroupsPro
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyMembersAccessControlAction {
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyMembersAccessControlAction {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -1425,7 +1466,7 @@ extension GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction.GroupsPro
         return result
     }
 
-    @objc public override var debugDescription: String {
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -1433,13 +1474,13 @@ extension GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction.GroupsPro
 #if DEBUG
 
 extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder {
-    @objc public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyMembersAccessControlAction? {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyMembersAccessControlAction? {
         return try! self.build()
     }
 }
@@ -1448,16 +1489,16 @@ extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.GroupsPr
 
 // MARK: - GroupsProtoGroupChangeActions
 
-@objc public class GroupsProtoGroupChangeActions: NSObject {
+public class GroupsProtoGroupChangeActions: NSObject {
 
     // MARK: - GroupsProtoGroupChangeActionsBuilder
 
-    @objc public class func builder() -> GroupsProtoGroupChangeActionsBuilder {
+    public class func builder() -> GroupsProtoGroupChangeActionsBuilder {
         return GroupsProtoGroupChangeActionsBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> GroupsProtoGroupChangeActionsBuilder {
+    public func asBuilder() -> GroupsProtoGroupChangeActionsBuilder {
         let builder = GroupsProtoGroupChangeActionsBuilder()
         if let _value = source {
             builder.setSource(_value)
@@ -1486,13 +1527,12 @@ extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.GroupsPr
         return builder
     }
 
-    @objc public class GroupsProtoGroupChangeActionsBuilder: NSObject {
+    public class GroupsProtoGroupChangeActionsBuilder: NSObject {
 
         private var proto = GroupsProtos_GroupChange.Actions()
 
-        @objc fileprivate override init() {}
+        fileprivate override init() {}
 
-        @objc
         @available(swift, obsoleted: 1.0)
         public func setSource(_ valueParam: GroupsProtoMember?) {
             guard let valueParam = valueParam else { return }
@@ -1503,42 +1543,40 @@ extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.GroupsPr
             proto.source = valueParam.proto
         }
 
-        @objc
         public func setVersion(_ valueParam: UInt32) {
             proto.version = valueParam
         }
 
-        @objc public func addAddMembers(_ valueParam: GroupsProtoGroupChangeActionsAddMemberAction) {
+        public func addAddMembers(_ valueParam: GroupsProtoGroupChangeActionsAddMemberAction) {
             var items = proto.addMembers
             items.append(valueParam.proto)
             proto.addMembers = items
         }
 
-        @objc public func setAddMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsAddMemberAction]) {
+        public func setAddMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsAddMemberAction]) {
             proto.addMembers = wrappedItems.map { $0.proto }
         }
 
-        @objc public func addDeleteMembers(_ valueParam: GroupsProtoGroupChangeActionsDeleteMemberAction) {
+        public func addDeleteMembers(_ valueParam: GroupsProtoGroupChangeActionsDeleteMemberAction) {
             var items = proto.deleteMembers
             items.append(valueParam.proto)
             proto.deleteMembers = items
         }
 
-        @objc public func setDeleteMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsDeleteMemberAction]) {
+        public func setDeleteMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsDeleteMemberAction]) {
             proto.deleteMembers = wrappedItems.map { $0.proto }
         }
 
-        @objc public func addModifyMembers(_ valueParam: GroupsProtoGroupChangeActionsModifyMemberRoleAction) {
+        public func addModifyMembers(_ valueParam: GroupsProtoGroupChangeActionsModifyMemberRoleAction) {
             var items = proto.modifyMembers
             items.append(valueParam.proto)
             proto.modifyMembers = items
         }
 
-        @objc public func setModifyMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsModifyMemberRoleAction]) {
+        public func setModifyMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsModifyMemberRoleAction]) {
             proto.modifyMembers = wrappedItems.map { $0.proto }
         }
 
-        @objc
         @available(swift, obsoleted: 1.0)
         public func setModifyTitle(_ valueParam: GroupsProtoGroupChangeActionsModifyTitleAction?) {
             guard let valueParam = valueParam else { return }
@@ -1549,7 +1587,6 @@ extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.GroupsPr
             proto.modifyTitle = valueParam.proto
         }
 
-        @objc
         @available(swift, obsoleted: 1.0)
         public func setModifyAvatar(_ valueParam: GroupsProtoGroupChangeActionsModifyAvatarAction?) {
             guard let valueParam = valueParam else { return }
@@ -1560,7 +1597,6 @@ extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.GroupsPr
             proto.modifyAvatar = valueParam.proto
         }
 
-        @objc
         @available(swift, obsoleted: 1.0)
         public func setModifyTitleAccess(_ valueParam: GroupsProtoGroupChangeActionsModifyTitleAccessControlAction?) {
             guard let valueParam = valueParam else { return }
@@ -1571,7 +1607,6 @@ extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.GroupsPr
             proto.modifyTitleAccess = valueParam.proto
         }
 
-        @objc
         @available(swift, obsoleted: 1.0)
         public func setModifyAvatarAccess(_ valueParam: GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction?) {
             guard let valueParam = valueParam else { return }
@@ -1582,7 +1617,6 @@ extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.GroupsPr
             proto.modifyAvatarAccess = valueParam.proto
         }
 
-        @objc
         @available(swift, obsoleted: 1.0)
         public func setModifyMemberAccess(_ valueParam: GroupsProtoGroupChangeActionsModifyMembersAccessControlAction?) {
             guard let valueParam = valueParam else { return }
@@ -1593,40 +1627,40 @@ extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.GroupsPr
             proto.modifyMemberAccess = valueParam.proto
         }
 
-        @objc public func build() throws -> GroupsProtoGroupChangeActions {
+        public func build() throws -> GroupsProtoGroupChangeActions {
             return try GroupsProtoGroupChangeActions.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        public func buildSerializedData() throws -> Data {
             return try GroupsProtoGroupChangeActions.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions
 
-    @objc public let source: GroupsProtoMember?
+    public let source: GroupsProtoMember?
 
-    @objc public let addMembers: [GroupsProtoGroupChangeActionsAddMemberAction]
+    public let addMembers: [GroupsProtoGroupChangeActionsAddMemberAction]
 
-    @objc public let deleteMembers: [GroupsProtoGroupChangeActionsDeleteMemberAction]
+    public let deleteMembers: [GroupsProtoGroupChangeActionsDeleteMemberAction]
 
-    @objc public let modifyMembers: [GroupsProtoGroupChangeActionsModifyMemberRoleAction]
+    public let modifyMembers: [GroupsProtoGroupChangeActionsModifyMemberRoleAction]
 
-    @objc public let modifyTitle: GroupsProtoGroupChangeActionsModifyTitleAction?
+    public let modifyTitle: GroupsProtoGroupChangeActionsModifyTitleAction?
 
-    @objc public let modifyAvatar: GroupsProtoGroupChangeActionsModifyAvatarAction?
+    public let modifyAvatar: GroupsProtoGroupChangeActionsModifyAvatarAction?
 
-    @objc public let modifyTitleAccess: GroupsProtoGroupChangeActionsModifyTitleAccessControlAction?
+    public let modifyTitleAccess: GroupsProtoGroupChangeActionsModifyTitleAccessControlAction?
 
-    @objc public let modifyAvatarAccess: GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction?
+    public let modifyAvatarAccess: GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction?
 
-    @objc public let modifyMemberAccess: GroupsProtoGroupChangeActionsModifyMembersAccessControlAction?
+    public let modifyMemberAccess: GroupsProtoGroupChangeActionsModifyMembersAccessControlAction?
 
-    @objc public var version: UInt32 {
+    public var version: UInt32 {
         return proto.version
     }
-    @objc public var hasVersion: Bool {
-        return proto.hasVersion
+    public var hasVersion: Bool {
+        return true
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions,
@@ -1656,7 +1690,7 @@ extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.GroupsPr
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActions {
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActions {
         let proto = try GroupsProtos_GroupChange.Actions(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -1718,7 +1752,7 @@ extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.GroupsPr
         return result
     }
 
-    @objc public override var debugDescription: String {
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -1726,13 +1760,13 @@ extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.GroupsPr
 #if DEBUG
 
 extension GroupsProtoGroupChangeActions {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension GroupsProtoGroupChangeActions.GroupsProtoGroupChangeActionsBuilder {
-    @objc public func buildIgnoringErrors() -> GroupsProtoGroupChangeActions? {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChangeActions? {
         return try! self.build()
     }
 }
@@ -1741,16 +1775,16 @@ extension GroupsProtoGroupChangeActions.GroupsProtoGroupChangeActionsBuilder {
 
 // MARK: - GroupsProtoGroupChange
 
-@objc public class GroupsProtoGroupChange: NSObject {
+public class GroupsProtoGroupChange: NSObject {
 
     // MARK: - GroupsProtoGroupChangeBuilder
 
-    @objc public class func builder() -> GroupsProtoGroupChangeBuilder {
+    public class func builder() -> GroupsProtoGroupChangeBuilder {
         return GroupsProtoGroupChangeBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> GroupsProtoGroupChangeBuilder {
+    public func asBuilder() -> GroupsProtoGroupChangeBuilder {
         let builder = GroupsProtoGroupChangeBuilder()
         if let _value = actions {
             builder.setActions(_value)
@@ -1761,13 +1795,12 @@ extension GroupsProtoGroupChangeActions.GroupsProtoGroupChangeActionsBuilder {
         return builder
     }
 
-    @objc public class GroupsProtoGroupChangeBuilder: NSObject {
+    public class GroupsProtoGroupChangeBuilder: NSObject {
 
         private var proto = GroupsProtos_GroupChange()
 
-        @objc fileprivate override init() {}
+        fileprivate override init() {}
 
-        @objc
         @available(swift, obsoleted: 1.0)
         public func setActions(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
@@ -1778,7 +1811,6 @@ extension GroupsProtoGroupChangeActions.GroupsProtoGroupChangeActionsBuilder {
             proto.actions = valueParam
         }
 
-        @objc
         @available(swift, obsoleted: 1.0)
         public func setServerSignature(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
@@ -1789,35 +1821,35 @@ extension GroupsProtoGroupChangeActions.GroupsProtoGroupChangeActionsBuilder {
             proto.serverSignature = valueParam
         }
 
-        @objc public func build() throws -> GroupsProtoGroupChange {
+        public func build() throws -> GroupsProtoGroupChange {
             return try GroupsProtoGroupChange.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        public func buildSerializedData() throws -> Data {
             return try GroupsProtoGroupChange.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: GroupsProtos_GroupChange
 
-    @objc public var actions: Data? {
-        guard proto.hasActions else {
+    public var actions: Data? {
+        guard hasActions else {
             return nil
         }
         return proto.actions
     }
-    @objc public var hasActions: Bool {
-        return proto.hasActions
+    public var hasActions: Bool {
+        return proto.actions.count > 0
     }
 
-    @objc public var serverSignature: Data? {
-        guard proto.hasServerSignature else {
+    public var serverSignature: Data? {
+        guard hasServerSignature else {
             return nil
         }
         return proto.serverSignature
     }
-    @objc public var hasServerSignature: Bool {
-        return proto.hasServerSignature
+    public var hasServerSignature: Bool {
+        return proto.serverSignature.count > 0
     }
 
     private init(proto: GroupsProtos_GroupChange) {
@@ -1829,7 +1861,7 @@ extension GroupsProtoGroupChangeActions.GroupsProtoGroupChangeActionsBuilder {
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChange {
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChange {
         let proto = try GroupsProtos_GroupChange(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -1843,7 +1875,7 @@ extension GroupsProtoGroupChangeActions.GroupsProtoGroupChangeActionsBuilder {
         return result
     }
 
-    @objc public override var debugDescription: String {
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -1851,13 +1883,13 @@ extension GroupsProtoGroupChangeActions.GroupsProtoGroupChangeActionsBuilder {
 #if DEBUG
 
 extension GroupsProtoGroupChange {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension GroupsProtoGroupChange.GroupsProtoGroupChangeBuilder {
-    @objc public func buildIgnoringErrors() -> GroupsProtoGroupChange? {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChange? {
         return try! self.build()
     }
 }
