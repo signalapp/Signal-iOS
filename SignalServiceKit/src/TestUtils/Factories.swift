@@ -4,6 +4,8 @@
 
 import Foundation
 
+#if TESTABLE_BUILD
+
 /// Factories for creating some default TSYapDatabaseObjects.
 ///
 /// To customize properties applied by the factory (e.g. `someProperty`)
@@ -1722,3 +1724,5 @@ public class CommonGenerator: NSObject {
         return sentences(count: sentenceCount).joined(separator: " ")
     }
 }
+
+#endif

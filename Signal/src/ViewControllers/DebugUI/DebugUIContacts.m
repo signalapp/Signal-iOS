@@ -24,8 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
     return SDSDatabaseStorage.shared;
 }
 
-#pragma mark -
-
 #pragma mark - Factory Methods
 
 - (NSString *)name
