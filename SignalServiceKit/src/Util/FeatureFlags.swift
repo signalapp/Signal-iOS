@@ -115,8 +115,7 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static var preserveYdb: Bool {
-        // GRDB TODO: Set to false
-        return !build.includes(.qa)
+        return false
     }
 
     @objc
