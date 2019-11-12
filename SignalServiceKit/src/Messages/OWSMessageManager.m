@@ -1007,6 +1007,12 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (syncMessage.verified) {
         OWSLogInfo(@"Received verification state for %@", syncMessage.verified.destination);
         [self.identityManager throws_processIncomingSyncMessage:syncMessage.verified transaction:transaction];
+    } else if (syncMessage.contacts) {
+        NSLog(@"[Loki] Received contact sync message.");
+        NSData *data = syncMessage.contacts.data;
+        ContactParser *parser = [[ContactParser alloc] initWithData:data];
+        NSArray<NSString *> *hexEncodedPublicKeys = [parser parseHexEncodedPublicKeys];
+        // TODO: Establish sessions
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
     }

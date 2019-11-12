@@ -67,13 +67,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
+    NSError *error;
     if (self.attachmentIds.count > 1) {
         OWSLogError(@"Expected sync contact message to have one or zero attachments, but found %lu.", (unsigned long)self.attachmentIds.count);
     }
 
     SSKProtoSyncMessageContactsBuilder *contactsBuilder;
     if (self.attachmentIds.count == 0) {
-        SSKProtoAttachmentPointer *attachmentProto = [SSKProtoAttachmentPointer builderWithId:0];
+        SSKProtoAttachmentPointerBuilder *attachmentProtoBuilder = [SSKProtoAttachmentPointer builderWithId:0];
+        SSKProtoAttachmentPointer *attachmentProto = [attachmentProtoBuilder buildAndReturnError:&error];
         contactsBuilder = [SSKProtoSyncMessageContacts builderWithBlob:attachmentProto];
         __block NSData *data;
         [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -90,7 +92,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
     [contactsBuilder setIsComplete:YES];
     
-    NSError *error;
     SSKProtoSyncMessageContacts *contactsProto = [contactsBuilder buildAndReturnError:&error];
     if (error || contactsProto == nil) {
         OWSFailDebug(@"Couldn't build protobuf due to error: %@.", error);

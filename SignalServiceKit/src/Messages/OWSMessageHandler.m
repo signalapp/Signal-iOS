@@ -170,8 +170,9 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
         NSString *verifiedString =
             [NSString stringWithFormat:@"Verification for: %@", syncMessage.verified.destination];
         [description appendString:verifiedString];
+    } else if (syncMessage.contacts) {
+        [description appendString:@"Contacts"];
     } else {
-        OWSFailDebug(@"Unknown sync message type");
         [description appendString:@"Unknown"];
     }
 
