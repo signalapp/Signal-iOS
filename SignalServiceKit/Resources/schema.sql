@@ -711,3 +711,39 @@ CREATE
         ON "model_SignalAccount"("recipientUUID"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_OWSReaction" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"emoji" TEXT NOT NULL
+            ,"reactorE164" TEXT
+            ,"reactorUUID" TEXT
+            ,"receivedAtTimestamp" INTEGER NOT NULL
+            ,"sentAtTimestamp" INTEGER NOT NULL
+            ,"uniqueMessageId" TEXT NOT NULL
+        )
+;
+
+CREATE
+    INDEX "index_model_OWSReaction_on_uniqueId"
+        ON "model_OWSReaction"("uniqueId"
+)
+;
+
+CREATE
+    INDEX "index_model_OWSReaction_on_uniqueMessageId_and_reactorE164"
+        ON "model_OWSReaction"("uniqueMessageId"
+    ,"reactorE164"
+)
+;
+
+CREATE
+    INDEX "index_model_OWSReaction_on_uniqueMessageId_and_reactorUUID"
+        ON "model_OWSReaction"("uniqueMessageId"
+    ,"reactorUUID"
+)
+;
