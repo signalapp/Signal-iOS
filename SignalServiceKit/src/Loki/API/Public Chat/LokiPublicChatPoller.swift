@@ -155,7 +155,7 @@ public final class LokiPublicChatPoller : NSObject {
             }
         }
         // Poll
-        let _ = LokiPublicChatAPI.getMessages(for: publicChat.channel, on: publicChat.server).done(on: .main) { messages in
+        let _ = LokiPublicChatAPI.getMessages(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global()) { messages in
             messages.forEach { message in
                 if message.hexEncodedPublicKey != userHexEncodedPublicKey {
                     processIncomingMessage(message)
@@ -168,7 +168,7 @@ public final class LokiPublicChatPoller : NSObject {
     
     private func pollForDeletedMessages() {
         let publicChat = self.publicChat
-        let _ = LokiPublicChatAPI.getDeletedMessageServerIDs(for: publicChat.channel, on: publicChat.server).done { deletedMessageServerIDs in
+        let _ = LokiPublicChatAPI.getDeletedMessageServerIDs(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global()) { deletedMessageServerIDs in
             let storage = OWSPrimaryStorage.shared()
             storage.dbReadWriteConnection.readWrite { transaction in
                 let deletedMessageIDs = deletedMessageServerIDs.compactMap { storage.getIDForMessage(withServerID: UInt($0), in: transaction) }

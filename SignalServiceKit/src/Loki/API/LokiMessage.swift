@@ -49,7 +49,7 @@ public struct LokiMessage {
     /// - Returns: The promise of a new message with its `timestamp` and `nonce` set.
     public func calculatePoW() -> Promise<LokiMessage> {
         return Promise<LokiMessage> { seal in
-            DispatchQueue.global(qos: .default).async {
+            DispatchQueue.global().async {
                 let now = NSDate.ows_millisecondTimeStamp()
                 let dataAsString = self.data as! String // Safe because of how from(signalMessage:with:) is implemented
                 if let nonce = ProofOfWork.calculate(data: dataAsString, pubKey: self.destination, timestamp: now, ttl: self.ttl) {

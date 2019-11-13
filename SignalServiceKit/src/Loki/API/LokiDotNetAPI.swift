@@ -40,7 +40,7 @@ public class LokiDotNetAPI : NSObject {
     public static func uploadAttachment(_ attachment: TSAttachmentStream, with attachmentID: String, to server: String) -> Promise<Void> {
         let isEncryptionRequired = (server == LokiStorageAPI.server)
         return Promise<Void>() { seal in
-            getAuthToken(for: server).done { token in
+            getAuthToken(for: server).done(on: DispatchQueue.global()) { token in
                 let data: Data
                 guard let unencryptedAttachmentData = try? attachment.readDataFromFile() else {
                     print("[Loki] Couldn't read attachment data from disk.")
@@ -104,7 +104,7 @@ public class LokiDotNetAPI : NSObject {
                     return seal.fulfill(())
                 })
                 task.resume()
-            }.catch { error in
+            }.catch(on: DispatchQueue.global()) { error in
                 print("[Loki] Couldn't upload attachment.")
                 seal.reject(error)
             }
@@ -116,7 +116,7 @@ public class LokiDotNetAPI : NSObject {
         if let token = getAuthTokenFromDatabase(for: server) {
             return Promise.value(token)
         } else {
-            return requestNewAuthToken(for: server).then { submitAuthToken($0, for: server) }.map { token -> String in
+            return requestNewAuthToken(for: server).then(on: DispatchQueue.global()) { submitAuthToken($0, for: server) }.map { token -> String in
                 setAuthToken(for: server, to: token)
                 return token
             }
@@ -129,7 +129,7 @@ public class LokiDotNetAPI : NSObject {
         let queryParameters = "pubKey=\(userHexEncodedPublicKey)"
         let url = URL(string: "\(server)/loki/v1/get_challenge?\(queryParameters)")!
         let request = TSRequest(url: url)
-        return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
+        return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { $0.responseObject }.map { rawResponse in
             guard let json = rawResponse as? JSON, let base64EncodedChallenge = json["cipherText64"] as? String, let base64EncodedServerPublicKey = json["serverPubKey64"] as? String,
                 let challenge = Data(base64Encoded: base64EncodedChallenge), var serverPublicKey = Data(base64Encoded: base64EncodedServerPublicKey) else {
                 throw Error.parsingFailed
@@ -153,7 +153,7 @@ public class LokiDotNetAPI : NSObject {
         let url = URL(string: "\(server)/loki/v1/submit_challenge")!
         let parameters = [ "pubKey" : userHexEncodedPublicKey, "token" : token ]
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
-        return TSNetworkManager.shared().makePromise(request: request).map { _ in token }
+        return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { _ in token }
     }
     
     // MARK: Attachments (Public Obj-C API)

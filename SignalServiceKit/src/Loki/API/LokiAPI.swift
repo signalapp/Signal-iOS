@@ -87,7 +87,7 @@ public final class LokiAPI : NSObject {
         let headers = request.allHTTPHeaderFields ?? [:]
         let headersDescription = headers.isEmpty ? "no custom headers specified" : headers.prettifiedDescription
         print("[Loki] Invoking \(method.rawValue) on \(target) with \(parameters.prettifiedDescription) (\(headersDescription)).")
-        return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }
+        return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { $0.responseObject }
             .handlingSwarmSpecificErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey).recoveringNetworkErrorsIfNeeded()
     }
     
@@ -130,10 +130,10 @@ public final class LokiAPI : NSObject {
         if timeSinceLastUpdate > deviceLinkUpdateInterval {
             storage.dbReadConnection.read { transaction in
                 let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
-                LokiStorageAPI.getDeviceLinks(associatedWith: masterHexEncodedPublicKey).done { _ in
+                LokiStorageAPI.getDeviceLinks(associatedWith: masterHexEncodedPublicKey).done(on: DispatchQueue.global()) { _ in
                     getDestinations()
                     lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()
-                }.catch { error in
+                }.catch(on: DispatchQueue.global()) { error in
                     if case LokiDotNetAPI.Error.parsingFailed = error {
                         // Don't immediately re-fetch in case of failure due to a parsing error
                         lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()
@@ -157,7 +157,7 @@ public final class LokiAPI : NSObject {
             return invoke(.sendMessage, on: target, associatedWith: destination, parameters: parameters)
         }
         func sendLokiMessageUsingSwarmAPI() -> Promise<Set<RawResponsePromise>> {
-            return lokiMessage.calculatePoW().then { lokiMessageWithPoW in
+            return lokiMessage.calculatePoW().then(on: DispatchQueue.global()) { lokiMessageWithPoW in
                 return getTargetSnodes(for: destination).map { swarm in
                     return Set(swarm.map { target in
                         sendLokiMessage(lokiMessageWithPoW, to: target).map { rawResponse in
@@ -179,7 +179,7 @@ public final class LokiAPI : NSObject {
             return Promise.value([ target ]).mapValues { sendLokiMessage(lokiMessage, to: $0) }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount).get { _ in
                 LokiP2PAPI.markOnline(destination)
                 onP2PSuccess()
-            }.recover { error -> Promise<Set<RawResponsePromise>> in
+            }.recover(on: DispatchQueue.global()) { error -> Promise<Set<RawResponsePromise>> in
                 LokiP2PAPI.markOffline(destination)
                 if lokiMessage.isPing {
                     print("[Loki] Failed to ping \(destination); marking contact as offline.")
@@ -368,7 +368,7 @@ public final class LokiAPI : NSObject {
 private extension Promise {
 
     fileprivate func recoveringNetworkErrorsIfNeeded() -> Promise<T> {
-        return recover() { error -> Promise<T> in
+        return recover(on: DispatchQueue.global()) { error -> Promise<T> in
             switch error {
             case NetworkManagerError.taskError(_, let underlyingError): throw underlyingError
             default: throw error

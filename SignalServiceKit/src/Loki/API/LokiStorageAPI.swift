@@ -19,11 +19,11 @@ public final class LokiStorageAPI : LokiDotNetAPI {
     /// server and stores and returns the valid ones.
     public static func getDeviceLinks(associatedWith hexEncodedPublicKey: String) -> Promise<Set<DeviceLink>> {
         print("[Loki] Getting device links for: \(hexEncodedPublicKey).")
-        return getAuthToken(for: server).then { token -> Promise<Set<DeviceLink>> in
+        return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<Set<DeviceLink>> in
             let queryParameters = "include_user_annotations=1"
             let url = URL(string: "\(server)/users/@\(hexEncodedPublicKey)?\(queryParameters)")!
             let request = TSRequest(url: url)
-            return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse -> Set<DeviceLink> in
+            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { $0.responseObject }.map { rawResponse -> Set<DeviceLink> in
                 guard let json = rawResponse as? JSON, let data = json["data"] as? JSON,
                     let annotations = data["annotations"] as? [JSON] else {
                     print("[Loki] Couldn't parse device links for user: \(hexEncodedPublicKey) from: \(rawResponse).")
@@ -74,7 +74,7 @@ public final class LokiStorageAPI : LokiDotNetAPI {
     
     public static func setDeviceLinks(_ deviceLinks: Set<DeviceLink>) -> Promise<Void> {
         print("[Loki] Updating device links.")
-        return getAuthToken(for: server).then { token -> Promise<Void> in
+        return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<Void> in
             let isMaster = deviceLinks.contains { $0.master.hexEncodedPublicKey == userHexEncodedPublicKey }
             let deviceLinksAsJSON = deviceLinks.map { $0.toJSON() }
             let value = !deviceLinksAsJSON.isEmpty ? [ "isPrimary" : isMaster ? 1 : 0, "authorisations" : deviceLinksAsJSON ] : nil
@@ -83,7 +83,7 @@ public final class LokiStorageAPI : LokiDotNetAPI {
             let url = URL(string: "\(server)/users/me")!
             let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-            return TSNetworkManager.shared().makePromise(request: request).map { _ in }.recover { error in
+            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { _ in }.recover(on: DispatchQueue.global()) { error in
                 print("Couldn't update device links due to error: \(error).")
                 throw error
             }
