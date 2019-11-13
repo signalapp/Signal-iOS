@@ -129,7 +129,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "శీర్షిక";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Attachment failed to export.";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "అటాచ్మెంట్ ఎగుమతి చేయడంలో విఫలమైంది";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "భద్రపరచడంలో విఫలమైంది.";
@@ -351,7 +351,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "నిరోధించిన వినియోగదారులు మీకు కాల్ చేయలేరు లేదా మీకు సందేశాలు పంపలేరు.";
 
 /* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Browse";
+"BROWSE_FILES_BUTTON" = "బ్రౌజ్";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "కొనసాగించు";
@@ -525,10 +525,10 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "మీరు ఖచ్చితంగా మీ ఖాతాను తొలగించాలనుకుంటున్నారా?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "This will reset the application by deleting all of your messages from this device. You can always link with your phone again, but that will not restore deleted messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "ఈ పరికరం నుండి మీ అన్ని సందేశాలను తొలగించడం ద్వారా ఇది అనువర్తనాన్ని రీసెట్ చేస్తుంది. మీరు ఎప్పుడైనా మీ ఫోన్‌తో మళ్లీ లింక్ చేయవచ్చు, కానీ అది తొలగించిన సందేశాలను పునరుద్ధరించదు. ఈ ప్రక్రియ పూర్తయిన తర్వాత అనువర్తనం మూసివేయబడుతుంది.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Are you sure you want to delete all data?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "మీరు ఖచ్చితంగా అన్ని డేటాను తొలగించాలనుకుంటున్నారా?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "మీరు ఇకపై ఈ సమూహాంలో సందేశాలను పంపలేరు లేదా స్వీకరించలేరు.";
@@ -675,7 +675,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "ఇప్పటికే ఉన్న పరిచయానికి జోడించండి";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "సిస్టమ్ పరిచయాలకు జోడించండి";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "ఈ సమూహాన్ని బ్లాక్ చేయాలా";
@@ -970,7 +970,7 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "పరిచయాలను యాక్సెస్ చేయలేకపోయింది.";
 
 /* Error indicating that 'save video' failed. */
-"ERROR_COULD_NOT_SAVE_VIDEO" = "Could not save video.";
+"ERROR_COULD_NOT_SAVE_VIDEO" = "వీడియోను సేవ్ చేయలేకపోయింది.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "సందేశం పంపడంలో విఫలమైంది.";
@@ -1042,10 +1042,10 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "భద్రతా సంఖ్య మార్చబడింది";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Your device is no longer linked. Please re-link to send further messages.";
+"ERROR_SENDING_DELINKED" = "మీ పరికరం ఇకపై లింక్ చేయబడలేదు. మరిన్ని సందేశాలను పంపడానికి దయచేసి తిరిగి లింక్ చేయండి.";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "Your device is no longer registered. Please re-register to send further messages.";
+"ERROR_SENDING_DEREGISTERED" = "మీ పరికరం ఇకపై నమోదు చేయబడలేదు. దయచేసి మరిన్ని సందేశాలను పంపడానికి తిరిగి నమోదు చేయండి.";
 
 /* Error indicating a send failure due to an expired application. */
 "ERROR_SENDING_EXPIRED" = "మీ Signal వెర్షన్ గడువు ముగిసింది. దయచేసి మరిన్ని సందేశాలను పంపడానికి నవీకరించండి.";
@@ -1087,10 +1087,10 @@
 "FINISH_GROUP_CREATION_LABEL" = "సమూహాన్ని సృష్టించడం ముగించండి";
 
 /* Label and title for 'contact forwarding' views. */
-"FORWARD_CONTACT" = "Forward Contact";
+"FORWARD_CONTACT" = "ఫార్వర్డ్ కాంటాక్ట్";
 
 /* Label and title for 'message forwarding' views. */
-"FORWARD_MESSAGE" = "Forward Message";
+"FORWARD_MESSAGE" = "ఫార్వర్డ్ సందేశం";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "ఈ సంభాషణలో మీకు మీడియా లేదు";
@@ -1249,7 +1249,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "వారి భద్రతా సంఖ్య మారినందున కాల్ తప్పిపోయింది.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "For your security, conversation history isn’t synced when you link a new device.\nIf you continue the conversation, it will be synced with your active devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, conversation history isn't transferred to new linked devices.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ Signal లో ఉంది!";
@@ -1288,22 +1288,22 @@
 "KEEP_MESSAGES_FOREVER" = "సందేశాలు కనిపిస్తాయి ";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "Go to All Media";
+"KEY_COMMAND_ALL_MEDIA" = "ఆల్ మీడియాకు వెళ్లండి";
 
 /* A keyboard command to archive the current coversation. */
 "KEY_COMMAND_ARCHIVE" = "సంభాషను భద్రపరుచు ";
 
 /* A keyboard command to open the current conversation's attachment picker. */
-"KEY_COMMAND_ATTACHMENTS" = "Show Attachments";
+"KEY_COMMAND_ATTACHMENTS" = "జోడింపులను చూపించు";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Go to Conversation Info";
+"KEY_COMMAND_CONVERSATION_INFO" = "సంభాషణ సమాచారానికి వెళ్లండి";
 
 /* A keyboard command to focus the current conversation's input field. */
-"KEY_COMMAND_FOCUS_COMPOSER" = "Focus Input Bar";
+"KEY_COMMAND_FOCUS_COMPOSER" = "ఇన్‌పుట్ బార్‌పై దృష్టి పెట్టండి";
 
 /* A keyboard command to open the current conversations GIF picker. */
-"KEY_COMMAND_GIF_SEARCH" = "Go to GIF Search";
+"KEY_COMMAND_GIF_SEARCH" = "GIF శోధనకు వెళ్లండి";
 
 /* A keyboard command to present the new group dialog. */
 "KEY_COMMAND_NEW_GROUP" = "కొత్త సమూహం";
@@ -1312,10 +1312,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "కొత్త సందేశం";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Go to Next Conversation";
+"KEY_COMMAND_NEXT_CONVERSATION" = "తదుపరి సంభాషణకు వెళ్లండి";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Conversation";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "మునుపటి సంభాషణకు వెళ్లండి";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "వెతకండి";
@@ -1324,10 +1324,10 @@
 "KEY_COMMAND_SETTINGS" = "అమరికలు";
 
 /* A keyboard command to open the current conversation's sticker picker. */
-"KEY_COMMAND_STICKERS" = "Show Stickers";
+"KEY_COMMAND_STICKERS" = "స్టిక్కర్లను చూపించు";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Conversation";
+"KEY_COMMAND_UNARCHIVE" = "సంభాషణను బయటపెట్టు ";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "వదిలి";
@@ -1423,7 +1423,7 @@
 "MESSAGE_ACTION_DETAILS" = "మరింత సమాచారం";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "ఈ సందేశాన్ని ఫార్వార్డ్ చేయండి";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "ఈ సందేశానికి ప్రత్యుత్తరం ఇవ్వండి";
@@ -1626,7 +1626,7 @@
 "NETWORK_STATUS_CONNECTING" = "కలుస్తుంది   ";
 
 /* Error indicating that this device is no longer linked. */
-"NETWORK_STATUS_DELINKED" = "No Longer Linked";
+"NETWORK_STATUS_DELINKED" = "ఇక పై లింక్ చేయబడలేదు";
 
 /* Error indicating that this device is no longer registered. */
 "NETWORK_STATUS_DEREGISTERED" = "నమోదు చేయబడలేదు";
@@ -1647,7 +1647,7 @@
 "NEW_GROUP_CREATE_BUTTON" = "సృష్టించు";
 
 /* Error indicating that a new group could not be created. */
-"NEW_GROUP_CREATION_FAILED" = "New group could not be created.";
+"NEW_GROUP_CREATION_FAILED" = "క్రొత్త సమూహాన్ని సృష్టించడం సాధ్యం కాలేదు.";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "కొత్త సమూహం";
@@ -1760,14 +1760,38 @@
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "మీ సందేశాలకు మానవత్వం యొక్క స్పర్శను జోడించండి";
 
+/* button indicating that the user will register their ipad */
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Register iPad";
+
+/* button indicating that the user will link their phone */
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link iPhone";
+
+/* explanation to the user they're switching from linking to registering flow */
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
+
+/* explanation to the user they're switching from registering to linking flow */
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link iPhone” will let you connect your phone to an existing account. Linking your phone is generally not recommended and will limit some functionality, such as calling.";
+
+/* header text indicating to the user they're switching from linking to registering flow */
+"ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "ఈ iPad ను నమోదు చేయండి";
+
+/* header text indicating to the user they're switching from registering to linking flow */
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this iPhone";
+
+/* warning to the user that registering an ipad is not recommended */
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registering this iPad will disable Signal on any other device currently registered with the same phone number.";
+
+/* warning to the user that linking a phone is not recommended */
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Linking your iPhone is not recommended and will limit core functionality.";
+
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "అనుమతులను ప్రారంభించండి";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifications let you see when messages arrive and receive updates about new conversation activity.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "సందేశాలు వచ్చినప్పుడు మరియు క్రొత్త సంభాషణ కార్యాచరణ గురించి నవీకరణలను స్వీకరించినప్పుడు నోటిఫికేషన్‌లు తెలియబరుస్తాయి.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Get the message";
+"ONBOARDING_PERMISSIONS_TITLE" = "సందేశాన్ని పొందండి";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "ప్రారంభించడానికి మీ ఫోన్ నంబర్‌ను నమోదు చేయండి";
@@ -2168,15 +2192,6 @@
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "మేము మీకు పంపిన కోడ్‌ను మీరు ధృవీకరించే వరకు మేము మీ ఖాతాను సక్రియం చేయలేము.";
 
-/* alert body when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_BODY" = "ఇప్పుడే నమోదు చేయడం వల్ల ప్రస్తుతం ఈ ఫోన్ నంబర్‌తో నమోదు చేయబడిన ఇతర పరికరాల్లో Signal నిలిపివేయబడుతుంది.";
-
-/* button text to proceed with registration when on an iPad */
-"REGISTRATION_IPAD_CONFIRM_BUTTON" = "ఈ iPad ను నమోదు చేయండి";
-
-/* alert title when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_TITLE" = "ఇప్పటికే Signal ఖాతా ఉందా?";
-
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "ఈ ఫోన్ నంబర్ ఆకృతికి మద్దతు లేదు, దయచేసి మద్దతును సంప్రదించండి.";
 
@@ -2307,49 +2322,49 @@
 "SEARCH_SECTION_MESSAGES" = "సందేశాలు";
 
 /* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "లింకింగ్ కోడ్‌ను పొందడం సాధ్యం కాలేదు";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "The linking device is running an older version of Signal. Update it and try again.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Your other device is running a legacy version of Signal that doesn't support scanning iPad QR codes. Please install the latest Signal release and try again.";
 
 /* alert title for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Failed to Link Your Device";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Update Scanning Device";
 
 /* alert title */
-"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Failed to Link Your Device";
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "మీ పరికరాన్ని లింక్ చేయడంలో విఫలమైంది";
 
 /* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choose a name for this device";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "ఈ పరికరం కోసం పేరును ఎంచుకోండి";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "You'll see this name under \"Linked Devices.\"";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "మీరు ఈ పేరును \"లింక్డ్ డివైజెస్\" క్రింద చూస్తారు.";
 
 /* text field placeholder */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Choose a name";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "పేరును ఎంచుకోండి";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Finish Linking";
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "లింకింగ్ ముగించు";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Launch Signal on your phone to link this iPad to your account";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "ఈ iPad ను మీ ఖాతాకు లింక్ చేయడానికి మీ ఫోన్‌లో Signal  ప్రారంభించండి";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "నా ఫోన్‌లో Signal లేదు ...";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Go to the App Store on your phone, install Signal, complete the registration process, and then you can link your iPad to the same account.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "మీ ఫోన్‌లోని యాప్ స్టోర్‌కు వెళ్లి, Signal ను ఇన్‌స్టాల్ చేయండి, రిజిస్ట్రేషన్ ప్రాసెస్‌ను పూర్తి చేయండి, ఆపై మీరు మీ iPad ను అదే ఖాతాకు లింక్ చేయవచ్చు.";
 
 /* alert title */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Install Signal on Your Phone";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "మీ ఫోన్‌లో Signal ను ఇన్‌స్టాల్ చేయండి";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tap on your profile picture to open Signal Settings on your phone. Then \"Linked Devices\" and \"Link New Device\" to scan this code with your phone:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "మీ ఫోన్‌లో Signal సెట్టింగులను తెరవడానికి మీ ప్రొఫైల్ చిత్రంపై నొక్కండి. మీ ఫోన్‌తో ఈ కోడ్‌ను స్కాన్ చేయడానికి \"లింక్డ్ పరికరాలు\" మరియు \"క్రొత్త పరికరాన్ని లింక్ చేయండి\":";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Get help linking your iPad here";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "మీ iPad ను ఇక్కడ లింక్ చేయడంలో సహాయం పొందండి";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan the QR Code with your phone";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "మీ ఫోన్‌తో QR కోడ్‌ను స్కాన్ చేయండి";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "సురక్షిత సెషన్ రీసెట్ చేయబడింది.";
@@ -2607,7 +2622,7 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "సందేశాలు చదివినప్పుడు చూడండి మరియు భాగస్వామ్యం చేయండి. ఈ సెట్టింగ్ ఐచ్ఛికం మరియు అన్ని సంభాషణలకు వర్తిస్తుంది.";
 
 /* Label for re-link button. */
-"SETTINGS_RELINK_BUTTON" = "Re-link";
+"SETTINGS_RELINK_BUTTON" = "తిరిగి లింక్ చేయండి";
 
 /* Label for re-registration button. */
 "SETTINGS_REREGISTER_BUTTON" = "మల్లి నమోదుచేయుత ";
@@ -2910,7 +2925,7 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "లింక్ తొలగించు \"%@\"?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Device no longer linked. Re-link Signal with your phone to continue messaging.";
+"UNLINKED_WARNING" = "పరికరం ఇకపై లింక్ చేయబడలేదు. సందేశాన్ని కొనసాగించడానికి మీ ఫోన్‌తో Signal ను తిరిగి లింక్ చేయండి.";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal మీ పరికరాన్ని అన్‌లింక్ చేయలేకపోయింది.";
@@ -2991,7 +3006,7 @@
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */
-"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Usernames may not begin with a number.";
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "వినియోగదారు పేర్లు సంఖ్యతో ప్రారంభం కాకపోవచ్చు.";
 
 /* The title for the username view. */
 "USERNAME_TITLE" = "వినియోగదారుడు ";
@@ -3006,10 +3021,10 @@
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "వినియోగదారు పేరు నవీకరణ విఫలమైంది.";
 
 /* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Device name cannot be blank";
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "పరికర పేరు ఖాళీగా ఉండకూడదు";
 
 /* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "Device name is too long";
+"VALIDATION_ERROR_TOO_LONG" = "పరికర పేరు చాలా పెద్దది";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "ధృవీకరించబడనట్లు మీరు %@ అని గుర్తు పెట్టారు.";
