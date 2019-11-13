@@ -646,7 +646,7 @@ public class OnboardingController: NSObject {
 
             // Since we were told we need 2fa, clear out any stored KBS keys so we can
             // do a fresh verification.
-            KeyBackupService.clearKeychain()
+            SDSDatabaseStorage.shared.write { KeyBackupService.clearKeys(transaction: $0) }
 
             completion(.invalid2FAPin)
 

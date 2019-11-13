@@ -23,10 +23,6 @@ public class KeyBackupService: NSObject {
         return .shared
     }
 
-    static var keychainStorage: SSKKeychainStorage {
-        return CurrentAppContext().keychainStorage()
-    }
-
     // PRAGMA MARK: - Pin Management
 
     // TODO: Decide what we want this to be
@@ -35,7 +31,7 @@ public class KeyBackupService: NSObject {
     /// Indicates whether or not we have a local copy of your keys to verify your pin
     @objc
     public static var hasLocalKeys: Bool {
-        return storedMasterKey != nil && storedPinKey2 != nil
+        return cacheQueue.sync { cachedMasterKey != nil && cachedPinKey2 != nil }
     }
 
     /// Indicates whether your pin is valid when compared to your stored keys.
@@ -53,12 +49,12 @@ public class KeyBackupService: NSObject {
                 return
             }
 
-            guard let masterKey = storedMasterKey else {
+            guard let masterKey = cacheQueue.sync(execute: { cachedMasterKey }) else {
                 owsFailDebug("unexpectedly missing master key")
                 return
             }
 
-            guard let pinKey2 = storedPinKey2 else {
+            guard let pinKey2 = cacheQueue.sync(execute: { cachedPinKey2 }) else {
                 owsFailDebug("unexpectedly missing pinKey2")
                 return
             }
@@ -82,7 +78,7 @@ public class KeyBackupService: NSObject {
         return AnyPromise(restoreKeys(with: pin))
     }
 
-    /// Loads the users key, if any, from the KBS into the keychain.
+    /// Loads the users key, if any, from the KBS into the database.
     public static func restoreKeys(with pin: String, and auth: RemoteAttestationAuth? = nil) -> Promise<Void> {
         return DispatchQueue.global().async(.promise) { () -> (Data, Data) in
             guard let stretchedPin = self.deriveStretchedPin(from: pin) else {
@@ -170,9 +166,11 @@ public class KeyBackupService: NSObject {
                 owsFailDebug("the server thinks we provided a `validFrom` in the future")
                 throw KBSError.assertion
             case .ok:
-                // We successfully stored the new keys in KBS, save them in the keychain
-                storePinKey2(pinKey2)
-                storeMasterKey(masterKey)
+                // We successfully stored the new keys in KBS, save them in the database
+                databaseStorage.write { transaction in
+                    storePinKey2(pinKey2, transaction: transaction)
+                    storeMasterKey(masterKey, transaction: transaction)
+                }
             }
         }.recover { error in
             guard let kbsError = error as? KBSError else {
@@ -184,38 +182,13 @@ public class KeyBackupService: NSObject {
         }
     }
 
-    #if TESTABLE_BUILD
-    public static func storeKeysForTests() throws {
-        let pin: String = "blah blah"
-
-        guard let stretchedPin = self.deriveStretchedPin(from: pin) else {
-            owsFailDebug("failed to derive stretched pin")
-            throw KBSError.assertion
-        }
-
-        guard let pinKey1 = derivePinKey1(from: stretchedPin) else {
-            owsFailDebug("failed to derive stretched pin")
-            throw KBSError.assertion
-        }
-
-        let pinKey2 = pinKey1
-
-        guard let masterKey = deriveMasterKey(from: pinKey1, and: pinKey2) else {
-            throw KBSError.assertion
-        }
-
-        storePinKey2(pinKey2)
-        storeMasterKey(masterKey)
-    }
-    #endif
-
     @objc(generateAndBackupKeysWithPin:)
     static func objc_generateAndBackupKeys(with pin: String) -> AnyPromise {
         return AnyPromise(generateAndBackupKeys(with: pin))
     }
 
     /// Generates a new master key for the given pin, backs it up to the KBS,
-    /// and stores it locally in the keychain.
+    /// and stores it locally in the database.
     public static func generateAndBackupKeys(with pin: String) -> Promise<Void> {
         return DispatchQueue.global().async(.promise) { () -> (Data, Data, Data) in
             guard let stretchedPin = deriveStretchedPin(from: pin) else {
@@ -261,9 +234,11 @@ public class KeyBackupService: NSObject {
                 owsFailDebug("the server thinks we provided a `validFrom` in the future")
                 throw KBSError.assertion
             case .ok:
-                // We successfully stored the new keys in KBS, save them in the keychain
-                storePinKey2(pinKey2)
-                storeMasterKey(masterKey)
+                // We successfully stored the new keys in KBS, save them in the database
+                databaseStorage.write { transaction in
+                    storePinKey2(pinKey2, transaction: transaction)
+                    storeMasterKey(masterKey, transaction: transaction)
+                }
             }
         }.recover { error in
             guard let kbsError = error as? KBSError else {
@@ -285,8 +260,8 @@ public class KeyBackupService: NSObject {
     public static func deleteKeys() -> Promise<Void> {
         return deleteKeyRequest().ensure {
             // Even if the request to delete our keys from KBS failed,
-            // purge them from the keychain.
-            clearKeychain()
+            // purge them from the database.
+            databaseStorage.write { clearKeys(transaction: $0) }
         }.done { _ in
             // The next token is no longer valid, as it pertains to
             // a deleted backup. Clear it out so we fetch a fresh one.
@@ -297,7 +272,8 @@ public class KeyBackupService: NSObject {
     // PRAGMA MARK: - Crypto
 
     public static func encryptWithMasterKey(_ data: Data) throws -> Data {
-        guard let masterKeyData = storedMasterKey, let masterKey = OWSAES256Key(data: masterKeyData) else {
+        guard let masterKeyData = cacheQueue.sync(execute: { cachedMasterKey }),
+            let masterKey = OWSAES256Key(data: masterKeyData) else {
             owsFailDebug("missing master key")
             throw KBSError.assertion
         }
@@ -312,7 +288,8 @@ public class KeyBackupService: NSObject {
     }
 
     public static func decryptWithMasterKey(_ encryptedData: Data) throws -> Data {
-        guard let masterKeyData = storedMasterKey, let masterKey = OWSAES256Key(data: masterKeyData) else {
+        guard let masterKeyData = cacheQueue.sync(execute: { cachedMasterKey }),
+            let masterKey = OWSAES256Key(data: masterKeyData) else {
             owsFailDebug("missing master key")
             throw KBSError.assertion
         }
@@ -376,7 +353,7 @@ public class KeyBackupService: NSObject {
 
     @objc
     static func deriveRegistrationLockToken() -> String? {
-        guard let masterKey = storedMasterKey else {
+        guard let masterKey = cacheQueue.sync(execute: { cachedMasterKey }) else {
             return nil
         }
 
@@ -399,69 +376,69 @@ public class KeyBackupService: NSObject {
         return Cryptography.computeSHA256HMAC(data, withHMACKey: stretchedPin)
     }
 
-    // PRAGMA MARK: - Keychain
+    // PRAGMA MARK: - Key Storage
 
-    private static let keychainService = "OWSKeyBackup"
-    private static let masterKeyKeychainIdentifer = "KBSMasterKey"
-    private static let pinKey2KeychainIdentifer = "KBSPinKey2"
+    private static var keyValueStore: SDSKeyValueStore {
+        return SDSKeyValueStore(collection: "kOWSKeyBackupService_Keys")
+    }
+
+    private static let masterKeyIdentifer = "masterKey"
+    private static let pinKey2Identifer = "pinKey2"
+    private static let cacheQueue = DispatchQueue(label: "org.signal.KeyBackupService")
+
+    @objc
+    public static func warmCaches() {
+        var masterKey: Data?
+        var pinKey2: Data?
+
+        databaseStorage.read { transaction in
+            masterKey = keyValueStore.getData(masterKeyIdentifer, transaction: transaction)
+            pinKey2 = keyValueStore.getData(pinKey2Identifer, transaction: transaction)
+        }
+
+        cacheQueue.sync {
+            cachedMasterKey = masterKey
+            cachedPinKey2 = pinKey2
+        }
+    }
 
     /// Removes the KBS keys locally from the device, they can still be
     /// restored from the server if you know the pin.
     @objc
-    public static func clearKeychain() {
-        clearMasterKey()
-        clearPinKey2()
-    }
-
-    private static var storedMasterKey: Data? {
-        do {
-            return try keychainStorage.optionalData(forService: keychainService, key: masterKeyKeychainIdentifer)
-        } catch {
-            owsFail("Failed to fetch master key from keychain")
+    public static func clearKeys(transaction: SDSAnyWriteTransaction) {
+        keyValueStore.removeAll(transaction: transaction)
+        cacheQueue.sync {
+            cachedMasterKey = nil
+            cachedPinKey2 = nil
         }
     }
 
-    private static func storeMasterKey(_ masterKey: Data) {
-        do {
-            try keychainStorage.set(data: masterKey, service: keychainService, key: masterKeyKeychainIdentifer)
+    // Should only be interacted with on the serial cache queue
+    // Always contains an in memory reference to our current masterKey
+    private static var cachedMasterKey: Data?
 
-            // Our master key did change, reencrypt and backup our social graph
-            SSKEnvironment.shared.storageServiceManager.restoreOrCreateManifestIfNecessary()
-        } catch {
-            owsFail("Failed to store master key in keychain")
-        }
+    private static func storeMasterKey(_ masterKey: Data, transaction: SDSAnyWriteTransaction) {
+        keyValueStore.setData(masterKey, key: masterKeyIdentifer, transaction: transaction)
+        cacheQueue.sync { cachedMasterKey = masterKey }
     }
 
-    private static func clearMasterKey() {
-        do {
-            try keychainStorage.remove(service: keychainService, key: masterKeyKeychainIdentifer)
-        } catch {
-            owsFail("Failed to clear master key in keychain")
-        }
+    private static func clearMasterKey(transaction: SDSAnyWriteTransaction) {
+        keyValueStore.setData(nil, key: masterKeyIdentifer, transaction: transaction)
+        cacheQueue.sync { cachedMasterKey = nil }
     }
 
-    private static var storedPinKey2: Data? {
-        do {
-            return try keychainStorage.optionalData(forService: keychainService, key: pinKey2KeychainIdentifer)
-        } catch {
-            owsFail("Failed to fetch pinKey2 from keychain")
-        }
+    // Should only be interacted with on the serial cache queue.
+    // Always contains an in memory reference to our current pinKey2
+    private static var cachedPinKey2: Data?
+
+    private static func storePinKey2(_ pinKey2: Data, transaction: SDSAnyWriteTransaction) {
+        keyValueStore.setData(pinKey2, key: pinKey2Identifer, transaction: transaction)
+        cacheQueue.sync { cachedPinKey2 = pinKey2 }
     }
 
-    private static func storePinKey2(_ pinKey2: Data) {
-        do {
-            try keychainStorage.set(data: pinKey2, service: keychainService, key: pinKey2KeychainIdentifer)
-        } catch {
-            owsFail("Failed to store pinKey2 in keychain")
-        }
-    }
-
-    private static func clearPinKey2() {
-        do {
-            try keychainStorage.remove(service: keychainService, key: pinKey2KeychainIdentifer)
-        } catch {
-            owsFail("Failed to clear pinKey2 from keychain")
-        }
+    private static func clearPinKey2(transaction: SDSAnyWriteTransaction) {
+        keyValueStore.setData(nil, key: pinKey2Identifer, transaction: transaction)
+        cacheQueue.sync { cachedPinKey2 = nil }
     }
 
     // PRAGMA MARK: - Requests

@@ -34,10 +34,6 @@ extension StorageServiceProtoContactRecord {
         return .shared()
     }
 
-    static var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
     // MARK: -
 
     static func build(
@@ -59,17 +55,9 @@ extension StorageServiceProtoContactRecord {
             builder.setServiceUuid(uuidString)
         }
 
-        var isInWhitelist: Bool = false
-        var profileKey: Data?
-        var profileName: String?
-        databaseStorage.read { transaction in
-            isInWhitelist = profileManager.isUser(inProfileWhitelist: address,
-                                                transaction: transaction)
-            profileKey = profileManager.profileKeyData(for: address,
-                                                       transaction: transaction)
-            profileName = profileManager.profileName(for: address,
-                                                     transaction: transaction)
-        }
+        let isInWhitelist = profileManager.isUser(inProfileWhitelist: address, transaction: transaction)
+        let profileKey = profileManager.profileKeyData(for: address, transaction: transaction)
+        let profileName = profileManager.profileName(for: address, transaction: transaction)
 
         builder.setBlocked(blockingManager.isAddressBlocked(address))
         builder.setWhitelisted(isInWhitelist)

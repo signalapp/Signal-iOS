@@ -246,8 +246,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
         deleteDBKeys()
 
-        KeyBackupService.clearKeychain()
-
         if (CurrentAppContext().isMainApp) {
             TSAttachmentStream.deleteAttachments()
         }
