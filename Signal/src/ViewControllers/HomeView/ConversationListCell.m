@@ -539,7 +539,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updatePreview
 {
-    if ([self.typingIndicators typingAddressForThread:self.thread.threadRecord] != nil) {
+    // We use "override snippets" to show "message" search results.
+    // We don't want to show typing indicators in that case.
+    BOOL isShowingOverrideSnippet = self.overrideSnippet != nil;
+    if (!isShowingOverrideSnippet &&
+        [self.typingIndicators typingAddressForThread:self.thread.threadRecord] != nil) {
         // If we hide snippetLabel, our layout will break since UIStackView will remove
         // it from the layout.  Wrapping the preview views (the snippet label and the
         // typing indicator) in a UIStackView proved non-trivial since we're using
