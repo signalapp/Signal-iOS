@@ -386,7 +386,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     // CallViewController only supports portrait for iPhones, but if we're _already_ landscape it won't
     // automatically switch.
     if (!UIDevice.currentDevice.isIPad) {
-        [UIDevice.currentDevice ows_setOrientation:UIInterfaceOrientationPortrait];
+        [UIDevice.currentDevice ows_setOrientation:UIDeviceOrientationPortrait];
     }
     [self ensureWindowState];
 }

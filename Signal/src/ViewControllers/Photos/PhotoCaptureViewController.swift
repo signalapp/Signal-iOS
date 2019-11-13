@@ -55,13 +55,9 @@ class PhotoCaptureViewController: OWSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupPhotoCapture()
-        setupOrientationMonitoring()
 
         updateNavigationItems()
         updateFlashModeControl()
-
-        let initialCaptureOrientation = AVCaptureVideoOrientation(interfaceOrientation: self.interfaceOrientation) ?? .portrait
-        updateIconOrientations(isAnimated: false, captureOrientation: initialCaptureOrientation)
 
         view.addGestureRecognizer(pinchZoomGesture)
         view.addGestureRecognizer(tapToFocusGesture)
@@ -74,7 +70,15 @@ class PhotoCaptureViewController: OWSViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         isVisible = true
-        UIDevice.current.ows_setOrientation(.portrait)
+        let previewOrientation: AVCaptureVideoOrientation
+        if UIDevice.current.isIPad {
+            previewOrientation = AVCaptureVideoOrientation(interfaceOrientation: CurrentAppContext().interfaceOrientation)  ?? .portrait
+        } else {
+            previewOrientation = .portrait
+        }
+        UIViewController.attemptRotationToDeviceOrientation()
+        photoCapture.updateVideoPreviewConnection(toOrientation: previewOrientation)
+        updateIconOrientations(isAnimated: false, captureOrientation: previewOrientation)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -108,7 +112,6 @@ class PhotoCaptureViewController: OWSViewController {
             // while the rotation occurs.
             self.photoCapture.previewView.alpha = 0
             coordinator.animate(alongsideTransition: { _ in }) { _ in
-                self.photoCapture.updateVideoConnectionOrientation()
                 UIView.animate(withDuration: 0.1) {
                     self.photoCapture.previewView.alpha = 1
                 }
@@ -269,25 +272,6 @@ class PhotoCaptureViewController: OWSViewController {
 
     // MARK: - Orientation
 
-    private func setupOrientationMonitoring() {
-        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
-
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didChangeDeviceOrientation),
-                                               name: UIDevice.orientationDidChangeNotification,
-                                               object: UIDevice.current)
-    }
-
-    @objc
-    func didChangeDeviceOrientation(notification: Notification) {
-        // Even though `interfaceOrientation` is deprecated, we use it rather than DeviceOrientation
-        // because "face up" and "face down" could correspond to any capture orientation. The user
-        // expects the capture orientation to reflect the interface orientation.
-        if let captureOrientation = AVCaptureVideoOrientation(interfaceOrientation: self.interfaceOrientation) {
-            updateIconOrientations(isAnimated: true, captureOrientation: captureOrientation)
-        }
-    }
-
     // MARK: -
 
     private func updateIconOrientations(isAnimated: Bool, captureOrientation: AVCaptureVideoOrientation) {
@@ -342,7 +326,6 @@ class PhotoCaptureViewController: OWSViewController {
 
         // If the session is already running, we're good to go.
         guard !photoCapture.session.isRunning else {
-            photoCapture.updateVideoConnectionOrientation()
             return captureReady()
         }
 
@@ -473,16 +456,19 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
         return view.bounds.height
     }
 
-    var captureOrientation: AVCaptureVideoOrientation {
-        return AVCaptureVideoOrientation(interfaceOrientation: interfaceOrientation) ?? .portrait
-    }
-
     func beginCaptureButtonAnimation(_ duration: TimeInterval) {
         captureButton.beginRecordingAnimation(duration: duration)
     }
 
     func endCaptureButtonAnimation(_ duration: TimeInterval) {
         captureButton.endRecordingAnimation(duration: duration)
+    }
+
+    func photoCapture(_ photoCapture: PhotoCapture, didChangeOrientation orientation: AVCaptureVideoOrientation) {
+        updateIconOrientations(isAnimated: true, captureOrientation: orientation)
+        if UIDevice.current.isIPad {
+            photoCapture.updateVideoPreviewConnection(toOrientation: orientation)
+        }
     }
 }
 
