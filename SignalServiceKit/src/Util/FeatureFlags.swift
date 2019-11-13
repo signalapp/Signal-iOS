@@ -236,4 +236,10 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let linkedPhones = build.includes(.internalPreview)
+
+    @objc
+    public static let reactionReceive = build.includes(.dev)
+
+    @objc
+    public static let reactionSend = build.includes(.dev)
 }
