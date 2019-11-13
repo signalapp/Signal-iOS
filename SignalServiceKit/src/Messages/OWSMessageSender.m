@@ -927,6 +927,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }];
     LKFriendRequestMessage *message = [[LKFriendRequestMessage alloc] initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:@"Accept this friend request to enable messages to be synced across devices" attachmentIds:[NSMutableArray new]
         expiresInSeconds:0 expireStartedAt:0 isVoiceMessage:NO groupMetaMessage:TSGroupMetaMessageUnspecified quotedMessage:nil contactShare:nil linkPreview:nil];
+    message.skipSave = YES;
     SignalRecipient *recipient = [[SignalRecipient alloc] initWithUniqueId:hexEncodedPublicKey];
     NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
     return [[OWSMessageSend alloc] initWithMessage:message thread:thread recipient:recipient senderCertificate:nil udAccess:nil localNumber:userHexEncodedPublicKey success:^{ } failure:^(NSError *error) { }];
@@ -1247,27 +1248,31 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         uint64_t ttl = ((NSNumber *)signalMessageInfo[@"ttl"]).unsignedIntegerValue;
         BOOL isPing = ((NSNumber *)signalMessageInfo[@"isPing"]).boolValue;
         LKSignalMessage *signalMessage = [[LKSignalMessage alloc] initWithType:type timestamp:timestamp senderID:senderID senderDeviceID:senderDeviceID content:content recipientID:recipientID ttl:ttl isPing:isPing];
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            // Update the PoW calculation status
-            [message saveIsCalculatingProofOfWork:YES withTransaction:transaction];
-            // Update the message and thread if needed
-            if (signalMessage.type == TSFriendRequestMessageType) {
-                [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSending withTransaction:transaction];
-                [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
-            }
-        }];
+        if (!message.skipSave) {
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                // Update the PoW calculation status
+                [message saveIsCalculatingProofOfWork:YES withTransaction:transaction];
+                // Update the message and thread if needed
+                if (signalMessage.type == TSFriendRequestMessageType) {
+                    [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSending withTransaction:transaction];
+                    [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
+                }
+            }];
+        }
         // Convenience
         void (^onP2PSuccess)() = ^() { message.isP2P = YES; };
         void (^handleError)(NSError *error) = ^(NSError *error) {
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                // Update the message and thread if needed
-                if (signalMessage.type == TSFriendRequestMessageType) {
-                    [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusNone withTransaction:transaction];
-                    [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
-                }
-                // Update the PoW calculation status
-                [message saveIsCalculatingProofOfWork:NO withTransaction:transaction];
-            }];
+            if (!message.skipSave) {
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    // Update the message and thread if needed
+                    if (signalMessage.type == TSFriendRequestMessageType) {
+                        [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusNone withTransaction:transaction];
+                        [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
+                    }
+                    // Update the PoW calculation status
+                    [message saveIsCalculatingProofOfWork:NO withTransaction:transaction];
+                }];
+            }
             // Handle the error
             failedMessageSend(error);
         };
@@ -1285,16 +1290,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     [LKAnalytics.shared track:@"Sent Message Using Swarm API"];
                     isSuccess = YES;
                     if (signalMessage.type == TSFriendRequestMessageType) {
-                        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                            // Update the thread
-                            [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSent withTransaction:transaction];
-                            [message.thread removeOldOutgoingFriendRequestMessagesIfNeededWithTransaction:transaction];
-                            // Update the message
-                            [message saveFriendRequestStatus:LKMessageFriendRequestStatusPending withTransaction:transaction];
-                            NSTimeInterval expirationInterval = 72 * kHourInterval;
-                            NSDate *expirationDate = [[NSDate new] dateByAddingTimeInterval:expirationInterval];
-                            [message saveFriendRequestExpiresAt:[NSDate ows_millisecondsSince1970ForDate:expirationDate] withTransaction:transaction];
-                        }];
+                        if (!message.skipSave) {
+                            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                // Update the thread
+                                [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSent withTransaction:transaction];
+                                [message.thread removeOldOutgoingFriendRequestMessagesIfNeededWithTransaction:transaction];
+                                // Update the message
+                                [message saveFriendRequestStatus:LKMessageFriendRequestStatusPending withTransaction:transaction];
+                                NSTimeInterval expirationInterval = 72 * kHourInterval;
+                                NSDate *expirationDate = [[NSDate new] dateByAddingTimeInterval:expirationInterval];
+                                [message saveFriendRequestExpiresAt:[NSDate ows_millisecondsSince1970ForDate:expirationDate] withTransaction:transaction];
+                            }];
+                        }
                     }
                     // Invoke the completion handler
                     [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:false wasSentByWebsocket:false];
