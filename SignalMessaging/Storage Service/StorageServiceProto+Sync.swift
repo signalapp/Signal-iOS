@@ -34,10 +34,6 @@ extension StorageServiceProtoContactRecord {
         return .shared()
     }
 
-    static var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
     // MARK: -
 
     static func build(

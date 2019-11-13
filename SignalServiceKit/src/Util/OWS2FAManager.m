@@ -116,6 +116,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 {
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [OWS2FAManager.keyValueStore removeValueForKey:kOWS2FAManager_PinCode transaction:transaction];
+        [OWSKeyBackupService clearKeysWithTransaction:transaction];
     }];
 
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationName_2FAStateDidChange
@@ -226,8 +227,6 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
             [self.networkManager makeRequest:request
                 success:^(NSURLSessionDataTask *task, id responseObject) {
                     OWSAssertIsOnMainThread();
-
-                    [OWSKeyBackupService clearKeychain];
 
                     [self set2FANotEnabled];
 

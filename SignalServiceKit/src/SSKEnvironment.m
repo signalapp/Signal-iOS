@@ -8,6 +8,7 @@
 #import "OWSPrimaryStorage.h"
 #import "TSAccountManager.h"
 #import <SignalServiceKit/ProfileManagerProtocol.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -263,6 +264,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     [self.blockingManager warmCaches];
     [self.profileManager warmCaches];
     [self.tsAccountManager warmCaches];
+    [OWSKeyBackupService warmCaches];
 }
 
 - (nullable OWSPrimaryStorage *)primaryStorage
