@@ -320,7 +320,8 @@ extension YDBToGRDBMigration {
             GRDBUnorderedRecordMigrator<OWSLinkedDeviceReadReceipt>(label: "OWSLinkedDeviceReadReceipt", ydbTransaction: ydbTransaction),
             GRDBUnorderedRecordMigrator<OWSDevice>(label: "OWSDevice", ydbTransaction: ydbTransaction),
             GRDBUnorderedRecordMigrator<OWSUserProfile>(label: "OWSUserProfile", ydbTransaction: ydbTransaction),
-            GRDBUnorderedRecordMigrator<TSRecipientReadReceipt>(label: "TSRecipientReadReceipt", ydbTransaction: ydbTransaction)
+            GRDBUnorderedRecordMigrator<TSRecipientReadReceipt>(label: "TSRecipientReadReceipt", ydbTransaction: ydbTransaction),
+            GRDBUnorderedRecordMigrator<OWSReaction>(label: "OWSReaction", ydbTransaction: ydbTransaction)
         ]
     }
 }

@@ -335,3 +335,22 @@ public extension String {
             })
     }
 }
+
+@objc
+public extension NSString {
+    var glyphCount: Int {
+        return (self as String).glyphCount
+    }
+
+    var isSingleEmoji: Bool {
+        return (self as String).isSingleEmoji
+    }
+
+    var containsEmoji: Bool {
+        return (self as String).containsEmoji
+    }
+
+    var containsOnlyEmoji: Bool {
+        return (self as String).containsOnlyEmoji
+    }
+}

@@ -21,10 +21,13 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSOutgoingReactionMessage
 
 - (instancetype)initWithThread:(TSThread *)thread
-                       message:(nonnull TSMessage *)message
-                         emoji:(nonnull NSString *)emoji
+                       message:(TSMessage *)message
+                         emoji:(NSString *)emoji
                     isRemoving:(BOOL)isRemoving
 {
+    OWSAssertDebug(thread.uniqueId == message.uniqueThreadId);
+    OWSAssertDebug(emoji.isSingleEmoji);
+
     // MJK TODO - remove senderTimestamp
     self = [super initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                           inThread:thread
@@ -95,7 +98,6 @@ NS_ASSUME_NONNULL_BEGIN
     [builder setReaction:reactionProto];
 
     return builder;
-
 }
 
 @end

@@ -9,18 +9,30 @@ protocol ReactionFinderAdapter {
     associatedtype ReadTransaction
     associatedtype WriteTransaction
 
+    /// Returns the given users reaction if it exists, otherwise nil
     func reaction(for reactor: SignalServiceAddress, transaction: ReadTransaction) -> OWSReaction?
-    func reactors(for emoji: String, transaction: ReadTransaction) -> [SignalServiceAddress]?
-    func emojiCounts(transaction: ReadTransaction) -> [(emoji: String, count: Int)]?
+
+    /// Returns a list of all users who have reacted to this message with a given emoji
+    func reactors(for emoji: String, transaction: ReadTransaction) -> [SignalServiceAddress]
+
+    /// Returns a list of all emoji that have been reacted to this message, and the number
+    /// of users who have sent that reaction, ordered from most to least frequent reaction
+    func emojiCounts(transaction: ReadTransaction) -> [(emoji: String, count: Int)]
+
+    /// Returns true if any user has reacted to this message
     func existsReaction(transaction: ReadTransaction) -> Bool
+
+    /// Iterate over all the reactions on this message, ordered by creation from oldest to newest
     func enumerateReactions(
         transaction: ReadTransaction,
         block: @escaping (OWSReaction, UnsafeMutablePointer<ObjCBool>) -> Void
     )
-    func allUniqueIds(transaction: ReadTransaction) -> [String]?
 
+    /// A list of all the unique reaction IDs linked to this message, ordered by creation from oldest to neweset
+    func allUniqueIds(transaction: ReadTransaction) -> [String]
+
+    /// Delete all reaction records associated with this message
     func deleteAllReactions(transaction: WriteTransaction) throws
-    static func deleteReactions(with uniqueIds: [String], transaction: WriteTransaction) throws
 }
 
 // MARK: -
@@ -48,7 +60,7 @@ public class ReactionFinder: NSObject, ReactionFinderAdapter {
     }
 
     @objc
-    func reactors(for emoji: String, transaction: SDSAnyReadTransaction) -> [SignalServiceAddress]? {
+    func reactors(for emoji: String, transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
         switch transaction.readTransaction {
         case .yapRead(let yapRead):
             return yapAdapter.reactors(for: emoji, transaction: yapRead)
@@ -57,7 +69,7 @@ public class ReactionFinder: NSObject, ReactionFinderAdapter {
         }
     }
 
-    func emojiCounts(transaction: SDSAnyReadTransaction) -> [(emoji: String, count: Int)]? {
+    func emojiCounts(transaction: SDSAnyReadTransaction) -> [(emoji: String, count: Int)] {
         switch transaction.readTransaction {
         case .yapRead(let yapRead):
             return yapAdapter.emojiCounts(transaction: yapRead)
@@ -90,7 +102,7 @@ public class ReactionFinder: NSObject, ReactionFinderAdapter {
     }
 
     @objc
-    func allUniqueIds(transaction: SDSAnyReadTransaction) -> [String]? {
+    func allUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
         switch transaction.readTransaction {
         case .yapRead(let yapRead):
             return yapAdapter.allUniqueIds(transaction: yapRead)
@@ -106,16 +118,6 @@ public class ReactionFinder: NSObject, ReactionFinderAdapter {
             return try yapAdapter.deleteAllReactions(transaction: yapWrite)
         case .grdbWrite(let grdbWrite):
             return try grdbAdapter.deleteAllReactions(transaction: grdbWrite)
-        }
-    }
-
-    @objc
-    static func deleteReactions(with uniqueIds: [String], transaction: SDSAnyWriteTransaction) throws {
-        switch transaction.writeTransaction {
-        case .yapWrite(let yapWrite):
-            return try YAPDBReactionFinderAdapter.deleteReactions(with: uniqueIds, transaction: yapWrite)
-        case .grdbWrite(let grdbWrite):
-            return try GRDBReactionFinderAdapter.deleteReactions(with: uniqueIds, transaction: grdbWrite)
         }
     }
 }
@@ -197,10 +199,10 @@ class YAPDBReactionFinderAdapter: NSObject, ReactionFinderAdapter {
         return matchedReaction
     }
 
-    func reactors(for emoji: String, transaction: YapDatabaseReadTransaction) -> [SignalServiceAddress]? {
+    func reactors(for emoji: String, transaction: YapDatabaseReadTransaction) -> [SignalServiceAddress] {
         guard let ext = transaction.ext(YAPDBReactionFinderAdapter.indexName) as? YapDatabaseSecondaryIndexTransaction else {
             owsFailDebug("Unexpected transaction type for extension")
-            return nil
+            return []
         }
 
         let queryFormat = String(
@@ -219,10 +221,10 @@ class YAPDBReactionFinderAdapter: NSObject, ReactionFinderAdapter {
             reactors.append(reaction.reactor)
         }
 
-        return reactors.isEmpty ? nil : reactors
+        return reactors
     }
 
-    func emojiCounts(transaction: YapDatabaseReadTransaction) -> [(emoji: String, count: Int)]? {
+    func emojiCounts(transaction: YapDatabaseReadTransaction) -> [(emoji: String, count: Int)] {
         var countMap = [String: Int]()
 
         enumerateReactions(transaction: transaction) { reaction, _ in
@@ -230,8 +232,6 @@ class YAPDBReactionFinderAdapter: NSObject, ReactionFinderAdapter {
             count += 1
             countMap[reaction.emoji] = count
         }
-
-        guard !countMap.isEmpty else { return nil }
 
         return countMap.map { (emoji: $0.key, count: $0.value) }.sorted { lhs, rhs in
             return lhs.count > rhs.count
@@ -271,26 +271,16 @@ class YAPDBReactionFinderAdapter: NSObject, ReactionFinderAdapter {
         }
     }
 
-    func allUniqueIds(transaction: YapDatabaseReadTransaction) -> [String]? {
+    func allUniqueIds(transaction: YapDatabaseReadTransaction) -> [String] {
         var uniqueIds = [String]()
         enumerateReactions(transaction: transaction) { reaction, _ in
             uniqueIds.append(reaction.uniqueId)
         }
-        return uniqueIds.isEmpty ? nil : uniqueIds
+        return uniqueIds
     }
 
     func deleteAllReactions(transaction: YapDatabaseReadWriteTransaction) throws {
         enumerateReactions(transaction: transaction) { reaction, _ in
-            reaction.anyRemove(transaction: transaction.asAnyWrite)
-        }
-    }
-
-    static func deleteReactions(with uniqueIds: [String], transaction: YapDatabaseReadWriteTransaction) throws {
-        for uniqueId in uniqueIds {
-            guard let reaction = OWSReaction.anyFetch(uniqueId: uniqueId, transaction: transaction.asAnyRead) else {
-                owsFailDebug("Tried to remove uniqueId that doesn't exist: \(uniqueId)")
-                continue
-            }
             reaction.anyRemove(transaction: transaction.asAnyWrite)
         }
     }
@@ -371,7 +361,7 @@ struct GRDBReactionFinderAdapter: ReactionFinderAdapter {
         return OWSReaction.grdbFetchOne(sql: sql, arguments: [uniqueMessageId, e164], transaction: transaction)
     }
 
-    func reactors(for emoji: String, transaction: GRDBReadTransaction) -> [SignalServiceAddress]? {
+    func reactors(for emoji: String, transaction: GRDBReadTransaction) -> [SignalServiceAddress] {
         let sql = """
             SELECT * FROM \(ReactionRecord.databaseTableName)
             WHERE \(reactionColumn: .uniqueMessageId) = ?
@@ -389,10 +379,10 @@ struct GRDBReactionFinderAdapter: ReactionFinderAdapter {
             owsFailDebug("unexpected error \(error)")
         }
 
-        return reactors.isEmpty ? nil : reactors
+        return reactors
     }
 
-    func emojiCounts(transaction: GRDBReadTransaction) -> [(emoji: String, count: Int)]? {
+    func emojiCounts(transaction: GRDBReadTransaction) -> [(emoji: String, count: Int)] {
         let sql = """
             SELECT COUNT(*) as count, \(reactionColumn: .emoji)
             FROM \(ReactionRecord.databaseTableName)
@@ -407,7 +397,7 @@ struct GRDBReactionFinderAdapter: ReactionFinderAdapter {
             return rows.map { (emoji: $0[1], count: $0[0]) }
         } catch {
             owsFailDebug("unexpected error \(error)")
-            return nil
+            return []
         }
     }
 
@@ -421,7 +411,16 @@ struct GRDBReactionFinderAdapter: ReactionFinderAdapter {
             )
         """
         let arguments: StatementArguments = [uniqueMessageId]
-        return (try? Bool.fetchOne(transaction.database, sql: sql, arguments: arguments)) ?? false
+
+        let exists: Bool
+        do {
+            exists = try Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+        } catch {
+            owsFailDebug("Received unexpected error \(error)")
+            exists = false
+        }
+
+        return exists
     }
 
     func enumerateReactions(
@@ -446,7 +445,7 @@ struct GRDBReactionFinderAdapter: ReactionFinderAdapter {
         }
     }
 
-    func allUniqueIds(transaction: GRDBReadTransaction) -> [String]? {
+    func allUniqueIds(transaction: GRDBReadTransaction) -> [String] {
         let sql = """
             SELECT \(reactionColumn: .uniqueId)
             FROM \(ReactionRecord.databaseTableName)
@@ -459,7 +458,7 @@ struct GRDBReactionFinderAdapter: ReactionFinderAdapter {
             return rows.map { $0[0] }
         } catch {
             owsFailDebug("unexpected error \(error)")
-            return nil
+            return []
         }
     }
 
@@ -469,13 +468,5 @@ struct GRDBReactionFinderAdapter: ReactionFinderAdapter {
             WHERE \(reactionColumn: .uniqueMessageId) = ?
         """
         try transaction.database.execute(sql: sql, arguments: [uniqueMessageId])
-    }
-
-    static func deleteReactions(with uniqueIds: [String], transaction: GRDBWriteTransaction) throws {
-        let sql = """
-            DELETE FROM \(ReactionRecord.databaseTableName)
-            WHERE \(reactionColumn: .uniqueId) IN (?)
-        """
-        try transaction.database.execute(sql: sql, arguments: [uniqueIds.joined(separator: ", ")])
     }
 }

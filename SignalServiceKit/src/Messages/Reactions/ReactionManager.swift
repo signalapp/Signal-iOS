@@ -14,12 +14,14 @@ public class ReactionManager: NSObject {
         return .sharedInstance()
     }
 
-    @objc(sendReactionForMessage:emoji:isRemoving:transaction:)
-    class func sendReaction(for message: TSMessage, emoji: String, isRemoving: Bool, transaction: SDSAnyWriteTransaction) {
+    @objc(localUserReactedToMessage:emoji:isRemoving:transaction:)
+    class func localUserReacted(to message: TSMessage, emoji: String, isRemoving: Bool, transaction: SDSAnyWriteTransaction) {
         guard FeatureFlags.reactionSend else {
             Logger.info("Not sending reaction, feature disabled")
             return
         }
+
+        assert(emoji.isSingleEmoji)
 
         Logger.info("Sending reaction: \(emoji) isRemoving: \(isRemoving)")
 
@@ -35,11 +37,13 @@ public class ReactionManager: NSObject {
         )
 
         let removedOrReplacedReaction = message.reaction(for: localAddress, transaction: transaction)
+        let createdReaction: OWSReaction?
 
         if isRemoving {
             message.removeReaction(for: localAddress, transaction: transaction)
+            createdReaction = nil
         } else {
-            message.recordReaction(
+            createdReaction = message.recordReaction(
                 for: localAddress,
                 emoji: emoji,
                 sentAtTimestamp: outgoingMessage.timestamp,
@@ -50,7 +54,7 @@ public class ReactionManager: NSObject {
 
         // We intentionally don't send reactions durably since we don't want to clutter
         // the user's message history with failure information. Instead, if it fails in
-        // sending to all recipients, we rollback the changes. For example, if you try
+        // sending to any recipients, we rollback the changes. For example, if you try
         // and react to a message you will immediately see the reaction appear on the
         // bubble. If we end up failing to send, the reaction will disappear from the
         // bubble without any further indication to the user.
@@ -65,6 +69,12 @@ public class ReactionManager: NSObject {
                 // TODO: determine if the message succeeded in sending to _anyone_
                 // and if so, ignore this failure.
                 databaseStorage.write { transaction in
+                    guard let currentReaction = message.reaction(for: localAddress, transaction: transaction),
+                        currentReaction == createdReaction else {
+                            Logger.info("Skipping reversion, changes have been made since we tried to send this message.")
+                            return
+                    }
+
                     if let removedOrReplacedReaction = removedOrReplacedReaction {
                         message.recordReaction(
                             for: removedOrReplacedReaction.reactor,
@@ -94,11 +104,16 @@ public class ReactionManager: NSObject {
             return
         }
 
+        guard reaction.emoji.isSingleEmoji else {
+            owsFailDebug("Received invalid emoji")
+            return
+        }
+
         guard let messageAuthor = reaction.authorAddress else {
             return owsFailDebug("reaction missing author address")
         }
 
-        guard let message = TSMessage.findMessage(
+        guard let message = InteractionFinder.findMessage(
             withTimestamp: reaction.timestamp,
             threadId: threadId,
             author: messageAuthor,

@@ -25,15 +25,18 @@ public extension TSMessage {
     }
 
     @objc(recordReactionForReactor:emoji:sentAtTimestamp:receivedAtTimestamp:transaction:)
+    @discardableResult
     func recordReaction(
         for reactor: SignalServiceAddress,
         emoji: String,
         sentAtTimestamp: UInt64,
         receivedAtTimestamp: UInt64,
         transaction: SDSAnyWriteTransaction
-    ) {
+    ) -> OWSReaction {
 
         Logger.info("")
+
+        assert(emoji.isSingleEmoji)
 
         // Remove any previous reaction, there can only be one
         removeReaction(for: reactor, transaction: transaction)
@@ -48,6 +51,8 @@ public extension TSMessage {
 
         reaction.anyInsert(transaction: transaction)
         databaseStorage.touch(interaction: self, transaction: transaction)
+
+        return reaction
     }
 
     @objc(removeReactionForReactor:transaction:)
@@ -58,62 +63,5 @@ public extension TSMessage {
 
         reaction.anyRemove(transaction: transaction)
         databaseStorage.touch(interaction: self, transaction: transaction)
-    }
-
-    @objc
-    class func findMessage(
-        withTimestamp timestamp: UInt64,
-        threadId: String,
-        author: SignalServiceAddress,
-        transaction: SDSAnyReadTransaction
-    ) -> TSMessage? {
-        guard timestamp > 0 else {
-            owsFailDebug("invalid timestamp: \(timestamp)")
-            return nil
-        }
-
-        guard !threadId.isEmpty else {
-            owsFailDebug("invalid thread")
-            return nil
-        }
-
-        guard author.isValid else {
-            owsFailDebug("Invalid author \(author)")
-            return nil
-        }
-
-        let interactions: [TSInteraction]
-
-        do {
-            interactions = try InteractionFinder.interactions(
-                withTimestamp: timestamp,
-                filter: { $0 is TSMessage },
-                transaction: transaction
-            )
-        } catch {
-            owsFailDebug("Error loading interactions \(error.localizedDescription)")
-            return nil
-        }
-
-        for interaction in interactions {
-            guard let message = interaction as? TSMessage else {
-                owsFailDebug("received unexpected non-message interaction")
-                continue
-            }
-
-            guard message.uniqueThreadId == threadId else { continue }
-
-            if let incomingMessage = message as? TSIncomingMessage,
-                incomingMessage.authorAddress.isEqualToAddress(author) {
-                return incomingMessage
-            }
-
-            if let outgoingMessage = message as? TSOutgoingMessage,
-                author.isLocalAddress {
-                return outgoingMessage
-            }
-        }
-
-        return nil
     }
 }

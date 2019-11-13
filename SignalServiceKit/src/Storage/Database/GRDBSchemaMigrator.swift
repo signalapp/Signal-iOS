@@ -780,35 +780,5 @@ private func createV1Schema(db: Database) throws {
                     AttachmentRecord.columnName(.lazyRestoreFragmentId)
         ])
 
-    // Reactions
-    try db.create(table: "model_OWSReaction") { table in
-        table.autoIncrementedPrimaryKey("id")
-            .notNull()
-        table.column("recordType", .integer)
-            .notNull()
-        table.column("uniqueId", .text)
-            .notNull()
-            .unique(onConflict: .fail)
-        table.column("emoji", .text)
-            .notNull()
-        table.column("reactorE164", .text)
-        table.column("reactorUUID", .text)
-        table.column("receivedAtTimestamp", .integer)
-            .notNull()
-        table.column("sentAtTimestamp", .integer)
-            .notNull()
-        table.column("uniqueMessageId", .text)
-            .notNull()
-    }
-    try db.create(index: "index_model_OWSReaction_on_uniqueId",
-                  on: "model_OWSReaction",
-                  columns: ["uniqueId"])
-    try db.create(index: "index_model_OWSReaction_on_uniqueMessageId_and_reactorE164",
-                  on: "model_OWSReaction",
-                  columns: ["uniqueMessageId", "reactorE164"])
-    try db.create(index: "index_model_OWSReaction_on_uniqueMessageId_and_reactorUUID",
-                  on: "model_OWSReaction",
-                  columns: ["uniqueMessageId", "reactorUUID"])
-
     try GRDBFullTextSearchFinder.createTables(database: db)
 }

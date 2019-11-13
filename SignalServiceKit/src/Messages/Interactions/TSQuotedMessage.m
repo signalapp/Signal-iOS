@@ -174,10 +174,10 @@ NS_ASSUME_NONNULL_BEGIN
     TSQuotedMessageContentSource bodySource = TSQuotedMessageContentSourceUnknown;
 
     // Prefer to generate the text snippet locally if available.
-    TSMessage *_Nullable quotedMessage = [TSMessage findMessageWithTimestamp:timestamp
-                                                                    threadId:thread.uniqueId
-                                                                      author:authorAddress
-                                                                 transaction:transaction];
+    TSMessage *_Nullable quotedMessage = [InteractionFinder findMessageWithTimestamp:timestamp
+                                                                            threadId:thread.uniqueId
+                                                                              author:authorAddress
+                                                                         transaction:transaction];
 
     if (quotedMessage) {
         bodySource = TSQuotedMessageContentSourceLocal;
@@ -277,10 +277,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                             contentType:(NSString *)contentType
                                                             transaction:(SDSAnyWriteTransaction *)transaction
 {
-    TSMessage *_Nullable quotedMessage = [TSMessage findMessageWithTimestamp:timestamp
-                                                                    threadId:threadId
-                                                                      author:authorAddress
-                                                                 transaction:transaction];
+    TSMessage *_Nullable quotedMessage = [InteractionFinder findMessageWithTimestamp:timestamp
+                                                                            threadId:threadId
+                                                                              author:authorAddress
+                                                                         transaction:transaction];
 
     if (!quotedMessage) {
         OWSLogWarn(@"Could not find quoted message: %llu", timestamp);
