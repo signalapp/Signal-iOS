@@ -14,6 +14,7 @@
 #import <SignalServiceKit/OWSIncomingContactSyncJobRecord.h>
 #import <SignalServiceKit/OWSIncomingGroupSyncJobRecord.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/OWSReaction.h>
 #import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
@@ -38,6 +39,7 @@ NSString *const OWSOrphanDataCleaner_LastCleaningDateKey = @"OWSOrphanDataCleane
 @property (nonatomic) NSSet<NSString *> *interactionIds;
 @property (nonatomic) NSSet<NSString *> *attachmentIds;
 @property (nonatomic) NSSet<NSString *> *filePaths;
+@property (nonatomic) NSSet<NSString *> *reactionIds;
 
 @end
 
@@ -344,11 +346,14 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     __block int attachmentStreamCount = 0;
     NSMutableSet<NSString *> *allAttachmentFilePaths = [NSMutableSet new];
     NSMutableSet<NSString *> *allAttachmentIds = [NSMutableSet new];
+    // Reactions
+    NSMutableSet<NSString *> *allReactionIds = [NSMutableSet new];
     // Threads
     __block NSSet *threadIds;
     // Messages
     NSMutableSet<NSString *> *orphanInteractionIds = [NSMutableSet new];
     NSMutableSet<NSString *> *allMessageAttachmentIds = [NSMutableSet new];
+    NSMutableSet<NSString *> *allMessageReactionIds = [NSMutableSet new];
     // Stickers
     NSMutableSet<NSString *> *activeStickerFilePaths = [NSMutableSet new];
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
@@ -383,6 +388,25 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             return;
         }
 
+        [OWSReaction
+         anyEnumerateWithTransaction:transaction
+         batched:YES
+         block:^(OWSReaction *reaction, BOOL *stop) {
+             if (!self.isMainAppAndActive) {
+                 shouldAbort = YES;
+                 *stop = YES;
+                 return;
+             }
+             if (![reaction isKindOfClass:[OWSReaction class]]) {
+                 return;
+             }
+             [allReactionIds addObject:reaction.uniqueId];
+         }];
+
+        if (shouldAbort) {
+            return;
+        }
+
         threadIds = [NSSet setWithArray:[TSThread anyAllUniqueIdsWithTransaction:transaction]];
 
         [TSInteraction anyEnumerateWithTransaction:transaction
@@ -404,6 +428,11 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
                                                  TSMessage *message = (TSMessage *)interaction;
                                                  [allMessageAttachmentIds addObjectsFromArray:message.allAttachmentIds];
+
+                                                 NSArray<NSString *> *_Nullable messageReactionIds = [message allReactionIdsWithTransaction:transaction];
+                                                 if (messageReactionIds) {
+                                                     [allMessageReactionIds addObjectsFromArray:messageReactionIds];
+                                                 }
                                              }];
 
         if (shouldAbort) {
@@ -507,10 +536,19 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     OWSLogDebug(@"missing attachmentIds: %zu", missingAttachmentIds.count);
     OWSLogDebug(@"orphan interactions: %zu", orphanInteractionIds.count);
 
+    NSMutableSet<NSString *> *orphanReactionIds = [allReactionIds mutableCopy];
+    [orphanReactionIds minusSet:allMessageReactionIds];
+    NSMutableSet<NSString *> *missingReactionIds = [allMessageReactionIds mutableCopy];
+    [missingReactionIds minusSet:allReactionIds];
+
+    OWSLogDebug(@"orphan reactionIds: %zu", orphanReactionIds.count);
+    OWSLogDebug(@"missing reactionIds: %zu", missingReactionIds.count);
+
     OWSOrphanData *result = [OWSOrphanData new];
     result.interactionIds = [orphanInteractionIds copy];
     result.attachmentIds = [orphanAttachmentIds copy];
     result.filePaths = [orphanFilePaths copy];
+    result.reactionIds = [orphanReactionIds copy];
     return result;
 }
 
@@ -784,6 +822,34 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             [attachmentStream anyRemoveWithTransaction:transaction];
         }
         OWSLogInfo(@"Deleted orphan attachments: %zu", attachmentsRemoved);
+
+        NSUInteger reactionsRemoved = 0;
+        for (NSString *reactionId in orphanData.reactionIds) {
+            if (!self.isMainAppAndActive) {
+                shouldAbort = YES;
+                return;
+            }
+            OWSReaction *_Nullable reaction =
+                [OWSReaction anyFetchWithUniqueId:reactionId transaction:transaction];
+            if (!reaction) {
+                // This could just be a race condition, but it should be very unlikely.
+                OWSLogWarn(@"Could not load reaction: %@", reactionId);
+                continue;
+            }
+            // Don't delete reactions which were created in the last N minutes.
+            NSDate *creationDate = [NSDate ows_dateWithMillisecondsSince1970:reaction.sentAtTimestamp];
+            if ([creationDate isAfterDate:thresholdDate]) {
+                OWSLogInfo(@"Skipping orphan reaction due to age: %f", fabs(creationDate.timeIntervalSinceNow));
+                continue;
+            }
+            OWSLogInfo(@"Removing orphan reaction: %@", reaction.uniqueId);
+            reactionsRemoved++;
+            if (!shouldRemoveOrphans) {
+                continue;
+            }
+            [reaction anyRemoveWithTransaction:transaction];
+        }
+        OWSLogInfo(@"Deleted orphan reactions: %zu", reactionsRemoved);
     }];
 
     if (shouldAbort) {
