@@ -1447,10 +1447,12 @@ NS_ASSUME_NONNULL_BEGIN
                 }
                 
                 // Loki: Cache the user hex encoded public key (for mentions)
-                dispatch_sync(dispatch_get_main_queue(), ^{
-                    [LKAPI populateUserHexEncodedPublicKeyCacheIfNeededFor:oldGroupThread.uniqueId in:transaction];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                        [LKAPI populateUserHexEncodedPublicKeyCacheIfNeededFor:oldGroupThread.uniqueId in:transaction];
+                        [LKAPI cache:incomingMessage.authorId for:oldGroupThread.uniqueId];
+                    }];
                 });
-                [LKAPI cache:incomingMessage.authorId for:oldGroupThread.uniqueId];
                 
                 [self finalizeIncomingMessage:incomingMessage
                                        thread:oldGroupThread
