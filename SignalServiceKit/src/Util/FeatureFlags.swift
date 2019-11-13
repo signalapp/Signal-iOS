@@ -98,7 +98,7 @@ public class FeatureFlags: NSObject {
     public static var storageMode: StorageMode {
         if CurrentAppContext().isRunningTests {
             // We should be running the tests using both .ydbTests or .grdbTests.
-            return .ydbTests
+            return .grdbTests
         } else if build.includes(.beta) {
             return .grdbForAll
         } else {

@@ -5,9 +5,9 @@
 	<key>BuildDetails</key>
 	<dict>
 		<key>CarthageVersion</key>
-		<string>0.34.0</string>
+		<string>0.33.0</string>
 		<key>OSXVersion</key>
-		<string>10.14.6</string>
+		<string>10.15</string>
 		<key>WebRTCCommit</key>
 		<string>cd1885e8e42ebc893b521fef5e27a05bf90f1a9f v0.1.9</string>
 	</dict>
