@@ -9,7 +9,7 @@ import PromiseKit
 import CommonCrypto
 
 public struct ProvisionMessage {
-    public let uuid: UUID
+    public let uuid: UUID?
     public let phoneNumber: String
     public let identityKeyPair: ECKeyPair
     public let profileKey: OWSAES256Key
@@ -114,9 +114,13 @@ public class ProvisioningCipher {
             throw ProvisioningError.invalidProvisionMessage("missing number from provisioning message")
         }
 
-        guard let uuidString = proto.uuid, let uuid = UUID(uuidString: uuidString) else {
-            throw ProvisioningError.invalidProvisionMessage("missing uuid from provisioning message")
-        }
+        let uuid: UUID? = try {
+            guard proto.hasUuid, let uuidString = proto.uuid else { return nil }
+            guard let uuid = UUID(uuidString: uuidString) else {
+                throw ProvisioningError.invalidProvisionMessage("invalid uuid from provisioning message")
+            }
+            return uuid
+        }()
 
         return ProvisionMessage(uuid: uuid,
                                 phoneNumber: phoneNumber,
