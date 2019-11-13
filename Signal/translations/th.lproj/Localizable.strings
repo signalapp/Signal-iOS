@@ -1534,7 +1534,7 @@
 "MESSAGE_STATUS_SEND_FAILED" = "การส่งล้มเหลว";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Sending…";
+"MESSAGE_STATUS_SENDING" = "กำลังส่ง…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "ส่งแล้ว";
@@ -2715,7 +2715,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "รหัสความปลอดภัยระหว่างคุณกับ %@ เพิ่งมีการเปลี่ยนแปลง คุณอาจต้องการตรวจยืนยันอีกครั้งในแอปหลักก่อนที่จะส่งอีกครั้ง";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Loading…";
+"SHARE_EXTENSION_LOADING" = "กำลังโหลด…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "เปิดแอป Signal เพื่อลงทะเบียน";
@@ -2778,7 +2778,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Installed Stickers";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Loading…";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "กำลังโหลด…";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "No stickers installed";
