@@ -159,7 +159,7 @@ public class SSKMessageDecryptOperation: OWSOperation, DurableOperation {
                                                 }
             },
                                              failureBlock: {
-                                                // TODO failureBlock should propogate specific error
+                                                // TODO: failureBlock should propagate specific error.
                                                 self.reportError(SSKMessageDecryptOperationError.unspecifiedError)
                                             })
         } catch {
