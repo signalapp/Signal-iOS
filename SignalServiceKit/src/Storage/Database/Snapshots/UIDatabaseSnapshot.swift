@@ -222,7 +222,7 @@ extension UIDatabaseObserver: TransactionObserver {
         }
 
         // Try to restart after every Nth write.
-        let restartFrequency: UInt32 = 500
+        let restartFrequency: UInt32 = 100
         let shouldTryToRestart = arc4random_uniform(restartFrequency) == 0
         let mode: Database.CheckpointMode = shouldTryToRestart ? .restart : .passive
 
