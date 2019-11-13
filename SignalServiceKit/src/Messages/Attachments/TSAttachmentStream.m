@@ -939,7 +939,16 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     if (originalSize.width <= thumbnailDimensionPoints || originalSize.height <= thumbnailDimensionPoints) {
         // There's no point in generating a thumbnail if the original is smaller than the
         // thumbnail size.
-        return [[OWSLoadedThumbnail alloc] initWithImage:self.originalImage filePath:self.originalFilePath];
+        UIImage *_Nullable originalImage = self.originalImage;
+        if (originalImage == nil) {
+            OWSFailDebug(@"originalImage was unexpectedly nil");
+            // Any time we return nil from this method we have to call the failure handler
+            // or else the caller waits for an async thumbnail
+            failure();
+            return nil;
+        }
+
+        return [[OWSLoadedThumbnail alloc] initWithImage:originalImage filePath:self.originalFilePath];
     }
 
     NSString *thumbnailPath = [self pathForThumbnailDimensionPoints:thumbnailDimensionPoints];
