@@ -3796,7 +3796,9 @@ typedef enum : NSUInteger {
         // [UICollectionView reloadData] sometimes has no effect.
         // This might be a regression in iOS 13? reloadSections
         // does not appear to have the same issue.
-        [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:0]];
+        [UIView performWithoutAnimation:^{
+            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:0]];
+        }];
     } else {
         // Don't reload sections until the view has appeared and the
         // collection view has loaded.
