@@ -238,6 +238,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
                                       [YAPDBLinkedDeviceReadReceiptFinder asyncRegisterDatabaseExtensions:self];
                                       [YAPDBContactQueryFinder asyncRegisterDatabaseExtensions:self];
                                       [YAPDBUserProfileFinder asyncRegisterDatabaseExtensions:self];
+                                      [YAPDBReactionFinderAdapter asyncRegisterDatabaseExtensions:self];
 
                                       [self.database
                                           flushExtensionRequestsWithCompletionQueue:dispatch_get_global_queue(
