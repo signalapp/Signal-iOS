@@ -125,17 +125,21 @@ public func Bench(title: String,
 ///    [BenchManager completeEventWithEventId:message.id]
 public func BenchEventStart(title: String, eventId: BenchmarkEventId) {
     BenchAsync(title: title) { finish in
-        runningEvents[eventId] = Event(title: title, eventId: eventId, completion: finish)
+        eventQueue.sync {
+            runningEvents[eventId] = Event(title: title, eventId: eventId, completion: finish)
+        }
     }
 }
 
 public func BenchEventComplete(eventId: BenchmarkEventId) {
-    guard let event = runningEvents.removeValue(forKey: eventId) else {
-        Logger.debug("no active event with id: \(eventId)")
-        return
-    }
+    eventQueue.sync {
+        guard let event = runningEvents.removeValue(forKey: eventId) else {
+            Logger.debug("no active event with id: \(eventId)")
+            return
+        }
 
-    event.completion()
+        event.completion()
+    }
 }
 
 public typealias BenchmarkEventId = String
@@ -147,6 +151,7 @@ private struct Event {
 }
 
 private var runningEvents: [BenchmarkEventId: Event] = [:]
+private let eventQueue = DispatchQueue(label: "org.signal.bench")
 
 @objc
 public class BenchManager: NSObject {
