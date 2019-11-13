@@ -173,7 +173,17 @@ class ConversationSplitViewController: UISplitViewController {
         } else {
             viewControllers[1] = vc
         }
-        currentDetailViewController = vc
+
+        // If the detail VC is a nav controller, we want to keep track of
+        // the root view controller. We use this to determine the start
+        // point of the current detail view when replacing it while
+        // collapsed. At that point, this nav controller's view controllers
+        // will have been merged into the primary nav controller.
+        if let vc = vc as? UINavigationController {
+            currentDetailViewController = vc.viewControllers.first
+        } else {
+            currentDetailViewController = vc
+        }
     }
 
     // MARK: - Keyboard Shortcuts
@@ -441,7 +451,13 @@ extension ConversationSplitViewController: UISplitViewControllerDelegate {
 
         let allViewControllers = primaryNavController.viewControllers
 
-        primaryNavController.viewControllers = Array(allViewControllers[0..<conversationVCIndex])
+        primaryNavController.viewControllers = Array(allViewControllers[0..<conversationVCIndex]).filter { vc in
+            // Don't ever allow a conversation view controller to be transfered on the master
+            // stack when expanding from collapsed mode. This should never happen.
+            guard let vc = vc as? ConversationViewController else { return true }
+            owsFailDebug("Unexpected conversation in view hierarchy: \(vc.thread)")
+            return false
+        }
 
         // Create a new detail nav because reusing the existing one causes
         // some strange behavior around the title view + input accessory view.
