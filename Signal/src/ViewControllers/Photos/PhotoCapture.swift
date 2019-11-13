@@ -140,10 +140,9 @@ class PhotoCapture: NSObject {
 
     func updateVideoPreviewConnection(toOrientation orientation: AVCaptureVideoOrientation) {
         guard let videoConnection = previewView.previewLayer.connection else {
-            Logger.error("videoConnection was unexpectedly nil")
+            Logger.info("previewView hasn't completed setup yet.")
             return
         }
-        Logger.verbose("newOrientation: \(orientation), deviceOrientation: \(UIDevice.current.orientation), interfaceOrientation: \(CurrentAppContext().interfaceOrientation)")
         videoConnection.videoOrientation = orientation
     }
 
