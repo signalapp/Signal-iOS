@@ -1465,10 +1465,11 @@ NS_ASSUME_NONNULL_BEGIN
                 }
 
                 if (dataMessage.reaction) {
-                    [self handleReactionInThread:groupThread
-                                        reaction:dataMessage.reaction
-                                        envelope:envelope
-                                     transaction:transaction];
+                    [OWSReactionManager processIncomingReaction:dataMessage.reaction
+                                                       threadId:groupThread.uniqueId
+                                                        reactor:envelope.sourceAddress
+                                                      timestamp:timestamp
+                                                    transaction:transaction];
                     return nil;
                 }
 
@@ -1503,10 +1504,11 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         if (dataMessage.reaction) {
-            [self handleReactionInThread:thread
-                                reaction:dataMessage.reaction
-                                envelope:envelope
-                             transaction:transaction];
+            [OWSReactionManager processIncomingReaction:dataMessage.reaction
+                                               threadId:thread.uniqueId
+                                                reactor:envelope.sourceAddress
+                                              timestamp:timestamp
+                                            transaction:transaction];
             return nil;
         }
 
@@ -1732,40 +1734,6 @@ NS_ASSUME_NONNULL_BEGIN
     });
 
     return incomingMessage;
-}
-
-- (void)handleReactionInThread:(TSThread *)thread
-                      reaction:(SSKProtoDataMessageReaction *)reaction
-                      envelope:(SSKProtoEnvelope *)envelope
-                   transaction:(SDSAnyWriteTransaction *)transaction
-{
-    if (!SSKFeatureFlags.reactionReceive) {
-        OWSLogInfo(@"Ignoring incoming reaction, feature disabled");
-        return;
-    }
-
-    TSMessage *_Nullable message = [TSMessage findMessageWithTimestamp:reaction.timestamp
-                                                              threadId:thread.uniqueId
-                                                                author:reaction.authorAddress
-                                                           transaction:transaction];
-
-    if (message == nil) {
-        // This is potentially normal. For example, we could've deleted the message locally.
-        OWSLogInfo(@"Received reaction for a message that doesn't exist %llu", reaction.timestamp);
-        return;
-    }
-
-    // If this is a reaction removal, we want to remove *any* reaction from this author
-    // on this message, regardless of the specified emoji.
-    if (reaction.remove) {
-        [message removeReactionForReactor:envelope.sourceAddress transaction:transaction];
-    } else {
-        [message recordReactionForReactor:envelope.sourceAddress
-                                    emoji:reaction.emoji
-                          sentAtTimestamp:envelope.timestamp
-                      receivedAtTimestamp:[NSDate ows_millisecondTimeStamp]
-                              transaction:transaction];
-    }
 }
 
 #pragma mark - helpers

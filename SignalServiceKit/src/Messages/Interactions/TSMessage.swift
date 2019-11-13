@@ -10,11 +10,6 @@ public extension TSMessage {
     }
 
     @objc
-    func hasReactions(transaction: SDSAnyReadTransaction) -> Bool {
-        return reactionFinder.existsReaction(transaction: transaction)
-    }
-
-    @objc
     func removeAllReactions(transaction: SDSAnyWriteTransaction) throws {
         try reactionFinder.deleteAllReactions(transaction: transaction)
     }
@@ -24,22 +19,24 @@ public extension TSMessage {
         return reactionFinder.allUniqueIds(transaction: transaction)
     }
 
-    @objc
-    func reaction(forReactor reactor: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> OWSReaction? {
+    @objc(reactionForReactor:transaction:)
+    func reaction(for reactor: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> OWSReaction? {
         return reactionFinder.reaction(for: reactor, transaction: transaction)
     }
 
-    @objc
-    func recordReaction(forReactor reactor: SignalServiceAddress,
-                        emoji: String,
-                        sentAtTimestamp: UInt64,
-                        receivedAtTimestamp: UInt64,
-                        transaction: SDSAnyWriteTransaction) {
+    @objc(recordReactionForReactor:emoji:sentAtTimestamp:receivedAtTimestamp:transaction:)
+    func recordReaction(
+        for reactor: SignalServiceAddress,
+        emoji: String,
+        sentAtTimestamp: UInt64,
+        receivedAtTimestamp: UInt64,
+        transaction: SDSAnyWriteTransaction
+    ) {
 
         Logger.info("")
 
         // Remove any previous reaction, there can only be one
-        removeReaction(forReactor: reactor, transaction: transaction)
+        removeReaction(for: reactor, transaction: transaction)
 
         let reaction = OWSReaction(
             uniqueMessageId: uniqueId,
@@ -53,11 +50,11 @@ public extension TSMessage {
         databaseStorage.touch(interaction: self, transaction: transaction)
     }
 
-    @objc
-    func removeReaction(forReactor reactor: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
+    @objc(removeReactionForReactor:transaction:)
+    func removeReaction(for reactor: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
         Logger.info("")
 
-        guard let reaction = reaction(forReactor: reactor, transaction: transaction) else { return }
+        guard let reaction = reaction(for: reactor, transaction: transaction) else { return }
 
         reaction.anyRemove(transaction: transaction)
         databaseStorage.touch(interaction: self, transaction: transaction)
