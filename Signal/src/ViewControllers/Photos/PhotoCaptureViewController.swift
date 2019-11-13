@@ -464,7 +464,7 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
         captureButton.endRecordingAnimation(duration: duration)
     }
 
-    func photoCapture(_ photoCapture: PhotoCapture, didChangeOrienation orientation: AVCaptureVideoOrientation) {
+    func photoCapture(_ photoCapture: PhotoCapture, didChangeOrientation orientation: AVCaptureVideoOrientation) {
         updateIconOrientations(isAnimated: true, captureOrientation: orientation)
         if UIDevice.current.isIPad {
             photoCapture.updateVideoPreviewConnection(toOrientation: orientation)

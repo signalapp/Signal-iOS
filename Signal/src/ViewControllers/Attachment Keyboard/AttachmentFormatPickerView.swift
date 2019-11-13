@@ -155,7 +155,7 @@ extension AttachmentFormatPickerView: PhotoCaptureDelegate {
         return nil
     }
 
-    func photoCapture(_ photoCapture: PhotoCapture, didChangeOrienation orientation: AVCaptureVideoOrientation) {
+    func photoCapture(_ photoCapture: PhotoCapture, didChangeOrientation orientation: AVCaptureVideoOrientation) {
         photoCapture.updateVideoPreviewConnection(toOrientation: orientation)
     }
 

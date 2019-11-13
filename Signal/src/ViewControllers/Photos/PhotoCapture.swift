@@ -21,7 +21,7 @@ protocol PhotoCaptureDelegate: AnyObject {
 
     // MARK: Utility
 
-    func photoCapture(_ photoCapture: PhotoCapture, didChangeOrienation: AVCaptureVideoOrientation)
+    func photoCapture(_ photoCapture: PhotoCapture, didChangeOrientation: AVCaptureVideoOrientation)
     func photoCaptureCanCaptureMoreItems(_ photoCapture: PhotoCapture) -> Bool
     func photoCaptureDidTryToCaptureTooMany(_ photoCapture: PhotoCapture)
     var zoomScaleReferenceHeight: CGFloat? { get }
@@ -133,7 +133,7 @@ class PhotoCapture: NSObject {
             self.captureOrientation = captureOrientation
 
             DispatchQueue.main.async {
-                self.delegate?.photoCapture(self, didChangeOrienation: captureOrientation)
+                self.delegate?.photoCapture(self, didChangeOrientation: captureOrientation)
             }
         }
     }
