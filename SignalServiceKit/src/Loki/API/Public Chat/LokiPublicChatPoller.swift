@@ -47,15 +47,22 @@ public final class LokiPublicChatPoller : NSObject {
         // Processing logic for incoming messages
         func processIncomingMessage(_ message: LokiPublicChatMessage) {
             let storage = OWSPrimaryStorage.shared()
-            var senderHexEncodedPublicKey = ""
+            var masterHexEncodedPublicKey: String? = nil
             storage.dbReadConnection.read { transaction in
-                senderHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: message.hexEncodedPublicKey, in: transaction) ?? message.hexEncodedPublicKey
+                masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: message.hexEncodedPublicKey, in: transaction)
             }
-            let endIndex = senderHexEncodedPublicKey.endIndex
-            let cutoffIndex = senderHexEncodedPublicKey.index(endIndex, offsetBy: -8)
-            // FIXME: The display name code below relies on LokiStorageAPI.getDeviceLinks(...) getting and storing display names, which it shouldn't be doing.
-            let rawDisplayName = DisplayNameUtilities.getPublicChatDisplayName(for: senderHexEncodedPublicKey, in: publicChat.channel, on: publicChat.server) ?? message.displayName
-            let senderDisplayName = "\(rawDisplayName) (...\(senderHexEncodedPublicKey[cutoffIndex..<endIndex]))"
+            let senderHexEncodedPublicKey = masterHexEncodedPublicKey ?? message.hexEncodedPublicKey
+            func generateDisplayName(from rawDisplayName: String) -> String {
+                let endIndex = senderHexEncodedPublicKey.endIndex
+                let cutoffIndex = senderHexEncodedPublicKey.index(endIndex, offsetBy: -8)
+                return "\(rawDisplayName) (...\(senderHexEncodedPublicKey[cutoffIndex..<endIndex]))"
+            }
+            var senderDisplayName = ""
+            if let masterHexEncodedPublicKey = masterHexEncodedPublicKey {
+                senderDisplayName = DisplayNameUtilities.getPublicChatDisplayName(for: senderHexEncodedPublicKey, in: publicChat.channel, on: publicChat.server) ?? generateDisplayName(from: NSLocalizedString("Anonymous", comment: ""))
+            } else {
+                senderDisplayName = generateDisplayName(from: message.displayName)
+            }
             let id = publicChat.idAsData
             let groupContext = SSKProtoGroupContext.builder(id: id, type: .deliver)
             groupContext.setName(publicChat.displayName)
