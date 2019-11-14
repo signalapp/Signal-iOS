@@ -155,8 +155,10 @@ public final class LokiPublicChatPoller : NSObject {
                 guard let messageID = message.uniqueId else { return print("[Loki] Failed to save public chat message.") }
                 storage.setIDForMessageWithServerID(UInt(messageServerID), to: messageID, in: transaction)
             }
-            if let linkPreviewURL = OWSLinkPreview.previewUrl(forMessageBodyText: message.body, selectedRange: nil) {
-                message.generateLinkPreviewIfNeeded(fromURL: linkPreviewURL)
+            DispatchQueue.main.async {
+                if let linkPreviewURL = OWSLinkPreview.previewUrl(forMessageBodyText: message.body, selectedRange: nil) {
+                    message.generateLinkPreviewIfNeeded(fromURL: linkPreviewURL)
+                }
             }
         }
         // Poll
