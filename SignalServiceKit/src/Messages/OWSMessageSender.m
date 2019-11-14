@@ -674,14 +674,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return failureHandler(error);
     }
 
-    // In the "self-send" special case, we ony need to send a sync message with a delivery receipt.
-    if ([thread isKindOfClass:[TSContactThread class]] &&
-        [((TSContactThread *)thread).contactIdentifier isEqualToString:self.tsAccountManager.localNumber]) {
-        // Send to self.
-        OWSAssertDebug(message.recipientIds.count == 1);
-        // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
-        successHandler();
-        return;
+    // Loki: Handle note to self case
+    if ([thread isKindOfClass:[TSContactThread class]]) {
+        __block BOOL isNoteToSelf;
+        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            isNoteToSelf = [LKDatabaseUtilities isUserLinkedDevice:((TSContactThread *)thread).contactIdentifier in:transaction];
+        }];
+        if (isNoteToSelf) {
+            [self sendSyncTranscriptForMessage:message isRecipientUpdate:NO success:^{ } failure:^(NSError *error) { }];
+            successHandler();
+            return;
+        }
     }
 
     if (thread.isGroupThread) {
@@ -1541,19 +1544,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                          failure:(RetryableFailureHandler)failure
 {
     dispatch_block_t success = ^{
-        TSThread *_Nullable thread = message.thread;
-        if (thread && [thread isKindOfClass:[TSContactThread class]] &&
-            [thread.contactIdentifier isEqualToString:self.tsAccountManager.localNumber]) {
-            OWSAssertDebug(message.recipientIds.count == 1);
-            // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            TSThread *thread = message.thread;
+            // Loki: Handle note to self case
+            if (thread && [thread isKindOfClass:[TSContactThread class]] && [LKDatabaseUtilities isUserLinkedDevice:thread.contactIdentifier in:transaction]) {
                 for (NSString *recipientId in message.sendingRecipientIds) {
-                    [message updateWithReadRecipientId:recipientId
-                                         readTimestamp:message.timestamp
-                                           transaction:transaction];
+                    [message updateWithReadRecipientId:recipientId readTimestamp:message.timestamp transaction:transaction];
                 }
-            }];
-        }
+            }
+        }];
 
         successParam();
     };
@@ -1647,9 +1646,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     if ([messageSend.message isKindOfClass:OWSOutgoingSyncMessage.class]) {
         [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:userHexEncodedPublicKey in:transaction] ?: userHexEncodedPublicKey;
-            NSMutableSet<NSString *> *linkedDeviceHexEncodedPublicKeys = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction].mutableCopy;
-            [linkedDeviceHexEncodedPublicKeys removeObject:userHexEncodedPublicKey];
-            recipientIDs = [recipientIDs setByAddingObjectsFromSet:linkedDeviceHexEncodedPublicKeys].mutableCopy;
+            recipientIDs = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction].mutableCopy;
         }];
     }
 

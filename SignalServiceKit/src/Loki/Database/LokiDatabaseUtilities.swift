@@ -23,7 +23,7 @@ public final class LokiDatabaseUtilities : NSObject {
     
     // MARK: Device Links
     @objc(getLinkedDeviceHexEncodedPublicKeysFor:in:)
-    public static func getLinkedDeviceHexEncodedPublicKeys(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction) -> Set<String> {
+    public static func getLinkedDeviceHexEncodedPublicKeys(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> Set<String> {
         let storage = OWSPrimaryStorage.shared()
         let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
         var result = Set(storage.getDeviceLinks(for: masterHexEncodedPublicKey, in: transaction).flatMap { deviceLink in
@@ -34,8 +34,15 @@ public final class LokiDatabaseUtilities : NSObject {
     }
 
     @objc(getLinkedDeviceThreadsFor:in:)
-    public static func getLinkedDeviceThreads(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction) -> Set<TSContactThread> {
+    public static func getLinkedDeviceThreads(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> Set<TSContactThread> {
         return Set(getLinkedDeviceHexEncodedPublicKeys(for: hexEncodedPublicKey, in: transaction).compactMap { TSContactThread.getWithContactId($0, transaction: transaction) })
+    }
+    
+    @objc(isUserLinkedDevice:in:)
+    public static func isUserLinkedDevice(_ hexEncodedPublicKey: String, transaction: YapDatabaseReadTransaction) -> Bool {
+        let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+        let userLinkedDeviceHexEncodedPublicKeys = getLinkedDeviceHexEncodedPublicKeys(for: userHexEncodedPublicKey, in: transaction)
+        return userLinkedDeviceHexEncodedPublicKeys.contains(hexEncodedPublicKey)
     }
 
     @objc(getMasterHexEncodedPublicKeyFor:in:)
