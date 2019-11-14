@@ -77,9 +77,14 @@ public class ProfileFetcherJob: NSObject {
 
     private var backgroundTask: OWSBackgroundTask?
 
-    public class func updateProfilePromise(address: SignalServiceAddress) -> Promise<SignalServiceProfile> {
+    public class func updateProfilePromise(address: SignalServiceAddress,
+                                           mainAppOnly: Bool = true,
+                                           ignoreThrottling: Bool = false,
+                                           shouldUpdateProfile: Bool = true) -> Promise<SignalServiceProfile> {
         let subject = ProfileRequestSubject.address(address: address)
-        let options = ProfileFetchOptions()
+        let options = ProfileFetchOptions(mainAppOnly: mainAppOnly,
+                                          ignoreThrottling: ignoreThrottling,
+                                          shouldUpdateProfile: shouldUpdateProfile)
         return ProfileFetcherJob(subject: subject, options: options).runAsPromise()
     }
 
