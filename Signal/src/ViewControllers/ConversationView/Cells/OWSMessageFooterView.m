@@ -146,7 +146,15 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
         }
 
-        if (statusIndicatorImage) {
+        __block BOOL isNoteToSelf = NO;
+        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            TSContactThread *thread = [outgoingMessage.thread as:TSContactThread.class];
+            if (thread != nil) {
+                isNoteToSelf = [LKDatabaseUtilities isUserLinkedDevice:thread.contactIdentifier in:transaction];
+            }
+        }];
+        
+        if (statusIndicatorImage && !isNoteToSelf) {
             [self showStatusIndicatorWithIcon:statusIndicatorImage textColor:textColor];
         } else {
             [self hideStatusIndicator];
