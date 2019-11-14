@@ -10,6 +10,7 @@ import Photos
 @objc
 public protocol VideoEditorViewDelegate: class {
     var videoEditorViewController: UIViewController { get }
+    func videoEditorUpdateNavigationBar()
 }
 
 // MARK: -
@@ -274,11 +275,16 @@ public class VideoEditorView: UIView {
 
     // MARK: - Navigation Bar
 
+    private func updateNavigationBar() {
+        delegate?.videoEditorUpdateNavigationBar()
+    }
+
     public func navigationBarItems() -> [UIView] {
         guard !shouldHideControls else {
             return []
         }
-        guard attachmentApprovalItem.canSave else {
+        let shouldShowSave = isTrimmed || attachmentApprovalItem.canSave
+        guard shouldShowSave else {
             return []
         }
         let saveButton = navigationBarButton(imageName: Theme.iconName(.messageActionSave),
@@ -328,12 +334,25 @@ public class VideoEditorView: UIView {
 
     private func saveVideoPromise() -> Promise<Void> {
         return model.ensureCurrentRender().nonconsumingFilePromise().then(on: .global()) { (videoFilePath: String) -> Promise<Void> in
-            let videoUrl = URL(fileURLWithPath: videoFilePath)
+            guard let fileExtension = videoFilePath.fileExtension else {
+                return Promise(error: OWSErrorMakeAssertionError("Missing fileExtension."))
+            }
+            let tempFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: fileExtension)
+            do {
+                try FileManager.default.copyItem(atPath: videoFilePath, toPath: tempFilePath)
+            } catch {
+                return Promise(error: error)
+            }
+
+            let videoUrl = URL(fileURLWithPath: tempFilePath)
 
             let (promise, resolver) = Promise<Void>.pending()
             PHPhotoLibrary.shared().performChanges({
                 PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: videoUrl)
             }) { didSucceed, error in
+
+                OWSFileSystem.deleteFileIfExists(tempFilePath)
+
                 if let error = error {
                     resolver.reject(error)
                     return
@@ -405,10 +424,9 @@ extension VideoEditorView: TrimVideoTimelineViewDelegate {
     func gestureDidComplete() {
         ensureSeekReflectsTrimming()
 
-        let model = self.model
-        DispatchQueue.global().async {
-            _ = model.ensureCurrentRender()
-        }
+        updateNavigationBar()
+
+        _ = model.ensureCurrentRender()
     }
 
     func pauseIfPlaying() {
