@@ -500,12 +500,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     __block NSMutableSet<NSString *> *recipientIds = [NSMutableSet new];
     if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-        NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
         [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
             NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:userHexEncodedPublicKey in:transaction] ?: userHexEncodedPublicKey;
-            NSMutableSet<NSString *> *linkedDeviceHexEncodedPublicKeys = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction].mutableCopy;
-            [linkedDeviceHexEncodedPublicKeys removeObject:userHexEncodedPublicKey];
-            recipientIds = [recipientIds setByAddingObjectsFromSet:linkedDeviceHexEncodedPublicKeys].mutableCopy;
+            recipientIds = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction].mutableCopy;
         }];
     } else if (thread.isGroupThread) {
         [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -1567,7 +1565,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return success();
     }
 
-    BOOL shouldSendTranscript = (AreRecipientUpdatesEnabled() || !message.hasSyncedTranscript);
+    // Loki: Handle note to self case
+    __block BOOL isNoteToSelf = NO;
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        TSThread *thread = message.thread;
+        if (thread && [thread isKindOfClass:[TSContactThread class]] && [LKDatabaseUtilities isUserLinkedDevice:thread.contactIdentifier in:transaction]) {
+            isNoteToSelf = YES;
+        }
+    }];
+    
+    BOOL shouldSendTranscript = (AreRecipientUpdatesEnabled() || !message.hasSyncedTranscript) && !isNoteToSelf;
     if (!shouldSendTranscript) {
         return success();
     }
@@ -1642,6 +1649,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         messageSend.isUDSend);
 
     NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    
     __block NSMutableSet<NSString *> *recipientIDs = [NSSet setWithObject:recipient.uniqueId];
     if ([messageSend.message isKindOfClass:OWSOutgoingSyncMessage.class]) {
         [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {

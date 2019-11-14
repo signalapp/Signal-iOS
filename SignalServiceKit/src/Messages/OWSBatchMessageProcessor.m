@@ -448,7 +448,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
                                                     transaction:transaction];
                 }
             } @catch (NSException *exception) {
-                OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
+//                OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
                 reportFailure(transaction);
             }
             [processedJobs addObject:job];
