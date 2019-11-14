@@ -18,50 +18,57 @@ public final class LokiStorageAPI : LokiDotNetAPI {
     /// Gets the device links associated with the given hex encoded public key from the
     /// server and stores and returns the valid ones.
     public static func getDeviceLinks(associatedWith hexEncodedPublicKey: String) -> Promise<Set<DeviceLink>> {
-        print("[Loki] Getting device links for: \(hexEncodedPublicKey).")
+        return getDeviceLinks(associatedWith: [ hexEncodedPublicKey ])
+    }
+    
+    /// Gets the device links associated with the given hex encoded public keys from the
+    /// server and stores and returns the valid ones.
+    public static func getDeviceLinks(associatedWith hexEncodedPublicKeys: [String]) -> Promise<Set<DeviceLink>> {
+        print("[Loki] Getting device links for: \(hexEncodedPublicKeys).")
         return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<Set<DeviceLink>> in
-            let queryParameters = "include_user_annotations=1"
-            let url = URL(string: "\(server)/users/@\(hexEncodedPublicKey)?\(queryParameters)")!
+            let queryParameters = "ids=\(hexEncodedPublicKeys.map { "@\($0)" }.joined(separator: ","))&include_user_annotations=1"
+            let url = URL(string: "\(server)/users?\(queryParameters)")!
             let request = TSRequest(url: url)
             return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { $0.responseObject }.map { rawResponse -> Set<DeviceLink> in
-                guard let json = rawResponse as? JSON, let data = json["data"] as? JSON,
-                    let annotations = data["annotations"] as? [JSON] else {
-                    print("[Loki] Couldn't parse device links for user: \(hexEncodedPublicKey) from: \(rawResponse).")
+                guard let json = rawResponse as? JSON, let data = json["data"] as? [JSON] else {
+                    print("[Loki] Couldn't parse device links for users: \(hexEncodedPublicKeys) from: \(rawResponse).")
                     throw Error.parsingFailed
                 }
-                guard !annotations.isEmpty else { return [] }
-                guard let annotation = annotations.first(where: { $0["type"] as? String == deviceLinkType }),
-                    let value = annotation["value"] as? JSON, let rawDeviceLinks = value["authorisations"] as? [JSON] else {
-                    print("[Loki] Couldn't parse device links for user: \(hexEncodedPublicKey) from: \(rawResponse).")
-                    throw Error.parsingFailed
-                }
-                return Set(rawDeviceLinks.flatMap { rawDeviceLink in
-                    guard let masterHexEncodedPublicKey = rawDeviceLink["primaryDevicePubKey"] as? String, let slaveHexEncodedPublicKey = rawDeviceLink["secondaryDevicePubKey"] as? String,
-                        let base64EncodedSlaveSignature = rawDeviceLink["requestSignature"] as? String else {
-                        print("[Loki] Couldn't parse device link for user: \(hexEncodedPublicKey) from: \(rawResponse).")
-                        return nil
+                return Set(data.flatMap { data -> [DeviceLink] in
+                    guard let annotations = data["annotations"] as? [JSON], !annotations.isEmpty, let hexEncodedPublicKey = data["username"] as? String else { return [] }
+                    guard let annotation = annotations.first(where: { $0["type"] as? String == deviceLinkType }),
+                        let value = annotation["value"] as? JSON, let rawDeviceLinks = value["authorisations"] as? [JSON] else {
+                        print("[Loki] Couldn't parse device links for user: \(hexEncodedPublicKey) from: \(rawResponse).")
+                        return []
                     }
-                    let masterSignature: Data?
-                    if let base64EncodedMasterSignature = rawDeviceLink["grantSignature"] as? String {
-                        masterSignature = Data(base64Encoded: base64EncodedMasterSignature)
-                    } else {
-                        masterSignature = nil
-                    }
-                    let slaveSignature = Data(base64Encoded: base64EncodedSlaveSignature)
-                    let master = DeviceLink.Device(hexEncodedPublicKey: masterHexEncodedPublicKey, signature: masterSignature)
-                    let slave = DeviceLink.Device(hexEncodedPublicKey: slaveHexEncodedPublicKey, signature: slaveSignature)
-                    let deviceLink = DeviceLink(between: master, and: slave)
-                    if let masterSignature = masterSignature {
-                        guard DeviceLinkingUtilities.hasValidMasterSignature(deviceLink) else {
-                            print("[Loki] Received a device link with an invalid master signature.")
+                    return rawDeviceLinks.compactMap { rawDeviceLink in
+                        guard let masterHexEncodedPublicKey = rawDeviceLink["primaryDevicePubKey"] as? String, let slaveHexEncodedPublicKey = rawDeviceLink["secondaryDevicePubKey"] as? String,
+                            let base64EncodedSlaveSignature = rawDeviceLink["requestSignature"] as? String else {
+                            print("[Loki] Couldn't parse device link for user: \(hexEncodedPublicKey) from: \(rawResponse).")
                             return nil
                         }
+                        let masterSignature: Data?
+                        if let base64EncodedMasterSignature = rawDeviceLink["grantSignature"] as? String {
+                            masterSignature = Data(base64Encoded: base64EncodedMasterSignature)
+                        } else {
+                            masterSignature = nil
+                        }
+                        let slaveSignature = Data(base64Encoded: base64EncodedSlaveSignature)
+                        let master = DeviceLink.Device(hexEncodedPublicKey: masterHexEncodedPublicKey, signature: masterSignature)
+                        let slave = DeviceLink.Device(hexEncodedPublicKey: slaveHexEncodedPublicKey, signature: slaveSignature)
+                        let deviceLink = DeviceLink(between: master, and: slave)
+                        if let masterSignature = masterSignature {
+                            guard DeviceLinkingUtilities.hasValidMasterSignature(deviceLink) else {
+                                print("[Loki] Received a device link with an invalid master signature.")
+                                return nil
+                            }
+                        }
+                        guard DeviceLinkingUtilities.hasValidSlaveSignature(deviceLink) else {
+                            print("[Loki] Received a device link with an invalid slave signature.")
+                            return nil
+                        }
+                        return deviceLink
                     }
-                    guard DeviceLinkingUtilities.hasValidSlaveSignature(deviceLink) else {
-                        print("[Loki] Received a device link with an invalid slave signature.")
-                        return nil
-                    }
-                    return deviceLink
                 })
             }.map { deviceLinks -> Set<DeviceLink> in
                 storage.dbReadWriteConnection.readWrite { transaction in
