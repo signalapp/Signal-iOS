@@ -2,7 +2,7 @@ import PromiseKit
 
 @objc(LKAPI)
 public final class LokiAPI : NSObject {
-    private static var lastDeviceLinkUpdate: [String:Date] = [:] // Hex encoded public key to date
+    public static var lastDeviceLinkUpdate: [String:Date] = [:] // Hex encoded public key to date
     @objc public static var userHexEncodedPublicKeyCache: [String:Set<String>] = [:] // Thread ID to set of user hex encoded public keys
     
     // MARK: Convenience
@@ -14,12 +14,12 @@ public final class LokiAPI : NSObject {
     private static let maxRetryCount: UInt = 8
     private static let defaultTimeout: TimeInterval = 20
     private static let longPollingTimeout: TimeInterval = 40
-    private static let deviceLinkUpdateInterval: TimeInterval = 60
     private static let receivedMessageHashValuesKey = "receivedMessageHashValuesKey"
     private static let receivedMessageHashValuesCollection = "receivedMessageHashValuesCollection"
     private static var userIDScanLimit: UInt = 4096
     internal static var powDifficulty: UInt = 4
     public static let defaultMessageTTL: UInt64 = 24 * 60 * 60 * 1000
+    public static let deviceLinkUpdateInterval: TimeInterval = 60
     
     // MARK: Types
     public typealias RawResponse = Any

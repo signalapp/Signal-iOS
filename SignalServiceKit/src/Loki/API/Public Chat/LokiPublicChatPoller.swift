@@ -46,10 +46,16 @@ public final class LokiPublicChatPoller : NSObject {
         let userHexEncodedPublicKey = self.userHexEncodedPublicKey
         // Processing logic for incoming messages
         func processIncomingMessage(_ message: LokiPublicChatMessage) {
-            let senderHexEncodedPublicKey = message.hexEncodedPublicKey
+            let storage = OWSPrimaryStorage.shared()
+            var senderHexEncodedPublicKey = ""
+            storage.dbReadConnection.read { transaction in
+                senderHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: message.hexEncodedPublicKey, in: transaction) ?? message.hexEncodedPublicKey
+            }
             let endIndex = senderHexEncodedPublicKey.endIndex
             let cutoffIndex = senderHexEncodedPublicKey.index(endIndex, offsetBy: -8)
-            let senderDisplayName = "\(message.displayName) (...\(senderHexEncodedPublicKey[cutoffIndex..<endIndex]))"
+            // FIXME: The display name code below relies on LokiStorageAPI.getDeviceLinks(...) getting and storing display names, which it shouldn't be doing.
+            let rawDisplayName = DisplayNameUtilities.getPublicChatDisplayName(for: senderHexEncodedPublicKey, in: publicChat.channel, on: publicChat.server) ?? message.displayName
+            let senderDisplayName = "\(rawDisplayName) (...\(senderHexEncodedPublicKey[cutoffIndex..<endIndex]))"
             let id = publicChat.idAsData
             let groupContext = SSKProtoGroupContext.builder(id: id, type: .deliver)
             groupContext.setName(publicChat.displayName)
@@ -107,7 +113,6 @@ public final class LokiPublicChatPoller : NSObject {
             envelope.setSource(senderHexEncodedPublicKey)
             envelope.setSourceDevice(OWSDevicePrimaryDeviceId)
             envelope.setContent(try! content.build().serializedData())
-            let storage = OWSPrimaryStorage.shared()
             storage.dbReadWriteConnection.readWrite { transaction in
                 transaction.setObject(senderDisplayName, forKey: senderHexEncodedPublicKey, inCollection: publicChat.id)
                 SSKEnvironment.shared.messageManager.throws_processEnvelope(try! envelope.build(), plaintextData: try! content.build().serializedData(), wasReceivedByUD: false, transaction: transaction)
@@ -156,16 +161,49 @@ public final class LokiPublicChatPoller : NSObject {
         }
         // Poll
         let _ = LokiPublicChatAPI.getMessages(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global()) { messages in
-            messages.forEach { message in
-                var wasSentByCurrentUser = false
-                OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
-                    wasSentByCurrentUser = LokiDatabaseUtilities.isUserLinkedDevice(message.hexEncodedPublicKey, transaction: transaction)
+            func proceed() {
+                messages.forEach { message in
+                    var wasSentByCurrentUser = false
+                    OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
+                        wasSentByCurrentUser = LokiDatabaseUtilities.isUserLinkedDevice(message.hexEncodedPublicKey, transaction: transaction)
+                    }
+                    if !wasSentByCurrentUser {
+                        processIncomingMessage(message)
+                    } else {
+                        processOutgoingMessage(message)
+                    }
                 }
-                if !wasSentByCurrentUser {
-                    processIncomingMessage(message)
+            }
+            let uniqueHexEncodedPublicKeys = Set(messages.map { $0.hexEncodedPublicKey })
+            let hexEncodedPublicKeysToUpdate = uniqueHexEncodedPublicKeys.filter { hexEncodedPublicKey in
+                let timeSinceLastUpdate: TimeInterval
+                if let lastDeviceLinkUpdate = LokiAPI.lastDeviceLinkUpdate[hexEncodedPublicKey] {
+                    timeSinceLastUpdate = Date().timeIntervalSince(lastDeviceLinkUpdate)
                 } else {
-                    processOutgoingMessage(message)
+                    timeSinceLastUpdate = .infinity
                 }
+                return timeSinceLastUpdate > LokiAPI.deviceLinkUpdateInterval
+            }
+            if !hexEncodedPublicKeysToUpdate.isEmpty {
+                let storage = OWSPrimaryStorage.shared()
+                storage.dbReadConnection.read { transaction in
+                    LokiStorageAPI.getDeviceLinks(associatedWith: hexEncodedPublicKeysToUpdate).done(on: DispatchQueue.global()) { _ in
+                        proceed()
+                        hexEncodedPublicKeysToUpdate.forEach {
+                            LokiAPI.lastDeviceLinkUpdate[$0] = Date()
+                        }
+                    }.catch(on: DispatchQueue.global()) { error in
+                        if case LokiDotNetAPI.Error.parsingFailed = error {
+                            // Don't immediately re-fetch in case of failure due to a parsing error
+                            hexEncodedPublicKeysToUpdate.forEach {
+                                LokiAPI.lastDeviceLinkUpdate[$0] = Date()
+                            }
+                        }
+                        proceed()
+                    }
+                }
+            } else {
+                proceed()
             }
         }
     }
