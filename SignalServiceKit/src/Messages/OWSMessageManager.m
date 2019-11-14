@@ -1464,6 +1464,15 @@ NS_ASSUME_NONNULL_BEGIN
                     return nil;
                 }
 
+                if (dataMessage.reaction) {
+                    [OWSReactionManager processIncomingReaction:dataMessage.reaction
+                                                       threadId:groupThread.uniqueId
+                                                        reactor:envelope.sourceAddress
+                                                      timestamp:timestamp
+                                                    transaction:transaction];
+                    return nil;
+                }
+
                 NSString *messageDescription =
                     [NSString stringWithFormat:@"Incoming message from: %@ for group: %@ with timestamp: %llu",
                               envelopeAddress(envelope),
@@ -1491,6 +1500,15 @@ NS_ASSUME_NONNULL_BEGIN
                                             protocolVersion:dataMessage.requiredProtocolVersion
                                                      sender:envelope.sourceAddress
                                                 transaction:transaction];
+            return nil;
+        }
+
+        if (dataMessage.reaction) {
+            [OWSReactionManager processIncomingReaction:dataMessage.reaction
+                                               threadId:thread.uniqueId
+                                                reactor:envelope.sourceAddress
+                                              timestamp:timestamp
+                                            transaction:transaction];
             return nil;
         }
 

@@ -160,4 +160,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark -
+
+@interface OWSReaction (SDS)
+
+@property (nonatomic, readonly, nullable) NSString *reactorE164;
+@property (nonatomic, readonly, nullable) NSString *reactorUUID;
+
+@end
+
 NS_ASSUME_NONNULL_END

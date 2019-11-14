@@ -255,7 +255,7 @@ class ParsedClass:
             # This will initially be nil for new properties
             # which have not yet been assigned an order.
             property.property_order = property_order_for_property(property, record_name)
-        all_property_orders = [property.property_order for property in record_properties]
+        all_property_orders = [property.property_order for property in record_properties if property.property_order]
         # We determine the "next" order we would assign to any
         # new property without an order.
         next_property_order = 1 + (max(all_property_orders) if len(all_property_orders) > 0 else 0)

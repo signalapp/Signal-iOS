@@ -174,10 +174,10 @@ NS_ASSUME_NONNULL_BEGIN
     TSQuotedMessageContentSource bodySource = TSQuotedMessageContentSourceUnknown;
 
     // Prefer to generate the text snippet locally if available.
-    TSMessage *_Nullable quotedMessage = [self findQuotedMessageWithTimestamp:timestamp
-                                                                     threadId:thread.uniqueId
-                                                                authorAddress:authorAddress
-                                                                  transaction:transaction];
+    TSMessage *_Nullable quotedMessage = [InteractionFinder findMessageWithTimestamp:timestamp
+                                                                            threadId:thread.uniqueId
+                                                                              author:authorAddress
+                                                                         transaction:transaction];
 
     if (quotedMessage) {
         bodySource = TSQuotedMessageContentSourceLocal;
@@ -199,6 +199,8 @@ NS_ASSUME_NONNULL_BEGIN
         if (localText.length > 0) {
             body = localText;
         }
+    } else {
+        OWSLogWarn(@"Could not find quoted message: %llu", timestamp);
     }
 
     if (body.length == 0) {
@@ -275,11 +277,13 @@ NS_ASSUME_NONNULL_BEGIN
                                                             contentType:(NSString *)contentType
                                                             transaction:(SDSAnyWriteTransaction *)transaction
 {
-    TSMessage *_Nullable quotedMessage = [self findQuotedMessageWithTimestamp:timestamp
-                                                                     threadId:threadId
-                                                                authorAddress:authorAddress
-                                                                  transaction:transaction];
+    TSMessage *_Nullable quotedMessage = [InteractionFinder findMessageWithTimestamp:timestamp
+                                                                            threadId:threadId
+                                                                              author:authorAddress
+                                                                         transaction:transaction];
+
     if (!quotedMessage) {
+        OWSLogWarn(@"Could not find quoted message: %llu", timestamp);
         return nil;
     }
 
@@ -301,60 +305,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
     TSAttachmentStream *sourceStream = (TSAttachmentStream *)attachmentToQuote;
     return [sourceStream cloneAsThumbnail];
-}
-
-+ (nullable TSMessage *)findQuotedMessageWithTimestamp:(uint64_t)timestamp
-                                              threadId:(NSString *)threadId
-                                         authorAddress:(SignalServiceAddress *)authorAddress
-                                           transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    if (timestamp <= 0) {
-        OWSFailDebug(@"Invalid timestamp: %llu", timestamp);
-        return nil;
-    }
-    if (threadId.length <= 0) {
-        OWSFailDebug(@"Invalid thread.");
-        return nil;
-    }
-    if (!authorAddress.isValid) {
-        OWSFailDebug(@"Invalid authorAddress: %@", authorAddress);
-        return nil;
-    }
-
-    NSError *error;
-    NSArray<TSInteraction *> *interactions =
-        [InteractionFinder interactionsWithTimestamp:timestamp
-                                              filter:^(TSInteraction *interaction) {
-                                                  return [interaction isKindOfClass:[TSMessage class]];
-                                              }
-                                         transaction:transaction
-                                               error:&error];
-    if (error != nil) {
-        OWSFailDebug(@"Error loading interactions: %@", error);
-        return nil;
-    }
-    for (TSInteraction *interaction in interactions) {
-        TSMessage *message = (TSMessage *)interaction;
-        if (![message.uniqueThreadId isEqualToString:threadId]) {
-            continue;
-        }
-        if ([message isKindOfClass:[TSIncomingMessage class]]) {
-            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
-            if (![authorAddress isEqualToAddress:incomingMessage.authorAddress]) {
-                continue;
-            }
-        } else if ([message isKindOfClass:[TSOutgoingMessage class]]) {
-            if (!authorAddress.isLocalAddress) {
-                continue;
-            }
-        }
-
-        return message;
-    }
-    OWSLogWarn(@"Could not find quoted message: %llu", timestamp);
-    return nil;
 }
 
 #pragma mark - Attachment (not necessarily with a thumbnail)

@@ -68,6 +68,7 @@ public enum SDSRecordType: UInt {
     case invalidIdentityKeySendingErrorMessage = 23
     case message = 11
     case outgoingMessage = 21
+    case reaction = 62
     case recipientReadReceipt = 12
     case thread = 2
     case unreadIndicatorInteraction = 4

@@ -615,6 +615,12 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [super anyDidRemoveWithTransaction:transaction];
 
     [self removeAllAttachmentsWithTransaction:transaction];
+    
+    NSError *error;
+    [self removeAllReactionsWithTransaction:transaction error:&error];
+    if (error) {
+        OWSFailDebug(@"Failed to remove all reactions: %@", error.localizedDescription);
+    }
 }
 
 - (void)removeAllAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction

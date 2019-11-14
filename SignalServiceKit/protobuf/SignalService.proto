@@ -222,14 +222,26 @@ message DataMessage {
     optional AttachmentPointer data = 4;
   }
 
+  message Reaction {
+    // @required
+    optional string emoji      = 1;
+    // @required
+    optional bool   remove     = 2;
+    optional string authorE164 = 3;
+    optional string authorUuid = 4;
+    // @required
+    optional uint64 timestamp  = 5;
+  }
+
   enum ProtocolVersion {
     option allow_alias = true;
 
-    INITIAL = 0;
-    MESSAGE_TIMERS = 1;
-    VIEW_ONCE = 2;
+    INITIAL         = 0;
+    MESSAGE_TIMERS  = 1;
+    VIEW_ONCE       = 2;
     VIEW_ONCE_VIDEO = 3;
-    CURRENT = 3;
+    REACTIONS       = 4; 
+    CURRENT         = 4;
   }
 
   optional string            body                    =  1;
@@ -246,6 +258,7 @@ message DataMessage {
   optional Sticker           sticker                 = 11;
   optional uint32            requiredProtocolVersion = 12;
   optional bool              isViewOnce              = 14;
+  optional Reaction          reaction                = 16;
 }
 
 message NullMessage {

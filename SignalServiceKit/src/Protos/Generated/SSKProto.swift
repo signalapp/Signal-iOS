@@ -3539,6 +3539,236 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
 
 #endif
 
+// MARK: - SSKProtoDataMessageReaction
+
+@objc public class SSKProtoDataMessageReaction: NSObject {
+
+    // MARK: - SSKProtoDataMessageReactionBuilder
+
+    @objc public class func builder(emoji: String, remove: Bool, timestamp: UInt64) -> SSKProtoDataMessageReactionBuilder {
+        return SSKProtoDataMessageReactionBuilder(emoji: emoji, remove: remove, timestamp: timestamp)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoDataMessageReactionBuilder {
+        let builder = SSKProtoDataMessageReactionBuilder(emoji: emoji, remove: remove, timestamp: timestamp)
+        if let _value = authorE164 {
+            builder.setAuthorE164(_value)
+        }
+        if let _value = authorUuid {
+            builder.setAuthorUuid(_value)
+        }
+        return builder
+    }
+
+    @objc public class SSKProtoDataMessageReactionBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_DataMessage.Reaction()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(emoji: String, remove: Bool, timestamp: UInt64) {
+            super.init()
+
+            setEmoji(emoji)
+            setRemove(remove)
+            setTimestamp(timestamp)
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setEmoji(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.emoji = valueParam
+        }
+
+        public func setEmoji(_ valueParam: String) {
+            proto.emoji = valueParam
+        }
+
+        @objc
+        public func setRemove(_ valueParam: Bool) {
+            proto.remove = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setAuthorE164(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.authorE164 = valueParam
+        }
+
+        public func setAuthorE164(_ valueParam: String) {
+            proto.authorE164 = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setAuthorUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.authorUuid = valueParam
+        }
+
+        public func setAuthorUuid(_ valueParam: String) {
+            proto.authorUuid = valueParam
+        }
+
+        @objc
+        public func setTimestamp(_ valueParam: UInt64) {
+            proto.timestamp = valueParam
+        }
+
+        @objc public func build() throws -> SSKProtoDataMessageReaction {
+            return try SSKProtoDataMessageReaction.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageReaction.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.Reaction
+
+    @objc public let emoji: String
+
+    @objc public let remove: Bool
+
+    @objc public let timestamp: UInt64
+
+    @objc public var authorE164: String? {
+        guard proto.hasAuthorE164 else {
+            return nil
+        }
+        return proto.authorE164
+    }
+    @objc public var hasAuthorE164: Bool {
+        return proto.hasAuthorE164
+    }
+
+    @objc public var authorUuid: String? {
+        guard proto.hasAuthorUuid else {
+            return nil
+        }
+        return proto.authorUuid
+    }
+    @objc public var hasAuthorUuid: Bool {
+        return proto.hasAuthorUuid
+    }
+
+    @objc public var hasValidAuthor: Bool {
+        return authorAddress != nil
+    }
+    @objc public var authorAddress: SignalServiceAddress? {
+        guard hasAuthorE164 || hasAuthorUuid else { return nil }
+
+        let uuidString: String? = {
+            guard hasAuthorUuid else { return nil }
+
+            guard let authorUuid = authorUuid else {
+                owsFailDebug("authorUuid was unexpectedly nil")
+                return nil
+            }
+
+            return authorUuid
+        }()
+
+        let phoneNumber: String? = {
+            guard hasAuthorE164 else {
+                // Shouldn’t happen in prod yet
+                assert(FeatureFlags.allowUUIDOnlyContacts)
+                return nil
+            }
+
+            guard let authorE164 = authorE164 else {
+                owsFailDebug("authorE164 was unexpectedly nil")
+                return nil
+            }
+
+            guard !authorE164.isEmpty else {
+                owsFailDebug("authorE164 was unexpectedly empty")
+                return nil
+            }
+
+            return authorE164
+        }()
+
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        guard address.isValid else {
+            owsFailDebug("address was unexpectedly invalid")
+            return nil
+        }
+
+        return address
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.Reaction,
+                 emoji: String,
+                 remove: Bool,
+                 timestamp: UInt64) {
+        self.proto = proto
+        self.emoji = emoji
+        self.remove = remove
+        self.timestamp = timestamp
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoDataMessageReaction {
+        let proto = try SignalServiceProtos_DataMessage.Reaction(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Reaction) throws -> SSKProtoDataMessageReaction {
+        guard proto.hasEmoji else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: emoji")
+        }
+        let emoji = proto.emoji
+
+        guard proto.hasRemove else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: remove")
+        }
+        let remove = proto.remove
+
+        guard proto.hasTimestamp else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: timestamp")
+        }
+        let timestamp = proto.timestamp
+
+        // MARK: - Begin Validation Logic for SSKProtoDataMessageReaction -
+
+        // MARK: - End Validation Logic for SSKProtoDataMessageReaction -
+
+        let result = SSKProtoDataMessageReaction(proto: proto,
+                                                 emoji: emoji,
+                                                 remove: remove,
+                                                 timestamp: timestamp)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoDataMessageReaction {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessageReaction.SSKProtoDataMessageReactionBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoDataMessageReaction? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoDataMessage
 
 @objc public class SSKProtoDataMessage: NSObject {
@@ -3574,6 +3804,7 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         case messageTimers = 1
         case viewOnce = 2
         case viewOnceVideo = 3
+        case reactions = 4
     }
 
     private class func SSKProtoDataMessageProtocolVersionWrap(_ value: SignalServiceProtos_DataMessage.ProtocolVersion) -> SSKProtoDataMessageProtocolVersion {
@@ -3582,6 +3813,7 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         case .messageTimers: return .messageTimers
         case .viewOnce: return .viewOnce
         case .viewOnceVideo: return .viewOnceVideo
+        case .reactions: return .reactions
         }
     }
 
@@ -3591,6 +3823,7 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         case .messageTimers: return .messageTimers
         case .viewOnce: return .viewOnce
         case .viewOnceVideo: return .viewOnceVideo
+        case .reactions: return .reactions
         }
     }
 
@@ -3638,6 +3871,9 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         }
         if hasIsViewOnce {
             builder.setIsViewOnce(isViewOnce)
+        }
+        if let _value = reaction {
+            builder.setReaction(_value)
         }
         return builder
     }
@@ -3769,6 +4005,17 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
             proto.isViewOnce = valueParam
         }
 
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setReaction(_ valueParam: SSKProtoDataMessageReaction?) {
+            guard let valueParam = valueParam else { return }
+            proto.reaction = valueParam.proto
+        }
+
+        public func setReaction(_ valueParam: SSKProtoDataMessageReaction) {
+            proto.reaction = valueParam.proto
+        }
+
         @objc public func build() throws -> SSKProtoDataMessage {
             return try SSKProtoDataMessage.parseProto(proto)
         }
@@ -3793,6 +4040,8 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
     @objc public let preview: [SSKProtoDataMessagePreview]
 
     @objc public let sticker: SSKProtoDataMessageSticker?
+
+    @objc public let reaction: SSKProtoDataMessageReaction?
 
     @objc public var body: String? {
         guard proto.hasBody else {
@@ -3856,7 +4105,8 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
                  quote: SSKProtoDataMessageQuote?,
                  contact: [SSKProtoDataMessageContact],
                  preview: [SSKProtoDataMessagePreview],
-                 sticker: SSKProtoDataMessageSticker?) {
+                 sticker: SSKProtoDataMessageSticker?,
+                 reaction: SSKProtoDataMessageReaction?) {
         self.proto = proto
         self.attachments = attachments
         self.group = group
@@ -3865,6 +4115,7 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         self.contact = contact
         self.preview = preview
         self.sticker = sticker
+        self.reaction = reaction
     }
 
     @objc
@@ -3907,6 +4158,11 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
             sticker = try SSKProtoDataMessageSticker.parseProto(proto.sticker)
         }
 
+        var reaction: SSKProtoDataMessageReaction? = nil
+        if proto.hasReaction {
+            reaction = try SSKProtoDataMessageReaction.parseProto(proto.reaction)
+        }
+
         // MARK: - Begin Validation Logic for SSKProtoDataMessage -
 
         // MARK: - End Validation Logic for SSKProtoDataMessage -
@@ -3918,7 +4174,8 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
                                          quote: quote,
                                          contact: contact,
                                          preview: preview,
-                                         sticker: sticker)
+                                         sticker: sticker,
+                                         reaction: reaction)
         return result
     }
 

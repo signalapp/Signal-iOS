@@ -28,6 +28,7 @@
     "OWSLinkedDeviceReadReceipt": 36, 
     "OWSMessageContentJob": 15, 
     "OWSMessageDecryptJob": 8, 
+    "OWSReaction": 62, 
     "OWSRecipientIdentity": 38, 
     "OWSResaveCollectionDBMigration": 49, 
     "OWSSessionResetJobRecord": 52, 

@@ -29,6 +29,7 @@
 #import <SignalServiceKit/OWSMessageReceiver.h>
 #import <SignalServiceKit/OWSOperation.h>
 #import <SignalServiceKit/OWSOutgoingSyncMessage.h>
+#import <SignalServiceKit/OWSReaction.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>
 #import <SignalServiceKit/OWSSessionResetJobRecord.h>
