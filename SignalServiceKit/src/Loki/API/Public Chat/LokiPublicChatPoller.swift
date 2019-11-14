@@ -157,7 +157,11 @@ public final class LokiPublicChatPoller : NSObject {
         // Poll
         let _ = LokiPublicChatAPI.getMessages(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global()) { messages in
             messages.forEach { message in
-                if message.hexEncodedPublicKey != userHexEncodedPublicKey {
+                var wasSentByCurrentUser = false
+                OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
+                    wasSentByCurrentUser = LokiDatabaseUtilities.isUserLinkedDevice(message.hexEncodedPublicKey, transaction: transaction)
+                }
+                if !wasSentByCurrentUser {
                     processIncomingMessage(message)
                 } else {
                     processOutgoingMessage(message)
