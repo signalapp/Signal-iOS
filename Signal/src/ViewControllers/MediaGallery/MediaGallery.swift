@@ -365,16 +365,6 @@ class MediaGallery {
         return galleryItem
     }
 
-    func ensureAlbumEntirelyLoaded(galleryItem: MediaGalleryItem) {
-        ensureGalleryItemsLoaded(.before, item: galleryItem, amount: UInt(galleryItem.albumIndex))
-
-        let followingCount = galleryItem.message.attachmentIds.count - 1 - galleryItem.albumIndex
-        guard followingCount >= 0 else {
-            return
-        }
-        ensureGalleryItemsLoaded(.after, item: galleryItem, amount: UInt(followingCount))
-    }
-
     var galleryAlbums: [String: MediaGalleryAlbum] = [:]
     func getAlbum(item: MediaGalleryItem) -> MediaGalleryAlbum? {
         guard let albumMessageId = item.attachmentStream.albumMessageId else {
@@ -405,7 +395,7 @@ class MediaGallery {
 
     // MARK: - Loading
 
-    func ensureGalleryItemsLoaded(_ direction: GalleryDirection, item: MediaGalleryItem, amount: UInt, completion: ((IndexSet, [IndexPath]) -> Void)? = nil ) {
+    func ensureGalleryItemsLoaded(_ direction: GalleryDirection, item: MediaGalleryItem, amount: UInt, shouldLoadAlbumRemainder: Bool, completion: ((IndexSet, [IndexPath]) -> Void)? = nil ) {
 
         var galleryItems: [MediaGalleryItem] = self.galleryItems
         var sections: [GalleryDate: [MediaGalleryItem]] = self.sections
@@ -422,8 +412,9 @@ class MediaGallery {
                     }
                     let mediaCount: Int = Int(self.mediaGalleryFinder.mediaCount(transaction: transaction))
 
+                    var albumRange: Range<Int>?
                     let requestRange: Range<Int> = { () -> Range<Int> in
-                        let range: Range<Int> = { () -> Range<Int> in
+                        var range: Range<Int> = { () -> Range<Int> in
                             switch direction {
                             case .around:
                                 // To keep it simple, this isn't exactly *amount* sized if `message` window overlaps the end or
@@ -445,6 +436,13 @@ class MediaGallery {
                             }
                         }()
 
+                        if shouldLoadAlbumRemainder {
+                            let albumStart = (initialIndex - item.albumIndex)
+                            let albumEnd = albumStart + item.message.attachmentIds.count
+                            albumRange = (albumStart..<albumEnd)
+                            range = (min(range.lowerBound, albumStart)..<max(range.upperBound, albumEnd))
+                        }
+
                         return range.clamped(to: 0..<mediaCount)
                     }()
 
@@ -461,13 +459,23 @@ class MediaGallery {
                     // ...but we always fulfill even small requests if we're getting just the tail end of a gallery.
                     let isFetchingEdgeOfGallery = (self.fetchedIndexSet.count - unfetchedSet.count) < requestSet.count
 
-                    guard isSubstantialRequest || isFetchingEdgeOfGallery else {
+                    // If we're trying to load a complete album, and some of that album is unfetched...
+                    let isLoadingAlbumRemainder: Bool
+                    if let albumRange = albumRange {
+                        isLoadingAlbumRemainder = unfetchedSet.intersects(integersIn: albumRange)
+                    } else {
+                        isLoadingAlbumRemainder = false
+                    }
+
+                    guard isSubstantialRequest || isFetchingEdgeOfGallery || isLoadingAlbumRemainder else {
                         Logger.debug("ignoring small fetch request: \(unfetchedSet.count)")
                         return
                     }
 
-                    Logger.debug("fetching set: \(unfetchedSet)")
-                    let nsRange: NSRange = NSRange(location: unfetchedSet.min()!, length: unfetchedSet.count)
+                    let firstUnfetchedIndex = unfetchedSet.min()!
+                    let highestUnfetchedIndex = unfetchedSet.max()!
+                    let nsRange: NSRange = NSRange(location: firstUnfetchedIndex, length: highestUnfetchedIndex - firstUnfetchedIndex + 1)
+                    Logger.debug("fetching set: \(unfetchedSet), range: \(nsRange)")
                     self.mediaGalleryFinder.enumerateMediaAttachments(range: nsRange, transaction: transaction) { (attachment: TSAttachment) in
 
                         guard !self.deletedAttachments.contains(attachment) else {
@@ -477,6 +485,14 @@ class MediaGallery {
 
                         guard let item: MediaGalleryItem = self.buildGalleryItem(attachment: attachment, transaction: transaction) else {
                             owsFailDebug("unexpectedly failed to buildGalleryItem")
+                            return
+                        }
+
+                        guard direction != .around || !galleryItems.contains(item) else {
+                            // When loading "around" an item, we sometimes redunantly load some of
+                            // the middle items. It's faster to skip them rather than doing two
+                            // separate `before` and `after` queries.
+                            Logger.debug("skipping redundant gallery item")
                             return
                         }
 
@@ -554,11 +570,7 @@ class MediaGallery {
     public func ensureLoadedForDetailView(focusedItem: MediaGalleryItem) {
         // For a speedy load, we only fetch a few items on either side of
         // the initial message
-        ensureGalleryItemsLoaded(.around, item: focusedItem, amount: 10)
-
-        // We lazily load media into the gallery, but with large albums, we want to be sure
-        // we load all the media required to render the album's media rail.
-        ensureAlbumEntirelyLoaded(galleryItem: focusedItem)
+        ensureGalleryItemsLoaded(.around, item: focusedItem, amount: 10, shouldLoadAlbumRemainder: true)
     }
 
     func ensureLoadedForMostRecentTileView() -> MediaGalleryItem? {
@@ -571,7 +583,7 @@ class MediaGallery {
             return nil
         }
 
-        ensureGalleryItemsLoaded(.before, item: mostRecentItem, amount: 50)
+        ensureGalleryItemsLoaded(.before, item: mostRecentItem, amount: 50, shouldLoadAlbumRemainder: false)
         return mostRecentItem
     }
 
@@ -682,7 +694,7 @@ class MediaGallery {
     internal func galleryItem(after currentItem: MediaGalleryItem) -> MediaGalleryItem? {
         Logger.debug("")
 
-        self.ensureGalleryItemsLoaded(.after, item: currentItem, amount: kGallerySwipeLoadBatchSize)
+        self.ensureGalleryItemsLoaded(.after, item: currentItem, amount: kGallerySwipeLoadBatchSize, shouldLoadAlbumRemainder: true)
 
         guard let currentIndex = galleryItems.firstIndex(of: currentItem) else {
             owsFailDebug("currentIndex was unexpectedly nil")
@@ -706,7 +718,7 @@ class MediaGallery {
     internal func galleryItem(before currentItem: MediaGalleryItem) -> MediaGalleryItem? {
         Logger.debug("")
 
-        self.ensureGalleryItemsLoaded(.before, item: currentItem, amount: kGallerySwipeLoadBatchSize)
+        self.ensureGalleryItemsLoaded(.before, item: currentItem, amount: kGallerySwipeLoadBatchSize, shouldLoadAlbumRemainder: true)
 
         guard let currentIndex = galleryItems.firstIndex(of: currentItem) else {
             owsFailDebug("currentIndex was unexpectedly nil")
