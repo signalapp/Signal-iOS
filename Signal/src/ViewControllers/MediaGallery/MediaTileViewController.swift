@@ -787,7 +787,7 @@ extension MediaTileViewController: MediaPresentationContextProvider {
         }
 
         guard let visibleIndex = collectionView.indexPathsForVisibleItems.firstIndex(of: indexPath) else {
-            owsFailDebug("visibleIndex was unexpectedly nil")
+            Logger.debug("visibleIndex was nil, swiped to offscreen gallery item")
             return nil
         }
 
