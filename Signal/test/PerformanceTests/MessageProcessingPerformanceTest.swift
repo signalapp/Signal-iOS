@@ -115,7 +115,7 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
         }
 
         self.dbObserverBlock = {
-            let messageCount = self.databaseStorage.readReturningResult { transaction in
+            let messageCount = self.databaseStorage.read { transaction in
                 return TSInteraction.anyCount(transaction: transaction)
             }
             if (messageCount == envelopeDatas.count) {

@@ -939,7 +939,7 @@ public class StickerManager: NSObject {
     }
 
     private func warmIsStickerSendEnabled() {
-        let value = databaseStorage.readReturningResult { transaction in
+        let value = databaseStorage.read { transaction in
             return StickerManager.store.getBool(self.kHasReceivedStickersKey, defaultValue: false, transaction: transaction)
         }
 
@@ -999,7 +999,7 @@ public class StickerManager: NSObject {
     }
 
     private func warmTooltipState() {
-        let value = databaseStorage.readReturningResult { transaction in
+        let value = databaseStorage.read { transaction in
             return StickerManager.store.getUInt(self.kShouldShowTooltipKey, defaultValue: TooltipState.unknown.rawValue, transaction: transaction)
         }
 

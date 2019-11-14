@@ -24,7 +24,7 @@ public extension TSAccountManager {
     }
 
     private class func getLocalThreadWithSneakyTransaction() -> TSThread? {
-        return databaseStorage.readReturningResult { transaction in
+        return databaseStorage.read { transaction in
             return getLocalThread(transaction: transaction)
         }
     }
@@ -44,7 +44,7 @@ public extension TSAccountManager {
             return thread
         }
 
-        return databaseStorage.writeReturningResult { transaction in
+        return databaseStorage.write { transaction in
             return getOrCreateLocalThread(transaction: transaction)
         }
     }

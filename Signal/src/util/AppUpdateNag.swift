@@ -168,7 +168,7 @@ class AppUpdateNag: NSObject {
     // MARK: Storage
 
     var firstHeardOfNewVersionDate: Date? {
-        return self.databaseStorage.readReturningResult { transaction in
+        return self.databaseStorage.read { transaction in
             return self.keyValueStore.getDate(AppUpdateNag.kFirstHeardOfNewVersionDateKey, transaction: transaction)
         }
     }
@@ -186,7 +186,7 @@ class AppUpdateNag: NSObject {
     }
 
     var lastNagDate: Date? {
-        return self.databaseStorage.readReturningResult { transaction in
+        return self.databaseStorage.read { transaction in
             return self.keyValueStore.getDate(AppUpdateNag.kLastNagDateKey, transaction: transaction)
         }
     }

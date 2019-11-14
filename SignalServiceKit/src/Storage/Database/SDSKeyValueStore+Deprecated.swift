@@ -20,7 +20,7 @@ public extension SDSKeyValueStore {
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
     func getString(_ key: String) -> String? {
-        return databaseStorage.readReturningResult { (transaction) in
+        return databaseStorage.read { (transaction) in
             return self.getString(key, transaction: transaction)
         }
     }
@@ -36,7 +36,7 @@ public extension SDSKeyValueStore {
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
     func getDate(_ key: String) -> Date? {
-        return databaseStorage.readReturningResult { (transaction) in
+        return databaseStorage.read { (transaction) in
             return self.getDate(key, transaction: transaction)
         }
     }
@@ -52,7 +52,7 @@ public extension SDSKeyValueStore {
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
     func getBool(_ key: String, defaultValue: Bool) -> Bool {
-        return databaseStorage.readReturningResult { (transaction) in
+        return databaseStorage.read { (transaction) in
             return self.getBool(key, defaultValue: defaultValue, transaction: transaction)
         }
     }
@@ -69,7 +69,7 @@ public extension SDSKeyValueStore {
     // TODO: Handle numerics more generally.
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
     func getUInt(_ key: String, defaultValue: UInt) -> UInt {
-        return databaseStorage.readReturningResult { (transaction) in
+        return databaseStorage.read { (transaction) in
             return self.getUInt(key, defaultValue: defaultValue, transaction: transaction)
         }
     }
@@ -85,7 +85,7 @@ public extension SDSKeyValueStore {
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
     func getData(_ key: String) -> Data? {
-        return databaseStorage.readReturningResult { (transaction) in
+        return databaseStorage.read { (transaction) in
             return self.getData(key, transaction: transaction)
         }
     }
@@ -101,7 +101,7 @@ public extension SDSKeyValueStore {
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
     func getInt(_ key: String, defaultValue: Int) -> Int {
-        return databaseStorage.readReturningResult { (transaction) in
+        return databaseStorage.read { (transaction) in
             return self.getInt(key, defaultValue: defaultValue, transaction: transaction)
         }
     }
@@ -117,7 +117,7 @@ public extension SDSKeyValueStore {
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
     func getUInt64(_ key: String, defaultValue: UInt64) -> UInt64 {
-        return databaseStorage.readReturningResult { (transaction) in
+        return databaseStorage.read { (transaction) in
             return self.getUInt64(key, defaultValue: defaultValue, transaction: transaction)
         }
     }
@@ -133,7 +133,7 @@ public extension SDSKeyValueStore {
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
     func getObject(_ key: String) -> Any? {
-        return databaseStorage.readReturningResult { (transaction) in
+        return databaseStorage.read { (transaction) in
             return self.getObject(key, transaction: transaction)
         }
     }

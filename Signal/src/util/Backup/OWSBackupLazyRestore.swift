@@ -139,7 +139,7 @@ public class BackupLazyRestore: NSObject {
             complete(errorCount: errorCount)
             return
         }
-        let attachment = databaseStorage.readReturningResult { (transaction) in
+        let attachment = databaseStorage.read { (transaction) in
             return TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction)
         }
         guard let attachmentPointer = attachment as? TSAttachmentPointer else {

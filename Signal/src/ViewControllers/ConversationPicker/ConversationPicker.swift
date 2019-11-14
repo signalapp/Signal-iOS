@@ -152,7 +152,7 @@ class ConversationPickerViewController: OWSViewController {
         }
 
         return DispatchQueue.global().async(.promise) {
-            return self.databaseStorage.readReturningResult { transaction in
+            return self.databaseStorage.read { transaction in
                 return self.fullTextSearcher.searchForComposeScreen(searchText: searchText,
                                                                     transaction: transaction)
             }
@@ -185,7 +185,7 @@ class ConversationPickerViewController: OWSViewController {
     }
 
     func buildConversationCollection() -> ConversationCollection {
-        return self.databaseStorage.uiReadReturningResult { transaction in
+        return self.databaseStorage.uiread { transaction in
             var recentItems: [RecentConversationItem] = []
             var contactItems: [ContactConversationItem] = []
             var groupItems: [GroupConversationItem] = []
@@ -248,7 +248,7 @@ class ConversationPickerViewController: OWSViewController {
         }
 
         return DispatchQueue.global().async(.promise) {
-            return self.databaseStorage.readReturningResult { transaction in
+            return self.databaseStorage.read { transaction in
                 let groupItems = searchResults.groupThreads.map { self.buildGroupItem($0, transaction: transaction) }
                 let contactItems = searchResults.signalAccounts.map { self.buildContactItem($0.recipientAddress, transaction: transaction) }
 

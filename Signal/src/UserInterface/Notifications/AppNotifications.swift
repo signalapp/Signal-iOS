@@ -598,7 +598,7 @@ class NotificationActionHandler {
     }
 
     private func threadWithSneakyTransaction(threadId: String) -> TSThread? {
-        return databaseStorage.readReturningResult { transaction in
+        return databaseStorage.read { transaction in
             return TSThread.anyFetch(uniqueId: threadId, transaction: transaction)
         }
     }

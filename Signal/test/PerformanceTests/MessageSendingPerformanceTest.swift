@@ -116,7 +116,7 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
             groupMemberClients.map { $0.address }
         }
 
-        let thread: TSGroupThread = databaseStorage.writeReturningResult { transaction in
+        let thread: TSGroupThread = databaseStorage.write { transaction in
             XCTAssertEqual(0, TSMessage.anyCount(transaction: transaction))
             XCTAssertEqual(0, TSThread.anyCount(transaction: transaction))
             return threadFactory.create(transaction: transaction)
@@ -161,7 +161,7 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
         }
 
         self.dbObserverBlock = {
-            let (messageCount, attemptingOutCount): (UInt, Int) = self.databaseStorage.readReturningResult { transaction in
+            let (messageCount, attemptingOutCount): (UInt, Int) = self.databaseStorage.read { transaction in
                 let messageCount = TSInteraction.anyCount(transaction: transaction)
                 let attemptingOutCount = InteractionFinder.attemptingOutInteractionIds(transaction: transaction).count
                 return (messageCount, attemptingOutCount)

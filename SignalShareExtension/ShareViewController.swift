@@ -333,7 +333,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         if !tsAccountManager.isRegistered {
             showNotRegisteredView()
         } else {
-            let localProfileExists = databaseStorage.readReturningResult { transaction in
+            let localProfileExists = databaseStorage.read { transaction in
                 return self.profileManager.localProfileExists(with: transaction)
             }
             if !localProfileExists {

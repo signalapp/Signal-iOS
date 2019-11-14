@@ -83,7 +83,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         delegate = self
         transitioningDelegate = self
 
-        let galleryItem: MediaGalleryItem? = databaseStorage.uiReadReturningResult { transaction in
+        let galleryItem: MediaGalleryItem? = databaseStorage.uiread { transaction in
             self.mediaGallery.buildGalleryItem(attachment: initialMediaAttachment, transaction: transaction)
         }
 

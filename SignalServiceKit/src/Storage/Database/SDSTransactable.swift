@@ -66,7 +66,7 @@ public extension SDSTransactable {
     func write<T>(_: PMKNamespacer, _ block: @escaping (SDSAnyWriteTransaction) -> T) -> Promise<T> {
         return Promise { resolver in
             DispatchQueue.global().async {
-                resolver.fulfill(self.writeReturningResult(block: block))
+                resolver.fulfill(self.write(block: block))
             }
         }
     }
@@ -75,7 +75,7 @@ public extension SDSTransactable {
 // MARK: - Value Methods
 
 public extension SDSTransactable {
-    func readReturningResult<T>(block: @escaping (SDSAnyReadTransaction) -> T) -> T {
+    func read<T>(block: @escaping (SDSAnyReadTransaction) -> T) -> T {
         var value: T!
         read { (transaction) in
             value = block(transaction)
@@ -83,7 +83,7 @@ public extension SDSTransactable {
         return value
     }
 
-    func readReturningResult<T>(block: @escaping (SDSAnyReadTransaction) throws -> T) throws -> T {
+    func read<T>(block: @escaping (SDSAnyReadTransaction) throws -> T) throws -> T {
         var value: T!
         var thrown: Error?
         read { (transaction) in
@@ -98,22 +98,6 @@ public extension SDSTransactable {
             throw error
         }
 
-        return value
-    }
-
-    func writeReturningResult<T>(block: @escaping (SDSAnyWriteTransaction) -> T) -> T {
-        var value: T!
-        write { (transaction) in
-            value = block(transaction)
-        }
-        return value
-    }
-
-    func writeReturningResult<T>(block: @escaping (SDSAnyWriteTransaction) throws -> T) throws-> T {
-        var value: T!
-        try write { (transaction) in
-            value = try block(transaction)
-        }
         return value
     }
 

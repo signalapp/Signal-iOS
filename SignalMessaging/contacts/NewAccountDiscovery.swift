@@ -32,7 +32,7 @@ public class NewAccountDiscovery: NSObject {
     }
 
     public func discovered(newRecipients: Set<SignalRecipient>, forNewThreadsOnly: Bool) {
-        let shouldNotifyOfNewAccounts = databaseStorage.readReturningResult { transaction in
+        let shouldNotifyOfNewAccounts = databaseStorage.read { transaction in
             self.preferences.shouldNotifyOfNewAccounts(transaction: transaction)
         }
 

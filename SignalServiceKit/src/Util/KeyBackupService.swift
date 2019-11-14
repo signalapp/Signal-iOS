@@ -644,14 +644,14 @@ public class KeyBackupService: NSObject {
         /// If we don't have a cached value (we've never stored a token before), an error is thrown.
         @discardableResult
         static func updateNext(backupId: Data? = nil, data: Data, tries: UInt32? = nil) throws -> Token {
-            guard let backupId = backupId ?? databaseStorage.readReturningResult(block: { transaction in
+            guard let backupId = backupId ?? databaseStorage.read(block: { transaction in
                 keyValueStore.getData(backupIdKey, transaction: transaction)
             }) else {
                 owsFailDebug("missing backupId")
                 throw KBSError.assertion
             }
 
-            guard let tries = tries ?? databaseStorage.readReturningResult(block: { transaction in
+            guard let tries = tries ?? databaseStorage.read(block: { transaction in
                 keyValueStore.getUInt32(triesKey, transaction: transaction)
             }) else {
                 owsFailDebug("missing tries")
@@ -690,7 +690,7 @@ public class KeyBackupService: NSObject {
 
         /// The token to use when making the next enclave request.
         static var next: Token? {
-            return databaseStorage.readReturningResult { transaction in
+            return databaseStorage.read { transaction in
                 guard let backupId = keyValueStore.getData(backupIdKey, transaction: transaction),
                     let data = keyValueStore.getData(dataKey, transaction: transaction),
                     let tries = keyValueStore.getUInt32(triesKey, transaction: transaction) else {
