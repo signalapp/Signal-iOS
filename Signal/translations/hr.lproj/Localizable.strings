@@ -1534,7 +1534,7 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Neuspješno slanje";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Sending…";
+"MESSAGE_STATUS_SENDING" = "Slanje…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Poslano";

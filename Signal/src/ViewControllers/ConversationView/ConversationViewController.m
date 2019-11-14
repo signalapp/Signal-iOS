@@ -759,7 +759,7 @@ typedef enum : NSUInteger {
         [self scrollToMenuActionInteraction:NO];
     }
 
-    [self updateLastVisibleSortIdWithSneakyTransaction];
+    [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
 
     if (!self.viewHasEverAppeared) {
         NSTimeInterval appearenceDuration = CACurrentMediaTime() - self.viewControllerCreatedAt;
@@ -3455,18 +3455,29 @@ typedef enum : NSUInteger {
 - (void)didScrollToBottom
 {
     self.scrollDownButton.hidden = YES;
-    [self updateLastVisibleSortIdWithSneakyTransaction];
+    
+    [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
 }
 
-- (void)updateLastVisibleSortIdWithSneakyTransaction
+// Certain view states changes (scroll state, view layout, etc.) can
+// update which messages are visible and thus should be marked as
+// read.  Many of those changes occur when UIKit responds to some
+// app activity that may have an open transaction.  Therefore, we
+// update the "last visible sort id" async to avoid opening a
+// transaction within a transaction.
+- (void)updateLastVisibleSortIdWithSneakyAsyncTransaction
 {
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        [self updateLastVisibleSortIdWithTransaction:transaction];
-    }];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+            [self updateLastVisibleSortIdWithTransaction:transaction];
+        }];
+    });
 }
 
 - (void)updateLastVisibleSortIdWithTransaction:(SDSAnyReadTransaction *)transaction
 {
+    OWSAssertIsOnMainThread();
+
     NSIndexPath *_Nullable lastVisibleIndexPath = [self lastVisibleIndexPath];
     id<ConversationViewItem> _Nullable lastVisibleViewItem;
     if (lastVisibleIndexPath) {
@@ -3509,7 +3520,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    [self updateLastVisibleSortIdWithSneakyTransaction];
+    [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
 
     uint64_t lastVisibleSortId = self.lastVisibleSortId;
 
@@ -3941,13 +3952,7 @@ typedef enum : NSUInteger {
     // Constantly try to update the lastKnownDistanceFromBottom.
     [self updateLastKnownDistanceFromBottom];
 
-    // `scrollViewDidScroll:` is called whenever the user scrolls or whenever we programmatically
-    //  set collectionView.contentOffset.
-    // Since the latter sometimes occurs within a transaction, we dispatch to avoid any chance
-    // of deadlock.
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self updateLastVisibleSortIdWithSneakyTransaction];
-    });
+    [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
 
     [self.autoLoadMoreTimer invalidate];
     self.autoLoadMoreTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.1f
@@ -4451,7 +4456,7 @@ typedef enum : NSUInteger {
         [self resetForSizeOrOrientationChange];
     }
 
-    [self updateLastVisibleSortIdWithSneakyTransaction];
+    [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
 }
 
 #pragma mark - View Items
@@ -4904,7 +4909,7 @@ typedef enum : NSUInteger {
 
         // We can't use the transaction parameter; this completion
         // will be run async.
-        [self updateLastVisibleSortIdWithSneakyTransaction];
+        [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
 
         if (scrollToBottom) {
             [self scrollToBottomAnimated:NO];

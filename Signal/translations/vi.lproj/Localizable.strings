@@ -3048,7 +3048,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Kiểm tra lại các Số An toàn";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Trượt để Hủy";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Kéo để huỷ";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "Tin nhắn Thoại";
