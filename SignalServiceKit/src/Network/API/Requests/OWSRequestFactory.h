@@ -157,6 +157,15 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 + (TSRequest *)usernameDeleteRequest;
 + (TSRequest *)getProfileRequestWithUsername:(NSString *)username;
 
+#pragma mark - Profiles
+
++ (TSRequest *)profileNameSetRequestWithEncryptedPaddedName:(nullable NSData *)encryptedPaddedName;
+
++ (TSRequest *)versionedProfileSetRequestWithName:(nullable NSData *)name
+                                        hasAvatar:(BOOL)hasAvatar
+                                          version:(NSData *)version
+                                       commitment:(NSData *)commitment;
+
 @end
 
 NS_ASSUME_NONNULL_END

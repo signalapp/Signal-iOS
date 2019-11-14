@@ -117,6 +117,11 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
                         fromViewController:(UIViewController *)fromViewController
                                    success:(void (^)(void))successHandler;
 
+#pragma mark - Misc.
+
++ (nullable NSData *)encryptProfileNameWithUnpaddedName:(NSString *)name
+                                        localProfileKey:(OWSAES256Key *)localProfileKey;
+
 @end
 
 NS_ASSUME_NONNULL_END
