@@ -93,9 +93,9 @@ public class ProfileFetcherJob: NSObject {
 
     @objc
     public class func updateProfile(username: String,
-                                          success: @escaping (_ address: SignalServiceAddress) -> Void,
-                                          notFound: @escaping () -> Void,
-                                          failure: @escaping (_ error: Error?) -> Void) {
+                                    success: @escaping (_ address: SignalServiceAddress) -> Void,
+                                    notFound: @escaping () -> Void,
+                                    failure: @escaping (_ error: Error?) -> Void) {
         let subject = ProfileRequestSubject.username(username: username)
         let options = ProfileFetchOptions(ignoreThrottling: true)
         ProfileFetcherJob(subject: subject, options: options).runAsPromise()
