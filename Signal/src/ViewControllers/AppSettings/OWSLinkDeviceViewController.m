@@ -223,7 +223,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                 // Fetch the local profile to determine if all
                 // linked devices support UD.
-                [self.profileManager fetchLocalUsersProfile];
+                [self.profileManager updateLocalUsersProfile];
             });
         }
         failure:^(NSError *error) {

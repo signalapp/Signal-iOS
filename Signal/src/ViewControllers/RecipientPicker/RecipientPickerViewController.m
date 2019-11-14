@@ -923,58 +923,55 @@ const NSUInteger kMinimumSearchLength = 2;
         presentFromViewController:self
                         canCancel:YES
                   backgroundBlock:^(ModalActivityIndicatorViewController *modal) {
-                      [self.contactsViewHelper.profileManager fetchProfileForUsername:username
+                      [self.contactsViewHelper.profileManager updateProfileForUsername:username
                           success:^(SignalServiceAddress *address) {
-                              dispatch_async(dispatch_get_main_queue(), ^{
-                                  if (modal.wasCancelled) {
+                              OWSAssertIsOnMainThread();
+                              if (modal.wasCancelled) {
+                                  return;
+                              }
+
+                              [modal dismissWithCompletion:^{
+                                  __strong typeof(self) strongSelf = weakSelf;
+                                  if (!strongSelf) {
                                       return;
                                   }
 
-                                  [modal dismissWithCompletion:^{
-                                      __strong typeof(self) strongSelf = weakSelf;
-                                      if (!strongSelf) {
-                                          return;
-                                      }
-
-                                      [strongSelf.delegate recipientPicker:strongSelf
-                                                        didSelectRecipient:[PickedRecipient forAddress:address]];
-                                  }];
-                              });
+                                  [strongSelf.delegate recipientPicker:strongSelf
+                                                    didSelectRecipient:[PickedRecipient forAddress:address]];
+                              }];
                           }
                           notFound:^{
-                              dispatch_async(dispatch_get_main_queue(), ^{
-                                  if (modal.wasCancelled) {
-                                      return;
-                                  }
+                              OWSAssertIsOnMainThread();
+                              if (modal.wasCancelled) {
+                                  return;
+                              }
 
-                                  [modal dismissWithCompletion:^{
-                                      NSString *usernameNotFoundFormat = NSLocalizedString(@"USERNAME_NOT_FOUND_FORMAT",
-                                          @"A message indicating that the given username is not a registered signal "
-                                          @"account. Embeds "
-                                          @"{{username}}");
-                                      [OWSActionSheets
-                                          showActionSheetWithTitle:
-                                              NSLocalizedString(@"USERNAME_NOT_FOUND_TITLE",
-                                                  @"A message indicating that the given username was not "
-                                                  @"registered with signal.")
-                                                           message:[[NSString alloc]
-                                                                       initWithFormat:usernameNotFoundFormat,
-                                                                       [CommonFormats formatUsername:username]]];
-                                  }];
-                              });
+                              [modal dismissWithCompletion:^{
+                                  NSString *usernameNotFoundFormat = NSLocalizedString(@"USERNAME_NOT_FOUND_FORMAT",
+                                      @"A message indicating that the given username is not a registered signal "
+                                      @"account. Embeds "
+                                      @"{{username}}");
+                                  [OWSActionSheets
+                                      showActionSheetWithTitle:
+                                          NSLocalizedString(@"USERNAME_NOT_FOUND_TITLE",
+                                              @"A message indicating that the given username was not "
+                                              @"registered with signal.")
+                                                       message:[[NSString alloc]
+                                                                   initWithFormat:usernameNotFoundFormat,
+                                                                   [CommonFormats formatUsername:username]]];
+                              }];
                           }
                           failure:^(NSError *error) {
-                              dispatch_async(dispatch_get_main_queue(), ^{
-                                  if (modal.wasCancelled) {
-                                      return;
-                                  }
+                              OWSAssertIsOnMainThread();
+                              if (modal.wasCancelled) {
+                                  return;
+                              }
 
-                                  [modal dismissWithCompletion:^{
-                                      [OWSActionSheets showErrorAlertWithMessage:
-                                                           NSLocalizedString(@"USERNAME_LOOKUP_ERROR",
-                                                               @"A message indicating that username lookup failed.")];
-                                  }];
-                              });
+                              [modal dismissWithCompletion:^{
+                                  [OWSActionSheets showErrorAlertWithMessage:
+                                                       NSLocalizedString(@"USERNAME_LOOKUP_ERROR",
+                                                           @"A message indicating that username lookup failed.")];
+                              }];
                           }];
                   }];
 }

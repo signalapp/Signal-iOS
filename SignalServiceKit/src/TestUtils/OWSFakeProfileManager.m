@@ -96,12 +96,12 @@ NS_ASSUME_NONNULL_BEGIN
     [self.threadWhitelist addObject:groupId.hexadecimalString];
 }
 
-- (void)fetchLocalUsersProfile
+- (void)updateLocalUsersProfile
 {
     // Do nothing.
 }
 
-- (void)fetchProfileForAddress:(nonnull SignalServiceAddress *)address
+- (void)updateProfileForAddress:(nonnull SignalServiceAddress *)address
 {
     // Do nothing.
 }

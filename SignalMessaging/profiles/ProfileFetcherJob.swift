@@ -8,45 +8,127 @@ import SignalServiceKit
 import SignalMetadataKit
 
 @objc
+public enum ProfileFetchError: Int, Error {
+    case missing
+    case throttled
+    case notMainApp
+}
+
+// MARK: -
+
+@objc
+public class ProfileFetchOptions: NSObject {
+    fileprivate let mainAppOnly: Bool
+    fileprivate let ignoreThrottling: Bool
+    // TODO: Do we ever want to fetch but not update our local profile store?
+    fileprivate let shouldUpdateProfile: Bool
+
+    fileprivate init(mainAppOnly: Bool = true,
+                     ignoreThrottling: Bool = false,
+                     shouldUpdateProfile: Bool = true) {
+        self.mainAppOnly = mainAppOnly
+        self.ignoreThrottling = ignoreThrottling
+        self.shouldUpdateProfile = shouldUpdateProfile
+    }
+
+}
+
+// MARK: -
+
+private enum ProfileRequestSubject {
+    case address(address: SignalServiceAddress)
+    case username(username: String)
+}
+
+// MARK: -
+
+extension ProfileRequestSubject: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .address(let address):
+            return "[address:\(address)]"
+        case .username:
+            // TODO: Could we redact username for logging?
+            return "[username]"
+        }
+    }
+
+    public var asKey: String {
+        switch self {
+        case .address(let address):
+            return "[address:\(address)]"
+        case .username(let username):
+            return "[username: \(username)]"
+        }
+    }
+}
+
+// MARK: -
+
+@objc
 public class ProfileFetcherJob: NSObject {
 
     // This property is only accessed on the serial queue.
-    static var fetchDateMap = [SignalServiceAddress: Date]()
-    static let serialQueue = DispatchQueue(label: "org.signal.profileFetcherJob")
+    private static var fetchDateMap = [String: Date]()
+    private static let serialQueue = DispatchQueue(label: "org.signal.profileFetcherJob")
 
-    let ignoreThrottling: Bool
+    private let subject: ProfileRequestSubject
+    private let options: ProfileFetchOptions
 
-    var backgroundTask: OWSBackgroundTask?
+    private var backgroundTask: OWSBackgroundTask?
 
-    @objc
-    public class func run(thread: TSThread) {
-        guard CurrentAppContext().isMainApp else {
-            return
-        }
-
-        ProfileFetcherJob().run(addresses: thread.recipientAddresses)
+    public class func updateProfilePromise(address: SignalServiceAddress) -> Promise<SignalServiceProfile> {
+        let subject = ProfileRequestSubject.address(address: address)
+        let options = ProfileFetchOptions()
+        return ProfileFetcherJob(subject: subject, options: options).runAsPromise()
     }
 
     @objc
-    public class func run(address: SignalServiceAddress, ignoreThrottling: Bool) {
-        guard CurrentAppContext().isMainApp else {
-            return
-        }
-
-        ProfileFetcherJob(ignoreThrottling: ignoreThrottling).run(addresses: [address])
+    public class func updateProfile(address: SignalServiceAddress, ignoreThrottling: Bool) {
+        let subject = ProfileRequestSubject.address(address: address)
+        let options = ProfileFetchOptions(ignoreThrottling: ignoreThrottling)
+        ProfileFetcherJob(subject: subject, options: options).runAsPromise()
+            .retainUntilComplete()
     }
 
     @objc
-    public class func run(username: String, completion: @escaping (_ address: SignalServiceAddress?, _ notFound: Bool, _ error: Error?) -> Void) {
-        guard CurrentAppContext().isMainApp else {
-            return
-        }
-
-        ProfileFetcherJob(ignoreThrottling: true).run(username: username, completion: completion)
+    public class func updateProfile(username: String,
+                                          success: @escaping (_ address: SignalServiceAddress) -> Void,
+                                          notFound: @escaping () -> Void,
+                                          failure: @escaping (_ error: Error?) -> Void) {
+        let subject = ProfileRequestSubject.username(username: username)
+        let options = ProfileFetchOptions(ignoreThrottling: true)
+        ProfileFetcherJob(subject: subject, options: options).runAsPromise()
+            .done { profile in
+                success(profile.address)
+            }.catch { error in
+                switch error {
+                case ProfileFetchError.missing:
+                    notFound()
+                default:
+                    failure(error)
+                }
+            }
+            .retainUntilComplete()
     }
 
-    public init(ignoreThrottling: Bool = false) {
-        self.ignoreThrottling = ignoreThrottling
+    @objc(updateProfilesWithThread:)
+    public class func updateProfiles(thread: TSThread) {
+        let addresses = thread.recipientAddresses
+        let subjects = addresses.map { ProfileRequestSubject.address(address: $0) }
+        let options = ProfileFetchOptions()
+        var promises = [Promise<SignalServiceProfile>]()
+        for subject in subjects {
+            let job = ProfileFetcherJob(subject: subject, options: options)
+            promises.append(job.runAsPromise())
+        }
+        when(fulfilled: promises).retainUntilComplete()
+    }
+
+    private init(subject: ProfileRequestSubject,
+                 options: ProfileFetchOptions) {
+        self.subject = subject
+        self.options = options
     }
 
     // MARK: - Dependencies
@@ -90,85 +172,31 @@ public class ProfileFetcherJob: NSObject {
 
     // MARK: -
 
-    public func run(addresses: [SignalServiceAddress]) {
-        AssertIsOnMainThread()
-
-        run {
-            for address in addresses {
-                self.getAndUpdateProfile(address: address)
+    private func runAsPromise() -> Promise<SignalServiceProfile> {
+        return DispatchQueue.main.async(.promise) {
+            self.addBackgroundTask()
+        }.then(on: DispatchQueue.global()) { _ in
+            return self.requestProfileAttempt()
+        }.map(on: DispatchQueue.global()) { profile in
+            if self.options.shouldUpdateProfile {
+                self.updateProfile(signalServiceProfile: profile)
             }
+            return profile
         }
     }
 
-    public func run(username: String, completion: @escaping (_ address: SignalServiceAddress?, _ notFound: Bool, _ error: Error?) -> Void) {
-        run {
-            let request = OWSRequestFactory.getProfileRequest(withUsername: username)
-            self.networkManager.makePromise(request: request)
-                .map(on: DispatchQueue.global()) { try SignalServiceProfile(address: nil, responseObject: $1) }
-                .done(on: DispatchQueue.global()) { serviceProfile in
-                    self.updateProfile(signalServiceProfile: serviceProfile)
-                    completion(serviceProfile.address, false, nil)
-                }.catch(on: DispatchQueue.global()) { error in
-                    if case .taskError(let task, _)? = error as? NetworkManagerError, task.statusCode() == 404 {
-                        completion(nil, true, nil)
-                        return
-                    }
+    private func requestProfile() -> Promise<SignalServiceProfile> {
 
-                    completion(nil, false, error)
-                }.retainUntilComplete()
-        }
-    }
-
-    public func run(runBlock: @escaping () -> Void) {
-        guard CurrentAppContext().isMainApp else {
-            // Only refresh profiles in the MainApp to decrease the chance of missed SN notifications
-            // in the AppExtension for our users who choose not to verify contacts.
-            owsFailDebug("Should only fetch profiles in the main app")
-            return
+        guard !options.mainAppOnly || CurrentAppContext().isMainApp else {
+            // We usually only refresh profiles in the MainApp to decrease the
+            // chance of missed SN notifications in the AppExtension for our users
+            // who choose not to verify contacts.
+            return Promise(error: ProfileFetchError.notMainApp)
         }
 
-        backgroundTask = OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak self] status in
-            AssertIsOnMainThread()
-
-            guard status == .expired else {
-                return
-            }
-            guard let _ = self else {
-                return
-            }
-            Logger.error("background task time ran out before profile fetch completed.")
-        })
-
-        DispatchQueue.global().async(execute: runBlock)
-    }
-
-    enum ProfileFetcherJobError: Error {
-        case throttled(lastTimeInterval: TimeInterval)
-    }
-
-    public func getAndUpdateProfile(address: SignalServiceAddress, remainingRetries: Int = 3) {
-        self.getProfile(address: address).map(on: DispatchQueue.global()) { profile in
-            self.updateProfile(signalServiceProfile: profile)
-        }.catch(on: DispatchQueue.global()) { error in
-            switch error {
-            case ProfileFetcherJobError.throttled:
-                // skipping
-                break
-            case let error as SignalServiceProfile.ValidationError:
-                Logger.warn("skipping updateProfile retry. Invalid profile for: \(address) error: \(error)")
-            default:
-                if remainingRetries > 0 {
-                    self.getAndUpdateProfile(address: address, remainingRetries: remainingRetries - 1)
-                } else {
-                    Logger.warn("failed to get profile with error: \(error)")
-                }
-            }
-        }.retainUntilComplete()
-    }
-
-    public func getProfile(address: SignalServiceAddress) -> Promise<SignalServiceProfile> {
-        if !ignoreThrottling {
-            if let lastDate = lastFetchDate(for: address) {
+        // Check throttling _before_ possible retries.
+        if !options.ignoreThrottling {
+            if let lastDate = lastFetchDate(for: subject) {
                 let lastTimeInterval = fabs(lastDate.timeIntervalSinceNow)
                 // Don't check a profile more often than every N seconds.
                 //
@@ -176,14 +204,78 @@ public class ProfileFetcherJob: NSObject {
                 // with our fetching logic.
                 let kGetProfileMaxFrequencySeconds = _isDebugAssertConfiguration() ? 60 : 60.0 * 5.0
                 guard lastTimeInterval > kGetProfileMaxFrequencySeconds else {
-                    return Promise(error: ProfileFetcherJobError.throttled(lastTimeInterval: lastTimeInterval))
+                    return Promise(error: ProfileFetchError.throttled)
                 }
             }
         }
 
-        recordLastFetchDate(for: address)
+        recordLastFetchDate(for: subject)
 
-        Logger.info("getProfile: \(address)")
+        return requestProfileWithRetries()
+    }
+
+    private func requestProfileWithRetries(remainingRetries: Int = 3) -> Promise<SignalServiceProfile> {
+        let subject = self.subject
+
+        let (promise, resolver) = Promise<SignalServiceProfile>.pending()
+        requestProfileAttempt()
+            .done(on: DispatchQueue.global()) { profile in
+                resolver.fulfill(profile)
+            }.catch(on: DispatchQueue.global()) { error in
+                if case .taskError(let task, _)? = error as? NetworkManagerError, task.statusCode() == 404 {
+                    resolver.reject(ProfileFetchError.missing)
+                    return
+                }
+
+                switch error {
+                case ProfileFetchError.throttled, ProfileFetchError.notMainApp:
+                    // These errors should only be thrown at a higher level.
+                    owsFailDebug("Unexpected error: \(error)")
+                    resolver.reject(error)
+                    return
+                case let error as SignalServiceProfile.ValidationError:
+                    // This should not be retried.
+                    owsFailDebug("skipping updateProfile retry. Invalid profile for: \(subject) error: \(error)")
+                    resolver.reject(error)
+                    return
+                default:
+                    guard remainingRetries > 0 else {
+                        owsFailDebug("failed to get profile with error: \(error)")
+                        resolver.reject(error)
+                        return
+                    }
+
+                    self.requestProfileWithRetries(remainingRetries: remainingRetries - 1)
+                        .done(on: DispatchQueue.global()) { profile in
+                            resolver.fulfill(profile)
+                        }.catch(on: DispatchQueue.global()) { error in
+                            resolver.reject(error)
+                        }.retainUntilComplete()
+                }
+            }.retainUntilComplete()
+        return promise
+    }
+
+    private func requestProfileAttempt() -> Promise<SignalServiceProfile> {
+        switch subject {
+        case .address(let address):
+            return requestProfileAttempt(address: address)
+        case .username(let username):
+            return requestProfileAttempt(username: username)
+        }
+    }
+
+    private func requestProfileAttempt(username: String) -> Promise<SignalServiceProfile> {
+        Logger.info("username")
+
+        let request = OWSRequestFactory.getProfileRequest(withUsername: username)
+        return networkManager.makePromise(request: request)
+            .map(on: DispatchQueue.global()) { try SignalServiceProfile(address: nil, responseObject: $1)
+        }
+    }
+
+    private func requestProfileAttempt(address: SignalServiceAddress) -> Promise<SignalServiceProfile> {
+        Logger.info("address: \(address)")
 
         // Don't use UD for "self" profile fetches.
         var udAccess: OWSUDAccess?
@@ -192,17 +284,10 @@ public class ProfileFetcherJob: NSObject {
                                           requireSyncAccess: false)
         }
 
-        return requestProfile(address: address,
-                              udAccess: udAccess,
-                              canFailoverUDAuth: true)
-    }
-
-    private func requestProfile(address: SignalServiceAddress,
-                                udAccess: OWSUDAccess?,
-                                canFailoverUDAuth: Bool) -> Promise<SignalServiceProfile> {
+        let canFailoverUDAuth = true
         let requestMaker = RequestMaker(label: "Profile Fetch",
                                         requestFactoryBlock: { (udAccessKeyForRequest) -> TSRequest in
-            return OWSRequestFactory.getProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
+                                            return OWSRequestFactory.getProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
         }, udAuthFailureBlock: {
             // Do nothing
         }, websocketFailureBlock: {
@@ -275,15 +360,29 @@ public class ProfileFetcherJob: NSObject {
         }
     }
 
-    private func lastFetchDate(for address: SignalServiceAddress) -> Date? {
+    private func lastFetchDate(for subject: ProfileRequestSubject) -> Date? {
         return ProfileFetcherJob.serialQueue.sync {
-            return ProfileFetcherJob.fetchDateMap[address]
+            return ProfileFetcherJob.fetchDateMap[subject.asKey]
         }
     }
 
-    private func recordLastFetchDate(for address: SignalServiceAddress) {
+    private func recordLastFetchDate(for subject: ProfileRequestSubject) {
         ProfileFetcherJob.serialQueue.sync {
-            ProfileFetcherJob.fetchDateMap[address] = Date()
+            ProfileFetcherJob.fetchDateMap[subject.asKey] = Date()
         }
+    }
+
+    private func addBackgroundTask() {
+        backgroundTask = OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak self] status in
+            AssertIsOnMainThread()
+
+            guard status == .expired else {
+                return
+            }
+            guard let _ = self else {
+                return
+            }
+            Logger.error("background task time ran out before profile fetch completed.")
+        })
     }
 }
