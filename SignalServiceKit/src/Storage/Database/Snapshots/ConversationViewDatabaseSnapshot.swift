@@ -35,6 +35,13 @@ public class ConversationViewDatabaseObserver: NSObject {
         let rowId = RowId(interaction.sortId)
         assert(rowId > 0)
         pendingInteractionChanges.insert(rowId)
+
+        let interactionThread: TSThread? = interaction.thread(transaction: transaction.asAnyRead)
+        if let thread = interactionThread {
+            didTouch(thread: thread, transaction: transaction)
+        } else {
+            owsFailDebug("Could not load thread for interaction.")
+        }
     }
 
     // internal - should only be called by DatabaseStorage
