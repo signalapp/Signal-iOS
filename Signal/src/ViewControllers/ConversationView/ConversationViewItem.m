@@ -1269,13 +1269,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }];
     if (publicChat == nil) return false;
     
-    // Only allow deletion on incoming messages if the user has moderation permission
     if (interationType == OWSInteractionType_IncomingMessage) {
-        BOOL isModerator = [LKPublicChatAPI isUserModerator:self.userHexEncodedPublicKey forGroup:publicChat.channel onServer:publicChat.server];
-        if (!isModerator) return false;
+        // Only allow deletion on incoming messages if the user has moderation permission
+        return [LKPublicChatAPI isUserModerator:self.userHexEncodedPublicKey forGroup:publicChat.channel onServer:publicChat.server];
+    } else {
+        // Only allow deletion on outgoing messages if the user was the sender (i.e. it was not sent from another linked device)
+        return [self.interaction.actualSenderHexEncodedPublicKey isEqual:self.userHexEncodedPublicKey];
     }
-
-    return true;
 }
 
 @end

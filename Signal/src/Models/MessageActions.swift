@@ -116,6 +116,8 @@ class ConversationViewItemActions: NSObject {
     class func mediaActions(conversationViewItem: ConversationViewItem, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MenuAction] {
         var actions: [MenuAction] = []
 
+        let isGroup = conversationViewItem.isGroupThread;
+        
         if shouldAllowReply {
             let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(replyAction)
@@ -132,8 +134,10 @@ class ConversationViewItemActions: NSObject {
             }
         }
 
-        let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
-        actions.append(deleteAction)
+        if !isGroup || conversationViewItem.userCanDeleteGroupMessage {
+            let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
+            actions.append(deleteAction)
+        }
 
         let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)
         actions.append(showDetailsAction)

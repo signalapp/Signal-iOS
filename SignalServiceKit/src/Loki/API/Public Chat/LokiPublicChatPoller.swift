@@ -147,17 +147,18 @@ public final class LokiPublicChatPoller : NSObject {
                 signalLinkPreview = nil
             }
             let body = (message.body == message.timestamp.description) ? "" : message.body // Workaround for the fact that the back-end doesn't accept messages without a body
-            let message = TSOutgoingMessage(outgoingMessageWithTimestamp: message.timestamp, in: thread, messageBody: body, attachmentIds: NSMutableArray(array: attachmentIDs), expiresInSeconds: 0,
+            let signalMessage = TSOutgoingMessage(outgoingMessageWithTimestamp: message.timestamp, in: thread, messageBody: body, attachmentIds: NSMutableArray(array: attachmentIDs), expiresInSeconds: 0,
                 expireStartedAt: 0, isVoiceMessage: false, groupMetaMessage: .deliver, quotedMessage: signalQuote, contactShare: nil, linkPreview: signalLinkPreview)
+            signalMessage.actualSenderHexEncodedPublicKey = message.hexEncodedPublicKey
             storage.dbReadWriteConnection.readWrite { transaction in
-                message.update(withSentRecipient: publicChat.server, wasSentByUD: false, transaction: transaction)
-                message.saveGroupChatServerID(messageServerID, in: transaction)
-                guard let messageID = message.uniqueId else { return print("[Loki] Failed to save public chat message.") }
+                signalMessage.update(withSentRecipient: publicChat.server, wasSentByUD: false, transaction: transaction)
+                signalMessage.saveGroupChatServerID(messageServerID, in: transaction)
+                guard let messageID = signalMessage.uniqueId else { return print("[Loki] Failed to save public chat message.") }
                 storage.setIDForMessageWithServerID(UInt(messageServerID), to: messageID, in: transaction)
             }
             DispatchQueue.main.async {
                 if let linkPreviewURL = OWSLinkPreview.previewUrl(forMessageBodyText: message.body, selectedRange: nil) {
-                    message.generateLinkPreviewIfNeeded(fromURL: linkPreviewURL)
+                    signalMessage.generateLinkPreviewIfNeeded(fromURL: linkPreviewURL)
                 }
             }
         }
