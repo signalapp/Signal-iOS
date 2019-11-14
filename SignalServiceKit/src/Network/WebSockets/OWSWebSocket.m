@@ -294,6 +294,10 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
                                              selector:@selector(deviceListUpdateModifiedDeviceList:)
                                                  name:NSNotificationName_DeviceListUpdateModifiedDeviceList
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(environmentDidChange:)
+                                                 name:TSConstants.EnvironmentDidChange
+                                               object:nil];
 }
 
 #pragma mark - Manage Socket
@@ -415,7 +419,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 
             // Create a new web socket.
             NSString *webSocketConnect =
-                [textSecureWebSocketAPI stringByAppendingString:[self webSocketAuthenticationString]];
+                [TSConstants.textSecureWebSocketAPI stringByAppendingString:[self webSocketAuthenticationString]];
             NSURL *webSocketConnectURL = [NSURL URLWithString:webSocketConnect];
             NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:webSocketConnectURL];
 
@@ -1102,7 +1106,14 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 - (void)deviceListUpdateModifiedDeviceList:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
+    
+    [self cycleSocket];
+}
 
+- (void)environmentDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+    
     [self cycleSocket];
 }
 

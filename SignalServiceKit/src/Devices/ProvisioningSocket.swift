@@ -15,7 +15,7 @@ public class ProvisioningSocket {
     public weak var delegate: ProvisioningSocketDelegate?
 
     public init() {
-        let serviceBaseURL = URL(string: textSecureWebSocketAPI)!
+        let serviceBaseURL = URL(string: TSConstants.textSecureWebSocketAPI)!
         let socketURL = URL(string: "/v1/websocket/provisioning/?agent=\(OWSUserAgent)",
                             relativeTo: serviceBaseURL)!
 

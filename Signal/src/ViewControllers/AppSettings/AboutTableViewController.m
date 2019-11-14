@@ -130,6 +130,10 @@
 
     debugSection.headerTitle = @"Debug";
 
+    NSString *environmentName = TSConstants.isUsingProductionService ? @"Production" : @"Staging";
+    [debugSection
+     addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Environment: %@", environmentName]]];
+
     NSString *formattedThreadCount = [numberFormatter stringFromNumber:@(threadCount)];
     [debugSection
         addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Threads: %@", formattedThreadCount]]];

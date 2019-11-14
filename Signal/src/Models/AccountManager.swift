@@ -101,7 +101,7 @@ public class AccountManager: NSObject {
 
             return self.accountServiceClient.requestPreauthChallenge(recipientId: recipientId, pushToken: voipToken).then { () -> Promise<String?> in
                 let timeout: TimeInterval
-                if OWSIsDebugBuild() && IsUsingProductionService() {
+                if OWSIsDebugBuild() && TSConstants.isUsingProductionService {
                     // won't receive production voip in debug build, don't wait for long
                     timeout = 0.5
                 } else {
@@ -116,7 +116,7 @@ public class AccountManager: NSObject {
                 Logger.warn("Push not supported: \(description)")
             case let networkError as NetworkManagerError:
                 // not deployed to production yet.
-                if networkError.statusCode == 404, IsUsingProductionService() {
+                if networkError.statusCode == 404, TSConstants.isUsingProductionService {
                     Logger.warn("404 while requesting preauthChallenge: \(error)")
                 } else {
                     fallthrough

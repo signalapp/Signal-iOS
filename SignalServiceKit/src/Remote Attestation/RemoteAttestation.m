@@ -15,6 +15,7 @@
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -277,12 +278,12 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
     NSString *mrenclave;
     switch (service) {
         case RemoteAttestationServiceContactDiscovery:
-            enclaveName = contactDiscoveryEnclaveName;
-            mrenclave = contactDiscoveryMrEnclave;
+            enclaveName = TSConstants.contactDiscoveryEnclaveName;
+            mrenclave = TSConstants.contactDiscoveryMrEnclave;
             break;
         case RemoteAttestationServiceKeyBackup:
-            enclaveName = keyBackupEnclaveName;
-            mrenclave = keyBackupMrEnclave;
+            enclaveName = TSConstants.keyBackupEnclaveName;
+            mrenclave = TSConstants.keyBackupMrEnclave;
             break;
     }
 

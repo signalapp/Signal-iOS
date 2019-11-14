@@ -212,7 +212,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (AFHTTPSessionManager *)defaultSignalServiceSessionManager
 {
-    NSURL *baseURL = [[NSURL alloc] initWithString:textSecureServerURL];
+    NSURL *baseURL = [[NSURL alloc] initWithString:TSConstants.textSecureServerURL];
     OWSAssertDebug(baseURL);
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
     AFHTTPSessionManager *sessionManager =
@@ -233,7 +233,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
 
     NSURL *frontingURL = censorshipConfiguration.domainFrontBaseURL;
-    NSURL *baseURL = [frontingURL URLByAppendingPathComponent:serviceCensorshipPrefix];
+    NSURL *baseURL = [frontingURL URLByAppendingPathComponent:TSConstants.serviceCensorshipPrefix];
     AFHTTPSessionManager *sessionManager =
         [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
 
@@ -268,7 +268,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (AFHTTPSessionManager *)defaultCDNSessionManager
 {
-    NSURL *baseURL = [[NSURL alloc] initWithString:textSecureCDNServerURL];
+    NSURL *baseURL = [[NSURL alloc] initWithString:TSConstants.textSecureCDNServerURL];
     OWSAssertDebug(baseURL);
     
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
@@ -289,7 +289,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
 
     NSURL *frontingURL = censorshipConfiguration.domainFrontBaseURL;
-    NSURL *baseURL = [frontingURL URLByAppendingPathComponent:cdnCensorshipPrefix];
+    NSURL *baseURL = [frontingURL URLByAppendingPathComponent:TSConstants.cdnCensorshipPrefix];
     AFHTTPSessionManager *sessionManager =
         [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
 
@@ -307,7 +307,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (AFHTTPSessionManager *)storageServiceSessionManager
 {
-    NSURL *baseURL = [[NSURL alloc] initWithString:storageServiceURL];
+    NSURL *baseURL = [[NSURL alloc] initWithString:TSConstants.storageServiceURL];
     OWSAssertDebug(baseURL);
 
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;

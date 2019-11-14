@@ -560,12 +560,12 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
     switch (service) {
         case RemoteAttestationServiceContactDiscovery:
-            request.customHost = contactDiscoveryURL;
-            request.customCensorshipCircumventionPrefix = contactDiscoveryCensorshipPrefix;
+            request.customHost = TSConstants.contactDiscoveryURL;
+            request.customCensorshipCircumventionPrefix = TSConstants.contactDiscoveryCensorshipPrefix;
             break;
         case RemoteAttestationServiceKeyBackup:
-            request.customHost = keyBackupURL;
-            request.customCensorshipCircumventionPrefix = keyBackupCensorshipPrefix;
+            request.customHost = TSConstants.keyBackupURL;
+            request.customCensorshipCircumventionPrefix = TSConstants.keyBackupCensorshipPrefix;
             break;
     }
 
@@ -618,8 +618,8 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
     request.authUsername = authUsername;
     request.authPassword = authPassword;
-    request.customHost = contactDiscoveryURL;
-    request.customCensorshipCircumventionPrefix = contactDiscoveryCensorshipPrefix;
+    request.customHost = TSConstants.contactDiscoveryURL;
+    request.customCensorshipCircumventionPrefix = TSConstants.contactDiscoveryCensorshipPrefix;
 
     // Don't bother with the default cookie store;
     // these cookies are ephemeral.
@@ -668,8 +668,8 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
     request.authUsername = authUsername;
     request.authPassword = authPassword;
-    request.customHost = keyBackupURL;
-    request.customCensorshipCircumventionPrefix = keyBackupCensorshipPrefix;
+    request.customHost = TSConstants.keyBackupURL;
+    request.customCensorshipCircumventionPrefix = TSConstants.keyBackupCensorshipPrefix;
 
     // Don't bother with the default cookie store;
     // these cookies are ephemeral.
@@ -705,8 +705,8 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
     request.authUsername = authUsername;
     request.authPassword = authPassword;
-    request.customHost = keyBackupURL;
-    request.customCensorshipCircumventionPrefix = keyBackupCensorshipPrefix;
+    request.customHost = TSConstants.keyBackupURL;
+    request.customCensorshipCircumventionPrefix = TSConstants.keyBackupCensorshipPrefix;
 
     // Don't bother with the default cookie store;
     // these cookies are ephemeral.
