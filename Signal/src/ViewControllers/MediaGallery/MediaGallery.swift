@@ -433,8 +433,8 @@ class MediaGallery {
 
                                 return start..<end
                             case .before:
-                                let start: Int = initialIndex - Int(amount)
-                                let end: Int = initialIndex
+                                let start: Int = initialIndex + 1 - Int(amount)
+                                let end: Int = initialIndex + 1
 
                                 return start..<end
                             case  .after:
@@ -571,7 +571,7 @@ class MediaGallery {
             return nil
         }
 
-        ensureGalleryItemsLoaded(.around, item: mostRecentItem, amount: 100)
+        ensureGalleryItemsLoaded(.before, item: mostRecentItem, amount: 50)
         return mostRecentItem
     }
 

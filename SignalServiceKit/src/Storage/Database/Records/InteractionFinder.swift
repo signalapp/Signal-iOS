@@ -818,10 +818,10 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
     func sortIndex(interactionUniqueId: String, transaction: GRDBReadTransaction) throws -> UInt? {
         return try UInt.fetchOne(transaction.database,
                                  sql: """
-            SELECT rowNumber
+            SELECT sortIndex
             FROM (
                 SELECT
-                    ROW_NUMBER() OVER (ORDER BY \(interactionColumn: .id)) as rowNumber,
+                    ROW_NUMBER() OVER (ORDER BY \(interactionColumn: .id)) - 1 as sortIndex,
                     \(interactionColumn: .id),
                     \(interactionColumn: .uniqueId)
                 FROM \(InteractionRecord.databaseTableName)
