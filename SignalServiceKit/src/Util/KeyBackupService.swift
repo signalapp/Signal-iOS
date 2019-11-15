@@ -23,6 +23,18 @@ public class KeyBackupService: NSObject {
         return .shared
     }
 
+    static var tsAccountManager: TSAccountManager {
+        return .sharedInstance()
+    }
+
+    static var storageServiceManager: StorageServiceManagerProtocol {
+        return SSKEnvironment.shared.storageServiceManager
+    }
+
+    static var syncManager: SyncManagerProtocol {
+        return SSKEnvironment.shared.syncManager
+    }
+
     // PRAGMA MARK: - Pin Management
 
     // TODO: Decide what we want this to be
@@ -269,11 +281,20 @@ public class KeyBackupService: NSObject {
 
     // PRAGMA MARK: - Crypto
 
-    public enum DerivedKey: String {
+    public enum DerivedKey: String, CaseIterable {
         case storageService = "Storage Service Encryption"
         case registrationLock = "Registration Lock"
 
         public var data: Data? {
+            // If we have this derived key stored in the database, use it.
+            // This should only happen if we're a linked device and received
+            // the derived key via a sync message, since we won't know about
+            // the master key.
+            if tsAccountManager.isPrimaryDevice,
+                let cachedData = cacheQueue.sync(execute: { cachedSyncedDerivedKeys[self] }) {
+                return cachedData
+            }
+
             guard let masterKey = cacheQueue.sync(execute: { cachedMasterKey }) else {
                 return nil
             }
@@ -285,6 +306,8 @@ public class KeyBackupService: NSObject {
 
             return Cryptography.computeSHA256HMAC(data, withHMACKey: masterKey)
         }
+
+        public var isAvailable: Bool { return data != nil }
     }
 
     public static func encrypt(keyType: DerivedKey, data: Data) throws -> Data {
@@ -367,7 +390,6 @@ public class KeyBackupService: NSObject {
 
     @objc
     static func deriveRegistrationLockToken() -> String? {
-        guard hasLocalKeys else { return nil }
         return DerivedKey.registrationLock.data?.hexadecimalString
     }
 
@@ -398,14 +420,21 @@ public class KeyBackupService: NSObject {
         var masterKey: Data?
         var pinKey2: Data?
 
+        var syncedDerivedKeys = [DerivedKey: Data]()
+
         databaseStorage.read { transaction in
             masterKey = keyValueStore.getData(masterKeyIdentifer, transaction: transaction)
             pinKey2 = keyValueStore.getData(pinKey2Identifer, transaction: transaction)
+
+            for type in DerivedKey.allCases {
+                syncedDerivedKeys[type] = keyValueStore.getData(type.rawValue, transaction: transaction)
+            }
         }
 
         cacheQueue.sync {
             cachedMasterKey = masterKey
             cachedPinKey2 = pinKey2
+            cachedSyncedDerivedKeys = syncedDerivedKeys
         }
     }
 
@@ -425,6 +454,8 @@ public class KeyBackupService: NSObject {
     private static var cachedMasterKey: Data?
     // Always contains an in memory reference to our current pinKey2
     private static var cachedPinKey2: Data?
+    // Always contains an in memory refernce to our received derived keys
+    static var cachedSyncedDerivedKeys = [DerivedKey: Data]()
 
     private static func store(_ masterKey: Data, pinKey2: Data, transaction: SDSAnyWriteTransaction) {
         guard masterKey != cachedMasterKey || pinKey2 != cachedPinKey2 else { return }
@@ -438,10 +469,24 @@ public class KeyBackupService: NSObject {
         }
 
         // Trigger a re-creation of the storage manifest, our keys have changed
-        SSKEnvironment.shared.storageServiceManager.restoreOrCreateManifestIfNecessary()
+        storageServiceManager.restoreOrCreateManifestIfNecessary()
 
         // Sync our new keys with linked devices.
-        SSKEnvironment.shared.syncManager.sendKeysSyncMessage()
+        syncManager.sendKeysSyncMessage()
+    }
+
+    public static func storeSyncedKey(type: DerivedKey, data: Data?, transaction: SDSAnyWriteTransaction) {
+        guard !tsAccountManager.isPrimaryDevice else {
+            return owsFailDebug("primary device should never store synced keys")
+        }
+
+        keyValueStore.setData(data, key: type.rawValue, transaction: transaction)
+        cacheQueue.sync { cachedSyncedDerivedKeys[type] = data }
+
+        // Trigger a re-fetch of the storage manifest, our keys have changed
+        if type == .storageService {
+            storageServiceManager.restoreOrCreateManifestIfNecessary()
+        }
     }
 
     // PRAGMA MARK: - Requests

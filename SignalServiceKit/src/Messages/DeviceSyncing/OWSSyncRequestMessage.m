@@ -37,6 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
             return SSKProtoSyncMessageRequestTypeBlocked;
         case OWSSyncRequestType_Configuration:
             return SSKProtoSyncMessageRequestTypeConfiguration;
+        case OWSSyncRequestType_Keys:
+            return SSKProtoSyncMessageRequestTypeKeys;
     }
 }
 

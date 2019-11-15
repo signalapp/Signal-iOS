@@ -32,4 +32,7 @@ public protocol SyncManagerProtocolSwift {
 
     func sendAllSyncRequestMessages() -> AnyPromise
     func sendAllSyncRequestMessages(timeout: TimeInterval) -> AnyPromise
+
+    func processIncomingKeysSyncMessage(_ syncMessage: SSKProtoSyncMessageKeys, transaction: SDSAnyWriteTransaction)
+    func sendKeysSyncRequestMessage(transaction: SDSAnyWriteTransaction)
 }

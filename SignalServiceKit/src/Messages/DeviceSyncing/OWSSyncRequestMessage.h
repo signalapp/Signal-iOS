@@ -11,7 +11,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWSSyncRequestType) {
     OWSSyncRequestType_Contacts,
     OWSSyncRequestType_Groups,
     OWSSyncRequestType_Blocked,
-    OWSSyncRequestType_Configuration
+    OWSSyncRequestType_Configuration,
+    OWSSyncRequestType_Keys
 };
 
 @interface OWSSyncRequestMessage : OWSOutgoingSyncMessage

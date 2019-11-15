@@ -1166,6 +1166,8 @@ NS_ASSUME_NONNULL_BEGIN
         [self.syncManager processIncomingGroupsSyncMessage:syncMessage.groups transaction:transaction];
     } else if (syncMessage.fetchLatest) {
         [self.syncManager processIncomingFetchLatestSyncMessage:syncMessage.fetchLatest transaction:transaction];
+    } else if (syncMessage.keys) {
+        [self.syncManager processIncomingKeysSyncMessage:syncMessage.keys transaction:transaction];
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
     }

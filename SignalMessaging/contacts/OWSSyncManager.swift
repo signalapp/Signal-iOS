@@ -32,6 +32,7 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
             self.sendSyncRequestMessage(.configuration, transaction: transaction)
             self.sendSyncRequestMessage(.groups, transaction: transaction)
             self.sendSyncRequestMessage(.contacts, transaction: transaction)
+            self.sendSyncRequestMessage(.keys, transaction: transaction)
         }
 
         return when(fulfilled: [
@@ -64,6 +65,20 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
             let syncKeysMessage = OWSSyncKeysMessage(thread: thread, storageServiceKey: KeyBackupService.DerivedKey.storageService.data)
             self.messageSenderJobQueue.add(message: syncKeysMessage.asPreparer, transaction: transaction)
         }
+    }
+
+    @objc
+    public func processIncomingKeysSyncMessage(_ syncMessage: SSKProtoSyncMessageKeys, transaction: SDSAnyWriteTransaction) {
+        guard !tsAccountManager.isRegisteredPrimaryDevice else {
+            return owsFailDebug("Key sync messages should only be processed on linked devices")
+        }
+
+        KeyBackupService.storeSyncedKey(type: .storageService, data: syncMessage.storageService, transaction: transaction)
+    }
+
+    @objc
+    public func sendKeysSyncRequestMessage(transaction: SDSAnyWriteTransaction) {
+        sendSyncRequestMessage(.keys, transaction: transaction)
     }
 }
 

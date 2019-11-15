@@ -202,7 +202,7 @@ class StorageServiceOperation: OWSOperation {
 
         // We don't have backup keys, do nothing. We'll try a
         // fresh restore once the keys are set.
-        guard KeyBackupService.hasLocalKeys else {
+        guard KeyBackupService.DerivedKey.storageService.isAvailable else {
             return reportSuccess()
         }
 
@@ -418,10 +418,22 @@ class StorageServiceOperation: OWSOperation {
             if let storageError = error as? StorageService.StorageError {
 
                 // If we succeeded to fetch the manifest but were unable to decrypt it,
-                // it likely means our keys changed. Create a new manifest with the
-                // latest version of our backup key.
+                // it likely means our keys changed.
                 if case .decryptionFailed(let previousManifestVersion) = storageError {
-                    return self.createNewManifest(version: previousManifestVersion + 1)
+                    // If this is the primary device, throw everything away and re-encrypt
+                    // the social graph with the keys we have locally.
+                    if TSAccountManager.sharedInstance().isPrimaryDevice {
+                        return self.createNewManifest(version: previousManifestVersion + 1)
+                    }
+
+                    // If this is a linked device, give up and request the latest storage
+                    // service key from the primary device.
+                    self.databaseStorage.asyncWrite { transaction in
+                        // Clear out the key, it's no longer valid. This will prevent us
+                        // from trying to backup again until the sync response is received.
+                        KeyBackupService.storeSyncedKey(type: .storageService, data: nil, transaction: transaction)
+                        OWSSyncManager.shared().sendKeysSyncRequestMessage(transaction: transaction)
+                    }
                 }
 
                 return self.reportError(storageError)
