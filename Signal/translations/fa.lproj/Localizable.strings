@@ -1740,7 +1740,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "کد نادرست است";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "پین نادرست تلاشهای٪ lu باقی مانده است";
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "پین نادرست تلاشهای %lu باقی مانده است";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN_SINGLE" = "پین اشتباه وارد شده . 1 تلاش دیگر باقی مانده است.";

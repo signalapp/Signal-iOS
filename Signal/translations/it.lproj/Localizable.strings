@@ -657,7 +657,7 @@
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Persone";
 
 /* navbar header */
-"CONVERSATION_PICKER_TITLE" = "Seleziona i Destinatari";
+"CONVERSATION_PICKER_TITLE" = "Seleziona i destinatari";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Nessun risultato";
@@ -1279,7 +1279,7 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "Invita i tuoi amici";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "L'invito simultaneo di più utenti invierà un messaggio di gruppo e i destinatari potranno vedere tutti gli altri.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "L'invito simultaneo di più utenti invierà un messaggio di gruppo e i destinatari saranno in grado di vedersi a vicenda.";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "I messaggi scompariranno dopo %@.";

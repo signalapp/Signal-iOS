@@ -1740,7 +1740,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "غلط پن";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "غلط پن۔٪lu کوششیں باقی ہیں۔";
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "غلط پن۔%lu کوششیں باقی ہیں۔";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN_SINGLE" = "غلط پن۔ 1 کوشش باقی ہے۔";
@@ -2154,7 +2154,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "آپ کا پن بھول گیا؟";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "آپ کی ٪lu کوششیں باقی ہیں۔اگر آپ زیادہ کوشش کریں گے تو آپ کا اکاؤنٹ لاک ہو جائے گا۔ 7 دنوں  کی سرگرمی کے بعد آپ اپنے پن کیساتھ دوبارہ رجسٹر کر سکتے ہیں۔آپ کا اکاؤنٹ صاف اور مواد حذف ہو جائے گا۔";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "آپ کی %lu کوششیں باقی ہیں۔اگر آپ زیادہ کوشش کریں گے تو آپ کا اکاؤنٹ لاک ہو جائے گا۔ 7 دنوں  کی سرگرمی کے بعد آپ اپنے پن کیساتھ دوبارہ رجسٹر کر سکتے ہیں۔آپ کا اکاؤنٹ صاف اور مواد حذف ہو جائے گا۔";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "آپ کی 1 کوشش باقی ہے۔اگر آپ زیادہ کوشش کریں گے تو آپ کا اکاؤنٹ لاک ہو جائے گا۔ 7 دنوں کی سرگرمی کے بعد آپ اپنے پن کیساتھ دوبارہ رجسٹر کر سکتے ہیں۔آپ کا اکاؤنٹ صاف اور مواد حذف ہو جائے گا۔";
@@ -2817,10 +2817,10 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "حفاظتی نمبر کی تصدیق کریں";
 
 /* The number of members in a group. Embeds {{member count}} */
-"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "٪lu اراکین";
+"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu اراکین";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@،%@کے اراکین اور ٪lu اضافی گروپس";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@،%@کے اراکین اور %lu اضافی گروپس";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@کے اراکین";
