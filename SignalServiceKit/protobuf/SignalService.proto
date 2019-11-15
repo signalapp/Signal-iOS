@@ -329,6 +329,7 @@ message SyncMessage {
       GROUPS        = 2;
       BLOCKED       = 3;
       CONFIGURATION = 4;
+      KEYS          = 5;
     }
 
     optional Type type = 1;
@@ -378,6 +379,10 @@ message SyncMessage {
     optional Type type = 1;
   }
 
+  message Keys {
+    optional bytes storageService = 1;
+  }
+
   optional Sent                 sent                 =  1;
   optional Contacts             contacts             =  2;
   optional Groups               groups               =  3;
@@ -390,6 +395,7 @@ message SyncMessage {
   repeated StickerPackOperation stickerPackOperation = 10;
   optional ViewOnceOpen         viewOnceOpen         = 11;
   optional FetchLatest          fetchLatest          = 12;
+  optional Keys                 keys                 = 13;
 }
 
 message AttachmentPointer {
