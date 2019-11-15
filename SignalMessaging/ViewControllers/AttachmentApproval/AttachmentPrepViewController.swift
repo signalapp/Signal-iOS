@@ -118,6 +118,8 @@ public class AttachmentPrepViewController: OWSViewController {
 
             view.addSubview(videoEditorView)
             videoEditorView.autoPinEdgesToSuperviewEdges()
+
+            videoEditorUpdateNavigationBar()
         } else {
             let mediaMessageView = MediaMessageView(attachment: attachment, mode: .attachmentApproval)
             containerView.addSubview(mediaMessageView)
@@ -346,5 +348,9 @@ extension AttachmentPrepViewController: ImageEditorViewDelegate {
 extension AttachmentPrepViewController: VideoEditorViewDelegate {
     public var videoEditorViewController: UIViewController {
         return self
+    }
+
+    public func videoEditorUpdateNavigationBar() {
+        prepDelegate?.prepViewControllerUpdateNavigationBar()
     }
 }

@@ -170,10 +170,10 @@ struct GRDBThreadFinder: ThreadFinder {
 
     func sortIndex(thread: TSThread, transaction: GRDBReadTransaction) throws -> UInt? {
         let sql = """
-        SELECT rowNumber
+        SELECT sortIndex
         FROM (
             SELECT
-                (ROW_NUMBER() OVER (ORDER BY \(threadColumn: .lastInteractionRowId) DESC) - 1) as rowNumber,
+                (ROW_NUMBER() OVER (ORDER BY \(threadColumn: .lastInteractionRowId) DESC) - 1) as sortIndex,
                 \(threadColumn: .id)
             FROM \(ThreadRecord.databaseTableName)
             WHERE \(threadColumn: .shouldThreadBeVisible) = 1
