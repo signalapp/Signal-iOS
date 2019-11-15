@@ -121,7 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.outgoingReceiptManager;
 }
 
-- (id<OWSSyncManagerProtocol>)syncManager
+- (id<SyncManagerProtocol>)syncManager
 {
     OWSAssertDebug(SSKEnvironment.shared.syncManager);
 

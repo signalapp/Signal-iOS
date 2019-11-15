@@ -2,8 +2,6 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSSyncManagerProtocol.h"
-
 NS_ASSUME_NONNULL_BEGIN
 
 @class AccountServiceClient;
@@ -43,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol ProfileManagerProtocol;
 @protocol OWSUDManager;
 @protocol SSKReachabilityManager;
-@protocol OWSSyncManagerProtocol;
+@protocol SyncManagerProtocol;
 @protocol OWSTypingIndicators;
 @protocol StorageServiceManagerProtocol;
 
@@ -77,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
                      readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
                  outgoingReceiptManager:(OWSOutgoingReceiptManager *)outgoingReceiptManager
                     reachabilityManager:(id<SSKReachabilityManager>)reachabilityManager
-                            syncManager:(id<OWSSyncManagerProtocol>)syncManager
+                            syncManager:(id<SyncManagerProtocol>)syncManager
                        typingIndicators:(id<OWSTypingIndicators>)typingIndicators
                     attachmentDownloads:(OWSAttachmentDownloads *)attachmentDownloads
                          stickerManager:(StickerManager *)stickerManager
@@ -123,7 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (nonatomic, readonly) OWSReadReceiptManager *readReceiptManager;
 @property (nonatomic, readonly) OWSOutgoingReceiptManager *outgoingReceiptManager;
-@property (nonatomic, readonly) id<OWSSyncManagerProtocol> syncManager;
+@property (nonatomic, readonly) id<SyncManagerProtocol> syncManager;
 @property (nonatomic, readonly) id<SSKReachabilityManager> reachabilityManager;
 @property (nonatomic, readonly) id<OWSTypingIndicators> typingIndicators;
 @property (nonatomic, readonly) OWSAttachmentDownloads *attachmentDownloads;

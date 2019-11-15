@@ -90,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSReadReceiptManager *readReceiptManager = [OWSReadReceiptManager new];
     OWSOutgoingReceiptManager *outgoingReceiptManager = [OWSOutgoingReceiptManager new];
     id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
-    id<OWSSyncManagerProtocol> syncManager = [[OWSMockSyncManager alloc] init];
+    id<SyncManagerProtocol> syncManager = [[OWSMockSyncManager alloc] init];
     id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
     OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];
     StickerManager *stickerManager = [[StickerManager alloc] init];

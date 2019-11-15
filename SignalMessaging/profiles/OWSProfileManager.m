@@ -165,7 +165,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     return SSKEnvironment.shared.blockingManager;
 }
 
-- (id<OWSSyncManagerProtocol>)syncManager
+- (id<SyncManagerProtocol>)syncManager
 {
     return SSKEnvironment.shared.syncManager;
 }

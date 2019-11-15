@@ -36,7 +36,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (nonatomic) OWSReadReceiptManager *readReceiptManager;
 @property (nonatomic) OWSOutgoingReceiptManager *outgoingReceiptManager;
-@property (nonatomic) id<OWSSyncManagerProtocol> syncManager;
+@property (nonatomic) id<SyncManagerProtocol> syncManager;
 @property (nonatomic) id<SSKReachabilityManager> reachabilityManager;
 @property (nonatomic) id<OWSTypingIndicators> typingIndicators;
 @property (nonatomic) OWSAttachmentDownloads *attachmentDownloads;
@@ -81,7 +81,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                      readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
                  outgoingReceiptManager:(OWSOutgoingReceiptManager *)outgoingReceiptManager
                     reachabilityManager:(id<SSKReachabilityManager>)reachabilityManager
-                            syncManager:(id<OWSSyncManagerProtocol>)syncManager
+                            syncManager:(id<SyncManagerProtocol>)syncManager
                        typingIndicators:(id<OWSTypingIndicators>)typingIndicators
                     attachmentDownloads:(OWSAttachmentDownloads *)attachmentDownloads
                          stickerManager:(StickerManager *)stickerManager

@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSProfileManager sharedManager];
 }
 
-+ (id<OWSSyncManagerProtocol>)syncManager
++ (id<SyncManagerProtocol>)syncManager
 {
     OWSAssertDebug(SSKEnvironment.shared.syncManager);
 

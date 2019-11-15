@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (nonatomic) OWSReadReceiptManager *readReceiptManager;
 @property (nonatomic) OWSOutgoingReceiptManager *outgoingReceiptManager;
-@property (nonatomic) id<OWSSyncManagerProtocol> syncManager;
+@property (nonatomic) id<SyncManagerProtocol> syncManager;
 @property (nonatomic) id<SSKReachabilityManager> reachabilityManager;
 @property (nonatomic) id<OWSTypingIndicators> typingIndicators;
 @property (nonatomic) OWSAttachmentDownloads *attachmentDownloads;

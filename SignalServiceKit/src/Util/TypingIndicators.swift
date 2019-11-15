@@ -101,7 +101,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
     // MARK: - Dependencies
 
-    private var syncManager: OWSSyncManagerProtocol {
+    private var syncManager: SyncManagerProtocol {
         return SSKEnvironment.shared.syncManager
     }
 

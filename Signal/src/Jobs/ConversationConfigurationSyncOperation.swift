@@ -21,7 +21,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         return Environment.shared.contactsManager
     }
 
-    private var syncManager: OWSSyncManagerProtocol {
+    private var syncManager: SyncManagerProtocol {
         return SSKEnvironment.shared.syncManager
     }
 
@@ -61,7 +61,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
             return
         }
 
-        syncManager.syncContacts(for: [signalAccount]).retainUntilComplete()
+        syncManager.syncContacts(forSignalAccounts: [signalAccount]).retainUntilComplete()
     }
 
     private func sync(groupThread: TSGroupThread) {
