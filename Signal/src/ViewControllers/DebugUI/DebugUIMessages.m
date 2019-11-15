@@ -3921,25 +3921,27 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 break;
             }
             case 3: {
-                NSString *filename = @"test.jpg";
-                UInt32 filesize = 16;
-
-                TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"audio/jpg"
-                                                                                             byteCount:filesize
+                NSString *filename = @"test.png";
+                NSData *pngData = [[ImageFactory new] buildPNGData];
+                TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/png"
+                                                                                             byteCount:(uint32_t)pngData.length
                                                                                         sourceFilename:filename
-                                                                                               caption:nil
+                                                                                               caption:CommonGenerator.sentence
                                                                                         albumMessageId:nil];
 
                 NSError *error;
-                BOOL success = [attachmentStream writeData:[self createRandomNSDataOfSize:filesize] error:&error];
+                BOOL success = [attachmentStream writeData:pngData error:&error];
                 OWSAssertDebug(success && !error);
                 [attachmentStream anyInsertWithTransaction:transaction];
-
+                [attachmentStream updateAsUploadedWithEncryptionKey:[Cryptography generateRandomBytes:32]
+                                                             digest:[Cryptography generateRandomBytes:32]
+                                                           serverId:1
+                                                        transaction:transaction];
                 [self createFakeOutgoingMessage:thread
                                     messageBody:nil
-                                   attachmentId:attachmentStream.uniqueId
+                                     attachment:attachmentStream
                                        filename:filename
-                                   messageState:TSOutgoingMessageStateFailed
+                                   messageState:TSOutgoingMessageStateSent
                                     isDelivered:NO
                                          isRead:NO
                                  isVoiceMessage:NO
@@ -4635,7 +4637,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     return [self createFakeOutgoingMessage:thread
                                messageBody:messageBody
-                              attachmentId:attachment.uniqueId
+                                attachment:attachment
                                   filename:fakeAssetLoader.filename
                               messageState:messageState
                                isDelivered:isDelivered
@@ -4650,7 +4652,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
 + (TSOutgoingMessage *)createFakeOutgoingMessage:(TSThread *)thread
                                      messageBody:(nullable NSString *)messageBody
-                                    attachmentId:(nullable NSString *)attachmentId
+                                      attachment:(nullable TSAttachment *)attachment
                                         filename:(nullable NSString *)filename
                                     messageState:(TSOutgoingMessageState)messageState
                                      isDelivered:(BOOL)isDelivered
@@ -4664,11 +4666,11 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 {
     OWSAssertDebug(thread);
     OWSAssertDebug(transaction);
-    OWSAssertDebug(messageBody.length > 0 || attachmentId.length > 0 || contactShare);
+    OWSAssertDebug(messageBody.length > 0 || attachment != nil || contactShare);
 
     NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
-    if (attachmentId) {
-        [attachmentIds addObject:attachmentId];
+    if (attachment != nil) {
+        [attachmentIds addObject:attachment.uniqueId];
     }
 
     // MJK TODO - remove senderTimestamp
@@ -4689,6 +4691,11 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     [message anyInsertWithTransaction:transaction];
     [message updateWithFakeMessageState:messageState transaction:transaction];
+    [attachment anyUpdateWithTransaction:transaction block:^(TSAttachment *latest) {
+        // There's no public setter for albumMessageId, since it's usually set in the initializer.
+        // This isn't convenient for the DEBUG UI, so we abuse the migrateAlbumMessageId method.
+        [latest migrateAlbumMessageId:message.uniqueId];
+    }];
     if (isDelivered) {
         SignalServiceAddress *_Nullable address = thread.recipientAddresses.lastObject;
         OWSAssertDebug(address.isValid);

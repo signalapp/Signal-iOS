@@ -1707,21 +1707,99 @@ public class CommonGenerator: NSObject {
         return result.joined(separator: " ")
     }
 
+    @objc
     static public var sentence: String {
         return sentences.randomElement()!
     }
 
+    @objc
     static public func sentences(count: UInt) -> [String] {
         return (0..<count).map { _ in sentence }
     }
 
+    @objc
     static public var paragraph: String {
         let sentenceCount = UInt(arc4random_uniform(7) + 2)
         return paragraph(sentenceCount: sentenceCount)
     }
 
+    @objc
     static public func paragraph(sentenceCount: UInt) -> String {
         return sentences(count: sentenceCount).joined(separator: " ")
+    }
+}
+
+@objc
+public class ImageFactory: NSObject {
+
+    @objc
+    public func build() -> UIImage {
+        return type(of: self).buildImage(size: sizeBuilder(),
+                                         backgroundColor: backgroundColorBuilder(),
+                                         textColor: textColorBuilder(),
+                                         text: textBuilder())
+    }
+
+    @objc
+    public func buildPNGData() -> Data {
+        guard let data = build().pngData() else {
+            owsFailDebug("data was unexpectedly nil")
+            return Data()
+        }
+        return data
+    }
+
+    @objc
+    public func buildJPGData() -> Data {
+        guard let data = build().jpegData(compressionQuality: 0.9) else {
+            owsFailDebug("data was unexpectedly nil")
+            return Data()
+        }
+        return data
+    }
+
+    public var sizeBuilder: () -> CGSize = { return CGSize(width: (50..<1000).randomElement()!, height: (50..<1000).randomElement()!) }
+    public var backgroundColorBuilder: () -> UIColor = { return [UIColor.purple, UIColor.yellow, UIColor.green, UIColor.blue, UIColor.red, UIColor.orange].randomElement()! }
+    public var textColorBuilder: () -> UIColor = { return [UIColor.black, UIColor.white].randomElement()! }
+    public var textBuilder: () -> String = { return "\(CommonGenerator.word)\n\(CommonGenerator.word)" }
+
+    public class func buildImage(size: CGSize, backgroundColor: UIColor, textColor: UIColor, text: String) -> UIImage {
+        return autoreleasepool {
+            let imageSize = CGSize(width: size.width / UIScreen.main.scale,
+                                   height: size.height / UIScreen.main.scale)
+
+            let imageFrame = CGRect(origin: .zero, size: imageSize)
+            let font = UIFont.boldSystemFont(ofSize: imageSize.width * 0.1)
+
+            let textAttributes: [NSAttributedString.Key: Any] = [.font: font,
+                                                                 .foregroundColor: textColor]
+
+            let textFrame = text.boundingRect(with: imageFrame.size,
+                                              options: [.usesLineFragmentOrigin, .usesFontLeading],
+                                              attributes: textAttributes,
+                                              context: nil)
+
+            UIGraphicsBeginImageContextWithOptions(imageFrame.size, false, UIScreen.main.scale)
+            guard let context = UIGraphicsGetCurrentContext() else {
+                owsFailDebug("context was unexpectedly nil")
+                return UIImage()
+            }
+
+            context.setFillColor(backgroundColor.cgColor)
+            context.fill(imageFrame)
+
+            text.draw(at: CGPoint(x: imageFrame.midX - textFrame.midX,
+                                  y: imageFrame.midY - textFrame.midY),
+                      withAttributes: textAttributes)
+
+            guard let image = UIGraphicsGetImageFromCurrentImageContext() else {
+                owsFailDebug("image was unexpectedly nil")
+                return UIImage()
+            }
+            UIGraphicsEndImageContext()
+
+            return image
+        }
     }
 }
 
