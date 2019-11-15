@@ -6,6 +6,10 @@ import UIKit
 import AVFoundation
 import PromiseKit
 
+public enum VideoEditorError: Error {
+    case cancelled
+}
+
 @objc
 public protocol VideoEditorModelObserver: class {
     func videoEditorModelDidChange(_ model: VideoEditorModel)
@@ -359,13 +363,14 @@ private class TrimVideoOperation: OWSOperation {
                 switch exportSession.status {
                 case .completed:
                     resolver.fulfill(dstFilePath)
+                case .cancelled:
+                    resolver.reject(VideoEditorError.cancelled)
                 default:
                     resolver.reject(OWSAssertionError("Status: \(exportSession.status)"))
                 }
             }
         }
         promise.done { filePath in
-            Logger.debug("done")
             self.render.resolver.fulfill(filePath)
             self.reportSuccess()
         }.catch { error in
