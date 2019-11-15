@@ -13,7 +13,6 @@
 #import "Pastelog.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
-#import "SignalsNavigationController.h"
 #import "ViewControllerUtils.h"
 #import "YDBLegacyMigration.h"
 #import <Intents/Intents.h>

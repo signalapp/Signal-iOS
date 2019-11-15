@@ -8,7 +8,6 @@
 #import "ConversationListViewController.h"
 #import "OWSNavigationController.h"
 #import "Signal-Swift.h"
-#import "SignalsNavigationController.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalCoreKit/NSDate+OWS.h>
