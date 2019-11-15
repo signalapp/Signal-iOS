@@ -311,7 +311,7 @@ NSString *const TSInteractionsBySortIdGroup = @"TSInteractionsBySortIdGroup";
                 return NSOrderedAscending;
             } else {
                 // Ensure sort is stable if sort ids are equal.
-                return [interaction1 compareForSorting:interaction2];
+                return [interaction1.uniqueId compare:interaction2.uniqueId];
             }
         }
     }];
