@@ -727,7 +727,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             mediaTileViewLayout.isInsertingCellsToTop = true
             mediaTileViewLayout.contentSizeBeforeInsertingToTop = collectionView.contentSize
             collectionView.performBatchUpdates({
-                self.mediaGallery.ensureGalleryItemsLoaded(.before, item: oldestLoadedItem, amount: self.kMediaTileViewLoadBatchSize) { addedSections, addedItems in
+                self.mediaGallery.ensureGalleryItemsLoaded(.before, item: oldestLoadedItem, amount: self.kMediaTileViewLoadBatchSize, shouldLoadAlbumRemainder: false) { addedSections, addedItems in
                     Logger.debug("insertingSections: \(addedSections) items: \(addedItems)")
 
                     collectionView.insertSections(addedSections)
@@ -761,7 +761,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             CATransaction.setDisableActions(true)
             UIView.performWithoutAnimation {
                 collectionView.performBatchUpdates({
-                    self.mediaGallery.ensureGalleryItemsLoaded(.after, item: mostRecentLoadedItem, amount: self.kMediaTileViewLoadBatchSize) { addedSections, addedItems in
+                    self.mediaGallery.ensureGalleryItemsLoaded(.after, item: mostRecentLoadedItem, amount: self.kMediaTileViewLoadBatchSize, shouldLoadAlbumRemainder: false) { addedSections, addedItems in
                         Logger.debug("insertingSections: \(addedSections), items: \(addedItems)")
                         collectionView.insertSections(addedSections)
                         collectionView.insertItems(at: addedItems)
@@ -787,7 +787,7 @@ extension MediaTileViewController: MediaPresentationContextProvider {
         }
 
         guard let visibleIndex = collectionView.indexPathsForVisibleItems.firstIndex(of: indexPath) else {
-            owsFailDebug("visibleIndex was unexpectedly nil")
+            Logger.debug("visibleIndex was nil, swiped to offscreen gallery item")
             return nil
         }
 
@@ -847,7 +847,8 @@ private class MediaGalleryStaticHeader: UICollectionViewCell {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-
+        label.textColor = Theme.primaryTextColor
+        label.font = UIFont.ows_dynamicTypeBody
         addSubview(label)
 
         label.textAlignment = .center
@@ -867,6 +868,7 @@ private class MediaGalleryStaticHeader: UICollectionViewCell {
     public override func prepareForReuse() {
         label.text = nil
         label.textColor = Theme.primaryTextColor
+        label.font = UIFont.ows_dynamicTypeBody
     }
 }
 

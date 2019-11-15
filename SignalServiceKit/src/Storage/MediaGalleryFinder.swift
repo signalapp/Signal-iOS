@@ -155,8 +155,10 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
             AND \(attachmentColumn: .albumMessageId) IS NOT NULL
             AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
         ORDER BY
-            \(interactionColumnFullyQualified: .id) DESC,
-            \(attachmentColumnFullyQualified: .id) DESC
+            \(interactionColumnFullyQualified: .id),
+            \(attachmentColumnFullyQualified: .id)
+        LIMIT \(range.length)
+        OFFSET \(range.lowerBound)
         """
 
         // GRDB TODO: migrate such that attachment.id reflects ordering in TSInteraction.attachmentIds
@@ -168,14 +170,14 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
 
     func mediaIndex(attachment: TSAttachmentStream, transaction: GRDBReadTransaction) -> Int? {
         let sql = """
-        SELECT rowNumber
+        SELECT mediaIndex
         FROM (
             SELECT
                 ROW_NUMBER() OVER (
                     ORDER BY
-                        \(interactionColumnFullyQualified: .id) DESC,
-                        \(attachmentColumnFullyQualified: .id) DESC
-                ) as rowNumber,
+                        \(interactionColumnFullyQualified: .id),
+                        \(attachmentColumnFullyQualified: .id)
+                ) - 1 as mediaIndex,
                 \(attachmentColumnFullyQualified: .uniqueId)
             FROM \(AttachmentRecord.databaseTableName)
             INNER JOIN \(InteractionRecord.databaseTableName)
