@@ -39,6 +39,9 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 @property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) uint64_t sortId;
 @property (nonatomic, readonly) uint64_t receivedAtTimestamp;
+/// Used for public chats where a message sent from a slave device is interpreted as having been sent from the master device.
+@property (nonatomic) NSString *actualSenderHexEncodedPublicKey;
+
 - (NSDate *)receivedAtDate;
 
 - (OWSInteractionType)interactionType;

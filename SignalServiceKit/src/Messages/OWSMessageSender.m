@@ -232,7 +232,7 @@ void AssertIsOnSendingQueue()
 - (void)didSucceed
 {
     if (self.message.messageState != TSOutgoingMessageStateSent) {
-        OWSFailDebug(@"unexpected message status: %@", self.message.statusDescription);
+//        OWSFailDebug(@"unexpected message status: %@", self.message.statusDescription);
     }
 
     self.successHandler();
@@ -498,9 +498,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(message);
     OWSAssertDebug(errorHandle);
 
-    NSMutableSet<NSString *> *recipientIds = [NSMutableSet new];
+    __block NSMutableSet<NSString *> *recipientIds = [NSMutableSet new];
     if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-        [recipientIds addObject:self.tsAccountManager.localNumber];
+        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+            NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:userHexEncodedPublicKey in:transaction] ?: userHexEncodedPublicKey;
+            recipientIds = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction].mutableCopy;
+        }];
     } else if (thread.isGroupThread) {
         [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             LKPublicChat *publicChat = [LKDatabaseUtilities getPublicChatForThreadID:thread.uniqueId transaction:transaction];
@@ -597,7 +601,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     }
                     resolve(error);
                 }];
-            [self sendMessageToRecipient:messageSend];
+            [self sendMessageToDestinationAndLinkedDevices:messageSend];
         }];
         [sendPromises addObject:sendPromise];
     }
@@ -668,14 +672,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return failureHandler(error);
     }
 
-    // In the "self-send" special case, we ony need to send a sync message with a delivery receipt.
-    if ([thread isKindOfClass:[TSContactThread class]] &&
-        [((TSContactThread *)thread).contactIdentifier isEqualToString:self.tsAccountManager.localNumber]) {
-        // Send to self.
-        OWSAssertDebug(message.recipientIds.count == 1);
-        // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
-        successHandler();
-        return;
+    // Loki: Handle note to self case
+    if ([thread isKindOfClass:[TSContactThread class]]) {
+        __block BOOL isNoteToSelf;
+        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            isNoteToSelf = [LKDatabaseUtilities isUserLinkedDevice:((TSContactThread *)thread).contactIdentifier in:transaction];
+        }];
+        if (isNoteToSelf) {
+            [self sendSyncTranscriptForMessage:message isRecipientUpdate:NO success:^{ } failure:^(NSError *error) { }];
+            successHandler();
+            return;
+        }
     }
 
     if (thread.isGroupThread) {
@@ -919,31 +926,29 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         thread.isForceHidden = YES;
         [thread saveWithTransaction:transaction];
     }];
-    LKFriendRequestMessage *message = [[LKFriendRequestMessage alloc] initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:@"Accept this friend request to enable messages to be synced across devices" attachmentIds:[NSMutableArray new]
+    LKFriendRequestMessage *message = [[LKFriendRequestMessage alloc] initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:@"Please accept to enable messages to be synced across devices" attachmentIds:[NSMutableArray new]
         expiresInSeconds:0 expireStartedAt:0 isVoiceMessage:NO groupMetaMessage:TSGroupMetaMessageUnspecified quotedMessage:nil contactShare:nil linkPreview:nil];
+    message.skipSave = YES;
     SignalRecipient *recipient = [[SignalRecipient alloc] initWithUniqueId:hexEncodedPublicKey];
     NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
     return [[OWSMessageSend alloc] initWithMessage:message thread:thread recipient:recipient senderCertificate:nil udAccess:nil localNumber:userHexEncodedPublicKey success:^{ } failure:^(NSError *error) { }];
 }
 
-- (void)sendMessageToRecipient:(OWSMessageSend *)messageSend
+- (void)sendMessageToDestinationAndLinkedDevices:(OWSMessageSend *)messageSend
 {
     TSOutgoingMessage *message = messageSend.message;
     NSString *contactID = messageSend.recipient.recipientId;
     BOOL isGroupMessage = messageSend.thread.isGroupThread;
     BOOL isDeviceLinkMessage = [message isKindOfClass:LKDeviceLinkMessage.class];
-    BOOL isMessageToSelf = (contactID == OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey);
-    BOOL isSyncMessage = [message isKindOfClass:OWSOutgoingSyncMessage.class];
-    if (isGroupMessage || isDeviceLinkMessage || isMessageToSelf || isSyncMessage) {
+    if (isGroupMessage || isDeviceLinkMessage) {
         [self sendMessage:messageSend];
     } else {
-        BOOL isSilentMessage = message.isSilent;
+        BOOL isSilentMessage = message.isSilent || [message isKindOfClass:LKEphemeralMessage.class] || [message isKindOfClass:OWSOutgoingSyncMessage.class];
         BOOL isFriendRequestMessage = [message isKindOfClass:LKFriendRequestMessage.class];
         [[LKAPI getDestinationsFor:contactID]
         .thenOn(OWSDispatch.sendingQueue, ^(NSArray<LKDestination *> *destinations) {
             // Get master destination
-            LKDestination *masterDestination = [destinations filtered:^BOOL(NSObject *object) {
-                LKDestination *destination = [object as:LKDestination.class];
+            LKDestination *masterDestination = [destinations filtered:^BOOL(LKDestination *destination) {
                 return [destination.kind isEqual:@"master"];
             }].firstObject;
             // Send to master destination
@@ -958,8 +963,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 }
             }
             // Get slave destinations
-            NSArray *slaveDestinations = [destinations filtered:^BOOL(NSObject *object) {
-                LKDestination *destination = [object as:LKDestination.class];
+            NSArray *slaveDestinations = [destinations filtered:^BOOL(LKDestination *destination) {
                 return [destination.kind isEqual:@"slave"];
             }];
             // Send to slave destinations (using a best attempt approach (i.e. ignoring the message send result) for now)
@@ -1164,9 +1168,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // so that we can learn from the service whether or not there are
         // linked devices that we don't know about.
         OWSLogWarn(@"Sending a message with no device messages.");
-        
-        // Loki: We don't handle linked devices yet so it's better to just exit early
-        // This would only occur if we're sending a message to ourself
+
         NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
         [error setIsRetryable:NO];
         return messageSend.failure(error);
@@ -1225,6 +1227,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             NSUInteger height = attachment.shouldHaveImageSize ? @(attachment.imageSize.height).unsignedIntegerValue : 0;
             [groupMessage addAttachmentWithKind:@"attachment" server:publicChat.server serverID:attachment.serverId contentType:attachment.contentType size:attachment.byteCount fileName:attachment.sourceFilename flags:0 width:width height:height caption:attachment.caption url:attachment.downloadURL linkPreviewURL:nil linkPreviewTitle:nil];
         }
+        message.actualSenderHexEncodedPublicKey = userHexEncodedPublicKey;
         [[LKPublicChatAPI sendMessage:groupMessage toGroup:publicChat.channel onServer:publicChat.server]
         .thenOn(OWSDispatch.sendingQueue, ^(LKGroupMessage *groupMessage) {
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -1247,27 +1250,31 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         uint64_t ttl = ((NSNumber *)signalMessageInfo[@"ttl"]).unsignedIntegerValue;
         BOOL isPing = ((NSNumber *)signalMessageInfo[@"isPing"]).boolValue;
         LKSignalMessage *signalMessage = [[LKSignalMessage alloc] initWithType:type timestamp:timestamp senderID:senderID senderDeviceID:senderDeviceID content:content recipientID:recipientID ttl:ttl isPing:isPing];
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            // Update the PoW calculation status
-            [message saveIsCalculatingProofOfWork:YES withTransaction:transaction];
-            // Update the message and thread if needed
-            if (signalMessage.type == TSFriendRequestMessageType) {
-                [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSending withTransaction:transaction];
-                [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
-            }
-        }];
+        if (!message.skipSave) {
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                // Update the PoW calculation status
+                [message saveIsCalculatingProofOfWork:YES withTransaction:transaction];
+                // Update the message and thread if needed
+                if (signalMessage.type == TSFriendRequestMessageType) {
+                    [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSending withTransaction:transaction];
+                    [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
+                }
+            }];
+        }
         // Convenience
         void (^onP2PSuccess)() = ^() { message.isP2P = YES; };
         void (^handleError)(NSError *error) = ^(NSError *error) {
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                // Update the message and thread if needed
-                if (signalMessage.type == TSFriendRequestMessageType) {
-                    [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusNone withTransaction:transaction];
-                    [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
-                }
-                // Update the PoW calculation status
-                [message saveIsCalculatingProofOfWork:NO withTransaction:transaction];
-            }];
+            if (!message.skipSave) {
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    // Update the message and thread if needed
+                    if (signalMessage.type == TSFriendRequestMessageType) {
+                        [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusNone withTransaction:transaction];
+                        [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
+                    }
+                    // Update the PoW calculation status
+                    [message saveIsCalculatingProofOfWork:NO withTransaction:transaction];
+                }];
+            }
             // Handle the error
             failedMessageSend(error);
         };
@@ -1285,16 +1292,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     [LKAnalytics.shared track:@"Sent Message Using Swarm API"];
                     isSuccess = YES;
                     if (signalMessage.type == TSFriendRequestMessageType) {
-                        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                            // Update the thread
-                            [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSent withTransaction:transaction];
-                            [message.thread removeOldOutgoingFriendRequestMessagesIfNeededWithTransaction:transaction];
-                            // Update the message
-                            [message saveFriendRequestStatus:LKMessageFriendRequestStatusPending withTransaction:transaction];
-                            NSTimeInterval expirationInterval = 72 * kHourInterval;
-                            NSDate *expirationDate = [[NSDate new] dateByAddingTimeInterval:expirationInterval];
-                            [message saveFriendRequestExpiresAt:[NSDate ows_millisecondsSince1970ForDate:expirationDate] withTransaction:transaction];
-                        }];
+                        if (!message.skipSave) {
+                            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                // Update the thread
+                                [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSent withTransaction:transaction];
+                                [message.thread removeOldOutgoingFriendRequestMessagesIfNeededWithTransaction:transaction];
+                                // Update the message
+                                [message saveFriendRequestStatus:LKMessageFriendRequestStatusPending withTransaction:transaction];
+                                NSTimeInterval expirationInterval = 72 * kHourInterval;
+                                NSDate *expirationDate = [[NSDate new] dateByAddingTimeInterval:expirationInterval];
+                                [message saveFriendRequestExpiresAt:[NSDate ows_millisecondsSince1970ForDate:expirationDate] withTransaction:transaction];
+                            }];
+                        }
                     }
                     // Invoke the completion handler
                     [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:false wasSentByWebsocket:false];
@@ -1348,15 +1357,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // have a valid Signal account.
             [SignalRecipient markRecipientAsRegisteredAndGet:recipient.recipientId transaction:transaction];
         }];
-        
-        // Loki: Check if we need to generate a link preview
-        TSMessage *message = messageSend.message;
-        if (message.linkPreview == nil && !message.hasAttachments) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSString *linkPreviewURL = [OWSLinkPreview previewURLForRawBodyText:message.body];
-                if (linkPreviewURL) { [message generateLinkPreviewIfNeededFromURL:linkPreviewURL]; }
-            });
-        }
 
         messageSend.success();
     });
@@ -1388,7 +1388,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
         dispatch_async([OWSDispatch sendingQueue], ^{
             OWSLogDebug(@"Retrying: %@", message.debugDescription);
-            [self sendMessageToRecipient:messageSend];
+            [self sendMessage:messageSend];
         });
     };
 
@@ -1543,19 +1543,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                          failure:(RetryableFailureHandler)failure
 {
     dispatch_block_t success = ^{
-        TSThread *_Nullable thread = message.thread;
-        if (thread && [thread isKindOfClass:[TSContactThread class]] &&
-            [thread.contactIdentifier isEqualToString:self.tsAccountManager.localNumber]) {
-            OWSAssertDebug(message.recipientIds.count == 1);
-            // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            TSThread *thread = message.thread;
+            // Loki: Handle note to self case
+            if (thread && [thread isKindOfClass:[TSContactThread class]] && [LKDatabaseUtilities isUserLinkedDevice:thread.contactIdentifier in:transaction]) {
                 for (NSString *recipientId in message.sendingRecipientIds) {
-                    [message updateWithReadRecipientId:recipientId
-                                         readTimestamp:message.timestamp
-                                           transaction:transaction];
+                    [message updateWithReadRecipientId:recipientId readTimestamp:message.timestamp transaction:transaction];
                 }
-            }];
-        }
+            }
+        }];
 
         successParam();
     };
@@ -1570,7 +1566,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return success();
     }
 
-    BOOL shouldSendTranscript = (AreRecipientUpdatesEnabled() || !message.hasSyncedTranscript);
+    // Loki: Handle note to self case
+    __block BOOL isNoteToSelf = NO;
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        TSThread *thread = message.thread;
+        if (thread && [thread isKindOfClass:[TSContactThread class]] && [LKDatabaseUtilities isUserLinkedDevice:thread.contactIdentifier in:transaction]) {
+            isNoteToSelf = YES;
+        }
+    }];
+    
+    BOOL isPublicChatMessage = message.thread.isGroupThread;
+    
+    BOOL shouldSendTranscript = (AreRecipientUpdatesEnabled() || !message.hasSyncedTranscript) && !isNoteToSelf && !isPublicChatMessage;
     if (!shouldSendTranscript) {
         return success();
     }
@@ -1619,7 +1626,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             failure(error);
         }];
-    [self sendMessageToRecipient:messageSend];
+    [self sendMessage:messageSend];
 }
 
 - (NSArray<NSDictionary *> *)throws_deviceMessagesForMessageSend:(OWSMessageSend *)messageSend
@@ -1644,20 +1651,21 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         messageSend.isLocalNumber,
         messageSend.isUDSend);
 
-    // Loki: Since we don't support multi-device sending yet, just send it to the primary device
-    NSMutableArray<NSNumber *> *deviceIds = [NSMutableArray arrayWithObject:@(OWSDevicePrimaryDeviceId)];
-
-    /* Loki: Original code
-    NSMutableArray<NSNumber *> *deviceIds = [recipient.devices mutableCopy];
-     */
-
-    OWSAssertDebug(deviceIds);
-
-    if (messageSend.isLocalNumber) {
-        [deviceIds removeObject:@(OWSDevicePrimaryDeviceId)];
+    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    
+    __block NSMutableSet<NSString *> *recipientIDs = [NSSet setWithObject:recipient.uniqueId];
+    if ([messageSend.message isKindOfClass:OWSOutgoingSyncMessage.class]) {
+        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:userHexEncodedPublicKey in:transaction] ?: userHexEncodedPublicKey;
+            recipientIDs = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction].mutableCopy;
+        }];
     }
 
-    for (NSNumber *deviceId in deviceIds) {
+    if (messageSend.isLocalNumber) {
+        [recipientIDs removeObject:userHexEncodedPublicKey];
+    }
+
+    for (NSString *recipientID in recipientIDs) {
         @try {
             // This may involve blocking network requests, so we do it _before_
             // we open a transaction.
@@ -1666,7 +1674,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             BOOL isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
             BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class];
             if (!isFriendRequest && !isDeviceLinkMessage) {
-                [self throws_ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
+                [self throws_ensureRecipientHasSessionForMessageSend:messageSend recipientID:recipientID deviceId:@(OWSDevicePrimaryDeviceId)];
             }
 
             __block NSDictionary *_Nullable messageDict;
@@ -1675,7 +1683,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     @try {
                         messageDict = [self throws_encryptedMessageForMessageSend:messageSend
-                                                                         deviceId:deviceId
+                                                                      recipientID:recipientID
                                                                         plainText:plainText
                                                                       transaction:transaction];
                     } @catch (NSException *exception) {
@@ -1697,7 +1705,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             if ([exception.name isEqualToString:OWSMessageSenderInvalidDeviceException]) {
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     [recipient updateRegisteredRecipientWithDevicesToAdd:nil
-                                                         devicesToRemove:@[ deviceId ]
+                                                         devicesToRemove:@[ @(OWSDevicePrimaryDeviceId) ]
                                                              transaction:transaction];
                 }];
             } else {
@@ -1709,19 +1717,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return [messagesArray copy];
 }
 
-- (void)throws_ensureRecipientHasSessionForMessageSend:(OWSMessageSend *)messageSend deviceId:(NSNumber *)deviceId
+- (void)throws_ensureRecipientHasSessionForMessageSend:(OWSMessageSend *)messageSend recipientID:(NSString *)recipientID deviceId:(NSNumber *)deviceId
 {
     OWSAssertDebug(messageSend);
     OWSAssertDebug(deviceId);
 
     OWSPrimaryStorage *storage = self.primaryStorage;
     SignalRecipient *recipient = messageSend.recipient;
-    NSString *recipientId = recipient.recipientId;
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(recipientID.length > 0);
 
     __block BOOL hasSession;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        hasSession = [storage containsSession:recipientId deviceId:[deviceId intValue] protocolContext:transaction];
+        hasSession = [storage containsSession:recipientID deviceId:[deviceId intValue] protocolContext:transaction];
     }];
     if (hasSession) {
         return;
@@ -1732,8 +1739,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSRaiseException(NoSessionForTransientMessageException, @"No session for transient message.");
     }
     
-    PreKeyBundle *_Nullable bundle = [storage getPreKeyBundleForContact:recipientId];
-    __block NSException *_Nullable exception;
+    PreKeyBundle *_Nullable bundle = [storage getPreKeyBundleForContact:recipientID];
+    __block NSException *exception;
 
     /** Loki: Original code
      * ================
@@ -1776,14 +1783,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                    preKeyStore:storage
                                                              signedPreKeyStore:storage
                                                               identityKeyStore:self.identityManager
-                                                                   recipientId:recipientId
+                                                                   recipientId:recipientID
                                                                       deviceId:[deviceId intValue]];
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             @try {
                 [builder throws_processPrekeyBundle:bundle protocolContext:transaction];
                 
-                // Loki: Discard the prekey bundle here since the session is initiated
-                [storage removePreKeyBundleForContact:recipientId transaction:transaction];
+                // Loki: Discard the pre key bundle here since the session has been established
+                [storage removePreKeyBundleForContact:recipientID transaction:transaction];
             } @catch (NSException *caughtException) {
                 exception = caughtException;
             }
@@ -1791,7 +1798,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         if (exception) {
             if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
                 OWSRaiseExceptionWithUserInfo(UntrustedIdentityKeyException,
-                    (@{ TSInvalidPreKeyBundleKey : bundle, TSInvalidRecipientKey : recipientId }),
+                    (@{ TSInvalidPreKeyBundleKey : bundle, TSInvalidRecipientKey : recipientID }),
                     @"");
             }
             @throw exception;
@@ -1896,43 +1903,40 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 }
 
 - (nullable NSDictionary *)throws_encryptedMessageForMessageSend:(OWSMessageSend *)messageSend
-                                                        deviceId:(NSNumber *)deviceId
+                                                     recipientID:(NSString *)recipientID
                                                        plainText:(NSData *)plainText
                                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(messageSend);
-    OWSAssertDebug(deviceId);
+    OWSAssertDebug(recipientID);
     OWSAssertDebug(plainText);
     OWSAssertDebug(transaction);
 
     OWSPrimaryStorage *storage = self.primaryStorage;
     TSOutgoingMessage *message = messageSend.message;
-    SignalRecipient *recipient = messageSend.recipient;
-    NSString *recipientId = recipient.recipientId;
-    OWSAssertDebug(recipientId.length > 0);
     
     // Loki: Both for friend request messages and device link messages we use fallback encryption as we don't necessarily have a session yet
     BOOL isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
     BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class];
     if (isFriendRequest || isDeviceLinkMessage) {
-        return [self throws_encryptedFriendRequestOrDeviceLinkMessageForMessageSend:messageSend deviceId:deviceId plainText:plainText];
+        return [self throws_encryptedFriendRequestOrDeviceLinkMessageForMessageSend:messageSend deviceId:@(OWSDevicePrimaryDeviceId) plainText:plainText];
     }
 
     // This may throw an exception.
-    if (![storage containsSession:recipientId deviceId:[deviceId intValue] protocolContext:transaction]) {
+    if (![storage containsSession:recipientID deviceId:@(OWSDevicePrimaryDeviceId).intValue protocolContext:transaction]) {
         NSString *missingSessionException = @"missingSessionException";
         OWSRaiseException(missingSessionException,
             @"Unexpectedly missing session for recipient: %@, device: %@",
-            recipientId,
-            deviceId);
+            recipientID,
+            @(OWSDevicePrimaryDeviceId));
     }
 
     SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storage
                                                             preKeyStore:storage
                                                       signedPreKeyStore:storage
                                                        identityKeyStore:self.identityManager
-                                                            recipientId:recipientId
-                                                               deviceId:[deviceId intValue]];
+                                                            recipientId:recipientID
+                                                               deviceId:@(OWSDevicePrimaryDeviceId).intValue];
 
     NSData *_Nullable serializedMessage;
     TSWhisperMessageType messageType;
@@ -1948,8 +1952,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             OWSRaiseException(@"SecretSessionCipherFailure", @"Can't create secret session cipher.");
         }
 
-        serializedMessage = [secretCipher throwswrapped_encryptMessageWithRecipientId:recipientId
-                                                                             deviceId:deviceId.intValue
+        serializedMessage = [secretCipher throwswrapped_encryptMessageWithRecipientId:recipientID
+                                                                             deviceId:@(OWSDevicePrimaryDeviceId).intValue
                                                                       paddedPlaintext:[plainText paddedMessageBody]
                                                                     senderCertificate:messageSend.senderCertificate
                                                                       protocolContext:transaction
@@ -1971,12 +1975,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     BOOL isSilent = message.isSilent;
     BOOL isOnline = message.isOnline;
     
-    LKAddressMessage *_Nullable addressMessage = [message as:[LKAddressMessage class]];
+    LKAddressMessage *addressMessage = [message as:[LKAddressMessage class]];
     BOOL isPing = addressMessage != nil && addressMessage.isPing;
     OWSMessageServiceParams *messageParams =
         [[OWSMessageServiceParams alloc] initWithType:messageType
-                                          recipientId:recipientId
-                                               device:[deviceId intValue]
+                                          recipientId:recipientID
+                                               device:@(OWSDevicePrimaryDeviceId).intValue
                                               content:serializedMessage
                                              isSilent:isSilent
                                              isOnline:isOnline

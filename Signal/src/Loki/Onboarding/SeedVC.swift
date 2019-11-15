@@ -5,7 +5,6 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
     private var mode: Mode = .register { didSet { if mode != oldValue { handleModeChanged() } } }
     private var seed: Data! { didSet { updateMnemonic() } }
     private var mnemonic: String! { didSet { handleMnemonicChanged() } }
-    private var linkingRequestMessageSendingTimer: Timer?
 
     // MARK: Components
     private lazy var registerStackView: UIStackView = {
@@ -50,7 +49,7 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
     }()
     
     private lazy var linkButton1: OWSFlatButton = {
-        let result = createLinkButton(title: NSLocalizedString("Link Device (Coming Soon)", comment: ""), selector: #selector(handleSwitchModeButton2Tapped))
+        let result = createLinkButton(title: NSLocalizedString("Link Device", comment: ""), selector: #selector(handleSwitchModeButton2Tapped))
         result.accessibilityIdentifier = "onboarding.keyPairStep.linkButton1"
         result.setBackgroundColors(upColor: .clear, downColor: .clear)
         return result
@@ -111,7 +110,7 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
     }()
     
     private lazy var linkButton2: OWSFlatButton = {
-        let result = createLinkButton(title: NSLocalizedString("Link Device (Coming Soon)", comment: ""), selector: #selector(handleSwitchModeButton2Tapped))
+        let result = createLinkButton(title: NSLocalizedString("Link Device", comment: ""), selector: #selector(handleSwitchModeButton2Tapped))
         result.accessibilityIdentifier = "onboarding.keyPairStep.linkButton2"
         result.setBackgroundColors(upColor: .clear, downColor: .clear)
         return result
@@ -224,11 +223,6 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
         restoreStackView.autoVCenterInSuperview()
         linkStackView.autoPinWidthToSuperview()
         linkStackView.autoVCenterInSuperview()
-        // TODO: Enable this again later
-        linkButton1.isUserInteractionEnabled = false
-        linkButton1.alpha = 0.24
-        linkButton2.isUserInteractionEnabled = false
-        linkButton2.alpha = 0.24
     }
     
     // MARK: General
@@ -352,21 +346,13 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
             present(deviceLinkingModal, animated: true, completion: nil)
             let masterHexEncodedPublicKey = masterHexEncodedPublicKeyTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces)
             let linkingRequestMessage = DeviceLinkingUtilities.getLinkingRequestMessage(for: masterHexEncodedPublicKey)
-            linkingRequestMessageSendingTimer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
-                self?.sendLinkingRequestMessage(linkingRequestMessage)
-            }
-            sendLinkingRequestMessage(linkingRequestMessage)
+            ThreadUtil.enqueue(linkingRequestMessage)
         } else {
             onboardingController.pushDisplayNameVC(from: self)
         }
     }
-
-    private func sendLinkingRequestMessage(_ linkingRequestMessage: DeviceLinkMessage) {
-        ThreadUtil.enqueue(linkingRequestMessage)
-    }
     
     func handleDeviceLinkAuthorized(_ deviceLink: DeviceLink) {
-        linkingRequestMessageSendingTimer?.invalidate()
         let userDefaults = UserDefaults.standard
         userDefaults.set(true, forKey: "didUpdateForMainnet")
         userDefaults.set(deviceLink.master.hexEncodedPublicKey, forKey: "masterDeviceHexEncodedPublicKey")
@@ -375,7 +361,6 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
     }
     
     func handleDeviceLinkingModalDismissed() {
-        linkingRequestMessageSendingTimer?.invalidate()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.stopLongPollerIfNeeded()
         TSAccountManager.sharedInstance().resetForReregistration()

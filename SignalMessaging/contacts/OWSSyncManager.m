@@ -21,6 +21,7 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
+#import <SignalServiceKit/TSContactThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -265,32 +266,27 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (AnyPromise *)syncAllContacts
 {
-    return [self syncContactsForSignalAccounts:self.contactsManager.signalAccounts];
+    NSMutableArray<SignalAccount *> *friends = @[].mutableCopy;
+    [TSContactThread enumerateCollectionObjectsUsingBlock:^(TSContactThread *thread, BOOL *stop) {
+        NSString *hexEncodedPublicKey = thread.contactIdentifier;
+        if (hexEncodedPublicKey != nil) {
+            [friends addObject:[[SignalAccount alloc] initWithRecipientId:hexEncodedPublicKey]];
+        }
+    }];
+    return [self syncContactsForSignalAccounts:friends];
 }
 
 - (AnyPromise *)syncContactsForSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
 {
-    OWSSyncContactsMessage *syncContactsMessage =
-        [[OWSSyncContactsMessage alloc] initWithSignalAccounts:signalAccounts
-                                               identityManager:self.identityManager
-                                                profileManager:self.profileManager];
-    __block DataSource *dataSource;
-    [self.readDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        dataSource = [DataSourceValue
-            dataSourceWithSyncMessageData:[syncContactsMessage
-                                              buildPlainTextAttachmentDataWithTransaction:transaction]];
-    }];
-
+    OWSSyncContactsMessage *syncContactsMessage = [[OWSSyncContactsMessage alloc] initWithSignalAccounts:signalAccounts identityManager:self.identityManager profileManager:self.profileManager];
     AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-        [self.messageSender sendTemporaryAttachment:dataSource
-            contentType:OWSMimeTypeApplicationOctetStream
-            inMessage:syncContactsMessage
+        [self.messageSender sendMessage:syncContactsMessage
             success:^{
                 OWSLogInfo(@"Successfully sent contacts sync message.");
                 resolve(@(1));
             }
             failure:^(NSError *error) {
-                OWSLogError(@"Failed to send contacts sync message with error: %@", error);
+                OWSLogError(@"Failed to send contacts sync message with error: %@.", error);
                 resolve(error);
             }];
     }];

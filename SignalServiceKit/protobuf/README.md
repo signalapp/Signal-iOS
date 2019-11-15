@@ -17,6 +17,6 @@ files.
 
 ## Building Protobuf
 
-    cd ~/src/WhisperSystems/SignalServiceKit/protobuf
+    cd SignalServiceKit/protobuf
     make
 

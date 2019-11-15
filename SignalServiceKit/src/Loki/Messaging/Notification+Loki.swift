@@ -7,8 +7,6 @@ public extension Notification.Name {
     public static let threadDeleted = Notification.Name("threadDeleted")
 }
 
-// MARK: - Obj-C
-
 @objc public extension NSNotification {
     @objc public static let contactOnlineStatusChanged = Notification.Name.contactOnlineStatusChanged.rawValue as NSString
     @objc public static let newMessagesReceived = Notification.Name.newMessagesReceived.rawValue as NSString

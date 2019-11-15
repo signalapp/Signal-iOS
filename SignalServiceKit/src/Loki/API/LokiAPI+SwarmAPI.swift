@@ -63,7 +63,7 @@ public extension LokiAPI {
                 ]
             ])
             print("[Loki] Invoking get_n_service_nodes on \(target).")
-            return TSNetworkManager.shared().makePromise(request: request).map { intermediate in
+            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { intermediate in
                 let rawResponse = intermediate.responseObject
                 guard let json = rawResponse as? JSON, let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw "Failed to update random snode pool from: \(rawResponse)." }
                 randomSnodePool = try Set(rawTargets.flatMap { rawTarget in
@@ -74,7 +74,7 @@ public extension LokiAPI {
                     return LokiAPITarget(address: "https://\(address)", port: UInt16(port))
                 })
                 return randomSnodePool.randomElement()!
-            }.recover { error -> Promise<LokiAPITarget> in
+            }.recover(on: DispatchQueue.global()) { error -> Promise<LokiAPITarget> in
                 print("[Loki] Failed to contact seed node at: \(target).")
                 Analytics.shared.track("Seed Node Failed")
                 throw error
@@ -91,7 +91,7 @@ public extension LokiAPI {
             return Promise<[LokiAPITarget]> { $0.fulfill(cachedSwarm) }
         } else {
             let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey ]
-            return getRandomSnode().then { invoke(.getSwarm, on: $0, associatedWith: hexEncodedPublicKey, parameters: parameters) }.map { parseTargets(from: $0) }.get { swarmCache[hexEncodedPublicKey] = $0 }
+            return getRandomSnode().then(on: DispatchQueue.global()) { invoke(.getSwarm, on: $0, associatedWith: hexEncodedPublicKey, parameters: parameters) }.map { parseTargets(from: $0) }.get { swarmCache[hexEncodedPublicKey] = $0 }
         }
     }
 
@@ -121,7 +121,7 @@ public extension LokiAPI {
 internal extension Promise {
     
     internal func handlingSwarmSpecificErrorsIfNeeded(for target: LokiAPITarget, associatedWith hexEncodedPublicKey: String) -> Promise<T> {
-        return recover { error -> Promise<T> in
+        return recover(on: DispatchQueue.global()) { error -> Promise<T> in
             if let error = error as? NetworkManagerError {
                 switch error.statusCode {
                 case 0, 400, 500, 503:

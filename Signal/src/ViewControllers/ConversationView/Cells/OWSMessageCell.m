@@ -213,7 +213,8 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     
-    if (self.message.isFriendRequest) {
+    // Loki: Attach the friend request view if needed
+    if ([self shouldShowFriendRequestUIForMessage:self.message]) {
         self.friendRequestView = [[LKFriendRequestView alloc] initWithMessage:self.message];
         self.friendRequestView.delegate = self.friendRequestViewDelegate;
         [self.contentView addSubview:self.friendRequestView];
@@ -298,6 +299,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.avatarView.image = authorAvatarImage;
     [self.contentView addSubview:self.avatarView];
     
+    // Loki: Show the moderator icon if needed
     if (self.viewItem.isGroupThread && !self.viewItem.isRSSFeed) {
         __block LKPublicChat *publicChat;
         [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -383,7 +385,8 @@ NS_ASSUME_NONNULL_BEGIN
         cellSize.width += self.sendFailureBadgeSize + self.sendFailureBadgeSpacing;
     }
 
-    if (self.message.isFriendRequest) {
+    // Loki: Include the friend request view if needed
+    if ([self shouldShowFriendRequestUIForMessage:self.message]) {
         cellSize.height += [LKFriendRequestView calculateHeightWithMessage:self.message conversationStyle:self.conversationStyle];
     }
     
@@ -468,7 +471,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(self.delegate);
 
-    if (self.message.isFriendRequest) {
+    if ([self shouldShowFriendRequestUIForMessage:self.message]) {
         return;
     }
     
@@ -528,6 +531,39 @@ NS_ASSUME_NONNULL_BEGIN
     CGPoint location = [sender locationInView:self];
     CGPoint headerBottom = [self convertPoint:CGPointMake(0, self.headerView.height) fromView:self.headerView];
     return location.y <= headerBottom.y;
+}
+
+#pragma mark - Convenience
+
+- (BOOL)shouldShowFriendRequestUIForMessage:(TSMessage *)message
+{
+    if ([message isKindOfClass:TSOutgoingMessage.class]) {
+        return message.isFriendRequest;
+    } else {
+        if (message.isFriendRequest) {
+            // Only show the first friend request that was received
+            NSString *senderID = ((TSIncomingMessage *)message).authorId;
+            __block NSMutableSet<TSContactThread *> *linkedDeviceThreads;
+            [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                linkedDeviceThreads = [LKDatabaseUtilities getLinkedDeviceThreadsFor:senderID in:transaction].mutableCopy;
+            }];
+            NSMutableArray<TSIncomingMessage *> *allFriendRequestMessages = @[].mutableCopy;
+            for (TSContactThread *thread in linkedDeviceThreads) {
+                [thread enumerateInteractionsUsingBlock:^(TSInteraction *interaction) {
+                    TSIncomingMessage *message = [interaction as:TSIncomingMessage.class];
+                    if (message != nil && message.isFriendRequest) {
+                        [allFriendRequestMessages addObject:message];
+                    }
+                }];
+            }
+            [allFriendRequestMessages sortUsingComparator:^NSComparisonResult(TSIncomingMessage *lhs, TSIncomingMessage *rhs) {
+                return [@(lhs.timestamp) compare:@(rhs.timestamp)] == NSOrderedDescending;
+            }];
+            return [message.uniqueId isEqual:allFriendRequestMessages.firstObject.uniqueId];
+        } else {
+            return NO;
+        }
+    }
 }
 
 @end

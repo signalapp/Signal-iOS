@@ -1644,12 +1644,36 @@ typedef enum : NSUInteger {
 #pragma mark - Updating
 
 - (void)updateInputToolbar {
-    BOOL hasPendingFriendRequest = self.thread.hasPendingFriendRequest;
-    [self.inputToolbar setUserInteractionEnabled:!hasPendingFriendRequest];
-    NSString *placeholderText = hasPendingFriendRequest ? NSLocalizedString(@"Pending Friend Request...", "") : NSLocalizedString(@"New Message", "");
+    BOOL isEnabled;
+    BOOL isAttachmentButtonHidden;
+    if ([self.thread isKindOfClass:TSContactThread.class]) {
+        NSString *senderID = ((TSContactThread *)self.thread).contactIdentifier;
+        __block NSSet<TSContactThread *> *linkedDeviceThreads;
+        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            linkedDeviceThreads = [LKDatabaseUtilities getLinkedDeviceThreadsFor:senderID in:transaction];
+        }];
+        if ([linkedDeviceThreads contains:^BOOL(TSContactThread *thread) {
+            return thread.isContactFriend;
+        }]) {
+            isEnabled = true;
+            isAttachmentButtonHidden = false;
+        } else if (![linkedDeviceThreads contains:^BOOL(TSContactThread *thread) {
+            return thread.hasPendingFriendRequest;
+        }]) {
+            isEnabled = true;
+            isAttachmentButtonHidden = true;
+        } else {
+            isEnabled = false;
+            isAttachmentButtonHidden = true;
+        }
+    } else {
+        isEnabled = true;
+        isAttachmentButtonHidden = false;
+    }
+    [self.inputToolbar setUserInteractionEnabled:isEnabled];
+    NSString *placeholderText = isEnabled ? NSLocalizedString(@"New Message", "") : NSLocalizedString(@"Pending Friend Request...", "");
     [self.inputToolbar setPlaceholderText:placeholderText];
-    BOOL isContactFriend = self.thread.isContactFriend;
-    [self.inputToolbar setAttachmentButtonHidden:(!isContactFriend && !self.thread.isGroupThread)];
+    [self.inputToolbar setAttachmentButtonHidden:isAttachmentButtonHidden];
 }
 
 #pragma mark - Identity
@@ -3793,8 +3817,7 @@ typedef enum : NSUInteger {
     if (isBackspace) {
         self.currentMentionStartIndex = -1;
         [self.inputToolbar hideMentionCandidateSelectionView];
-        NSArray *mentionsToRemove = [self.mentions filtered:^BOOL(NSObject *object) {
-            LKMention *mention = (LKMention *)object;
+        NSArray *mentionsToRemove = [self.mentions filtered:^BOOL(LKMention *mention) {
             return ![mention isContainedIn:newText];
         }];
         [self.mentions removeObjectsInArray:mentionsToRemove];
@@ -4428,10 +4451,26 @@ typedef enum : NSUInteger {
 
 - (void)acceptFriendRequest:(TSIncomingMessage *)friendRequest
 {
+    // Accept all outstanding friend requests associated with this user and try to establish sessions with the
+    // subset of their devices that haven't sent a friend request.
+    NSString *senderID = friendRequest.authorId;
+    __block NSSet<TSContactThread *> *linkedDeviceThreads;
+    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        linkedDeviceThreads = [LKDatabaseUtilities getLinkedDeviceThreadsFor:senderID in:transaction];
+    }];
+    for (TSContactThread *thread in linkedDeviceThreads) {
+        if (thread.hasPendingFriendRequest) {
+            [ThreadUtil enqueueFriendRequestAcceptanceMessageInThread:self.thread];
+        } else {
+            OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
+            OWSMessageSend *automatedFriendRequestMessage = [messageSender getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:thread.contactIdentifier];
+            dispatch_async(OWSDispatch.sendingQueue, ^{
+                [messageSender sendMessage:automatedFriendRequestMessage];
+            });
+        }
+    }
     // Update the thread's friend request status
     [self.thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:nil];
-    // Send a friend request accepted message
-    [ThreadUtil enqueueFriendRequestAcceptanceMessageInThread:self.thread];
 }
 
 - (void)declineFriendRequest:(TSIncomingMessage *)friendRequest

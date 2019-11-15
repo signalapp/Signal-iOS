@@ -286,7 +286,12 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                 self.toLinkedDevicesReadReceiptMap[threadUniqueId] = newReadReceipt;
             }
 
-            if ([message.authorId isEqualToString:[TSAccountManager localNumber]]) {
+            __block BOOL isNoteToSelf;
+            [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                isNoteToSelf = [LKDatabaseUtilities isUserLinkedDevice:message.authorId in:transaction];
+            }];
+            
+            if (isNoteToSelf) {
                 OWSLogVerbose(@"Ignoring read receipt for self-sender.");
                 return;
             }

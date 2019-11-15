@@ -57,6 +57,7 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import "OWSDispatch.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -241,6 +242,7 @@ NS_ASSUME_NONNULL_BEGIN
                  plaintextData:(NSData *_Nullable)plaintextData
                wasReceivedByUD:(BOOL)wasReceivedByUD
                    transaction:(YapDatabaseReadWriteTransaction *)transaction
+                      serverID:(uint64_t)serverID
 {
     if (!envelope) {
         OWSFailDebug(@"Missing envelope.");
@@ -286,7 +288,8 @@ NS_ASSUME_NONNULL_BEGIN
             [self throws_handleEnvelope:envelope
                           plaintextData:plaintextData
                         wasReceivedByUD:wasReceivedByUD
-                            transaction:transaction];
+                            transaction:transaction
+                               serverID:serverID];
             break;
         case SSKProtoEnvelopeTypeReceipt:
             OWSAssertDebug(!plaintextData);
@@ -379,6 +382,7 @@ NS_ASSUME_NONNULL_BEGIN
                 plaintextData:(NSData *)plaintextData
               wasReceivedByUD:(BOOL)wasReceivedByUD
                   transaction:(YapDatabaseReadWriteTransaction *)transaction
+                     serverID:(uint64_t)serverID
 {
     if (!envelope) {
         OWSFailDebug(@"Missing envelope.");
@@ -439,7 +443,7 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSLogInfo(@"[Loki] Received a device linking authorization from: %@", envelope.source); // Not masterHexEncodedPublicKey
                 [LKDeviceLinkingSession.current processLinkingAuthorizationFrom:masterHexEncodedPublicKey for:slaveHexEncodedPublicKey masterSignature:masterSignature slaveSignature:slaveSignature];
             } else if (slaveSignature != nil) { // Request
-                OWSLogInfo(@"[Loki] Received a device linking request from: %@", envelope.source); // Not slaveHexEncodedPublicKey }
+                OWSLogInfo(@"[Loki] Received a device linking request from: %@", envelope.source); // Not slaveHexEncodedPublicKey
                 [LKDeviceLinkingSession.current processLinkingRequestFrom:slaveHexEncodedPublicKey to:masterHexEncodedPublicKey with:slaveSignature];
             }
         }
@@ -447,7 +451,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Loki: Handle pre key bundle message if needed
         if (contentProto.prekeyBundleMessage != nil) {
             OWSLogInfo(@"[Loki] Received a pre key bundle message from: %@.", envelope.source);
-            PreKeyBundle *_Nullable bundle = [contentProto.prekeyBundleMessage createPreKeyBundleWithTransaction:transaction];
+            PreKeyBundle *_Nullable bundle = [contentProto.prekeyBundleMessage getPreKeyBundleWithTransaction:transaction];
             if (bundle == nil) {
                 OWSFailDebug(@"Failed to create a pre key bundle.");
             }
@@ -464,7 +468,8 @@ NS_ASSUME_NONNULL_BEGIN
         if (contentProto.syncMessage) {
             [self throws_handleIncomingEnvelope:envelope
                                 withSyncMessage:contentProto.syncMessage
-                                    transaction:transaction];
+                                    transaction:transaction
+                                       serverID:serverID];
 
             [[OWSDeviceManager sharedManager] setHasReceivedSyncMessage];
         } else if (contentProto.dataMessage) {
@@ -887,6 +892,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)throws_handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
                       withSyncMessage:(SSKProtoSyncMessage *)syncMessage
                           transaction:(YapDatabaseReadWriteTransaction *)transaction
+                             serverID:(uint64_t)serverID
 {
     if (!envelope) {
         OWSFailDebug(@"Missing envelope.");
@@ -901,9 +907,11 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSString *localNumber = self.tsAccountManager.localNumber;
-    if (![localNumber isEqualToString:envelope.source]) {
-        // Sync messages should only come from linked devices.
+    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    NSSet<NSString *> *linkedDeviceHexEncodedPublicKeys = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction];
+    if (![linkedDeviceHexEncodedPublicKeys contains:^BOOL(NSString *hexEncodedPublicKey) {
+        return [hexEncodedPublicKey isEqual:envelope.source];
+    }]) {
         OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorSyncMessageFromUnknownSource], envelope);
         return;
     }
@@ -931,6 +939,7 @@ NS_ASSUME_NONNULL_BEGIN
         if ([self isDataMessageGroupAvatarUpdate:syncMessage.sent.message] && !syncMessage.sent.isRecipientUpdate) {
             [OWSRecordTranscriptJob
                 processIncomingSentMessageTranscript:transcript
+                                            serverID:0
                                    attachmentHandler:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                                        OWSAssertDebug(attachmentStreams.count == 1);
                                        TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
@@ -952,6 +961,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             [OWSRecordTranscriptJob
                 processIncomingSentMessageTranscript:transcript
+                                            serverID:serverID
                                    attachmentHandler:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                                        OWSLogDebug(@"successfully fetched transcript attachments: %lu",
                                            (unsigned long)attachmentStreams.count);
@@ -1005,6 +1015,35 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (syncMessage.verified) {
         OWSLogInfo(@"Received verification state for %@", syncMessage.verified.destination);
         [self.identityManager throws_processIncomingSyncMessage:syncMessage.verified transaction:transaction];
+    } else if (syncMessage.contacts) {
+        NSLog(@"[Loki] Received contact sync message.");
+        NSData *data = syncMessage.contacts.data;
+        ContactParser *parser = [[ContactParser alloc] initWithData:data];
+        NSArray<NSString *> *hexEncodedPublicKeys = [parser parseHexEncodedPublicKeys];
+        // Try to establish sessions
+        for (NSString *hexEncodedPublicKey in hexEncodedPublicKeys) {
+            TSContactThread *thread = [TSContactThread getThreadWithContactId:hexEncodedPublicKey transaction:transaction];
+            if (thread == nil) { return; }
+            LKThreadFriendRequestStatus friendRequestStatus = thread.friendRequestStatus;
+            switch (friendRequestStatus) {
+                case LKThreadFriendRequestStatusNone: {
+                    OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
+                    OWSMessageSend *automatedFriendRequestMessage = [messageSender getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:hexEncodedPublicKey];
+                    dispatch_async(OWSDispatch.sendingQueue, ^{
+                        [messageSender sendMessage:automatedFriendRequestMessage];
+                    });
+                    break;
+                }
+                case LKThreadFriendRequestStatusRequestReceived: {
+                    [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];
+                    // The two lines below are equivalent to calling [ThreadUtil enqueueFriendRequestAcceptanceMessageInThread:thread]
+                    LKEphemeralMessage *backgroundMessage = [[LKEphemeralMessage alloc] initInThread:thread];
+                    [self.messageSenderJobQueue addMessage:backgroundMessage transaction:transaction];
+                    break;
+                }
+                default: break; // Do nothing
+            }
+        }
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
     }
@@ -1415,11 +1454,16 @@ NS_ASSUME_NONNULL_BEGIN
                 }
                 
                 // Loki: Cache the user hex encoded public key (for mentions)
-                [LKAPI populateUserHexEncodedPublicKeyCacheIfNeededFor:oldGroupThread.uniqueId in:transaction];
-                [LKAPI cache:incomingMessage.authorId for:oldGroupThread.uniqueId];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                        [LKAPI populateUserHexEncodedPublicKeyCacheIfNeededFor:oldGroupThread.uniqueId in:transaction];
+                        [LKAPI cache:incomingMessage.authorId for:oldGroupThread.uniqueId];
+                    }];
+                });
                 
                 [self finalizeIncomingMessage:incomingMessage
                                        thread:oldGroupThread
+                                 masterThread:oldGroupThread
                                      envelope:envelope
                                   transaction:transaction];
                 
@@ -1437,24 +1481,25 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else {
         
-        // TODO: Do we need to fetch the device mapping here?
+        // Loki: A message from a secondary device should appear as if it came from the primary device; the underlying
+        // friend request logic, however, should still be specific to the secondary device.
         
-        // Loki: Get the master hex encoded public key
-        NSString *hexEncodedPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source);
-        
-        OWSLogDebug(
-            @"incoming message from: %@ with timestamp: %lu", hexEncodedPublicKey, (unsigned long)timestamp);
-        TSContactThread *thread =
-            [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
+        // Loki: Get the master hex encoded public key and thread
+        NSString *hexEncodedPublicKey = envelope.source;
+        NSString *masterHexEncodedPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source);
+        TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
+        TSContactThread *masterThread = [TSContactThread getOrCreateThreadWithContactId:masterHexEncodedPublicKey transaction:transaction];
 
+        OWSLogDebug(@"incoming message from: %@ with timestamp: %lu", hexEncodedPublicKey, (unsigned long)timestamp);
+        
         [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
-                                                                                  thread:thread
+                                                                                  thread:masterThread
                                                               createdByRemoteRecipientId:hexEncodedPublicKey
                                                                   createdInExistingGroup:NO
                                                                              transaction:transaction];
 
         TSQuotedMessage *_Nullable quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:dataMessage
-                                                                                         thread:thread
+                                                                                         thread:masterThread
                                                                                     transaction:transaction];
 
         NSError *linkPreviewError;
@@ -1470,8 +1515,8 @@ NS_ASSUME_NONNULL_BEGIN
         // Legit usage of senderTimestamp when creating incoming message from received envelope
         TSIncomingMessage *incomingMessage =
             [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
-                                                               inThread:thread
-                                                               authorId:[thread contactIdentifier]
+                                                               inThread:masterThread
+                                                               authorId:masterThread.contactIdentifier
                                                          sourceDeviceId:envelope.sourceDevice
                                                             messageBody:body
                                                           attachmentIds:@[]
@@ -1486,9 +1531,9 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *rawDisplayName = dataMessage.profile.displayName;
         if (rawDisplayName != nil && rawDisplayName.length > 0) {
             NSString *displayName = [NSString stringWithFormat:@"%@ (...%@)", rawDisplayName, [incomingMessage.authorId substringFromIndex:incomingMessage.authorId.length - 8]];
-            [self.profileManager setDisplayNameForContactWithID:thread.contactIdentifier to:displayName with:transaction];
+            [self.profileManager setDisplayNameForContactWithID:masterThread.contactIdentifier to:displayName with:transaction];
         } else {
-            [self.profileManager setDisplayNameForContactWithID:thread.contactIdentifier to:nil with:transaction];
+            [self.profileManager setDisplayNameForContactWithID:masterThread.contactIdentifier to:nil with:transaction];
         }
         
         // Loki: Parse Loki specific properties if needed
@@ -1522,6 +1567,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         [self finalizeIncomingMessage:incomingMessage
                                thread:thread
+                         masterThread:thread
                              envelope:envelope
                           transaction:transaction];
         
@@ -1529,8 +1575,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)handleFriendRequestMessageIfNeededWithEnvelope:(SSKProtoEnvelope *)envelope data:(SSKProtoDataMessage *)data message:(TSIncomingMessage *)message thread:(TSThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    if (envelope.isGroupChatMessage || envelope.type != SSKProtoEnvelopeTypeFriendRequest) return;
+- (BOOL)canFriendRequestBeAutoAcceptedForThread:(TSContactThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    NSString *senderHexEncodedPublicKey = thread.contactIdentifier;
     if (thread.hasCurrentUserSentFriendRequest) {
         // This can happen if Alice sent Bob a friend request, Bob declined, but then Bob changed his
         // mind and sent a friend request to Alice. In this case we want Alice to auto-accept the request
@@ -1542,28 +1589,71 @@ NS_ASSUME_NONNULL_BEGIN
         // before updating Alice's thread's friend request status to LKThreadFriendRequestStatusFriends,
         // we can end up in a deadlock where both users' threads' friend request statuses are
         // LKThreadFriendRequestStatusRequestSent.
+        return YES;
+    }
+    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    NSSet<NSString *> *userLinkedDeviceHexEncodedPublicKeys = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction];
+    if ([userLinkedDeviceHexEncodedPublicKeys containsObject:senderHexEncodedPublicKey]) {
+        // Auto-accept any friend requests from the user's own linked devices
+        return YES;
+    }
+    NSSet<TSContactThread *> *senderLinkedDeviceThreads = [LKDatabaseUtilities getLinkedDeviceThreadsFor:senderHexEncodedPublicKey in:transaction];
+    if ([senderLinkedDeviceThreads contains:^BOOL(TSContactThread *thread) {
+        return thread.isContactFriend;
+    }]) {
+        // Auto-accept if the user is friends with any of the sender's linked devices.
+        return YES;
+    }
+    return NO;
+}
+
+- (void)handleFriendRequestMessageIfNeededWithEnvelope:(SSKProtoEnvelope *)envelope data:(SSKProtoDataMessage *)data message:(TSIncomingMessage *)message thread:(TSContactThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    if (envelope.isGroupChatMessage) {
+        return NSLog(@"[Loki] Ignoring friend request in group chat.", @"");
+    }
+    if (envelope.type != SSKProtoEnvelopeTypeFriendRequest) {
+        return NSLog(@"[Loki] handleFriendRequestMessageIfNeededWithEnvelope:data:message:thread:transaction was called with an envelope that isn't of type SSKProtoEnvelopeTypeFriendRequest.");
+    }
+    if ([self canFriendRequestBeAutoAcceptedForThread:thread transaction:transaction]) {
         [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];
-        TSOutgoingMessage *existingFriendRequestMessage = (TSOutgoingMessage *)[thread.lastInteraction as:TSOutgoingMessage.class];
-        if (existingFriendRequestMessage != nil && existingFriendRequestMessage.isFriendRequest) {
+        __block TSOutgoingMessage *existingFriendRequestMessage;
+        [thread enumerateInteractionsWithTransaction:transaction usingBlock:^(TSInteraction *interaction, YapDatabaseReadTransaction *transaction) {
+            if ([interaction isKindOfClass:TSOutgoingMessage.class] && ((TSOutgoingMessage *)interaction).isFriendRequest) {
+                existingFriendRequestMessage = (TSOutgoingMessage *)interaction;
+            }
+        }];
+        if (existingFriendRequestMessage != nil) {
             [existingFriendRequestMessage saveFriendRequestStatus:LKMessageFriendRequestStatusAccepted withTransaction:transaction];
         }
         // The two lines below are equivalent to calling [ThreadUtil enqueueFriendRequestAcceptanceMessageInThread:thread]
         LKEphemeralMessage *backgroundMessage = [[LKEphemeralMessage alloc] initInThread:thread];
         [self.messageSenderJobQueue addMessage:backgroundMessage transaction:transaction];
-    } else {
-        if (!thread.isContactFriend) {
-            // Checking that the sender of the message isn't already a friend is necessary because otherwise
-            // the following situation can occur: Alice and Bob are friends. Bob loses his database and his
-            // friend request status is reset to LKThreadFriendRequestStatusNone. Bob now sends Alice a friend
-            // request. Alice's thread's friend request status is reset to
-            // LKThreadFriendRequestStatusRequestReceived.
-            [thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestReceived withTransaction:transaction];
-            message.friendRequestStatus = LKMessageFriendRequestStatusPending; // Don't save yet. This is done in finalizeIncomingMessage:thread:envelope:transaction.
-        } else {
-            // This can happen if Alice and Bob have a session, Bob deletes his app, restores from seed, and then sends a friend request to Alice again.
-            // TODO: Re-enable when seed restoration is done
-//            [self handleEndSessionMessageWithEnvelope:envelope dataMessage:data transaction:transaction];
+    } else if (!thread.isContactFriend) {
+        // Checking that the sender of the message isn't already a friend is necessary because otherwise
+        // the following situation can occur: Alice and Bob are friends. Bob loses his database and his
+        // friend request status is reset to LKThreadFriendRequestStatusNone. Bob now sends Alice a friend
+        // request. Alice's thread's friend request status is reset to
+        // LKThreadFriendRequestStatusRequestReceived.
+        [thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestReceived withTransaction:transaction];
+        // Except for the message.friendRequestStatus = LKMessageFriendRequestStatusPending line below, all of this is to ensure that
+        // there's only ever one message with status LKMessageFriendRequestStatusPending in a thread (where a thread is the combination
+        // of all threads belonging to the linked devices of a user).
+        NSString *senderID = ((TSIncomingMessage *)message).authorId;
+        NSSet<TSContactThread *> *linkedDeviceThreads = [LKDatabaseUtilities getLinkedDeviceThreadsFor:senderID in:transaction];
+        for (TSContactThread *thread in linkedDeviceThreads) {
+            [thread enumerateInteractionsWithTransaction:transaction usingBlock:^(TSInteraction *interaction, YapDatabaseReadTransaction *transaction) {
+                if (![interaction isKindOfClass:TSIncomingMessage.class]) { return; }
+                TSIncomingMessage *message = (TSIncomingMessage *)interaction;
+                if (message.friendRequestStatus != LKMessageFriendRequestStatusNone) {
+                    [message saveFriendRequestStatus:LKMessageFriendRequestStatusNone withTransaction:transaction];
+                }
+            }];
         }
+        message.friendRequestStatus = LKMessageFriendRequestStatusPending; // Don't save yet. This is done in finalizeIncomingMessage:thread:masterThread:envelope:transaction.
+    } else {
+        // This can happen if Alice and Bob have a session, Bob deletes his app, restores from seed, and then sends a friend request to Alice again.
+        // TODO: Re-enable when seed restoration is done
+//        [self handleEndSessionMessageWithEnvelope:envelope dataMessage:data transaction:transaction];
     }
 }
 
@@ -1578,7 +1668,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (thread.isContactFriend) return;
     // Become happy friends and go on great adventures
     [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];
-    TSOutgoingMessage *existingFriendRequestMessage = (TSOutgoingMessage *)[thread.lastInteraction as:TSOutgoingMessage.class];
+    TSOutgoingMessage *existingFriendRequestMessage = [thread.lastInteraction as:TSOutgoingMessage.class];
     if (existingFriendRequestMessage != nil && existingFriendRequestMessage.isFriendRequest) {
         [existingFriendRequestMessage saveFriendRequestStatus:LKMessageFriendRequestStatusAccepted withTransaction:transaction];
     }
@@ -1591,6 +1681,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)finalizeIncomingMessage:(TSIncomingMessage *)incomingMessage
                          thread:(TSThread *)thread
+                   masterThread:(TSThread *)masterThread
                        envelope:(SSKProtoEnvelope *)envelope
                     transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -1619,7 +1710,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.
-    if ([(thread.contactIdentifier ?: envelope.source) isEqualToString:self.tsAccountManager.localNumber]) {
+    if ([(masterThread.contactIdentifier ?: envelope.source) isEqualToString:self.tsAccountManager.localNumber]) {
         // Don't send a read receipt for messages sent by ourselves.
         [incomingMessage markAsReadAtTimestamp:envelope.timestamp sendReadReceipt:NO transaction:transaction];
     }
@@ -1673,15 +1764,15 @@ NS_ASSUME_NONNULL_BEGIN
                                                                       transaction:transaction];
 
     // Update thread preview in inbox
-    [thread touchWithTransaction:transaction];
+    [masterThread touchWithTransaction:transaction];
 
     [SSKEnvironment.shared.notificationsManager notifyUserForIncomingMessage:incomingMessage
-                                                                    inThread:thread
+                                                                    inThread:masterThread
                                                                  transaction:transaction];
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.typingIndicators didReceiveIncomingMessageInThread:thread
-                                                     recipientId:(thread.contactIdentifier ?: envelope.source)
+        [self.typingIndicators didReceiveIncomingMessageInThread:masterThread
+                                                     recipientId:(masterThread.contactIdentifier ?: envelope.source)
                                                         deviceId:envelope.sourceDevice];
     });
 }
@@ -1752,7 +1843,7 @@ NS_ASSUME_NONNULL_BEGIN
     SignalRecipient *_Nullable recipient =
         [SignalRecipient registeredRecipientForRecipientId:localNumber mustHaveDevices:NO transaction:transaction];
     if (!recipient) {
-        OWSFailDebug(@"No local SignalRecipient.");
+//        OWSFailDebug(@"No local SignalRecipient.");
     } else {
         BOOL isRecipientDevice = [recipient.devices containsObject:@(envelope.sourceDevice)];
         if (!isRecipientDevice) {

@@ -17,6 +17,7 @@
 #import "TSQuotedMessage.h"
 #import "TSThread.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import "OWSPrimaryStorage+Loki.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -60,6 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 + (void)processIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)transcript
+                                    serverID:(uint64_t)serverID
                            attachmentHandler:(void (^)(
                                                  NSArray<TSAttachmentStream *> *attachmentStreams))attachmentHandler
                                  transaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -102,6 +104,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                       quotedMessage:transcript.quotedMessage
                                                        contactShare:transcript.contact
                                                         linkPreview:transcript.linkPreview];
+    
+    if (serverID != 0) {
+        outgoingMessage.groupChatServerID = serverID;
+    }
 
     NSArray<TSAttachmentPointer *> *attachmentPointers =
         [TSAttachmentPointer attachmentPointersFromProtos:transcript.attachmentPointerProtos
@@ -129,6 +135,9 @@ NS_ASSUME_NONNULL_BEGIN
                         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                             [outgoingMessage setQuotedMessageThumbnailAttachmentStream:attachmentStream];
                             [outgoingMessage saveWithTransaction:transaction];
+                            if (serverID != 0) {
+                                [OWSPrimaryStorage.sharedManager setIDForMessageWithServerID:serverID to:outgoingMessage.uniqueId in:transaction];
+                            }
                         }];
                 }
                 failure:^(NSError *error) {

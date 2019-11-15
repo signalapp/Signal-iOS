@@ -28,12 +28,11 @@ NS_ASSUME_NONNULL_BEGIN
 disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
 {
     OWSAssertDebug(signalAccount);
-    OWSAssertDebug(signalAccount.contact);
     OWSAssertDebug(contactsManager);
 
     SSKProtoContactDetailsBuilder *contactBuilder =
         [SSKProtoContactDetails builderWithNumber:signalAccount.recipientId];
-    [contactBuilder setName:signalAccount.contact.fullName];
+    [contactBuilder setName:[LKDisplayNameUtilities getPrivateChatDisplayNameFor:signalAccount.recipientId] ?: signalAccount.recipientId];
     [contactBuilder setColor:conversationColorName];
 
     if (recipientIdentity != nil) {
@@ -48,6 +47,7 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
         contactBuilder.verified = verified;
     }
 
+    /*
     UIImage *_Nullable rawAvatar = [contactsManager avatarImageForCNContactId:signalAccount.contact.cnContactId];
     NSData *_Nullable avatarPng;
     if (rawAvatar) {
@@ -66,6 +66,7 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
             [contactBuilder setAvatar:avatar];
         }
     }
+     */
 
     if (profileKeyData) {
         OWSAssertDebug(profileKeyData.length == kAES256_KeyByteLength);
@@ -93,12 +94,14 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     }
 
     uint32_t contactDataLength = (uint32_t)contactData.length;
-    [self writeVariableLengthUInt32:contactDataLength];
+    [self writeUInt32:contactDataLength];
     [self writeData:contactData];
 
+    /*
     if (avatarPng) {
         [self writeData:avatarPng];
     }
+     */
 }
 
 @end

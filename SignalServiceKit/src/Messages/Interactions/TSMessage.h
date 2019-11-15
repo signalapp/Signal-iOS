@@ -44,6 +44,8 @@ typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
 @property (nonatomic) uint64_t friendRequestExpiresAt;
 @property (nonatomic, readonly) BOOL isFriendRequest;
 @property (nonatomic, readonly) BOOL hasFriendRequestStatusMessage;
+@property BOOL skipSave;
+// P2P
 @property (nonatomic) BOOL isP2P;
 // Group chat
 @property (nonatomic) uint64_t groupChatServerID; // Should ideally be publicChatServerID

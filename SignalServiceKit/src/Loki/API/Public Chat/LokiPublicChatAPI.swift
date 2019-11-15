@@ -3,9 +3,10 @@ import PromiseKit
 @objc(LKPublicChatAPI)
 public final class LokiPublicChatAPI : LokiDotNetAPI {
     private static var moderators: [String:[UInt64:Set<String>]] = [:] // Server URL to (channel ID to set of moderator IDs)
+    public static var displayNameUpdatees: [String:Set<String>] = [:]
     
     // MARK: Settings
-    private static let fallbackBatchCount = 256
+    private static let fallbackBatchCount = 64
     private static let maxRetryCount: UInt = 8
     
     // MARK: Public Chat
@@ -83,7 +84,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         }
         let url = URL(string: "\(server)/channels/\(channel)/messages?\(queryParameters)")!
         let request = TSRequest(url: url)
-        return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
+        return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { $0.responseObject }.map { rawResponse in
             guard let json = rawResponse as? JSON, let rawMessages = json["data"] as? [JSON] else {
                 print("[Loki] Couldn't parse messages for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
                 throw Error.parsingFailed
@@ -129,6 +130,14 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                     print("[Loki] Ignoring public chat message with invalid signature.")
                     return nil
                 }
+                var existingMessageID: String? = nil
+                storage.dbReadConnection.read { transaction in
+                    existingMessageID = storage.getIDForMessage(withServerID: UInt(result.serverID!), in: transaction)
+                }
+                guard existingMessageID == nil else {
+                    print("[Loki] Ignorning duplicate message.")
+                    return nil
+                }
                 return result
             }.sorted { $0.timestamp < $1.timestamp }
         }
@@ -136,14 +145,14 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     
     public static func sendMessage(_ message: LokiPublicChatMessage, to channel: UInt64, on server: String) -> Promise<LokiPublicChatMessage> {
         guard let signedMessage = message.sign(with: userKeyPair.privateKey) else { return Promise(error: Error.signingFailed) }
-        return getAuthToken(for: server).then { token -> Promise<LokiPublicChatMessage> in
+        return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<LokiPublicChatMessage> in
             print("[Loki] Sending message to public chat channel with ID: \(channel) on server: \(server).")
             let url = URL(string: "\(server)/channels/\(channel)/messages")!
             let parameters = signedMessage.toJSON()
             let request = TSRequest(url: url, method: "POST", parameters: parameters)
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
             let displayName = userDisplayName
-            return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
+            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { $0.responseObject }.map { rawResponse in
                 // ISO8601DateFormatter doesn't support milliseconds before iOS 11
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
@@ -155,7 +164,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                 let timestamp = UInt64(date.timeIntervalSince1970) * 1000
                 return LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: userHexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp, quote: signedMessage.quote, attachments: signedMessage.attachments, signature: signedMessage.signature)
             }
-        }.recover { error -> Promise<LokiPublicChatMessage> in
+        }.recover(on: DispatchQueue.global()) { error -> Promise<LokiPublicChatMessage> in
             if let error = error as? NetworkManagerError, error.statusCode == 401 {
                 print("[Loki] Group chat auth token for: \(server) expired; dropping it.")
                 storage.dbReadWriteConnection.removeObject(forKey: server, inCollection: authTokenCollection)
@@ -164,7 +173,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         }.retryingIfNeeded(maxRetryCount: maxRetryCount).map { message in
             Analytics.shared.track("Group Message Sent")
             return message
-        }.recover { error -> Promise<LokiPublicChatMessage> in
+        }.recover(on: DispatchQueue.global()) { error -> Promise<LokiPublicChatMessage> in
             Analytics.shared.track("Failed to Send Group Message")
             throw error
         }
@@ -180,7 +189,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         }
         let url = URL(string: "\(server)/loki/v1/channel/\(channel)/deletes?\(queryParameters)")!
         let request = TSRequest(url: url)
-        return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
+        return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { $0.responseObject }.map { rawResponse in
             guard let json = rawResponse as? JSON, let deletions = json["data"] as? [JSON] else {
                 print("[Loki] Couldn't parse deleted messages for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
                 throw Error.parsingFailed
@@ -198,14 +207,14 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     }
     
     public static func deleteMessage(with messageID: UInt, for channel: UInt64, on server: String, isSentByUser: Bool) -> Promise<Void> {
-        return getAuthToken(for: server).then { token -> Promise<Void> in
+        return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<Void> in
             let isModerationRequest = !isSentByUser
             print("[Loki] Deleting message with ID: \(messageID) for public chat channel with ID: \(channel) on server: \(server) (isModerationRequest = \(isModerationRequest)).")
             let urlAsString = isSentByUser ? "\(server)/channels/\(channel)/messages/\(messageID)" : "\(server)/loki/v1/moderation/message/\(messageID)"
             let url = URL(string: urlAsString)!
             let request = TSRequest(url: url, method: "DELETE", parameters: [:])
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-            return TSNetworkManager.shared().makePromise(request: request).done { result -> Void in
+            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).done(on: DispatchQueue.global()) { result -> Void in
                 print("[Loki] Deleted message with ID: \(messageID) on server: \(server).")
             }.retryingIfNeeded(maxRetryCount: maxRetryCount)
         }
@@ -214,7 +223,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     public static func getModerators(for channel: UInt64, on server: String) -> Promise<Set<String>> {
         let url = URL(string: "\(server)/loki/v1/channel/\(channel)/get_moderators")!
         let request = TSRequest(url: url)
-        return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
+        return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { $0.responseObject }.map { rawResponse in
             guard let json = rawResponse as? JSON, let moderators = json["moderators"] as? [String] else {
                 print("[Loki] Couldn't parse moderators for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
                 throw Error.parsingFailed
@@ -229,6 +238,33 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         }
     }
     
+    public static func getDisplayNames(for channel: UInt64, on server: String) -> Promise<Void> {
+        let publicChatID = "\(server).\(channel)"
+        guard let hexEncodedPublicKeys = displayNameUpdatees[publicChatID] else { return Promise.value(()) }
+        displayNameUpdatees[publicChatID] = []
+        print("[Loki] Getting display names for: \(hexEncodedPublicKeys).")
+        return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<Void> in
+            let queryParameters = "ids=\(hexEncodedPublicKeys.map { "@\($0)" }.joined(separator: ","))&include_user_annotations=1"
+            let url = URL(string: "\(server)/users?\(queryParameters)")!
+            let request = TSRequest(url: url)
+            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { $0.responseObject }.map { rawResponse in
+                guard let json = rawResponse as? JSON, let data = json["data"] as? [JSON] else {
+                    print("[Loki] Couldn't parse display names for users: \(hexEncodedPublicKeys) from: \(rawResponse).")
+                    throw Error.parsingFailed
+                }
+                storage.dbReadWriteConnection.readWrite { transaction in
+                    data.forEach { data in
+                        guard let user = data["user"] as? JSON, let hexEncodedPublicKey = user["username"] as? String, let rawDisplayName = user["name"] as? String else { return }
+                        let endIndex = hexEncodedPublicKey.endIndex
+                        let cutoffIndex = hexEncodedPublicKey.index(endIndex, offsetBy: -8)
+                        let displayName = "\(rawDisplayName) (...\(hexEncodedPublicKey[cutoffIndex..<endIndex]))"
+                        transaction.setObject(displayName, forKey: hexEncodedPublicKey, inCollection: "\(server).\(channel)")
+                    }
+                }
+            }
+        }
+    }
+    
     @objc (isUserModerator:forGroup:onServer:)
     public static func isUserModerator(_ hexEncodedPublicString: String, for channel: UInt64, on server: String) -> Bool {
         return moderators[server]?[channel]?.contains(hexEncodedPublicString) ?? false
@@ -236,12 +272,12 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     
     public static func setDisplayName(to newDisplayName: String?, on server: String) -> Promise<Void> {
         print("[Loki] Updating display name on server: \(server).")
-        return getAuthToken(for: server).then { token -> Promise<Void> in
+        return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<Void> in
             let parameters: JSON = [ "name" : (newDisplayName ?? "") ]
             let url = URL(string: "\(server)/users/me")!
             let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-            return TSNetworkManager.shared().makePromise(request: request).map { _ in }.recover { error in
+            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { _ in }.recover(on: DispatchQueue.global()) { error in
                 print("Couldn't update display name due to error: \(error).")
                 throw error
             }
@@ -251,7 +287,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     public static func getInfo(for channel: UInt64, on server: String) -> Promise<LokiPublicChatInfo> {
         let url = URL(string: "\(server)/channels/\(channel)?include_annotations=1")!
         let request = TSRequest(url: url)
-        return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
+        return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { $0.responseObject }.map { rawResponse in
             guard let json = rawResponse as? JSON,
                 let data = json["data"] as? JSON,
                 let annotations = data["annotations"] as? [JSON],

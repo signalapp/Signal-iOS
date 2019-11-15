@@ -138,7 +138,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     @objc private func authorizeDeviceLink() {
         let deviceLink = self.deviceLink!
         let linkingAuthorizationMessage = DeviceLinkingUtilities.getLinkingAuthorizationMessage(for: deviceLink)
-        (0..<4).forEach { _ in ThreadUtil.enqueue(linkingAuthorizationMessage) }
+        ThreadUtil.enqueue(linkingAuthorizationMessage)
         let session = DeviceLinkingSession.current!
         session.stopListeningForLinkingRequests()
         session.markLinkingRequestAsProcessed()
@@ -147,6 +147,9 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         let signedDeviceLink = DeviceLink(between: master, and: deviceLink.slave)
         LokiStorageAPI.addDeviceLink(signedDeviceLink).catch { error in
             print("[Loki] Failed to add device link due to error: \(error).")
+        }
+        Timer.scheduledTimer(withTimeInterval: 8, repeats: false) { _ in
+            let _ = SSKEnvironment.shared.syncManager.syncAllContacts()
         }
     }
     

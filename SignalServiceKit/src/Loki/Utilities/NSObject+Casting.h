@@ -1,6 +1,6 @@
 
 @interface NSObject (Casting)
 
-- (instancetype)as:(Class)cls;
+- (id)as:(Class)cls;
 
 @end

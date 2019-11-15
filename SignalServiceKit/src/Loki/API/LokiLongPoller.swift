@@ -42,7 +42,7 @@ public final class LokiLongPoller : NSObject {
     // MARK: Private API
     private func openConnections() {
         guard !hasStopped else { return }
-        LokiAPI.getSwarm(for: userHexEncodedPublicKey).then { [weak self] _ -> Guarantee<[Result<Void>]> in
+        LokiAPI.getSwarm(for: userHexEncodedPublicKey).then(on: DispatchQueue.global()) { [weak self] _ -> Guarantee<[Result<Void>]> in
             guard let strongSelf = self else { return Guarantee.value([Result<Void>]()) }
             strongSelf.usedSnodes.removeAll()
             let connections: [Promise<Void>] = (0..<strongSelf.connectionCount).map { _ in
@@ -52,7 +52,7 @@ public final class LokiLongPoller : NSObject {
             }
             strongSelf.connections = Set(connections)
             return when(resolved: connections)
-        }.ensure { [weak self] in
+        }.ensure(on: DispatchQueue.global()) { [weak self] in
             guard let strongSelf = self else { return }
             Timer.scheduledTimer(withTimeInterval: strongSelf.retryInterval, repeats: false) { _ in
                 guard let strongSelf = self else { return }
@@ -69,7 +69,7 @@ public final class LokiLongPoller : NSObject {
             let nextSnode = unusedSnodes.randomElement()!
             usedSnodes.insert(nextSnode)
             print("[Loki] Opening long polling connection to \(nextSnode).")
-            longPoll(nextSnode, seal: seal).catch { [weak self] error in
+            longPoll(nextSnode, seal: seal).catch(on: DispatchQueue.global()) { [weak self] error in
                 print("[Loki] Long polling connection to \(nextSnode) failed; dropping it and switching to next snode.")
                 LokiAPI.dropIfNeeded(nextSnode, hexEncodedPublicKey: userHexEncodedPublicKey)
                 self?.openConnectionToNextSnode(seal: seal)
@@ -80,11 +80,16 @@ public final class LokiLongPoller : NSObject {
     }
 
     private func longPoll(_ target: LokiAPITarget, seal: Resolver<Void>) -> Promise<Void> {
-        return LokiAPI.getRawMessages(from: target, usingLongPolling: true).then { [weak self] rawResponse -> Promise<Void> in
+        return LokiAPI.getRawMessages(from: target, usingLongPolling: true).then(on: DispatchQueue.global()) { [weak self] rawResponse -> Promise<Void> in
             guard let strongSelf = self, !strongSelf.hasStopped else { return Promise.value(()) }
             let messages = LokiAPI.parseRawMessagesResponse(rawResponse, from: target)
-            strongSelf.onMessagesReceived(messages)
-            return strongSelf.longPoll(target, seal: seal)
+            let hexEncodedPublicKeys = Set(messages.compactMap { $0.source })
+            let promises = hexEncodedPublicKeys.map { LokiAPI.getDestinations(for: $0) }
+            return when(resolved: promises).then(on: DispatchQueue.global()) { _ -> Promise<Void> in
+                guard let strongSelf = self, !strongSelf.hasStopped else { return Promise.value(()) }
+                strongSelf.onMessagesReceived(messages)
+                return strongSelf.longPoll(target, seal: seal)
+            }
         }
     }
 }

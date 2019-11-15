@@ -16,6 +16,7 @@
 #import "TSContactThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import "OWSPrimaryStorage.h"
 
 @import Contacts;
 
@@ -66,25 +67,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
-    if (self.attachmentIds.count != 1) {
-        OWSLogError(@"expected sync contact message to have exactly one attachment, but found %lu",
-            (unsigned long)self.attachmentIds.count);
-    }
-
-    SSKProtoAttachmentPointer *_Nullable attachmentProto =
-        [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
-    if (!attachmentProto) {
-        OWSFailDebug(@"could not build protobuf.");
-        return nil;
-    }
-
-    SSKProtoSyncMessageContactsBuilder *contactsBuilder = [SSKProtoSyncMessageContacts builderWithBlob:attachmentProto];
-    [contactsBuilder setIsComplete:YES];
-
     NSError *error;
-    SSKProtoSyncMessageContacts *_Nullable contactsProto = [contactsBuilder buildAndReturnError:&error];
-    if (error || !contactsProto) {
-        OWSFailDebug(@"could not build protobuf: %@", error);
+    if (self.attachmentIds.count > 1) {
+        OWSLogError(@"Expected sync contact message to have one or zero attachments, but found %lu.", (unsigned long)self.attachmentIds.count);
+    }
+
+    SSKProtoSyncMessageContactsBuilder *contactsBuilder;
+    if (self.attachmentIds.count == 0) {
+        SSKProtoAttachmentPointerBuilder *attachmentProtoBuilder = [SSKProtoAttachmentPointer builderWithId:0];
+        SSKProtoAttachmentPointer *attachmentProto = [attachmentProtoBuilder buildAndReturnError:&error];
+        contactsBuilder = [SSKProtoSyncMessageContacts builderWithBlob:attachmentProto];
+        __block NSData *data;
+        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            data = [self buildPlainTextAttachmentDataWithTransaction:transaction];
+        }];
+        [contactsBuilder setData:data];
+    } else {
+        SSKProtoAttachmentPointer *attachmentProto = [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
+        if (attachmentProto == nil) {
+            OWSFailDebug(@"Couldn't build protobuf.");
+            return nil;
+        }
+        contactsBuilder = [SSKProtoSyncMessageContacts builderWithBlob:attachmentProto];
+    }
+    [contactsBuilder setIsComplete:YES];
+    
+    SSKProtoSyncMessageContacts *contactsProto = [contactsBuilder buildAndReturnError:&error];
+    if (error || contactsProto == nil) {
+        OWSFailDebug(@"Couldn't build protobuf due to error: %@.", error);
         return nil;
     }
     SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessage builder];

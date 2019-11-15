@@ -445,10 +445,11 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
                     [self.messageManager throws_processEnvelope:envelope
                                                   plaintextData:job.plaintextData
                                                 wasReceivedByUD:job.wasReceivedByUD
-                                                    transaction:transaction];
+                                                    transaction:transaction
+                                                       serverID:0];
                 }
             } @catch (NSException *exception) {
-                OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
+//                OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
                 reportFailure(transaction);
             }
             [processedJobs addObject:job];

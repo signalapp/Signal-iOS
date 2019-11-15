@@ -2,17 +2,17 @@
 
 @implementation NSArray (Functional)
 
-- (BOOL)contains:(BOOL (^)(NSObject *))predicate {
-    for (NSObject *object in self) {
+- (BOOL)contains:(BOOL (^)(id))predicate {
+    for (id object in self) {
         BOOL isPredicateSatisfied = predicate(object);
         if (isPredicateSatisfied) { return YES; }
     }
     return NO;
 }
 
-- (NSArray *)filtered:(BOOL (^)(NSObject *))isIncluded {
+- (NSArray *)filtered:(BOOL (^)(id))isIncluded {
     NSMutableArray *result = [NSMutableArray new];
-    for (NSObject *object in self) {
+    for (id object in self) {
         if (isIncluded(object)) {
             [result addObject:object];
         }
@@ -20,10 +20,10 @@
     return result;
 }
 
-- (NSArray *)map:(NSObject *(^)(NSObject *))transform {
+- (NSArray *)map:(id (^)(id))transform {
     NSMutableArray *result = [NSMutableArray new];
-    for (NSObject *object in self) {
-        NSObject *transformedObject = transform(object);
+    for (id object in self) {
+        id transformedObject = transform(object);
         [result addObject:transformedObject];
     }
     return result;

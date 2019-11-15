@@ -16,6 +16,7 @@ extern const NSUInteger kOversizeTextMessageSizeThreshold;
 @class TSOutgoingMessage;
 @class TSThread;
 @class YapDatabaseReadWriteTransaction;
+@class OWSMessageSend;
 
 @protocol ContactsManagerProtocol;
 
@@ -95,6 +96,9 @@ NS_SWIFT_NAME(MessageSender)
                       inMessage:(TSOutgoingMessage *)outgoingMessage
                         success:(void (^)(void))successHandler
                         failure:(void (^)(NSError *error))failureHandler;
+
+- (OWSMessageSend *)getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey;
+- (void)sendMessage:(OWSMessageSend *)messageSend;
 
 @end
 

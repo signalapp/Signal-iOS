@@ -1,8 +1,8 @@
 
 @interface NSArray (Functional)
 
-- (BOOL)contains:(BOOL (^)(NSObject *))predicate;
-- (NSArray *)filtered:(BOOL (^)(NSObject *))isIncluded;
-- (NSArray *)map:(NSObject *(^)(NSObject *))transform;
+- (BOOL)contains:(BOOL (^)(id))predicate;
+- (NSArray *)filtered:(BOOL (^)(id))isIncluded;
+- (NSArray *)map:(id (^)(id))transform;
 
 @end

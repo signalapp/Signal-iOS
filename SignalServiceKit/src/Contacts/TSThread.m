@@ -739,7 +739,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
         
         // We want to remove any old incoming friend request messages which are pending
         if (interactionType == OWSInteractionType_IncomingMessage) {
-            removeMessage = message.friendRequestStatus == LKMessageFriendRequestStatusPending;
+            removeMessage = YES;
         } else {
             // Or if we're sending then remove any failed friend request messages
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
