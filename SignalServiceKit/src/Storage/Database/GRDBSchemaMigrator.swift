@@ -47,8 +47,8 @@ public class GRDBSchemaMigrator: NSObject {
         // After importing the initial schema, we want to skip the remaining incremental migrations
         // so we register each migration id with a no-op implementation.
         for migrationId in (MigrationId.allCases.filter { $0 != .createInitialSchema }) {
-            migrator.registerMigration(migrationId.rawValue) { id in
-                Logger.info("skipping migration: \(id) for new user.")
+            migrator.registerMigration(migrationId.rawValue) { _ in
+                Logger.info("skipping migration: \(migrationId) for new user.")
                 // no-op
             }
         }
