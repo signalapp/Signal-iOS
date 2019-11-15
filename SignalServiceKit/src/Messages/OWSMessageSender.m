@@ -926,7 +926,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         thread.isForceHidden = YES;
         [thread saveWithTransaction:transaction];
     }];
-    LKFriendRequestMessage *message = [[LKFriendRequestMessage alloc] initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:@"Accept this friend request to enable messages to be synced across devices" attachmentIds:[NSMutableArray new]
+    LKFriendRequestMessage *message = [[LKFriendRequestMessage alloc] initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:@"Please accept to enable messages to be synced across devices" attachmentIds:[NSMutableArray new]
         expiresInSeconds:0 expireStartedAt:0 isVoiceMessage:NO groupMetaMessage:TSGroupMetaMessageUnspecified quotedMessage:nil contactShare:nil linkPreview:nil];
     message.skipSave = YES;
     SignalRecipient *recipient = [[SignalRecipient alloc] initWithUniqueId:hexEncodedPublicKey];
@@ -1575,7 +1575,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }];
     
-    BOOL isPublicChatMessage = message.isGroupChatMessage;
+    BOOL isPublicChatMessage = message.thread.isGroupThread;
     
     BOOL shouldSendTranscript = (AreRecipientUpdatesEnabled() || !message.hasSyncedTranscript) && !isNoteToSelf && !isPublicChatMessage;
     if (!shouldSendTranscript) {

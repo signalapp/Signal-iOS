@@ -323,7 +323,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
                 return
             }
             
-            // Don't send typing indicators in group or note to self threads
+            // Loki: Don't send typing indicators in group or note to self threads
             if (thread.isGroupThread()) {
                 return
             } else {
