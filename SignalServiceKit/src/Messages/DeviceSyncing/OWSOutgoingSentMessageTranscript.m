@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithOutgoingMessage:(TSOutgoingMessage *)message isRecipientUpdate:(BOOL)isRecipientUpdate
 {
-    self = [super init];
+    self = [super initWithTimestamp:message.timestamp];
 
     if (!self) {
         return self;

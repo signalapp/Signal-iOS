@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview NS_UNAVAILABLE;
 
+- (instancetype)initWithTimestamp:(uint64_t)timestamp;
+
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
