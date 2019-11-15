@@ -67,9 +67,6 @@ public final class LokiPublicChatPoller : NSObject {
                     OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
                         wasSentByCurrentUser = LokiDatabaseUtilities.isUserLinkedDevice(message.hexEncodedPublicKey, transaction: transaction)
                     }
-                    
-                    
-                    
                     var masterHexEncodedPublicKey: String? = nil
                     storage.dbReadConnection.read { transaction in
                         masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: message.hexEncodedPublicKey, in: transaction)

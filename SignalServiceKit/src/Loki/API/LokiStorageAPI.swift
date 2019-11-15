@@ -38,7 +38,7 @@ public final class LokiStorageAPI : LokiDotNetAPI {
                     guard let annotations = data["annotations"] as? [JSON], !annotations.isEmpty else { return [] }
                     guard let annotation = annotations.first(where: { $0["type"] as? String == deviceLinkType }),
                         let value = annotation["value"] as? JSON, let rawDeviceLinks = value["authorisations"] as? [JSON],
-                        let user = data["user"] as? JSON, let hexEncodedPublicKey = user["username"] as? String else {
+                        let hexEncodedPublicKey = data["username"] as? String else {
                         print("[Loki] Couldn't parse device links from: \(rawResponse).")
                         return []
                     }
