@@ -304,6 +304,7 @@ NSString *const TSInteractionsBySortIdGroup = @"TSInteractionsBySortIdGroup";
         } else if (sortId1 < sortId2) {
             return NSOrderedAscending;
         } else {
+            // If sort ids are equal, use timestamp to restore correct ordering.
             if (timestamp1 > timestamp2) {
                 return NSOrderedDescending;
             } else if (timestamp1 < timestamp2) {
