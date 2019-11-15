@@ -113,6 +113,30 @@ public extension OWSSyncManager {
         let syncRequestMessage = OWSSyncRequestMessage(thread: thread, requestType: requestType)
         messageSenderJobQueue.add(message: syncRequestMessage.asPreparer, transaction: transaction)
     }
+
+    @objc
+    func _objc_sendKeysSyncMessage() {
+        Logger.info("")
+
+        guard tsAccountManager.isRegisteredAndReady else {
+            return owsFailDebug("Unexpectedly tried to send sync request before registration.")
+        }
+
+        guard tsAccountManager.isRegisteredPrimaryDevice else {
+            return owsFailDebug("Keys sync should only be initiated from the primary device")
+        }
+
+        databaseStorage.asyncWrite { [weak self] transaction in
+            guard let self = self else { return }
+
+            guard let thread = TSAccountManager.getOrCreateLocalThread(transaction: transaction) else {
+                return owsFailDebug("Missing thread")
+            }
+
+            let syncKeysMessage = OWSSyncKeysMessage(thread: thread, storageServiceKey: KeyBackupService.DerivedKey.storageService.data)
+            self.messageSenderJobQueue.add(message: syncKeysMessage.asPreparer, transaction: transaction)
+        }
+    }
 }
 
 private extension Notification {

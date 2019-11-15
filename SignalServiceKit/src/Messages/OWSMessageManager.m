@@ -1130,6 +1130,8 @@ NS_ASSUME_NONNULL_BEGIN
 
             // We send _two_ responses to the "configuration request".
             [StickerManager syncAllInstalledPacksWithTransaction:transaction];
+        } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeKeys) {
+            [self.syncManager sendKeysSyncMessage];
         } else {
             OWSLogWarn(@"ignoring unsupported sync request message");
         }

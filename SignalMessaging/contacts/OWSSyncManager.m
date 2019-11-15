@@ -513,6 +513,13 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     }
 }
 
+#pragma mark -
+
+- (void)sendKeysSyncMessage
+{
+    [self _objc_sendKeysSyncMessage];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

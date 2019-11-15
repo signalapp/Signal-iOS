@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)sendFetchLatestProfileSyncMessage;
 - (void)sendFetchLatestStorageManifestSyncMessage;
+- (void)sendKeysSyncMessage;
 
 - (void)processIncomingFetchLatestSyncMessage:(SSKProtoSyncMessageFetchLatest *)syncMessage
                                   transaction:(SDSAnyWriteTransaction *)transaction;
