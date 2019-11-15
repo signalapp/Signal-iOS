@@ -392,22 +392,25 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
         = NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER", @"table section footer");
     [contents addSection:unidentifiedDeliveryIndicatorsSection];
 
-    OWSTableSection *unidentifiedDeliveryUnrestrictedSection = [OWSTableSection new];
-    OWSTableItem *unrestrictedAccessItem = [OWSTableItem
-        switchItemWithText:NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS", @"switch label")
-        accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"sealed_sender_unrestricted"]
-        isOnBlock:^{
-            return [SSKEnvironment.shared.udManager shouldAllowUnrestrictedAccessLocal];
-        }
-        isEnabledBlock:^{
-            return YES;
-        }
-        target:weakSelf
-        selector:@selector(didToggleUDUnrestrictedAccessSwitch:)];
-    [unidentifiedDeliveryUnrestrictedSection addItem:unrestrictedAccessItem];
-    unidentifiedDeliveryUnrestrictedSection.footerTitle
-        = NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER", @"table section footer");
-    [contents addSection:unidentifiedDeliveryUnrestrictedSection];
+    // Only the primary device can adjust the unrestricted UD setting. We don't sync this setting.
+    if (self.accountManager.isRegisteredPrimaryDevice) {
+        OWSTableSection *unidentifiedDeliveryUnrestrictedSection = [OWSTableSection new];
+        OWSTableItem *unrestrictedAccessItem = [OWSTableItem
+            switchItemWithText:NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS", @"switch label")
+            accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"sealed_sender_unrestricted"]
+            isOnBlock:^{
+                return [SSKEnvironment.shared.udManager shouldAllowUnrestrictedAccessLocal];
+            }
+            isEnabledBlock:^{
+                return YES;
+            }
+            target:weakSelf
+            selector:@selector(didToggleUDUnrestrictedAccessSwitch:)];
+        [unidentifiedDeliveryUnrestrictedSection addItem:unrestrictedAccessItem];
+        unidentifiedDeliveryUnrestrictedSection.footerTitle
+            = NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER", @"table section footer");
+        [contents addSection:unidentifiedDeliveryUnrestrictedSection];
+    }
 
     OWSTableSection *unidentifiedDeliveryLearnMoreSection = [OWSTableSection new];
     [unidentifiedDeliveryLearnMoreSection
