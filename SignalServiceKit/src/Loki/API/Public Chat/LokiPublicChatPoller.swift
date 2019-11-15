@@ -1,10 +1,13 @@
 
+// TODO: Move away from polling
+
 @objc(LKPublicChatPoller)
 public final class LokiPublicChatPoller : NSObject {
     private let publicChat: LokiPublicChat
     private var pollForNewMessagesTimer: Timer? = nil
     private var pollForDeletedMessagesTimer: Timer? = nil
     private var pollForModeratorsTimer: Timer? = nil
+    private var pollForDisplayNamesTimer: Timer? = nil
     private var hasStarted = false
     private let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
     
@@ -12,6 +15,7 @@ public final class LokiPublicChatPoller : NSObject {
     private let pollForNewMessagesInterval: TimeInterval = 4
     private let pollForDeletedMessagesInterval: TimeInterval = 20
     private let pollForModeratorsInterval: TimeInterval = 10 * 60
+    private let pollForDisplayNamesInterval: TimeInterval = 60
     
     // MARK: Lifecycle
     @objc(initForPublicChat:)
@@ -25,10 +29,12 @@ public final class LokiPublicChatPoller : NSObject {
         pollForNewMessagesTimer = Timer.scheduledTimer(withTimeInterval: pollForNewMessagesInterval, repeats: true) { [weak self] _ in self?.pollForNewMessages() }
         pollForDeletedMessagesTimer = Timer.scheduledTimer(withTimeInterval: pollForDeletedMessagesInterval, repeats: true) { [weak self] _ in self?.pollForDeletedMessages() }
         pollForModeratorsTimer = Timer.scheduledTimer(withTimeInterval: pollForModeratorsInterval, repeats: true) { [weak self] _ in self?.pollForModerators() }
+        pollForDisplayNamesTimer = Timer.scheduledTimer(withTimeInterval: pollForDisplayNamesInterval, repeats: true) { [weak self] _ in self?.pollForDisplayNames() }
         // Perform initial updates
         pollForNewMessages()
         pollForDeletedMessages()
         pollForModerators()
+        pollForDisplayNames()
         hasStarted = true
     }
     
@@ -36,6 +42,7 @@ public final class LokiPublicChatPoller : NSObject {
         pollForNewMessagesTimer?.invalidate()
         pollForDeletedMessagesTimer?.invalidate()
         pollForModeratorsTimer?.invalidate()
+        pollForDisplayNamesTimer?.invalidate()
         hasStarted = false
     }
     
@@ -171,7 +178,17 @@ public final class LokiPublicChatPoller : NSObject {
         }
         // Poll
         let _ = LokiPublicChatAPI.getMessages(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global()) { messages in
+            let uniqueHexEncodedPublicKeys = Set(messages.map { $0.hexEncodedPublicKey })
             func proceed() {
+                let storage = OWSPrimaryStorage.shared()
+                var newDisplayNameUpdatees: Set<String> = []
+                storage.dbReadConnection.read { transaction in
+                    newDisplayNameUpdatees = Set(uniqueHexEncodedPublicKeys.filter { storage.getMasterHexEncodedPublicKey(for: $0, in: transaction) != $0 }.compactMap { storage.getMasterHexEncodedPublicKey(for: $0, in: transaction) })
+                }
+                if !newDisplayNameUpdatees.isEmpty {
+                    let displayNameUpdatees = LokiPublicChatAPI.displayNameUpdatees[publicChat.id] ?? []
+                    LokiPublicChatAPI.displayNameUpdatees[publicChat.id] = displayNameUpdatees.union(newDisplayNameUpdatees)
+                }
                 messages.forEach { message in
                     var wasSentByCurrentUser = false
                     OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
@@ -184,7 +201,6 @@ public final class LokiPublicChatPoller : NSObject {
                     }
                 }
             }
-            let uniqueHexEncodedPublicKeys = Set(messages.map { $0.hexEncodedPublicKey })
             let hexEncodedPublicKeysToUpdate = uniqueHexEncodedPublicKeys.filter { hexEncodedPublicKey in
                 let timeSinceLastUpdate: TimeInterval
                 if let lastDeviceLinkUpdate = LokiAPI.lastDeviceLinkUpdate[hexEncodedPublicKey] {
@@ -233,5 +249,9 @@ public final class LokiPublicChatPoller : NSObject {
     
     private func pollForModerators() {
         let _ = LokiPublicChatAPI.getModerators(for: publicChat.channel, on: publicChat.server)
+    }
+    
+    private func pollForDisplayNames() {
+        let _ = LokiPublicChatAPI.getDisplayNames(for: publicChat.channel, on: publicChat.server)
     }
 }

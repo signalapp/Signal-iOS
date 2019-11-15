@@ -3,6 +3,7 @@ import PromiseKit
 @objc(LKPublicChatAPI)
 public final class LokiPublicChatAPI : LokiDotNetAPI {
     private static var moderators: [String:[UInt64:Set<String>]] = [:] // Server URL to (channel ID to set of moderator IDs)
+    public static var displayNameUpdatees: [String:Set<String>] = [:]
     
     // MARK: Settings
     private static let fallbackBatchCount = 64
@@ -226,6 +227,33 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                 self.moderators[server] = [ channel : moderatorAsSet ]
             }
             return moderatorAsSet
+        }
+    }
+    
+    public static func getDisplayNames(for channel: UInt64, on server: String) -> Promise<Void> {
+        let publicChatID = "\(server).\(channel)"
+        guard let hexEncodedPublicKeys = displayNameUpdatees[publicChatID] else { return Promise.value(()) }
+        displayNameUpdatees[publicChatID] = []
+        print("[Loki] Getting display names for: \(hexEncodedPublicKeys).")
+        return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<Void> in
+            let queryParameters = "ids=\(hexEncodedPublicKeys.map { "@\($0)" }.joined(separator: ","))&include_user_annotations=1"
+            let url = URL(string: "\(server)/users?\(queryParameters)")!
+            let request = TSRequest(url: url)
+            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { $0.responseObject }.map { rawResponse in
+                guard let json = rawResponse as? JSON, let data = json["data"] as? [JSON] else {
+                    print("[Loki] Couldn't parse display names for users: \(hexEncodedPublicKeys) from: \(rawResponse).")
+                    throw Error.parsingFailed
+                }
+                storage.dbReadWriteConnection.readWrite { transaction in
+                    data.forEach { data in
+                        guard let user = data["user"] as? JSON, let hexEncodedPublicKey = user["username"] as? String, let rawDisplayName = user["name"] as? String else { return }
+                        let endIndex = hexEncodedPublicKey.endIndex
+                        let cutoffIndex = hexEncodedPublicKey.index(endIndex, offsetBy: -8)
+                        let displayName = "\(rawDisplayName) (...\(hexEncodedPublicKey[cutoffIndex..<endIndex]))"
+                        transaction.setObject(displayName, forKey: hexEncodedPublicKey, inCollection: "\(server).\(channel)")
+                    }
+                }
+            }
         }
     }
     

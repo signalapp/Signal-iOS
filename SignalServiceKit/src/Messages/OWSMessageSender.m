@@ -1227,6 +1227,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             NSUInteger height = attachment.shouldHaveImageSize ? @(attachment.imageSize.height).unsignedIntegerValue : 0;
             [groupMessage addAttachmentWithKind:@"attachment" server:publicChat.server serverID:attachment.serverId contentType:attachment.contentType size:attachment.byteCount fileName:attachment.sourceFilename flags:0 width:width height:height caption:attachment.caption url:attachment.downloadURL linkPreviewURL:nil linkPreviewTitle:nil];
         }
+        message.actualSenderHexEncodedPublicKey = userHexEncodedPublicKey;
         [[LKPublicChatAPI sendMessage:groupMessage toGroup:publicChat.channel onServer:publicChat.server]
         .thenOn(OWSDispatch.sendingQueue, ^(LKGroupMessage *groupMessage) {
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -1574,7 +1575,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }];
     
-    BOOL shouldSendTranscript = (AreRecipientUpdatesEnabled() || !message.hasSyncedTranscript) && !isNoteToSelf;
+    BOOL isPublicChatMessage = message.isGroupChatMessage;
+    
+    BOOL shouldSendTranscript = (AreRecipientUpdatesEnabled() || !message.hasSyncedTranscript) && !isNoteToSelf && !isPublicChatMessage;
     if (!shouldSendTranscript) {
         return success();
     }
