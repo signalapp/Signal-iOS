@@ -337,6 +337,11 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     [self ydb_saveWithTransaction:transaction];
 }
 
+// NOTE: This is only for use by the YDB-to-GRDB legacy migration.
+- (void)replaceSortId:(uint64_t)sortId {
+    _sortId = sortId;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

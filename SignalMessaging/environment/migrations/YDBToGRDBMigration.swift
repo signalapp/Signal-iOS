@@ -330,10 +330,6 @@ extension YDBToGRDBMigration {
 private class LegacyObjectFinder<T> {
     let collection: String
 
-    // HACK: normally we don't want to retain transactions, as it allows them to escape their
-    // closure. This is a work around since YapDB transactions want to be on their own sync queue
-    // while GRDB also wants to be on their own sync queue, so nesting a YapDB transaction from
-    // one DB inside a GRDB transaction on another DB is currently not possible.
     let transaction: YapDatabaseReadTransaction
 
     init(collection: String, transaction: YapDatabaseReadTransaction) {
@@ -346,22 +342,21 @@ private class LegacyObjectFinder<T> {
     }
 
     public func enumerateLegacyKeysAndObjects(block: @escaping (String, T) throws -> Void ) throws {
+        var knownCollectionKeys = Set<String>()
         try transaction.enumerateKeysAndObjects(inCollection: collection) { (collectionKey: String, collectionObj: Any, _: UnsafeMutablePointer<ObjCBool>) throws -> Void in
             guard let legacyObj = collectionObj as? T else {
                 owsFailDebug("unexpected collectionObj: \(type(of: collectionObj)) collectionKey: \(collectionKey)")
                 return
             }
-            try block(collectionKey, legacyObj)
-        }
-    }
 
-    public func enumerateLegacyObjects(block: @escaping (T) throws -> Void ) throws {
-        try transaction.enumerateKeysAndObjects(inCollection: collection) { (_: String, collectionObj: Any, _: UnsafeMutablePointer<ObjCBool>) throws -> Void in
-            guard let legacyObj = collectionObj as? T else {
-                owsFailDebug("unexpected collectionObj: \(type(of: collectionObj))")
+            // Ignore duplicates in YDB enumerations.
+            guard !knownCollectionKeys.contains(collectionKey) else {
+                owsFailDebug("Ignoring duplicate collectionKey: \(collectionKey)")
                 return
             }
-            try block(legacyObj)
+            knownCollectionKeys.insert(collectionKey)
+
+            try block(collectionKey, legacyObj)
         }
     }
 }
@@ -387,14 +382,50 @@ private class LegacyUnorderedFinder<RecordType>: LegacyObjectFinder<RecordType> 
 
 // MARK: -
 
+private class LegacyInteractionFinder {
+    let transaction: YapDatabaseReadTransaction
+
+    init(transaction: YapDatabaseReadTransaction) {
+        self.transaction = transaction
+    }
+
+    public var count: UInt {
+        let collection = TSInteraction.collection()
+        return transaction.numberOfKeys(inCollection: collection)
+    }
+
+    // We need to enumerate in ascending order of sort id.
+    public func enumerateLegacyKeysAndObjects(block: @escaping (String, TSInteraction) -> Void ) throws {
+        guard let view = transaction.safeAutoViewTransaction(TSInteractionsBySortIdDatabaseViewExtensionName) else {
+            owsFail("Missing interaction view.")
+        }
+        var knownUniqueIds = Set<String>()
+        view.safe_enumerateKeysAndObjects(inGroup: TSInteractionsBySortIdGroup,
+                                          extensionName: TSInteractionsBySortIdDatabaseViewExtensionName) { (_, _, object, _, _) in
+                                            guard let interaction = object as? TSInteraction else {
+                                                owsFailDebug("unexpected interaction: \(type(of: object))")
+                                                return
+                                            }
+
+                                            // Ignore duplicates in YDB enumerations.
+                                            let uniqueId = interaction.uniqueId
+                                            guard !knownUniqueIds.contains(uniqueId) else {
+                                                owsFailDebug("Ignoring duplicate uniqueId: \(uniqueId)")
+                                                return
+                                            }
+                                            knownUniqueIds.insert(uniqueId)
+
+                                            block(uniqueId, interaction)
+        }
+    }
+}
+
+// MARK: -
+
 private class LegacyJobRecordFinder {
 
     let extensionName = YAPDBJobRecordFinder.dbExtensionName
 
-    // HACK: normally we don't want to retain transactions, as it allows them to escape their
-    // closure. This is a work around since YapDB transactions want to be on their own sync queue
-    // while GRDB also wants to be on their own sync queue, so nesting a YapDB transaction from
-    // one DB inside a GRDB transaction on another DB is currently not possible.
     var ext: YapDatabaseSecondaryIndexTransaction?
 
     init(transaction: YapDatabaseReadTransaction) {
@@ -501,7 +532,7 @@ extension GRDBMigrator {
 
         let count = Float(self.count)
         guard count > maxSampleCount else {
-                return 1
+            return 1
         }
         return maxSampleCount / count
     }
@@ -563,7 +594,7 @@ public class GRDBUnorderedRecordMigrator<T>: GRDBMigrator where T: SDSModel {
         Logger.info("\(label): \(count)")
         try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count), logInProduction: true) { memorySampler in
             var recordCount = 0
-            try finder.enumerateLegacyObjects { legacyRecord in
+            try finder.enumerateLegacyKeysAndObjects { (_, legacyRecord) in
                 recordCount += 1
                 legacyRecord.anyInsert(transaction: grdbTransaction.asAnyWrite)
                 memorySampler.sample()
@@ -607,11 +638,11 @@ public class GRDBJobRecordMigrator: GRDBMigrator {
 
 public class GRDBInteractionMigrator: GRDBMigrator {
     public let label: String
-    private let finder: LegacyUnorderedFinder<TSInteraction>
+    private let finder: LegacyInteractionFinder
 
     init(ydbTransaction: YapDatabaseReadTransaction) {
         self.label = "Migrate Interactions"
-        self.finder = LegacyUnorderedFinder(transaction: ydbTransaction)
+        self.finder = LegacyInteractionFinder(transaction: ydbTransaction)
     }
 
     public var count: UInt {
@@ -621,10 +652,36 @@ public class GRDBInteractionMigrator: GRDBMigrator {
     public func migrate(grdbTransaction: GRDBWriteTransaction) throws {
         let count = self.count
         Logger.info("\(label): \(count)")
+        var prevSortId: UInt64?
         try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count), logInProduction: true) { memorySampler in
             var recordCount = 0
-            try finder.enumerateLegacyObjects { legacyInteraction in
-                legacyInteraction.anyInsert(transaction: grdbTransaction.asAnyWrite)
+            // This must enumerate the interactions in ascending order of sort id.
+            try finder.enumerateLegacyKeysAndObjects { (_, interaction) in
+
+                // Ensure all interactions have valid, monotonically increasing sort ids.
+                let minSortId: UInt64
+                if let previousSortId = prevSortId {
+                    minSortId = previousSortId + 1
+                } else {
+                    minSortId = 1
+                }
+                let sortId: UInt64
+                if interaction.sortId >= minSortId {
+                    // Interaction already has valid sort id.
+                    sortId = interaction.sortId
+                } else {
+                    if interaction.sortId > 0 {
+                        owsFailDebug("Replacing invalid sort id: \(interaction.sortId) -> \(minSortId)")
+                    } else {
+                        owsFailDebug("Setting missing sort id: \(minSortId)")
+                    }
+                    // NOTE: "replaced" sort ids will not be written to YDB.
+                    interaction.replaceSortId(minSortId)
+                    sortId = minSortId
+                }
+                prevSortId = sortId
+
+                interaction.anyInsert(transaction: grdbTransaction.asAnyWrite)
                 recordCount += 1
                 memorySampler.sample()
             }
