@@ -22,7 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)throws_processEnvelope:(SSKProtoEnvelope *)envelope
                  plaintextData:(NSData *_Nullable)plaintextData
                wasReceivedByUD:(BOOL)wasReceivedByUD
-                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                   transaction:(YapDatabaseReadWriteTransaction *)transaction
+                      serverID:(uint64_t)serverID;
 
 // This should be invoked by the main app when the app is ready.
 - (void)startObserving;

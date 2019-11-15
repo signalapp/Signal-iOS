@@ -62,7 +62,7 @@ public final class LokiRSSFeedPoller : NSObject {
                 envelope.setSourceDevice(OWSDevicePrimaryDeviceId)
                 envelope.setContent(try! content.build().serializedData())
                 OWSPrimaryStorage.shared().dbReadWriteConnection.readWrite { transaction in
-                    SSKEnvironment.shared.messageManager.throws_processEnvelope(try! envelope.build(), plaintextData: try! content.build().serializedData(), wasReceivedByUD: false, transaction: transaction)
+                    SSKEnvironment.shared.messageManager.throws_processEnvelope(try! envelope.build(), plaintextData: try! content.build().serializedData(), wasReceivedByUD: false, transaction: transaction, serverID: 0)
                 }
             }
         }

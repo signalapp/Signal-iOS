@@ -242,6 +242,7 @@ NS_ASSUME_NONNULL_BEGIN
                  plaintextData:(NSData *_Nullable)plaintextData
                wasReceivedByUD:(BOOL)wasReceivedByUD
                    transaction:(YapDatabaseReadWriteTransaction *)transaction
+                      serverID:(uint64_t)serverID
 {
     if (!envelope) {
         OWSFailDebug(@"Missing envelope.");
@@ -287,7 +288,8 @@ NS_ASSUME_NONNULL_BEGIN
             [self throws_handleEnvelope:envelope
                           plaintextData:plaintextData
                         wasReceivedByUD:wasReceivedByUD
-                            transaction:transaction];
+                            transaction:transaction
+                               serverID:serverID];
             break;
         case SSKProtoEnvelopeTypeReceipt:
             OWSAssertDebug(!plaintextData);
@@ -380,6 +382,7 @@ NS_ASSUME_NONNULL_BEGIN
                 plaintextData:(NSData *)plaintextData
               wasReceivedByUD:(BOOL)wasReceivedByUD
                   transaction:(YapDatabaseReadWriteTransaction *)transaction
+                     serverID:(uint64_t)serverID
 {
     if (!envelope) {
         OWSFailDebug(@"Missing envelope.");
@@ -465,7 +468,8 @@ NS_ASSUME_NONNULL_BEGIN
         if (contentProto.syncMessage) {
             [self throws_handleIncomingEnvelope:envelope
                                 withSyncMessage:contentProto.syncMessage
-                                    transaction:transaction];
+                                    transaction:transaction
+                                       serverID:serverID];
 
             [[OWSDeviceManager sharedManager] setHasReceivedSyncMessage];
         } else if (contentProto.dataMessage) {
@@ -888,6 +892,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)throws_handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
                       withSyncMessage:(SSKProtoSyncMessage *)syncMessage
                           transaction:(YapDatabaseReadWriteTransaction *)transaction
+                             serverID:(uint64_t)serverID
 {
     if (!envelope) {
         OWSFailDebug(@"Missing envelope.");
@@ -934,6 +939,7 @@ NS_ASSUME_NONNULL_BEGIN
         if ([self isDataMessageGroupAvatarUpdate:syncMessage.sent.message] && !syncMessage.sent.isRecipientUpdate) {
             [OWSRecordTranscriptJob
                 processIncomingSentMessageTranscript:transcript
+                                            serverID:0
                                    attachmentHandler:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                                        OWSAssertDebug(attachmentStreams.count == 1);
                                        TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
@@ -955,6 +961,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             [OWSRecordTranscriptJob
                 processIncomingSentMessageTranscript:transcript
+                                            serverID:serverID
                                    attachmentHandler:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                                        OWSLogDebug(@"successfully fetched transcript attachments: %lu",
                                            (unsigned long)attachmentStreams.count);
@@ -1836,7 +1843,7 @@ NS_ASSUME_NONNULL_BEGIN
     SignalRecipient *_Nullable recipient =
         [SignalRecipient registeredRecipientForRecipientId:localNumber mustHaveDevices:NO transaction:transaction];
     if (!recipient) {
-        OWSFailDebug(@"No local SignalRecipient.");
+//        OWSFailDebug(@"No local SignalRecipient.");
     } else {
         BOOL isRecipientDevice = [recipient.devices containsObject:@(envelope.sourceDevice)];
         if (!isRecipientDevice) {

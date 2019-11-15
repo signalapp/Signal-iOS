@@ -130,6 +130,14 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                     print("[Loki] Ignoring public chat message with invalid signature.")
                     return nil
                 }
+                var existingMessageID: String? = nil
+                storage.dbReadConnection.read { transaction in
+                    existingMessageID = storage.getIDForMessage(withServerID: UInt(result.serverID!), in: transaction)
+                }
+                guard existingMessageID == nil else {
+                    print("[Loki] Ignorning duplicate message.")
+                    return nil
+                }
                 return result
             }.sorted { $0.timestamp < $1.timestamp }
         }
