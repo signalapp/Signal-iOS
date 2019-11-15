@@ -374,8 +374,8 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                     if (![existingAttachment isKindOfClass:[TSAttachmentPointer class]]) {
                         OWSFailDebug(@"Unexpected attachment pointer class: %@", existingAttachment.class);
                     }
-                    [existingAttachment anyRemoveWithTransaction:transaction];
-                    [attachmentStream anyInsertWithTransaction:transaction];
+                    // This will clobber the attachmentPointer
+                    [attachmentStream anyOverwritingUpdateWithTransaction:transaction];
 
                     if (job.message != nil) {
                         [self reloadAndTouchLatestVersionOfMessage:job.message transaction:transaction];
