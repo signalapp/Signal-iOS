@@ -191,139 +191,67 @@ NSString *const TSInteractionsBySortIdGroup = @"TSInteractionsBySortIdGroup";
 {
     OWSAssertIsOnMainThread();
     OWSAssert(storage);
-    
+
     YapDatabaseView *existingView = [storage registeredExtension:TSMessageDatabaseViewExtensionName_Legacy];
     if (existingView) {
         OWSFailDebug(@"Registered database view twice: %@", TSMessageDatabaseViewExtensionName_Legacy);
         return;
     }
-    
+
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
-                                                                                                 YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
+        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
         if (![object isKindOfClass:[TSInteraction class]]) {
             OWSFailDebug(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object class], collection);
             return nil;
         }
         TSInteraction *interaction = (TSInteraction *)object;
-        
+
         return interaction.uniqueThreadId;
     }];
-    
-    YapDatabaseViewSorting *viewSorting =
-    [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(YapDatabaseReadTransaction *transaction,
-                                                                NSString *group,
-                                                                NSString *collection1,
-                                                                NSString *key1,
-                                                                id object1,
-                                                                NSString *collection2,
-                                                                NSString *key2,
-                                                                id object2) {
-        if (![object1 isKindOfClass:[TSInteraction class]]) {
-            OWSFailDebug(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object1 class], collection1);
-            return NSOrderedSame;
-        }
-        if (![object2 isKindOfClass:[TSInteraction class]]) {
-            OWSFailDebug(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object2 class], collection2);
-            return NSOrderedSame;
-        }
-        TSInteraction *interaction1 = (TSInteraction *)object1;
-        TSInteraction *interaction2 = (TSInteraction *)object2;
-        
-        // Legit usage of timestampForLegacySorting since we're registering the
-        // legacy extension
-        uint64_t timestamp1 = interaction1.timestampForLegacySorting;
-        uint64_t timestamp2 = interaction2.timestampForLegacySorting;
-        
-        if (timestamp1 > timestamp2) {
-            return NSOrderedDescending;
-        } else if (timestamp1 < timestamp2) {
-            return NSOrderedAscending;
-        } else {
-            return NSOrderedSame;
-        }
-    }];
-    
-    YapDatabaseViewOptions *options = [YapDatabaseViewOptions new];
-    options.isPersistent = YES;
-    options.allowedCollections =
-    [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSInteraction collection]]];
-    
-    YapDatabaseView *view =
-    [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"1" options:options];
-    
-    [storage asyncRegisterExtension:view withName:TSMessageDatabaseViewExtensionName_Legacy];
-}
 
-+ (void)asyncRegisterInteractionsBySortIdDatabaseView:(OWSStorage *)storage
-{
-    OWSAssertIsOnMainThread();
-    OWSAssert(storage);
-    
-    YapDatabaseView *existingView = [storage registeredExtension:TSInteractionsBySortIdDatabaseViewExtensionName];
-    if (existingView) {
-        OWSFailDebug(@"Registered database view twice: %@", TSInteractionsBySortIdDatabaseViewExtensionName);
-        return;
-    }
-    
-    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
-                                                                                                 YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
-        if (![object isKindOfClass:[TSInteraction class]]) {
-            OWSFailDebug(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object class], collection);
-            return nil;
-        }
-        return TSInteractionsBySortIdGroup;
-    }];
-    
     YapDatabaseViewSorting *viewSorting =
-    [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(YapDatabaseReadTransaction *transaction,
-                                                                NSString *group,
-                                                                NSString *collection1,
-                                                                NSString *key1,
-                                                                id object1,
-                                                                NSString *collection2,
-                                                                NSString *key2,
-                                                                id object2) {
-        if (![object1 isKindOfClass:[TSInteraction class]]) {
-            OWSFailDebug(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object1 class], collection1);
-            return NSOrderedSame;
-        }
-        if (![object2 isKindOfClass:[TSInteraction class]]) {
-            OWSFailDebug(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object2 class], collection2);
-            return NSOrderedSame;
-        }
-        TSInteraction *interaction1 = (TSInteraction *)object1;
-        TSInteraction *interaction2 = (TSInteraction *)object2;
-        
-        uint64_t sortId1 = interaction1.sortId;
-        uint64_t sortId2 = interaction2.sortId;
-        uint64_t timestamp1 = interaction1.timestampForLegacySorting;
-        uint64_t timestamp2 = interaction2.timestampForLegacySorting;
+        [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(YapDatabaseReadTransaction *transaction,
+            NSString *group,
+            NSString *collection1,
+            NSString *key1,
+            id object1,
+            NSString *collection2,
+            NSString *key2,
+            id object2) {
+            if (![object1 isKindOfClass:[TSInteraction class]]) {
+                OWSFailDebug(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object1 class], collection1);
+                return NSOrderedSame;
+            }
+            if (![object2 isKindOfClass:[TSInteraction class]]) {
+                OWSFailDebug(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object2 class], collection2);
+                return NSOrderedSame;
+            }
+            TSInteraction *interaction1 = (TSInteraction *)object1;
+            TSInteraction *interaction2 = (TSInteraction *)object2;
 
-        if (sortId1 > sortId2) {
-            return NSOrderedDescending;
-        } else if (sortId1 < sortId2) {
-            return NSOrderedAscending;
-        } else {
+            // Legit usage of timestampForLegacySorting since we're registering the
+            // legacy extension
+            uint64_t timestamp1 = interaction1.timestampForLegacySorting;
+            uint64_t timestamp2 = interaction2.timestampForLegacySorting;
+
             if (timestamp1 > timestamp2) {
                 return NSOrderedDescending;
             } else if (timestamp1 < timestamp2) {
                 return NSOrderedAscending;
             } else {
-                // Ensure sort is stable if sort ids are equal.
-                return [interaction1 compareForSorting:interaction2];
+                return NSOrderedSame;
             }
-        }
-    }];
-    
+        }];
+
     YapDatabaseViewOptions *options = [YapDatabaseViewOptions new];
     options.isPersistent = YES;
     options.allowedCollections =
-    [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSInteraction collection]]];
-    
+        [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSInteraction collection]]];
+
     YapDatabaseView *view =
-    [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"1" options:options];
-    
-    [storage asyncRegisterExtension:view withName:TSInteractionsBySortIdDatabaseViewExtensionName];
+        [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"1" options:options];
+
+    [storage asyncRegisterExtension:view withName:TSMessageDatabaseViewExtensionName_Legacy];
 }
 
 + (void)asyncRegisterThreadInteractionsDatabaseView:(OWSStorage *)storage
