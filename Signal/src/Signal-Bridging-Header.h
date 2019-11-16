@@ -53,7 +53,6 @@
 #import "RecipientPickerViewController.h"
 #import "RemoteVideoView.h"
 #import "SignalApp.h"
-#import "SignalsNavigationController.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <PureLayout/PureLayout.h>

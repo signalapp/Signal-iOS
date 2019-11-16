@@ -222,6 +222,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
                                       [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:self];
                                       [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:self];
                                       [TSDatabaseView asyncRegisterIncompleteViewOnceMessagesDatabaseView:self];
+                                      [TSDatabaseView asyncRegisterInteractionsBySortIdDatabaseView:self];
 
                                       // YAPDBSignalServiceAddressIndex must register before YDBFullTextSearchFinder.
                                       [YAPDBSignalServiceAddressIndex asyncRegisterDatabaseExtensions:self];

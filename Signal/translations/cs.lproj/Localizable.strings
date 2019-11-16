@@ -1887,7 +1887,7 @@
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Media";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Disappearing Photo";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Mizející fotografie";
 
 /* inbox cell and notification text for a view-once video. */
 "PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Disappearing Video";

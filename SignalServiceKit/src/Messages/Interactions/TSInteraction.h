@@ -103,6 +103,9 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueTh
 - (void)ydb_saveNextSortIdWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
     NS_SWIFT_NAME(ydb_saveNextSortId(transaction:));
 
+// NOTE: This is only for use by the YDB-to-GRDB legacy migration.
+- (void)replaceSortId:(uint64_t)sortId;
+
 @end
 
 NS_ASSUME_NONNULL_END

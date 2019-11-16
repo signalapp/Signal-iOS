@@ -147,6 +147,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) UIView *bottomBar;
 @property (nonatomic, nullable) NSLayoutConstraint *bottomBarBottomConstraint;
 @property (nonatomic, readonly) InputAccessoryViewPlaceholder *inputAccessoryPlaceholder;
+@property (nonatomic) BOOL isDismissingInteractively;
 
 @property (nonatomic, readonly) ConversationInputToolbar *inputToolbar;
 @property (nonatomic, readonly) ConversationCollectionView *collectionView;
@@ -5292,7 +5293,9 @@ typedef enum : NSUInteger {
 - (void)inputAccessoryPlaceholderKeyboardIsDismissingInteractively
 {
     // No animation, just follow along with the keyboard.
+    self.isDismissingInteractively = YES;
     [self updateBottomBarPosition];
+    self.isDismissingInteractively = NO;
 }
 
 - (void)inputAccessoryPlaceholderKeyboardIsDismissingWithAnimationDuration:(NSTimeInterval)animationDuration
@@ -5360,6 +5363,15 @@ typedef enum : NSUInteger {
 - (void)updateInputAccessoryPlaceholderHeight
 {
     OWSAssertIsOnMainThread();
+
+    // If we're currently dismissing interactively, skip updating the
+    // input accessory height. Changing it while dismissing can lead to
+    // an infinite loop of keyboard frame changes as the listeners in
+    // InputAcessoryViewPlaceholder will end up calling back here if
+    // a dismissal is in progress.
+    if (self.isDismissingInteractively) {
+        return;
+    }
 
     // Apply any pending layout changes to ensure we're measuring the up-to-date height.
     [self.bottomBar.superview layoutIfNeeded];

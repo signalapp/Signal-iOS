@@ -25,6 +25,9 @@ extern NSString *const TSThreadSpecialMessagesDatabaseViewExtensionName;
 extern NSString *const TSIncompleteViewOnceMessagesDatabaseViewExtensionName;
 extern NSString *const TSIncompleteViewOnceMessagesGroup;
 
+extern NSString *const TSInteractionsBySortIdGroup;
+extern NSString *const TSInteractionsBySortIdDatabaseViewExtensionName;
+
 extern NSString *const TSLazyRestoreAttachmentsGroup;
 extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
 
@@ -55,6 +58,7 @@ extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
 
 + (void)asyncRegisterThreadInteractionsDatabaseView:(OWSStorage *)storage;
 + (void)asyncRegisterLegacyThreadInteractionsDatabaseView:(OWSStorage *)storage;
++ (void)asyncRegisterInteractionsBySortIdDatabaseView:(OWSStorage *)storage;
 
 + (void)asyncRegisterThreadOutgoingMessagesDatabaseView:(OWSStorage *)storage;
 
