@@ -1776,7 +1776,7 @@
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Registrar este iPad";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Enlazar teléfono";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Enlazar iPad";
 
 /* warning to the user that registering an ipad is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registrar este iPad desactivará Signal en todos los otros dispositivos que están registrados bajo el mismo número de teléfono.";
@@ -1791,7 +1791,7 @@
 "ONBOARDING_PERMISSIONS_EXPLANATION" = "Las notificaciones permiten mostrar cuando recibes mensajes y sobre otros eventos en chats.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Recibe el mensaje";
+"ONBOARDING_PERMISSIONS_TITLE" = "Entérate";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Introduce tu número de teléfono para comenzar";
@@ -2691,7 +2691,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Mostrar indicador";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Al activar se muestra un icono de estado en la sección «Más detalles» de los mensajes entregados con remitente sellado.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "«Remitente sellado» es una característica del protocolo de Signal que permite a nuestro servidor no saber quién envía el mensaje. En cambio, tu destinatario sí sabe quién lo envía. Al activar la opción se muestra un icono de estado en la sección «Más detalles» de los mensajes entregados con remitente sellado.";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Permitir de cualquiera";

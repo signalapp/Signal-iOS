@@ -129,7 +129,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Paaiškinimas";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Attachment failed to export.";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Nepavyko eksportuoti priedo.";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Nepavyko įrašyti";
@@ -351,7 +351,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Užblokuoti naudotojai negalės jums skambinti ar siųsti žinutes.";
 
 /* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Browse";
+"BROWSE_FILES_BUTTON" = "Naršyti";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Tęsti";
@@ -1087,10 +1087,10 @@
 "FINISH_GROUP_CREATION_LABEL" = "Užbaigti grupės kūrimą";
 
 /* Label and title for 'contact forwarding' views. */
-"FORWARD_CONTACT" = "Forward Contact";
+"FORWARD_CONTACT" = "Persiųsti adresatą";
 
 /* Label and title for 'message forwarding' views. */
-"FORWARD_MESSAGE" = "Forward Message";
+"FORWARD_MESSAGE" = "Persiųsti žinutę";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "Šiame pokalbyje neturite jokios medijos.";
@@ -1423,7 +1423,7 @@
 "MESSAGE_ACTION_DETAILS" = "Daugiau informacijos";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "Persiųsti šią žinutę";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Atsakyti į šią žinutę";
@@ -1626,7 +1626,7 @@
 "NETWORK_STATUS_CONNECTING" = "Jungiamasi";
 
 /* Error indicating that this device is no longer linked. */
-"NETWORK_STATUS_DELINKED" = "No Longer Linked";
+"NETWORK_STATUS_DELINKED" = "Daugiau nebesusietas";
 
 /* Error indicating that this device is no longer registered. */
 "NETWORK_STATUS_DEREGISTERED" = "Daugiau nebėra registruotas";
@@ -1761,10 +1761,10 @@
 "ONBOARDING_CAPTCHA_TITLE" = "Pridėkite į savo žinutes lašelį žmogiškumo";
 
 /* button indicating that the user will register their ipad */
-"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Register iPad";
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Registruoti iPad";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link iPhone";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Susieti iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
@@ -1776,7 +1776,7 @@
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Registruoti šį iPad";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this iPhone";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Susieti šį iPhone";
 
 /* warning to the user that registering an ipad is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registering this iPad will disable Signal on any other device currently registered with the same phone number.";
@@ -2349,7 +2349,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Launch Signal on your phone to link this iPad to your account";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Aš neturiu Signal programėlės savo telefone...";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Go to the App Store on your phone, install Signal, complete the registration process, and then you can link your iPad to the same account.";
@@ -2622,7 +2622,7 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Matyti kada žinutės būna perskaitomos ir rodyti tai kitiems. Šis nustatymas yra pasirinktinis ir yra taikomas visiems pokalbiams.";
 
 /* Label for re-link button. */
-"SETTINGS_RELINK_BUTTON" = "Re-link";
+"SETTINGS_RELINK_BUTTON" = "Susieti iš naujo";
 
 /* Label for re-registration button. */
 "SETTINGS_REREGISTER_BUTTON" = "Iš naujo registruoti";

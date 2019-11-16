@@ -970,7 +970,7 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "संपर्क नहीं मिल रहे हैं।";
 
 /* Error indicating that 'save video' failed. */
-"ERROR_COULD_NOT_SAVE_VIDEO" = "वीडियो सहेजने में असमर्थ।";
+"ERROR_COULD_NOT_SAVE_VIDEO" = "वीडियो सेव करने में असमर्थ।";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "मेसेज भेजने में असफल।";
@@ -1303,7 +1303,7 @@
 "KEY_COMMAND_FOCUS_COMPOSER" = "इनपुट बार पर फ़ोकस करें";
 
 /* A keyboard command to open the current conversations GIF picker. */
-"KEY_COMMAND_GIF_SEARCH" = "जीआईएफ खोजें";
+"KEY_COMMAND_GIF_SEARCH" = "GIF खोजें";
 
 /* A keyboard command to present the new group dialog. */
 "KEY_COMMAND_NEW_GROUP" = "नया ग्रुप";
@@ -2364,7 +2364,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "अपना iPad लिंक करने के लिये सहायता यहाँ से प्राप्त करें";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "अपने फोन से क्यूआर कोड स्कैन करें";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "अपने फोन से QR कोड स्कैन करें";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "सुरक्षित सेशन रिसेट कर दिया गया है।";

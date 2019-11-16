@@ -11,7 +11,7 @@
 "ACCESSIBILITY_LABEL_AUDIO" = "音频";
 
 /* Accessibility label for contact. */
-"ACCESSIBILITY_LABEL_CONTACT" = "聯絡人";
+"ACCESSIBILITY_LABEL_CONTACT" = "联系人";
 
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "媒体";
@@ -129,7 +129,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "注释";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Attachment failed to export.";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "无法导出附件。";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "保存失败";
@@ -189,7 +189,7 @@
 "ATTACHMENT_KEYBOARD_CAMERA" = "相机";
 
 /* A button to select a contact from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_CONTACT" = "聯絡人";
+"ATTACHMENT_KEYBOARD_CONTACT" = "联系人";
 
 /* A button to select a file from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_FILE" = "文件";
@@ -351,7 +351,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "被屏蔽的用户将无法向您发起通话，或发送消息。";
 
 /* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Browse";
+"BROWSE_FILES_BUTTON" = "浏览";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "继续";
@@ -525,10 +525,10 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "您确定要删除您的账号吗？";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "This will reset the application by deleting all of your messages from this device. You can always link with your phone again, but that will not restore deleted messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "此操作将删除当前设备上所有您的消息以重置应用。您可以随时重新关联您的手机，但已删除的消息将无法恢复。应用将在操作完成后关闭。";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Are you sure you want to delete all data?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "您确认要删除所有数据吗？";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "您将无法在这个群聊里面发送和接收消息。";
@@ -675,7 +675,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "添加已有的联系人";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "添加至系统通讯录";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "屏蔽此群组";
@@ -970,7 +970,7 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "无法访问联系人列表。";
 
 /* Error indicating that 'save video' failed. */
-"ERROR_COULD_NOT_SAVE_VIDEO" = "Could not save video.";
+"ERROR_COULD_NOT_SAVE_VIDEO" = "无法保存视频。";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "未能发送消息。";
@@ -1042,10 +1042,10 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "安全码已改变。";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Your device is no longer linked. Please re-link to send further messages.";
+"ERROR_SENDING_DELINKED" = "您的设备处于未关联状态。请重新关联以继续发送消息。";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "Your device is no longer registered. Please re-register to send further messages.";
+"ERROR_SENDING_DEREGISTERED" = "您的设备处于未注册状态。请重新注册以继续发送消息。";
 
 /* Error indicating a send failure due to an expired application. */
 "ERROR_SENDING_EXPIRED" = "您的 Signal 版本已过期，请升级到最新版本以继续发送消息。";
@@ -1090,7 +1090,7 @@
 "FORWARD_CONTACT" = "Forward Contact";
 
 /* Label and title for 'message forwarding' views. */
-"FORWARD_MESSAGE" = "Forward Message";
+"FORWARD_MESSAGE" = "转发消息";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "此对话中没有您的媒体数据。";
@@ -1288,7 +1288,7 @@
 "KEEP_MESSAGES_FOREVER" = "取消阅后即焚";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "Go to All Media";
+"KEY_COMMAND_ALL_MEDIA" = "全部媒体";
 
 /* A keyboard command to archive the current coversation. */
 "KEY_COMMAND_ARCHIVE" = "存档会话";
@@ -2334,22 +2334,22 @@
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "关联设备失败";
 
 /* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choose a name for this device";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "为此设备选择一个名称";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "You'll see this name under \"Linked Devices.\"";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "您将在“已关联设备”中看到该名称。";
 
 /* text field placeholder */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Choose a name";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "选择一个名称";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Finish Linking";
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "完成关联";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Launch Signal on your phone to link this iPad to your account";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "在您的手机上打开Signal用以将当前iPad关联至您的账户";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "我的手机上未安装Signal……";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Go to the App Store on your phone, install Signal, complete the registration process, and then you can link your iPad to the same account.";
@@ -3021,10 +3021,10 @@
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "用户名更新失败。";
 
 /* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Device name cannot be blank";
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "设备名称不能为空";
 
 /* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "Device name is too long";
+"VALIDATION_ERROR_TOO_LONG" = "设备名称过长";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "您已将%@标记为未验证。";

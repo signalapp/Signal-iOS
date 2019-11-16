@@ -129,7 +129,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Légende";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Attachment failed to export.";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "L’exportation du fichier joint a échoué.";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Échec de l’enregistrement";
@@ -351,7 +351,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Les utilisateurs bloqués ne pourront ni vous appeler ni vous envoyer des messages.";
 
 /* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Browse";
+"BROWSE_FILES_BUTTON" = "Parcourir";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Continuer";
@@ -525,7 +525,7 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Voulez-vous vraiment supprimer votre compte ?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "This will reset the application by deleting all of your messages from this device. You can always link with your phone again, but that will not restore deleted messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "L'application sera réinitialisée en supprimant tous vos messages de cet appareil. Vous pourrez encore relier votre téléphone, mais cela ne rechargera pas les messages supprimés. L'application se fermera une fois le processus terminé.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Êtes-vous sûr(e) de vouloir supprimer toutes les données ?";
@@ -1042,10 +1042,10 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Le numéro de sécurité a changé.";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Your device is no longer linked. Please re-link to send further messages.";
+"ERROR_SENDING_DELINKED" = "Votre appareil n’est plus relié. Veuillez rétablir le lien pour envoyer de nouveaux messages.";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "Your device is no longer registered. Please re-register to send further messages.";
+"ERROR_SENDING_DEREGISTERED" = "Votre appareil n’est plus inscrit. Veuillez le réinscrire pour envoyer de nouveaux messages.";
 
 /* Error indicating a send failure due to an expired application. */
 "ERROR_SENDING_EXPIRED" = "Votre version de Signal est expirée. Veuillez la mettre à jour pour envoyer de nouveaux messages.";
@@ -1087,7 +1087,7 @@
 "FINISH_GROUP_CREATION_LABEL" = "Achever la création du groupe";
 
 /* Label and title for 'contact forwarding' views. */
-"FORWARD_CONTACT" = "Forward Contact";
+"FORWARD_CONTACT" = "Transférer un contact";
 
 /* Label and title for 'message forwarding' views. */
 "FORWARD_MESSAGE" = "Transférer le message";
@@ -1249,7 +1249,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "L’appel a été manqué, car le numéro de sécurité de l’appelant a changé.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, conversation history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Vous pouvez envoyer ou recevoir des messages synchronisés depuis votre téléphone ou iPad.\nPour votre sécurité, l'historique de conversation n'est pas transféré vers les appareils nouvellement reliés.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ est sur Signal !";
@@ -1288,7 +1288,7 @@
 "KEEP_MESSAGES_FOREVER" = "Les messages ne disparaîtront pas.";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "Go to All Media";
+"KEY_COMMAND_ALL_MEDIA" = "Aller dans Tous les médias";
 
 /* A keyboard command to archive the current coversation. */
 "KEY_COMMAND_ARCHIVE" = "Archiver la conversation";
@@ -1297,7 +1297,7 @@
 "KEY_COMMAND_ATTACHMENTS" = "Afficher les fichiers joints";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Go to Conversation Info";
+"KEY_COMMAND_CONVERSATION_INFO" = "Aller vers les infos de conversation";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "Focus Input Bar";
@@ -1324,10 +1324,10 @@
 "KEY_COMMAND_SETTINGS" = "Paramètres";
 
 /* A keyboard command to open the current conversation's sticker picker. */
-"KEY_COMMAND_STICKERS" = "Show Stickers";
+"KEY_COMMAND_STICKERS" = "Afficher les autocollants";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Conversation";
+"KEY_COMMAND_UNARCHIVE" = "Désarchiver la conversation";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Quitter";
@@ -1647,7 +1647,7 @@
 "NEW_GROUP_CREATE_BUTTON" = "Créer";
 
 /* Error indicating that a new group could not be created. */
-"NEW_GROUP_CREATION_FAILED" = "New group could not be created.";
+"NEW_GROUP_CREATION_FAILED" = "Le nouveau groupe n’a pas pu être créé.";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Nouveau groupe";
@@ -1761,34 +1761,34 @@
 "ONBOARDING_CAPTCHA_TITLE" = "Ajoutez une touche d’humanité à vos messages";
 
 /* button indicating that the user will register their ipad */
-"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Register iPad";
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Inscrire un iPad";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link iPhone";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Relier un iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "En appuyant sur « Inscrire un iPad », vous pourrez créer un tout nouveau compte Signal ou transférer un compte existant vers cet iPad. Ceci désactivera Signal sur tout autre appareil actuellement inscrit le même numéro de téléphone.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link iPhone” will let you connect your phone to an existing account. Linking your phone is generally not recommended and will limit some functionality, such as calling.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "En appuyant sur « Relier un iPhone », vous pourrez connecter votre téléphone à un compte existant. Relier votre téléphone n’est généralement pas recommandé et limitera certaines fonctionnalités comme les appels.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Inscrire cet iPad";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this iPhone";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Relier cet iPhone";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registering this iPad will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Inscrire cet iPad désactivera Signal sur tout autre appareil actuellement inscrit avec ce même numéro de téléphone.";
 
 /* warning to the user that linking a phone is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Linking your iPhone is not recommended and will limit core functionality.";
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Relier votre iPhone n’est pas recommandé et limitera les fonctionnalités de base.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Accorder les autorisations";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifications let you see when messages arrive and receive updates about new conversation activity.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Les notifications vous permettent de voir quand des messages arrivent et de recevoir des alertes sur l’activité des conversations.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Get the message";
@@ -1962,7 +1962,7 @@
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Confirmez votre nouveau NIP.";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Your PIN adds and extra layer of security and backs up your account.";
+"PIN_CREATION_EXPLANATION" = "Votre NIP ajoute une couche supplémentaire de sécurité et sauvegarde votre compte.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "Le NIP ne correspond pas. Essayez encore.";
@@ -2157,7 +2157,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Il vous reste %lu tentatives. Si vous atteignez le nombre limite de tentatives, votre compte sera verrouillé. Après 7 jours d’inactivité, vous pourrez vous réenregistrer sans votre NIP. Votre compte sera effacé et toutes ses données supprimées.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Il vous reste 1 tentative. Si vous atteignez le nombre limite de tentatives, votre compte sera verrouillé. Après 7 jours d’inactivité, vous pourrez vous réenregistrer sans votre NIP. Votre compte sera effacé et toutes ses données supprimées.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "NIP erroné";
@@ -2322,13 +2322,13 @@
 "SEARCH_SECTION_MESSAGES" = "Messages";
 
 /* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Impossible de récupérer le code de liaison";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Your other device is running a legacy version of Signal that doesn't support scanning iPad QR codes. Please install the latest Signal release and try again.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Votre autre appareil exécute une ancienne version de Signal qui ne prend pas en charge le balayage des QR codes iPad. Veuillez installer la dernière version de Signal et réessayer.";
 
 /* alert title for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Update Scanning Device";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Mettre à jour l'autre appareil";
 
 /* alert title */
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Échec de la liaison avec votre appareil";
@@ -2346,19 +2346,19 @@
 "SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Terminer la liaison";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Launch Signal on your phone to link this iPad to your account";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Lancez Signal sur votre téléphone pour relier cet iPad à votre compte";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Je n’ai pas Signal sur mon téléphone…";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Go to the App Store on your phone, install Signal, complete the registration process, and then you can link your iPad to the same account.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Allez dans l’App Store de votre téléphone, installez Signal, complétez la procédure d’inscription, et vous pourrez ensuite relier votre iPad au même compte.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Installer Signal sur votre téléphone";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tap on your profile picture to open Signal Settings on your phone. Then \"Linked Devices\" and \"Link New Device\" to scan this code with your phone:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Appuyez sur votre image de profil pour accéder aux paramètres de Signal sur votre téléphone, puis sur « Appareils reliés » et « Relier un nouvel appareil » afin de balayer ce code avec votre téléphone :";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Obtenez de l’aide pour relier votre iPad ici";
@@ -2592,7 +2592,7 @@
 "SETTINGS_NOTIFICATIONS" = "Notifications";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security and backs up your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+"SETTINGS_PINS_FOOTER" = "Votre NIP ajoute une couche supplémentaire de sécurité et sauvegarde votre compte. Il vous sera demandé quand vous inscrirez votre numéro de téléphone avec Signal. Si vous oubliez votre NIP, votre compte sera verrouillé pendant 7 jours.";
 
 /* Label for the 'pins' item of the privacy settings. */
 "SETTINGS_PINS_ITEM" = "Changer votre code PIN";
@@ -2925,7 +2925,7 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Annuler le lien avec « %@ » ?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Device no longer linked. Re-link Signal with your phone to continue messaging.";
+"UNLINKED_WARNING" = "Cet appareil n’est plus relié. Veuillez rétablir le lien entre Signal et votre téléphone pour continuer la conversation.";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal n’a pas pu annuler le lien avec votre appareil.";
