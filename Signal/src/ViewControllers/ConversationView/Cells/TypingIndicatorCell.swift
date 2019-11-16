@@ -16,7 +16,7 @@ public class TypingIndicatorCell: ConversationViewCell {
         notImplemented()
     }
 
-    private let kAvatarSize: CGFloat = 36
+    private let kMinBubbleHeight: CGFloat = 36
     private let kAvatarHSpacing: CGFloat = 8
 
     private let avatarView = AvatarImageView()
@@ -126,10 +126,10 @@ public class TypingIndicatorCell: ConversationViewCell {
 
         if shouldShowAvatar() {
             return CGSizeCeil(CGSize(width: kAvatarSize + kAvatarHSpacing + bubbleSize.width,
-                                     height: max(kAvatarSize, bubbleSize.height)))
+                                     height: max(kMinBubbleHeight, bubbleSize.height)))
         } else {
             return CGSizeCeil(CGSize(width: bubbleSize.width,
-                                     height: max(kAvatarSize, bubbleSize.height)))
+                                     height: max(kMinBubbleHeight, bubbleSize.height)))
         }
     }
 

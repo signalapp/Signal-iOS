@@ -9,7 +9,7 @@ class ConversationSplitViewController: UISplitViewController {
     private let conversationListVC = ConversationListViewController()
     private let detailPlaceholderVC = NoSelectedConversationViewController()
 
-    private lazy var primaryNavController = SignalsNavigationController(rootViewController: conversationListVC)
+    private lazy var primaryNavController = OWSNavigationController(rootViewController: conversationListVC)
     private lazy var detailNavController = OWSNavigationController()
 
     @objc private(set) weak var selectedConversationViewController: ConversationViewController?
