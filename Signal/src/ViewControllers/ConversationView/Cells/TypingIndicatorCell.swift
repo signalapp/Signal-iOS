@@ -17,6 +17,7 @@ public class TypingIndicatorCell: ConversationViewCell {
     }
 
     private let kMinBubbleHeight: CGFloat = 36
+    private let kAvatarSize: CGFloat = 28
     private let kAvatarHSpacing: CGFloat = 8
 
     private let avatarView = AvatarImageView()
