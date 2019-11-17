@@ -13,16 +13,30 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     @objc
-    public func runMigrationsForNewUser() {
-        try! newUserMigrator.migrate(grdbStorage.pool)
-    }
-
-    @objc
-    public func runOutstandingMigrationsForExistingUser() {
-        try! incrementalMigrator.migrate(grdbStorage.pool)
+    public func runSchemaMigrations() {
+        if hasPreviouslyRunAnyMigrations {
+            try! incrementalMigrator.migrate(grdbStorage.pool)
+        } else {
+            try! newUserMigrator.migrate(grdbStorage.pool)
+        }
     }
 
     // MARK: -
+
+    @objc
+    public var hasPreviouslyRunAnyMigrations: Bool {
+        do {
+            let sql = "SELECT COUNT(*) FROM grdb_migrations"
+            guard let count = (try grdbStorage.read { transaction in
+                try UInt.fetchOne(transaction.database, sql: sql)
+            }) else {
+                throw OWSAssertionError("count was unexpectedly nil")
+            }
+            return count > 0
+        } catch {
+            owsFail("error: \(error)")
+        }
+    }
 
     private enum MigrationId: String, CaseIterable {
         case createInitialSchema
