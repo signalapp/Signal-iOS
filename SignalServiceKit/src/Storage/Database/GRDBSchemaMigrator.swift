@@ -14,29 +14,30 @@ public class GRDBSchemaMigrator: NSObject {
 
     @objc
     public func runSchemaMigrations() {
-        if hasPreviouslyRunAnyMigrations {
+        if hasCreatedInitialSchema {
             try! incrementalMigrator.migrate(grdbStorage.pool)
         } else {
             try! newUserMigrator.migrate(grdbStorage.pool)
         }
     }
 
-    // MARK: -
-
-    @objc
-    public var hasPreviouslyRunAnyMigrations: Bool {
-        do {
-            let sql = "SELECT COUNT(*) FROM grdb_migrations"
-            guard let count = (try grdbStorage.read { transaction in
-                try UInt.fetchOne(transaction.database, sql: sql)
-            }) else {
-                throw OWSAssertionError("count was unexpectedly nil")
-            }
-            return count > 0
-        } catch {
-            owsFail("error: \(error)")
+    private var hasCreatedInitialSchema: Bool {
+        // HACK: GRDB doesn't create the grdb_migrations table until running a migration.
+        // So we can't cleanly check which migrations have run for new users until creating this
+        // table ourselves.
+        try! grdbStorage.write { transaction in
+            try! self.fixit_setupMigrations(transaction.database)
         }
+
+        let appliedMigrations = try! incrementalMigrator.appliedMigrations(in: grdbStorage.pool)
+        return appliedMigrations.contains(MigrationId.createInitialSchema.rawValue)
     }
+
+    private func fixit_setupMigrations(_ db: Database) throws {
+        try db.execute(sql: "CREATE TABLE IF NOT EXISTS grdb_migrations (identifier TEXT NOT NULL PRIMARY KEY)")
+    }
+
+    // MARK: -
 
     private enum MigrationId: String, CaseIterable {
         case createInitialSchema
@@ -45,7 +46,7 @@ public class GRDBSchemaMigrator: NSObject {
         case jobRecords_add_attachmentId
     }
 
-    // For new users, we import the latest schema with the first migration
+    // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
     private lazy var newUserMigrator: DatabaseMigrator = {
         var migrator = DatabaseMigrator()
