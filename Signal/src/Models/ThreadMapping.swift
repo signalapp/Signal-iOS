@@ -134,7 +134,7 @@ class ThreadMapping: NSObject {
         if index < (threads.count - 1) {
             return IndexPath(item: index + 1, section: kSection)
         } else {
-            return firstIndexPath
+            return nil
         }
     }
 
@@ -150,7 +150,7 @@ class ThreadMapping: NSObject {
         if index > 0 {
             return IndexPath(item: index - 1, section: kSection)
         } else {
-            return lastIndexPath
+            return nil
         }
     }
 

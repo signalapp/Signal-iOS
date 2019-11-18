@@ -249,80 +249,90 @@ class ConversationSplitViewController: UISplitViewController {
         )
     ]
 
-    let selectedConversationKeyCommands = [
-        UIKeyCommand(
-            input: "i",
-            modifierFlags: [.command, .shift],
-            action: #selector(openConversationSettings),
-            discoverabilityTitle: NSLocalizedString(
-                "KEY_COMMAND_CONVERSATION_INFO",
-                comment: "A keyboard command to open the current conversation's settings."
+    var selectedConversationKeyCommands: [UIKeyCommand] {
+        var commands = [
+            UIKeyCommand(
+                input: "i",
+                modifierFlags: [.command, .shift],
+                action: #selector(openConversationSettings),
+                discoverabilityTitle: NSLocalizedString(
+                    "KEY_COMMAND_CONVERSATION_INFO",
+                    comment: "A keyboard command to open the current conversation's settings."
+                )
+            ),
+            UIKeyCommand(
+                input: "m",
+                modifierFlags: [.command, .shift],
+                action: #selector(openAllMedia),
+                discoverabilityTitle: NSLocalizedString(
+                    "KEY_COMMAND_ALL_MEDIA",
+                    comment: "A keyboard command to open the current conversation's all media view."
+                )
+            ),
+            UIKeyCommand(
+                input: "g",
+                modifierFlags: [.command, .shift],
+                action: #selector(openGifSearch),
+                discoverabilityTitle: NSLocalizedString(
+                    "KEY_COMMAND_GIF_SEARCH",
+                    comment: "A keyboard command to open the current conversations GIF picker."
+                )
+            ),
+            UIKeyCommand(
+                input: "u",
+                modifierFlags: .command,
+                action: #selector(openAttachmentKeyboard),
+                discoverabilityTitle: NSLocalizedString(
+                    "KEY_COMMAND_ATTACHMENTS",
+                    comment: "A keyboard command to open the current conversation's attachment picker."
+                )
             )
-        ),
-        UIKeyCommand(
-            input: "m",
-            modifierFlags: [.command, .shift],
-            action: #selector(openAllMedia),
-            discoverabilityTitle: NSLocalizedString(
-                "KEY_COMMAND_ALL_MEDIA",
-                comment: "A keyboard command to open the current conversation's all media view."
+        ]
+
+        if (StickerManager.shared.isStickerSendEnabled) {
+            commands.append(UIKeyCommand(
+                input: "s",
+                modifierFlags: [.command, .shift],
+                action: #selector(openStickerKeyboard),
+                discoverabilityTitle: NSLocalizedString(
+                    "KEY_COMMAND_STICKERS",
+                    comment: "A keyboard command to open the current conversation's sticker picker."
+                )
+            ))
+        }
+
+        commands += [
+            UIKeyCommand(
+                input: "a",
+                modifierFlags: [.command, .shift],
+                action: #selector(archiveSelectedConversation),
+                discoverabilityTitle: NSLocalizedString(
+                    "KEY_COMMAND_ARCHIVE",
+                    comment: "A keyboard command to archive the current coversation."
+                )
+            ),
+            UIKeyCommand(
+                input: "u",
+                modifierFlags: [.command, .shift],
+                action: #selector(unarchiveSelectedConversation),
+                discoverabilityTitle: NSLocalizedString(
+                    "KEY_COMMAND_UNARCHIVE",
+                    comment: "A keyboard command to unarchive the current coversation."
+                )
+            ),
+            UIKeyCommand(
+                input: "t",
+                modifierFlags: [.command, .shift],
+                action: #selector(focusInputToolbar),
+                discoverabilityTitle: NSLocalizedString(
+                    "KEY_COMMAND_FOCUS_COMPOSER",
+                    comment: "A keyboard command to focus the current conversation's input field."
+                )
             )
-        ),
-        UIKeyCommand(
-            input: "g",
-            modifierFlags: [.command, .shift],
-            action: #selector(openGifSearch),
-            discoverabilityTitle: NSLocalizedString(
-                "KEY_COMMAND_GIF_SEARCH",
-                comment: "A keyboard command to open the current conversations GIF picker."
-            )
-        ),
-        UIKeyCommand(
-            input: "u",
-            modifierFlags: .command,
-            action: #selector(openAttachmentKeyboard),
-            discoverabilityTitle: NSLocalizedString(
-                "KEY_COMMAND_ATTACHMENTS",
-                comment: "A keyboard command to open the current conversation's attachment picker."
-            )
-        ),
-        UIKeyCommand(
-            input: "s",
-            modifierFlags: [.command, .shift],
-            action: #selector(openStickerKeyboard),
-            discoverabilityTitle: NSLocalizedString(
-                "KEY_COMMAND_STICKERS",
-                comment: "A keyboard command to open the current conversation's sticker picker."
-            )
-        ),
-        UIKeyCommand(
-            input: "a",
-            modifierFlags: [.command, .shift],
-            action: #selector(archiveSelectedConversation),
-            discoverabilityTitle: NSLocalizedString(
-                "KEY_COMMAND_ARCHIVE",
-                comment: "A keyboard command to archive the current coversation."
-            )
-        ),
-        UIKeyCommand(
-            input: "u",
-            modifierFlags: [.command, .shift],
-            action: #selector(unarchiveSelectedConversation),
-            discoverabilityTitle: NSLocalizedString(
-                "KEY_COMMAND_UNARCHIVE",
-                comment: "A keyboard command to unarchive the current coversation."
-            )
-        ),
-        UIKeyCommand(
-            input: "t",
-            modifierFlags: [.command, .shift],
-            action: #selector(focusInputToolbar),
-            discoverabilityTitle: NSLocalizedString(
-                "KEY_COMMAND_FOCUS_COMPOSER",
-                comment: "A keyboard command to focus the current conversation's input field."
-            )
-        )
-    ]
+        ]
+
+        return commands
+    }
 
     override var keyCommands: [UIKeyCommand]? {
         // If there is a modal presented over us, or another window above us, don't respond to keyboard commands.
