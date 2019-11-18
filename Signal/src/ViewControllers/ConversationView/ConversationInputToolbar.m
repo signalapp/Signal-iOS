@@ -1107,6 +1107,12 @@ const CGFloat kMaxTextViewHeight = 98;
         [self.mentionCandidateSelectionView setPublicChatChannel:publicChat.channel];
     }
     self.mentionCandidateSelectionView.mentionCandidates = mentionCandidates;
+    // Add animation
+//    [UIView animateWithDuration:0.5f animations:^{
+//        self.mentionCandidateSelectionViewSizeConstraint.constant = 6 + MIN(mentionCandidates.count, 4) * 52;
+//        [self setNeedsLayout];
+//        [self layoutIfNeeded];
+//    }];
     self.mentionCandidateSelectionViewSizeConstraint.constant = 6 + MIN(mentionCandidates.count, 4) * 52;
     [self setNeedsLayout];
     [self layoutIfNeeded];
@@ -1115,6 +1121,12 @@ const CGFloat kMaxTextViewHeight = 98;
 
 - (void)hideMentionCandidateSelectionView
 {
+    // Add animation
+//    [UIView animateWithDuration:0.5f animations:^{
+//        self.mentionCandidateSelectionViewSizeConstraint.constant = 0;
+//        [self setNeedsLayout];
+//        [self layoutIfNeeded];
+//    }];
     self.mentionCandidateSelectionViewSizeConstraint.constant = 0;
     [self setNeedsLayout];
     [self layoutIfNeeded];
