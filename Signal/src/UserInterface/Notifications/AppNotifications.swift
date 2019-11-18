@@ -147,11 +147,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     @objc
     public override init() {
-        if #available(iOS 10, *) {
-            self.adaptee = UserNotificationPresenterAdaptee()
-        } else {
-            self.adaptee = LegacyNotificationPresenterAdaptee()
-        }
+        self.adaptee = UserNotificationPresenterAdaptee()
 
         super.init()
 
@@ -184,25 +180,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     }
 
     // MARK: -
-
-    // It is not safe to assume push token requests will be acknowledged until the user has
-    // registered their notification settings.
-    //
-    // e.g. in the case that Background Fetch is disabled, token requests will be ignored until
-    // we register user notification settings.
-    //
-    // For modern UNUserNotificationSettings, the registration takes a callback, so "waiting" for
-    // notification settings registration is straight forward, however for legacy UIUserNotification
-    // settings, the settings request is confirmed in the AppDelegate, where we call this method
-    // to inform the adaptee it's safe to proceed.
-    @objc
-    public func didRegisterLegacyNotificationSettings() {
-        guard let legacyAdaptee = adaptee as? LegacyNotificationPresenterAdaptee else {
-            owsFailDebug("unexpected notifications adaptee: \(adaptee)")
-            return
-        }
-        legacyAdaptee.didRegisterUserNotificationSettings()
-    }
 
     @objc
     func handleMessageRead(notification: Notification) {
