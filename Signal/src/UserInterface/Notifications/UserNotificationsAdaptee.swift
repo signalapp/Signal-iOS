@@ -105,15 +105,15 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         notify(category: category, title: title, body: body, threadIdentifier: threadIdentifier, userInfo: userInfo, sound: sound, replacingIdentifier: nil)
     }
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], sound: OWSSound?, replacingIdentifier: String?) {
+    func notify(category categoryx: AppNotificationCategory, title titlex: String?, body bodyx: String, threadIdentifier threadIdentifierx: String?, userInfo userInfox: [AnyHashable: Any], sound soundx: OWSSound?, replacingIdentifier replacingIdentifierx: String?) {
         AssertIsOnMainThread()
 
-        Logger.info("replacingIdentifier: \(replacingIdentifier)")
+//        Logger.info("replacingIdentifier: \(replacingIdentifier)")
 
         let content = UNMutableNotificationContent()
-        content.categoryIdentifier = category.identifier
+//        content.categoryIdentifier = category.identifier
         content.categoryIdentifier = AppNotificationCategory.incomingMessageWithActions.identifier
-        content.userInfo = userInfo
+//        content.userInfo = userInfo
         let isAppActive = UIApplication.shared.applicationState == .active
 //        if let sound = sound, sound != OWSSound.none {
 //            content.sound = sound.notificationSound(isQuiet: isAppActive)
@@ -154,13 +154,14 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 //            Logger.info("supressing notification body")
 //        }
 
-        if let threadIdentifier = threadIdentifier {
-            content.threadIdentifier = threadIdentifier
-        }
+//        if let threadIdentifier = threadIdentifier {
+//            content.threadIdentifier = threadIdentifier
+//        }
 
         let request = UNNotificationRequest(identifier: notificationIdentifier, content: content, trigger: trigger)
 
-        Logger.info("presenting notification with identifier: \(notificationIdentifier) \(category.identifier)")
+//        Logger.info("presenting notification with identifier: \(notificationIdentifier) \(category.identifier)")
+        Logger.info("presenting notification with identifier: \(notificationIdentifier) \(content.categoryIdentifier)")
         notificationCenter.add(request)
         notifications[notificationIdentifier] = request
     }
