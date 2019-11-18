@@ -210,7 +210,20 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
             return true
         }
 
-        guard category == .incomingMessageWithActions || category == .incomingMessageWithoutActions || category == .infoOrErrorMessage else {
+        switch category {
+        case .incomingMessageWithActions,
+             .incomingMessageWithoutActions,
+             .infoOrErrorMessage:
+            // If the app is in the foreground, show these notifications
+            // unless the corresponding conversation is already open.
+            break
+        case .incomingMessageFromNoLongerVerifiedIdentity,
+             .threadlessErrorMessage,
+             .incomingCall,
+             .missedCallWithActions,
+             .missedCallWithoutActions,
+             .missedCallFromNoLongerVerifiedIdentity:
+            // Always show these notifications whenever the app is in the foreground.
             return true
         }
 
