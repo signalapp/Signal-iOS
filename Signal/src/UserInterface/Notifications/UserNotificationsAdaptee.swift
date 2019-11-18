@@ -108,6 +108,8 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
     func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], sound: OWSSound?, replacingIdentifier: String?) {
         AssertIsOnMainThread()
 
+        Logger.info("replacingIdentifier: \(replacingIdentifier)")
+
         let content = UNMutableNotificationContent()
         content.categoryIdentifier = category.identifier
         content.userInfo = userInfo
@@ -117,11 +119,11 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         }
 
         var notificationIdentifier: String = UUID().uuidString
-        if let replacingIdentifier = replacingIdentifier {
-            notificationIdentifier = replacingIdentifier
-            Logger.debug("replacing notification with identifier: \(notificationIdentifier)")
-            cancelNotification(identifier: notificationIdentifier)
-        }
+//        if let replacingIdentifier = replacingIdentifier {
+//            notificationIdentifier = replacingIdentifier
+//            Logger.info("replacing notification with identifier: \(notificationIdentifier)")
+//            cancelNotification(identifier: notificationIdentifier)
+//        }
 
         let trigger: UNNotificationTrigger?
         let checkForCancel = (category == .incomingMessageWithActions ||
@@ -168,6 +170,9 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 
     func cancelNotification(_ notification: UNNotificationRequest) {
         AssertIsOnMainThread()
+        
+        Logger.info("")
+        
         cancelNotification(identifier: notification.identifier)
     }
 
