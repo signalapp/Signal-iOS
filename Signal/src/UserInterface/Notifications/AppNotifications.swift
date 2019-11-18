@@ -201,6 +201,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     }
 
     func presentIncomingCall(_ call: SignalCall, callerName: String) {
+        Logger.info("")
 
         let remoteAddress = call.remoteAddress
         let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
@@ -248,11 +249,17 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationTitle = callerName
             threadIdentifier = thread.uniqueId
         }
+        Logger.info("notificationTitle: \(notificationTitle)")
+        Logger.info("threadIdentifier: \(threadIdentifier)")
+        Logger.info("previewType: \(previewType) \(previewType.rawValue)")
+        Logger.info("remoteAddress: \(remoteAddress)")
+
         let notificationBody = NotificationStrings.missedCallBody
         let userInfo: [String: Any] = [
             AppNotificationUserInfoKey.threadId: thread.uniqueId,
             AppNotificationUserInfoKey.callBackAddress: remoteAddress
         ]
+        Logger.info("notificationBody: \(notificationBody)")
 
         let category: AppNotificationCategory = (shouldShowActions
             ? .missedCallWithActions

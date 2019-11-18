@@ -135,7 +135,12 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
             trigger = nil
         }
 
+        content.title = UUID().uuidString
+        content.body = UUID().uuidString
+
         if shouldPresentNotification(category: category, userInfo: userInfo) {
+            Logger.info("showing title and body")
+
             if let displayableTitle = title?.filterForDisplay {
                 content.title = displayableTitle
             }
