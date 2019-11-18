@@ -142,7 +142,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
             }
         } else {
             // Play sound and vibrate, but without a `body` no banner will show.
-            Logger.debug("supressing notification body")
+            Logger.info("supressing notification body")
         }
 
         if let threadIdentifier = threadIdentifier {
@@ -151,13 +151,16 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 
         let request = UNNotificationRequest(identifier: notificationIdentifier, content: content, trigger: trigger)
 
-        Logger.debug("presenting notification with identifier: \(notificationIdentifier)")
+        Logger.info("presenting notification with identifier: \(notificationIdentifier) \(category.identifier)")
         notificationCenter.add(request)
         notifications[notificationIdentifier] = request
     }
 
     func cancelNotification(identifier: String) {
         AssertIsOnMainThread()
+        
+        Logger.info("identifier: \(identifier)")
+
         notifications.removeValue(forKey: identifier)
         notificationCenter.removeDeliveredNotifications(withIdentifiers: [identifier])
         notificationCenter.removePendingNotificationRequests(withIdentifiers: [identifier])
@@ -170,6 +173,9 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 
     func cancelNotifications(threadId: String) {
         AssertIsOnMainThread()
+        
+        Logger.info("")
+
         for notification in notifications.values {
             guard let notificationThreadId = notification.content.userInfo[AppNotificationUserInfoKey.threadId] as? String else {
                 continue
@@ -186,6 +192,8 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
     func clearAllNotifications() {
         AssertIsOnMainThread()
 
+        Logger.info("")
+
         notificationCenter.removeAllPendingNotificationRequests()
         notificationCenter.removeAllDeliveredNotifications()
 
@@ -195,6 +203,8 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
     }
 
     private func clearLegacyNotifications() {
+        Logger.info("")
+
         // This will cancel all "scheduled" local notifications that haven't
         // been presented yet.
         UIApplication.shared.cancelAllLocalNotifications()
