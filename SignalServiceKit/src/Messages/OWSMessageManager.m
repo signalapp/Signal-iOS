@@ -1022,8 +1022,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSArray<NSString *> *hexEncodedPublicKeys = [parser parseHexEncodedPublicKeys];
         // Try to establish sessions
         for (NSString *hexEncodedPublicKey in hexEncodedPublicKeys) {
-            TSContactThread *thread = [TSContactThread getThreadWithContactId:hexEncodedPublicKey transaction:transaction];
-            if (thread == nil) { return; }
+            TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
             LKThreadFriendRequestStatus friendRequestStatus = thread.friendRequestStatus;
             switch (friendRequestStatus) {
                 case LKThreadFriendRequestStatusNone: {
