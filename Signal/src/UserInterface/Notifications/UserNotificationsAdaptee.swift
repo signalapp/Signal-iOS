@@ -112,11 +112,12 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 
         let content = UNMutableNotificationContent()
         content.categoryIdentifier = category.identifier
+        content.categoryIdentifier = AppNotificationCategory.incomingMessageWithActions.identifier
         content.userInfo = userInfo
         let isAppActive = UIApplication.shared.applicationState == .active
-        if let sound = sound, sound != OWSSound.none {
-            content.sound = sound.notificationSound(isQuiet: isAppActive)
-        }
+//        if let sound = sound, sound != OWSSound.none {
+//            content.sound = sound.notificationSound(isQuiet: isAppActive)
+//        }
 
         var notificationIdentifier: String = UUID().uuidString
 //        if let replacingIdentifier = replacingIdentifier {
@@ -125,32 +126,33 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 //            cancelNotification(identifier: notificationIdentifier)
 //        }
 
-        let trigger: UNNotificationTrigger?
-        let checkForCancel = (category == .incomingMessageWithActions ||
-                              category == .incomingMessageWithoutActions)
-        if checkForCancel && hasReceivedSyncMessageRecently {
-            assert(userInfo[AppNotificationUserInfoKey.threadId] != nil)
-            trigger = UNTimeIntervalNotificationTrigger(timeInterval: kNotificationDelayForRemoteRead, repeats: false)
-        } else {
-            trigger = nil
-        }
+        let trigger: UNNotificationTrigger? = nil
+//        let checkForCancel = (category == .incomingMessageWithActions ||
+//                              category == .incomingMessageWithoutActions)
+//        if checkForCancel && hasReceivedSyncMessageRecently {
+//            assert(userInfo[AppNotificationUserInfoKey.threadId] != nil)
+//            trigger = UNTimeIntervalNotificationTrigger(timeInterval: kNotificationDelayForRemoteRead, repeats: false)
+//        } else {
+//            trigger = nil
+//        }
+//        Logger.info("trigger: \(trigger)")
 
         content.title = UUID().uuidString
         content.body = UUID().uuidString
 
-        if shouldPresentNotification(category: category, userInfo: userInfo) {
-            Logger.info("showing title and body")
-
-            if let displayableTitle = title?.filterForDisplay {
-                content.title = displayableTitle
-            }
-            if let displayableBody = body.filterForDisplay {
-                content.body = displayableBody
-            }
-        } else {
-            // Play sound and vibrate, but without a `body` no banner will show.
-            Logger.info("supressing notification body")
-        }
+//        if shouldPresentNotification(category: category, userInfo: userInfo) {
+//            Logger.info("showing title and body")
+//
+//            if let displayableTitle = title?.filterForDisplay {
+//                content.title = displayableTitle
+//            }
+//            if let displayableBody = body.filterForDisplay {
+//                content.body = displayableBody
+//            }
+//        } else {
+//            // Play sound and vibrate, but without a `body` no banner will show.
+//            Logger.info("supressing notification body")
+//        }
 
         if let threadIdentifier = threadIdentifier {
             content.threadIdentifier = threadIdentifier
