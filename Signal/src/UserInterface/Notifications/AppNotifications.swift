@@ -233,7 +233,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     }
 
     func presentMissedCall(_ call: SignalCall, callerName: String) {
-
+        Logger.info("")
+        
         let remoteAddress = call.remoteAddress
         let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
 
@@ -269,6 +270,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     }
 
     public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: SignalCall, callerName: String) {
+        Logger.info("")
 
         let remoteAddress = call.remoteAddress
         let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
@@ -301,6 +303,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     }
 
     public func presentMissedCallBecauseOfNewIdentity(call: SignalCall, callerName: String) {
+        Logger.info("")
 
         let remoteAddress = call.remoteAddress
         let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
