@@ -64,10 +64,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMessage,
-    NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos,
-    SDSAnyWriteTransaction *writeTransaction);
-
 @implementation ThreadUtil
 
 #pragma mark - Dependencies

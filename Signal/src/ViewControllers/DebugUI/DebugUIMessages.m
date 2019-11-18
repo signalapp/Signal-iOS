@@ -3921,35 +3921,13 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 break;
             }
             case 3: {
-                NSString *filename = @"test.png";
-                NSData *pngData = [[ImageFactory new] buildPNGData];
-                TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/png"
-                                                                                             byteCount:(uint32_t)pngData.length
-                                                                                        sourceFilename:filename
-                                                                                               caption:CommonGenerator.sentence
-                                                                                        albumMessageId:nil];
-
-                NSError *error;
-                BOOL success = [attachmentStream writeData:pngData error:&error];
-                OWSAssertDebug(success && !error);
-                [attachmentStream anyInsertWithTransaction:transaction];
-                [attachmentStream updateAsUploadedWithEncryptionKey:[Cryptography generateRandomBytes:32]
-                                                             digest:[Cryptography generateRandomBytes:32]
-                                                           serverId:1
-                                                        transaction:transaction];
-                [self createFakeOutgoingMessage:thread
-                                    messageBody:nil
-                                     attachment:attachmentStream
-                                       filename:filename
-                                   messageState:TSOutgoingMessageStateSent
-                                    isDelivered:NO
-                                         isRead:NO
-                                 isVoiceMessage:NO
-                                  quotedMessage:nil
-                                   contactShare:nil
-                                    linkPreview:nil
-                                 messageSticker:nil
-                                    transaction:transaction];
+                ConversationFactory *conversationFactory = [ConversationFactory new];
+                conversationFactory.attachmentCount = arc4random_uniform(33);
+                conversationFactory.threadCreator = ^(SDSAnyWriteTransaction *_transaction){
+                    return thread;
+                };
+                
+                [conversationFactory createSentMessageWithTransaction:transaction];
                 break;
             }
         }

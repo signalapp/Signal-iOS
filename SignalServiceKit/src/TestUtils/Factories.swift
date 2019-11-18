@@ -427,6 +427,61 @@ public class GroupThreadFactory: NSObject, Factory {
 }
 
 @objc
+public class ConversationFactory: NSObject {
+
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    @objc
+    public var attachmentCount: Int = 0
+
+    @objc
+    public func createSentMessage(transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage {
+        let outgoingFactory = OutgoingMessageFactory()
+        outgoingFactory.threadCreator = threadCreator
+        let message = outgoingFactory.create(transaction: transaction)
+
+        let attachmentInfos: [OutgoingAttachmentInfo] = (0..<attachmentCount).map { albumIndex in
+            let caption = Bool.random() ? "(\(albumIndex)) \(CommonGenerator.sentence)" : nil
+            return attachmentInfoBuilder(message, caption)
+        }
+
+        databaseStorage.asyncWrite { asyncTransaction in
+            let messagePreparer = OutgoingMessagePreparer(message, unsavedAttachmentInfos: attachmentInfos)
+            _ = try! messagePreparer.prepareMessage(transaction: asyncTransaction)
+
+            for attachment in message.allAttachments(with: asyncTransaction) as! [TSAttachmentStream] {
+                attachment.updateAsUploaded(withEncryptionKey: Randomness.generateRandomBytes(16),
+                                            digest: Randomness.generateRandomBytes(16),
+                                            serverId: 1,
+                                            transaction: asyncTransaction)
+            }
+
+            message.update(withFakeMessageState: .sent, transaction: asyncTransaction)
+        }
+
+        return message
+    }
+
+    @objc
+    public var threadCreator: (SDSAnyWriteTransaction) -> TSThread = { transaction in
+        ContactThreadFactory().create(transaction: transaction)
+    }
+
+    @objc
+    public var attachmentInfoBuilder: (TSOutgoingMessage, String?) -> OutgoingAttachmentInfo = { outgoingMessage, caption in
+        let dataSource = DataSourceValue.dataSource(with: ImageFactory().buildPNGData(), fileExtension: "png")!
+        return OutgoingAttachmentInfo(dataSource: dataSource,
+                                      contentType: "image/png",
+                                      sourceFilename: nil,
+                                      caption: caption,
+                                      albumMessageId: outgoingMessage.uniqueId)
+    }
+
+}
+
+@objc
 public class AttachmentStreamFactory: NSObject, Factory {
 
     @objc
