@@ -957,7 +957,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     TSThread *_Nullable currentThread = self.conversationSplitViewController.selectedThread;
     NSIndexPath *_Nullable previousIndexPath = [self.threadMapping indexPathBeforeThread:currentThread];
     if (previousIndexPath) {
-        [self presentThread:[self threadForIndexPath:previousIndexPath] action:ConversationViewActionNone animated:YES];
+        [self presentThread:[self threadForIndexPath:previousIndexPath] action:ConversationViewActionCompose animated:YES];
         [self.tableView selectRowAtIndexPath:previousIndexPath
                                     animated:YES
                               scrollPosition:UITableViewScrollPositionNone];
@@ -979,7 +979,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     TSThread *_Nullable currentThread = self.conversationSplitViewController.selectedThread;
     NSIndexPath *_Nullable nextIndexPath = [self.threadMapping indexPathAfterThread:currentThread];
     if (nextIndexPath) {
-        [self presentThread:[self threadForIndexPath:nextIndexPath] action:ConversationViewActionNone animated:YES];
+        [self presentThread:[self threadForIndexPath:nextIndexPath] action:ConversationViewActionCompose animated:YES];
         [self.tableView selectRowAtIndexPath:nextIndexPath animated:YES scrollPosition:UITableViewScrollPositionNone];
     }
 }
