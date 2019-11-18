@@ -162,11 +162,6 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
     return AppEnvironment.shared.userNotificationActionHandler;
 }
 
-- (OWSLegacyNotificationActionHandler *)legacyNotificationActionHandler
-{
-    return AppEnvironment.shared.legacyNotificationActionHandler;
-}
-
 - (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
@@ -513,20 +508,6 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
     OWSProdError([OWSAnalyticsEvents appDelegateErrorFailedToRegisterForRemoteNotifications]);
     [self.pushRegistrationManager didFailToReceiveVanillaPushTokenWithError:error];
 #endif
-}
-
-- (void)application:(UIApplication *)application
-    didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
-        return;
-    }
-
-    OWSLogInfo(@"registered legacy notification settings");
-    [self.notificationPresenter didRegisterLegacyNotificationSettings];
 }
 
 - (BOOL)application:(UIApplication *)application
@@ -1121,99 +1102,6 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             completionHandler(UIBackgroundFetchResultNewData);
         });
-    }];
-}
-
-- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
-        return;
-    }
-
-    OWSLogInfo(@"%@", notification);
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (![self.tsAccountManager isRegisteredAndReady]) {
-            OWSLogInfo(@"Ignoring action; app not ready.");
-            return;
-        }
-
-        [self.legacyNotificationActionHandler
-            handleNotificationResponseWithActionIdentifier:OWSLegacyNotificationActionHandler.kDefaultActionIdentifier
-                                              notification:notification
-                                              responseInfo:@{}
-                                         completionHandler:^{
-                                         }];
-    }];
-}
-
-- (void)application:(UIApplication *)application
-    handleActionWithIdentifier:(NSString *)identifier
-          forLocalNotification:(UILocalNotification *)notification
-             completionHandler:(void (^)())completionHandler
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
-        completionHandler();
-        return;
-    }
-
-    // The docs for handleActionWithIdentifier:... state:
-    // "You must call [completionHandler] at the end of your method.".
-    // Nonetheless, it is presumably safe to call the completion handler
-    // later, after this method returns.
-    //
-    // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623068-application?language=objc
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (![self.tsAccountManager isRegisteredAndReady]) {
-            OWSLogInfo(@"Ignoring action; app not ready.");
-            completionHandler();
-            return;
-        }
-
-        [self.legacyNotificationActionHandler handleNotificationResponseWithActionIdentifier:identifier
-                                                                                notification:notification
-                                                                                responseInfo:@{}
-                                                                           completionHandler:completionHandler];
-    }];
-}
-
-- (void)application:(UIApplication *)application
-    handleActionWithIdentifier:(NSString *)identifier
-          forLocalNotification:(UILocalNotification *)notification
-              withResponseInfo:(NSDictionary *)responseInfo
-             completionHandler:(void (^)())completionHandler
-{
-    OWSLogInfo(@"handling action with identifier: %@", identifier);
-
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
-        completionHandler();
-        return;
-    }
-
-    // The docs for handleActionWithIdentifier:... state:
-    // "You must call [completionHandler] at the end of your method.".
-    // Nonetheless, it is presumably safe to call the completion handler
-    // later, after this method returns.
-    //
-    // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623068-application?language=objc
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (![self.tsAccountManager isRegisteredAndReady]) {
-            OWSLogInfo(@"Ignoring action; app not ready.");
-            completionHandler();
-            return;
-        }
-
-        [self.legacyNotificationActionHandler handleNotificationResponseWithActionIdentifier:identifier
-                                                                                notification:notification
-                                                                                responseInfo:responseInfo
-                                                                           completionHandler:completionHandler];
     }];
 }
 
