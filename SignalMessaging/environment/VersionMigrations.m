@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (!lastCompletedLaunchAppVersion) {
         OWSLogInfo(@"No previous version found. Probably first launch since install - nothing to migrate.");
         if (self.databaseStorage.canReadFromGrdb) {
-            [grdbSchemaMigrator runMigrationsForNewUser];
+            [grdbSchemaMigrator runSchemaMigrations];
         } else {
             OWSDatabaseMigrationRunner *runner = [OWSDatabaseMigrationRunner new];
             [runner assumeAllExistingMigrationsRun];
@@ -101,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (self.databaseStorage.canReadFromGrdb) {
-            [grdbSchemaMigrator runOutstandingMigrationsForExistingUser];
+            [grdbSchemaMigrator runSchemaMigrations];
             dispatch_async(dispatch_get_main_queue(), ^{
                 completion();
             });

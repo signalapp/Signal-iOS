@@ -13,13 +13,28 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     @objc
-    public func runMigrationsForNewUser() {
-        try! newUserMigrator.migrate(grdbStorage.pool)
+    public func runSchemaMigrations() {
+        if hasCreatedInitialSchema {
+            try! incrementalMigrator.migrate(grdbStorage.pool)
+        } else {
+            try! newUserMigrator.migrate(grdbStorage.pool)
+        }
     }
 
-    @objc
-    public func runOutstandingMigrationsForExistingUser() {
-        try! incrementalMigrator.migrate(grdbStorage.pool)
+    private var hasCreatedInitialSchema: Bool {
+        // HACK: GRDB doesn't create the grdb_migrations table until running a migration.
+        // So we can't cleanly check which migrations have run for new users until creating this
+        // table ourselves.
+        try! grdbStorage.write { transaction in
+            try! self.fixit_setupMigrations(transaction.database)
+        }
+
+        let appliedMigrations = try! incrementalMigrator.appliedMigrations(in: grdbStorage.pool)
+        return appliedMigrations.contains(MigrationId.createInitialSchema.rawValue)
+    }
+
+    private func fixit_setupMigrations(_ db: Database) throws {
+        try db.execute(sql: "CREATE TABLE IF NOT EXISTS grdb_migrations (identifier TEXT NOT NULL PRIMARY KEY)")
     }
 
     // MARK: -
@@ -31,7 +46,7 @@ public class GRDBSchemaMigrator: NSObject {
         case jobRecords_add_attachmentId
     }
 
-    // For new users, we import the latest schema with the first migration
+    // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
     private lazy var newUserMigrator: DatabaseMigrator = {
         var migrator = DatabaseMigrator()
