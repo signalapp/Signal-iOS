@@ -3826,11 +3826,11 @@ typedef enum : NSUInteger {
         NSUInteger lastCharacterIndex = newText.length - 1;
         unichar lastCharacter = [newText characterAtIndex:lastCharacterIndex];
         // Check if there is a whitespace before '@' or the '@' is the first character
-        unichar secondLastCharacter = ' ';
+        unichar secondToLastCharacter = ' ';
         if (lastCharacterIndex > 0) {
-            secondLastCharacter = [newText characterAtIndex:lastCharacterIndex - 1];
+            secondToLastCharacter = [newText characterAtIndex:lastCharacterIndex - 1];
         }
-        if (lastCharacter == '@' && [NSCharacterSet.whitespaceAndNewlineCharacterSet characterIsMember:secondLastCharacter]) {
+        if (lastCharacter == '@' && [NSCharacterSet.whitespaceAndNewlineCharacterSet characterIsMember:secondToLastCharacter]) {
             NSArray<LKMention *> *mentionCandidates = [LKAPI getMentionCandidatesFor:@"" in:self.thread.uniqueId];
             self.currentMentionStartIndex = (NSInteger)lastCharacterIndex;
             [self.inputToolbar showMentionCandidateSelectionViewFor:mentionCandidates in:self.thread];
