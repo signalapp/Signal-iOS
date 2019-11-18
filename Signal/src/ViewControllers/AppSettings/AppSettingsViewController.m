@@ -249,9 +249,22 @@
     [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Share Public Key", @"") actionBlock:^{ [weakSelf sharePublicKey]; }]];
     [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Show QR Code", @"") actionBlock:^{ [weakSelf showQRCode]; }]];
     if (isMasterDevice) {
+        NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        __block BOOL hasLinkedDevice;
+        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            NSSet<LKDeviceLink *> *deviceLinks = [LKDatabaseUtilities getDeviceLinksFor:userHexEncodedPublicKey in:transaction];
+            hasLinkedDevice = deviceLinks.count > 0;
+        }];
         [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Link Device", @"") actionBlock:^{
-            [weakSelf linkDevice];
+            if (!hasLinkedDevice) {
+                [weakSelf linkDevice];
+            } else {
+                UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Multi Device Limit Reached", @"") message:NSLocalizedString(@"It's currently not allowed to link more than one device.", @"") preferredStyle:UIAlertControllerStyleAlert];
+                [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"") style:UIAlertActionStyleDefault handler:nil]];
+                [weakSelf presentViewController:alert animated:YES completion:nil];
+            }
         }]];
+        
         [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Show Seed", @"") actionBlock:^{ [weakSelf showSeed]; }]];
     }
     [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Clear All Data", @"") actionBlock:^{ [weakSelf clearAllData]; }]];

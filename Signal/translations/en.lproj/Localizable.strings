@@ -2648,3 +2648,5 @@
 "Connecting..." = "Connecting...";
 "Couldn't Connect" = "Couldn't Connect";
 "Please pick a display name that consists of only a-z, A-Z, 0-9 and _ characters" = "Please pick a display name that consists of only a-z, A-Z, 0-9 and _ characters";
+"Multi Device Limit Reached" = "Multi Device Limit Reached";
+"It's currently not allowed to link more than one device." = "It's currently not allowed to link more than one device.";

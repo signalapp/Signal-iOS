@@ -359,7 +359,7 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
             }.catch(on: DispatchQueue.main) { [weak self] _ in
                 TSAccountManager.sharedInstance().resetForReregistration()
                 guard let self = self else { return }
-                let alert = UIAlertController(title: "Couldn't Link Device", message: "Please check your connection and try again.", preferredStyle: .alert)
+                let alert = UIAlertController(title: NSLocalizedString("Couldn't Link Device", comment: ""), message: NSLocalizedString("Please check your connection and try again.", comment: ""), preferredStyle: .alert)
                 self.present(alert, animated: true, completion: nil)
                 self.setUserInteractionEnabled(true)
             }
