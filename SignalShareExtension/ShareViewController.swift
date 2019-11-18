@@ -509,7 +509,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         self.dismiss(animated: true) { [weak self] in
             AssertIsOnMainThread()
             guard let strongSelf = self else { return }
-            strongSelf.extensionContext!.cancelRequest(withError: NSError())
+            strongSelf.extensionContext!.cancelRequest(withError: ShareViewControllerError.obsoleteShare)
         }
     }
 
