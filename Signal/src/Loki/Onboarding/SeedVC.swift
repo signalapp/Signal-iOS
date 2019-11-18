@@ -338,15 +338,31 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
         case .link: Analytics.shared.track("Device Linking Attempted")
         }
         if mode == .link {
-            TSAccountManager.sharedInstance().didRegister()
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            appDelegate.startLongPollerIfNeeded()
-            let deviceLinkingModal = DeviceLinkingModal(mode: .slave, delegate: self)
-            deviceLinkingModal.modalPresentationStyle = .overFullScreen
-            present(deviceLinkingModal, animated: true, completion: nil)
             let masterHexEncodedPublicKey = masterHexEncodedPublicKeyTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces)
-            let linkingRequestMessage = DeviceLinkingUtilities.getLinkingRequestMessage(for: masterHexEncodedPublicKey)
-            ThreadUtil.enqueue(linkingRequestMessage)
+            TSAccountManager.sharedInstance().didRegister()
+            setUserInteractionEnabled(false)
+            let _ = LokiStorageAPI.getDeviceLinks(associatedWith: masterHexEncodedPublicKey).done(on: DispatchQueue.main) { [weak self] deviceLinks in
+                guard let self = self else { return }
+                defer { self.setUserInteractionEnabled(true) }
+                guard deviceLinks.count < 2 else {
+                    let alert = UIAlertController(title: "Multi Device Limit Reached", message: "It's currently not allowed to link more than one device.", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", accessibilityIdentifier: nil, style: .default, handler: nil))
+                    return self.present(alert, animated: true, completion: nil)
+                }
+                let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                appDelegate.startLongPollerIfNeeded()
+                let deviceLinkingModal = DeviceLinkingModal(mode: .slave, delegate: self)
+                deviceLinkingModal.modalPresentationStyle = .overFullScreen
+                self.present(deviceLinkingModal, animated: true, completion: nil)
+                let linkingRequestMessage = DeviceLinkingUtilities.getLinkingRequestMessage(for: masterHexEncodedPublicKey)
+                ThreadUtil.enqueue(linkingRequestMessage)
+            }.catch(on: DispatchQueue.main) { [weak self] _ in
+                TSAccountManager.sharedInstance().resetForReregistration()
+                guard let self = self else { return }
+                let alert = UIAlertController(title: "Couldn't Link Device", message: "Please check your connection and try again.", preferredStyle: .alert)
+                self.present(alert, animated: true, completion: nil)
+                self.setUserInteractionEnabled(true)
+            }
         } else {
             onboardingController.pushDisplayNameVC(from: self)
         }
@@ -364,5 +380,12 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.stopLongPollerIfNeeded()
         TSAccountManager.sharedInstance().resetForReregistration()
+    }
+    
+    // MARK: Convenience
+    private func setUserInteractionEnabled(_ isEnabled: Bool) {
+        registerButton2.isUserInteractionEnabled = isEnabled
+        restoreButton2.isUserInteractionEnabled = isEnabled
+        mainButton.isUserInteractionEnabled = isEnabled
     }
 }
