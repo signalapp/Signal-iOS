@@ -21,12 +21,14 @@ import PromiseKit
 /// wired directly into the appropriate callback point.
 
 enum AppNotificationCategory: CaseIterable {
-    case incomingMessage
+    case incomingMessageWithActions
+    case incomingMessageWithoutActions
     case incomingMessageFromNoLongerVerifiedIdentity
     case infoOrErrorMessage
     case threadlessErrorMessage
     case incomingCall
-    case missedCall
+    case missedCallWithActions
+    case missedCallWithoutActions
     case missedCallFromNoLongerVerifiedIdentity
 }
 
@@ -41,14 +43,17 @@ enum AppNotificationAction: CaseIterable {
 
 struct AppNotificationUserInfoKey {
     static let threadId = "Signal.AppNotificationsUserInfoKey.threadId"
-    static let callBackAddress = "Signal.AppNotificationsUserInfoKey.callBackAddress"
+    static let callBackUuid = "Signal.AppNotificationsUserInfoKey.callBackUuid"
+    static let callBackPhoneNumber = "Signal.AppNotificationsUserInfoKey.callBackPhoneNumber"
     static let localCallId = "Signal.AppNotificationsUserInfoKey.localCallId"
 }
 
 extension AppNotificationCategory {
     var identifier: String {
         switch self {
-        case .incomingMessage:
+        case .incomingMessageWithActions:
+            return "Signal.AppNotificationCategory.incomingMessageWithActions"
+        case .incomingMessageWithoutActions:
             return "Signal.AppNotificationCategory.incomingMessage"
         case .incomingMessageFromNoLongerVerifiedIdentity:
             return "Signal.AppNotificationCategory.incomingMessageFromNoLongerVerifiedIdentity"
@@ -58,7 +63,9 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.threadlessErrorMessage"
         case .incomingCall:
             return "Signal.AppNotificationCategory.incomingCall"
-        case .missedCall:
+        case .missedCallWithActions:
+            return "Signal.AppNotificationCategory.missedCallWithActions"
+        case .missedCallWithoutActions:
             return "Signal.AppNotificationCategory.missedCall"
         case .missedCallFromNoLongerVerifiedIdentity:
             return "Signal.AppNotificationCategory.missedCallFromNoLongerVerifiedIdentity"
@@ -67,20 +74,24 @@ extension AppNotificationCategory {
 
     var actions: [AppNotificationAction] {
         switch self {
-        case .incomingMessage:
+        case .incomingMessageWithActions:
             return [.markAsRead, .reply]
+        case .incomingMessageWithoutActions:
+            return []
         case .incomingMessageFromNoLongerVerifiedIdentity:
-            return [.markAsRead, .showThread]
+            return []
         case .infoOrErrorMessage:
-            return [.showThread]
+            return []
         case .threadlessErrorMessage:
             return []
         case .incomingCall:
             return [.answerCall, .declineCall]
-        case .missedCall:
+        case .missedCallWithActions:
             return [.callBack, .showThread]
+        case .missedCallWithoutActions:
+            return []
         case .missedCallFromNoLongerVerifiedIdentity:
-            return [.showThread]
+            return []
         }
     }
 }
@@ -137,11 +148,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     @objc
     public override init() {
-        if #available(iOS 10, *) {
-            self.adaptee = UserNotificationPresenterAdaptee()
-        } else {
-            self.adaptee = LegacyNotificationPresenterAdaptee()
-        }
+        self.adaptee = UserNotificationPresenterAdaptee()
 
         super.init()
 
@@ -169,26 +176,11 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         return preferences.notificationPreviewType()
     }
 
-    // MARK: -
-
-    // It is not safe to assume push token requests will be acknowledged until the user has
-    // registered their notification settings.
-    //
-    // e.g. in the case that Background Fetch is disabled, token requests will be ignored until
-    // we register user notification settings.
-    //
-    // For modern UNUserNotificationSettings, the registration takes a callback, so "waiting" for
-    // notification settings registration is straight forward, however for legacy UIUserNotification
-    // settings, the settings request is confirmed in the AppDelegate, where we call this method
-    // to inform the adaptee it's safe to proceed.
-    @objc
-    public func didRegisterLegacyNotificationSettings() {
-        guard let legacyAdaptee = adaptee as? LegacyNotificationPresenterAdaptee else {
-            owsFailDebug("unexpected notifications adaptee: \(adaptee)")
-            return
-        }
-        legacyAdaptee.didRegisterUserNotificationSettings()
+    var shouldShowActions: Bool {
+        return previewType == .namePreview
     }
+
+    // MARK: -
 
     @objc
     func handleMessageRead(notification: Notification) {
@@ -257,14 +249,14 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.missedCallBody
-        let userInfo: [String: Any] = [
-            AppNotificationUserInfoKey.threadId: thread.uniqueId,
-            AppNotificationUserInfoKey.callBackAddress: remoteAddress
-        ]
+        let userInfo = userInfoForMissedCall(thread: thread, remoteAddress: remoteAddress)
 
+        let category: AppNotificationCategory = (shouldShowActions
+            ? .missedCallWithActions
+            : .missedCallWithoutActions)
         DispatchQueue.main.async {
             let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(category: .missedCall,
+            self.adaptee.notify(category: category,
                                 title: notificationTitle,
                                 body: notificationBody,
                                 threadIdentifier: threadIdentifier,
@@ -322,14 +314,14 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
-        let userInfo: [String: Any] = [
-            AppNotificationUserInfoKey.threadId: thread.uniqueId,
-            AppNotificationUserInfoKey.callBackAddress: remoteAddress
-        ]
+        let userInfo = userInfoForMissedCall(thread: thread, remoteAddress: remoteAddress)
 
+        let category: AppNotificationCategory = (shouldShowActions
+            ? .missedCallWithActions
+            : .missedCallWithoutActions)
         DispatchQueue.main.async {
             let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(category: .missedCall,
+            self.adaptee.notify(category: category,
                                 title: notificationTitle,
                                 body: notificationBody,
                                 threadIdentifier: threadIdentifier,
@@ -337,6 +329,19 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                 sound: sound,
                                 replacingIdentifier: call.localId.uuidString)
         }
+    }
+
+    private func userInfoForMissedCall(thread: TSThread, remoteAddress: SignalServiceAddress) -> [String: Any] {
+        var userInfo: [String: Any] = [
+            AppNotificationUserInfoKey.threadId: thread.uniqueId
+        ]
+        if let uuid = remoteAddress.uuid {
+            userInfo[AppNotificationUserInfoKey.callBackUuid] = uuid.uuidString
+        }
+        if let phoneNumber = remoteAddress.phoneNumber {
+            userInfo[AppNotificationUserInfoKey.callBackPhoneNumber] = phoneNumber
+        }
+        return userInfo
     }
 
     public func notifyUser(for incomingMessage: TSIncomingMessage, in thread: TSThread, transaction: SDSAnyReadTransaction) {
@@ -383,17 +388,24 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
         assert((notificationBody ?? notificationTitle) != nil)
 
-        var category = AppNotificationCategory.incomingMessage
-
         // Don't reply from lockscreen if anyone in this conversation is
         // "no longer verified".
+        var didIdentityChange = false
         for address in thread.recipientAddresses {
             if self.identityManager.verificationState(for: address) == .noLongerVerified {
-                category = AppNotificationCategory.incomingMessageFromNoLongerVerifiedIdentity
+                didIdentityChange = true
                 break
             }
         }
 
+        let category: AppNotificationCategory
+        if didIdentityChange {
+            category = .incomingMessageFromNoLongerVerifiedIdentity
+        } else if !shouldShowActions {
+            category = .incomingMessageWithoutActions
+        } else {
+            category = .incomingMessageWithActions
+        }
         let userInfo = [
             AppNotificationUserInfoKey.threadId: thread.uniqueId
         ]
@@ -576,8 +588,11 @@ class NotificationActionHandler {
     }
 
     func callBack(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
-        guard let address = userInfo[AppNotificationUserInfoKey.callBackAddress] as? SignalServiceAddress else {
-            throw NotificationError.failDebug("address was unexpectedly nil")
+        let uuidString = userInfo[AppNotificationUserInfoKey.callBackUuid] as? String
+        let phoneNumber = userInfo[AppNotificationUserInfoKey.callBackPhoneNumber] as? String
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        guard address.isValid else {
+            throw NotificationError.failDebug("Missing or invalid address.")
         }
 
         callUIAdapter.startAndShowOutgoingCall(address: address, hasLocalVideo: false)

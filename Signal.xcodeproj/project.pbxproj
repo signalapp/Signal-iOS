@@ -573,7 +573,6 @@
 		4CD675C522E7CF22008010D2 /* ConversationViewController+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675C422E7CF22008010D2 /* ConversationViewController+OWS.swift */; };
 		4CD675C722E7D393008010D2 /* MediaPresentationContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675C622E7D393008010D2 /* MediaPresentationContext.swift */; };
 		4CFD151D22415AA400F2450F /* CallVideoHintView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFD151C22415AA400F2450F /* CallVideoHintView.swift */; };
-		4CFE6B6C21F92BA700006701 /* LegacyNotificationsAdaptee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFE6B6B21F92BA700006701 /* LegacyNotificationsAdaptee.swift */; };
 		5AC566C518874973406105BF /* Pods_SignalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */; };
 		70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
@@ -1398,7 +1397,6 @@
 		4CD675C622E7D393008010D2 /* MediaPresentationContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPresentationContext.swift; sourceTree = "<group>"; };
 		4CFB4E9B220BC56D00ECB4DE /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = translations/nb.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4CFD151C22415AA400F2450F /* CallVideoHintView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallVideoHintView.swift; sourceTree = "<group>"; };
-		4CFE6B6B21F92BA700006701 /* LegacyNotificationsAdaptee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LegacyNotificationsAdaptee.swift; path = UserInterface/Notifications/LegacyNotificationsAdaptee.swift; sourceTree = "<group>"; };
 		4CFF4C0920F55BBA005DA313 /* MenuActionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuActionsViewController.swift; sourceTree = "<group>"; };
 		4F673294B9C30EE43B6FB0BC /* Pods-SignalShareExtension.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.testable release.xcconfig"; sourceTree = "<group>"; };
 		63BAA38DC365EE44110A6BD1 /* Pods-SignalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -2384,7 +2382,6 @@
 			children = (
 				451A13B01E13DED2000A50FD /* AppNotifications.swift */,
 				450DF2081E0DD2C6003D14BE /* UserNotificationsAdaptee.swift */,
-				4CFE6B6B21F92BA700006701 /* LegacyNotificationsAdaptee.swift */,
 			);
 			name = Notifications;
 			sourceTree = "<group>";
@@ -4227,7 +4224,6 @@
 				34D1F0B41F86D31D0066283D /* ConversationCollectionView.m in Sources */,
 				45D308AD2049A439000189E4 /* PinEntryView.m in Sources */,
 				340FC8B1204DAC8D007AEB0F /* BlockListViewController.m in Sources */,
-				4CFE6B6C21F92BA700006701 /* LegacyNotificationsAdaptee.swift in Sources */,
 				3441FD9F21A3604F00BB9542 /* BackupRestoreViewController.swift in Sources */,
 				45F659821E1BE77000444429 /* NonCallKitCallUIAdaptee.swift in Sources */,
 				4C5250D221E7BD7D00CE3D95 /* PhoneNumberValidator.swift in Sources */,

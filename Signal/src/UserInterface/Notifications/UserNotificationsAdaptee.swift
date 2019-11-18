@@ -124,7 +124,8 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         }
 
         let trigger: UNNotificationTrigger?
-        let checkForCancel = category == .incomingMessage
+        let checkForCancel = (category == .incomingMessageWithActions ||
+                              category == .incomingMessageWithoutActions)
         if checkForCancel && hasReceivedSyncMessageRecently {
             assert(userInfo[AppNotificationUserInfoKey.threadId] != nil)
             trigger = UNTimeIntervalNotificationTrigger(timeInterval: kNotificationDelayForRemoteRead, repeats: false)
@@ -189,8 +190,18 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         notificationCenter.removeAllDeliveredNotifications()
 
         if !FeatureFlags.onlyModernNotificationClearance {
-            LegacyNotificationPresenterAdaptee.clearExistingNotifications()
+            clearLegacyNotifications()
         }
+    }
+
+    private func clearLegacyNotifications() {
+        // This will cancel all "scheduled" local notifications that haven't
+        // been presented yet.
+        UIApplication.shared.cancelAllLocalNotifications()
+        // To clear all already presented local notifications, we need to
+        // set the app badge number to zero after setting it to a non-zero value.
+        UIApplication.shared.applicationIconBadgeNumber = 1
+        UIApplication.shared.applicationIconBadgeNumber = 0
     }
 
     func shouldPresentNotification(category: AppNotificationCategory, userInfo: [AnyHashable: Any]) -> Bool {
@@ -199,7 +210,20 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
             return true
         }
 
-        guard category == .incomingMessage || category == .infoOrErrorMessage else {
+        switch category {
+        case .incomingMessageWithActions,
+             .incomingMessageWithoutActions,
+             .infoOrErrorMessage:
+            // If the app is in the foreground, show these notifications
+            // unless the corresponding conversation is already open.
+            break
+        case .incomingMessageFromNoLongerVerifiedIdentity,
+             .threadlessErrorMessage,
+             .incomingCall,
+             .missedCallWithActions,
+             .missedCallWithoutActions,
+             .missedCallFromNoLongerVerifiedIdentity:
+            // Always show these notifications whenever the app is in the foreground.
             return true
         }
 
