@@ -21,12 +21,14 @@ import PromiseKit
 /// wired directly into the appropriate callback point.
 
 enum AppNotificationCategory: CaseIterable {
-    case incomingMessage
+    case incomingMessageWithActions
+    case incomingMessageWithoutActions
     case incomingMessageFromNoLongerVerifiedIdentity
     case infoOrErrorMessage
     case threadlessErrorMessage
     case incomingCall
-    case missedCall
+    case missedCallWithActions
+    case missedCallWithoutActions
     case missedCallFromNoLongerVerifiedIdentity
 }
 
@@ -48,7 +50,9 @@ struct AppNotificationUserInfoKey {
 extension AppNotificationCategory {
     var identifier: String {
         switch self {
-        case .incomingMessage:
+        case .incomingMessageWithActions:
+            return "Signal.AppNotificationCategory.incomingMessageWithActions"
+        case .incomingMessageWithoutActions:
             return "Signal.AppNotificationCategory.incomingMessage"
         case .incomingMessageFromNoLongerVerifiedIdentity:
             return "Signal.AppNotificationCategory.incomingMessageFromNoLongerVerifiedIdentity"
@@ -58,7 +62,9 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.threadlessErrorMessage"
         case .incomingCall:
             return "Signal.AppNotificationCategory.incomingCall"
-        case .missedCall:
+        case .missedCallWithActions:
+            return "Signal.AppNotificationCategory.missedCallWithActions"
+        case .missedCallWithoutActions:
             return "Signal.AppNotificationCategory.missedCall"
         case .missedCallFromNoLongerVerifiedIdentity:
             return "Signal.AppNotificationCategory.missedCallFromNoLongerVerifiedIdentity"
@@ -67,18 +73,22 @@ extension AppNotificationCategory {
 
     var actions: [AppNotificationAction] {
         switch self {
-        case .incomingMessage:
+        case .incomingMessageWithActions:
             return [.markAsRead, .reply]
+        case .incomingMessageWithoutActions:
+            return [.showThread]
         case .incomingMessageFromNoLongerVerifiedIdentity:
-            return [.markAsRead, .showThread]
+            return [.showThread]
         case .infoOrErrorMessage:
             return [.showThread]
         case .threadlessErrorMessage:
             return []
         case .incomingCall:
             return [.answerCall, .declineCall]
-        case .missedCall:
+        case .missedCallWithActions:
             return [.callBack, .showThread]
+        case .missedCallWithoutActions:
+            return [.showThread]
         case .missedCallFromNoLongerVerifiedIdentity:
             return [.showThread]
         }
@@ -167,6 +177,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     var previewType: NotificationType {
         return preferences.notificationPreviewType()
+    }
+
+    var shouldShowActions: Bool {
+        return previewType == .namePreview
     }
 
     // MARK: -
@@ -262,9 +276,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.callBackAddress: remoteAddress
         ]
 
+        let category: AppNotificationCategory = (shouldShowActions
+            ? .missedCallWithActions
+            : .missedCallWithoutActions)
         DispatchQueue.main.async {
             let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(category: .missedCall,
+            self.adaptee.notify(category: category,
                                 title: notificationTitle,
                                 body: notificationBody,
                                 threadIdentifier: threadIdentifier,
@@ -327,9 +344,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.callBackAddress: remoteAddress
         ]
 
+        let category: AppNotificationCategory = (shouldShowActions
+            ? .missedCallWithActions
+            : .missedCallWithoutActions)
         DispatchQueue.main.async {
             let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(category: .missedCall,
+            self.adaptee.notify(category: category,
                                 title: notificationTitle,
                                 body: notificationBody,
                                 threadIdentifier: threadIdentifier,
@@ -383,17 +403,24 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
         assert((notificationBody ?? notificationTitle) != nil)
 
-        var category = AppNotificationCategory.incomingMessage
-
         // Don't reply from lockscreen if anyone in this conversation is
         // "no longer verified".
+        var didIdentityChange = false
         for address in thread.recipientAddresses {
             if self.identityManager.verificationState(for: address) == .noLongerVerified {
-                category = AppNotificationCategory.incomingMessageFromNoLongerVerifiedIdentity
+                didIdentityChange = true
                 break
             }
         }
 
+        let category: AppNotificationCategory
+        if !shouldShowActions {
+            category = .incomingMessageWithoutActions
+        } else if didIdentityChange {
+            category = .incomingMessageFromNoLongerVerifiedIdentity
+        } else {
+            category = .incomingMessageWithActions
+        }
         let userInfo = [
             AppNotificationUserInfoKey.threadId: thread.uniqueId
         ]
