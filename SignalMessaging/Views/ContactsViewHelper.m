@@ -476,6 +476,7 @@ NS_ASSUME_NONNULL_BEGIN
     contactViewController.allowsActions = NO;
     contactViewController.allowsEditing = YES;
     contactViewController.edgesForExtendedLayout = UIRectEdgeNone;
+    contactViewController.view.backgroundColor = Theme.backgroundColor;
 
     return contactViewController;
 }
