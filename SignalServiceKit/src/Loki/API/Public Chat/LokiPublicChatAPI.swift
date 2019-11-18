@@ -99,6 +99,9 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                         print("[Loki] Couldn't parse message for public chat channel with ID: \(channel) on server: \(server) from: \(message).")
                         return nil
                 }
+
+                let avatarUrl = value["avatar"] as? String ?? nil;
+
                 let displayName = user["name"] as? String ?? NSLocalizedString("Anonymous", comment: "")
                 let lastMessageServerID = getLastMessageServerID(for: channel, on: server)
                 if serverID > (lastMessageServerID ?? 0) { setLastMessageServerID(for: channel, on: server, to: serverID) }
@@ -125,7 +128,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                     }
                     return LokiPublicChatMessage.Attachment(kind: kind, server: server, serverID: serverID, contentType: contentType, size: size, fileName: fileName, flags: flags, width: width, height: height, caption: caption, url: url, linkPreviewURL: linkPreviewURL, linkPreviewTitle: linkPreviewTitle)
                 }
-                let result = LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature)
+                let result = LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, avatar: avatarUrl, body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature)
                 guard result.hasValidSignature() else {
                     print("[Loki] Ignoring public chat message with invalid signature.")
                     return nil
@@ -162,7 +165,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                     throw Error.parsingFailed
                 }
                 let timestamp = UInt64(date.timeIntervalSince1970) * 1000
-                return LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: userHexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp, quote: signedMessage.quote, attachments: signedMessage.attachments, signature: signedMessage.signature)
+                return LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: userHexEncodedPublicKey, displayName: displayName, avatar: signedMessage.avatar, body: body, type: publicChatMessageType, timestamp: timestamp, quote: signedMessage.quote, attachments: signedMessage.attachments, signature: signedMessage.signature)
             }
         }.recover(on: DispatchQueue.global()) { error -> Promise<LokiPublicChatMessage> in
             if let error = error as? NetworkManagerError, error.statusCode == 401 {

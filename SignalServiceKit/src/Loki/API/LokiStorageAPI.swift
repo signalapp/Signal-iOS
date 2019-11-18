@@ -10,6 +10,7 @@ public final class LokiStorageAPI : LokiDotNetAPI {
     @objc public static let server = "https://file.lokinet.org"
 //    #endif
     private static let deviceLinkType = "network.loki.messenger.devicemapping"
+    private static let attachmentType = "net.app.core.oembed"
 
     // MARK: Database
     override internal class var authTokenCollection: String { return "LokiStorageAuthTokenCollection" }

@@ -1335,6 +1335,14 @@ NS_ASSUME_NONNULL_BEGIN
             [newMemberIds addObjectsFromArray:oldGroupThread.groupModel.groupMemberIds];
         }
 
+        NSString *hexEncodedPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source);
+        TSContactThread *thread =
+            [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
+
+        NSString *profilePictureURL = dataMessage.profile.profilePicture;
+        NSString *displayName = dataMessage.profile.displayName;
+        [self.profileManager updateProfileForContactWithID:thread.contactIdentifier displayName:displayName profilePictureURL:profilePictureURL with:transaction];
+
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
                 // Ensures that the thread exists but doesn't update it.
@@ -1536,8 +1544,9 @@ NS_ASSUME_NONNULL_BEGIN
         if (rawProfilePictureURL != nil && rawProfilePictureURL.length > 0) {
             profilePictureURL = rawProfilePictureURL;
         }
+
         [self.profileManager updateProfileForContactWithID:thread.contactIdentifier displayName:displayName profilePictureURL:profilePictureURL with:transaction];
-        
+
         // Loki: Parse Loki specific properties if needed
         if (envelope.isPtpMessage) { incomingMessage.isP2P = YES; }
         
