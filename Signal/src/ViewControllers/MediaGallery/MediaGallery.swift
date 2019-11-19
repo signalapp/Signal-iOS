@@ -337,7 +337,7 @@ class MediaGallery {
             return deletedItem
         }
 
-        delete(items: deletedItems, initiatedBy: self)
+        delete(items: deletedItems, initiatedBy: self, deleteFromDB: false)
     }
 
     // MARK: -
@@ -599,7 +599,7 @@ class MediaGallery {
         _delegates = _delegates.filter({ $0.value != nil}) + [Weak(value: delegate)]
     }
 
-    func delete(items: [MediaGalleryItem], initiatedBy: AnyObject) {
+    func delete(items: [MediaGalleryItem], initiatedBy: AnyObject, deleteFromDB: Bool) {
         AssertIsOnMainThread()
 
         guard items.count > 0 else {
@@ -615,14 +615,16 @@ class MediaGallery {
             self.deletedAttachments.insert(item.attachmentStream)
         }
 
-        self.databaseStorage.asyncWrite { transaction in
-            for item in items {
-                let message = item.message
-                let attachment = item.attachmentStream
-                message.removeAttachment(attachment, transaction: transaction)
-                if message.attachmentIds.count == 0 {
-                    Logger.debug("removing message after removing last media attachment")
-                    message.anyRemove(transaction: transaction)
+        if deleteFromDB {
+            self.databaseStorage.asyncWrite { transaction in
+                for item in items {
+                    let message = item.message
+                    let attachment = item.attachmentStream
+                    message.removeAttachment(attachment, transaction: transaction)
+                    if message.attachmentIds.count == 0 {
+                        Logger.debug("removing message after removing last media attachment")
+                        message.anyRemove(transaction: transaction)
+                    }
                 }
             }
         }

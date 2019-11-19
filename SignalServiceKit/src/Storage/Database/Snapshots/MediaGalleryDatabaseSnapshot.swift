@@ -28,27 +28,27 @@ public class MediaGalleryDatabaseObserver: NSObject {
 
     private typealias RowId = Int64
 
-    private var _pendingChanges: Set<RowId> = Set()
-    private var pendingChanges: Set<RowId> {
+    private var _pendingDeletes: Set<RowId> = Set()
+    private var pendingDeletes: Set<RowId> {
         get {
             AssertIsOnUIDatabaseObserverSerialQueue()
-            return _pendingChanges
+            return _pendingDeletes
         }
         set {
             AssertIsOnUIDatabaseObserverSerialQueue()
-            _pendingChanges = newValue
+            _pendingDeletes = newValue
         }
     }
 
-    private var _committedChanges: Set<RowId>?
-    private var committedChanges: Set<RowId>? {
+    private var _committedDeletes: Set<RowId>?
+    private var committedDeletes: Set<RowId>? {
         get {
             AssertIsOnMainThread()
-            return _committedChanges
+            return _committedDeletes
         }
         set {
             AssertIsOnMainThread()
-            _committedChanges = newValue
+            _committedDeletes = newValue
         }
     }
 
@@ -71,25 +71,25 @@ extension MediaGalleryDatabaseObserver: DatabaseSnapshotDelegate {
 
     public func snapshotTransactionDidChange(with event: DatabaseEvent) {
         AssertIsOnUIDatabaseObserverSerialQueue()
-        if event.tableName == AttachmentRecord.databaseTableName {
-            _ = pendingChanges.insert(event.rowID)
+        if event.kind == .delete && event.tableName == AttachmentRecord.databaseTableName {
+            _ = pendingDeletes.insert(event.rowID)
         }
     }
 
     public func snapshotTransactionDidCommit(db: Database) {
         AssertIsOnUIDatabaseObserverSerialQueue()
-        let pendingChanges = self.pendingChanges
-        self.pendingChanges = Set()
+        let pendingDeletes = self.pendingDeletes
+        self.pendingDeletes = Set()
 
         DispatchQueue.main.async {
-            self.committedChanges = pendingChanges
+            self.committedDeletes = pendingDeletes
         }
     }
 
     public func snapshotTransactionDidRollback(db: Database) {
         owsFailDebug("we should verify this works if we ever start to use rollbacks")
         AssertIsOnUIDatabaseObserverSerialQueue()
-        pendingChanges = Set()
+        pendingDeletes = Set()
     }
 
     // MARK: - Snapshot LifeCycle (Post Commit)
@@ -98,14 +98,14 @@ extension MediaGalleryDatabaseObserver: DatabaseSnapshotDelegate {
         AssertIsOnMainThread()
 
         do {
-            guard let committedChanges = self.committedChanges else {
-                throw OWSErrorMakeAssertionError("committedChanges were unexpectedly nil")
+            guard let committedDeletes = self.committedDeletes else {
+                throw OWSErrorMakeAssertionError("committedDeletes were unexpectedly nil")
             }
-            self.committedChanges = nil
+            self.committedDeletes = nil
 
             assert(self.deletedAttachmentIds == nil)
             try databaseStorage.uiReadThrows { transaction in
-                self.deletedAttachmentIds = try self.attachmentIds(forRowIds: committedChanges, transaction: transaction)
+                self.deletedAttachmentIds = try self.attachmentIds(forRowIds: committedDeletes, transaction: transaction)
             }
             for delegate in snapshotDelegates {
                 delegate.mediaGalleryDatabaseSnapshotWillUpdate()

@@ -607,7 +607,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         }()
 
         let deleteAction = ActionSheetAction(title: confirmationTitle, style: .destructive) { _ in
-            self.mediaGallery.delete(items: items, initiatedBy: self)
+            self.mediaGallery.delete(items: items, initiatedBy: self, deleteFromDB: true)
             self.endSelectMode()
         }
 

@@ -450,7 +450,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let deleteAction = ActionSheetAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""),
                                          style: .destructive) { _ in
                                             let deletedItem = currentViewController.galleryItem
-                                            self.mediaGallery.delete(items: [deletedItem], initiatedBy: self)
+                                            self.mediaGallery.delete(items: [deletedItem], initiatedBy: self, deleteFromDB: true)
         }
         actionSheet.addAction(OWSActionSheets.cancelAction)
         actionSheet.addAction(deleteAction)
@@ -667,20 +667,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         Logger.debug("")
 
         self.shouldHideToolbars = !self.shouldHideToolbars
-    }
-
-    public func mediaDetailViewController(_ mediaDetailViewController: MediaDetailViewController, requestDelete attachment: TSAttachment) {
-
-        guard let galleryItem = mediaGallery.galleryItems.first(where: { $0.attachmentStream == attachment }) else {
-            owsFailDebug("galleryItem was unexpectedly nil")
-            self.presentingViewController?.dismiss(animated: true)
-
-            return
-        }
-
-        dismissSelf(animated: true) {
-            self.mediaGallery.delete(items: [galleryItem], initiatedBy: self)
-        }
     }
 
     public func mediaDetailViewController(_ mediaDetailViewController: MediaDetailViewController, isPlayingVideo: Bool) {
