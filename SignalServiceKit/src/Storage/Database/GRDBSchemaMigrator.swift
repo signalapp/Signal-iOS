@@ -46,14 +46,14 @@ public class GRDBSchemaMigrator: NSObject {
         case signalAccount_add_contactAvatars
         case signalAccount_add_contactAvatars_indices
         case jobRecords_add_attachmentId
-
+        case createMediaGalleryItems
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
         // We only need to do this for breaking changes.
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 1
+    public static let grdbSchemaVersionLatest: UInt = 2
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -109,6 +109,7 @@ public class GRDBSchemaMigrator: NSObject {
             """
             try database.execute(sql: sql)
         }
+
         migrator.registerMigration(MigrationId.signalAccount_add_contactAvatars_indices.rawValue) { db in
             let sql = """
                 CREATE
@@ -136,6 +137,30 @@ public class GRDBSchemaMigrator: NSObject {
             try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
                 table.add(column: "attachmentId", .text)
             }
+        }
+
+        migrator.registerMigration(MigrationId.createMediaGalleryItems.rawValue) { db in
+            try db.create(table: "media_gallery_items") { table in
+                table.column("attachmentId", .integer)
+                    .notNull()
+                    .unique()
+                table.column("albumMessageId", .integer)
+                    .notNull()
+                table.column("threadId", .integer)
+                    .notNull()
+                table.column("originalAlbumOrder", .integer)
+                    .notNull()
+            }
+
+            try db.create(index: "index_media_gallery_items_for_gallery",
+                          on: "media_gallery_items",
+                          columns: ["threadId", "albumMessageId", "originalAlbumOrder"])
+
+            try db.create(index: "index_media_gallery_items_on_attachmentId",
+                          on: "media_gallery_items",
+                          columns: ["attachmentId"])
+
+            try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
         }
 
         return migrator
@@ -773,4 +798,32 @@ private func createV1Schema(db: Database) throws {
         ])
 
     try GRDBFullTextSearchFinder.createTables(database: db)
+}
+
+func createInitialGalleryRecords(transaction: GRDBWriteTransaction) throws {
+    try Bench(title: "createInitialGalleryRecords", logInProduction: true) {
+        let scope = AttachmentRecord.filter(sql: "\(attachmentColumn: .recordType) = \(SDSRecordType.attachmentStream.rawValue)")
+
+        let totalCount = try scope.fetchCount(transaction.database)
+        let cursor = try scope.fetchCursor(transaction.database)
+        var i = 0
+        try Batching.loop(batchSize: 500) { stopPtr in
+            guard let record = try cursor.next() else {
+                stopPtr.pointee = true
+                return
+            }
+
+            i+=1
+            if (i % 100) == 0 {
+                Logger.info("migrated \(i) / \(totalCount)")
+            }
+
+            guard let attachmentStream = try TSAttachment.fromRecord(record) as? TSAttachmentStream else {
+                owsFailDebug("unexpected record: \(record.recordType)")
+                return
+            }
+
+            try GRDBMediaGalleryFinder.insertGalleryRecord(attachmentStream: attachmentStream, transaction: transaction)
+        }
+    }
 }
