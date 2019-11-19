@@ -63,7 +63,7 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
         return true
     }
 
-    private func protoAction(forAction action: TypingIndicatorAction) -> SSKProtoTypingMessage.SSKProtoTypingMessageAction {
+    private func protoAction(forAction action: TypingIndicatorAction) -> SSKProtoTypingMessageAction {
         switch action {
         case .started:
             return .started
