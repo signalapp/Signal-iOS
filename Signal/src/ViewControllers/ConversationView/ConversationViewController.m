@@ -879,7 +879,6 @@ typedef enum : NSUInteger {
     // Avoid layout corrupt issues and out-of-date message subtitles.
     self.lastReloadDate = [NSDate new];
     [self.conversationViewModel viewDidResetContentAndLayoutWithTransaction:transaction];
-    [self.collectionView.collectionViewLayout invalidateLayout];
     [self reloadData];
 
     if (self.viewHasEverAppeared) {
@@ -3810,11 +3809,13 @@ typedef enum : NSUInteger {
         // does not appear to have the same issue.
         [UIView performWithoutAnimation:^{
             [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:0]];
+            [self.collectionView.collectionViewLayout invalidateLayout];
         }];
     } else {
         // Don't reload sections until the view has appeared and the
         // collection view has loaded.
         [self.collectionView reloadData];
+        [self.collectionView.collectionViewLayout invalidateLayout];
     }
 }
 
@@ -5109,7 +5110,6 @@ typedef enum : NSUInteger {
     for (id<ConversationViewItem> viewItem in self.viewItems) {
         [viewItem clearCachedLayoutState];
     }
-    [self.collectionView.collectionViewLayout invalidateLayout];
     [self reloadData];
     if (self.viewHasEverAppeared) {
         // Try to update the lastKnownDistanceFromBottom; the content size may have changed.

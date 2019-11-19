@@ -675,7 +675,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Ajouter à un contact existant";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Ajouter aux contacts système";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Bloquer ce groupe";
@@ -1689,7 +1689,7 @@
 "NO_SELECTED_CONVERSATION_TITLE" = "Bienvenue sur Signal";
 
 /* A string prompting the user to send a new mesaage to a user */
-"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Nouveau message à :";
+"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Nouveau message pour :";
 
 /* A string asking the user if they'd like to invite a number to signal via SMS. */
 "NON_CONTACT_TABLE_CELL_SEND_SMS" = "Aucun utilisateur trouvé. Inviter par texto ?";
@@ -1725,7 +1725,7 @@
 "OK" = "Valider";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "NIP incorrect. Tentatives épuisées.";
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "NIP erroné. Tentatives épuisées.";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Un NIP de blocage de l’inscription est activé pour ce numéro de téléphone. Veuillez saisir le NIP de blocage de l’inscription.";
@@ -1791,7 +1791,7 @@
 "ONBOARDING_PERMISSIONS_EXPLANATION" = "Les notifications vous permettent de voir quand des messages arrivent et de recevoir des alertes sur l’activité des conversations.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Get the message";
+"ONBOARDING_PERMISSIONS_TITLE" = "Recevez le message";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Saisissez votre numéro de téléphone pour commencer";
@@ -2328,7 +2328,7 @@
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Votre autre appareil exécute une ancienne version de Signal qui ne prend pas en charge le balayage des QR codes iPad. Veuillez installer la dernière version de Signal et réessayer.";
 
 /* alert title for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Mettre à jour l'autre appareil";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Mettre à jour l'appareil lecteur";
 
 /* alert title */
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Échec de la liaison avec votre appareil";

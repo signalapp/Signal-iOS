@@ -210,7 +210,7 @@
 "ATTACHMENT_LABEL" = "Anhang";
 
 /* Alert title when picking a document fails for an unknown reason */
-"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Auswählen des Dokuments gescheitert.";
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Dokument konnte nicht ausgewählt werden.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Bitte erstelle ein komprimiertes Archiv dieser Datei oder dieses Ordners und versuche stattdessen, das Archiv zu versenden.";
@@ -853,7 +853,7 @@
 "DEVICE_LINKED_AT_LABEL" = "Gekoppelt: %@";
 
 /* Alert title that can occur when viewing device manager. */
-"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Aktualisieren der Geräteliste gescheitert.";
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Geräteliste konnte nicht aktualisiert werden.";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Verschwindende Nachrichten";
@@ -973,19 +973,19 @@
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Video konnte nicht gespeichert werden.";
 
 /* Generic notice when message failed to send. */
-"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Senden der Nachricht gescheitert.";
+"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Nachricht konnte nicht versendet werden.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Senden nicht möglich aufgrund veralteter Sicherheitsdaten.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Nachrichtenversand gescheitert, da du den Benutzer blockiert hast.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Nachricht konnte nicht versendet werden, da du den Benutzer blockiert hast.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal konnte keine Verbindung zum Internet herstellen. Bitte erneut versuchen.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Nachrichtenversand gescheitert, da keine gültigen Empfänger vorhanden.";
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Nachricht konnte nicht versendet werden, da keine gültigen Empfänger vorhanden.";
 
 /* Error indicating that a socket request failed. */
 "ERROR_DESCRIPTION_REQUEST_FAILED" = "Netzanfrage gescheitert.";
@@ -1009,7 +1009,7 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt ist kein Signal-Nutzer.";
 
 /* Error message indicating that attachment download(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Herunterladen des Anhangs gescheitert.";
+"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Anhang konnte nicht heruntergeladen werden.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
 "ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Anhangsfehler: Bitte diesen Kontakt, Signal zu aktualisieren und danach die Nachricht erneut zu senden.";
@@ -1075,7 +1075,7 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Deine Sicherheitsnummer mit %@ hat sich kürzlich geändert. Vielleicht möchtest du vor dem erneuten Senden deinen Kontakt verifizieren.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Verifizieren der Sicherheitsnummer gescheitert!";
+"FAILED_VERIFICATION_TITLE" = "Sicherheitsnummer konnte nicht verifiziert werden!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Als verifiziert markieren";
@@ -1105,7 +1105,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "Anhang";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Abruf des angeforderten GIFs gescheitert. Bitte überprüfe, ob du online bist.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "Angefordertes GIF konnte nicht abgerufen werden. Bitte überprüfe, ob du online bist.";
 
 /* Generic error displayed when picking a GIF */
 "GIF_PICKER_ERROR_GENERIC" = "Ein unbekannter Fehler ist aufgetreten.";
@@ -1210,7 +1210,7 @@
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Du kannst nicht mehr als %@ Elemente teilen.";
 
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Anhangsauswahl gescheitert.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Anhang konnte nicht ausgewählt werden.";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Verbinden …";
@@ -1339,7 +1339,7 @@
 "LINK_DEVICE_INVALID_CODE_BODY" = "Dieser QR-Code ist ungültig. Stelle bitte sicher, dass du den QR-Code einscannst, der auf dem zu koppelnden Gerät angezeigt wird.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "Koppeln des Geräts gescheitert";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "Gerät konnte nicht gekoppelt werden";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Dieses Gerät wird in der Lage sein, deine Gruppen und Kontakte zu sehen, auf deine Unterhaltungen zuzugreifen und Nachrichten in deinem Namen zu versenden.";
@@ -1366,7 +1366,7 @@
 "LINKED_DEVICES_TITLE" = "Gekoppelte Geräte";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "Gerätekopplung gescheitert";
+"LINKING_DEVICE_FAILED_TITLE" = "Gerät konnte nicht gekoppelt werden";
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Gruppenmitglieder";
@@ -1947,7 +1947,7 @@
 "PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Bild kann nicht aufgenommen werden.";
 
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Konfigurieren der Kamera gescheitert.";
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Kamera konnte nicht konfiguriert werden.";
 
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Unbenanntes Album";
@@ -2073,7 +2073,7 @@
 "PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Dein Profilname ist zu lang.";
 
 /* Error message shown when a profile update fails. */
-"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Aktualisierung des Profils gescheitert.";
+"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Profil konnte nicht aktualisiert werden.";
 
 /* Default text for the profile name field of the profile view. */
 "PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Gib deinen Namen ein";
@@ -2178,7 +2178,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Zu viele Versuche. Bitte warte eine Minute vor einem erneuten Versuch.";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "Erneutes Registrieren von Push-Mittieilungen gescheitert.";
+"REGISTRATION_BODY" = "Push-Mitteilungen konnten nicht erneut registriert werden.";
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Landesvorwahl";
@@ -2283,7 +2283,7 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentifizierung gescheitert.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Zu viele gescheiterte Authentifizierungsversuche. Bitte versuche es später erneut.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Zu viele gescheiterte Authentifizierungsversuche. Bitte später erneut versuchen.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Du musst einen Passcode in deinen iOS-Einstellungen festlegen, um die Bildschirmsperre zu verwenden.";
@@ -2382,10 +2382,10 @@
 "SEND_BUTTON_TITLE" = "Senden";
 
 /* notification body */
-"SEND_FAILED_NOTIFICATION_BODY" = "Versand deiner Nachricht gescheitert.";
+"SEND_FAILED_NOTIFICATION_BODY" = "Deine Nachricht konnte nicht versendet werden.";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "Versenden der Einladung gescheitert. Bitte später erneut versuchen.";
+"SEND_INVITE_FAILURE" = "Einladung konnte nicht versendet werden. Bitte später erneut versuchen.";
 
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Du hast deinen Freund eingeladen, Signal zu verwenden!";
@@ -2475,7 +2475,7 @@
 "SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud-Status";
 
 /* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Wiederherstellen der Sicherung gescheitert";
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Sicherung konnte nicht wiederhergestellt werden";
 
 /* Indicates that app is not restoring up. */
 "SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Wiederherstellen der Sicherung inaktiv";
@@ -2793,7 +2793,7 @@
 "STICKERS_PACK_DEFAULT_TITLE" = "Sticker-Set";
 
 /* Error message shown when a sticker pack failed to install. */
-"STICKERS_PACK_INSTALL_FAILED" = "Installation des Sticker-Sets gescheitert.";
+"STICKERS_PACK_INSTALL_FAILED" = "Sticker-Set konnte nicht installiert werden.";
 
 /* Title of the 'share sticker pack' view. */
 "STICKERS_PACK_SHARE_VIEW_TITLE" = "Sticker-Set teilen";
@@ -2934,7 +2934,7 @@
 "UNNAMED_DEVICE" = "Unbenanntes Gerät";
 
 /* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Deregistrieren gescheitert.";
+"UNREGISTER_SIGNAL_FAIL" = "Signal konnte nicht deregistriert werden.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Nicht unterstützte Anhangsart erhalten.";

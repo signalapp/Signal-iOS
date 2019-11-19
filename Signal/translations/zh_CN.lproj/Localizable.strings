@@ -1327,7 +1327,7 @@
 "KEY_COMMAND_STICKERS" = "Show Stickers";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Conversation";
+"KEY_COMMAND_UNARCHIVE" = "激活对话";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "离开群组";
@@ -1423,7 +1423,7 @@
 "MESSAGE_ACTION_DETAILS" = "更多信息";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "转发当前消息";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "回复此消息";
@@ -1626,7 +1626,7 @@
 "NETWORK_STATUS_CONNECTING" = "正在连接";
 
 /* Error indicating that this device is no longer linked. */
-"NETWORK_STATUS_DELINKED" = "No Longer Linked";
+"NETWORK_STATUS_DELINKED" = "设备未关联";
 
 /* Error indicating that this device is no longer registered. */
 "NETWORK_STATUS_DEREGISTERED" = "未注册";
@@ -1647,7 +1647,7 @@
 "NEW_GROUP_CREATE_BUTTON" = "新建";
 
 /* Error indicating that a new group could not be created. */
-"NEW_GROUP_CREATION_FAILED" = "New group could not be created.";
+"NEW_GROUP_CREATION_FAILED" = "无法创建新群组。";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "新群组";
@@ -1761,28 +1761,28 @@
 "ONBOARDING_CAPTCHA_TITLE" = "给您的消息添加一点人情味";
 
 /* button indicating that the user will register their ipad */
-"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Register iPad";
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "注册iPad";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link iPhone";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "关联iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "点击“注册iPad”以创建全新Signal账户或将已有账户迁移至当前iPad。此操作将在其他所有设备上停用以相同电话号码注册的Signal账户。";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link iPhone” will let you connect your phone to an existing account. Linking your phone is generally not recommended and will limit some functionality, such as calling.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "点击“关联iPhone”以将您的手机关联至一个已有账户。我们通常并不建议关联您的手机，它会使语音呼叫等功能受限。";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "注册此 iPad";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this iPhone";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "关联当前iPhone";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registering this iPad will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "注册当前iPad将会停用在其他所有设备上以相同电话号码注册的Signal账户。";
 
 /* warning to the user that linking a phone is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Linking your iPhone is not recommended and will limit core functionality.";
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "我们并不建议关联您的iPhone，它会使某些关键功能受限。";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "开启权限";
@@ -2325,7 +2325,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Your other device is running a legacy version of Signal that doesn't support scanning iPad QR codes. Please install the latest Signal release and try again.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "您的另一台设备正在使用老旧版本的Signal，故而无法扫描iPad二维码。请安装最新版本的Signal之后重试。";
 
 /* alert title for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Update Scanning Device";
@@ -2352,10 +2352,10 @@
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "我的手机上未安装Signal……";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Go to the App Store on your phone, install Signal, complete the registration process, and then you can link your iPad to the same account.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "前往你手机上的App Store安装Signal并完成注册过程，之后您可以将您的iPad关联至同一账户。";
 
 /* alert title */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Install Signal on Your Phone";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "在您的手机上安装Signal";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
 "SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tap on your profile picture to open Signal Settings on your phone. Then \"Linked Devices\" and \"Link New Device\" to scan this code with your phone:";
@@ -2622,7 +2622,7 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "消息已读时，查看和分享已读状态。该设置为可选设置，且对所有对话生效。";
 
 /* Label for re-link button. */
-"SETTINGS_RELINK_BUTTON" = "Re-link";
+"SETTINGS_RELINK_BUTTON" = "重新关联";
 
 /* Label for re-registration button. */
 "SETTINGS_REREGISTER_BUTTON" = "重新注册";

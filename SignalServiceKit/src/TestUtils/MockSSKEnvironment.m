@@ -200,7 +200,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     GRDBSchemaMigrator *grdbSchemaMigrator = [GRDBSchemaMigrator new];
-    [grdbSchemaMigrator runMigrationsForNewUser];
+    [grdbSchemaMigrator runSchemaMigrations];
 
     return [AnyPromise promiseWithValue:@(1)];
 }

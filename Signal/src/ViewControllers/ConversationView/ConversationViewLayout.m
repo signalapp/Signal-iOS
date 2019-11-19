@@ -90,6 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.hasLayout) {
         return;
     }
+    [self clearState];
     self.hasLayout = YES;
 
     [self prepareLayoutOfItems];

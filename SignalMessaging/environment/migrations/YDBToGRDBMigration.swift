@@ -143,7 +143,7 @@ extension YDBToGRDBMigration {
             }
         ]
 
-        GRDBSchemaMigrator().runMigrationsForNewUser()
+        GRDBSchemaMigrator().runSchemaMigrations()
 
         try self.migrate(migratorGroups: migratorGroups)
 
