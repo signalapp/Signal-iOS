@@ -32,7 +32,7 @@ final class SeedModal : Modal {
         let subtitleLabel = UILabel()
         subtitleLabel.textColor = Theme.primaryColor
         subtitleLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
-        subtitleLabel.text = NSLocalizedString("This is your personal secret. It can be used to restore your account if you lose access, or to migrate to a new device.", comment: "")
+        subtitleLabel.text = NSLocalizedString("This is your personal secret. It can be used to restore your account if you lose access, or to migrate your account to a new device.", comment: "")
         subtitleLabel.numberOfLines = 0
         subtitleLabel.lineBreakMode = .byWordWrapping
         subtitleLabel.textAlignment = .center
