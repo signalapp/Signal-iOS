@@ -31,9 +31,10 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         lokiLogoContainer.addSubview(lokiLogoImageView)
         
         let betaTermsLabel = UILabel()
-        betaTermsLabel.text = NSLocalizedString("Loki Messenger is currently in beta. For development purposes the beta version collects basic usage statistics and crash logs. In addition, the beta version doesn't provide full privacy and shouldn't be used to transmit sensitive information.", comment: "")
+        betaTermsLabel.text = NSLocalizedString("Loki Messenger is currently in beta. For development purposes the beta version collects basic usage statistics and crash logs. In addition, the beta version doesn't yet provide full privacy and shouldn't be used to transmit sensitive information.", comment: "")
         betaTermsLabel.textColor = .white
-        betaTermsLabel.font = .ows_dynamicTypeSubheadlineClamped
+        let font = UIFont.ows_dynamicTypeCaption1Clamped
+        betaTermsLabel.font = UIFont(descriptor: font.fontDescriptor.withSymbolicTraits(.traitBold)!, size: font.pointSize)
         betaTermsLabel.numberOfLines = 0
         betaTermsLabel.textAlignment = .center
         betaTermsLabel.lineBreakMode = .byWordWrapping
