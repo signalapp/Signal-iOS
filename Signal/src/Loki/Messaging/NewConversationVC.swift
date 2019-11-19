@@ -81,9 +81,9 @@ final class NewConversationVC : OWSViewController, OWSQRScannerDelegate {
     @objc private func scanQRCode() {
         ows_ask(forCameraPermissions: { [weak self] hasCameraAccess in
             if hasCameraAccess {
-                let scanQRCodeVC = ScanQRCodeVC()
-                scanQRCodeVC.delegate = self
-                self?.navigationController!.pushViewController(scanQRCodeVC, animated: true)
+                let scanQRCodeWrapperVC = ScanQRCodeWrapperVC()
+                scanQRCodeWrapperVC.delegate = self
+                self?.navigationController!.pushViewController(scanQRCodeWrapperVC, animated: true)
             } else {
                 // Do nothing
             }
