@@ -5,6 +5,7 @@ public final class LokiPublicChatMessage : NSObject {
     public let serverID: UInt64?
     public let hexEncodedPublicKey: String
     public let displayName: String
+    public let avatar: String?
     public let body: String
     /// - Note: Expressed as milliseconds since 00:00:00 UTC on 1 January 1970.
     public let timestamp: UInt64
@@ -66,10 +67,11 @@ public final class LokiPublicChatMessage : NSObject {
     }
     
     // MARK: Initialization
-    public init(serverID: UInt64?, hexEncodedPublicKey: String, displayName: String, body: String, type: String, timestamp: UInt64, quote: Quote?, attachments: [Attachment], signature: Signature?) {
+    public init(serverID: UInt64?, hexEncodedPublicKey: String, displayName: String, avatar: String?, body: String, type: String, timestamp: UInt64, quote: Quote?, attachments: [Attachment], signature: Signature?) {
         self.serverID = serverID
         self.hexEncodedPublicKey = hexEncodedPublicKey
         self.displayName = displayName
+        self.avatar = avatar
         self.body = body
         self.type = type
         self.timestamp = timestamp
@@ -79,7 +81,7 @@ public final class LokiPublicChatMessage : NSObject {
         super.init()
     }
     
-    @objc public convenience init(hexEncodedPublicKey: String, displayName: String, body: String, type: String, timestamp: UInt64, quotedMessageTimestamp: UInt64, quoteeHexEncodedPublicKey: String?, quotedMessageBody: String?, quotedMessageServerID: UInt64, signatureData: Data?, signatureVersion: UInt64) {
+    @objc public convenience init(hexEncodedPublicKey: String, displayName: String, avatar: String?, body: String, type: String, timestamp: UInt64, quotedMessageTimestamp: UInt64, quoteeHexEncodedPublicKey: String?, quotedMessageBody: String?, quotedMessageServerID: UInt64, signatureData: Data?, signatureVersion: UInt64) {
         let quote: Quote?
         if quotedMessageTimestamp != 0, let quoteeHexEncodedPublicKey = quoteeHexEncodedPublicKey, let quotedMessageBody = quotedMessageBody {
             let quotedMessageServerID = (quotedMessageServerID != 0) ? quotedMessageServerID : nil
@@ -93,7 +95,7 @@ public final class LokiPublicChatMessage : NSObject {
         } else {
             signature = nil
         }
-        self.init(serverID: nil, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: type, timestamp: timestamp, quote: quote, attachments: [], signature: signature)
+        self.init(serverID: nil, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, avatar: avatar, body: body, type: type, timestamp: timestamp, quote: quote, attachments: [], signature: signature)
     }
     
     // MARK: Crypto
@@ -108,7 +110,7 @@ public final class LokiPublicChatMessage : NSObject {
             return nil
         }
         let signature = Signature(data: signatureData, version: signatureVersion)
-        return LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: type, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature)
+        return LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, avatar: avatar, body: body, type: type, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature)
     }
     
     internal func hasValidSignature() -> Bool {
@@ -128,6 +130,11 @@ public final class LokiPublicChatMessage : NSObject {
             value["sig"] = signature.data.toHexString()
             value["sigver"] = signature.version
         }
+
+        if let avatar = avatar {
+            value["avatar"] = avatar;
+        }
+
         let annotation: JSON = [ "type" : type, "value" : value ]
         let attachmentAnnotations: [JSON] = attachments.map { attachment in
             let type: String

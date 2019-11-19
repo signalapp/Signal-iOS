@@ -294,11 +294,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     OWSUserProfile *userProfile = self.localUserProfile;
     OWSAssertDebug(userProfile);
     
-    // Loki: We don't support avatar uploads yet
-    OWSLogVerbose(@"Updating local profile on service with no avatar.");
-    tryToUpdateService(nil, nil);
-
-    /* ========== Original code ===============
     if (avatarImage) {
         // If we have a new avatar image, we must first:
         //
@@ -343,7 +338,11 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         OWSLogVerbose(@"Updating local profile on service with no avatar.");
         tryToUpdateService(nil, nil);
     }
-    */
+}
+
+- (nullable NSString *)profilePictureURL
+{
+    return self.localUserProfile.avatarUrlPath;
 }
 
 - (void)writeAvatarToDisk:(UIImage *)avatar
@@ -402,6 +401,22 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     OWSAssertDebug(failureBlock);
     OWSAssertDebug(avatarData == nil || avatarData.length > 0);
 
+    [[LKStorageAPI setProfilePicture:avatarData]
+    .thenOn(dispatch_get_main_queue(), ^(NSString *url) {
+        successBlock(url);
+    })
+    .catchOn(dispatch_get_main_queue(), ^(id result) {
+        // There appears to be a bug in PromiseKit that sometimes causes catchOn
+        // to be invoked with the fulfilled promise's value as the error. The below
+        // is a quick and dirty workaround.
+        if ([result isKindOfClass:NSString.class]) {
+            successBlock(result);
+        } else {
+            failureBlock(result);
+        }
+    }) retainUntilComplete];
+    
+    /*
     // We want to clear the local user's profile avatar as soon as
     // we request the upload form, since that request clears our
     // avatar on the service.
@@ -414,6 +429,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     };
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
         // See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
         TSRequest *formRequest = [OWSRequestFactory profileAvatarUploadFormRequest];
 
@@ -527,6 +543,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                 return failureBlock(error);
             }];
     });
+     */
 }
 
 - (void)updateServiceWithProfileName:(nullable NSString *)localProfileName
@@ -1148,11 +1165,9 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         }
         NSString *_Nullable avatarUrlPathAtStart = userProfile.avatarUrlPath;
 
-        if (userProfile.profileKey.keyData.length < 1 || userProfile.avatarUrlPath.length < 1) {
+        if (userProfile.avatarUrlPath.length < 1) {
             return;
         }
-
-        OWSAES256Key *profileKeyAtStart = userProfile.profileKey;
 
         NSString *fileName = [self generateAvatarFilename];
         NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:fileName];
@@ -1171,72 +1186,12 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         NSString *tempDirectory = OWSTemporaryDirectory();
         NSString *tempFilePath = [tempDirectory stringByAppendingPathComponent:fileName];
 
-        void (^completionHandler)(NSURLResponse *_Nonnull, NSURL *_Nullable, NSError *_Nullable) = ^(
-            NSURLResponse *_Nonnull response, NSURL *_Nullable filePathParam, NSError *_Nullable error) {
-            // Ensure disk IO and decryption occurs off the main thread.
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                NSData *_Nullable encryptedData = (error ? nil : [NSData dataWithContentsOfFile:tempFilePath]);
-                NSData *_Nullable decryptedData = [self decryptProfileData:encryptedData profileKey:profileKeyAtStart];
-                UIImage *_Nullable image = nil;
-                if (decryptedData) {
-                    BOOL success = [decryptedData writeToFile:filePath atomically:YES];
-                    if (success) {
-                        image = [UIImage imageWithContentsOfFile:filePath];
-                    }
-                }
 
-                @synchronized(self.currentAvatarDownloads)
-                {
-                    [self.currentAvatarDownloads removeObject:userProfile.recipientId];
-                }
-
-                OWSUserProfile *latestUserProfile =
-                    [OWSUserProfile getOrBuildUserProfileForRecipientId:userProfile.recipientId
-                                                           dbConnection:self.dbConnection];
-                if (latestUserProfile.profileKey.keyData.length < 1
-                    || ![latestUserProfile.profileKey isEqual:userProfile.profileKey]) {
-                    OWSLogWarn(@"Ignoring avatar download for obsolete user profile.");
-                } else if (![avatarUrlPathAtStart isEqualToString:latestUserProfile.avatarUrlPath]) {
-                    OWSLogInfo(@"avatar url has changed during download");
-                    if (latestUserProfile.avatarUrlPath.length > 0) {
-                        [self downloadAvatarForUserProfile:latestUserProfile];
-                    }
-                } else if (error) {
-                    OWSLogError(@"avatar download for %@ failed with error: %@", userProfile.recipientId, error);
-                } else if (!encryptedData) {
-                    OWSLogError(@"avatar encrypted data for %@ could not be read.", userProfile.recipientId);
-                } else if (!decryptedData) {
-                    OWSLogError(@"avatar data for %@ could not be decrypted.", userProfile.recipientId);
-                } else if (!image) {
-                    OWSLogError(
-                        @"avatar image for %@ could not be loaded with error: %@", userProfile.recipientId, error);
-                } else {
-                    [self updateProfileAvatarCache:image filename:fileName];
-
-                    [latestUserProfile updateWithAvatarFileName:fileName dbConnection:self.dbConnection completion:nil];
-                }
-
-                // If we're updating the profile that corresponds to our local number,
-                // update the local profile as well.
-                NSString *_Nullable localNumber = self.tsAccountManager.localNumber;
-                if (localNumber && [localNumber isEqualToString:userProfile.recipientId]) {
-                    OWSUserProfile *localUserProfile = self.localUserProfile;
-                    OWSAssertDebug(localUserProfile);
-
-                    [localUserProfile updateWithAvatarFileName:fileName dbConnection:self.dbConnection completion:nil];
-                    [self updateProfileAvatarCache:image filename:fileName];
-                }
-
-                OWSAssertDebug(backgroundTask);
-                backgroundTask = nil;
-            });
-        };
-
-        NSURL *avatarUrl = [NSURL URLWithString:userProfile.avatarUrlPath relativeToURL:self.avatarHTTPManager.baseURL];
+        NSString *profilePictureURL = userProfile.avatarUrlPath;
         NSError *serializationError;
         NSMutableURLRequest *request =
             [self.avatarHTTPManager.requestSerializer requestWithMethod:@"GET"
-                                                              URLString:avatarUrl.absoluteString
+                                                              URLString:profilePictureURL
                                                              parameters:nil
                                                                   error:&serializationError];
         if (serializationError) {
@@ -1244,15 +1199,49 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             return;
         }
 
-        __block NSURLSessionDownloadTask *downloadTask = [self.avatarHTTPManager downloadTaskWithRequest:request
-            progress:^(NSProgress *_Nonnull downloadProgress) {
-                OWSLogVerbose(
-                    @"Downloading avatar for %@ %f", userProfile.recipientId, downloadProgress.fractionCompleted);
+        NSURLSession* session = [NSURLSession sharedSession];
+
+        NSURLSessionTask* downloadTask = [session downloadTaskWithRequest:request completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
+
+            @synchronized(self.currentAvatarDownloads)
+            {
+                [self.currentAvatarDownloads removeObject:userProfile.recipientId];
             }
-            destination:^NSURL *_Nonnull(NSURL *_Nonnull targetPath, NSURLResponse *_Nonnull response) {
-                return [NSURL fileURLWithPath:tempFilePath];
+            
+            if (error) {
+                OWSLogError(@"Dowload failed: %@", error);
+                return;
             }
-            completionHandler:completionHandler];
+
+            NSFileManager *fileManager = [NSFileManager defaultManager];
+            NSURL *fileURL = [NSURL fileURLWithPath:filePath];
+            NSError *moveError;
+            if (![fileManager moveItemAtURL:location toURL:fileURL error:&moveError]) {
+                OWSLogError(@"MoveItemAtURL for avatar failed: %@", moveError);
+                return;
+            }
+
+            UIImage *image = [UIImage imageWithContentsOfFile:[fileURL path]];
+            if (image) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+
+                    [self updateProfileAvatarCache:image filename:fileName];
+                    
+                    OWSUserProfile *latestUserProfile =
+                        [OWSUserProfile getOrBuildUserProfileForRecipientId:userProfile.recipientId
+                                                               dbConnection:self.dbConnection];
+
+                    [latestUserProfile updateWithAvatarFileName:fileName dbConnection:self.dbConnection completion:^{
+                        [[NSNotificationCenter defaultCenter]
+                            postNotificationNameAsync:OWSContactsManagerSignalAccountsDidChangeNotification
+                            object:nil];
+                    }];
+                });
+            }
+
+
+        }];
+
         [downloadTask resume];
     });
 }
@@ -1313,10 +1302,17 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     });
 }
 
-- (void)setDisplayNameForContactWithID:(NSString *)contactID to:(NSString *)displayName with:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateProfileForContactWithID:(NSString *)contactID displayName:(NSString *)displayName profilePictureURL:(NSString *)profilePictureURL with:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForRecipientId:contactID transaction:transaction];
-    [userProfile updateWithProfileName:displayName avatarUrlPath:@"" avatarFileName:@"" transaction:transaction completion:nil];
+    NSString *oldProfilePictureURL = userProfile.avatarUrlPath;
+    // Note: we keep using the old file name until we have the new one
+    // (otherwise the profile picuture would disspear for a short time)
+    NSString *oldAvatarFileName = userProfile.avatarFileName;
+    [userProfile updateWithProfileName:displayName avatarUrlPath:profilePictureURL avatarFileName:oldAvatarFileName transaction:transaction completion:nil];
+    if (profilePictureURL && ![oldProfilePictureURL isEqual:profilePictureURL]) {
+        [self downloadAvatarForUserProfile:userProfile];
+    }
 }
 
 - (BOOL)isNullableDataEqual:(NSData *_Nullable)left toData:(NSData *_Nullable)right

@@ -154,12 +154,10 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarRowTapped:)]];
     avatarRow.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"avatarRow");
 
-//    Loki: Disable setting the avatar
-//    [rows addObject:avatarRow];
+    [rows addObject:avatarRow];
 
     UILabel *avatarLabel = [UILabel new];
-    avatarLabel.text = NSLocalizedString(
-        @"PROFILE_VIEW_PROFILE_AVATAR_FIELD", @"Label for the profile avatar field of the profile view.");
+    avatarLabel.text = NSLocalizedString(@"Profile Picture", @"");
     avatarLabel.textColor = Theme.primaryColor;
     avatarLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
     [avatarRow addSubview:avatarLabel];
@@ -398,7 +396,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         return [OWSAlerts showErrorAlertWithMessage:NSLocalizedString(@"Please pick a display name", @"")];
     }
     
-    NSCharacterSet *allowedCharacters = [NSCharacterSet characterSetWithCharactersInString:@"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"];
+    NSCharacterSet *allowedCharacters = [NSCharacterSet characterSetWithCharactersInString:@"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_ "];
     if ([normalizedProfileName rangeOfCharacterFromSet:allowedCharacters.invertedSet].location != NSNotFound) {
         return [OWSAlerts showErrorAlertWithMessage:NSLocalizedString(@"Please pick a display name that consists of only a-z, A-Z, 0-9 and _ characters", @"")];
     }
@@ -601,8 +599,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (nullable NSString *)avatarActionSheetTitle
 {
-    return NSLocalizedString(
-        @"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE", @"Action Sheet title prompting the user for a profile avatar");
+    return NSLocalizedString(@"Set Profile Picture", @"");
 }
 
 - (void)avatarDidChange:(UIImage *)image
@@ -626,7 +623,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (NSString *)clearAvatarActionLabel
 {
-    return NSLocalizedString(@"PROFILE_VIEW_CLEAR_AVATAR", @"Label for action that clear's the user's profile avatar");
+    return NSLocalizedString(@"Clear Profile Picture", @"");
 }
 
 - (void)clearAvatar

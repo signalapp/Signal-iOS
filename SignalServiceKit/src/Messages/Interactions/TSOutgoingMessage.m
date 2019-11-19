@@ -1103,15 +1103,15 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
     [ProtoUtils addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId dataMessageBuilder:builder];
 
-    // Loki: Set display name if needed
+    // Loki: Set display name & profile picture
     id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
     NSString *displayName = profileManager.localProfileName;
-    if (displayName != nil) {
-        SSKProtoDataMessageLokiProfileBuilder *profileBuilder = [SSKProtoDataMessageLokiProfile builder];
-        [profileBuilder setDisplayName:displayName];
-        SSKProtoDataMessageLokiProfile *profile = [profileBuilder buildAndReturnError:nil];
-        [builder setProfile:profile];
-    }
+    NSString *profilePictureURL = profileManager.profilePictureURL;
+    SSKProtoDataMessageLokiProfileBuilder *profileBuilder = [SSKProtoDataMessageLokiProfile builder];
+    [profileBuilder setDisplayName:displayName];
+    [profileBuilder setProfilePicture:profilePictureURL ?: @""];
+    SSKProtoDataMessageLokiProfile *profile = [profileBuilder buildAndReturnError:nil];
+    [builder setProfile:profile];
     
     NSError *error;
     SSKProtoDataMessage *_Nullable dataProto = [builder buildAndReturnError:&error];

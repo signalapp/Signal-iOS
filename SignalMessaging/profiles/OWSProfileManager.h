@@ -39,6 +39,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 - (nullable NSString *)localProfileName;
 - (nullable UIImage *)localProfileAvatarImage;
 - (nullable NSData *)localProfileAvatarData;
+- (nullable NSString *)profilePictureURL;
 - (void)ensureLocalProfileCached;
 
 // This method is used to update the "local profile" state on the client
@@ -82,7 +83,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
                profileNameEncrypted:(nullable NSData *)profileNameEncrypted
                       avatarUrlPath:(nullable NSString *)avatarUrlPath;
 
-- (void)setDisplayNameForContactWithID:(NSString *)contactID to:(NSString *)displayName with:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateProfileForContactWithID:(NSString *)contactID displayName:(NSString *)displayName profilePictureURL:(NSString *)profilePictureURL with:(YapDatabaseReadWriteTransaction *)transaction;
 
 #pragma mark - User Interface
 
