@@ -257,7 +257,7 @@ NSString *const kMayHaveLinkedDevicesKey = @"kTSStorageManager_MayHaveLinkedDevi
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             // Device changes can affect the UD access mode for a recipient,
             // so we need to fetch the profile for this user to update UD access mode.
-            [self.profileManager updateLocalUsersProfile];
+            [self.profileManager fetchAndUpdateLocalUsersProfile];
         });
         return YES;
     } else {

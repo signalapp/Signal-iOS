@@ -919,7 +919,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
         // account attributes.  Specifically, we need to determine
         // if all devices for our account now support UD for sync
         // messages.
-        [self.profileManager updateLocalUsersProfile];
+        [self.profileManager fetchAndUpdateLocalUsersProfile];
     });
     [promise retainUntilComplete];
     return promise;

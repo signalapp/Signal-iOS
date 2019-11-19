@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.threadWhitelist addObject:groupId.hexadecimalString];
 }
 
-- (void)updateLocalUsersProfile
+- (void)fetchAndUpdateLocalUsersProfile
 {
     // Do nothing.
 }

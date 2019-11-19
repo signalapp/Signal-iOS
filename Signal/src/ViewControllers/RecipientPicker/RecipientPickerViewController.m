@@ -923,7 +923,7 @@ const NSUInteger kMinimumSearchLength = 2;
         presentFromViewController:self
                         canCancel:YES
                   backgroundBlock:^(ModalActivityIndicatorViewController *modal) {
-                      [self.contactsViewHelper.profileManager updateProfileForUsername:username
+                      [self.contactsViewHelper.profileManager fetchAndUpdateProfileForUsername:username
                           success:^(SignalServiceAddress *address) {
                               OWSAssertIsOnMainThread();
                               if (modal.wasCancelled) {

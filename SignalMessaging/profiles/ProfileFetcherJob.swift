@@ -77,10 +77,10 @@ public class ProfileFetcherJob: NSObject {
 
     private var backgroundTask: OWSBackgroundTask?
 
-    public class func updateProfilePromise(address: SignalServiceAddress,
-                                           mainAppOnly: Bool = true,
-                                           ignoreThrottling: Bool = false,
-                                           shouldUpdateProfile: Bool = true) -> Promise<SignalServiceProfile> {
+    public class func fetchAndUpdateProfilePromise(address: SignalServiceAddress,
+                                                   mainAppOnly: Bool = true,
+                                                   ignoreThrottling: Bool = false,
+                                                   shouldUpdateProfile: Bool = true) -> Promise<SignalServiceProfile> {
         let subject = ProfileRequestSubject.address(address: address)
         let options = ProfileFetchOptions(mainAppOnly: mainAppOnly,
                                           ignoreThrottling: ignoreThrottling,
@@ -89,7 +89,7 @@ public class ProfileFetcherJob: NSObject {
     }
 
     @objc
-    public class func updateProfile(address: SignalServiceAddress, ignoreThrottling: Bool) {
+    public class func fetchAndUpdateProfile(address: SignalServiceAddress, ignoreThrottling: Bool) {
         let subject = ProfileRequestSubject.address(address: address)
         let options = ProfileFetchOptions(ignoreThrottling: ignoreThrottling)
         ProfileFetcherJob(subject: subject, options: options).runAsPromise()
@@ -97,10 +97,10 @@ public class ProfileFetcherJob: NSObject {
     }
 
     @objc
-    public class func updateProfile(username: String,
-                                    success: @escaping (_ address: SignalServiceAddress) -> Void,
-                                    notFound: @escaping () -> Void,
-                                    failure: @escaping (_ error: Error?) -> Void) {
+    public class func fetchAndUpdateProfile(username: String,
+                                            success: @escaping (_ address: SignalServiceAddress) -> Void,
+                                            notFound: @escaping () -> Void,
+                                            failure: @escaping (_ error: Error?) -> Void) {
         let subject = ProfileRequestSubject.username(username: username)
         let options = ProfileFetchOptions(ignoreThrottling: true)
         ProfileFetcherJob(subject: subject, options: options).runAsPromise()
@@ -117,8 +117,8 @@ public class ProfileFetcherJob: NSObject {
             .retainUntilComplete()
     }
 
-    @objc(updateProfilesWithThread:)
-    public class func updateProfiles(thread: TSThread) {
+    @objc(fetchAndUpdateProfilesWithThread:)
+    public class func fetchAndUpdateProfiles(thread: TSThread) {
         let addresses = thread.recipientAddresses
         let subjects = addresses.map { ProfileRequestSubject.address(address: $0) }
         let options = ProfileFetchOptions()

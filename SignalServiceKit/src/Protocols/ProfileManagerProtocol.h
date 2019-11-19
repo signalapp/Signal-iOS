@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address;
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId;
 
-- (void)updateLocalUsersProfile;
+- (void)fetchAndUpdateLocalUsersProfile;
 
 - (void)updateProfileForAddress:(SignalServiceAddress *)address;
 

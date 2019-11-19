@@ -1342,7 +1342,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
     [OWSOrphanDataCleaner auditOnLaunchIfNecessary];
 #endif
 
-    [self.profileManager updateLocalUsersProfile];
+    [self.profileManager fetchAndUpdateLocalUsersProfile];
     [self.readReceiptManager prepareCachedValues];
 
     [SignalApp.sharedApp ensureRootViewController:launchStartedAt];

@@ -535,7 +535,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     });
 }
 
-- (void)updateLocalUsersProfile
+- (void)fetchAndUpdateLocalUsersProfile
 {
     OWSAssertIsOnMainThread();
 
@@ -548,13 +548,13 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 - (void)updateProfileForAddress:(SignalServiceAddress *)address
 {
-    [ProfileFetcherJob updateProfileWithAddress:address ignoreThrottling:YES];
+    [ProfileFetcherJob fetchAndUpdateProfileWithAddress:address ignoreThrottling:YES];
 }
 
-- (void)updateProfileForUsername:(NSString *)username
-                        success:(void (^)(SignalServiceAddress *))success
-                       notFound:(void (^)(void))notFound
-                        failure:(void (^)(NSError *))failure
+- (void)fetchAndUpdateProfileForUsername:(NSString *)username
+                                 success:(void (^)(SignalServiceAddress *))success
+                                notFound:(void (^)(void))notFound
+                                 failure:(void (^)(NSError *))failure
 {
     OWSAssertDebug(username.length > 0);
 
@@ -572,10 +572,10 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             return;
         }
 
-        [ProfileFetcherJob updateProfileWithUsername:username
-                                             success:success
-                                            notFound:notFound
-                                             failure:failure];
+        [ProfileFetcherJob fetchAndUpdateProfileWithUsername:username
+                                                     success:success
+                                                    notFound:notFound
+                                                     failure:failure];
     });
 }
 
@@ -824,8 +824,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
         // Fetch local profile.
         promise = promise.then(^(id value) {
-            [self updateLocalUsersProfile];
-            
+            [self fetchAndUpdateLocalUsersProfile];
+
             return @(1);
         });
 
