@@ -3792,7 +3792,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
 + (void)sendFakeMessages:(NSUInteger)counter thread:(TSThread *)thread isTextOnly:(BOOL)isTextOnly
 {
-    const NSUInteger kMaxBatchSize = 2500;
+    const NSUInteger kMaxBatchSize = 200;
     if (counter < kMaxBatchSize) {
         [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
             [self sendFakeMessages:counter thread:thread isTextOnly:isTextOnly transaction:transaction];
@@ -3922,7 +3922,10 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             }
             case 3: {
                 ConversationFactory *conversationFactory = [ConversationFactory new];
-                conversationFactory.attachmentCount = arc4random_uniform(33);
+                // We want to produce a variety of album sizes, but favoring smaller albums
+                conversationFactory.attachmentCount = MAX(0,
+                                                          MIN(SignalAttachment.maxAttachmentsAllowed,
+                                                          ((NSInteger)((double)UINT32_MAX/(double)arc4random()) - 1)));
                 conversationFactory.threadCreator = ^(SDSAnyWriteTransaction *_transaction){
                     return thread;
                 };

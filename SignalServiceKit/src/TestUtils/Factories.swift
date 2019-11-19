@@ -437,6 +437,7 @@ public class ConversationFactory: NSObject {
     public var attachmentCount: Int = 0
 
     @objc
+    @discardableResult
     public func createSentMessage(transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage {
         let outgoingFactory = OutgoingMessageFactory()
         outgoingFactory.threadCreator = threadCreator
