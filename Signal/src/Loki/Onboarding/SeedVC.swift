@@ -115,7 +115,7 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
     }()
     
     private lazy var mainButton: OWSFlatButton = {
-        let result = createButton(title: "", selector: #selector(proceed(with:)))
+        let result = createButton(title: "", selector: #selector(objc_proceed))
         result.accessibilityIdentifier = "onboarding.keyPairStep.mainButton"
         return result
     }()
@@ -241,7 +241,11 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
         }
     }
 
-    @objc private func proceed(with masterHexEncodedPublicKey: String? = nil) {
+    @objc private func objc_proceed() {
+        proceed()
+    }
+    
+    private func proceed(with masterHexEncodedPublicKey: String? = nil) {
         var seed: Data
         if let masterHexEncodedPublicKey = masterHexEncodedPublicKey {
             seed = self.seed
