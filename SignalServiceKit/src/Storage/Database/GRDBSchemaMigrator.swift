@@ -19,6 +19,8 @@ public class GRDBSchemaMigrator: NSObject {
         } else {
             try! newUserMigrator.migrate(grdbStorage.pool)
         }
+
+        SSKPreferences.markGRDBSchemaAsLatest()
     }
 
     private var hasCreatedInitialSchema: Bool {
@@ -44,7 +46,14 @@ public class GRDBSchemaMigrator: NSObject {
         case signalAccount_add_contactAvatars
         case signalAccount_add_contactAvatars_indices
         case jobRecords_add_attachmentId
+
+        // NOTE: Every time we add a migration id, consider
+        // incrementing grdbSchemaVersionLatest.
+        // We only need to do this for breaking changes.
     }
+
+    public static let grdbSchemaVersionDefault: UInt = 0
+    public static let grdbSchemaVersionLatest: UInt = 1
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
