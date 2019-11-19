@@ -1,6 +1,7 @@
 
 final class ScanQRCodeWrapperVC : UIViewController {
     var delegate: (UIViewController & OWSQRScannerDelegate)? = nil
+    var isPresentedModally = false
     private let message: String
     private let scanQRCodeVC = OWSQRCodeScanningViewController()
     
@@ -22,6 +23,10 @@ final class ScanQRCodeWrapperVC : UIViewController {
     }
     
     override func viewDidLoad() {
+        // Navigation bar
+        if isPresentedModally {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(objc_dismiss))
+        }
         // Background color
         view.backgroundColor = Theme.backgroundColor
         // Scan QR code VC
@@ -60,5 +65,10 @@ final class ScanQRCodeWrapperVC : UIViewController {
         DispatchQueue.main.async { [weak self] in
             self?.scanQRCodeVC.startCapture()
         }
+    }
+    
+    // MARK: Interaction
+    @objc private func objc_dismiss() {
+        presentingViewController?.dismiss(animated: true, completion: nil)
     }
 }

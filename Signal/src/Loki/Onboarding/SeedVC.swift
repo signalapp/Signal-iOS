@@ -224,10 +224,12 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
         ows_ask(forCameraPermissions: { [weak self] hasCameraAccess in
             guard let self = self else { return }
             if hasCameraAccess {
-                let message = NSLocalizedString("something something something", comment: "")
+                let message = NSLocalizedString("Link to an existing device by going into its in-app settings and clicking \"Link Device\".", comment: "")
                 let scanQRCodeWrapperVC = ScanQRCodeWrapperVC(message: message)
                 scanQRCodeWrapperVC.delegate = self
-                self.present(scanQRCodeWrapperVC, animated: true, completion: nil)
+                scanQRCodeWrapperVC.isPresentedModally = true
+                let navigationVC = OWSNavigationController(rootViewController: scanQRCodeWrapperVC)
+                self.present(navigationVC, animated: true, completion: nil)
             } else {
                 // Do nothing
             }
