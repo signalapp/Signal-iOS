@@ -27,25 +27,6 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 
 #pragma mark -
 
-@interface OWSUploadForm : NSObject
-
-// These properties will bet set for all uploads.
-@property (nonatomic) NSString *formAcl;
-@property (nonatomic) NSString *formKey;
-@property (nonatomic) NSString *formPolicy;
-@property (nonatomic) NSString *formAlgorithm;
-@property (nonatomic) NSString *formCredential;
-@property (nonatomic) NSString *formDate;
-@property (nonatomic) NSString *formSignature;
-
-// These properties will bet set for all attachment uploads.
-@property (nonatomic, nullable) NSNumber *attachmentId;
-@property (nonatomic, nullable) NSString *attachmentIdString;
-
-@end
-
-#pragma mark -
-
 // See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
 @implementation OWSUploadForm
 

@@ -19,7 +19,6 @@
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSProfileKeyMessage.h>
-#import <SignalServiceKit/OWSRequestBuilder.h>
 #import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/OWSUploadV2.h>
 #import <SignalServiceKit/OWSUserProfile.h>
@@ -523,7 +522,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSData *_Nullable encryptedPaddedName = [self encryptProfileNameWithUnpaddedName:localProfileName];
 
-        TSRequest *request = [OWSRequestBuilder profileNameSetRequestWithEncryptedPaddedName:encryptedPaddedName];
+        TSRequest *request = [OWSRequestFactory profileNameSetRequestWithEncryptedPaddedName:encryptedPaddedName];
         [self.networkManager makeRequest:request
             success:^(NSURLSessionDataTask *task, id responseObject) {
                 successBlock();
@@ -1553,7 +1552,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 #pragma mark - Profile Encryption
 
-- (nullable NSData *)encryptProfileData:(nullable NSData *)encryptedData profileKey:(OWSAES256Key *)profileKey
++ (nullable NSData *)encryptProfileData:(nullable NSData *)encryptedData profileKey:(OWSAES256Key *)profileKey
 {
     OWSAssertDebug(profileKey.keyData.length == kAES256_KeyByteLength);
 
@@ -1584,7 +1583,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         return nil;
     }
 
-
     // Unpad profile name.
     NSUInteger unpaddedLength = 0;
     const char *bytes = decryptedData.bytes;
@@ -1605,7 +1603,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 - (nullable NSData *)encryptProfileData:(nullable NSData *)data
 {
-    return [self encryptProfileData:data profileKey:self.localProfileKey];
+    return [OWSProfileManager encryptProfileData:data profileKey:self.localProfileKey];
 }
 
 - (BOOL)isProfileNameTooLong:(nullable NSString *)profileName
@@ -1617,6 +1615,13 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 }
 
 - (nullable NSData *)encryptProfileNameWithUnpaddedName:(NSString *)name
+{
+    return [OWSProfileManager encryptProfileNameWithUnpaddedName:name
+                                                 localProfileKey:self.localProfileKey];
+}
+
++ (nullable NSData *)encryptProfileNameWithUnpaddedName:(NSString *)name
+                                        localProfileKey:(OWSAES256Key *)localProfileKey
 {
     NSData *nameData = [name dataUsingEncoding:NSUTF8StringEncoding];
     if (nameData.length > kOWSProfileManager_NameDataLength) {
@@ -1632,7 +1637,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     [paddedNameData increaseLengthBy:paddingByteCount];
     OWSAssertDebug(paddedNameData.length == kOWSProfileManager_NameDataLength);
 
-    return [self encryptProfileData:[paddedNameData copy] profileKey:self.localProfileKey];
+    return [self encryptProfileData:[paddedNameData copy] profileKey:localProfileKey];
 }
 
 #pragma mark - Avatar Disk Cache
