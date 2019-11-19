@@ -450,7 +450,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let deleteAction = ActionSheetAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""),
                                          style: .destructive) { _ in
                                             let deletedItem = currentViewController.galleryItem
-                                            self.mediaGallery.delete(items: [deletedItem], initiatedBy: self)
+                                            self.mediaGallery.delete(items: [deletedItem], initiatedBy: self, deleteFromDB: true)
         }
         actionSheet.addAction(OWSActionSheets.cancelAction)
         actionSheet.addAction(deleteAction)
