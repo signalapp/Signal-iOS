@@ -2552,7 +2552,7 @@
 "Password (Optional)" = "Password (Optional)";
 "Next" = "Next";
 "Add" = "Add";
-"Please save the seed below in a safe location. It can be used to restore your account if you lose access, or to migrate to a new device." = "Please save the seed below in a safe location. It can be used to restore your account if you lose access, or to migrate to a new device.";
+"Please save the seed below in a safe location. It can be used to restore your account if you lose access, or to migrate your account to a new device." = "Please save the seed below in a safe location. It can be used to restore your account if you lose access, or to migrate your account to a new device.";
 "Restore your account by entering your seed below." = "Restore your account by entering your seed below.";
 "Copy" = "Copy";
 "Copied ✓" = "Copied ✓";
@@ -2621,7 +2621,7 @@
 "Loki" = "Loki";
 "Can't Start Conversation" = "Can't Start Conversation";
 "Please enter the public key of the person you'd like to message." = "Please enter the public key of the person you'd like to message.";
-"Loki Messenger is currently in beta. For development purposes the beta version collects basic usage statistics and crash logs. In addition, the beta version doesn't provide full privacy and shouldn't be used to transmit sensitive information." = "Loki Messenger is currently in beta. For development purposes the beta version collects basic usage statistics and crash logs. In addition, the beta version doesn't provide full privacy and shouldn't be used to transmit sensitive information.";
+"Loki Messenger is currently in beta. For development purposes the beta version collects basic usage statistics and crash logs. In addition, the beta version doesn't yet provide full privacy and shouldn't be used to transmit sensitive information." = "Loki Messenger is currently in beta. For development purposes the beta version collects basic usage statistics and crash logs. In addition, the beta version doesn't yet provide full privacy and shouldn't be used to transmit sensitive information.";
 "Copy Public Key" = "Copy Public Key";
 "Link Device" = "Link Device";
 "Waiting for Device" = "Waiting for Device";
@@ -2633,7 +2633,7 @@
 "Link to an existing device by going into its in-app settings and clicking \"Link Device\"." = "Link to an existing device by going into its in-app settings and clicking \"Link Device\".";
 "Authorize" = "Authorize";
 "Enter the Other Device's Public Key" = "Enter the Other Device's Public Key";
-"This is your personal secret. It can be used to restore your account if you lose access, or to migrate to a new device." = "This is your personal secret. It can be used to restore your account if you lose access, or to migrate to a new device.";
+"This is your personal secret. It can be used to restore your account if you lose access, or to migrate your account to a new device." = "This is your personal secret. It can be used to restore your account if you lose access, or to migrate your account to a new device.";
 "Device Link Authorized" = "Device Link Authorized";
 "Your device has been linked successfully" = "Your device has been linked successfully";
 "Link" = "Link";
@@ -2653,3 +2653,5 @@
 "Profile Picture" = "Profile Picture";
 "Set Profile Picture" = "Set Profile Picture";
 "Clear Profile Picture" = "Clear Profile Picture";
+"Invalid QR Code" = "Invalid QR Code";
+"Please make sure the QR code you scanned is correct and try again." = "Please make sure the QR code you scanned is correct and try again.";
