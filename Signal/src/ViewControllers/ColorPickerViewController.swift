@@ -372,6 +372,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var isFailedSticker: Bool = false
     var viewOnceMessageState: ViewOnceMessageState = .incomingExpired
     var mutualGroupNames: [String]?
+    var reactionState: InteractionReactionState?
 
     init(interaction: TSInteraction, thread: TSThread) {
         self.interaction = interaction

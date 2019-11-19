@@ -41,6 +41,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 @class ContactShareViewModel;
 @class ConversationViewCell;
 @class DisplayableText;
+@class InteractionReactionState;
 @class OWSLinkPreview;
 @class OWSQuotedReplyModel;
 @class OWSUnreadIndicator;
@@ -165,6 +166,8 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 
 // NOTE: This property is only set for conversation thread details
 @property (nonatomic, readonly, nullable) NSArray<NSString *> *mutualGroupNames;
+
+@property (nonatomic, readonly, nullable) InteractionReactionState *reactionState;
 
 #pragma mark - MessageActions
 
