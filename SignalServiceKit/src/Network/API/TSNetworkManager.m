@@ -539,7 +539,7 @@ dispatch_queue_t NetworkManagerQueue()
     // * CDS requests.
     // * Requests using UD auth.
     // * etc.
-    if ([task.originalRequest.URL.absoluteString hasPrefix:textSecureServerURL]
+    if ([task.originalRequest.URL.absoluteString hasPrefix:TSConstants.textSecureServerURL]
         && request.shouldHaveAuthorizationHeaders) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (self.tsAccountManager.isRegisteredAndReady) {

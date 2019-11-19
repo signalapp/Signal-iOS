@@ -119,7 +119,7 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
-    public static let uuidCapabilities = !IsUsingProductionService()
+    public static let uuidCapabilities = !isUsingProductionService
 
     @objc
     public static var canRevertToYDB: Bool {
@@ -176,12 +176,12 @@ public class FeatureFlags: NSObject {
     public static let onlyModernNotificationClearance = build.includes(.beta)
 
     @objc
-    public static let registrationLockV2 = !IsUsingProductionService() && build.includes(.dev)
+    public static let registrationLockV2 = !isUsingProductionService && build.includes(.dev)
 
     @objc
     public static var allowUUIDOnlyContacts: Bool {
         // TODO UUID: Remove production check once this rolls out to prod service
-        if OWSIsDebugBuild() && !IsUsingProductionService() {
+        if OWSIsDebugBuild() && !isUsingProductionService {
             return true
         } else {
             return false
@@ -192,13 +192,13 @@ public class FeatureFlags: NSObject {
     public static var pinsForEveryone = build.includes(.dev)
 
     @objc
-    public static let useOnlyModernContactDiscovery = !IsUsingProductionService() && build.includes(.dev)
+    public static let useOnlyModernContactDiscovery = !isUsingProductionService && build.includes(.dev)
 
     @objc
     public static let phoneNumberPrivacy = false
 
     @objc
-    public static let socialGraphOnServer = registrationLockV2 && !IsUsingProductionService() && build.includes(.dev)
+    public static let socialGraphOnServer = registrationLockV2 && !isUsingProductionService && build.includes(.dev)
 
     @objc
     public static let cameraFirstCaptureFlow = true
@@ -207,7 +207,7 @@ public class FeatureFlags: NSObject {
     public static let complainAboutSlowDBWrites = true
 
     @objc
-    public static let usernames = !IsUsingProductionService() && build.includes(.dev)
+    public static let usernames = !isUsingProductionService && build.includes(.dev)
 
     @objc
     public static let messageRequest = build.includes(.dev) && socialGraphOnServer
@@ -242,4 +242,7 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let reactionSend = build.includes(.dev)
+
+    @objc
+    public static let isUsingProductionService = true
 }

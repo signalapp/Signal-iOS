@@ -531,7 +531,7 @@ public class KeyBackupService: NSObject {
                 throw KBSError.assertion
             }
 
-            guard let serviceId = Data.data(fromHex: keyBackupServiceId) else {
+            guard let serviceId = Data.data(fromHex: TSConstants.keyBackupServiceId) else {
                 owsFailDebug("failed to encode service id")
                 throw KBSError.assertion
             }
@@ -564,7 +564,7 @@ public class KeyBackupService: NSObject {
                 throw KBSError.assertion
             }
 
-            guard let serviceId = Data.data(fromHex: keyBackupServiceId) else {
+            guard let serviceId = Data.data(fromHex: TSConstants.keyBackupServiceId) else {
                 owsFailDebug("failed to encode service id")
                 throw KBSError.assertion
             }
@@ -590,7 +590,7 @@ public class KeyBackupService: NSObject {
 
     private static func deleteKeyRequest() -> Promise<KeyBackupProtoDeleteResponse> {
         return enclaveRequest { token -> KeyBackupProtoDeleteRequest in
-            guard let serviceId = Data.data(fromHex: keyBackupServiceId) else {
+            guard let serviceId = Data.data(fromHex: TSConstants.keyBackupServiceId) else {
                 owsFailDebug("failed to encode service id")
                 throw KBSError.assertion
             }

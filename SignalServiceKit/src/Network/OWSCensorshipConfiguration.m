@@ -7,6 +7,7 @@
 #import "OWSError.h"
 #import "TSConstants.h"
 #import <AFNetworking/AFHTTPSessionManager.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -82,12 +83,12 @@ NSString *const OWSFrontingHost_Default = @"www.google.com";
 
 - (NSString *)signalServiceReflectorHost
 {
-    return textSecureServiceReflectorHost;
+    return TSConstants.textSecureServiceReflectorHost;
 }
 
 - (NSString *)CDNReflectorHost
 {
-    return textSecureCDNReflectorHost;
+    return TSConstants.textSecureCDNReflectorHost;
 }
 
 // MARK: Util
