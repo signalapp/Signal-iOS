@@ -62,12 +62,13 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 - (BOOL)isProfileNameTooLong:(nullable NSString *)profileName;
 
-- (void)fetchLocalUsersProfile;
+- (void)fetchAndUpdateLocalUsersProfile;
 
-- (void)fetchProfileForUsername:(NSString *)username
-                        success:(void (^)(SignalServiceAddress *))successHandler
-                       notFound:(void (^)(void))notFoundHandler
-                        failure:(void (^)(NSError *))failureHandler;
+// The completions are invoked on the main thread.
+- (void)fetchAndUpdateProfileForUsername:(NSString *)username
+                                 success:(void (^)(SignalServiceAddress *))successHandler
+                                notFound:(void (^)(void))notFoundHandler
+                                 failure:(void (^)(NSError *))failureHandler;
 
 #pragma mark - Profile Whitelist
 

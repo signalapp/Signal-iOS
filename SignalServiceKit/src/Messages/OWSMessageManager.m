@@ -1830,8 +1830,8 @@ NS_ASSUME_NONNULL_BEGIN
                    (unsigned long) envelope.sourceDevice);
 
         [OWSDevicesService refreshDevices];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.profileManager fetchLocalUsersProfile];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self.profileManager fetchAndUpdateLocalUsersProfile];
         });
     }
 }

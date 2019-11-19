@@ -535,7 +535,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     });
 }
 
-- (void)fetchLocalUsersProfile
+- (void)fetchAndUpdateLocalUsersProfile
 {
     OWSAssertIsOnMainThread();
 
@@ -543,20 +543,18 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     if (!localAddress.isValid) {
         return;
     }
-    [self fetchProfileForAddress:localAddress];
+    [self updateProfileForAddress:localAddress];
 }
 
-- (void)fetchProfileForAddress:(SignalServiceAddress *)address
+- (void)updateProfileForAddress:(SignalServiceAddress *)address
 {
-    OWSAssertIsOnMainThread();
-
-    [ProfileFetcherJob runWithAddress:address ignoreThrottling:YES];
+    [ProfileFetcherJob fetchAndUpdateProfileWithAddress:address ignoreThrottling:YES];
 }
 
-- (void)fetchProfileForUsername:(NSString *)username
-                        success:(void (^)(SignalServiceAddress *))successHandler
-                       notFound:(void (^)(void))notFoundHandler
-                        failure:(void (^)(NSError *))failureHandler
+- (void)fetchAndUpdateProfileForUsername:(NSString *)username
+                                 success:(void (^)(SignalServiceAddress *))success
+                                notFound:(void (^)(void))notFound
+                                 failure:(void (^)(NSError *))failure
 {
     OWSAssertDebug(username.length > 0);
 
@@ -570,24 +568,14 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         }];
 
         if (userProfile) {
-            successHandler(userProfile.address);
+            success(userProfile.address);
             return;
         }
 
-        [ProfileFetcherJob
-            runWithUsername:username
-                 completion:^(SignalServiceAddress *address, BOOL notFound, NSError *error) {
-                     if (error) {
-                         failureHandler(error);
-                     } else if (notFound) {
-                         notFoundHandler();
-                     } else if (address) {
-                         successHandler(address);
-                     } else {
-                         OWSFailDebug(@"Unexpected username lookup response.");
-                         failureHandler(OWSErrorMakeAssertionError(@"unexpected username lookup response"));
-                     }
-                 }];
+        [ProfileFetcherJob fetchAndUpdateProfileWithUsername:username
+                                                     success:success
+                                                    notFound:notFound
+                                                     failure:failure];
     });
 }
 
@@ -836,8 +824,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
         // Fetch local profile.
         promise = promise.then(^(id value) {
-            [self fetchLocalUsersProfile];
-            
+            [self fetchAndUpdateLocalUsersProfile];
+
             return @(1);
         });
 
@@ -1248,7 +1236,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                  completion:^{
                      dispatch_async(dispatch_get_main_queue(), ^{
                          [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown address:address];
-                         [self fetchProfileForAddress:address];
+                         [self updateProfileForAddress:address];
                      });
                  }];
 }

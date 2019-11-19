@@ -147,7 +147,7 @@ public class RequestMaker: NSObject {
                             // If a UD request fails due to service response (as opposed to network
                             // failure), mark address as _not_ in UD mode, then retry.
                             self.udManager.setUnidentifiedAccessMode(.disabled, address: self.address)
-                            self.profileManager.fetchProfile(for: self.address)
+                            self.profileManager.updateProfile(for: self.address)
                             self.udAuthFailureBlock()
 
                             if self.canFailoverUDAuth {
@@ -196,7 +196,7 @@ public class RequestMaker: NSObject {
                             // If a UD request fails due to service response (as opposed to network
                             // failure), mark recipient as _not_ in UD mode, then retry.
                             self.udManager.setUnidentifiedAccessMode(.disabled, address: self.address)
-                            self.profileManager.fetchProfile(for: self.address)
+                            self.profileManager.updateProfile(for: self.address)
                             self.udAuthFailureBlock()
 
                             if self.canFailoverUDAuth {
@@ -242,7 +242,7 @@ public class RequestMaker: NSObject {
             udManager.setUnidentifiedAccessMode(.enabled, address: address)
         }
         DispatchQueue.main.async {
-            self.profileManager.fetchProfile(for: self.address)
+            self.profileManager.updateProfile(for: self.address)
         }
     }
 }
