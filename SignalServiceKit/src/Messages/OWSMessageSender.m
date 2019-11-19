@@ -2001,14 +2001,22 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     if (message.quotedMessage) {
-        // Though we currently only ever expect at most one thumbnail, the proto data model
-        // suggests this could change. The logic is intended to work with multiple, but
-        // if we ever actually want to send multiple, we should do more testing.
-        NSArray<TSAttachmentStream *> *quotedThumbnailAttachments =
-            [message.quotedMessage createThumbnailAttachmentsIfNecessaryWithTransaction:transaction];
-        for (TSAttachmentStream *attachment in quotedThumbnailAttachments) {
-            [attachmentIds addObject:attachment.uniqueId];
-        }
+        // We need to update the message record here to reflect the new attachments we may create.
+        [message
+            anyUpdateOutgoingMessageWithTransaction:transaction
+                                              block:^(TSOutgoingMessage *message) {
+                                                  // Though we currently only ever expect at most one thumbnail, the
+                                                  // proto data model suggests this could change. The logic is intended
+                                                  // to work with multiple, but if we ever actually want to send
+                                                  // multiple, we should do more testing.
+                                                  NSArray<TSAttachmentStream *> *quotedThumbnailAttachments =
+                                                      [message.quotedMessage
+                                                          createThumbnailAttachmentsIfNecessaryWithTransaction:
+                                                              transaction];
+                                                  for (TSAttachmentStream *attachment in quotedThumbnailAttachments) {
+                                                      [attachmentIds addObject:attachment.uniqueId];
+                                                  }
+                                              }];
     }
 
     if (message.contactShare.avatarAttachmentId != nil) {
@@ -2040,14 +2048,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         } else {
             [attachmentIds addObject:attachment.uniqueId];
         }
-    }
-
-    // All outgoing messages should be saved at the time they are enqueued.
-
-    // GRDB TODO: Remove; this should be redundant.
-    if (message.shouldBeSaved && [TSInteraction anyFetchWithUniqueId:message.uniqueId transaction:transaction] == nil) {
-        OWSFailDebug(@"Message not saved.");
-        [message anyInsertWithTransaction:transaction];
     }
 
     // When we start a message send, all "failed" recipients should be marked as "sending".
