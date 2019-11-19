@@ -715,7 +715,7 @@ CREATE
 CREATE
     TABLE
         IF NOT EXISTS "media_gallery_items" (
-            "attachmentId" INTEGER NOT NULL
+            "attachmentId" INTEGER NOT NULL UNIQUE
             ,"albumMessageId" INTEGER NOT NULL
             ,"threadId" INTEGER NOT NULL
             ,"originalAlbumOrder" INTEGER NOT NULL

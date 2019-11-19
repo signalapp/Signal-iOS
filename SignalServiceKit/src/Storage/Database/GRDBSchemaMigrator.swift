@@ -143,6 +143,7 @@ public class GRDBSchemaMigrator: NSObject {
             try db.create(table: "media_gallery_items") { table in
                 table.column("attachmentId", .integer)
                     .notNull()
+                    .unique()
                 table.column("albumMessageId", .integer)
                     .notNull()
                 table.column("threadId", .integer)
