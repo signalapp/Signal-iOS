@@ -48,9 +48,12 @@ public class GRDBSchemaMigrator: NSObject {
         case jobRecords_add_attachmentId
 
         // NOTE: Every time we add a migration id, consider
-        // incrementing SSKPreferences.grdbSchemaVersionLatest.
+        // incrementing grdbSchemaVersionLatest.
         // We only need to do this for breaking changes.
     }
+
+    public static let grdbSchemaVersionDefault: UInt = 0
+    public static let grdbSchemaVersionLatest: UInt = 1
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".

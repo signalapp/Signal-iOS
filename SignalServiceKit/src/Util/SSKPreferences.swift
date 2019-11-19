@@ -110,9 +110,12 @@ public class SSKPreferences: NSObject {
 
     // MARK: -
 
-    @objc
-    public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 1
+    public class var grdbSchemaVersionDefault: UInt {
+        return GRDBSchemaMigrator.grdbSchemaVersionDefault
+    }
+    public class var grdbSchemaVersionLatest: UInt {
+        return GRDBSchemaMigrator.grdbSchemaVersionLatest
+    }
 
     private static let grdbSchemaVersionKey = "grdbSchemaVersion"
 
@@ -129,11 +132,11 @@ public class SSKPreferences: NSObject {
         guard value != lastKnownGrdbSchemaVersion else {
             return
         }
-        Logger.verbose("Schema version: \(value)")
         guard value > lastKnownGrdbSchemaVersion else {
             owsFailDebug("Reverting to earlier schema version: \(value)")
             return
         }
+        Logger.info("Updating schema version: \(lastKnownGrdbSchemaVersion) -> \(value)")
         let appUserDefaults = CurrentAppContext().appUserDefaults()
         appUserDefaults.set(value, forKey: grdbSchemaVersionKey)
         appUserDefaults.synchronize()
