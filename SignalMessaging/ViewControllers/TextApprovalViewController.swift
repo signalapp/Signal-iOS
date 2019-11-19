@@ -22,11 +22,12 @@ public protocol TextApprovalViewControllerDelegate: class {
 @objc
 public class TextApprovalViewController: OWSViewController, UITextViewDelegate {
 
-    weak var delegate: TextApprovalViewControllerDelegate?
+    @objc
+    public weak var delegate: TextApprovalViewControllerDelegate?
 
     // MARK: - Properties
 
-    let initialMessageText: String
+    private let initialMessageText: String
 
     private(set) var textView: UITextView!
     private let footerView = ApprovalFooterView()

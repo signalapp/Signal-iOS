@@ -21,7 +21,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 @interface SharingThreadPickerViewController () <SelectThreadViewControllerDelegate,
     AttachmentApprovalViewControllerDelegate,
-    MessageApprovalViewControllerDelegate,
+    TextApprovalViewControllerDelegate,
     ContactShareApprovalViewControllerDelegate>
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
@@ -164,11 +164,8 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         return NO;
     }
 
-    MessageApprovalViewController *approvalVC =
-        [[MessageApprovalViewController alloc] initWithMessageText:messageText
-                                                            thread:self.thread
-                                                   contactsManager:self.contactsManager
-                                                          delegate:self];
+    TextApprovalViewController *approvalVC = [[TextApprovalViewController alloc] initWithMessageText:messageText];
+    approvalVC.delegate = self;
 
     [self.navigationController pushViewController:approvalVC animated:YES];
     return YES;
@@ -297,10 +294,9 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     return nil;
 }
 
-#pragma mark - MessageApprovalViewControllerDelegate
+#pragma mark - TextApprovalViewControllerDelegate
 
-- (void)messageApproval:(MessageApprovalViewController *)approvalViewController
-      didApproveMessage:(NSString *)messageText
+- (void)textApproval:(TextApprovalViewController *)approvalViewController didApproveMessage:(NSString *)messageText
 {
     OWSAssertDebug(messageText.length > 0);
 
@@ -332,9 +328,28 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                  fromViewController:approvalViewController];
 }
 
-- (void)messageApprovalDidCancel:(MessageApprovalViewController *)approvalViewController
+- (void)textApprovalDidCancel:(TextApprovalViewController *)approvalViewController
 {
     [self cancelShareExperience];
+}
+
+- (nullable NSString *)textApprovalCustomTitle:(TextApprovalViewController *)approvalViewController
+{
+    return NSLocalizedString(@"MESSAGE_APPROVAL_DIALOG_TITLE", @"Title for the 'message approval' dialog.");
+}
+
+- (nullable NSString *)textApprovalRecipientsDescription:(TextApprovalViewController *)approvalViewController
+{
+    __block NSString *result;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [self.contactsManager displayNameForThread:self.thread transaction:transaction];
+    }];
+    return result;
+}
+
+- (ApprovalMode)textApprovalMode:(TextApprovalViewController *)approvalViewController
+{
+    return ApprovalModeSend;
 }
 
 #pragma mark - ContactShareApprovalViewControllerDelegate
