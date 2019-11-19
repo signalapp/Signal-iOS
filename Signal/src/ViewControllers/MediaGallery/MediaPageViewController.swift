@@ -669,20 +669,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         self.shouldHideToolbars = !self.shouldHideToolbars
     }
 
-    public func mediaDetailViewController(_ mediaDetailViewController: MediaDetailViewController, requestDelete attachment: TSAttachment) {
-
-        guard let galleryItem = mediaGallery.galleryItems.first(where: { $0.attachmentStream == attachment }) else {
-            owsFailDebug("galleryItem was unexpectedly nil")
-            self.presentingViewController?.dismiss(animated: true)
-
-            return
-        }
-
-        dismissSelf(animated: true) {
-            self.mediaGallery.delete(items: [galleryItem], initiatedBy: self)
-        }
-    }
-
     public func mediaDetailViewController(_ mediaDetailViewController: MediaDetailViewController, isPlayingVideo: Bool) {
         guard mediaDetailViewController == currentViewController else {
             Logger.verbose("ignoring stale delegate.")
