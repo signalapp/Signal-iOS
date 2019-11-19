@@ -575,6 +575,7 @@ class MediaGallery {
 
     func ensureLoadedForMostRecentTileView() -> MediaGalleryItem? {
         guard let mostRecentItem: MediaGalleryItem = (databaseStorage.uiReadReturningResult { transaction in
+            // POST GRDB - fetch messages w/ attachments rather than separate query
             guard let attachment = self.mediaGalleryFinder.mostRecentMediaAttachment(transaction: transaction)  else {
                 return nil
             }

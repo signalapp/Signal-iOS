@@ -800,7 +800,7 @@ private func createV1Schema(db: Database) throws {
 }
 
 func createInitialGalleryRecords(transaction: GRDBWriteTransaction) throws {
-    try Bench(title: "createInitialGalleryRecords") {
+    try Bench(title: "createInitialGalleryRecords", logInProduction: true) {
         let scope = AttachmentRecord.filter(sql: "\(attachmentColumn: .recordType) = \(SDSRecordType.attachmentStream.rawValue)")
 
         let totalCount = try scope.fetchCount(transaction.database)
