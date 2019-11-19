@@ -40,6 +40,27 @@ private enum ProfileRequestSubject {
     case username(username: String)
 }
 
+extension ProfileRequestSubject: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(hashTypeConstant)
+        switch(self) {
+        case .address(let address):
+            hasher.combine(address)
+        case .username(let username):
+            hasher.combine(username)
+        }
+    }
+
+    var hashTypeConstant: String {
+        switch(self) {
+        case .address:
+            return "address"
+        case .username:
+            return "username"
+        }
+    }
+}
+
 // MARK: -
 
 extension ProfileRequestSubject: CustomStringConvertible {
@@ -52,15 +73,6 @@ extension ProfileRequestSubject: CustomStringConvertible {
             return "[username]"
         }
     }
-
-    public var asKey: String {
-        switch self {
-        case .address(let address):
-            return "[address:\(address)]"
-        case .username(let username):
-            return "[username: \(username)]"
-        }
-    }
 }
 
 // MARK: -
@@ -69,7 +81,7 @@ extension ProfileRequestSubject: CustomStringConvertible {
 public class ProfileFetcherJob: NSObject {
 
     // This property is only accessed on the serial queue.
-    private static var fetchDateMap = [String: Date]()
+    private static var fetchDateMap = [ProfileRequestSubject: Date]()
     private static let serialQueue = DispatchQueue(label: "org.signal.profileFetcherJob")
 
     private let subject: ProfileRequestSubject
@@ -367,13 +379,13 @@ public class ProfileFetcherJob: NSObject {
 
     private func lastFetchDate(for subject: ProfileRequestSubject) -> Date? {
         return ProfileFetcherJob.serialQueue.sync {
-            return ProfileFetcherJob.fetchDateMap[subject.asKey]
+            return ProfileFetcherJob.fetchDateMap[subject]
         }
     }
 
     private func recordLastFetchDate(for subject: ProfileRequestSubject) {
         ProfileFetcherJob.serialQueue.sync {
-            ProfileFetcherJob.fetchDateMap[subject.asKey] = Date()
+            ProfileFetcherJob.fetchDateMap[subject] = Date()
         }
     }
 
