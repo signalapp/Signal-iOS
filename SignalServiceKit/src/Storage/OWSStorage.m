@@ -805,7 +805,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     [self deleteDBKeys];
 
     if (CurrentAppContext().isMainApp) {
-        [TSAttachmentStream deleteAttachments];
+        [TSAttachmentStream deleteAttachmentsFromDisk];
     }
 
     // TODO: Delete Profiles on Disk?

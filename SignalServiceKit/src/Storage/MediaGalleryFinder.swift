@@ -72,8 +72,8 @@ extension AnyMediaGalleryFinder: MediaGalleryFinder {
         }
     }
 
-    @objc(anyDidInsertAttachmentStream:transaction:)
-    public class func anyDidInsert(attachmentStream: TSAttachmentStream, transaction: SDSAnyWriteTransaction) {
+    @objc(didInsertAttachmentStream:transaction:)
+    public class func didInsert(attachmentStream: TSAttachmentStream, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite:
             break
@@ -86,14 +86,28 @@ extension AnyMediaGalleryFinder: MediaGalleryFinder {
         }
     }
 
-    @objc(anyDidRemoveAttachmentStream:transaction:)
-    public class func anyDidRemove(attachmentStream: TSAttachmentStream, transaction: SDSAnyWriteTransaction) {
+    @objc(didRemoveAttachmentStream:transaction:)
+    public class func didRemove(attachmentStream: TSAttachmentStream, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite:
             break
         case .grdbWrite(let grdbWrite):
             do {
                 try GRDBMediaGalleryFinder.removeAnyGalleryRecord(attachmentStream: attachmentStream, transaction: grdbWrite)
+            } catch {
+                owsFailDebug("error: \(error)")
+            }
+        }
+    }
+
+    @objc
+    public class func didRemoveAllContent(transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite:
+            break
+        case .grdbWrite(let grdbWrite):
+            do {
+                try GRDBMediaGalleryFinder.removeAllGalleryRecords(transaction: grdbWrite)
             } catch {
                 owsFailDebug("error: \(error)")
             }
@@ -188,6 +202,10 @@ public class GRDBMediaGalleryFinder: NSObject {
                                                originalAlbumOrder: originalAlbumIndex)
 
         try galleryRecord.insert(transaction.database)
+    }
+
+    public class func removeAllGalleryRecords(transaction: GRDBWriteTransaction) throws {
+        try MediaGalleryRecord.deleteAll(transaction.database)
     }
 }
 

@@ -689,8 +689,12 @@ NS_ASSUME_NONNULL_BEGIN
         [TSInteraction anyRemoveAllWithInstantationWithTransaction:transaction];
         [TSAttachment anyRemoveAllWithInstantationWithTransaction:transaction];
         [SignalRecipient anyRemoveAllWithInstantationWithTransaction:transaction];
+
+        // Deleting attachments above should be enough to remove any gallery items, but
+        // we redunantly clean up *all* gallery items to be safe.
+        [AnyMediaGalleryFinder didRemoveAllContentWithTransaction:transaction];
     }];
-    [TSAttachmentStream deleteAttachments];
+    [TSAttachmentStream deleteAttachmentsFromDisk];
 }
 
 #pragma mark - Find Content

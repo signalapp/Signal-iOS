@@ -461,7 +461,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidInsertWithTransaction:transaction];
-    [AnyMediaGalleryFinder anyDidInsertAttachmentStream:self transaction:transaction];
+    [AnyMediaGalleryFinder didInsertAttachmentStream:self transaction:transaction];
 }
 
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -469,7 +469,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     [super anyDidRemoveWithTransaction:transaction];
 
     [self removeFile];
-    [AnyMediaGalleryFinder anyDidRemoveAttachmentStream:self transaction:transaction];
+    [AnyMediaGalleryFinder didRemoveAttachmentStream:self transaction:transaction];
 }
 
 - (BOOL)isValidVisualMedia
@@ -614,7 +614,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return image;
 }
 
-+ (void)deleteAttachments
++ (void)deleteAttachmentsFromDisk
 {
     NSError *error;
     NSFileManager *fileManager = [NSFileManager defaultManager];
