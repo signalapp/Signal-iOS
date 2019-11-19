@@ -81,7 +81,8 @@ final class NewConversationVC : OWSViewController, OWSQRScannerDelegate {
     @objc private func scanQRCode() {
         ows_ask(forCameraPermissions: { [weak self] hasCameraAccess in
             if hasCameraAccess {
-                let scanQRCodeWrapperVC = ScanQRCodeWrapperVC()
+                let message = NSLocalizedString("Scan the QR code of the person you'd like to securely message. They can find their QR code by going into Loki Messenger's in-app settings and clicking \"Show QR Code\".", comment: "")
+                let scanQRCodeWrapperVC = ScanQRCodeWrapperVC(message: message)
                 scanQRCodeWrapperVC.delegate = self
                 self?.navigationController!.pushViewController(scanQRCodeWrapperVC, animated: true)
             } else {

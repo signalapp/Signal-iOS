@@ -1,12 +1,26 @@
 
 final class ScanQRCodeWrapperVC : UIViewController {
     var delegate: (UIViewController & OWSQRScannerDelegate)? = nil
+    private let message: String
     private let scanQRCodeVC = OWSQRCodeScanningViewController()
     
     // MARK: Settings
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask { return .portrait }
     
     // MARK: Lifecycle
+    init(message: String) {
+        self.message = message
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        preconditionFailure("Use init(title:) instead.")
+    }
+    
+    override init(nibName: String?, bundle: Bundle?) {
+        preconditionFailure("Use init(title:) instead.")
+    }
+    
     override func viewDidLoad() {
         // Background color
         view.backgroundColor = Theme.backgroundColor
@@ -27,7 +41,7 @@ final class ScanQRCodeWrapperVC : UIViewController {
         bottomView.pin(.bottom, to: .bottom, of: view)
         // Explanation label
         let explanationLabel = UILabel()
-        explanationLabel.text = NSLocalizedString("Scan the QR code of the person you'd like to securely message. They can find their QR code by going into Loki Messenger's in-app settings and clicking \"Show QR Code\".", comment: "")
+        explanationLabel.text = message
         explanationLabel.textColor = Theme.primaryColor
         explanationLabel.font = .ows_dynamicTypeSubheadlineClamped
         explanationLabel.numberOfLines = 0
