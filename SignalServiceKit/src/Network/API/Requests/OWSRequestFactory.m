@@ -809,9 +809,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     OWSAssertDebug(version.length > 0);
     OWSAssertDebug(commitment.length > 0);
     
-    // TODO: Do we need remove "/" from version as we used to with profileNameSetRequestWithEncryptedPaddedName?
     NSString *base64EncodedVersion = [version base64EncodedString];
-    // TODO: Do we need remove "/" from commitment as we used to with profileNameSetRequestWithEncryptedPaddedName?
     NSString *base64EncodedCommitment = [commitment base64EncodedString];
 
     NSMutableDictionary<NSString *, NSObject *> *parameters = [@{
