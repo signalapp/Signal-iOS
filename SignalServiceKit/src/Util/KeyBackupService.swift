@@ -23,6 +23,18 @@ public class KeyBackupService: NSObject {
         return .shared
     }
 
+    static var tsAccountManager: TSAccountManager {
+        return .sharedInstance()
+    }
+
+    static var storageServiceManager: StorageServiceManagerProtocol {
+        return SSKEnvironment.shared.storageServiceManager
+    }
+
+    static var syncManager: SyncManagerProtocol {
+        return SSKEnvironment.shared.syncManager
+    }
+
     // PRAGMA MARK: - Pin Management
 
     // TODO: Decide what we want this to be
@@ -168,8 +180,7 @@ public class KeyBackupService: NSObject {
             case .ok:
                 // We successfully stored the new keys in KBS, save them in the database
                 databaseStorage.write { transaction in
-                    storePinKey2(pinKey2, transaction: transaction)
-                    storeMasterKey(masterKey, transaction: transaction)
+                    store(masterKey, pinKey2: pinKey2, transaction: transaction)
                 }
             }
         }.recover { error in
@@ -236,8 +247,7 @@ public class KeyBackupService: NSObject {
             case .ok:
                 // We successfully stored the new keys in KBS, save them in the database
                 databaseStorage.write { transaction in
-                    storePinKey2(pinKey2, transaction: transaction)
-                    storeMasterKey(masterKey, transaction: transaction)
+                    store(masterKey, pinKey2: pinKey2, transaction: transaction)
                 }
             }
         }.recover { error in
@@ -271,15 +281,43 @@ public class KeyBackupService: NSObject {
 
     // PRAGMA MARK: - Crypto
 
-    public static func encryptWithMasterKey(_ data: Data) throws -> Data {
-        guard let masterKeyData = cacheQueue.sync(execute: { cachedMasterKey }),
-            let masterKey = OWSAES256Key(data: masterKeyData) else {
-            owsFailDebug("missing master key")
+    public enum DerivedKey: String, CaseIterable {
+        case storageService = "Storage Service Encryption"
+        case registrationLock = "Registration Lock"
+
+        public var data: Data? {
+            // If we have this derived key stored in the database, use it.
+            // This should only happen if we're a linked device and received
+            // the derived key via a sync message, since we won't know about
+            // the master key.
+            if tsAccountManager.isPrimaryDevice,
+                let cachedData = cacheQueue.sync(execute: { cachedSyncedDerivedKeys[self] }) {
+                return cachedData
+            }
+
+            guard let masterKey = cacheQueue.sync(execute: { cachedMasterKey }) else {
+                return nil
+            }
+
+            guard let data = rawValue.data(using: .utf8) else {
+                owsFailDebug("Failed to encode data")
+                return nil
+            }
+
+            return Cryptography.computeSHA256HMAC(data, withHMACKey: masterKey)
+        }
+
+        public var isAvailable: Bool { return data != nil }
+    }
+
+    public static func encrypt(keyType: DerivedKey, data: Data) throws -> Data {
+        guard let keyData = keyType.data, let key = OWSAES256Key(data: keyData) else {
+            owsFailDebug("missing derived key \(keyType)")
             throw KBSError.assertion
         }
 
         // TODO: Maybe rename this since it's no longer profile specific
-        guard let encryptedData = Cryptography.encryptAESGCMProfileData(plainTextData: data, key: masterKey) else {
+        guard let encryptedData = Cryptography.encryptAESGCMProfileData(plainTextData: data, key: key) else {
             owsFailDebug("Failed to encrypt data")
             throw KBSError.assertion
         }
@@ -287,15 +325,14 @@ public class KeyBackupService: NSObject {
         return encryptedData
     }
 
-    public static func decryptWithMasterKey(_ encryptedData: Data) throws -> Data {
-        guard let masterKeyData = cacheQueue.sync(execute: { cachedMasterKey }),
-            let masterKey = OWSAES256Key(data: masterKeyData) else {
-            owsFailDebug("missing master key")
+    public static func decrypt(keyType: DerivedKey, encryptedData: Data) throws -> Data {
+        guard let keyData = keyType.data, let key = OWSAES256Key(data: keyData) else {
+            owsFailDebug("missing derived key \(keyType)")
             throw KBSError.assertion
         }
 
         // TODO: Maybe rename this since it's no longer profile specific
-        guard let data = Cryptography.decryptAESGCMProfileData(encryptedData: encryptedData, key: masterKey) else {
+        guard let data = Cryptography.decryptAESGCMProfileData(encryptedData: encryptedData, key: key) else {
             owsFailDebug("failed to decrypt data")
             throw KBSError.assertion
         }
@@ -353,15 +390,7 @@ public class KeyBackupService: NSObject {
 
     @objc
     static func deriveRegistrationLockToken() -> String? {
-        guard let masterKey = cacheQueue.sync(execute: { cachedMasterKey }) else {
-            return nil
-        }
-
-        guard let data = "Registration Lock".data(using: .utf8) else {
-            return nil
-        }
-
-        return Cryptography.computeSHA256HMAC(data, withHMACKey: masterKey)?.hexadecimalString
+        return DerivedKey.registrationLock.data?.hexadecimalString
     }
 
     @objc
@@ -391,14 +420,21 @@ public class KeyBackupService: NSObject {
         var masterKey: Data?
         var pinKey2: Data?
 
+        var syncedDerivedKeys = [DerivedKey: Data]()
+
         databaseStorage.read { transaction in
             masterKey = keyValueStore.getData(masterKeyIdentifer, transaction: transaction)
             pinKey2 = keyValueStore.getData(pinKey2Identifer, transaction: transaction)
+
+            for type in DerivedKey.allCases {
+                syncedDerivedKeys[type] = keyValueStore.getData(type.rawValue, transaction: transaction)
+            }
         }
 
         cacheQueue.sync {
             cachedMasterKey = masterKey
             cachedPinKey2 = pinKey2
+            cachedSyncedDerivedKeys = syncedDerivedKeys
         }
     }
 
@@ -416,29 +452,41 @@ public class KeyBackupService: NSObject {
     // Should only be interacted with on the serial cache queue
     // Always contains an in memory reference to our current masterKey
     private static var cachedMasterKey: Data?
-
-    private static func storeMasterKey(_ masterKey: Data, transaction: SDSAnyWriteTransaction) {
-        keyValueStore.setData(masterKey, key: masterKeyIdentifer, transaction: transaction)
-        cacheQueue.sync { cachedMasterKey = masterKey }
-    }
-
-    private static func clearMasterKey(transaction: SDSAnyWriteTransaction) {
-        keyValueStore.setData(nil, key: masterKeyIdentifer, transaction: transaction)
-        cacheQueue.sync { cachedMasterKey = nil }
-    }
-
-    // Should only be interacted with on the serial cache queue.
     // Always contains an in memory reference to our current pinKey2
     private static var cachedPinKey2: Data?
+    // Always contains an in memory reference to our received derived keys
+    static var cachedSyncedDerivedKeys = [DerivedKey: Data]()
 
-    private static func storePinKey2(_ pinKey2: Data, transaction: SDSAnyWriteTransaction) {
+    private static func store(_ masterKey: Data, pinKey2: Data, transaction: SDSAnyWriteTransaction) {
+        guard masterKey != cachedMasterKey || pinKey2 != cachedPinKey2 else { return }
+
+        keyValueStore.setData(masterKey, key: masterKeyIdentifer, transaction: transaction)
         keyValueStore.setData(pinKey2, key: pinKey2Identifer, transaction: transaction)
-        cacheQueue.sync { cachedPinKey2 = pinKey2 }
+
+        cacheQueue.sync {
+            cachedMasterKey = masterKey
+            cachedPinKey2 = pinKey2
+        }
+
+        // Trigger a re-creation of the storage manifest, our keys have changed
+        storageServiceManager.restoreOrCreateManifestIfNecessary()
+
+        // Sync our new keys with linked devices.
+        syncManager.sendKeysSyncMessage()
     }
 
-    private static func clearPinKey2(transaction: SDSAnyWriteTransaction) {
-        keyValueStore.setData(nil, key: pinKey2Identifer, transaction: transaction)
-        cacheQueue.sync { cachedPinKey2 = nil }
+    public static func storeSyncedKey(type: DerivedKey, data: Data?, transaction: SDSAnyWriteTransaction) {
+        guard !tsAccountManager.isPrimaryDevice else {
+            return owsFailDebug("primary device should never store synced keys")
+        }
+
+        keyValueStore.setData(data, key: type.rawValue, transaction: transaction)
+        cacheQueue.sync { cachedSyncedDerivedKeys[type] = data }
+
+        // Trigger a re-fetch of the storage manifest, our keys have changed
+        if type == .storageService {
+            storageServiceManager.restoreOrCreateManifestIfNecessary()
+        }
     }
 
     // PRAGMA MARK: - Requests

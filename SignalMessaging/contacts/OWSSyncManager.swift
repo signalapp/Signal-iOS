@@ -5,7 +5,84 @@
 import Foundation
 import PromiseKit
 
-public extension OWSSyncManager {
+extension OWSSyncManager: SyncManagerProtocolSwift {
+
+    // MARK: - Sync Requests
+
+    @objc
+    public func sendAllSyncRequestMessages() -> AnyPromise {
+        return AnyPromise(_sendAllSyncRequestMessages())
+    }
+
+    @objc
+    public func sendAllSyncRequestMessages(timeout: TimeInterval) -> AnyPromise {
+        return AnyPromise(_sendAllSyncRequestMessages()
+            .timeout(seconds: timeout, substituteValue: ()))
+    }
+
+    private func _sendAllSyncRequestMessages() -> Promise<Void> {
+        Logger.info("")
+
+        guard tsAccountManager.isRegisteredAndReady else {
+            return Promise(error: OWSAssertionError("Unexpectedly tried to send sync request before registration."))
+        }
+
+        databaseStorage.asyncWrite { transaction in
+            self.sendSyncRequestMessage(.blocked, transaction: transaction)
+            self.sendSyncRequestMessage(.configuration, transaction: transaction)
+            self.sendSyncRequestMessage(.groups, transaction: transaction)
+            self.sendSyncRequestMessage(.contacts, transaction: transaction)
+            self.sendSyncRequestMessage(.keys, transaction: transaction)
+        }
+
+        return when(fulfilled: [
+            NotificationCenter.default.observe(once: .IncomingContactSyncDidComplete).asVoid(),
+            NotificationCenter.default.observe(once: .IncomingGroupSyncDidComplete).asVoid(),
+            NotificationCenter.default.observe(once: .OWSSyncManagerConfigurationSyncDidComplete).asVoid(),
+            NotificationCenter.default.observe(once: .OWSBlockingManagerBlockedSyncDidComplete).asVoid()
+        ])
+    }
+
+    @objc
+    public func sendKeysSyncMessage() {
+        Logger.info("")
+
+        guard tsAccountManager.isRegisteredAndReady else {
+            return owsFailDebug("Unexpectedly tried to send sync request before registration.")
+        }
+
+        guard tsAccountManager.isRegisteredPrimaryDevice else {
+            return owsFailDebug("Keys sync should only be initiated from the primary device")
+        }
+
+        databaseStorage.asyncWrite { [weak self] transaction in
+            guard let self = self else { return }
+
+            guard let thread = TSAccountManager.getOrCreateLocalThread(transaction: transaction) else {
+                return owsFailDebug("Missing thread")
+            }
+
+            let syncKeysMessage = OWSSyncKeysMessage(thread: thread, storageServiceKey: KeyBackupService.DerivedKey.storageService.data)
+            self.messageSenderJobQueue.add(message: syncKeysMessage.asPreparer, transaction: transaction)
+        }
+    }
+
+    @objc
+    public func processIncomingKeysSyncMessage(_ syncMessage: SSKProtoSyncMessageKeys, transaction: SDSAnyWriteTransaction) {
+        guard !tsAccountManager.isRegisteredPrimaryDevice else {
+            return owsFailDebug("Key sync messages should only be processed on linked devices")
+        }
+
+        KeyBackupService.storeSyncedKey(type: .storageService, data: syncMessage.storageService, transaction: transaction)
+    }
+
+    @objc
+    public func sendKeysSyncRequestMessage(transaction: SDSAnyWriteTransaction) {
+        sendSyncRequestMessage(.keys, transaction: transaction)
+    }
+}
+
+public extension SyncManagerProtocolSwift {
 
     // MARK: -
 
@@ -21,40 +98,7 @@ public extension OWSSyncManager {
         return SSKEnvironment.shared.messageSenderJobQueue
     }
 
-    // MARK: - Sync Requests
-
-    @objc
-    func _objc_sendAllSyncRequestMessages() -> AnyPromise {
-        return AnyPromise(sendAllSyncRequestMessages())
-    }
-
-    @objc
-    func _objc_sendAllSyncRequestMessages(timeout: TimeInterval) -> AnyPromise {
-        return AnyPromise(sendAllSyncRequestMessages()
-            .timeout(seconds: timeout, substituteValue: ()))
-    }
-
-    private func sendAllSyncRequestMessages() -> Promise<Void> {
-        Logger.info("")
-
-        guard tsAccountManager.isRegisteredAndReady else {
-            return Promise(error: OWSAssertionError("Unexpectedly tried to send sync request before registration."))
-        }
-
-        databaseStorage.asyncWrite { transaction in
-            self.sendSyncRequestMessage(.blocked, transaction: transaction)
-            self.sendSyncRequestMessage(.configuration, transaction: transaction)
-            self.sendSyncRequestMessage(.groups, transaction: transaction)
-            self.sendSyncRequestMessage(.contacts, transaction: transaction)
-        }
-
-        return when(fulfilled: [
-            NotificationCenter.default.observe(once: .IncomingContactSyncDidComplete).asVoid(),
-            NotificationCenter.default.observe(once: .IncomingGroupSyncDidComplete).asVoid(),
-            NotificationCenter.default.observe(once: .OWSSyncManagerConfigurationSyncDidComplete).asVoid(),
-            NotificationCenter.default.observe(once: .OWSBlockingManagerBlockedSyncDidComplete).asVoid()
-        ])
-    }
+    // MARK: -
 
     func sendInitialSyncRequestsAwaitingCreatedThreadOrdering(timeoutSeconds: TimeInterval) -> Promise<[String]> {
         Logger.info("")
@@ -95,7 +139,7 @@ public extension OWSSyncManager {
         }
     }
 
-    private func sendSyncRequestMessage(_ requestType: OWSSyncRequestType, transaction: SDSAnyWriteTransaction) {
+    fileprivate func sendSyncRequestMessage(_ requestType: OWSSyncRequestType, transaction: SDSAnyWriteTransaction) {
         Logger.info("")
 
         guard tsAccountManager.isRegisteredAndReady else {

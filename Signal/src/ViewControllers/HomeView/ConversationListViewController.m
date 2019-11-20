@@ -1391,7 +1391,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             return [AnyPromise promiseWithValue:nil];
         }
 
-        return [SSKEnvironment.shared.syncManager objc_sendAllSyncRequestMessagesWithTimeout:20];
+        return [SSKEnvironment.shared.syncManager sendAllSyncRequestMessagesWithTimeout:20];
     }).ensure(^{
         OWSLogInfo(@"ending refreshing.");
         [refreshControl endRefreshing];

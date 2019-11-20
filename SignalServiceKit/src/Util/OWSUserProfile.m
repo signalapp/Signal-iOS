@@ -183,7 +183,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
 #pragma mark - Dependencies
 
-- (id<OWSSyncManagerProtocol>)syncManager
+- (id<SyncManagerProtocol>)syncManager
 {
     return SSKEnvironment.shared.syncManager;
 }

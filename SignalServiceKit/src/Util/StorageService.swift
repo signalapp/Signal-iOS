@@ -57,7 +57,7 @@ public struct StorageService {
                 let encryptedManifestContainer = try StorageServiceProtoContactsManifest.parseData(response.data)
                 let manifestData: Data
                 do {
-                    manifestData = try KeyBackupService.decryptWithMasterKey(encryptedManifestContainer.value)
+                    manifestData = try KeyBackupService.decrypt(keyType: .storageService, encryptedData: encryptedManifestContainer.value)
                 } catch {
                     throw StorageError.decryptionFailed(manifestVersion: encryptedManifestContainer.version)
                 }
@@ -88,7 +88,7 @@ public struct StorageService {
 
             // Encrypt the manifest
             let manifestData = try manifest.serializedData()
-            let encryptedManifestData = try KeyBackupService.encryptWithMasterKey(manifestData)
+            let encryptedManifestData = try KeyBackupService.encrypt(keyType: .storageService, data: manifestData)
 
             let manifestWrapperBuilder = StorageServiceProtoContactsManifest.builder(
                 version: manifest.version,
@@ -99,7 +99,7 @@ public struct StorageService {
             // Encrypt the new contacts
             builder.setInsertContact(try newContacts.map { contact in
                 let contactData = try contact.serializedData()
-                let encryptedContactData = try KeyBackupService.encryptWithMasterKey(contactData)
+                let encryptedContactData = try KeyBackupService.encrypt(keyType: .storageService, data: contactData)
                 let contactWrapperBuilder = StorageServiceProtoContact.builder(key: contact.key, value: encryptedContactData)
                 return try contactWrapperBuilder.build()
             })
@@ -119,7 +119,7 @@ public struct StorageService {
             case .conflict:
                 // Our version was out of date, we should've received a copy of the latest version
                 let encryptedManifestData = try StorageServiceProtoContactsManifest.parseData(response.data).value
-                let manifestData = try KeyBackupService.decryptWithMasterKey(encryptedManifestData)
+                let manifestData = try KeyBackupService.decrypt(keyType: .storageService, encryptedData: encryptedManifestData)
                 return try StorageServiceProtoManifestRecord.parseData(manifestData)
             default:
                 owsFailDebug("unexpected response \(response.status)")
@@ -157,7 +157,7 @@ public struct StorageService {
 
             return try contactsProto.contacts.map { contact in
                 let encryptedContactData = contact.value
-                let contactData = try KeyBackupService.decryptWithMasterKey(encryptedContactData)
+                let contactData = try KeyBackupService.decrypt(keyType: .storageService, encryptedData: encryptedContactData)
                 return try StorageServiceProtoContactRecord.parseData(contactData)
             }
         }

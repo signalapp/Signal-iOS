@@ -6075,6 +6075,7 @@ public enum SSKProtoSyncMessageRequestType: Int32 {
     case groups = 2
     case blocked = 3
     case configuration = 4
+    case keys = 5
 }
 
 private func SSKProtoSyncMessageRequestTypeWrap(_ value: SignalServiceProtos_SyncMessage.Request.TypeEnum) -> SSKProtoSyncMessageRequestType {
@@ -6084,6 +6085,7 @@ private func SSKProtoSyncMessageRequestTypeWrap(_ value: SignalServiceProtos_Syn
     case .groups: return .groups
     case .blocked: return .blocked
     case .configuration: return .configuration
+    case .keys: return .keys
     }
 }
 
@@ -6094,6 +6096,7 @@ private func SSKProtoSyncMessageRequestTypeUnwrap(_ value: SSKProtoSyncMessageRe
     case .groups: return .groups
     case .blocked: return .blocked
     case .configuration: return .configuration
+    case .keys: return .keys
     }
 }
 
@@ -7139,6 +7142,120 @@ extension SSKProtoSyncMessageFetchLatest.SSKProtoSyncMessageFetchLatestBuilder {
 
 #endif
 
+// MARK: - SSKProtoSyncMessageKeys
+
+@objc
+public class SSKProtoSyncMessageKeys: NSObject {
+
+    // MARK: - SSKProtoSyncMessageKeysBuilder
+
+    @objc
+    public class func builder() -> SSKProtoSyncMessageKeysBuilder {
+        return SSKProtoSyncMessageKeysBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoSyncMessageKeysBuilder {
+        let builder = SSKProtoSyncMessageKeysBuilder()
+        if let _value = storageService {
+            builder.setStorageService(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoSyncMessageKeysBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_SyncMessage.Keys()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setStorageService(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.storageService = valueParam
+        }
+
+        public func setStorageService(_ valueParam: Data) {
+            proto.storageService = valueParam
+        }
+
+        @objc
+        public func build() throws -> SSKProtoSyncMessageKeys {
+            return try SSKProtoSyncMessageKeys.parseProto(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageKeys.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.Keys
+
+    @objc
+    public var storageService: Data? {
+        guard hasStorageService else {
+            return nil
+        }
+        return proto.storageService
+    }
+    @objc
+    public var hasStorageService: Bool {
+        return proto.hasStorageService
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.Keys) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageKeys {
+        let proto = try SignalServiceProtos_SyncMessage.Keys(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Keys) throws -> SSKProtoSyncMessageKeys {
+        // MARK: - Begin Validation Logic for SSKProtoSyncMessageKeys -
+
+        // MARK: - End Validation Logic for SSKProtoSyncMessageKeys -
+
+        let result = SSKProtoSyncMessageKeys(proto: proto)
+        return result
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoSyncMessageKeys {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessageKeys.SSKProtoSyncMessageKeysBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoSyncMessageKeys? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoSyncMessage
 
 @objc
@@ -7186,6 +7303,9 @@ public class SSKProtoSyncMessage: NSObject {
         }
         if let _value = fetchLatest {
             builder.setFetchLatest(_value)
+        }
+        if let _value = keys {
+            builder.setKeys(_value)
         }
         return builder
     }
@@ -7333,6 +7453,17 @@ public class SSKProtoSyncMessage: NSObject {
         }
 
         @objc
+        @available(swift, obsoleted: 1.0)
+        public func setKeys(_ valueParam: SSKProtoSyncMessageKeys?) {
+            guard let valueParam = valueParam else { return }
+            proto.keys = valueParam.proto
+        }
+
+        public func setKeys(_ valueParam: SSKProtoSyncMessageKeys) {
+            proto.keys = valueParam.proto
+        }
+
+        @objc
         public func build() throws -> SSKProtoSyncMessage {
             return try SSKProtoSyncMessage.parseProto(proto)
         }
@@ -7379,6 +7510,9 @@ public class SSKProtoSyncMessage: NSObject {
     public let fetchLatest: SSKProtoSyncMessageFetchLatest?
 
     @objc
+    public let keys: SSKProtoSyncMessageKeys?
+
+    @objc
     public var padding: Data? {
         guard hasPadding else {
             return nil
@@ -7401,7 +7535,8 @@ public class SSKProtoSyncMessage: NSObject {
                  configuration: SSKProtoSyncMessageConfiguration?,
                  stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation],
                  viewOnceOpen: SSKProtoSyncMessageViewOnceOpen?,
-                 fetchLatest: SSKProtoSyncMessageFetchLatest?) {
+                 fetchLatest: SSKProtoSyncMessageFetchLatest?,
+                 keys: SSKProtoSyncMessageKeys?) {
         self.proto = proto
         self.sent = sent
         self.contacts = contacts
@@ -7414,6 +7549,7 @@ public class SSKProtoSyncMessage: NSObject {
         self.stickerPackOperation = stickerPackOperation
         self.viewOnceOpen = viewOnceOpen
         self.fetchLatest = fetchLatest
+        self.keys = keys
     }
 
     @objc
@@ -7479,6 +7615,11 @@ public class SSKProtoSyncMessage: NSObject {
             fetchLatest = try SSKProtoSyncMessageFetchLatest.parseProto(proto.fetchLatest)
         }
 
+        var keys: SSKProtoSyncMessageKeys? = nil
+        if proto.hasKeys {
+            keys = try SSKProtoSyncMessageKeys.parseProto(proto.keys)
+        }
+
         // MARK: - Begin Validation Logic for SSKProtoSyncMessage -
 
         // MARK: - End Validation Logic for SSKProtoSyncMessage -
@@ -7494,7 +7635,8 @@ public class SSKProtoSyncMessage: NSObject {
                                          configuration: configuration,
                                          stickerPackOperation: stickerPackOperation,
                                          viewOnceOpen: viewOnceOpen,
-                                         fetchLatest: fetchLatest)
+                                         fetchLatest: fetchLatest,
+                                         keys: keys)
         return result
     }
 

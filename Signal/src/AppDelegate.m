@@ -172,7 +172,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
     return SDSDatabaseStorage.shared;
 }
 
-- (id<OWSSyncManagerProtocol>)syncManager
+- (id<SyncManagerProtocol>)syncManager
 {
     OWSAssertDebug(SSKEnvironment.shared.syncManager);
 

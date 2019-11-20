@@ -22,6 +22,7 @@
 #import <SignalServiceKit/OWSSyncContactsMessage.h>
 #import <SignalServiceKit/OWSSyncFetchLatestMessage.h>
 #import <SignalServiceKit/OWSSyncGroupsMessage.h>
+#import <SignalServiceKit/OWSSyncKeysMessage.h>
 #import <SignalServiceKit/OWSSyncRequestMessage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalAccount.h>
@@ -86,7 +87,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                 // so this won't yield redundant traffic.
                 [self sendSyncContactsMessageIfNecessary];
             } else {
-                [[self objc_sendAllSyncRequestMessages] retainUntilComplete];
+                [[self sendAllSyncRequestMessages] retainUntilComplete];
             }
         }
     }];
@@ -445,18 +446,6 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     NSData *_Nullable result = [Cryptography computeSHA256Digest:messageData];
     OWSAssertDebug(result != nil);
     return result;
-}
-
-# pragma mark - Sync Requests
-
-- (AnyPromise *)objc_sendAllSyncRequestMessages
-{
-    return [self _objc_sendAllSyncRequestMessages];
-}
-
-- (AnyPromise *)objc_sendAllSyncRequestMessagesWithTimeout:(NSTimeInterval)timeout
-{
-    return [self _objc_sendAllSyncRequestMessagesWithTimeout:timeout];
 }
 
 #pragma mark - Fetch Latest
