@@ -119,7 +119,7 @@ typedef enum : NSUInteger {
     LongTextViewDelegate,
     MessageActionsDelegate,
     MessageDetailViewDelegate,
-    MenuActionsViewControllerDelegate,
+    MessageActionsViewControllerDelegate,
     OWSMessageBubbleViewDelegate,
     OWSMessageStickerViewDelegate,
     OWSMessageViewOnceViewDelegate,
@@ -206,13 +206,16 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) ConversationSearchController *searchController;
 @property (nonatomic, nullable) NSString *lastSearchedText;
 @property (nonatomic) BOOL isShowingSearchUI;
-@property (nonatomic, nullable) MenuActionsViewController *menuActionsViewController;
-@property (nonatomic) CGFloat extraContentInsetPadding;
-@property (nonatomic) CGPoint originalContentOffset;
 
 @property (nonatomic, nullable) MessageRequestView *messageRequestView;
 
 @property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
+
+@property (nonatomic, readonly) BOOL isPresentingMessageActions;
+@property (nonatomic, nullable) MessageActionsViewController *messageActionsViewController;
+@property (nonatomic) CGFloat messageActionsExtraContentInsetPadding;
+@property (nonatomic) CGPoint messageActionsOriginalContentOffset;
+@property (nonatomic) CGFloat messageActionsOriginalFocusY;
 
 @end
 
@@ -510,7 +513,7 @@ typedef enum : NSUInteger {
 
     if (self.isUserScrolling || !self.isViewCompletelyAppeared || !self.isViewVisible
         || !CurrentAppContext().isAppForegroundAndActive || !self.viewHasEverAppeared
-        || OWSWindowManager.sharedManager.isPresentingMenuActions) {
+        || self.isPresentingMessageActions) {
         return;
     }
 
@@ -756,8 +759,6 @@ typedef enum : NSUInteger {
     // We want to set the initial scroll state the first time we enter the view.
     if (!self.viewHasEverAppeared) {
         [self scrollToDefaultPosition:NO];
-    } else if (self.menuActionsViewController != nil) {
-        [self scrollToMenuActionInteraction:NO];
     }
 
     [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
@@ -1259,7 +1260,7 @@ typedef enum : NSUInteger {
 
     self.isViewCompletelyAppeared = NO;
 
-    [self dismissMenuActions];
+    [self dismissMessageActions];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -2063,128 +2064,135 @@ typedef enum : NSUInteger {
     [self.navigationController popToViewController:self animated:YES];
 }
 
-#pragma mark - MenuActionsViewControllerDelegate
+#pragma mark - MessageActionsViewControllerDelegate
 
-- (void)menuActionsWillPresent:(MenuActionsViewController *)menuActionsViewController
+- (void)messageActionsViewControllerDidDismiss:(MessageActionsViewController *)messageActionsViewController
+                                    withAction:(nullable MessageAction *)withAction
 {
-    OWSLogVerbose(@"");
+    [self dismissMessageActions];
+}
 
-    // While presenting menu actions, cache the original content offset.
+- (void)presentMessageActions:(NSArray<MessageAction *> *)messageActions withFocusedCell:(ConversationViewCell *)cell
+{
+    MessageActionsViewController *messageActionsViewController =
+        [[MessageActionsViewController alloc] initWithFocusedInteraction:cell.viewItem.interaction
+                                                             focusedView:cell
+                                                                 actions:messageActions];
+    messageActionsViewController.delegate = self;
+
+    self.messageActionsViewController = messageActionsViewController;
+
+    [self setupMessageActionsStateForCell:cell];
+
+    [messageActionsViewController presentOnWindow:self.view.window
+        prepareConstraints:^{
+            // In order to ensure the bottom bar remains above the keyboard, we pin it
+            // to our bottom bar which follows the inputAccessoryView
+            [messageActionsViewController.bottomBar autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.bottomBar];
+
+            // We only want the message actions to show up over the detail view, in
+            // the case where we are expanded. So match its edges to our nav controller.
+            [messageActionsViewController.view autoPinToEdgesOfView:self.navigationController.view];
+        }
+        animateAlongside:^{
+            self.bottomBar.alpha = 0;
+        }
+        completion:nil];
+}
+
+- (void)setupMessageActionsStateForCell:(ConversationViewCell *)cell
+{
+    // While presenting message actions, cache the original content offset.
     // This allows us to restore the user to their original scroll position
     // when they dismiss the menu.
-    self.originalContentOffset = self.collectionView.contentOffset;
+    self.messageActionsOriginalContentOffset = self.collectionView.contentOffset;
+
+    self.messageActionsOriginalFocusY = [self.view convertPoint:cell.frame.origin fromView:self.collectionView].y;
 
     // While the menu actions are presented, temporarily use extra content
     // inset padding so that interactions near the top or bottom of the
     // collection view can be scrolled anywhere within the viewport.
-    //
-    // e.g. In a new conversation, there might be only a single message
-    // which we might want to scroll to the bottom of the screen to
-    // pin above the menu actions popup.
+    // This allows us to keep the message position constant even when
+    // messages dissappear above / below the focused message to the point
+    // that we have less than one screen worth of content.
     CGSize navControllerSize = self.navigationController.view.frame.size;
-    self.extraContentInsetPadding = MAX(navControllerSize.width, navControllerSize.height);
+    self.messageActionsExtraContentInsetPadding = MAX(navControllerSize.width, navControllerSize.height);
 
     UIEdgeInsets contentInset = self.collectionView.contentInset;
-    contentInset.top += self.extraContentInsetPadding;
-    contentInset.bottom += self.extraContentInsetPadding;
+    contentInset.top += self.messageActionsExtraContentInsetPadding;
+    contentInset.bottom += self.messageActionsExtraContentInsetPadding;
+    self.collectionView.contentInset = contentInset;
+}
+
+- (void)clearMessageActionsState
+{
+    self.bottomBar.alpha = 1;
+
+    UIEdgeInsets contentInset = self.collectionView.contentInset;
+    contentInset.top -= self.messageActionsExtraContentInsetPadding;
+    contentInset.bottom -= self.messageActionsExtraContentInsetPadding;
     self.collectionView.contentInset = contentInset;
 
-    self.menuActionsViewController = menuActionsViewController;
+    self.collectionView.contentOffset = self.messageActionsOriginalContentOffset;
+    self.messageActionsOriginalContentOffset = CGPointZero;
+    self.messageActionsExtraContentInsetPadding = 0;
+    self.messageActionsViewController = nil;
 }
 
-- (void)menuActionsIsPresenting:(MenuActionsViewController *)menuActionsViewController
+- (BOOL)isPresentingMessageActions
+{
+    return self.messageActionsViewController != nil;
+}
+
+- (void)dismissMessageActions
 {
     OWSLogVerbose(@"");
 
-    // Changes made in this "is presenting" callback are animated by the caller.
-    [self scrollToMenuActionInteraction:NO];
-}
-
-- (void)menuActionsDidPresent:(MenuActionsViewController *)menuActionsViewController
-{
-    OWSLogVerbose(@"");
-
-    [self scrollToMenuActionInteraction:NO];
-}
-
-- (void)menuActionsIsDismissing:(MenuActionsViewController *)menuActionsViewController
-{
-    OWSLogVerbose(@"");
-
-    // Changes made in this "is dismissing" callback are animated by the caller.
-    [self clearMenuActionsState];
-}
-
-- (void)menuActionsDidDismiss:(MenuActionsViewController *)menuActionsViewController
-{
-    OWSLogVerbose(@"");
-
-    [self dismissMenuActions];
-}
-
-- (void)dismissMenuActions
-{
-    OWSLogVerbose(@"");
-
-    [self clearMenuActionsState];
-    [[OWSWindowManager sharedManager] hideMenuActionsWindow];
-}
-
-- (void)clearMenuActionsState
-{
-    OWSLogVerbose(@"");
-
-    if (self.menuActionsViewController == nil) {
+    if (!self.isPresentingMessageActions) {
         return;
     }
 
-    UIEdgeInsets contentInset = self.collectionView.contentInset;
-    contentInset.top -= self.extraContentInsetPadding;
-    contentInset.bottom -= self.extraContentInsetPadding;
-    self.collectionView.contentInset = contentInset;
-
-    self.collectionView.contentOffset = self.originalContentOffset;
-
-    self.originalContentOffset = CGPointZero;
-    self.menuActionsViewController = nil;
-    self.extraContentInsetPadding = 0;
+    [self.messageActionsViewController
+        dismissAndAnimateAlongside:^{
+            self.bottomBar.alpha = 1;
+        }
+        completion:^{
+            [self clearMessageActionsState];
+        }];
 }
 
-- (void)scrollToMenuActionInteractionIfNecessary
+- (void)dismissMessageActionsIfNecessary
 {
-    if (self.menuActionsViewController != nil) {
-        [self scrollToMenuActionInteraction:NO];
+    if (self.shouldDismissMessageActions) {
+        [self dismissMessageActions];
     }
 }
 
-- (void)scrollToMenuActionInteraction:(BOOL)animated
+- (BOOL)shouldDismissMessageActions
 {
-    OWSAssertDebug(self.menuActionsViewController);
-
-    NSValue *_Nullable contentOffset = [self contentOffsetForMenuActionInteraction];
-    if (contentOffset == nil) {
-        OWSFailDebug(@"Missing contentOffset.");
-        return;
+    if (!self.isPresentingMessageActions) {
+        return NO;
     }
-    [self.collectionView setContentOffset:contentOffset.CGPointValue animated:animated];
+    NSString *_Nullable messageActionInteractionId = self.messageActionsViewController.focusedInteraction.uniqueId;
+    if (messageActionInteractionId == nil) {
+        return NO;
+    }
+    // Check whether there is still a view item for this interaction.
+    return (self.conversationViewModel.viewState.interactionIndexMap[messageActionInteractionId] == nil);
 }
 
-- (nullable NSValue *)contentOffsetForMenuActionInteraction
+- (nullable NSValue *)contentOffsetForMessageActionInteraction
 {
-    OWSAssertDebug(self.menuActionsViewController);
+    OWSAssertDebug(self.messageActionsViewController);
 
-    NSString *_Nullable menuActionInteractionId = self.menuActionsViewController.focusedInteraction.uniqueId;
-    if (menuActionInteractionId == nil) {
-        OWSFailDebug(@"Missing menu action interaction.");
+    NSString *_Nullable messageActionInteractionId = self.messageActionsViewController.focusedInteraction.uniqueId;
+    if (messageActionInteractionId == nil) {
+        OWSFailDebug(@"Missing message action interaction.");
         return nil;
     }
-    CGPoint modalTopWindow = [self.menuActionsViewController.focusUI convertPoint:CGPointZero toView:nil];
-    CGPoint modalTopLocal = [self.view convertPoint:modalTopWindow fromView:nil];
-    CGPoint offset = modalTopLocal;
-    CGFloat focusTop = offset.y - self.menuActionsViewController.vSpacing;
 
     NSNumber *_Nullable interactionIndex
-        = self.conversationViewModel.viewState.interactionIndexMap[menuActionInteractionId];
+        = self.conversationViewModel.viewState.interactionIndexMap[messageActionInteractionId];
     if (interactionIndex == nil) {
         // This is expected if the menu action interaction is being deleted.
         return nil;
@@ -2197,27 +2205,7 @@ typedef enum : NSUInteger {
         return nil;
     }
     CGRect cellFrame = layoutAttributes.frame;
-    return [NSValue valueWithCGPoint:CGPointMake(0, CGRectGetMaxY(cellFrame) - focusTop)];
-}
-
-- (void)dismissMenuActionsIfNecessary
-{
-    if (self.shouldDismissMenuActions) {
-        [self dismissMenuActions];
-    }
-}
-
-- (BOOL)shouldDismissMenuActions
-{
-    if (!OWSWindowManager.sharedManager.isPresentingMenuActions) {
-        return NO;
-    }
-    NSString *_Nullable menuActionInteractionId = self.menuActionsViewController.focusedInteraction.uniqueId;
-    if (menuActionInteractionId == nil) {
-        return NO;
-    }
-    // Check whether there is still a view item for this interaction.
-    return (self.conversationViewModel.viewState.interactionIndexMap[menuActionInteractionId] == nil);
+    return [NSValue valueWithCGPoint:CGPointMake(0, cellFrame.origin.y - self.messageActionsOriginalFocusY)];
 }
 
 #pragma mark - ConversationViewCellDelegate
@@ -2226,7 +2214,7 @@ typedef enum : NSUInteger {
              shouldAllowReply:(BOOL)shouldAllowReply
     didLongpressMediaViewItem:(id<ConversationViewItem>)viewItem
 {
-    NSArray<MenuAction *> *messageActions =
+    NSArray<MessageAction *> *messageActions =
         [ConversationViewItemActions mediaActionsWithConversationViewItem:viewItem
                                                          shouldAllowReply:shouldAllowReply
                                                                  delegate:self];
@@ -2237,7 +2225,7 @@ typedef enum : NSUInteger {
             shouldAllowReply:(BOOL)shouldAllowReply
     didLongpressTextViewItem:(id<ConversationViewItem>)viewItem
 {
-    NSArray<MenuAction *> *messageActions =
+    NSArray<MessageAction *> *messageActions =
         [ConversationViewItemActions textActionsWithConversationViewItem:viewItem
                                                         shouldAllowReply:shouldAllowReply
                                                                 delegate:self];
@@ -2248,7 +2236,7 @@ typedef enum : NSUInteger {
              shouldAllowReply:(BOOL)shouldAllowReply
     didLongpressQuoteViewItem:(id<ConversationViewItem>)viewItem
 {
-    NSArray<MenuAction *> *messageActions =
+    NSArray<MessageAction *> *messageActions =
         [ConversationViewItemActions quotedMessageActionsWithConversationViewItem:viewItem
                                                                  shouldAllowReply:shouldAllowReply
                                                                          delegate:self];
@@ -2258,7 +2246,7 @@ typedef enum : NSUInteger {
 - (void)conversationCell:(ConversationViewCell *)cell
     didLongpressSystemMessageViewItem:(id<ConversationViewItem>)viewItem
 {
-    NSArray<MenuAction *> *messageActions =
+    NSArray<MessageAction *> *messageActions =
         [ConversationViewItemActions infoMessageActionsWithConversationViewItem:viewItem delegate:self];
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
@@ -2267,7 +2255,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertDebug(viewItem);
 
-    NSArray<MenuAction *> *messageActions =
+    NSArray<MessageAction *> *messageActions =
         [ConversationViewItemActions mediaActionsWithConversationViewItem:viewItem shouldAllowReply:YES delegate:self];
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
@@ -2290,27 +2278,6 @@ typedef enum : NSUInteger {
 - (void)conversationCell:(ConversationViewCell *)cell didReplyToItem:(id<ConversationViewItem>)viewItem
 {
     [self populateReplyForViewItem:viewItem];
-}
-
-- (void)presentMessageActions:(NSArray<MenuAction *> *)messageActions withFocusedCell:(ConversationViewCell *)cell
-{
-    MenuActionsViewController *menuActionsViewController =
-        [[MenuActionsViewController alloc] initWithFocusedInteraction:cell.viewItem.interaction
-                                                          focusedView:cell
-                                                              actions:messageActions];
-
-    menuActionsViewController.delegate = self;
-
-    // If we're not running full screen, dismiss the keyboard. Normally, we render
-    // the message actions in a window that sits above the keyboard to avoid too
-    // much context switching. However, when multi-tasking, the keyboard lives
-    // outside of our window hierarchy and we cannot render above it, so we must
-    // dismiss it in order for this to be fully visible.
-    if (!CGRectEqualToRect(CurrentAppContext().frame, UIScreen.mainScreen.bounds)) {
-        [self dismissKeyBoard];
-    }
-
-    [[OWSWindowManager sharedManager] showMenuActionsWindow:menuActionsViewController];
 }
 
 - (void)presentAddThreadToProfileWhitelistWithSuccess:(void (^)(void))successHandler
@@ -2802,6 +2769,10 @@ typedef enum : NSUInteger {
 - (void)ensureScrollDownButton
 {
     OWSAssertIsOnMainThread();
+
+    if (self.isPresentingMessageActions) {
+        return;
+    }
 
     if (self.peek) {
         self.scrollDownButton.hidden = YES;
@@ -3942,9 +3913,9 @@ typedef enum : NSUInteger {
 - (void)updateLastKnownDistanceFromBottom
 {
     // Never update the lastKnownDistanceFromBottom,
-    // if we're presenting the menu actions which
+    // if we're presenting the message actions which
     // temporarily meddles with the content insets.
-    if (!OWSWindowManager.sharedManager.isPresentingMenuActions) {
+    if (!self.isPresentingMessageActions) {
         self.lastKnownDistanceFromBottom = @(self.safeDistanceFromBottom);
     }
 }
@@ -4559,8 +4530,8 @@ typedef enum : NSUInteger {
 - (CGPoint)collectionView:(UICollectionView *)collectionView
     targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset
 {
-    if (self.menuActionsViewController != nil) {
-        NSValue *_Nullable contentOffset = [self contentOffsetForMenuActionInteraction];
+    if (self.isPresentingMessageActions) {
+        NSValue *_Nullable contentOffset = [self contentOffsetForMessageActionInteraction];
         if (contentOffset != nil) {
             return contentOffset.CGPointValue;
         }
@@ -4835,7 +4806,9 @@ typedef enum : NSUInteger {
 
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
-    [self dismissMenuActionsIfNecessary];
+
+    // If the message has been deleted / disappeared, we need to dismiss
+    [self dismissMessageActionsIfNecessary];
 
     if (self.isGroupConversation) {
         [self.thread anyReloadWithTransaction:transaction];
@@ -5050,13 +5023,7 @@ typedef enum : NSUInteger {
 
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
-    // The "message actions" window tries to pin the message
-    // in the content of this view.  It's easier to dismiss the
-    // "message actions" window when the device changes orientation
-    // than to try to ensure this works in that case.
-    if (OWSWindowManager.sharedManager.isPresentingMenuActions) {
-        [self dismissMenuActions];
-    }
+    [self dismissMessageActions];
 
     // Snapshot the "last visible row".
     NSIndexPath *_Nullable lastVisibleIndexPath = self.lastVisibleIndexPath;
@@ -5082,9 +5049,7 @@ typedef enum : NSUInteger {
 
             [strongSelf updateInputToolbarLayout];
 
-            if (self.menuActionsViewController != nil) {
-                [self scrollToMenuActionInteraction:NO];
-            } else if (lastVisibleIndexPath) {
+            if (lastVisibleIndexPath) {
                 [strongSelf.collectionView scrollToItemAtIndexPath:lastVisibleIndexPath
                                                   atScrollPosition:UICollectionViewScrollPositionBottom
                                                           animated:NO];
@@ -5417,9 +5382,9 @@ typedef enum : NSUInteger {
     UIEdgeInsets oldInsets = self.collectionView.contentInset;
     UIEdgeInsets newInsets = oldInsets;
 
-    newInsets.bottom = self.extraContentInsetPadding + self.inputAccessoryPlaceholder.keyboardOverlap
+    newInsets.bottom = self.messageActionsExtraContentInsetPadding + self.inputAccessoryPlaceholder.keyboardOverlap
         + self.bottomBar.height - self.bottomLayoutGuide.length;
-    newInsets.top = self.extraContentInsetPadding;
+    newInsets.top = self.messageActionsExtraContentInsetPadding;
 
     BOOL wasScrolledToBottom = [self isScrolledToBottom];
 

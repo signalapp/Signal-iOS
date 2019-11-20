@@ -30,20 +30,12 @@ extern const UIWindowLevel UIWindowLevel_Background;
 - (void)setupWithRootWindow:(UIWindow *)rootWindow screenBlockingWindow:(UIWindow *)screenBlockingWindow;
 
 @property (nonatomic, readonly) UIWindow *rootWindow;
-@property (nonatomic, readonly) UIWindow *menuActionsWindow;
 @property (nonatomic) BOOL isScreenBlockActive;
 
 - (BOOL)isAppWindow:(UIWindow *)window;
 
 - (void)updateWindowFrames;
 - (void)ensureReturnToCallWindowFrame;
-
-#pragma mark - Message Actions
-
-@property (nonatomic, readonly) BOOL isPresentingMenuActions;
-
-- (void)showMenuActionsWindow:(UIViewController *)menuActionsViewController;
-- (void)hideMenuActionsWindow;
 
 #pragma mark - Calls
 
