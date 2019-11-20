@@ -75,6 +75,14 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         lokiLogoImageView.autoCenterInSuperview()
         
         Analytics.shared.track("Landing Screen Viewed")
+
+        let userDefaults = UserDefaults.standard
+        if userDefaults.bool(forKey: "wasUnlinked") {
+            let alert = UIAlertController(title: NSLocalizedString("Device Unlinked", comment: ""), message: NSLocalizedString("Your device was unlinked successfully", comment: ""), preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), accessibilityIdentifier: nil, style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+            userDefaults.set(false, forKey: "wasUnlinked")
+        }
     }
 
      // MARK: - Events

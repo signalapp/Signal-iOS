@@ -1199,6 +1199,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (![deviceLinks contains:^BOOL(LKDeviceLink *deviceLink) {
             return [deviceLink.master.hexEncodedPublicKey isEqual:senderHexEncodedPublicKey] && [deviceLink.slave.hexEncodedPublicKey isEqual:userHexEncodedPublicKey];
         }]) {
+            [NSUserDefaults.standardUserDefaults setBool:YES forKey:@"wasUnlinked"];
             [NSNotificationCenter.defaultCenter postNotification:NSNotification.dataNukeRequested];
         }
     });
