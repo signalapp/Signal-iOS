@@ -89,7 +89,7 @@ final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableView
     }
     
     func handleDeviceLinkAuthorized(_ deviceLink: DeviceLink) {
-        dismiss(animated: true, completion: nil)
+        // The modal already dismisses itself
         updateDeviceLinks()
     }
     
@@ -100,7 +100,7 @@ final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableView
     // MARK: Interaction
     @objc private func linkNewDevice() {
         if deviceLinks.isEmpty {
-            let deviceLinkingModal = DeviceLinkingModal(mode: .master, delegate: nil)
+            let deviceLinkingModal = DeviceLinkingModal(mode: .master, delegate: self)
             deviceLinkingModal.modalPresentationStyle = .overFullScreen
             present(deviceLinkingModal, animated: true, completion: nil)
         } else {

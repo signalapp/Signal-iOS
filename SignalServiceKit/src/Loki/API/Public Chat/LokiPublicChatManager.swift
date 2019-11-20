@@ -43,6 +43,7 @@ public final class LokiPublicChatManager : NSObject {
     
     @objc public func stopPollers() {
         for poller in pollers.values { poller.stop() }
+        pollers.removeAll()
         isPolling = false
     }
     

@@ -72,7 +72,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter
 {
-    NSString *localNumber = [TSAccountManager localNumber];
+    NSString *localNumber = [NSUserDefaults.standardUserDefaults stringForKey:@"masterDeviceHexEncodedPublicKey"];
+    if (localNumber == nil) {
+        localNumber = [TSAccountManager localNumber];
+    }
     OWSAssertDebug(localNumber.length > 0);
     OWSAssertDebug(diameter > 0);
 

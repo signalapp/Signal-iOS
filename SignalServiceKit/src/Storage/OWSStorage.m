@@ -497,7 +497,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
             return [unarchiver decodeObjectForKey:@"root"];
         } @catch (NSException *exception) {
             // Sync log in case we bail.
-            OWSFailDebug(@"error deserializing object: %@, %@", collection, exception);
+//            OWSFailDebug(@"error deserializing object: %@, %@", collection, exception);
             OWSProdCritical([OWSAnalyticsEvents storageErrorDeserialization]);
             @throw exception;
         }
