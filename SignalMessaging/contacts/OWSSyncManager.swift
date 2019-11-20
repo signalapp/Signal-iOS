@@ -135,7 +135,7 @@ public extension SyncManagerProtocolSwift {
 
             return newThreads.sorted { (lhs: (key: String, value: UInt32), rhs: (key: String, value: UInt32)) -> Bool in
                 lhs.value < rhs.value
-                }.map { $0.key }
+            }.map { $0.key }
         }
     }
 

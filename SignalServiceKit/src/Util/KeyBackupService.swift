@@ -454,7 +454,7 @@ public class KeyBackupService: NSObject {
     private static var cachedMasterKey: Data?
     // Always contains an in memory reference to our current pinKey2
     private static var cachedPinKey2: Data?
-    // Always contains an in memory refernce to our received derived keys
+    // Always contains an in memory reference to our received derived keys
     static var cachedSyncedDerivedKeys = [DerivedKey: Data]()
 
     private static func store(_ masterKey: Data, pinKey2: Data, transaction: SDSAnyWriteTransaction) {
