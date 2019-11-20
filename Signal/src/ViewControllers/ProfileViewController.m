@@ -159,7 +159,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     UILabel *avatarLabel = [UILabel new];
     avatarLabel.text = NSLocalizedString(@"Profile Picture", @"");
     avatarLabel.textColor = Theme.primaryColor;
-    avatarLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
+    avatarLabel.font = [UIFont ows_regularFontWithSize:fontSizePoints];
     [avatarRow addSubview:avatarLabel];
     [avatarLabel autoPinLeadingToSuperviewMargin];
     [avatarLabel autoVCenterInSuperview];

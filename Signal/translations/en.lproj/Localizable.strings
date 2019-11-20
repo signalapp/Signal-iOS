@@ -2612,7 +2612,7 @@
 "Loki News" = "Loki News";
 "Loki Messenger Updates" = "Loki Messenger Updates";
 "Show QR Code" = "Show QR Code";
-"This is your personal QR code. Other people can scan it to start a secure conversation with you." = "This is your personal QR code. Other people can scan it to start a secure conversation with you.";
+"This is your QR code. Other people can scan it to start a secure conversation with you." = "This is your QR code. Other people can scan it to start a secure conversation with you.";
 "Scan a QR Code Instead" = "Scan a QR Code Instead";
 "Loki Messenger needs camera access to scan QR codes." = "Loki Messenger needs camera access to scan QR codes.";
 "You can enable camera access in your device settings." = "You can enable camera access in your device settings.";
@@ -2663,3 +2663,5 @@
 "Change Device Name" = "Change Device Name";
 "Enter the new display name for your device below" = "Enter the new display name for your device below";
 "Enter a Name" = "Enter a Name";
+"Error" = "Error";
+"Please pick a name" = "Please pick a name";

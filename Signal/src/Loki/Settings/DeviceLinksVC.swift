@@ -60,8 +60,11 @@ final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableView
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") as! Cell
-        let deviceLink = deviceLinks[indexPath.row]
-        cell.deviceLink = deviceLink
+        let selectedBackgroundView = UIView()
+        selectedBackgroundView.backgroundColor = Theme.cellSelectedColor
+        cell.selectedBackgroundView = selectedBackgroundView
+        let device = deviceLinks[indexPath.row].other
+        cell.device = device
         return cell
     }
     
@@ -86,6 +89,7 @@ final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableView
     }
     
     func handleDeviceLinkAuthorized(_ deviceLink: DeviceLink) {
+        dismiss(animated: true, completion: nil)
         updateDeviceLinks()
     }
     
@@ -107,22 +111,25 @@ final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableView
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let deviceLink = deviceLinks[indexPath.row]
+        defer { tableView.deselectRow(at: indexPath, animated: true) }
+        let device = deviceLinks[indexPath.row].other
         let sheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         sheet.addAction(UIAlertAction(title: NSLocalizedString("Change Name", comment: ""), style: .default) { [weak self] _ in
             guard let self = self else { return }
             let deviceNameModal = DeviceNameModal()
-            deviceNameModal.deviceLink = deviceLink
+            deviceNameModal.device = device
             deviceNameModal.delegate = self
             self.present(deviceNameModal, animated: true, completion: nil)
         })
         sheet.addAction(UIAlertAction(title: NSLocalizedString("Unlink", comment: ""), style: .destructive) { _ in
             // TODO: Implement
         })
+        sheet.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel) { _ in })
         present(sheet, animated: true, completion: nil)
     }
     
     @objc func handleDeviceNameChanged(to name: String, for device: DeviceLink.Device) {
+        dismiss(animated: true, completion: nil)
         updateUI()
     }
 }
@@ -132,13 +139,14 @@ final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableView
 private extension DeviceLinksVC {
     
     final class Cell : UITableViewCell {
-        var deviceLink: DeviceLink! { didSet { update() } }
+        var device: DeviceLink.Device! { didSet { update() } }
         
         // MARK: Components
         private lazy var titleLabel: UILabel = {
             let result = UILabel()
             result.textColor = Theme.primaryColor
-            result.font = UIFont.ows_dynamicTypeSubheadlineClamped
+            let font = UIFont.ows_dynamicTypeSubheadlineClamped
+            result.font = UIFont(descriptor: font.fontDescriptor.withSymbolicTraits(.traitBold)!, size: font.pointSize)
             result.lineBreakMode = .byTruncatingTail
             return result
         }()
@@ -179,14 +187,8 @@ private extension DeviceLinksVC {
         
         // MARK: Updating
         private func update() {
-            if let displayName = deviceLink.displayName {
-                titleLabel.text = displayName
-                subtitleLabel.text = deviceLink.other.hexEncodedPublicKey
-                subtitleLabel.isHidden = false
-            } else {
-                titleLabel.text = deviceLink.other.hexEncodedPublicKey
-                subtitleLabel.isHidden = true
-            }
+            titleLabel.text = device.displayName
+            subtitleLabel.text = Mnemonic.encode(hexEncodedString: device.hexEncodedPublicKey.removing05PrefixIfNeeded()).split(separator: " ")[0..<3].joined(separator: " ")
         }
     }
 }

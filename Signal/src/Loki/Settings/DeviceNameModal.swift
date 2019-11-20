@@ -1,7 +1,7 @@
 
 @objc(LKDeviceNameModal)
 final class DeviceNameModal : Modal {
-    @objc public var deviceLink: DeviceLink!
+    @objc public var device: DeviceLink.Device!
     @objc public var delegate: DeviceNameModalDelegate?
     
     // MARK: Components
@@ -9,8 +9,9 @@ final class DeviceNameModal : Modal {
         let result = UITextField()
         result.textColor = Theme.primaryColor
         result.font = .ows_dynamicTypeBodyClamped
+        result.textAlignment = .center
         let placeholder = NSMutableAttributedString(string: NSLocalizedString("Enter a Name", comment: ""))
-        placeholder.addAttribute(.foregroundColor, value: Theme.placeholderColor, range: NSRange(location: 0, length: placeholder.length))
+        placeholder.addAttribute(.foregroundColor, value: UIColor.white.withAlphaComponent(0.5), range: NSRange(location: 0, length: placeholder.length))
         result.attributedPlaceholder = placeholder
         result.tintColor = .lokiGreen()
         result.keyboardAppearance = .dark
@@ -18,6 +19,11 @@ final class DeviceNameModal : Modal {
     }()
     
     // MARK: Lifecycle
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillChangeFrameNotification(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+    }
+    
     override func populateContentView() {
         // Label
         let titleLabel = UILabel()
@@ -55,10 +61,29 @@ final class DeviceNameModal : Modal {
         contentView.pin(.bottom, to: .bottom, of: stackView, withInset: 16)
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    // MARK: Updating
+    @objc private func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
+        guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
+        verticalCenteringConstraint.constant = -(newHeight / 2)
+        UIView.animate(withDuration: 0.25) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
     // MARK: Interaction
     @objc private func changeName() {
         let name = nameTextView.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        UserDefaults.standard.set(name, forKey: "\(deviceLink.other.hexEncodedPublicKey)_display_name")
-        delegate?.handleDeviceNameChanged(to: name, for: deviceLink.other)
+        if !name.isEmpty {
+            UserDefaults.standard.set(name, forKey: "\(device.hexEncodedPublicKey)_display_name")
+            delegate?.handleDeviceNameChanged(to: name, for: device)
+        } else {
+            let alert = UIAlertController(title: NSLocalizedString("Error", comment: ""), message: NSLocalizedString("Please pick a name", comment: ""), preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), accessibilityIdentifier: nil, style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+        }
     }
 }

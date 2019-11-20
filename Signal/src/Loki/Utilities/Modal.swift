@@ -1,6 +1,7 @@
 
 @objc(LKModal)
 internal class Modal : UIViewController {
+    private(set) var verticalCenteringConstraint: NSLayoutConstraint!
     
     // MARK: Components
     lazy var contentView: UIView = {
@@ -31,7 +32,7 @@ internal class Modal : UIViewController {
         view.addSubview(contentView)
         contentView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32).isActive = true
         view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 32).isActive = true
-        contentView.center(.vertical, in: view)
+        verticalCenteringConstraint = contentView.center(.vertical, in: view)
         populateContentView()
     }
     

@@ -6,7 +6,7 @@ final class QRCodeModal : Modal {
         // Label
         let label = UILabel()
         label.font = UIFont.ows_dynamicTypeSubheadlineClamped
-        label.text = NSLocalizedString("This is your personal QR code. Other people can scan it to start a secure conversation with you.", comment: "")
+        label.text = NSLocalizedString("This is your QR code. Other people can scan it to start a secure conversation with you.", comment: "")
         label.numberOfLines = 0
         label.textAlignment = .center
         label.lineBreakMode = .byWordWrapping

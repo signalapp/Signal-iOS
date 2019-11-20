@@ -1,4 +1,3 @@
-import NVActivityIndicatorView
 
 @objc(LKSeedModal)
 final class SeedModal : Modal {

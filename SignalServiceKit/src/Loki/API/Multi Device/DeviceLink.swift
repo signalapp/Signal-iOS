@@ -4,14 +4,6 @@ public final class DeviceLink : NSObject, NSCoding {
     @objc public let master: Device
     @objc public let slave: Device
     
-    @objc public var displayName: String? {
-        if let customDisplayName = UserDefaults.standard.string(forKey: "\(other.hexEncodedPublicKey)_display_name") {
-            return customDisplayName
-        } else {
-            return Mnemonic.encode(hexEncodedString: other.hexEncodedPublicKey.removing05PrefixIfNeeded()).split(separator: " ")[0..<3].joined(separator: " ")
-        }
-    }
-    
     @objc public var isAuthorized: Bool { return master.signature != nil }
     
     @objc public var other: Device {
@@ -24,6 +16,14 @@ public final class DeviceLink : NSObject, NSCoding {
     public final class Device : NSObject, NSCoding {
         @objc public let hexEncodedPublicKey: String
         @objc public let signature: Data?
+        
+        @objc public var displayName: String {
+            if let customDisplayName = UserDefaults.standard.string(forKey: "\(hexEncodedPublicKey)_display_name") {
+                return customDisplayName
+            } else {
+                return Mnemonic.encode(hexEncodedString: hexEncodedPublicKey.removing05PrefixIfNeeded()).split(separator: " ")[0..<3].joined(separator: " ")
+            }
+        }
         
         @objc public init(hexEncodedPublicKey: String, signature: Data? = nil) {
             self.hexEncodedPublicKey = hexEncodedPublicKey
