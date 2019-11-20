@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
                     isRemoving:(BOOL)isRemoving;
 
 @property (nonatomic, nullable) OWSReaction *createdReaction;
-@property (nonatomic, nullable) OWSReaction *removedOrReplacedReaction;
+@property (nonatomic, nullable) OWSReaction *previousReaction;
 
 @end
 

@@ -127,11 +127,11 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (self.removedOrReplacedReaction) {
-        [self.message recordReactionForReactor:self.removedOrReplacedReaction.reactor
-                                         emoji:self.removedOrReplacedReaction.emoji
-                               sentAtTimestamp:self.removedOrReplacedReaction.sentAtTimestamp
-                           receivedAtTimestamp:self.removedOrReplacedReaction.receivedAtTimestamp
+    if (self.previousReaction) {
+        [self.message recordReactionForReactor:self.previousReaction.reactor
+                                         emoji:self.previousReaction.emoji
+                               sentAtTimestamp:self.previousReaction.sentAtTimestamp
+                           receivedAtTimestamp:self.previousReaction.receivedAtTimestamp
                                    transaction:transaction];
     } else {
         [self.message removeReactionForReactor:localAddress transaction:transaction];

@@ -36,7 +36,7 @@ public class ReactionManager: NSObject {
             isRemoving: isRemoving
         )
 
-        outgoingMessage.removedOrReplacedReaction = message.reaction(for: localAddress, transaction: transaction)
+        outgoingMessage.previousReaction = message.reaction(for: localAddress, transaction: transaction)
 
         if isRemoving {
             message.removeReaction(for: localAddress, transaction: transaction)

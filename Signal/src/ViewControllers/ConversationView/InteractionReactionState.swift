@@ -6,7 +6,7 @@ import Foundation
 
 @objc
 class InteractionReactionState: NSObject {
-    let emojiCounts: [(emoji: String, count: Int)]?
+    let emojiCounts: [(emoji: String, count: Int)]
     let localUserEmoji: String?
 
     @objc

@@ -13,8 +13,9 @@ class ReactionBubblesView: UIView {
         super.init(frame: .zero)
 
         autoSetDimension(.height, toSize: 62, relation: .lessThanOrEqual)
-        autoSetDimension(.height, toSize: 34, relation: .greaterThanOrEqual)
-
+        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
+            autoSetDimension(.height, toSize: 34, relation: .greaterThanOrEqual)
+        }
         addSubview(bubble2)
         addSubview(bubble1)
 
@@ -33,13 +34,19 @@ class ReactionBubblesView: UIView {
         bubble1.isHidden = true
         bubble2.isHidden = true
 
-        guard let emojiCounts = reactionState.emojiCounts, !emojiCounts.isEmpty else { return }
+        guard !reactionState.emojiCounts.isEmpty else { return }
 
-        bubble1.configure(for: emojiCounts[0].emoji, fromLocalUser: emojiCounts[0].emoji == reactionState.localUserEmoji)
+        bubble1.configure(
+            for: reactionState.emojiCounts[0].emoji,
+            fromLocalUser: reactionState.emojiCounts[0].emoji == reactionState.localUserEmoji
+        )
         bubble1.isHidden = false
 
-        guard emojiCounts.count >= 2 else { return }
-        bubble2.configure(for: emojiCounts[1].emoji, fromLocalUser: emojiCounts[1].emoji == reactionState.localUserEmoji)
+        guard reactionState.emojiCounts.count >= 2 else { return }
+        bubble2.configure(
+            for: reactionState.emojiCounts[1].emoji,
+            fromLocalUser: reactionState.emojiCounts[1].emoji == reactionState.localUserEmoji
+        )
         bubble2.isHidden = false
     }
 }
