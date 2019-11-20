@@ -847,6 +847,9 @@ func createInitialGalleryRecords(transaction: GRDBWriteTransaction) throws {
 }
 
 public func dedupeSignalRecipients(transaction: SDSAnyWriteTransaction) throws {
+    BenchEventStart(title: "Deduping Signal Recipients", eventId: "dedupeSignalRecipients")
+    defer { BenchEventComplete(eventId: "dedupeSignalRecipients") }
+
     var recipients: [SignalServiceAddress: [String]] = [:]
 
     SignalRecipient.anyEnumerate(transaction: transaction) { (recipient, _) in
@@ -887,6 +890,7 @@ public func dedupeSignalRecipients(transaction: SDSAnyWriteTransaction) throws {
                 owsFailDebug("redundantRecipient was unexpectedly nil")
                 continue
             }
+            Logger.info("removing redundant recipient: \(redundantRecipient)")
             redundantRecipient.anyRemove(transaction: transaction)
         }
     }
