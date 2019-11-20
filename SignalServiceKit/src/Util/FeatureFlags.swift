@@ -18,7 +18,8 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
+//let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
+let build: FeatureBuild = .beta
 
 // MARK: -
 
@@ -245,4 +246,10 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let isUsingProductionService = true
+
+    @objc
+    public static let versionedProfiledFetches = false
+
+    @objc
+    public static let versionedProfiledUpdate = false
 }

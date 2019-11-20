@@ -292,7 +292,8 @@ extension YDBToGRDBMigration {
             GRDBKeyValueStoreMigrator<Any>(label: "Theme", keyStore: Theme.keyValueStore(), ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSSyncManager", keyStore: OWSSyncManager.keyValueStore(), ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSOutgoingReceiptManager.deliveryReceiptStore", keyStore: OWSOutgoingReceiptManager.deliveryReceiptStore(), ydbTransaction: ydbTransaction),
-            GRDBKeyValueStoreMigrator<Any>(label: "OWSOutgoingReceiptManager.readReceiptStore", keyStore: OWSOutgoingReceiptManager.readReceiptStore(), ydbTransaction: ydbTransaction)
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSOutgoingReceiptManager.readReceiptStore", keyStore: OWSOutgoingReceiptManager.readReceiptStore(), ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "VersionedProfiles.credentialStore", keyStore: VersionedProfiles.credentialStore, ydbTransaction: ydbTransaction)
         ]
 
         for (label, keyStore) in YDBToGRDBMigration.otherKeyStores {

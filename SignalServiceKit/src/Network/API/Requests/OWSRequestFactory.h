@@ -41,9 +41,15 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)getMessagesRequest;
 
-+ (TSRequest *)getProfileRequestWithAddress:(SignalServiceAddress *)address
-                                udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
-    NS_SWIFT_NAME(getProfileRequest(address:udAccessKey:));
++ (TSRequest *)getUnversionedProfileRequestWithAddress:(SignalServiceAddress *)address
+                                           udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
+    NS_SWIFT_NAME(getUnversionedProfileRequest(address:udAccessKey:));
+
++ (TSRequest *)getVersionedProfileRequestWithAddress:(SignalServiceAddress *)address
+                                   profileKeyVersion:(nullable NSData *)profileKeyVersion
+                                   credentialRequest:(nullable NSData *)credentialRequest
+                                         udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
+    NS_SWIFT_NAME(getVersionedProfileRequest(address:profileKeyVersion:credentialRequest:udAccessKey:));
 
 + (TSRequest *)turnServerInfoRequest;
 
