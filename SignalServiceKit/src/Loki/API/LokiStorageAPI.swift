@@ -92,7 +92,7 @@ public final class LokiStorageAPI : LokiDotNetAPI {
             let url = URL(string: "\(server)/users/me")!
             let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { _ in }.recover(on: DispatchQueue.global()) { error in
+            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { _ in }.retryingIfNeeded(maxRetryCount: 8).recover(on: DispatchQueue.global()) { error in
                 print("Couldn't update device links due to error: \(error).")
                 throw error
             }

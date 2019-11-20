@@ -112,17 +112,17 @@ final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableView
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         defer { tableView.deselectRow(at: indexPath, animated: true) }
-        let device = deviceLinks[indexPath.row].other
+        let deviceLink = deviceLinks[indexPath.row]
         let sheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         sheet.addAction(UIAlertAction(title: NSLocalizedString("Change Name", comment: ""), style: .default) { [weak self] _ in
             guard let self = self else { return }
             let deviceNameModal = DeviceNameModal()
-            deviceNameModal.device = device
+            deviceNameModal.device = deviceLink.other
             deviceNameModal.delegate = self
             self.present(deviceNameModal, animated: true, completion: nil)
         })
-        sheet.addAction(UIAlertAction(title: NSLocalizedString("Unlink", comment: ""), style: .destructive) { _ in
-            // TODO: Implement
+        sheet.addAction(UIAlertAction(title: NSLocalizedString("Unlink", comment: ""), style: .destructive) { [weak self] _ in
+            self?.removeDeviceLink(deviceLink)
         })
         sheet.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel) { _ in })
         present(sheet, animated: true, completion: nil)
@@ -131,6 +131,19 @@ final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableView
     @objc func handleDeviceNameChanged(to name: String, for device: DeviceLink.Device) {
         dismiss(animated: true, completion: nil)
         updateUI()
+    }
+    
+    private func removeDeviceLink(_ deviceLink: DeviceLink) {
+        LokiStorageAPI.removeDeviceLink(deviceLink).done { [weak self] in
+            guard let thread = TSContactThread.fetch(uniqueId: TSContactThread.threadId(fromContactId: deviceLink.other.hexEncodedPublicKey)) else { return }
+            let unlinkDeviceMessage = UnlinkDeviceMessage(thread: thread)!
+            ThreadUtil.enqueue(unlinkDeviceMessage)
+            self?.updateDeviceLinks()
+        }.catch { [weak self] _ in
+            let alert = UIAlertController(title: NSLocalizedString("Couldn't Unlink Device", comment: ""), message: NSLocalizedString("Please check your internet connection and try again", comment: ""), preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), accessibilityIdentifier: nil, style: .default, handler: nil))
+            self?.present(alert, animated: true, completion: nil)
+        }
     }
 }
 

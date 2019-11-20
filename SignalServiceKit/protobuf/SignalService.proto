@@ -148,6 +148,7 @@ message DataMessage {
     END_SESSION             = 1;
     EXPIRATION_TIMER_UPDATE = 2;
     PROFILE_KEY_UPDATE      = 4;
+    UNLINK_DEVICE           = 8;
   }
 
   message Quote {
@@ -247,7 +248,7 @@ message DataMessage {
   // Loki: A custom message for our profile
   message LokiProfile {
     optional string displayName = 1;
-    optional AttachmentPointer avatar = 2;
+    optional string profilePicture = 2;
   }
 
   optional string             body        = 1;

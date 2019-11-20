@@ -101,6 +101,13 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     }];
 }
 
++ (void)enqueueUnlinkDeviceMessage:(LKUnlinkDeviceMessage *)message
+{
+    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+    }];
+}
+
 + (TSOutgoingMessage *)enqueueMessageWithText:(NSString *)fullMessageText
                                      inThread:(TSThread *)thread
                              quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel

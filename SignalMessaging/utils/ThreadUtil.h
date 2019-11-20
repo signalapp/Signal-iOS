@@ -5,6 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class LKDeviceLinkMessage;
+@class LKUnlinkDeviceMessage;
 @class OWSBlockingManager;
 @class OWSContact;
 @class OWSContactsManager;
@@ -47,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSOutgoingMessage *)enqueueFriendRequestAcceptanceMessageInThread:(TSThread *)thread;
 + (void)enqueueDeviceLinkMessage:(LKDeviceLinkMessage *)message;
++ (void)enqueueUnlinkDeviceMessage:(LKUnlinkDeviceMessage *)message;
 
 + (TSOutgoingMessage *)enqueueMessageWithText:(NSString *)fullMessageText
                                      inThread:(TSThread *)thread

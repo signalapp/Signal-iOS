@@ -3433,6 +3433,7 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
         case endSession = 1
         case expirationTimerUpdate = 2
         case profileKeyUpdate = 4
+        case unlinkDevice = 8
     }
 
     private class func SSKProtoDataMessageFlagsWrap(_ value: SignalServiceProtos_DataMessage.Flags) -> SSKProtoDataMessageFlags {
@@ -3440,6 +3441,7 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
         case .endSession: return .endSession
         case .expirationTimerUpdate: return .expirationTimerUpdate
         case .profileKeyUpdate: return .profileKeyUpdate
+        case .unlinkDevice: return .unlinkDevice
         }
     }
 
@@ -3448,6 +3450,7 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
         case .endSession: return .endSession
         case .expirationTimerUpdate: return .expirationTimerUpdate
         case .profileKeyUpdate: return .profileKeyUpdate
+        case .unlinkDevice: return .unlinkDevice
         }
     }
 

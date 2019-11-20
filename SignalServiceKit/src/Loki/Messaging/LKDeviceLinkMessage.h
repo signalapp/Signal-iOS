@@ -3,7 +3,6 @@
 typedef NS_ENUM(NSUInteger, LKDeviceLinkMessageKind) {
     LKDeviceLinkMessageKindRequest = 1,
     LKDeviceLinkMessageKindAuthorization = 2,
-    LKDeviceLinkMessageKindRevocation = 3
 };
 
 NS_SWIFT_NAME(DeviceLinkMessage)
