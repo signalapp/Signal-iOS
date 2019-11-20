@@ -153,8 +153,8 @@ private class TSConstantsProduction: TSConstantsProtocol {
         return contactDiscoveryEnclaveName
     }
 
-    public let keyBackupEnclaveName = "281b2220946102e8447b1d72a02b52d413c390780bae3e3a5aad27398999e7a3"
-    public let keyBackupMrEnclave = "94029382f0a8947a72df682e6972f58bbb6dda2f5ec51ab0974bd40c781b719b"
+    public let keyBackupEnclaveName = "f2e2a5004794a6c1bac5c4949eadbc243dd02e02d1a93f10fe24584fb70815d8"
+    public let keyBackupMrEnclave = "f51f435802ada769e67aaf5744372bb7e7d519eecf996d335eb5b46b872b5789"
     public var keyBackupServiceId: String {
         return keyBackupEnclaveName
     }
@@ -185,8 +185,8 @@ private class TSConstantsStaging: TSConstantsProtocol {
         return contactDiscoveryEnclaveName
     }
 
-    public let keyBackupEnclaveName = "2709220be70c8e45e9e92131512f74358625ea7b25b353f148488d5aadf3e87a"
-    public let keyBackupMrEnclave = "0038324960141c82f1b30f3df41a87a4c9d3a00f0143e2d6ea934871c6f93dfc"
+    public let keyBackupEnclaveName = "b5a865941f95887018c86725cc92308d34a3084dc2b4e7bd2de5e5e1690b50c6"
+    public let keyBackupMrEnclave = "f51f435802ada769e67aaf5744372bb7e7d519eecf996d335eb5b46b872b5789"
     public var keyBackupServiceId: String {
         return keyBackupEnclaveName
     }
