@@ -189,9 +189,6 @@ public class VideoEditorModel: NSObject {
         private let isConsumed = AtomicBool(false)
 
         required init(model: VideoEditorModel) {
-            // The model's properties can only be accessed on the main thread.
-            AssertIsOnMainThread()
-
             self.srcVideoPath = model.srcVideoPath
             self.untrimmedDuration = model.untrimmedDuration
             self.trimmedStartSeconds = model.trimmedStartSeconds
