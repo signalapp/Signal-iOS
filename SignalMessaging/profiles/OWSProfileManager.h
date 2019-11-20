@@ -29,6 +29,8 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 @property (nonatomic, readonly) SDSKeyValueStore *whitelistedUUIDsStore;
 @property (nonatomic, readonly) SDSKeyValueStore *whitelistedGroupsStore;
 
+@property (atomic) BOOL isUpdatingProfileOnService;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage NS_DESIGNATED_INITIALIZER;

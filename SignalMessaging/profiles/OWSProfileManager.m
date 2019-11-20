@@ -89,16 +89,12 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     OWSAssertIsOnMainThread();
     OWSAssertDebug(databaseStorage);
 
-    NSString *const kOWSProfileManager_UserPhoneNumberWhitelistCollection
-        = @"kOWSProfileManager_UserWhitelistCollection";
-    NSString *const kOWSProfileManager_UserUUIDWhitelistCollection = @"kOWSProfileManager_UserUUIDWhitelistCollection";
-    NSString *const kOWSProfileManager_GroupWhitelistCollection = @"kOWSProfileManager_GroupWhitelistCollection";
-
     _whitelistedPhoneNumbersStore =
-        [[SDSKeyValueStore alloc] initWithCollection:kOWSProfileManager_UserPhoneNumberWhitelistCollection];
+        [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_UserWhitelistCollection"];
     _whitelistedUUIDsStore =
-        [[SDSKeyValueStore alloc] initWithCollection:kOWSProfileManager_UserUUIDWhitelistCollection];
-    _whitelistedGroupsStore = [[SDSKeyValueStore alloc] initWithCollection:kOWSProfileManager_GroupWhitelistCollection];
+        [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_UserUUIDWhitelistCollection"];
+    _whitelistedGroupsStore =
+        [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_GroupWhitelistCollection"];
 
     _profileAvatarImageCache = [NSCache new];
     _currentAvatarDownloads = [NSMutableSet new];
@@ -873,17 +869,20 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (void)logProfileWhitelist
 {
     [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        OWSLogError(@"kOWSProfileManager_UserPhoneNumberWhitelistCollection: %lu",
+        OWSLogError(@"%@: %lu",
+            self.whitelistedPhoneNumbersStore.collection,
             (unsigned long)[self.whitelistedPhoneNumbersStore numberOfKeysWithTransaction:transaction]);
         for (NSString *key in [self.whitelistedPhoneNumbersStore allKeysWithTransaction:transaction]) {
             OWSLogError(@"\t profile whitelist user phone number: %@", key);
         }
-        OWSLogError(@"kOWSProfileManager_UserUUIDWhitelistCollection: %lu",
+        OWSLogError(@"%@: %lu",
+            self.whitelistedUUIDsStore.collection,
             (unsigned long)[self.whitelistedUUIDsStore numberOfKeysWithTransaction:transaction]);
         for (NSString *key in [self.whitelistedUUIDsStore allKeysWithTransaction:transaction]) {
             OWSLogError(@"\t profile whitelist user uuid: %@", key);
         }
-        OWSLogError(@"kOWSProfileManager_GroupWhitelistCollection: %lu",
+        OWSLogError(@"%@: %lu",
+            self.whitelistedGroupsStore.collection,
             (unsigned long)[self.whitelistedGroupsStore numberOfKeysWithTransaction:transaction]);
         for (NSString *key in [self.whitelistedGroupsStore allKeysWithTransaction:transaction]) {
             OWSLogError(@"\t profile whitelist group: %@", key);

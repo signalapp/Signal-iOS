@@ -296,6 +296,7 @@ extension YDBToGRDBMigration {
             GRDBKeyValueStoreMigrator<Any>(label: "OWSProfileManager.whitelistedPhoneNumbersStore", keyStore: profileManager.whitelistedPhoneNumbersStore, ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSProfileManager.whitelistedUUIDsStore", keyStore: profileManager.whitelistedUUIDsStore, ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSProfileManager.whitelistedGroupsStore", keyStore: profileManager.whitelistedGroupsStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSProfileManager.settingsStore", keyStore: OWSProfileManager.settingsStore, ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSScreenLock.keyValueStore", keyStore: OWSScreenLock.shared.keyValueStore, ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSSounds", keyStore: OWSSounds.keyValueStore(), ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "Theme", keyStore: Theme.keyValueStore(), ydbTransaction: ydbTransaction),
