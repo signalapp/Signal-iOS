@@ -2439,10 +2439,10 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Sansür Atlatma";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_DEBUGLOG" = "Hata Ayıklama Kaydını etkinleştir";
+"SETTINGS_ADVANCED_DEBUGLOG" = "Hata Ayıklama Günlüğünü etkinleştir";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Hata Ayıklama Kaydını gönder";
+"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Hata Ayıklama Günlüğünü gönder";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Gelişmiş";
