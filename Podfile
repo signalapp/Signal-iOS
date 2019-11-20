@@ -97,6 +97,7 @@ post_install do |installer|
   enable_extension_support_for_purelayout(installer)
   configure_warning_flags(installer)
   configure_testable_build(installer)
+  disable_bitcode(installer)
 end
 
 # PureLayout by default makes use of UIApplication, and must be configured to be built for an extension.
@@ -143,3 +144,11 @@ def configure_testable_build(installer)
   end
 end
 
+
+def disable_bitcode(installer)
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['ENABLE_BITCODE'] = 'NO'
+    end
+  end
+end
