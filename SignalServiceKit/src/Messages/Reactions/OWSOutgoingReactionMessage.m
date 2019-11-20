@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
                          emoji:(NSString *)emoji
                     isRemoving:(BOOL)isRemoving
 {
-    OWSAssertDebug(thread.uniqueId == message.uniqueThreadId);
+    OWSAssertDebug([thread.uniqueId isEqualToString:message.uniqueThreadId]);
     OWSAssertDebug(emoji.isSingleEmoji);
 
     // MJK TODO - remove senderTimestamp
@@ -96,8 +96,46 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoDataMessageBuilder *builder = [SSKProtoDataMessage builder];
     [builder setTimestamp:self.timestamp];
     [builder setReaction:reactionProto];
+    [builder setRequiredProtocolVersion:SSKProtoDataMessageProtocolVersionReactions];
 
     return builder;
+}
+
+- (void)updateWithSendingError:(NSError *)error transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super updateWithSendingError:error transaction:transaction];
+
+    // Do nothing if we successfully delivered to anyone. Only cleanup
+    // local state if we fail to deliver to anyone.
+    if (self.sentRecipientAddresses.count > 0) {
+        OWSLogError(@"Failed to send reaction to some recipients: %@", error.localizedDescription);
+        return;
+    }
+
+    SignalServiceAddress *_Nullable localAddress = TSAccountManager.sharedInstance.localAddress;
+    if (!localAddress) {
+        OWSFailDebug(@"unexpectedly missing local address");
+        return;
+    }
+
+    OWSLogError(@"Failed to send reaction to all recipients: %@", error.localizedDescription);
+
+    OWSReaction *_Nullable currentReaction = [self.message reactionForReactor:localAddress transaction:transaction];
+
+    if (![NSString isNullableObject:currentReaction.uniqueId equalTo:self.createdReaction.uniqueId]) {
+        OWSLogInfo(@"Skipping reversion, changes have been made since we tried to send this message.");
+        return;
+    }
+
+    if (self.previousReaction) {
+        [self.message recordReactionForReactor:self.previousReaction.reactor
+                                         emoji:self.previousReaction.emoji
+                               sentAtTimestamp:self.previousReaction.sentAtTimestamp
+                           receivedAtTimestamp:self.previousReaction.receivedAtTimestamp
+                                   transaction:transaction];
+    } else {
+        [self.message removeReactionForReactor:localAddress transaction:transaction];
+    }
 }
 
 @end

@@ -36,14 +36,12 @@ public class ReactionManager: NSObject {
             isRemoving: isRemoving
         )
 
-        let removedOrReplacedReaction = message.reaction(for: localAddress, transaction: transaction)
-        let createdReaction: OWSReaction?
+        outgoingMessage.previousReaction = message.reaction(for: localAddress, transaction: transaction)
 
         if isRemoving {
             message.removeReaction(for: localAddress, transaction: transaction)
-            createdReaction = nil
         } else {
-            createdReaction = message.recordReaction(
+            outgoingMessage.createdReaction = message.recordReaction(
                 for: localAddress,
                 emoji: emoji,
                 sentAtTimestamp: outgoingMessage.timestamp,
@@ -52,43 +50,7 @@ public class ReactionManager: NSObject {
             )
         }
 
-        // We intentionally don't send reactions durably since we don't want to clutter
-        // the user's message history with failure information. Instead, if it fails in
-        // sending to any recipients, we rollback the changes. For example, if you try
-        // and react to a message you will immediately see the reaction appear on the
-        // bubble. If we end up failing to send, the reaction will disappear from the
-        // bubble without any further indication to the user.
-        //
-        // TODO: Retry this send 3 times back-to-back before failing, to help out
-        // with group sends / flakey networks.
-        SSKEnvironment.shared.messageSender.sendMessage(.promise, outgoingMessage.asPreparer)
-            .catch(on: .global()) { error in
-                Logger.error("Failed to send reaction with error: \(error.localizedDescription)")
-
-                // Revert the changes we made.
-                // TODO: determine if the message succeeded in sending to _anyone_
-                // and if so, ignore this failure.
-                databaseStorage.write { transaction in
-                    guard let currentReaction = message.reaction(for: localAddress, transaction: transaction),
-                        currentReaction == createdReaction else {
-                            Logger.info("Skipping reversion, changes have been made since we tried to send this message.")
-                            return
-                    }
-
-                    if let removedOrReplacedReaction = removedOrReplacedReaction {
-                        message.recordReaction(
-                            for: removedOrReplacedReaction.reactor,
-                            emoji: removedOrReplacedReaction.emoji,
-                            sentAtTimestamp: removedOrReplacedReaction.sentAtTimestamp,
-                            receivedAtTimestamp: removedOrReplacedReaction.receivedAtTimestamp,
-                            transaction: transaction
-                        )
-                    } else if !isRemoving {
-                        message.removeReaction(for: localAddress, transaction: transaction)
-                    }
-                }
-            }
-            .retainUntilComplete()
+        SSKEnvironment.shared.messageSenderJobQueue.add(message: outgoingMessage.asPreparer, transaction: transaction)
     }
 
     @objc

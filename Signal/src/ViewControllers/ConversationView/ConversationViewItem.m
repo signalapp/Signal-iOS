@@ -134,6 +134,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 @property (nonatomic, nullable) NSString *authorConversationColorName;
 @property (nonatomic, nullable) ConversationStyle *conversationStyle;
 @property (nonatomic, nullable) NSArray<NSString *> *mutualGroupNames;
+@property (nonatomic, nullable) InteractionReactionState *reactionState;
 
 @end
 
@@ -178,6 +179,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 
     [self setAuthorConversationColorNameWithTransaction:transaction];
     [self setMutualGroupNamesWithTransaction:transaction];
+    [self ensureReactionStateWithTransaction:transaction];
 
     [self ensureViewState:transaction];
 
@@ -227,6 +229,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 
     [self setAuthorConversationColorNameWithTransaction:transaction];
     [self setMutualGroupNamesWithTransaction:transaction];
+    [self ensureReactionStateWithTransaction:transaction];
 
     [self clearCachedLayoutState];
 
@@ -285,6 +288,14 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
             return thread.groupNameOrDefault;
         }];
     }
+}
+
+- (void)ensureReactionStateWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSCAssertDebug(transaction);
+
+    self.reactionState = [[InteractionReactionState alloc] initWithInteraction:self.interaction
+                                                                   transaction:transaction];
 }
 
 - (NSString *)itemId

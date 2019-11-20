@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) OWSMessageViewOnceView *messageViewOnceView;
 @property (nonatomic) AvatarImageView *avatarView;
 @property (nonatomic, nullable) UIImageView *sendFailureBadgeView;
+@property (nonatomic) ReactionBubblesView *reactionBubblesView;
 
 @property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
 
@@ -48,13 +49,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame
 {
     if (self = [super initWithFrame:frame]) {
-        [self commontInit];
+        [self commonInit];
     }
 
     return self;
 }
 
-- (void)commontInit
+- (void)commonInit
 {
     // Ensure only called once.
     OWSAssertDebug(!self.messageBubbleView);
@@ -96,6 +97,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.contentView addGestureRecognizer:self.avatarTapGestureRecognizer];
     [self.avatarTapGestureRecognizer requireGestureRecognizerToFail:self.panGestureRecognizer];
     [self.avatarTapGestureRecognizer requireGestureRecognizerToFail:self.tapGestureRecognizer];
+
+    self.reactionBubblesView = [ReactionBubblesView new];
 
     [self setupSwipeContainer];
 }
@@ -258,6 +261,29 @@ NS_ASSUME_NONNULL_BEGIN
         ]];
     }
 
+    if ([self updateReactionsView]) {
+        if (self.isIncoming) {
+            [self.viewConstraints addObject:[self.reactionBubblesView autoPinEdge:ALEdgeLeading
+                                                                           toEdge:ALEdgeTrailing
+                                                                           ofView:messageView
+                                                                       withOffset:-8]];
+        } else {
+            [self.viewConstraints addObject:[self.reactionBubblesView autoPinEdge:ALEdgeTrailing
+                                                                           toEdge:ALEdgeLeading
+                                                                           ofView:messageView
+                                                                       withOffset:8]];
+        }
+
+        [self.viewConstraints addObjectsFromArray:@[
+            [self.reactionBubblesView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:messageView],
+            [self.reactionBubblesView autoPinEdge:ALEdgeBottom
+                                           toEdge:ALEdgeBottom
+                                           ofView:messageView
+                                       withOffset:0
+                                         relation:NSLayoutRelationLessThanOrEqual]
+        ]];
+    }
+
     // Swipe-to-reply
     [self.viewConstraints addObjectsFromArray:@[
         [self.swipeToReplyImageView autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:messageView withOffset:8],
@@ -364,6 +390,21 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateAvatarView];
 }
 
+#pragma mark - Reactions
+
+// Returns true IFF we should display reactions bubbles
+- (BOOL)updateReactionsView
+{
+    if (self.viewItem.reactionState == nil) {
+        return NO;
+    }
+
+    [self.reactionBubblesView configureWith:self.viewItem.reactionState];
+    [self.contentView addSubview:self.reactionBubblesView];
+
+    return YES;
+}
+
 #pragma mark - Measurement
 
 - (CGSize)cellSize
@@ -420,6 +461,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.avatarView.image = nil;
     [self.avatarView removeFromSuperview];
+
+    [self.reactionBubblesView removeFromSuperview];
 
     [self.sendFailureBadgeView removeFromSuperview];
     self.sendFailureBadgeView = nil;

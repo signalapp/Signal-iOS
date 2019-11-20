@@ -23,7 +23,13 @@ NS_ASSUME_NONNULL_BEGIN
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                                   messageSticker:(nullable MessageSticker *)messageSticker NS_UNAVAILABLE;
 
-- (instancetype)initWithThread:(TSThread *)thread message:(TSMessage *)message emoji:(NSString *)emoji isRemoving:(BOOL)isRemoving;
+- (instancetype)initWithThread:(TSThread *)thread
+                       message:(TSMessage *)message
+                         emoji:(NSString *)emoji
+                    isRemoving:(BOOL)isRemoving;
+
+@property (nonatomic, nullable) OWSReaction *createdReaction;
+@property (nonatomic, nullable) OWSReaction *previousReaction;
 
 @end
 

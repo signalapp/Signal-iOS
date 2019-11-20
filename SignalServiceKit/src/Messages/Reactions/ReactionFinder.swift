@@ -50,7 +50,7 @@ public class ReactionFinder: NSObject, ReactionFinderAdapter {
     }
 
     @objc
-    func reaction(for reactor: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> OWSReaction? {
+    public func reaction(for reactor: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> OWSReaction? {
         switch transaction.readTransaction {
         case .yapRead(let yapRead):
             return yapAdapter.reaction(for: reactor, transaction: yapRead)
@@ -60,7 +60,7 @@ public class ReactionFinder: NSObject, ReactionFinderAdapter {
     }
 
     @objc
-    func reactors(for emoji: String, transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+    public func reactors(for emoji: String, transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
         switch transaction.readTransaction {
         case .yapRead(let yapRead):
             return yapAdapter.reactors(for: emoji, transaction: yapRead)
@@ -69,7 +69,7 @@ public class ReactionFinder: NSObject, ReactionFinderAdapter {
         }
     }
 
-    func emojiCounts(transaction: SDSAnyReadTransaction) -> [(emoji: String, count: Int)] {
+    public func emojiCounts(transaction: SDSAnyReadTransaction) -> [(emoji: String, count: Int)] {
         switch transaction.readTransaction {
         case .yapRead(let yapRead):
             return yapAdapter.emojiCounts(transaction: yapRead)
@@ -79,7 +79,7 @@ public class ReactionFinder: NSObject, ReactionFinderAdapter {
     }
 
     @objc
-    func existsReaction(transaction: SDSAnyReadTransaction) -> Bool {
+    public func existsReaction(transaction: SDSAnyReadTransaction) -> Bool {
         switch transaction.readTransaction {
         case .yapRead(let yapRead):
             return yapAdapter.existsReaction(transaction: yapRead)
@@ -89,7 +89,7 @@ public class ReactionFinder: NSObject, ReactionFinderAdapter {
     }
 
     @objc
-    func enumerateReactions(
+    public func enumerateReactions(
         transaction: SDSAnyReadTransaction,
         block: @escaping (OWSReaction, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
@@ -102,7 +102,7 @@ public class ReactionFinder: NSObject, ReactionFinderAdapter {
     }
 
     @objc
-    func allUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
+    public func allUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
         switch transaction.readTransaction {
         case .yapRead(let yapRead):
             return yapAdapter.allUniqueIds(transaction: yapRead)
@@ -112,7 +112,7 @@ public class ReactionFinder: NSObject, ReactionFinderAdapter {
     }
 
     @objc
-    func deleteAllReactions(transaction: SDSAnyWriteTransaction) throws {
+    public func deleteAllReactions(transaction: SDSAnyWriteTransaction) throws {
         switch transaction.writeTransaction {
         case .yapWrite(let yapWrite):
             return try yapAdapter.deleteAllReactions(transaction: yapWrite)
