@@ -223,6 +223,13 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     });
 }
 
+// normally this should be a private method, but we expose it for a migration
+- (void)fixup_addDevicesToRegisteredRecipient:(NSSet<NSNumber *> *)devices
+                                  transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self addDevicesToRegisteredRecipient:devices transaction:transaction];
+}
+
 - (void)addDevicesToRegisteredRecipient:(NSSet<NSNumber *> *)devices transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
