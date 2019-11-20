@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "ممکن است شما زمانی که %@ در حال ری استارت بود پیام هایی دریافت کرده باشید.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "به دلیل باگ در فریم‌ورک اعلان آنی Apple، پیش‌نمایش پیام‌ها تنها در صورتی نمایش داده خواهند شد که 30 ثانیه پس از ارسال،‌ دریافت شوند. در نتیجه عدد کنار آیکون برنامه دقیق نخواهد بود.";
+"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "هیچ نام و یا محتوایی وجود ندارد";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "صداها";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "نام و محتوا";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "فقط نام";
@@ -2631,7 +2631,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "تایم اوت قفل صفحه نمایش";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "صفحه Signal را با استفاده از تاچ آیدی، فیس آیدی، یا رمزعبور دستگاه iOS خود آنلاک کنید. شما همچنان میتوانید به تماس های ورودی پاسخ داده و نوتیفیکیشن های پیام را زمانی که قفل صفحه نمایش فعال می باشد دریافت کنید. تنظیمات نوتیفیکیشن Signal به شما اجازه می دهد تا اطلاعاتی که نمایش داده می شود را تغییر دهید.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "قفل صفحه نمایش";

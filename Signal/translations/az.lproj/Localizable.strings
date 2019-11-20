@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "%@ yenidən başladılana qədən mesaj qəbul etmiş ola bilərsən.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Apple push çərçivəsinin bilinən xətalarına görə ismarışların öncəgörüntüsü göndəriləndən 30 saniyə sonra göstəriləcək. Ona görə tətbiqetmənin bu hissəsi tam doğru olmaya bilər.";
+"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Ad və Mətn Yoxdur";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Səslər";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Ad və Mətn";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Yalnız Ad";
@@ -2631,7 +2631,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Ekran Kilidi Müddəti";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Signal-ın ekran kilidini Touch ID, Face ID və ya sənin iOS cihazının şifrə ifadəsi vasitəsilə aç. Ekran Kilidi aktiv ola-ola sən zəng və mesaj qəbul edə biləcəksən. Signal-ın xəbərdarlıq parametrləri sənə nümayiş ediləcək məlumatları seçmək imkanı verir.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Ekran Kilidi";

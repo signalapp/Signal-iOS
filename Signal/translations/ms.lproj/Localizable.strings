@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Anda mungkin menerima mesej semasa %@ anda mulakan semula.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Oleh kerana pepijat yang diketahui dalam rangka kerja Apple, pratonton mesej hanya akan ditunjukkan jika mesej itu diambil dalam masa 30 saat selepas dihantar. Akibatnya, lencana permohonan mungkin tidak tepat.";
+"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Tiada Nama atau Kandungan";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Bunyi";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nama dan Kandungan";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Nama Sahaja";
@@ -2631,7 +2631,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Kunci Skrin Tamat Masa";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Buka kunci skrin SIgnal menggunakan ID Sentuh, ID Wajah, atau kod laluan peranti iOS anda. Anda masih boleh menjawab panggilan masuk dan menerima pemberitahuan mesej semasa Kunci Skrin diaktifkan. Tetapan pemberitahuan Signal membolehkan anda menyesuaikan maklumat yang dipaparkan.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Kunci Skrin";

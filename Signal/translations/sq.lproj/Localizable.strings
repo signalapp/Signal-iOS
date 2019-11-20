@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Mund të keni marrë mesazhe teksa %@ po rinisej.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Për shkak të metash në mekanizmin push të Apple-it, paraparje mesazhesh do të shfaqen vetëm nëse mesazhi merret brenda 30 sekondash pasi është dërguar. Për pasojë, stema që i vihet nga aplikacioni mund të jetë e pasaktë.";
+"NOTIFICATIONS_FOOTER_WARNING" = "Veprimet përfshijnë “Vëri Shenjë si I lexuar”, “Përgjigjuni”, dhe “Kthejini Thirrjen”.";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "S’ka Emër apo Lëndë";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Tinguj";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Emër dhe Lëndë";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Emër, Lëndë dhe Veprime";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Vetëm Emër";
@@ -2631,7 +2631,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Skadim Kyçjeje Ekrani";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Shkyçeni ekranin e Signal-it duke përdorur Touch ID, Face ID, ose frazëkalimin e pajisjes suaj iOS. Mundeni gjithnjë t’u përgjigjeni thirrjeve dhe të merrni njoftime mesazhesh teksa Kyçja e Ekranit është e aktivizuar. Rregullimet për njoftime nga Signal-i ju lejojnë të përshtatni informacionin që shfaqet.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Shkyçeni ekranin e Signal-it duke përdorur Touch ID, Face ID, ose frazëkalimin e pajisjes tuaj iOS. Mundeni prapë t’u përgjigjeni thirrjeve ardhëse dhe të merrni thirrje dhe njoftime mesazhesh teksa Kyçja e Ekranit është e aktivizuar. Rregullimet e njoftimeve nga Signal-i ju lejojnë të përshtatni të dhënat që shfaqen.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Kyçje Ekrani";

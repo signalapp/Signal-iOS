@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Has recibido mensajes mientras tu %@ estaba reiniciándose.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Debido a fallos del sistema de notificaciones de Apple, la previsualización de mensajes sólo ocurre si el mensaje se recupera 30 segundos después de haberse enviado. Como resultado, el número mostrado en el globo junto al icono de Signal puede ser incorrecto.";
+"NOTIFICATIONS_FOOTER_WARNING" = "Las acciones incluyen: «Marcar como leído», «Responder» o «Llamar».";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Ni remitente ni contenido";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Notificaciones sonoras";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Remitente y contenido";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nombre, contenido y acciones";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Sólo remitente";
@@ -2631,7 +2631,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Bloquear acceso tras";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Usa Touch ID, Face ID o el código de acceso de iOS para abrir Signal. Con Signal bloqueado, puedes reponder llamadas y ver notificaciones de mensajes. En los ajustes de Signal puedes seleccionar la información a mostrar por las notificaciones.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Desbloquea el acceso a Signal con Touch ID, Face ID o el código de iOS. Con el bloqueo de acceso activado, todavía puedes reponder llamadas y ver notificaciones de mensajes. Además, en los ajustes de Signal puedes seleccionar la información a mostrar por las notificaciones.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Bloqueo de acceso";

@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Bạn có thể đã nhận tin nhắn này khi %@ đang khởi động nguồn trở lại.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Do các lỗi đã biết của khung phần mềm của Apple, nội dung xem trước của tin nhắn sẽ chỉ hiển thị nếu tin nhắn được truy hồi trong vòng 30 giây sau khi được gửi. Biểu tượng của ứng dụng vì thế có thể sẽ không chính xác.";
+"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Không có Tên hoặc Nội dung";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Âm thanh";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Tên và Nội dung";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Chỉ dùng Tên";
@@ -2631,7 +2631,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Thời gian chờ Khóa Màn hình";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Mở khóa màn hình Signal bằng Touch ID, Face ID hoặc mật khẩu thiết bị iOS của bạn. Bạn vẫn có thể trả lời cuộc gọi đến và nhận thông báo tin nhắn khi bật tính năng Khóa Màn hình. Cài đặt thông báo của Signal cho phép bạn tùy chỉnh thông tin hiển thị.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Khóa Màn hình";

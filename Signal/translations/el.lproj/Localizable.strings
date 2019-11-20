@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Μπορεί να έχετε λάβει μηνύματα κατά την επανεκκίνηση του %@ σας.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Λόγω γνωστών σφαλμάτων στο πλαίσιο ειδοποιήσεων της Apple, οι προεπισκοπήσεις μηνυμάτων θα εμφανίζονται μόνο αν το μήνυμα ανακτηθεί εντός 30 δευτερολέπτων από την αποστολή. Κατά συνέπεια, ο μετρητής ειδοποιήσεων της εφαρμογής μπορεί να μην είναι ακριβής.";
+"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Κανένα Όνομα ή Περιεχόμενο";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Ήχοι";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Όνομα και Περιεχόμενο";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Μόνο Όνομα";
@@ -2631,7 +2631,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Αυτόματο Kλείδωμα Oθόνης";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Ξεκλειδώστε την οθόνη του Signal χρησιμοποιώντας το Touch ID, το Face ID ή τον κωδικό πρόσβασης της iOS συσκευής σας. Μπορείτε να απαντήσετε στις εισερχόμενες κλήσεις και να λάβετε ειδοποιήσεις μηνυμάτων ενώ είναι ενεργοποιημένη η λειτουργία Κλειδώματος Οθόνης. Οι ρυθμίσεις ειδοποιήσεων του Signal σας επιτρέπουν να προσαρμόσετε τις πληροφορίες που εμφανίζονται.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Κλείδωμα Οθόνης";

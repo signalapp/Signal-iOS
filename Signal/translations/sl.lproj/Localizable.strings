@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Možno je, da ste med ponovnim zagonom naprave %@ prejeli kakšno sporočilo.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Zaradi hroščev v Applovem potisnem mehanizmu je predogled sporočila možen le vkolikor je to prispelo v 30 sekundah po tem, ko je bilo poslano. Zato lahko prihaja do nenatančnosti pri časovnih oznakah sporočil.";
+"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Ne pošiljatelj, ne sporočilo";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Zvoki";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Pošiljatelj in sporočilo";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Samo pošiljatelj";
@@ -2631,7 +2631,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Časovni interval pred zaklepom aplikacije";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Odklepajte Signal s pomočjo Touch ID, Face ID ali gesla vaše naprave. Z vklopljenim Zaklepom zaslona boste še zmerom lahko odgovarjali na klice in prejemali sporočila. V nastavitvah obvestil za Signal lahko določite kaj vse bo vidno v obvestilih o novem sporočilu.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Zaklep zaslona";

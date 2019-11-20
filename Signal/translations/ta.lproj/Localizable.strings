@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "உங்கள் %@ மறுதொடக்கம் செய்யும்போது செய்திகளைப் பெற்றிருக்கலாம்.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "ஆப்பிளின் புஷ் கட்டமைப்பில் அறியப்பட்ட பிழைகள் காரணமாக, செய்தி அனுப்பப்பட்ட 30 விநாடிகளுக்குள் செய்தி மீட்டெடுக்கப்பட்டால் மட்டுமே செய்தி மாதிரிக்காட்சிகள் காண்பிக்கப்படும். இதன் விளைவாக பயன்பாட்டு பேட்ஜ் சரியாக இருக்காது.";
+"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "பெயர் அல்லது உள்ளடக்கம் இல்லை";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "ஒலிகள் ";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "பெயர் மற்றும் உள்ளடக்கம்";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "பெயர் மட்டும்";
@@ -2631,7 +2631,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "திரை பூட்டு நேரம் முடிந்தது";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "டச் ஐடி, ஃபேஸ் ஐடி அல்லது உங்கள் iOS சாதன கடவுக்குறியீட்டைப் பயன்படுத்தி Signal லின் திரையைத் திறக்கவும். திரை பூட்டு இயக்கப்பட்டிருக்கும்போது உள்வரும் அழைப்புகளுக்கு நீங்கள் பதிலளிக்கலாம் மற்றும் செய்தி அறிவிப்புகளைப் பெறலாம். Signal லின் அறிவிப்பு அமைப்புகள் காண்பிக்கப்படும் தகவலைத் தனிப்பயனாக்க உங்களை அனுமதிக்கின்றன.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "திரை பூட்டி";

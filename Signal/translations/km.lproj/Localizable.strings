@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "អ្នកប្រហែលបានទទួលសារ នៅពេល %@ របស់អ្នក កំពុងបើកឡើងវិញ។";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "ដោយសារបញ្ហាដែលបានរកឃើញ ក្នុងការជម្រុញក្រមខណ្ឌរបស់ Apple ការបើកមើលសារជាមុន នឹងបង្ហាញបាន ក្នុងករណីសារត្រូវបានទាញយកក្នុងពេល 30 វិនាទី បន្ទាប់ពីបានបញ្ជូន។ ផ្លាកកម្មវិធី អាចនឹងមិនត្រឹមត្រូវ ជាមួយលទ្ធផលជាក់ស្តែង។";
+"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "គ្មានឈ្មោះ ឬ ខ្លឹមសារ";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "សំឡេង";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "ឈ្មោះ និងខ្លឹមសារ";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "មានតែឈ្មោះ";
@@ -2631,7 +2631,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "រយៈពេលចាក់សោរអេក្រង់";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "ដោះសោរ អេក្រង់ Signal ដោយប្រើ  Touch ID, Face ID, ឬលេខកូដលើឧបករណ៍ iOS របស់អ្នក។ អ្នកនៅតែអាចទទួលការហៅចូល និងសារជូនដំណឹង នៅពេល បានបើកសោរអេក្រង់។ ការកំណត់ការជូនដំណឹង Signal អនុញ្ញាតឲ្យអ្នកកំណត់ព័ត៌មាន ដែលបានបង្ហាញ។";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "អេក្រង់ចាក់សោរ";

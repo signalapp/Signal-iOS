@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "আপনার %@ পুনঃসূচনা করার সময় হয়তবা আপনি বার্তা পেয়েছেন।";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "অ্যাপলের পুশ ফ্রেমওয়ার্কের চেনা বাগগুলির কারণে, বার্তা প্রেরণের 30 সেকেন্ডের মধ্যে বার্তাটি পুনরুদ্ধার করা হলেই কেবলমাত্র বার্তার পূর্বরূপগুলি প্রদর্শিত হবে। ফলস্বরূপ অ্যাপ্লিকেশন ব্যাজটিতে ভুল দেখাতে পারে।";
+"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "কোন নাম বা বিষয়বস্তু নেই";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "শব্দসমূহ";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "নাম এবং বিষয়বস্তু";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "শুধুমাত্র নাম";
@@ -2631,7 +2631,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "স্ক্রীন এর লক্ সময়সীমা";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "টাচ আইডি, ফেস আইডি বা আপনার আইওএস ডিভাইস পাসকোড ব্যবহার করে সিগন্যালের স্ক্রীন লক্ খুলুন করুন। আপনি এই অবস্থাতেও ইনকামিং কল সমূহ জবাব দিতে পারেন এবং স্ক্রীন এর লক্ সক্ষম থাকা অবস্থায় বার্তার বিজ্ঞপ্তিগুলি পেতে পারেন। সিগন্যালের বিজ্ঞপ্তি সেটিংস আপনাকে প্রদর্শিত তথ্য ইচ্ছামাফিক পরিবর্তন করার অনুমতি দেয়।";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "স্ক্রীন এর লক্";
