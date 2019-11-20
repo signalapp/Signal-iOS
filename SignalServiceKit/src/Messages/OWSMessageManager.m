@@ -1196,11 +1196,11 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     [LKStorageAPI getDeviceLinksAssociatedWith:userHexEncodedPublicKey].thenOn(dispatch_get_main_queue(), ^(NSSet<LKDeviceLink *> *deviceLinks) {
-        if (![deviceLinks contains:^BOOL(LKDeviceLink *deviceLink) {
+        if ([deviceLinks contains:^BOOL(LKDeviceLink *deviceLink) {
             return [deviceLink.master.hexEncodedPublicKey isEqual:senderHexEncodedPublicKey] && [deviceLink.slave.hexEncodedPublicKey isEqual:userHexEncodedPublicKey];
         }]) {
             [NSUserDefaults.standardUserDefaults setBool:YES forKey:@"wasUnlinked"];
-            [NSNotificationCenter.defaultCenter postNotification:NSNotification.dataNukeRequested];
+            [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.dataNukeRequested object:nil];
         }
     });
 }

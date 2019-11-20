@@ -1,8 +1,8 @@
 
 public extension OWSPrimaryStorage {
     
-    private func getDeviceLinkCollection(for primaryDevice: String) -> String {
-        return "LokiDeviceLinkCollection-\(primaryDevice)"
+    private func getDeviceLinkCollection(for masterHexEncodedPublicKey: String) -> String {
+        return "LokiDeviceLinkCollection-\(masterHexEncodedPublicKey)"
     }
 
     public func setDeviceLinks(_ deviceLinks: Set<DeviceLink>, in transaction: YapDatabaseReadWriteTransaction) {
