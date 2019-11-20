@@ -1,4 +1,3 @@
-import NVActivityIndicatorView
 
 @objc(LKNukeDataModal)
 final class NukeDataModal : Modal {

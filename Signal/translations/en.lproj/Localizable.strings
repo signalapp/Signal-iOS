@@ -2655,3 +2655,11 @@
 "Clear Profile Picture" = "Clear Profile Picture";
 "Invalid QR Code" = "Invalid QR Code";
 "Please make sure the QR code you scanned is correct and try again." = "Please make sure the QR code you scanned is correct and try again.";
+"Linked Devices" = "Linked Devices";
+"You don't have any linked devices yet" = "You don't have any linked devices yet";
+"Link a Device" = "Link a Device";
+"Unlink" = "Unlink";
+"Change Name" = "Change Name";
+"Change Device Name" = "Change Device Name";
+"Enter the new display name for your device below" = "Enter the new display name for your device below";
+"Enter a Name" = "Enter a Name";

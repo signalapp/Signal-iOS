@@ -45,6 +45,11 @@ extension UIView {
         }
     }
     
+    func center(in view: UIView) {
+        center(.horizontal, in: view)
+        center(.vertical, in: view)
+    }
+    
     func set(_ dimension: Dimension, to size: CGFloat) {
         translatesAutoresizingMaskIntoConstraints = false
         switch dimension {

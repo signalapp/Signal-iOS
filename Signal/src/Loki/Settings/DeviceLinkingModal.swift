@@ -145,7 +145,9 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         dismiss(animated: true, completion: nil)
         let master = DeviceLink.Device(hexEncodedPublicKey: deviceLink.master.hexEncodedPublicKey, signature: linkingAuthorizationMessage.masterSignature)
         let signedDeviceLink = DeviceLink(between: master, and: deviceLink.slave)
-        LokiStorageAPI.addDeviceLink(signedDeviceLink).catch { error in
+        LokiStorageAPI.addDeviceLink(signedDeviceLink).done { [weak self] in
+            self?.delegate?.handleDeviceLinkAuthorized(signedDeviceLink)
+        }.catch { error in
             print("[Loki] Failed to add device link due to error: \(error).")
         }
         Timer.scheduledTimer(withTimeInterval: 8, repeats: false) { _ in

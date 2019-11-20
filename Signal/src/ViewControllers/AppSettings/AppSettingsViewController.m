@@ -202,14 +202,13 @@
                                               actionBlock:^{
                                                   [weakSelf showNotifications];
                                               }]];
+    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"Linked Devices", @"")
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"linked_devices")
+                                              actionBlock:^{
+                                                  [weakSelf showLinkedDevices];
+                                              }]];
     // Loki: Original code
     // ========
-//    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"LINKED_DEVICES_TITLE",
-//                                                              @"Menu item and navbar title for the device manager")
-//                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"linked_devices")
-//                                              actionBlock:^{
-//                                                  [weakSelf showLinkedDevices];
-//                                              }]];
 //    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"")
 //                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"advanced")
 //                                              actionBlock:^{
@@ -248,25 +247,6 @@
 
     [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Share Public Key", @"") actionBlock:^{ [weakSelf sharePublicKey]; }]];
     [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Show QR Code", @"") actionBlock:^{ [weakSelf showQRCode]; }]];
-    if (isMasterDevice) {
-        NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-        __block BOOL hasLinkedDevice;
-        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            NSSet<LKDeviceLink *> *deviceLinks = [LKDatabaseUtilities getDeviceLinksFor:userHexEncodedPublicKey in:transaction];
-            hasLinkedDevice = deviceLinks.count > 0;
-        }];
-        [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Link Device", @"") actionBlock:^{
-            if (!hasLinkedDevice) {
-                [weakSelf linkDevice];
-            } else {
-                UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Multi Device Limit Reached", @"") message:NSLocalizedString(@"It's currently not allowed to link more than one device.", @"") preferredStyle:UIAlertControllerStyleAlert];
-                [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"") style:UIAlertActionStyleDefault handler:nil]];
-                [weakSelf presentViewController:alert animated:YES completion:nil];
-            }
-        }]];
-        
-        [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Show Seed", @"") actionBlock:^{ [weakSelf showSeed]; }]];
-    }
     [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Clear All Data", @"") actionBlock:^{ [weakSelf clearAllData]; }]];
     
     if (TSAccountManager.sharedInstance.isDeregistered) {
@@ -429,8 +409,8 @@
 
 - (void)showLinkedDevices
 {
-    OWSLinkedDevicesTableViewController *vc = [OWSLinkedDevicesTableViewController new];
-    [self.navigationController pushViewController:vc animated:YES];
+    LKDeviceLinksVC *deviceLinksVC = [LKDeviceLinksVC new];
+    [self.navigationController pushViewController:deviceLinksVC animated:YES];
 }
 
 - (void)showProfile
@@ -540,13 +520,6 @@
     LKQRCodeModal *qrCodeModal = [LKQRCodeModal new];
     qrCodeModal.modalPresentationStyle = UIModalPresentationOverFullScreen;
     [self presentViewController:qrCodeModal animated:YES completion:nil];
-}
-
-- (void)linkDevice
-{
-    LKDeviceLinkingModal *deviceLinkingModal = [[LKDeviceLinkingModal alloc] initWithMode:@"master" delegate:nil];
-    deviceLinkingModal.modalPresentationStyle = UIModalPresentationOverFullScreen;
-    [self presentViewController:deviceLinkingModal animated:YES completion:nil];
 }
 
 - (void)showSeed

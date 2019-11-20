@@ -4,7 +4,20 @@ public final class DeviceLink : NSObject, NSCoding {
     @objc public let master: Device
     @objc public let slave: Device
     
+    @objc public var displayName: String? {
+        if let customDisplayName = UserDefaults.standard.string(forKey: "\(other.hexEncodedPublicKey)_display_name") {
+            return customDisplayName
+        } else {
+            return Mnemonic.encode(hexEncodedString: other.hexEncodedPublicKey.removing05PrefixIfNeeded()).split(separator: " ")[0..<3].joined(separator: " ")
+        }
+    }
+    
     @objc public var isAuthorized: Bool { return master.signature != nil }
+    
+    @objc public var other: Device {
+        let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+        return (userHexEncodedPublicKey == master.hexEncodedPublicKey) ? slave : master
+    }
     
     // MARK: Types
     @objc(LKDevice)
