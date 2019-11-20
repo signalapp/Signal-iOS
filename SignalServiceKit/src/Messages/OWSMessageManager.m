@@ -591,6 +591,8 @@ NS_ASSUME_NONNULL_BEGIN
         [self handleExpirationTimerUpdateMessageWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
     } else if ((dataMessage.flags & SSKProtoDataMessageFlagsProfileKeyUpdate) != 0) {
         [self handleProfileKeyMessageWithEnvelope:envelope dataMessage:dataMessage];
+    } else if ((dataMessage.flags & SSKProtoDataMessageFlagsUnlinkDevice) != 0) {
+        [self handleUnlinkDeviceMessageWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
     } else if (dataMessage.attachments.count > 0) {
         [self handleReceivedMediaWithEnvelope:envelope
                                   dataMessage:dataMessage
@@ -1179,6 +1181,27 @@ NS_ASSUME_NONNULL_BEGIN
 
     id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
     [profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
+}
+
+- (void)handleUnlinkDeviceMessageWithEnvelope:(SSKProtoEnvelope *)envelope dataMessage:(SSKProtoDataMessage *)dataMessage transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    NSString *senderHexEncodedPublicKey = envelope.source;
+    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:userHexEncodedPublicKey in:transaction];
+    if (![masterHexEncodedPublicKey isEqual:senderHexEncodedPublicKey]) { return; }
+    NSSet<LKDeviceLink *> *deviceLinks = [LKDatabaseUtilities getDeviceLinksFor:senderHexEncodedPublicKey in:transaction];
+    if (![deviceLinks contains:^BOOL(LKDeviceLink *deviceLink) {
+        return [deviceLink.master.hexEncodedPublicKey isEqual:senderHexEncodedPublicKey] && [deviceLink.slave.hexEncodedPublicKey isEqual:userHexEncodedPublicKey];
+    }]) {
+        return;
+    }
+    [LKStorageAPI getDeviceLinksAssociatedWith:userHexEncodedPublicKey].thenOn(dispatch_get_main_queue(), ^(NSSet<LKDeviceLink *> *deviceLinks) {
+        if (![deviceLinks contains:^BOOL(LKDeviceLink *deviceLink) {
+            return [deviceLink.master.hexEncodedPublicKey isEqual:senderHexEncodedPublicKey] && [deviceLink.slave.hexEncodedPublicKey isEqual:userHexEncodedPublicKey];
+        }]) {
+            [NSNotificationCenter.defaultCenter postNotification:NSNotification.dataNukeRequested];
+        }
+    });
 }
 
 - (void)handleReceivedTextMessageWithEnvelope:(SSKProtoEnvelope *)envelope

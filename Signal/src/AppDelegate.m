@@ -319,11 +319,14 @@ static NSTimeInterval launchStartedAt;
                                                object:nil];
     
     // Loki - Observe new messages received notifications
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleNewMessagesReceived:) name:NSNotification.newMessagesReceived object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleNewMessagesReceived:) name:NSNotification.newMessagesReceived object:nil];
     
     // Loki - Observe thread deleted notifications
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleThreadDeleted:) name:NSNotification.threadDeleted object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleThreadDeleted:) name:NSNotification.threadDeleted object:nil];
 
+    // Loki - Observe data nuke request notifications
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleDataNukeRequested:) name:NSNotification.dataNukeRequested object:nil];
+    
     OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
 
     [OWSAnalytics appLaunchDidBegin];
@@ -1607,6 +1610,18 @@ static NSTimeInterval launchStartedAt;
         [self.lokiNewsFeedPoller stop];
         self.lokiNewsFeedPoller = nil;
     }
+}
+
+- (void)handleDataNukeRequested:(NSNotification *)notification {
+    [ThreadUtil deleteAllContent];
+    [SSKEnvironment.shared.identityManager clearIdentityKey];
+    [LKAPI clearRandomSnodePool];
+    [self stopLongPollerIfNeeded];
+    [SSKEnvironment.shared.tsAccountManager resetForReregistration];
+    UIViewController *rootVC = [OnboardingController new].initialViewController;
+    OWSNavigationController *navigationVC = [[OWSNavigationController alloc] initWithRootViewController:rootVC];
+    [navigationVC setNavigationBarHidden:YES];
+    UIApplication.sharedApplication.keyWindow.rootViewController = navigationVC;
 }
 
 @end

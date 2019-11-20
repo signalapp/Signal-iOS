@@ -48,15 +48,6 @@ final class NukeDataModal : Modal {
     // MARK: Interaction
     @objc private func nuke() {
         Analytics.shared.track("Data Nuked")
-        ThreadUtil.deleteAllContent()
-        SSKEnvironment.shared.identityManager.clearIdentityKey()
-        LokiAPI.clearRandomSnodePool()
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        appDelegate.stopLongPollerIfNeeded()
-        SSKEnvironment.shared.tsAccountManager.resetForReregistration()
-        let rootViewController = OnboardingController().initialViewController()
-        let navigationController = OWSNavigationController(rootViewController: rootViewController)
-        navigationController.isNavigationBarHidden = true
-        UIApplication.shared.keyWindow!.rootViewController = navigationController
+        NotificationCenter.default.post(name: .dataNukeRequested, object: nil)
     }
 }
