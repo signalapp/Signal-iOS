@@ -291,9 +291,8 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     OWSAssertDebug(transaction);
 
     SignalRecipient *_Nullable existingInstance = [self registeredRecipientForAddress:address
-                                                                      mustHaveDevices:YES
+                                                                      mustHaveDevices:NO
                                                                           transaction:transaction];
-
     if (existingInstance == nil) {
         OWSLogDebug(@"creating recipient: %@", address);
 
@@ -308,14 +307,20 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 
     BOOL hasChanged = NO;
 
+    if (existingInstance.devices.count == 0) {
+        hasChanged = YES;
+
+        // We know they're registered, so make sure they have at least one device.
+        // We assume it's the default device. If we're wrong, the service will correct us when we
+        // try to send a message to them
+        existingInstance.devices = [NSOrderedSet orderedSetWithObject:@(OWSDevicePrimaryDeviceId)];
+    }
+
     // If we've learned a users UUID, record it.
     if (existingInstance.recipientUUID == nil && address.uuid != nil) {
         hasChanged = YES;
 
-        [existingInstance anyUpdateWithTransaction:transaction
-                                             block:^(SignalRecipient *latestCopy) {
-                                                 latestCopy.recipientUUID = address.uuidString;
-                                             }];
+        existingInstance.recipientUUID = address.uuidString;
     }
 
     // If we've learned a users phone number, record it.
@@ -323,14 +328,12 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
         hasChanged = YES;
 
         OWSFailDebug(@"unexpectedly learned about a users phone number");
-        [existingInstance anyUpdateWithTransaction:transaction
-                                             block:^(SignalRecipient *latestCopy) {
-                                                 latestCopy.recipientPhoneNumber = address.phoneNumber;
-                                             }];
+        existingInstance.recipientPhoneNumber = address.phoneNumber;
     }
 
     // Record the updated contact in the social graph
     if (hasChanged) {
+        [existingInstance anyOverwritingUpdateWithTransaction:transaction];
         [self.storageServiceManager recordPendingUpdatesWithUpdatedIds:@[ existingInstance.accountId ]];
     }
 
