@@ -18,8 +18,7 @@ extension FeatureBuild {
     }
 }
 
-//let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
-let build: FeatureBuild = .beta
+let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
 
 // MARK: -
 

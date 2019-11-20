@@ -813,9 +813,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     NSString *base64EncodedName = [encryptedPaddedName base64EncodedString];
     // name length must match exactly
     if (base64EncodedName.length == kEncodedNameLength) {
-        // Remove any "/" in the base64 (all other base64 chars are URL safe.
-        // Apples built-in `stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URL*]]` doesn't offer a
-        // flavor for encoding "/".
         NSString *_Nullable urlEncodedName = base64EncodedName.encodeURIComponent;
         OWSFailDebug(@"Couldn't encode name.");
         urlString = [NSString stringWithFormat:textSecureSetProfileNameAPIFormat, urlEncodedName];

@@ -198,12 +198,11 @@ public class VersionedProfiles: NSObject {
                 throw OWSErrorMakeAssertionError("Invalid address: \(address)")
         }
 
-        let canRequestCredential = true
-
         var requestContext: ProfileKeyCredentialRequestContext?
         var profileKeyVersionArg: Data?
         var credentialRequestArg: Data?
         try databaseStorage.read { transaction in
+            // We try to include the profile key if we have one.
             guard let profileKeyForAddress: OWSAES256Key = self.profileManager.profileKey(for: address, transaction: transaction) else {
                 return
             }
@@ -212,18 +211,17 @@ public class VersionedProfiles: NSObject {
             let profileKeyVersionData = asData(bytes: profileKeyVersion.serialize())
             profileKeyVersionArg = profileKeyVersionData
 
-            if canRequestCredential {
-                let credential = try self.credentialData(for: address, transaction: transaction)
-                if credential == nil {
-                    let clientZkProfileOperations = try self.clientZkProfileOperations()
-                    let uuidData: Data = withUnsafeBytes(of: uuid.uuid) { Data($0) }
-                    let requestUuid = try Uuid(contents: [UInt8](uuidData))
-                    let context = try clientZkProfileOperations.createProfileKeyCredentialRequestContext(uuid: requestUuid,
-                                                                                                         profileKey: profileKey)
-                    requestContext = context
-                    let credentialRequest = try context.getRequest()
-                    credentialRequestArg = asData(bytes: credentialRequest.serialize())
-                }
+            // We need to request a credential if we don't have one already.
+            let credential = try self.credentialData(for: address, transaction: transaction)
+            if credential == nil {
+                let clientZkProfileOperations = try self.clientZkProfileOperations()
+                let uuidData: Data = withUnsafeBytes(of: uuid.uuid) { Data($0) }
+                let requestUuid = try Uuid(contents: [UInt8](uuidData))
+                let context = try clientZkProfileOperations.createProfileKeyCredentialRequestContext(uuid: requestUuid,
+                                                                                                     profileKey: profileKey)
+                requestContext = context
+                let credentialRequest = try context.getRequest()
+                credentialRequestArg = asData(bytes: credentialRequest.serialize())
             }
         }
 
