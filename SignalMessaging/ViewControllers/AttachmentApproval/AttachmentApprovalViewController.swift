@@ -590,6 +590,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         page.loadViewIfNeeded()
 
+        Logger.debug("currentItem for attachment: \(item.attachment.debugDescription)")
         self.setViewControllers([page], direction: direction, animated: isAnimated, completion: nil)
         updateMediaRail()
     }

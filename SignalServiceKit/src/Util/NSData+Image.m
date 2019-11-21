@@ -279,7 +279,7 @@ NSString *NSStringForImageFormat(ImageFormat value)
     return (width > 0 && width < kMaxValidSize && height > 0 && height < kMaxValidSize);
 }
 
-+ (CGSize)imageSizeForFilePath:(NSString *)filePath mimeType:(NSString *)mimeType
++ (CGSize)imageSizeForFilePath:(NSString *)filePath mimeType:(nullable NSString *)mimeType
 {
     ImageData *imageData = [self imageDataWithPath:filePath mimeType:mimeType];
     if (!imageData.isValid) {
