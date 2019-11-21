@@ -165,7 +165,9 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(MigrationId.dedupeSignalRecipients.rawValue) { db in
-            try dedupeSignalRecipients(transaction: GRDBWriteTransaction(database: db).asAnyWrite)
+            try autoreleasepool {
+                try dedupeSignalRecipients(transaction: GRDBWriteTransaction(database: db).asAnyWrite)
+            }
 
             try db.drop(index: "index_signal_recipients_on_recipientPhoneNumber")
             try db.drop(index: "index_signal_recipients_on_recipientUUID")
