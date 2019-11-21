@@ -100,10 +100,12 @@ extension OWSProfileManager {
 
     fileprivate class func attemptToUpdateProfileOnService(update: PendingProfileUpdate,
                                                            retryDelay: TimeInterval = 1) -> Promise<Void> {
+        Logger.verbose("")
+
         self.profileManager.isUpdatingProfileOnService = true
 
-        // Do this outside of any transaction; it should never use a sneaky
-        // transaction itself, but hypothetically could.
+        // We capture the local user profile early to eliminate the
+        // risk of opening a transaction within a transaction.
         let userProfile = self.profileManager.localUserProfile()
 
         let attempt = ProfileUpdateAttempt(update: update,
@@ -230,6 +232,8 @@ extension OWSProfileManager {
 
     private class func updateLocalProfile(with attempt: ProfileUpdateAttempt,
                                           transaction: SDSAnyWriteTransaction) {
+        Logger.verbose("profileName: \(attempt.update.profileName), avatarFilename: \(attempt.avatarFilename)")
+
         attempt.userProfile.update(profileName: attempt.update.profileName,
                                    avatarUrlPath: nil,
                                    avatarFileName: attempt.avatarFilename,
@@ -242,6 +246,8 @@ extension OWSProfileManager {
     private static let kPendingProfileUpdateKey = "kPendingProfileUpdateKey"
 
     private class func enqueueProfileUpdate(profileName: String?, profileAvatarData: Data?) -> PendingProfileUpdate {
+        Logger.verbose("")
+
         // Note that this might overwrite a pending profile update.
         // That's desirable.  We only ever want to retain the
         // latest changes.
@@ -271,6 +277,8 @@ extension OWSProfileManager {
     }
 
     private class func tryToDequeueProfileUpdate(update: PendingProfileUpdate, transaction: SDSAnyWriteTransaction) -> Bool {
+        Logger.verbose("")
+
         guard self.isCurrentPendingProfileUpdate(update: update, transaction: transaction) else {
             Logger.warn("Ignoring stale update completion.")
             return false
