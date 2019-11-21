@@ -135,25 +135,25 @@ extension OWSProfileManager {
                 } else {
                     return updateProfileOnServiceUnversioned(attempt: attempt)
                 }
-        }.done(on: .global()) { _ in
-            self.databaseStorage.write { transaction in
-                guard tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction) else {
-                    return
-                }
-
-                if attempt.update.profileAvatarData != nil {
-                    if attempt.avatarFilename == nil {
-                        owsFailDebug("Missing avatarFilename.")
+            }.done(on: .global()) { _ in
+                self.databaseStorage.write { transaction in
+                    guard tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction) else {
+                        return
                     }
-                    if attempt.avatarUrlPath == nil {
-                        owsFailDebug("Missing avatarUrlPath.")
+
+                    if attempt.update.profileAvatarData != nil {
+                        if attempt.avatarFilename == nil {
+                            owsFailDebug("Missing avatarFilename.")
+                        }
+                        if attempt.avatarUrlPath == nil {
+                            owsFailDebug("Missing avatarUrlPath.")
+                        }
                     }
+
+                    self.updateLocalProfile(with: attempt, transaction: transaction)
+
+                    self.profileManager.isUpdatingProfileOnService = false
                 }
-
-                self.updateLocalProfile(with: attempt, transaction: transaction)
-
-                self.profileManager.isUpdatingProfileOnService = false
-            }
         }
 
         promise.ensure {
@@ -190,7 +190,7 @@ extension OWSProfileManager {
         return updateProfileNameOnServiceUnversioned(attempt: attempt)
             .then { _ in
                 return updateProfileAvatarOnServiceUnversioned(attempt: attempt)
-            }
+        }
     }
 
     private class func updateProfileNameOnServiceUnversioned(attempt: ProfileUpdateAttempt) -> Promise<Void> {
