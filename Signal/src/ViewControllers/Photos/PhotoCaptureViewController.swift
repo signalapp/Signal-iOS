@@ -992,9 +992,7 @@ public class MovieLockView: UIView {
 
     let lockIconWidth: CGFloat = 24
     private lazy var lockIconView: UIImageView = {
-        let imageTemplate = #imageLiteral(resourceName: "ic_lock_outline").withRenderingMode(.alwaysTemplate)
-        let imageView = UIImageView(image: imageTemplate)
-        imageView.tintColor = .white
+        let imageView = UIImageView.withTemplateImage(#imageLiteral(resourceName: "ic_lock_outline"), tintColor: .white)
         imageView.autoSetDimensions(to: CGSize(square: lockIconWidth))
         return imageView
     }()
