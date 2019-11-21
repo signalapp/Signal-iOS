@@ -3433,7 +3433,7 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
         case endSession = 1
         case expirationTimerUpdate = 2
         case profileKeyUpdate = 4
-        case unlinkDevice = 8
+        case unlinkDevice = 128
     }
 
     private class func SSKProtoDataMessageFlagsWrap(_ value: SignalServiceProtos_DataMessage.Flags) -> SSKProtoDataMessageFlags {
