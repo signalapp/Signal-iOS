@@ -389,9 +389,7 @@ class SendMediaNavigationController: OWSNavigationController {
         if attachmentDraftCollection.count == 0 {
             self.sendMediaNavDelegate?.sendMediaNavDidCancel(self)
         } else {
-            let alertTitle = NSLocalizedString("SEND_MEDIA_ABANDON_TITLE", comment: "alert title when user attempts to leave the send media flow when they have an in-progress album")
-
-            let alert = ActionSheetController(title: alertTitle, message: nil)
+            let alert = ActionSheetController(title: nil, message: nil)
 
             let confirmAbandonText = NSLocalizedString("SEND_MEDIA_CONFIRM_ABANDON_ALBUM", comment: "alert action, confirming the user wants to exit the media flow and abandon any photos they've taken")
             let confirmAbandonAction = ActionSheetAction(title: confirmAbandonText,

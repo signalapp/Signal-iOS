@@ -1416,9 +1416,6 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Delete This Message";
 
-/* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "It will only be deleted on this device.";
-
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "More Info";
 
@@ -1428,14 +1425,8 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Reply to This Message";
 
-/* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "Save Media";
-
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";
-
-/* Label for the recipient name in the 'message approval' dialog. */
-"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "To:";
 
 /* Title for the compose view. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "New Message";
@@ -2389,9 +2380,6 @@
 
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "You invited your friend to use Signal!";
-
-/* alert title when user attempts to leave the send media flow when they have an in-progress album */
-"SEND_MEDIA_ABANDON_TITLE" = "Discard Media?";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Discard Media";
