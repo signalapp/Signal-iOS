@@ -142,8 +142,8 @@ extension OWSProfileManager {
                 }
 
                 if attempt.update.profileAvatarData != nil {
-                    if attempt.profileAvatarFilename == nil {
-                        owsFailDebug("Missing profileAvatarFilename.")
+                    if attempt.avatarFilename == nil {
+                        owsFailDebug("Missing avatarFilename.")
                     }
                     if attempt.avatarUrlPath == nil {
                         owsFailDebug("Missing avatarUrlPath.")
@@ -176,8 +176,8 @@ extension OWSProfileManager {
         let (promise, resolver) = Promise<Void>.pending()
         DispatchQueue.global().async {
             self.profileManager.writeAvatarToDisk(with: profileAvatarData,
-                                                  success: { profileAvatarFilename in
-                                                    attempt.profileAvatarFilename = profileAvatarFilename
+                                                  success: { avatarFilename in
+                                                    attempt.avatarFilename = avatarFilename
                                                     resolver.fulfill(())
             }, failure: { (error) in
                 resolver.reject(error)
@@ -232,7 +232,7 @@ extension OWSProfileManager {
                                           transaction: SDSAnyWriteTransaction) {
         attempt.userProfile.update(profileName: attempt.update.profileName,
                                    avatarUrlPath: nil,
-                                   avatarFileName: attempt.profileAvatarFilename,
+                                   avatarFileName: attempt.avatarFilename,
                                    transaction: transaction,
                                    completion: nil)
     }
@@ -282,15 +282,24 @@ extension OWSProfileManager {
 
 // MARK: -
 
-fileprivate class PendingProfileUpdate: MTLModel {
+private class PendingProfileUpdate: MTLModel {
+    // This property is optional so that MTLModel can populate it after initialization.
+    // It should always be set in practice.
     @objc
     var id: UUID?
 
+    // If nil, we are clearing the profile name.
     @objc
     var profileName: String?
 
+    // If nil, we are clearing the profile avatar.
     @objc
     var profileAvatarData: Data?
+
+    @objc
+    override init() {
+        super.init()
+    }
 
     @objc
     init(profileName: String?, profileAvatarData: Data?) {
@@ -323,13 +332,13 @@ fileprivate class PendingProfileUpdate: MTLModel {
 
 // MARK: -
 
-fileprivate class ProfileUpdateAttempt {
+private class ProfileUpdateAttempt {
     let update: PendingProfileUpdate
 
     let userProfile: OWSUserProfile
 
-    var profileAvatarFilename: String?
-
+    // These properties are populated during the update process.
+    var avatarFilename: String?
     var avatarUrlPath: String?
 
     init(update: PendingProfileUpdate, userProfile: OWSUserProfile) {

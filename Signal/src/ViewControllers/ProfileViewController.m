@@ -445,11 +445,9 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                   OWSFailDebug(@"Error: %@", error);
 
                                   [modalActivityIndicator dismissWithCompletion:^{
-                                      [OWSActionSheets
-                                          showErrorAlertWithMessage:NSLocalizedString(
-                                                                        @"PROFILE_VIEW_ERROR_UPDATE_FAILED",
-                                                                        @"Error message shown when a "
-                                                                        @"profile update fails.")];
+                                      // Don't show an error alert; the profile update
+                                      // is enqueued and will be completed later.
+                                      [weakSelf updateProfileCompleted];
                                   }];
                               }) retainUntilComplete];
                   }];
