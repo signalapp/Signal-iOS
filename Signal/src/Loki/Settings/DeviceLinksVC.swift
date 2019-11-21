@@ -90,9 +90,7 @@ final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableView
     
     func handleDeviceLinkAuthorized(_ deviceLink: DeviceLink) {
         // The modal already dismisses itself
-        // FIXME: Somehow calling updateDeviceLinks() is unreliable here
-        deviceLinks.append(deviceLink)
-        updateUI()
+        updateDeviceLinks()
     }
     
     func handleDeviceLinkingModalDismissed() {
