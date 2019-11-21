@@ -205,59 +205,71 @@ class SendMediaNavigationController: OWSNavigationController {
                 guard let topViewController = viewControllers.last else {
                     return
                 }
-                updateViewState(topViewController: topViewController)
+                updateViewState(topViewController: topViewController, animated: false)
             }
         }
     }
 
-    func updateViewState(topViewController: UIViewController) {
+    func updateViewState(topViewController: UIViewController, animated: Bool) {
+        let changes: () -> Void
         switch topViewController {
         case is AttachmentApprovalViewController:
-            isShowingMediaLibrary = false
-            batchModeButton.isHidden = true
-            doneButton.isHidden = true
-            cameraModeButton.isHidden = true
-            mediaLibraryModeButton.isHidden = true
+            changes = {
+                self.isShowingMediaLibrary = false
+                self.batchModeButton.alpha = 0
+                self.doneButton.alpha = 0
+                self.cameraModeButton.alpha = 0
+                self.mediaLibraryModeButton.alpha = 0
+            }
         case let mediaLibraryView as ImagePickerGridController:
-            isShowingMediaLibrary = true
-            let showDoneButton = isInBatchSelectMode && attachmentCount > 0
-            doneButton.isHidden = !showDoneButton
+            changes = {
+                self.isShowingMediaLibrary = true
+                let showDoneButton = self.isInBatchSelectMode && self.attachmentCount > 0
+                self.doneButton.alpha = showDoneButton ? 1 : 0
 
-            batchModeButton.isHidden = showDoneButton || isForcingBatchSelectInMediaLibrary
-            batchModeButton.isBeingPresentedOverPhotoCapture = false
+                self.batchModeButton.alpha = showDoneButton || self.isForcingBatchSelectInMediaLibrary ? 0 : 1
+                self.batchModeButton.isBeingPresentedOverPhotoCapture = false
 
-            cameraModeButton.isHidden = false
-            cameraModeButton.isBeingPresentedOverPhotoCapture = false
+                self.cameraModeButton.alpha = 1
+                self.cameraModeButton.isBeingPresentedOverPhotoCapture = false
 
-            mediaLibraryModeButton.isHidden = true
-            mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = false
+                self.mediaLibraryModeButton.alpha = 0
+                self.mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = false
 
-            mediaLibraryView.applyBatchSelectMode()
+                mediaLibraryView.applyBatchSelectMode()
+            }
         case is PhotoCaptureViewController:
-            isShowingMediaLibrary = false
-            let showDoneButton = isInBatchSelectMode && attachmentCount > 0
-            doneButton.isHidden = !showDoneButton || isRecordingMovie
+            changes = {
+                self.isShowingMediaLibrary = false
+                let showDoneButton = self.isInBatchSelectMode && self.attachmentCount > 0
+                self.doneButton.alpha = !showDoneButton || self.isRecordingMovie ? 0 : 1
 
-            batchModeButton.isHidden = showDoneButton || isRecordingMovie
-            batchModeButton.isBeingPresentedOverPhotoCapture = true
+                self.batchModeButton.alpha = showDoneButton || self.isRecordingMovie ? 0 : 1
+                self.batchModeButton.isBeingPresentedOverPhotoCapture = true
 
-            cameraModeButton.isHidden = true
-            cameraModeButton.isBeingPresentedOverPhotoCapture = true
+                self.cameraModeButton.alpha = 0
+                self.cameraModeButton.isBeingPresentedOverPhotoCapture = true
 
-            mediaLibraryModeButton.isHidden = isRecordingMovie
-            mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = true
+                self.mediaLibraryModeButton.alpha = self.isRecordingMovie ? 0 : 1
+                self.mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = true
+            }
         case is ConversationPickerViewController:
-            doneButton.isHidden = true
-            batchModeButton.isHidden = true
-            batchModeButton.isBeingPresentedOverPhotoCapture = false
-            cameraModeButton.isHidden = true
-            cameraModeButton.isBeingPresentedOverPhotoCapture = false
-            mediaLibraryModeButton.isHidden = true
-            mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = false
+            changes = {
+                self.doneButton.alpha = 0
+                self.batchModeButton.alpha = 0
+                self.cameraModeButton.alpha = 0
+                self.mediaLibraryModeButton.alpha = 0
+            }
         default:
             owsFailDebug("unexpected topViewController: \(topViewController)")
+            changes = { }
         }
 
+        if animated {
+            UIView.animate(withDuration: 0.3, animations: changes)
+        } else {
+            changes()
+        }
         doneButton.updateCount()
     }
 
@@ -421,7 +433,7 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
             break
         }
 
-        self.updateViewState(topViewController: viewController)
+        updateViewState(topViewController: viewController, animated: false)
     }
 
     // In case back navigation was canceled, we re-apply whatever is showing.
@@ -433,7 +445,7 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
                 owsFailDebug("unexpected navigationBar: \(navigationBar)")
             }
         }
-        self.updateViewState(topViewController: viewController)
+        updateViewState(topViewController: viewController, animated: false)
     }
 
     func navigationControllerSupportedInterfaceOrientations(_ navigationController: UINavigationController) -> UIInterfaceOrientationMask {
@@ -484,7 +496,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
         let cameraCaptureAttachment = CameraCaptureAttachment(signalAttachment: attachment, canSave: sendMediaNavDelegate.sendMediaNavCanSaveAttachments)
         attachmentDraftCollection.append(.camera(attachment: cameraCaptureAttachment))
         if isInBatchSelectMode {
-            updateViewState(topViewController: photoCaptureViewController)
+            updateViewState(topViewController: photoCaptureViewController, animated: false)
         } else {
             pushApprovalViewController(attachmentApprovalItems: [cameraCaptureAttachment.attachmentApprovalItem],
                                        animated: true)
@@ -515,7 +527,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
     func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, isRecordingMovie: Bool) {
         assert(self.isRecordingMovie != isRecordingMovie)
         self.isRecordingMovie = isRecordingMovie
-        updateViewState(topViewController: photoCaptureViewController)
+        updateViewState(topViewController: photoCaptureViewController, animated: true)
     }
 }
 
@@ -569,7 +581,7 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
         let libraryMedia = MediaLibraryAttachment(asset: asset, attachmentApprovalItemPromise: attachmentApprovalItemPromise)
         attachmentDraftCollection.append(.picker(attachment: libraryMedia))
 
-        updateViewState(topViewController: imagePicker)
+        updateViewState(topViewController: imagePicker, animated: false)
     }
 
     func imagePicker(_ imagePicker: ImagePickerGridController, didDeselectAsset asset: PHAsset) {
@@ -578,7 +590,7 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
         }
         attachmentDraftCollection.remove(.picker(attachment: draft))
 
-        updateViewState(topViewController: imagePicker)
+        updateViewState(topViewController: imagePicker, animated: false)
     }
 
     func imagePickerCanSelectMoreItems(_ imagePicker: ImagePickerGridController) -> Bool {
@@ -593,7 +605,7 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
 extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegate {
 
     func attachmentApprovalDidAppear(_ attachmentApproval: AttachmentApprovalViewController) {
-        updateViewState(topViewController: attachmentApproval)
+        updateViewState(topViewController: attachmentApproval, animated: true)
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageText newMessageText: String?) {
