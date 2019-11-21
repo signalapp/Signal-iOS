@@ -216,7 +216,7 @@ public class VersionedProfiles: NSObject {
             if credential == nil {
                 let clientZkProfileOperations = try self.clientZkProfileOperations()
                 let uuidData: Data = withUnsafeBytes(of: uuid.uuid) { Data($0) }
-                let requestUuid = try Uuid(contents: [UInt8](uuidData))
+                let requestUuid = try ZKGroup.Uuid(contents: [UInt8](uuidData))
                 let context = try clientZkProfileOperations.createProfileKeyCredentialRequestContext(uuid: requestUuid,
                                                                                                      profileKey: profileKey)
                 requestContext = context
@@ -237,13 +237,7 @@ public class VersionedProfiles: NSObject {
 
     private class func parseProfileKey(profileKey: OWSAES256Key) throws -> ProfileKey {
         let profileKeyData: Data = profileKey.keyData
-        guard profileKeyData.count == kAES256_KeyByteLength else {
-            throw OWSErrorMakeAssertionError("Invalid profile key: \(profileKeyData.count)")
-        }
         let profileKeyDataBytes = [UInt8](profileKeyData)
-        guard profileKeyDataBytes.count == kAES256_KeyByteLength else {
-            throw OWSErrorMakeAssertionError("Invalid profile key bytes: \(profileKeyDataBytes.count)")
-        }
         return try ProfileKey(contents: profileKeyDataBytes)
     }
 

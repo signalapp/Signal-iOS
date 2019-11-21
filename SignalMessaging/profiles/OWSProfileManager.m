@@ -465,7 +465,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     return data;
 }
 
-// TODO:
+// TODO: Rework "unversioned" profile updates.
 // If avatarData is nil, we are clearing the avatar.
 - (void)uploadAvatarToService:(NSData *_Nullable)avatarData
                       success:(void (^)(NSString *_Nullable avatarUrlPath))successBlock
@@ -514,7 +514,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     });
 }
 
-// TODO:
+// TODO: Rework "unversioned" profile updates.
 - (void)updateServiceWithProfileName:(nullable NSString *)localProfileName
                              success:(void (^)(void))successBlock
                              failure:(ProfileManagerFailureBlock)failureBlock {
