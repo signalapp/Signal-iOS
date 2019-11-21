@@ -808,6 +808,8 @@ extension CaptureOutput: AVCaptureVideoDataOutputSampleBufferDelegate, AVCapture
         assertOnQueue(movieRecordingQueue)
 
         guard let movieRecording = movieRecording else {
+            // `movieRecording` is assigned async after the capture pipeline has been set up.
+            // We'll drop a few frames before we're ready to start recording.
             return
         }
 
@@ -826,12 +828,16 @@ extension CaptureOutput: AVCaptureVideoDataOutputSampleBufferDelegate, AVCapture
                 movieRecordingQueue.async {
                     if movieRecording.videoInput.isReadyForMoreMediaData {
                         movieRecording.videoInput.append(sampleBuffer)
+                    } else {
+                        Logger.verbose("videoInput was not ready for more data")
                     }
                 }
             } else if output == self.audioDataOutput {
                 movieRecordingQueue.async {
                     if movieRecording.audioInput.isReadyForMoreMediaData {
                         movieRecording.audioInput.append(sampleBuffer)
+                    } else {
+                        Logger.verbose("audioInput was not ready for more data")
                     }
                 }
             } else {
