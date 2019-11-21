@@ -129,15 +129,15 @@ extension AttachmentFormatPickerView: PhotoCaptureDelegate {
         owsFailDebug("\(#function) should never be called")
     }
 
-    func photoCaptureDidBeginVideo(_ photoCapture: PhotoCapture) {
+    func photoCaptureDidBeginMovie(_ photoCapture: PhotoCapture) {
         owsFailDebug("\(#function) should never be called")
     }
 
-    func photoCaptureDidCompleteVideo(_ photoCapture: PhotoCapture) {
+    func photoCaptureDidCompleteMovie(_ photoCapture: PhotoCapture) {
         owsFailDebug("\(#function) should never be called")
     }
 
-    func photoCaptureDidCancelVideo(_ photoCapture: PhotoCapture) {
+    func photoCaptureDidCancelMovie(_ photoCapture: PhotoCapture) {
         owsFailDebug("\(#function) should never be called")
     }
 
