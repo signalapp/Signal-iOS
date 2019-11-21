@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "သင်၏ %@ ကို ပြန်လည်စတင်နေသည့်အချိန်အတွင်း စာများ လက်ခံရယူနိုင်ပါသည်။";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Apple ၏ Push framework တွင် ပြဿနာအချို့ရှိသောကြောင့်၊ စာကို စက္ကန့် 30 အတွင်းလက်ခံရရှိမှသာလျှင် အစမ်းကြည့်နိုင်မည်ဖြစ်ပြီး၊ application badge မှာလည်း မှားယွင်းနိုင်ပါသည်။";
+"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "နာမည် သို့မဟုတ် အကြောင်းအရာများ မရှိပါ";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "အသံ";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "နာမည်နှင့် အကြောင်းအရာများ";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "နာမည်တစ်ခုတည်းသာ";
@@ -2631,7 +2631,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "မျက်နှာပြင်လုံခြုံရေးသတ်မှတ်ချိန်ကျော်လွန်သွားပါပြီ";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Signal ကို Touch ID၊ Face ID သို့မဟုတ် သင်၏ iOS ဖုန်းပစ္စည်း၏ စကားဝှက်ဖြင့် ဖွင့်ပါ။ မျက်နှာပြင်ပိတ်ထားသော်လည်း အဝင်ဖုန်းများနှင့် စာတိုပေးပို့မှု သတိပေးချက်အားလုံးကို ဖြေဆိုနိုင်သည်။ Signal ၏ သတိပေးချက်အပြင်အဆင်များသည် ပြသလိုသည့် သတင်းအချက်ကိုသာရွေးချယ်ထားနိုင်သည်။";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "မျက်နှာပြင် သော့ခတ်ခြင်း";

@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "जब आपका %@ शुरु हो रहा था तब आपके पास मेसेज प्राप्त हुए हो सकते हैं।";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Apple के पुश फ्रेमवर्क में ख़राबी की वजह से मेसेजों का पूर्वावलोकन तभी हो सकता है अगर वो भेजने के 30 सेकंड के अंदर प्राप्त हो जाएँ। इस वजह से एप्लिकेशन बैज ग़लत हों सकते हैं।";
+"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "कोई नाम या विषय वस्तु नहीं";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "आवाज़ ";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "नाम और विषय वस्तु";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "केवल नाम";
@@ -2631,7 +2631,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "स्क्रीन लॉक टाइमआउट";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "आप Signal को टच ID, फ़ेस ID, या अपने iOS डिवाइस पासकोड से खोल सकते हैं। आप तब भी सक्रीन लॉक सक्षम होने पर भी आने वाली कॉल या मेसेज का जवाब दे पायेंगे। आप Signal की सूचना सेटिंग्स से क्या जानकारी दिखानी है, वह निश्चित कर सकते हैं। ";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "स्क्रीन लॉक";

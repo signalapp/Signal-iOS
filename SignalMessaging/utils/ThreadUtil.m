@@ -64,10 +64,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMessage,
-    NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos,
-    SDSAnyWriteTransaction *writeTransaction);
-
 @implementation ThreadUtil
 
 #pragma mark - Dependencies
@@ -693,8 +689,12 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
         [TSInteraction anyRemoveAllWithInstantationWithTransaction:transaction];
         [TSAttachment anyRemoveAllWithInstantationWithTransaction:transaction];
         [SignalRecipient anyRemoveAllWithInstantationWithTransaction:transaction];
+
+        // Deleting attachments above should be enough to remove any gallery items, but
+        // we redunantly clean up *all* gallery items to be safe.
+        [AnyMediaGalleryFinder didRemoveAllContentWithTransaction:transaction];
     }];
-    [TSAttachmentStream deleteAttachments];
+    [TSAttachmentStream deleteAttachmentsFromDisk];
 }
 
 #pragma mark - Find Content

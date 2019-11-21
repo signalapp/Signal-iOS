@@ -759,14 +759,11 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
             let sql = """
                 SELECT COUNT(*)
                 FROM \(InteractionRecord.databaseTableName)
-                WHERE
-            """ + sqlClauseForUnreadInteractionCounts
-        let arguments: StatementArguments = statementArgumentsForUnreadInteractionCounts
-            guard let count = try UInt.fetchOne(transaction.database,
-                                                sql: sql,
-                arguments: arguments) else {
-                    owsFailDebug("count was unexpectedly nil")
-                    return 0
+                WHERE \(sqlClauseForUnreadInteractionCounts)
+            """
+            guard let count = try UInt.fetchOne(transaction.database, sql: sql) else {
+                owsFailDebug("count was unexpectedly nil")
+                return 0
             }
             return count
         } catch {
@@ -912,10 +909,9 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                 SELECT COUNT(*)
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
-                AND
-            """ + GRDBInteractionFinderAdapter.sqlClauseForUnreadInteractionCounts
+                AND \(GRDBInteractionFinderAdapter.sqlClauseForUnreadInteractionCounts)
+            """
             let arguments: StatementArguments = [threadUniqueId]
-            + GRDBInteractionFinderAdapter.statementArgumentsForUnreadInteractionCounts
 
             guard let count = try UInt.fetchOne(transaction.database,
                                                 sql: sql,
@@ -955,9 +951,9 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND
-        """ + sqlClauseForAllUnreadInteractions
-        let arguments: StatementArguments = [threadUniqueId] + statementArgumentsForAllUnreadInteractions
+            AND \(sqlClauseForAllUnreadInteractions)
+        """
+        let arguments: StatementArguments = [threadUniqueId]
         let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
         while let interaction = try cursor.next() {
             var stop: ObjCBool = false
@@ -1135,20 +1131,28 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         // It's a lot easier to whitelist.
         //
         // POST GRDB TODO: Rename "unseen" and "unread" finder methods.
+        let recordTypes: [SDSRecordType] = [
+            .disappearingConfigurationUpdateInfoMessage,
+            .unknownProtocolVersionMessage,
+            .verificationStateChangeMessage,
+            .call,
+            .errorMessage,
+            .incomingMessage,
+            .infoMessage,
+            .invalidIdentityKeyErrorMessage,
+            .invalidIdentityKeyReceivingErrorMessage,
+            .invalidIdentityKeySendingErrorMessage
+        ]
+
+        let recordTypesSql = recordTypes.map { "\($0.rawValue)" }.joined(separator: ",")
+
         return """
         (
             \(interactionColumn: .read) IS 0
-            AND \(interactionColumn: .recordType) IN ( ?, ?, ?, ? )
+            AND \(interactionColumn: .recordType) IN (\(recordTypesSql))
         )
         """
     }()
-
-    private let statementArgumentsForAllUnreadInteractions: StatementArguments = [
-        SDSRecordType.incomingMessage.rawValue,
-        SDSRecordType.call.rawValue,
-        SDSRecordType.infoMessage.rawValue,
-        SDSRecordType.errorMessage.rawValue
-    ]
 
     private static let sqlClauseForUnreadInteractionCounts: String = {
         // The nomenclature we've inherited from our YDB database views is confusing.
@@ -1166,23 +1170,15 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         (
             \(interactionColumn: .read) IS 0
             AND (
-                \(interactionColumn: .recordType) IN ( ?, ? )
+                \(interactionColumn: .recordType) IN (\(SDSRecordType.incomingMessage.rawValue), \(SDSRecordType.call.rawValue))
                 OR (
-                    \(interactionColumn: .recordType) IS ?
-                    AND \(interactionColumn: .messageType) IS ?
+                    \(interactionColumn: .recordType) IS \(SDSRecordType.infoMessage.rawValue)
+                    AND \(interactionColumn: .messageType) IS \(TSInfoMessageType.userJoinedSignal.rawValue)
                 )
             )
         )
         """
     }()
-
-    private static let statementArgumentsForUnreadInteractionCounts: StatementArguments = [
-        SDSRecordType.incomingMessage.rawValue,
-        SDSRecordType.call.rawValue,
-        SDSRecordType.infoMessage.rawValue,
-        TSInfoMessageType.userJoinedSignal.rawValue
-    ]
-
 }
 
 private func assertionError(_ description: String) -> Error {

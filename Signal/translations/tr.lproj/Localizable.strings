@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "%@ cihazınız yeniden başlarken ileti almış olabilirsiniz.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Apple'ın bildirim altyapısındaki bilinen hatalardan dolayı, ileti önizlemeleri yalnızca ileti gönderildikten sonraki 30 saniye içinde alınırsa gösterilir. Bunun sonucunda uygulama rozeti düzgün olmayabilir.";
+"NOTIFICATIONS_FOOTER_WARNING" = "\"Okundu olarak işaretle\", \"Yanıtla\" ve \"Geri ara\" gibi eylemler içerir.";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "İsim veya İçerik Yok";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Sesler";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "İsim ve İçerik";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "İsim, İçerik ve Eylemler";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Sadece İsim";
@@ -2439,10 +2439,10 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Sansür Atlatma";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_DEBUGLOG" = "Hata Ayıklama Kaydını etkinleştir";
+"SETTINGS_ADVANCED_DEBUGLOG" = "Hata Ayıklama Günlüğünü etkinleştir";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Hata Ayıklama Kaydını gönder";
+"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Hata Ayıklama Günlüğünü gönder";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Gelişmiş";
@@ -2631,7 +2631,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Ekran Kilidi Zaman Aşımı";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Touch ID, Face ID, veya iOS cihaz şifrenizi kullanarak Signal'in kilidini açın. Ekran Kilidi etkinken gelen aramaları cevaplayabilir ve ileti bildirimleri alabilirsiniz. Signal'in bildirim ayarları, görüntülenen bilgileri özelleştirmenizi sağlar.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Signal'i Touch ID, Face ID veya iOS cihazınızın parolası ile açın. Ekran kilidi etkinken hala gelen aramaları yanıtlayabilir ve ileti bildirimlerini alabilirsiniz. Signal'in bildirim ayarları görüntülenecek bilgiyi özelleştirmenize olanak tanır.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Ekran Kilidi";

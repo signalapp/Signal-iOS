@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Вы могли получить сообщения, пока ваш %@ перезапускался.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Из-за недостатков в push-сервисе Apple предпросмотр сообщения будет показан, только если оно получено в течение 30 секунд после отправки. Из-за этого наклейка на значке приложения может показывать неверное число.";
+"NOTIFICATIONS_FOOTER_WARNING" = "Действия включают «Прочитано», «Ответить» и «Перезвонить».";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Без имени и содержимого";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Звуки";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Имя и содержимое";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Имя, содержимое и действия";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Только имя";
@@ -2631,7 +2631,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Тайм-аут блокировки экрана";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Требовать Touch ID, Face ID или код вашего устройства iOS при открытии Signal. Вы по-прежнему сможете отвечать на входящие звонки и получать уведомления о сообщениях при заблокированном экране. В настройках уведомлений Signal вы можете выбрать, какая информация будет при этом отображаться.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Требовать Touch ID, Face ID или код-пароль вашего устройства iOS для открытия Signal. Вы по-прежнему сможете отвечать на входящие звонки и получать уведомления о звонках и сообщениях при включённой «Блокировке экрана». Настройки уведомлений Signal позволяют вам настраивать отображаемую информацию.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Блокировка экрана";

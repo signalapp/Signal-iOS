@@ -248,7 +248,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         deleteDBKeys()
 
         if (CurrentAppContext().isMainApp) {
-            TSAttachmentStream.deleteAttachments()
+            TSAttachmentStream.deleteAttachmentsFromDisk()
         }
 
         // TODO: Delete Profiles on Disk?

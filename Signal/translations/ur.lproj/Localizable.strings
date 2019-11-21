@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "آپ کو پیغامات موصول ہو سکتے تھے جب آپ %@کا دوبارہ ترتیب ہو رہا تھا۔";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "ایپل پش فریم ورک میں بگز جاننے کی وجہ سے، پیغام پیش نظرہوگا اگر پیغام بھیجنے کے 30 سیکنڈز بعد دوبارہ حاصل ہو گا۔ یہ ایپلیکیشن بیج نٓتیجہ کے طور پر غلط ہو سکتا ہے۔";
+"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "کوئی نام یا مواد نہیں";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "آوازیں";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "نام یا مواد";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "صرف نام";
@@ -2631,7 +2631,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "سکرین لاک کا ٹائم ختم ہو گیا";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Signal سکرین کھولنے کیلئے ٹچ آئی ڈی ،فیس آئی ڈی،یا اپنا iOS ڈیوائس پاس کوڈ استعمال کریں۔آپ موصول ہونے والی کال اور پیغامات موصول کر سکتے ہیں جب سکرین لاک فعال ہو چکا ہو۔  Signal اطلاعات کی ترتیبات کو جب معلومات ظاہر ہو اجازت دیں۔";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "سکرین لاک";

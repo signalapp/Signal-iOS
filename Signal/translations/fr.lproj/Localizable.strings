@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Vous avez peut-être reçu des messages alors que votre %@ redémarrait.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "En raison de bogues connus dans le cadre d’applications du pousser d’Apple, les prévisualisations de messages ne seront affichées que si le message est récupéré dans les 30 secondes après envoi. Le macaron de l’application pourrait ainsi être inexact.";
+"NOTIFICATIONS_FOOTER_WARNING" = "Les actions sont « Marquer comme lu », « Répondre » et « Rappeler ».";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Ni nom ni contenu";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Sons";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nom et contenu";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nom, contenu et actions";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Nom seulement";
@@ -2631,7 +2631,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Délai de verrouillage de l’écran";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Déverrouillez l’écran Signal en utilisant Touch ID, Face ID ou le code de votre appareil iOS. Vous pouvez toujours répondre aux appels entrants et recevoir des notifications de messages quand le verrouillage de l’écran est activé. Les paramètres de notification de Signal vous permettent de personnaliser les renseignements qui sont affichés.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Déverrouillez l’écran de Signal en utilisant Touch ID, Face ID ou le code de déverrouillage de votre appareil sous iOS. Vous pouvez toujours répondre aux appels entrants et recevoir des notifications d’appels et de messages depuis l’écran verrouillé. Les paramètres de notification de Signal vous permettent de personnaliser les informations affichées.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Verrouillage de l’écran";

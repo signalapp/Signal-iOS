@@ -120,7 +120,7 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCo
 - (BOOL)writeConsumingDataSource:(id<DataSource>)dataSource
                            error:(NSError **)error NS_SWIFT_NAME(writeConsumingDataSource(_:));
 
-+ (void)deleteAttachments;
++ (void)deleteAttachmentsFromDisk;
 
 + (NSString *)attachmentsFolder;
 + (NSString *)legacyAttachmentsDirPath;

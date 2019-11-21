@@ -458,11 +458,18 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     }
 }
 
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidInsertWithTransaction:transaction];
+    [AnyMediaGalleryFinder didInsertAttachmentStream:self transaction:transaction];
+}
+
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidRemoveWithTransaction:transaction];
 
     [self removeFile];
+    [AnyMediaGalleryFinder didRemoveAttachmentStream:self transaction:transaction];
 }
 
 - (BOOL)isValidVisualMedia
@@ -607,7 +614,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return image;
 }
 
-+ (void)deleteAttachments
++ (void)deleteAttachmentsFromDisk
 {
     NSError *error;
     NSFileManager *fileManager = [NSFileManager defaultManager];

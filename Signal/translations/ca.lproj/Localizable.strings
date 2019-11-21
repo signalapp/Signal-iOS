@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Podeu haver rebut missatges mentre el vostre %@ es reiniciava.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Degut a errors coneguts a l'entorn «push» d'Apple, la vista prèvia dels missatges només es mostrarà si aquests es reben dins dels 30 segons d'haver-se enviat. Per això, el número sobre la icona de l'aplicació pot ser poc precís.";
+"NOTIFICATIONS_FOOTER_WARNING" = "Les accions inclouen “Marca com a llegit”, “Respon” i “Truca.”";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Sense nom ni contingut";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Sons";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nom i contingut";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nom, contingut i accions";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Només el nom";
@@ -2631,7 +2631,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Temps d'espera de la pantalla de bloqueig";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Desbloqueja la pantalla de Signal fent servir Touch ID, Face ID o el codi d'accés. Podeu continuar contestant les trucades entrants i rebre notificacions de missatges mentre la pantalla de bloqueig està activada. Els paràmetres de les notificacions de Signal permeten personalitzar la informació que es mostra.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Desbloquegeu la pantalla del Signal fent servir Touch ID, Face ID o el codi d'accés d'iOS. Podeu continuar contestant les trucades entrants i rebre notificacions de trucades i missatges mentre la pantalla de bloqueig estigui activada. Els paràmetres de les notificacions del Signal permeten personalitzar la informació que es mostra.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Pantalla de bloqueig";

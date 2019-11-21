@@ -40,6 +40,8 @@ public class UIDatabaseObserver: NSObject {
 
     public static let kMaxIncrementalRowChanges = 200
 
+    private lazy var nonModelTables: Set<String> = Set([MediaGalleryRecord.databaseTableName])
+
     // tldr; Instead, of protecting UIDatabaseObserver state with a nested DispatchQueue,
     // which would break GRDB's SchedulingWatchDog, we use objc_sync
     //
@@ -113,6 +115,11 @@ extension UIDatabaseObserver: TransactionObserver {
     public func observes(eventsOfKind eventKind: DatabaseEventKind) -> Bool {
         guard !eventKind.tableName.hasPrefix(GRDBFullTextSearchFinder.databaseTableName) else {
             // Ignore updates to the GRDB FTS table(s)
+            return false
+        }
+
+        guard !nonModelTables.contains(eventKind.tableName) else {
+            // Ignore updates to non-model tables
             return false
         }
 

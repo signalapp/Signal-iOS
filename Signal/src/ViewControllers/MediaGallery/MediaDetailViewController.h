@@ -20,9 +20,6 @@ typedef NS_OPTIONS(NSInteger, MediaGalleryOption) {
 @protocol MediaDetailViewControllerDelegate <NSObject>
 
 - (void)mediaDetailViewController:(MediaDetailViewController *)mediaDetailViewController
-          requestDeleteAttachment:(TSAttachment *)attachment;
-
-- (void)mediaDetailViewController:(MediaDetailViewController *)mediaDetailViewController
                    isPlayingVideo:(BOOL)isPlayingVideo;
 
 - (void)mediaDetailViewControllerDidTapMedia:(MediaDetailViewController *)mediaDetailViewController;
