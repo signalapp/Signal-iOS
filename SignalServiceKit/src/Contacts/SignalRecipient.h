@@ -56,9 +56,6 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:devices:recipientPhoneNumber:recipientUUID:))
                                   devicesToRemove:(nullable NSArray<NSNumber *> *)devicesToRemove
                                       transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)fixup_addDevicesToRegisteredRecipient:(NSSet<NSNumber *> *)devices
-                                  transaction:(SDSAnyWriteTransaction *)transaction;
-
 @property (nonatomic, nullable) NSString *recipientPhoneNumber;
 @property (nonatomic, nullable) NSString *recipientUUID;
 
