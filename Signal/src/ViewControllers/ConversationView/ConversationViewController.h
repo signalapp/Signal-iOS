@@ -41,6 +41,7 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 - (void)openStickerKeyboard;
 - (void)openAttachmentKeyboard;
 - (void)openGifSearch;
+- (void)dismissMessageActionsAnimated:(BOOL)animated;
 
 @end
 
@@ -56,6 +57,7 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 @property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
 @property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
 @property (nonatomic, readonly) BOOL isViewVisible;
+@property (nonatomic, readonly) BOOL isPresentingMessageActions;
 
 @end
 

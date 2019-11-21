@@ -338,6 +338,9 @@ class ConversationSplitViewController: UISplitViewController {
         // If there is a modal presented over us, or another window above us, don't respond to keyboard commands.
         guard presentedViewController == nil || view.window?.isKeyWindow != true else { return nil }
 
+        // Don't allow keyboard commands while presenting message actions.
+        guard selectedConversationViewController?.isPresentingMessageActions != true else { return nil }
+
         if selectedThread != nil {
             return selectedConversationKeyCommands + globalKeyCommands
         } else {

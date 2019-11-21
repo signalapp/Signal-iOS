@@ -879,6 +879,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     OWSLogInfo(@"");
 
+    // Dismiss any message actions if they're presented
+    [self.conversationSplitViewController.selectedConversationViewController dismissMessageActionsAnimated:YES];
+
     ComposeViewController *viewController = [ComposeViewController new];
 
     [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
@@ -901,6 +904,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     OWSLogInfo(@"");
 
+    // Dismiss any message actions if they're presented
+    [self.conversationSplitViewController.selectedConversationViewController dismissMessageActionsAnimated:YES];
+
     NewGroupViewController *viewController = [NewGroupViewController new];
 
     [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
@@ -922,6 +928,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     OWSAssertIsOnMainThread();
 
     OWSLogInfo(@"");
+
+    // Dismiss any message actions if they're presented
+    [self.conversationSplitViewController.selectedConversationViewController dismissMessageActionsAnimated:YES];
 
     OWSNavigationController *navigationController = [AppSettingsViewController inModalNavigationController];
     [self presentFormSheetViewController:navigationController animated:YES completion:nil];
@@ -1034,6 +1043,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)showCameraView
 {
+    // Dismiss any message actions if they're presented
+    [self.conversationSplitViewController.selectedConversationViewController dismissMessageActionsAnimated:YES];
+
     [self ows_askForCameraPermissions:^(BOOL cameraGranted) {
         if (!cameraGranted) {
             OWSLogWarn(@"camera permission denied.");

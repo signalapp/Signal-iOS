@@ -6,29 +6,32 @@ import Foundation
 
 @objc
 public class MessageAction: NSObject {
+    @objc
     let block: (MessageAction) -> Void
     let image: UIImage
     let accessibilityIdentifier: String
 
     public init(image: UIImage,
+                accessibilityLabel: String,
                 accessibilityIdentifier: String,
                 block: @escaping (MessageAction) -> Void) {
         self.image = image
         self.accessibilityIdentifier = accessibilityIdentifier
         self.block = block
+        super.init()
+        self.accessibilityLabel = accessibilityLabel
     }
 }
 
 @objc
 protocol MessageActionsViewControllerDelegate: class {
-    func messageActionsViewControllerDidDismiss(_ messageActionsViewController: MessageActionsViewController, withAction: MessageAction?)
+    func messageActionsViewControllerRequestedDismissal(_ messageActionsViewController: MessageActionsViewController, withAction: MessageAction?)
 }
 
 @objc
 class MessageActionsViewController: UIViewController {
     @objc
     let focusedInteraction: TSInteraction
-    @objc
     let focusedView: UIView
     private let actionsToolbar: MessageActionsToolbar
 
@@ -99,7 +102,7 @@ class MessageActionsViewController: UIViewController {
     }
 
     @objc func didTapBackdrop() {
-        delegate?.messageActionsViewControllerDidDismiss(self, withAction: nil)
+        delegate?.messageActionsViewControllerRequestedDismissal(self, withAction: nil)
     }
 
     @objc(presentOnWindow:prepareConstraints:animateAlongside:completion:)
@@ -152,7 +155,7 @@ class MessageActionsViewController: UIViewController {
 
 extension MessageActionsViewController: MessageActionsToolbarDelegate {
     fileprivate func messageActionsToolbar(_ messageActionsToolbar: MessageActionsToolbar, executedAction: MessageAction) {
-        delegate?.messageActionsViewControllerDidDismiss(self, withAction: executedAction)
+        delegate?.messageActionsViewControllerRequestedDismissal(self, withAction: executedAction)
     }
 }
 
@@ -204,6 +207,7 @@ private class MessageActionsToolbar: UIToolbar {
                 action: #selector(didTapItem(_:))
             )
             actionItem.tintColor = Theme.primaryIconColor
+            actionItem.accessibilityLabel = action.accessibilityLabel
             newItems.append(actionItem)
             itemToAction[actionItem] = action
 
@@ -220,6 +224,5 @@ private class MessageActionsToolbar: UIToolbar {
         }
 
         actionDelegate?.messageActionsToolbar(self, executedAction: action)
-        action.block(action)
     }
 }

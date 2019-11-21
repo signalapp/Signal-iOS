@@ -17,9 +17,10 @@ struct MessageActionBuilder {
     static func reply(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
         let image = Theme.iconImage(.messageActionReply)
         return MessageAction(image: image,
-                          accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "reply"),
-                          block: { [weak delegate] (_) in
-                            delegate?.messageActionsReplyToItem(conversationViewItem)
+                             accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_REPLY", comment: "Action sheet button title"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "reply"),
+                             block: { [weak delegate] (_) in
+                                delegate?.messageActionsReplyToItem(conversationViewItem)
 
         })
     }
@@ -27,45 +28,50 @@ struct MessageActionBuilder {
     static func copyText(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
         let image = Theme.iconImage(.messageActionCopy)
         return MessageAction(image: image,
-                          accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "copy_text"),
-                          block: { (_) in
-                            conversationViewItem.copyTextAction()
+                             accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_COPY_TEXT", comment: "Action sheet button title"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "copy_text"),
+                             block: { (_) in
+                                conversationViewItem.copyTextAction()
         })
     }
 
     static func showDetails(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
         let image = Theme.iconImage(.info)
         return MessageAction(image: image,
-                          accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "show_details"),
-                          block: { [weak delegate] (_) in
-                            delegate?.messageActionsShowDetailsForItem(conversationViewItem)
+                             accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_DETAILS", comment: "Action sheet button title"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "show_details"),
+                             block: { [weak delegate] (_) in
+                                delegate?.messageActionsShowDetailsForItem(conversationViewItem)
         })
     }
 
     static func deleteMessage(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
         let image = Theme.iconImage(.messageActionDelete)
         return MessageAction(image: image,
-                          accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "delete_message"),
-                          block: { (_) in
-                            conversationViewItem.deleteAction()
+                             accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE", comment: "Action sheet button title"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "delete_message"),
+                             block: { (_) in
+                                conversationViewItem.deleteAction()
         })
     }
 
     static func copyMedia(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
         let image = Theme.iconImage(.messageActionCopy)
         return MessageAction(image: image,
-                          accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "copy_media"),
-                          block: { (_) in
-                            conversationViewItem.copyMediaAction()
+                             accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_COPY_MEDIA", comment: "Action sheet button title"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "copy_media"),
+                             block: { (_) in
+                                conversationViewItem.copyMediaAction()
         })
     }
 
     static func forwardMessage(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
         let image = Theme.iconImage(.messageActionForward)
         return MessageAction(image: image,
-                          accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "forward_message"),
-                          block: { [weak delegate] (_) in
-                            delegate?.messageActionsForwardItem(conversationViewItem)
+                             accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_FORWARD_MESSAGE", comment: "Action sheet button title"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "forward_message"),
+                             block: { [weak delegate] (_) in
+                                delegate?.messageActionsForwardItem(conversationViewItem)
         })
     }
 }

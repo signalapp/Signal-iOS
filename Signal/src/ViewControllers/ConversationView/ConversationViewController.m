@@ -211,7 +211,6 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
 
-@property (nonatomic, readonly) BOOL isPresentingMessageActions;
 @property (nonatomic, nullable) MessageActionsViewController *messageActionsViewController;
 @property (nonatomic) CGFloat messageActionsExtraContentInsetPadding;
 @property (nonatomic) CGPoint messageActionsOriginalContentOffset;
@@ -1260,7 +1259,7 @@ typedef enum : NSUInteger {
 
     self.isViewCompletelyAppeared = NO;
 
-    [self dismissMessageActions];
+    [self dismissMessageActionsAnimated:NO];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -2066,10 +2065,15 @@ typedef enum : NSUInteger {
 
 #pragma mark - MessageActionsViewControllerDelegate
 
-- (void)messageActionsViewControllerDidDismiss:(MessageActionsViewController *)messageActionsViewController
-                                    withAction:(nullable MessageAction *)withAction
+- (void)messageActionsViewControllerRequestedDismissal:(MessageActionsViewController *)messageActionsViewController
+                                            withAction:(nullable MessageAction *)action
 {
-    [self dismissMessageActions];
+    [self dismissMessageActionsAnimated:YES
+                             completion:^{
+                                 if (action) {
+                                     action.block(action);
+                                 }
+                             }];
 }
 
 - (void)presentMessageActions:(NSArray<MessageAction *> *)messageActions withFocusedCell:(ConversationViewCell *)cell
@@ -2144,7 +2148,14 @@ typedef enum : NSUInteger {
     return self.messageActionsViewController != nil;
 }
 
-- (void)dismissMessageActions
+- (void)dismissMessageActionsAnimated:(BOOL)animated
+{
+    [self dismissMessageActionsAnimated:animated
+                             completion:^ {
+                             }];
+}
+
+- (void)dismissMessageActionsAnimated:(BOOL)animated completion:(void (^)(void))completion
 {
     OWSLogVerbose(@"");
 
@@ -2152,19 +2163,26 @@ typedef enum : NSUInteger {
         return;
     }
 
-    [self.messageActionsViewController
-        dismissAndAnimateAlongside:^{
-            self.bottomBar.alpha = 1;
-        }
-        completion:^{
-            [self clearMessageActionsState];
-        }];
+    if (animated) {
+        [self.messageActionsViewController
+            dismissAndAnimateAlongside:^{
+                self.bottomBar.alpha = 1;
+            }
+            completion:^{
+                [self clearMessageActionsState];
+                completion();
+            }];
+    } else {
+        [self.messageActionsViewController.view removeFromSuperview];
+        [self clearMessageActionsState];
+        completion();
+    }
 }
 
 - (void)dismissMessageActionsIfNecessary
 {
     if (self.shouldDismissMessageActions) {
-        [self dismissMessageActions];
+        [self dismissMessageActionsAnimated:YES];
     }
 }
 
@@ -3770,6 +3788,10 @@ typedef enum : NSUInteger {
     [self updateBarButtonItems];
 
     [self reloadData];
+
+    // Re-styling the message actions is tricky,
+    // since this happens rarely just dismiss
+    [self dismissMessageActionsAnimated:NO];
 }
 
 - (void)reloadData
@@ -5023,7 +5045,7 @@ typedef enum : NSUInteger {
 
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
-    [self dismissMessageActions];
+    [self dismissMessageActionsAnimated:NO];
 
     // Snapshot the "last visible row".
     NSIndexPath *_Nullable lastVisibleIndexPath = self.lastVisibleIndexPath;
