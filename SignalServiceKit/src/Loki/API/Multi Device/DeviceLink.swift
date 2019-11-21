@@ -21,7 +21,7 @@ public final class DeviceLink : NSObject, NSCoding {
             if let customDisplayName = UserDefaults.standard.string(forKey: "\(hexEncodedPublicKey)_display_name") {
                 return customDisplayName
             } else {
-                return Mnemonic.encode(hexEncodedString: hexEncodedPublicKey.removing05PrefixIfNeeded()).split(separator: " ")[0..<3].joined(separator: " ")
+                return NSLocalizedString("Unnamed Device", comment: "")
             }
         }
         

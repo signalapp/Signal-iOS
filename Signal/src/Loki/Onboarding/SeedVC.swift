@@ -306,9 +306,14 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
                 let linkingRequestMessage = DeviceLinkingUtilities.getLinkingRequestMessage(for: masterHexEncodedPublicKey)
                 ThreadUtil.enqueue(linkingRequestMessage)
             }.catch(on: DispatchQueue.main) { [weak self] _ in
-                TSAccountManager.sharedInstance().resetForReregistration()
+                DispatchQueue.main.async {
+                    // FIXME: For some reason resetForRegistration() complains about not being on the main queue
+                    // without this (even though the catch closure should be executed on the main queue)
+                    TSAccountManager.sharedInstance().resetForReregistration()
+                }
                 guard let self = self else { return }
                 let alert = UIAlertController(title: NSLocalizedString("Couldn't Link Device", comment: ""), message: NSLocalizedString("Please check your internet connection and try again", comment: ""), preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", accessibilityIdentifier: nil, style: .default, handler: nil))
                 self.present(alert, animated: true, completion: nil)
                 self.setUserInteractionEnabled(true)
             }
