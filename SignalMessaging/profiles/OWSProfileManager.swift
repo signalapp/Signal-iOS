@@ -118,26 +118,13 @@ extension OWSProfileManager {
                     self.updateLocalProfile(with: attempt, transaction: transaction)
                 }
 
-                // We use a "self-only" contact sync to indicate to desktop
-                // that we've changed our profile and that it should do a
-                // profile fetch for "self".
-                //
-                // NOTE: We also inform the desktop in the failure case,
-                //       since that _may have_ affected service state.
-                if self.tsAccountManager.isRegisteredPrimaryDevice {
-                    self.syncManager.syncLocalContact().retainUntilComplete()
-                }
-
-                // Notify all our devices that the profile has changed.
-                // Older linked devices may not handle this message.
-                self.syncManager.sendFetchLatestProfileSyncMessage()
-
                 if FeatureFlags.versionedProfiledUpdate {
                     return updateProfileOnServiceVersioned(attempt: attempt)
                 } else {
                     return updateProfileOnServiceUnversioned(attempt: attempt)
                 }
             }.done(on: .global()) { _ in
+
                 self.databaseStorage.write { transaction in
                     guard tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction) else {
                         return
@@ -159,13 +146,29 @@ extension OWSProfileManager {
         }
 
         promise.ensure {
+            // We use a "self-only" contact sync to indicate to desktop
+            // that we've changed our profile and that it should do a
+            // profile fetch for "self".
+            //
+            // NOTE: We also inform the desktop in the failure case,
+            //       since that _may have_ affected service state.
+            if self.tsAccountManager.isRegisteredPrimaryDevice {
+                self.syncManager.syncLocalContact().retainUntilComplete()
+            }
+
+            // Notify all our devices that the profile has changed.
+            // Older linked devices may not handle this message.
+            self.syncManager.sendFetchLatestProfileSyncMessage()
+
             self.profileManager.isUpdatingProfileOnService = false
 
             // There may be another update enqueued that we should kick off.
             // Or we may need to retry.
             //
             // We don't want to get in a retry loop, so we use exponential backoff.
-            self.updateProfileOnServiceIfNecessary(retryDelay: retryDelay * 2)
+            DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
+                self.updateProfileOnServiceIfNecessary(retryDelay: (retryDelay + 1) * 2)
+            })
         }.retainUntilComplete()
 
         return promise
