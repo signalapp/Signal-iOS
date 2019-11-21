@@ -328,6 +328,13 @@ private class TrimVideoOperation: OWSOperation {
             let render = self.render
             guard render.isTrimmed else {
                 // Video editor has no changes.
+                owsFailDebug("calling no-op render. Instead copy the file.")
+                // When rendering a new file, the caller is given a URL that they "own" - that is the
+                // caller can then `consume` it, and must delete on deallocation if they don't.
+                //
+                // However here we return the existing URL, which violates that contract - two entities
+                // now own the original file. In practice, I think we're no longer hitting this code
+                // path, but I'm leaving this here for resiliency.
                 resolver.fulfill(render.srcVideoPath)
                 return
             }
