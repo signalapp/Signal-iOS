@@ -333,7 +333,13 @@ public class VideoEditorView: UIView {
     }
 
     private func saveVideoPromise() -> Promise<Void> {
-        return model.ensureCurrentRender().nonconsumingFilePromise().then(on: .global()) { (videoFilePath: String) -> Promise<Void> in
+        return firstly { () -> Promise<String> in
+            if model.isTrimmed {
+                return self.model.ensureCurrentRender().nonconsumingFilePromise()
+            } else {
+                return Promise.value(self.model.srcVideoPath)
+            }
+        }.then(on: .global()) { (videoFilePath: String) -> Promise<Void> in
             guard let fileExtension = videoFilePath.fileExtension else {
                 return Promise(error: OWSErrorMakeAssertionError("Missing fileExtension."))
             }
@@ -346,24 +352,24 @@ public class VideoEditorView: UIView {
 
             let videoUrl = URL(fileURLWithPath: tempFilePath)
 
-            let (promise, resolver) = Promise<Void>.pending()
-            PHPhotoLibrary.shared().performChanges({
-                PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: videoUrl)
-            }) { didSucceed, error in
+            return Promise<Void> { resolver in
+                PHPhotoLibrary.shared().performChanges({
+                    PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: videoUrl)
+                }) { didSucceed, error in
 
-                OWSFileSystem.deleteFileIfExists(tempFilePath)
+                    OWSFileSystem.deleteFileIfExists(tempFilePath)
 
-                if let error = error {
-                    resolver.reject(error)
-                    return
+                    if let error = error {
+                        resolver.reject(error)
+                        return
+                    }
+                    guard didSucceed else {
+                        resolver.reject(OWSErrorMakeAssertionError("Video export failed."))
+                        return
+                    }
+                    resolver.fulfill(())
                 }
-                guard didSucceed else {
-                    resolver.reject(OWSErrorMakeAssertionError("Video export failed."))
-                    return
-                }
-                resolver.fulfill(())
             }
-            return promise
         }
     }
 }

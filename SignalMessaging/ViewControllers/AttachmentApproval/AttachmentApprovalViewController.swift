@@ -643,31 +643,27 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     // sending the original attachment.  This seems better than trying
     // to involve the user in resolving the issue.
     func outputAttachmentPromise(for attachmentApprovalItem: AttachmentApprovalItem) -> Promise<SignalAttachment> {
-        if let imageEditorModel = attachmentApprovalItem.imageEditorModel {
-            return outputAttachmentPromise(imageEditorModel: imageEditorModel,
+        if let imageEditorModel = attachmentApprovalItem.imageEditorModel, imageEditorModel.isDirty() {
+            return editedAttachmentPromise(imageEditorModel: imageEditorModel,
                                            attachmentApprovalItem: attachmentApprovalItem)
         }
-        if let videoEditorModel = attachmentApprovalItem.videoEditorModel {
-            return outputAttachmentPromise(videoEditorModel: videoEditorModel,
-                                           attachmentApprovalItem: attachmentApprovalItem)
+        if let videoEditorModel = attachmentApprovalItem.videoEditorModel, videoEditorModel.isTrimmed {
+            return trimmedAttachmentPromise(videoEditorModel: videoEditorModel,
+                                            attachmentApprovalItem: attachmentApprovalItem)
         }
         // No editor applies. Use original, un-edited attachment.
         return Promise.value(attachmentApprovalItem.attachment)
     }
 
     // For any attachments edited with the image editor, returns a
-    // new SignalAttachment that reflects those changes.  Otherwise,
-    // returns the original attachment.
+    // new SignalAttachment that reflects those changes.
     //
     // If any errors occurs in the export process, we fail over to
     // sending the original attachment.  This seems better than trying
     // to involve the user in resolving the issue.
-    func outputAttachmentPromise(imageEditorModel: ImageEditorModel,
+    func editedAttachmentPromise(imageEditorModel: ImageEditorModel,
                                  attachmentApprovalItem: AttachmentApprovalItem) -> Promise<SignalAttachment> {
-        guard imageEditorModel.isDirty() else {
-            // Image editor has no changes.
-            return Promise.value(attachmentApprovalItem.attachment)
-        }
+        assert(imageEditorModel.isDirty())
         // Currently edited images are exported on the main thread.
         let promise: Promise<UIImage> = firstly { () -> Promise<UIImage> in
             guard let dstImage = imageEditorModel.renderOutput() else {
@@ -716,14 +712,14 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     // For any attachments edited with the video editor, returns a
-    // new SignalAttachment that reflects those changes.  Otherwise,
-    // returns the original attachment.
+    // new SignalAttachment that reflects those changes.
     //
     // If any errors occurs in the export process, we fail over to
     // sending the original attachment.  This seems better than trying
     // to involve the user in resolving the issue.
-    func outputAttachmentPromise(videoEditorModel: VideoEditorModel,
-                                 attachmentApprovalItem: AttachmentApprovalItem) -> Promise<SignalAttachment> {
+    func trimmedAttachmentPromise(videoEditorModel: VideoEditorModel,
+                                  attachmentApprovalItem: AttachmentApprovalItem) -> Promise<SignalAttachment> {
+        assert(videoEditorModel.isTrimmed)
         return videoEditorModel.ensureCurrentRender().consumingFilePromise()
             .map(on: DispatchQueue.global()) { filePath in
                 guard let fileExtension = filePath.fileExtension else {
