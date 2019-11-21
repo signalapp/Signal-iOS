@@ -62,10 +62,56 @@ class PhotoCaptureViewController: OWSViewController {
     override func loadView() {
         self.view = UIView()
         self.view.backgroundColor = Theme.darkThemeBackgroundColor
+
+        view.addSubview(previewView)
+
+        previewView.autoPinWidthToSuperview()
+
+        if UIDevice.current.hasIPhoneXNotch {
+            previewView.autoPinEdge(toSuperviewEdge: .bottom, withInset: fixedBottomSafeAreaInset)
+        } else {
+            previewView.autoPinEdge(toSuperviewMargin: .bottom)
+        }
+        previewView.autoPin(toAspectRatio: 9/16, relation: .greaterThanOrEqual)
+        previewView.autoPin(toAspectRatio: 3/4, relation: .lessThanOrEqual)
+        previewView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
+        NSLayoutConstraint.autoSetPriority(.defaultLow) {
+            previewView.autoPinEdge(toSuperviewEdge: .top)
+        }
+
+        view.addSubview(captureButton)
+        if UIDevice.current.isIPad {
+            captureButton.autoVCenterInSuperview()
+            captureButton.centerXAnchor.constraint(equalTo: view.trailingAnchor, constant: SendMediaNavigationController.bottomButtonsCenterOffset).isActive = true
+        } else {
+            captureButton.autoHCenterInSuperview()
+            // we pin to edges rather than margin, because on notched devices the margin changes
+            // as the device rotates *EVEN THOUGH* the interface is locked to portrait.
+            captureButton.centerYAnchor.constraint(equalTo: view.bottomAnchor,
+                                                   constant: SendMediaNavigationController.bottomButtonsCenterOffset).isActive = true
+        }
+
+        // If the view is already visible, setup the volume button listener
+        // now that the capture UI is ready. Otherwise, we'll wait until
+        // we're visible.
+        if isVisible {
+            VolumeButtons.shared?.addObserver(observer: photoCapture)
+        }
+
+        view.addSubview(tapToFocusView)
+        tapToFocusView.isUserInteractionEnabled = false
+
+        view.addSubview(topBar)
+        topBar.autoPinWidthToSuperview()
+        topBarOffset = topBar.autoPinEdge(toSuperviewEdge: .top)
+        topBar.autoSetDimension(.height, toSize: 44)
     }
+
+    var topBarOffset: NSLayoutConstraint!
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         setupPhotoCapture()
 
         updateNavigationItems()
@@ -115,6 +161,10 @@ class PhotoCaptureViewController: OWSViewController {
         return true
     }
 
+    override var prefersHomeIndicatorAutoHidden: Bool {
+        return true
+    }
+
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
@@ -131,30 +181,81 @@ class PhotoCaptureViewController: OWSViewController {
         }
     }
 
+    @available(iOS 11.0, *)
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        // we pin to a constant rather than margin, because on notched devices the
+        // safeAreaInsets/margins change as the device rotates *EVEN THOUGH* the interface
+        // is locked to portrait.
+        topBarOffset.constant = max(view.safeAreaInsets.top, view.safeAreaInsets.left, view.safeAreaInsets.bottom)
+    }
+
     // MARK: -
     var isRecordingMovie: Bool = false
-    let recordingTimerView = RecordingTimerView()
+
+    private class TopBar: UIView {
+        let recordingTimerView = RecordingTimerView()
+        let navStack: UIStackView
+
+        init(navbarItems: [UIView]) {
+            self.navStack = UIStackView(arrangedSubviews: navbarItems)
+            navStack.spacing = 16
+
+            super.init(frame: .zero)
+
+            addSubview(navStack)
+            navStack.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+
+            addSubview(recordingTimerView)
+            recordingTimerView.isHidden = true
+            recordingTimerView.autoCenterInSuperview()
+        }
+
+        required init?(coder aDecoder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        enum Mode {
+            case navigation, recordingMovie
+        }
+
+        var mode: Mode = .navigation {
+            didSet {
+                switch mode {
+                case .recordingMovie:
+                    navStack.isHidden = true
+                    recordingTimerView.sizeToFit()
+                    recordingTimerView.isHidden = false
+                case .navigation:
+                    navStack.isHidden = false
+                    recordingTimerView.isHidden = true
+                }
+            }
+        }
+    }
+
+    private lazy var topBar: TopBar = {
+        let dismissButton: UIButton
+        if UIDevice.current.isIPad {
+            dismissButton = OWSButton.shadowedCancelButton { [weak self] in
+                self?.didTapClose()
+            }
+        } else {
+            dismissButton = dismissControl.button
+            dismissButton.contentEdgeInsets = UIEdgeInsets(top: -1, leading: 0, bottom: 0, trailing: 20)
+        }
+
+        return TopBar(navbarItems: [dismissButton,
+                                    UIView.hStretchingSpacer(),
+                                    switchCameraControl.button,
+                                    flashModeControl.button])
+    }()
 
     func updateNavigationItems() {
         if isRecordingMovie {
-            navigationItem.leftBarButtonItem = nil
-            navigationItem.rightBarButtonItems = nil
-            navigationItem.titleView = recordingTimerView
-            recordingTimerView.sizeToFit()
+            topBar.mode = .recordingMovie
         } else {
-            navigationItem.titleView = nil
-            if UIDevice.current.isIPad {
-                let cancelButton = OWSButton.shadowedCancelButton { [weak self] in
-                    self?.didTapClose()
-                }
-                navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
-            } else {
-                navigationItem.leftBarButtonItem = dismissControl.barButtonItem
-            }
-            let fixedSpace = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
-            fixedSpace.width = 16
-
-            navigationItem.rightBarButtonItems = [switchCameraControl.barButtonItem, fixedSpace, flashModeControl.barButtonItem]
+            topBar.mode = .navigation
         }
     }
 
@@ -172,21 +273,14 @@ class PhotoCaptureViewController: OWSViewController {
 
     class PhotoControl {
         let button: OWSButton
-        let barButtonItem: UIBarButtonItem
 
         init(imageName: String, block: @escaping () -> Void) {
             self.button = OWSButton(imageName: imageName, tintColor: .ows_white, block: block)
-            if #available(iOS 10, *) {
-                button.autoPinToSquareAspectRatio()
-            } else {
-                button.sizeToFit()
-            }
-
+            button.setCompressionResistanceHigh()
             button.layer.shadowOffset = CGSize.zero
             button.layer.shadowOpacity = 0.35
             button.layer.shadowRadius = 4
-
-            self.barButtonItem = UIBarButtonItem(customView: button)
+            button.contentEdgeInsets = UIEdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4)
         }
 
         func setImage(imageName: String) {
@@ -336,7 +430,6 @@ class PhotoCaptureViewController: OWSViewController {
         let captureReady = { [weak self] in
             guard let self = self else { return }
             self.hasCaptureStarted = true
-            self.showCaptureUI()
             BenchEventComplete(eventId: "Show-Camera")
         }
 
@@ -351,39 +444,6 @@ class PhotoCaptureViewController: OWSViewController {
                 guard let self = self else { return }
                 self.showFailureUI(error: error)
             }.retainUntilComplete()
-    }
-
-    private func showCaptureUI() {
-        Logger.debug("")
-        view.addSubview(previewView)
-
-        previewView.autoPinWidthToSuperview()
-        previewView.autoPinEdge(toSuperviewMargin: .bottom)
-        previewView.autoPin(toAspectRatio: 9/16, relation: .greaterThanOrEqual)
-        previewView.autoPin(toAspectRatio: 3/4, relation: .lessThanOrEqual)
-        previewView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
-        NSLayoutConstraint.autoSetPriority(.defaultLow) {
-            previewView.autoPinEdge(toSuperviewEdge: .top)
-        }
-
-        view.addSubview(captureButton)
-        if UIDevice.current.isIPad {
-            captureButton.autoVCenterInSuperview()
-            captureButton.centerXAnchor.constraint(equalTo: view.trailingAnchor, constant: SendMediaNavigationController.bottomButtonsCenterOffset).isActive = true
-        } else {
-            captureButton.autoHCenterInSuperview()
-            captureButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: SendMediaNavigationController.bottomButtonsCenterOffset).isActive = true
-        }
-
-        // If the view is already visible, setup the volume button listener
-        // now that the capture UI is ready. Otherwise, we'll wait until
-        // we're visible.
-        if isVisible {
-            VolumeButtons.shared?.addObserver(observer: photoCapture)
-        }
-
-        view.addSubview(tapToFocusView)
-        tapToFocusView.isUserInteractionEnabled = false
     }
 
     private func showFailureUI(error: Error) {
@@ -457,20 +517,20 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
     func photoCaptureDidBeginMovie(_ photoCapture: PhotoCapture) {
         isRecordingMovie = true
         updateNavigationItems()
-        recordingTimerView.startCounting()
+        topBar.recordingTimerView.startCounting()
         delegate?.photoCaptureViewController(self, isRecordingMovie: isRecordingMovie)
     }
 
     func photoCaptureDidCompleteMovie(_ photoCapture: PhotoCapture) {
         isRecordingMovie = false
-        recordingTimerView.stopCounting()
+        topBar.recordingTimerView.stopCounting()
         updateNavigationItems()
         delegate?.photoCaptureViewController(self, isRecordingMovie: isRecordingMovie)
     }
 
     func photoCaptureDidCancelMovie(_ photoCapture: PhotoCapture) {
         isRecordingMovie = false
-        recordingTimerView.stopCounting()
+        topBar.recordingTimerView.stopCounting()
         updateNavigationItems()
         delegate?.photoCaptureViewController(self, isRecordingMovie: isRecordingMovie)
     }
