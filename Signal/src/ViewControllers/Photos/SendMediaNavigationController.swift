@@ -186,6 +186,7 @@ class SendMediaNavigationController: OWSNavigationController {
     private var isForcingBatchSelectInMediaLibrary = true
 
     private var isShowingMediaLibrary = false
+    private var isRecordingMovie = false
 
     var isInBatchSelectMode: Bool {
         get {
@@ -235,15 +236,15 @@ class SendMediaNavigationController: OWSNavigationController {
         case is PhotoCaptureViewController:
             isShowingMediaLibrary = false
             let showDoneButton = isInBatchSelectMode && attachmentCount > 0
-            doneButton.isHidden = !showDoneButton
+            doneButton.isHidden = !showDoneButton || isRecordingMovie
 
-            batchModeButton.isHidden = showDoneButton
+            batchModeButton.isHidden = showDoneButton || isRecordingMovie
             batchModeButton.isBeingPresentedOverPhotoCapture = true
 
             cameraModeButton.isHidden = true
             cameraModeButton.isBeingPresentedOverPhotoCapture = true
 
-            mediaLibraryModeButton.isHidden = false
+            mediaLibraryModeButton.isHidden = isRecordingMovie
             mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = true
         case is ConversationPickerViewController:
             doneButton.isHidden = true
@@ -509,6 +510,12 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
             attachmentDraftCollection.remove(lastAttachmentDraft)
         }
         assert(attachmentDraftCollection.attachmentDrafts.count == 0)
+    }
+
+    func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, isRecordingMovie: Bool) {
+        assert(self.isRecordingMovie != isRecordingMovie)
+        self.isRecordingMovie = isRecordingMovie
+        updateViewState(topViewController: photoCaptureViewController)
     }
 }
 

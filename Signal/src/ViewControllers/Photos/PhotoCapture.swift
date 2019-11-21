@@ -15,9 +15,9 @@ protocol PhotoCaptureDelegate: AnyObject {
 
     // MARK: Video
 
-    func photoCaptureDidBeginVideo(_ photoCapture: PhotoCapture)
-    func photoCaptureDidCompleteVideo(_ photoCapture: PhotoCapture)
-    func photoCaptureDidCancelVideo(_ photoCapture: PhotoCapture)
+    func photoCaptureDidBeginMovie(_ photoCapture: PhotoCapture)
+    func photoCaptureDidCompleteMovie(_ photoCapture: PhotoCapture)
+    func photoCaptureDidCancelMovie(_ photoCapture: PhotoCapture)
 
     // MARK: Utility
 
@@ -397,7 +397,8 @@ class PhotoCapture: NSObject {
     }
 
     // MARK: - Photo
-    private func handleTap() {
+
+    private func takePhoto() {
         Logger.verbose("")
         AssertIsOnMainThread()
 
@@ -416,7 +417,7 @@ class PhotoCapture: NSObject {
 
     // MARK: - Video
 
-    private func handleLongPressBegin() {
+    private func beginMovieCapture() {
         AssertIsOnMainThread()
         Logger.verbose("")
 
@@ -436,13 +437,13 @@ class PhotoCapture: NSObject {
         }.done(on: captureOutput.movieRecordingQueue) { movieRecording in
             self.captureOutput.movieRecording = movieRecording
         }.done {
-            self.delegate?.photoCaptureDidBeginVideo(self)
+            self.delegate?.photoCaptureDidBeginMovie(self)
         }.catch { error in
             self.delegate?.photoCapture(self, processingDidError: error)
         }.retainUntilComplete()
     }
 
-    private func handleLongPressComplete() {
+    private func completeMovieCapture() {
         Logger.verbose("")
         BenchEventStart(title: "Movie Processing", eventId: "Movie Processing")
         captureOutput.movieRecordingQueue.async(.promise) {
@@ -453,16 +454,16 @@ class PhotoCapture: NSObject {
 
         AssertIsOnMainThread()
         // immediately inform UI that capture is stopping
-        delegate?.photoCaptureDidCompleteVideo(self)
+        delegate?.photoCaptureDidCompleteMovie(self)
     }
 
-    private func handleLongPressCancel() {
+    private func cancelMovieCapture() {
         Logger.verbose("")
         AssertIsOnMainThread()
         sessionQueue.async {
             self.stopAudioCapture()
         }
-        delegate?.photoCaptureDidCancelVideo(self)
+        delegate?.photoCaptureDidCancelMovie(self)
     }
 }
 
@@ -476,37 +477,41 @@ extension PhotoCapture: VolumeButtonObserver {
     }
 
     func didTapVolumeButton(with identifier: VolumeButtons.Identifier) {
-        handleTap()
+        takePhoto()
     }
 
     func didBeginLongPressVolumeButton(with identifier: VolumeButtons.Identifier) {
-        handleLongPressBegin()
+        beginMovieCapture()
     }
 
     func didCompleteLongPressVolumeButton(with identifier: VolumeButtons.Identifier) {
-        handleLongPressComplete()
+        completeMovieCapture()
     }
 
     func didCancelLongPressVolumeButton(with identifier: VolumeButtons.Identifier) {
-        handleLongPressCancel()
+        cancelMovieCapture()
     }
 }
 
 extension PhotoCapture: CaptureButtonDelegate {
     func didTapCaptureButton(_ captureButton: CaptureButton) {
-        handleTap()
+        takePhoto()
     }
 
     func didBeginLongPressCaptureButton(_ captureButton: CaptureButton) {
-        handleLongPressBegin()
+        beginMovieCapture()
     }
 
     func didCompleteLongPressCaptureButton(_ captureButton: CaptureButton) {
-        handleLongPressComplete()
+        completeMovieCapture()
     }
 
     func didCancelLongPressCaptureButton(_ captureButton: CaptureButton) {
-        handleLongPressCancel()
+        cancelMovieCapture()
+    }
+
+    func didPressStopCaptureButton(_ captureButton: CaptureButton) {
+        completeMovieCapture()
     }
 
     var zoomScaleReferenceHeight: CGFloat? {

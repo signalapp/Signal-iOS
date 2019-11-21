@@ -12,6 +12,7 @@ protocol PhotoCaptureViewControllerDelegate: AnyObject {
     func photoCaptureViewControllerDidCancel(_ photoCaptureViewController: PhotoCaptureViewController)
     func photoCaptureViewControllerDidTryToCaptureTooMany(_ photoCaptureViewController: PhotoCaptureViewController)
     func photoCaptureViewControllerCanCaptureMoreItems(_ photoCaptureViewController: PhotoCaptureViewController) -> Bool
+    func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, isRecordingMovie: Bool)
 }
 
 enum PhotoCaptureError: Error {
@@ -164,6 +165,7 @@ class PhotoCaptureViewController: OWSViewController {
     // MARK: - Views
 
     let captureButton = CaptureButton()
+
     var previewView: CapturePreviewView {
         return photoCapture.previewView
     }
@@ -450,24 +452,27 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
         delegate?.photoCaptureViewControllerDidTryToCaptureTooMany(self)
     }
 
-    // MARK: - Video
+    // MARK: - Movie
 
-    func photoCaptureDidBeginVideo(_ photoCapture: PhotoCapture) {
+    func photoCaptureDidBeginMovie(_ photoCapture: PhotoCapture) {
         isRecordingMovie = true
         updateNavigationItems()
         recordingTimerView.startCounting()
+        delegate?.photoCaptureViewController(self, isRecordingMovie: isRecordingMovie)
     }
 
-    func photoCaptureDidCompleteVideo(_ photoCapture: PhotoCapture) {
+    func photoCaptureDidCompleteMovie(_ photoCapture: PhotoCapture) {
         isRecordingMovie = false
         recordingTimerView.stopCounting()
         updateNavigationItems()
+        delegate?.photoCaptureViewController(self, isRecordingMovie: isRecordingMovie)
     }
 
-    func photoCaptureDidCancelVideo(_ photoCapture: PhotoCapture) {
+    func photoCaptureDidCancelMovie(_ photoCapture: PhotoCapture) {
         isRecordingMovie = false
         recordingTimerView.stopCounting()
         updateNavigationItems()
+        delegate?.photoCaptureViewController(self, isRecordingMovie: isRecordingMovie)
     }
 
     // MARK: -
@@ -502,14 +507,27 @@ protocol CaptureButtonDelegate: AnyObject {
     func didBeginLongPressCaptureButton(_ captureButton: CaptureButton)
     func didCompleteLongPressCaptureButton(_ captureButton: CaptureButton)
     func didCancelLongPressCaptureButton(_ captureButton: CaptureButton)
+    func didPressStopCaptureButton(_ captureButton: CaptureButton)
 
     var zoomScaleReferenceHeight: CGFloat? { get }
     func longPressCaptureButton(_ captureButton: CaptureButton, didUpdateZoomAlpha zoomAlpha: CGFloat)
 }
 
+extension CaptureButton: MovieLockViewDelegate {
+    func videoLockViewDidTapStop(_ videoLockView: MovieLockView) {
+        assert(movieLockView.isLocked)
+        movieLockView.unlock(isAnimated: true)
+        UIView.animate(withDuration: 0.2) {
+            self.movieLockView.alpha = 0
+        }
+        delegate?.didPressStopCaptureButton(self)
+    }
+}
+
 class CaptureButton: UIView {
 
     let innerButton = CircleView()
+    let movieLockView = MovieLockView()
 
     var longPressGesture: UILongPressGestureRecognizer!
     let longPressDuration = 0.5
@@ -547,6 +565,13 @@ class CaptureButton: UIView {
         zoomIndicator.layer.borderWidth = 1.5
         zoomIndicator.autoAlignAxis(.horizontal, toSameAxisOf: innerButton)
         zoomIndicator.autoAlignAxis(.vertical, toSameAxisOf: innerButton)
+
+        addSubview(movieLockView)
+        movieLockView.autoSetDimensions(to: CGSize(width: 120, height: 50))
+        movieLockView.stopButton.autoAlignAxis(.horizontal, toSameAxisOf: self)
+        movieLockView.stopButton.autoAlignAxis(.vertical, toSameAxisOf: self)
+        movieLockView.alpha = 0
+        movieLockView.delegate = self
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -597,6 +622,10 @@ class CaptureButton: UIView {
         switch gesture.state {
         case .possible: break
         case .began:
+            guard !movieLockView.isLocked else {
+                return
+            }
+
             initialTouchLocation = gesture.location(in: gesture.view)
             beginRecordingAnimation(duration: 0.4, delay: 0.1)
 
@@ -611,6 +640,11 @@ class CaptureButton: UIView {
             ) { [weak self] _ in
                 guard let `self` = self else { return }
                 self.isLongPressing = true
+
+                self.movieLockView.unlock(isAnimated: false)
+                UIView.animate(withDuration: 0.2) {
+                    self.movieLockView.alpha = 1
+                }
                 self.delegate?.didBeginLongPressCaptureButton(self)
             }
         case .changed:
@@ -632,33 +666,53 @@ class CaptureButton: UIView {
             }
 
             let currentLocation = gesture.location(in: gestureView)
+
+            // Zoom
             let minDistanceBeforeActivatingZoom: CGFloat = 30
-            let distance = initialTouchLocation.y - currentLocation.y - minDistanceBeforeActivatingZoom
+            let yDistance = initialTouchLocation.y - currentLocation.y - minDistanceBeforeActivatingZoom
             let distanceForFullZoom = referenceHeight / 4
-            let ratio = distance / distanceForFullZoom
+            let yRatio = yDistance / distanceForFullZoom
+            let yAlpha = yRatio.clamp(0, 1)
 
-            let alpha = ratio.clamp(0, 1)
-
-            let zoomIndicatorDiameter = CGFloatLerp(type(of: self).recordingDiameter, 3, alpha)
+            let zoomIndicatorDiameter = CGFloatLerp(type(of: self).recordingDiameter, 3, yAlpha)
             self.zoomIndicatorSizeConstraints.forEach { $0.constant = zoomIndicatorDiameter }
             zoomIndicator.superview?.layoutIfNeeded()
 
-            delegate?.longPressCaptureButton(self, didUpdateZoomAlpha: alpha)
+            delegate?.longPressCaptureButton(self, didUpdateZoomAlpha: yAlpha)
+
+            // Lock
+
+            guard !movieLockView.isLocked else {
+                return
+            }
+            let minDistanceBeforeActivatingLockSlider: CGFloat = 30
+            let xDistance = currentLocation.x - initialTouchLocation.x - minDistanceBeforeActivatingLockSlider
+            movieLockView.update(xDistance: xDistance)
         case .ended:
             endRecordingAnimation(duration: 0.2)
+            touchTimer?.invalidate()
+            touchTimer = nil
+
+            guard !movieLockView.isLocked else {
+                return
+            }
 
             if isLongPressing {
+                UIView.animate(withDuration: 0.2) {
+                    self.movieLockView.alpha = 0
+                }
                 delegate?.didCompleteLongPressCaptureButton(self)
             } else {
                 delegate?.didTapCaptureButton(self)
             }
-
-            touchTimer?.invalidate()
-            touchTimer = nil
         case .cancelled, .failed:
             endRecordingAnimation(duration: 0.2)
 
             if isLongPressing {
+                self.movieLockView.unlock(isAnimated: true)
+                UIView.animate(withDuration: 0.2) {
+                    self.movieLockView.alpha = 0
+                }
                 delegate?.didCancelLongPressCaptureButton(self)
             }
 
@@ -840,4 +894,129 @@ class RecordingTimerView: UIView {
             label.sizeToFit()
         }
     }
+}
+
+// MARK: Movie Lock
+
+protocol MovieLockViewDelegate: AnyObject {
+    func videoLockViewDidTapStop(_ videoLockView: MovieLockView)
+}
+
+@objc
+public class MovieLockView: UIView {
+
+    weak var delegate: MovieLockViewDelegate?
+
+    @objc
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        addSubview(stopButton)
+        stopButton.autoVCenterInSuperview()
+        stopButton.centerXAnchor.constraint(equalTo: leadingAnchor,
+                                            constant: highlightViewWidth/2).isActive = true
+        self.stopButton.alpha = 0
+
+        addSubview(highlightView)
+        highlightView.autoVCenterInSuperview()
+        highlightLeadingConstraint = highlightView.autoPinEdge(toSuperviewEdge: .leading)
+
+        addSubview(lockIconView)
+        lockIconView.autoVCenterInSuperview()
+        lockIconView.centerXAnchor.constraint(equalTo: trailingAnchor,
+                                              constant: -highlightViewWidth/2).isActive = true
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    public func update(xDistance: CGFloat) {
+        let max = frame.width - highlightView.frame.width
+        let offset = xDistance.clamp(0, max)
+        let alpha = offset/max
+        highlightView.alpha = alpha
+        highlightLeadingConstraint.constant = offset
+        if offset == max {
+            lock(isAnimated: true)
+        }
+    }
+
+    // MARK: -
+
+    private(set) var isLocked = false
+
+    public func unlock(isAnimated: Bool) {
+        Logger.debug("")
+        guard isLocked else {
+            Logger.debug("ignoring redundant request")
+            return
+        }
+        Logger.debug("unlocking")
+
+        isLocked = false
+        let changes = {
+            self.lockIconView.tintColor = .white
+            self.stopButton.alpha = 0
+            self.highlightView.alpha = 0
+        }
+
+        if isAnimated {
+            UIView.animate(withDuration: 0.2, animations: changes)
+        } else {
+            changes()
+        }
+    }
+
+    private func lock(isAnimated: Bool) {
+        guard !isLocked else {
+            Logger.debug("ignoring redundant request")
+            return
+        }
+        Logger.debug("locking")
+
+        isLocked = true
+        let changes = {
+            self.lockIconView.tintColor = .black
+            self.stopButton.alpha = 1.0
+        }
+
+        if isAnimated {
+            UIView.animate(withDuration: 0.2, animations: changes)
+        } else {
+            changes()
+        }
+    }
+
+    // MARK: - Subviews
+
+    let lockIconWidth: CGFloat = 24
+    private lazy var lockIconView: UIImageView = {
+        let imageTemplate = #imageLiteral(resourceName: "ic_lock_outline").withRenderingMode(.alwaysTemplate)
+        let imageView = UIImageView(image: imageTemplate)
+        imageView.tintColor = .white
+        imageView.autoSetDimensions(to: CGSize(square: lockIconWidth))
+        return imageView
+    }()
+
+    let highlightViewWidth = SendMediaNavigationController.bottomButtonWidth
+    private var highlightLeadingConstraint: NSLayoutConstraint!
+    private lazy var highlightView: UIView = {
+        let view = CircleView(diameter: highlightViewWidth)
+        view.backgroundColor = .white
+        return view
+    }()
+
+    let stopButtonWidth: CGFloat = 30
+    public lazy var stopButton: UIButton = {
+        let view = OWSButton { [weak self] in
+            guard let self = self else { return }
+            self.delegate?.videoLockViewDidTapStop(self)
+        }
+
+        view.backgroundColor = .white
+        view.autoSetDimensions(to: CGSize(square: stopButtonWidth))
+
+        return view
+    }()
 }
