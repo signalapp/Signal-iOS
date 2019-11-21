@@ -1143,7 +1143,11 @@ extension CGSize {
     }
 
     func cropped(toAspectRatio aspectRatio: CGFloat) -> CGSize {
-        assert(aspectRatio <= 1)
+        guard aspectRatio > 0, aspectRatio <= 1 else {
+            owsFailDebug("invalid aspectRatio: \(aspectRatio)")
+            return self
+        }
+
         if width > height {
             return CGSize(width: width, height: width * aspectRatio)
         } else {
@@ -1153,7 +1157,14 @@ extension CGSize {
 }
 
 private func crop(photoData: Data, toOutputRect outputRect: CGRect) throws -> Data {
-    let originalImage = UIImage(data: photoData)!
+    guard let originalImage = UIImage(data: photoData) else {
+        throw OWSAssertionError("originalImage was unexpectedly nil")
+    }
+
+    guard outputRect.width > 0, outputRect.height > 0 else {
+        throw OWSAssertionError("invalid outputRect: \(outputRect)")
+    }
+
     var cgImage = originalImage.cgImage!
     let width = CGFloat(cgImage.width)
     let height = CGFloat(cgImage.height)
@@ -1164,5 +1175,8 @@ private func crop(photoData: Data, toOutputRect outputRect: CGRect) throws -> Da
 
     cgImage = cgImage.cropping(to: cropRect)!
     let croppedUIImage = UIImage(cgImage: cgImage, scale: 1.0, orientation: originalImage.imageOrientation)
-    return croppedUIImage.jpegData(compressionQuality: 0.9)!
+    guard let croppedData = croppedUIImage.jpegData(compressionQuality: 0.9) else {
+        throw OWSAssertionError("croppedData was unexpectedly nil")
+    }
+    return croppedData
 }
