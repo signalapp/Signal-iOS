@@ -273,9 +273,9 @@ class SendMediaNavigationController: OWSNavigationController {
         doneButton.updateCount()
     }
 
-    func fadeTo(viewControllers: [UIViewController]) {
+    func fadeTo(viewControllers: [UIViewController], duration: CFTimeInterval) {
         let transition: CATransition = CATransition()
-        transition.duration = 0.08
+        transition.duration = duration
         transition.type = CATransitionType.fade
         view.layer.add(transition, forKey: nil)
         setViewControllers(viewControllers, animated: false)
@@ -293,7 +293,7 @@ class SendMediaNavigationController: OWSNavigationController {
             guard isGranted else { return }
 
             BenchEventStart(title: "Show-Camera", eventId: "Show-Camera")
-            self.fadeTo(viewControllers: [self.captureViewController])
+            self.fadeTo(viewControllers: [self.captureViewController], duration: 0.08)
         }
     }
 
@@ -302,7 +302,7 @@ class SendMediaNavigationController: OWSNavigationController {
             guard isGranted else { return }
 
             BenchEventStart(title: "Show-Media-Library", eventId: "Show-Media-Library")
-            self.fadeTo(viewControllers: [self.mediaLibraryViewController])
+            self.fadeTo(viewControllers: [self.mediaLibraryViewController], duration: 0.08)
         }
     }
 
@@ -378,7 +378,11 @@ class SendMediaNavigationController: OWSNavigationController {
         approvalViewController.approvalDelegate = self
         approvalViewController.messageText = sendMediaNavDelegate.sendMediaNavInitialMessageText(self)
 
-        pushViewController(approvalViewController, animated: animated)
+        if animated {
+            fadeTo(viewControllers: viewControllers + [approvalViewController], duration: 0.3)
+        } else {
+            pushViewController(approvalViewController, animated: false)
+        }
     }
 
     private func didRequestExit(dontAbandonText: String) {
