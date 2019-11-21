@@ -5,6 +5,7 @@
 import Foundation
 import AVFoundation
 import PromiseKit
+import Lottie
 
 protocol PhotoCaptureViewControllerDelegate: AnyObject {
     func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, didFinishProcessingAttachment attachment: SignalAttachment)
@@ -37,6 +38,16 @@ class PhotoCaptureViewController: OWSViewController {
     weak var delegate: PhotoCaptureViewControllerDelegate?
 
     @objc public lazy var photoCapture = PhotoCapture()
+
+    lazy var tapToFocusView: AnimationView = {
+        let view = AnimationView(name: "tap_to_focus")
+        view.animationSpeed = 3
+        view.backgroundBehavior = .forceFinish
+        view.contentMode = .scaleAspectFit
+        view.autoSetDimensions(to: CGSize(square: 150))
+        view.setContentHuggingHigh()
+        return view
+    }()
 
     deinit {
         UIDevice.current.endGeneratingDeviceOrientationNotifications()
@@ -110,10 +121,10 @@ class PhotoCaptureViewController: OWSViewController {
             // Since we support iPad multitasking, we cannot *disable* rotation of our views.
             // Rotating the preview layer is really distracting, so we fade out the preview layer
             // while the rotation occurs.
-            self.photoCapture.previewView.alpha = 0
+            self.previewView.alpha = 0
             coordinator.animate(alongsideTransition: { _ in }) { _ in
                 UIView.animate(withDuration: 0.1) {
-                    self.photoCapture.previewView.alpha = 1
+                    self.previewView.alpha = 1
                 }
             }
         }
@@ -267,6 +278,10 @@ class PhotoCaptureViewController: OWSViewController {
     func didTapFocusExpose(tapGesture: UITapGestureRecognizer) {
         let viewLocation = tapGesture.location(in: view)
         let devicePoint = previewView.previewLayer.captureDevicePointConverted(fromLayerPoint: viewLocation)
+
+        tapToFocusView.center = viewLocation
+        tapToFocusView.play()
+
         photoCapture.focus(with: .autoFocus, exposureMode: .autoExpose, at: devicePoint, monitorSubjectAreaChange: true)
     }
 
@@ -364,6 +379,9 @@ class PhotoCaptureViewController: OWSViewController {
         if isVisible {
             VolumeButtons.shared?.addObserver(observer: photoCapture)
         }
+
+        view.addSubview(tapToFocusView)
+        tapToFocusView.isUserInteractionEnabled = false
     }
 
     private func showFailureUI(error: Error) {
