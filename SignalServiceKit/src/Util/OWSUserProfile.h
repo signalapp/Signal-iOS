@@ -72,7 +72,8 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:profileKey:profi
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
                avatarFileName:(nullable NSString *)avatarFileName
                   transaction:(SDSAnyWriteTransaction *)transaction
-                   completion:(nullable OWSUserProfileCompletion)completion;
+                   completion:(nullable OWSUserProfileCompletion)completion
+    NS_SWIFT_NAME(update(profileName:avatarUrlPath:avatarFileName:transaction:completion:));
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
                      username:(nullable NSString *)username

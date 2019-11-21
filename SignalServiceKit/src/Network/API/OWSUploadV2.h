@@ -49,7 +49,6 @@ typedef void (^UploadProgressBlock)(NSProgress *progress);
 @property (nonatomic, nullable) NSString *urlPath;
 
 - (AnyPromise *)uploadAvatarToService:(NSData *_Nullable)avatarData
-                     clearLocalAvatar:(dispatch_block_t)clearLocalAvatar
                         progressBlock:(UploadProgressBlock)progressBlock;
 
 @end

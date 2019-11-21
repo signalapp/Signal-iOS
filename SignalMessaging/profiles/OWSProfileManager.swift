@@ -8,6 +8,44 @@ import SignalServiceKit
 
 public extension OWSProfileManager {
 
+    // The main entry point for updating the local profile. It will:
+    //
+    // * Update local state optimistically.
+    // * Enqueue a service update.
+    // * Attempt that service update.
+    //
+    // The returned promise will fail if the service can't be updated
+    // (or in the unlikely fact that another error occurs) but this
+    // manager will continue to retry until the update succeeds.
+    class func updateLocalProfilePromise(profileName: String?, profileAvatarData: Data?) -> Promise<Void> {
+        return DispatchQueue.global().async(.promise) {
+            return enqueueProfileUpdate(profileName: profileName, profileAvatarData: profileAvatarData)
+            }.then(on: .global()) { update in
+                return self.attemptToUpdateProfileOnService(update: update)
+            }.done(on: .global()) { () -> Void in
+                Logger.verbose("Profile update did complete.")
+        }
+    }
+}
+
+// MARK: -
+
+@objc
+public extension OWSProfileManager {
+    // See OWSProfileManager.updateProfilePromise().
+    class func updateLocalProfilePromiseObj(profileName: String?, profileAvatarData: Data?) -> AnyPromise {
+        return AnyPromise(updateLocalProfilePromise(profileName: profileName, profileAvatarData: profileAvatarData))
+    }
+
+    class func updateProfileOnServiceIfNecessaryObjc() {
+        updateProfileOnServiceIfNecessary()
+    }
+}
+
+// MARK: -
+
+extension OWSProfileManager {
+
     // MARK: - Dependencies
 
     private class var databaseStorage: SDSDatabaseStorage {
@@ -18,6 +56,14 @@ public extension OWSProfileManager {
         return OWSProfileManager.shared()
     }
 
+    private class var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
+    }
+
+    private class var syncManager: SyncManagerProtocol {
+        return SSKEnvironment.shared.syncManager
+    }
+
     // MARK: -
 
     @objc
@@ -25,55 +71,170 @@ public extension OWSProfileManager {
 
     // MARK: -
 
-    class func updateProfilePromise(profileName: String?, profileAvatarData: Data?) -> Promise<Void> {
-
-        return DispatchQueue.global().async(.promise) {
-            let update = enqueueProfileUpdate(profileName: profileName, profileAvatarData: profileAvatarData)
-            return update
-        }.then(on: .global()) { update in
-            return self.updateProfileOnService(update: update)
-        }.done(on: .global()) { (_: PendingProfileUpdate) -> Void in
-            Logger.verbose("Profile update did complete.")
+    public class func updateProfileOnServiceIfNecessary(retryDelay: TimeInterval = 1) {
+        guard AppReadiness.isAppReady() else {
+            return
         }
+        guard tsAccountManager.isRegisteredAndReady else {
+            return
+        }
+        guard !profileManager.isUpdatingProfileOnService else {
+            // Avoid having two redundant updates in flight at the same time.
+            return
+        }
+
+        let pendingUpdate = self.databaseStorage.read { transaction in
+            return self.currentPendingProfileUpdate(transaction: transaction)
+        }
+        guard let update = pendingUpdate else {
+            return
+        }
+        attemptToUpdateProfileOnService(update: update,
+                                        retryDelay: retryDelay)
+            .done { _ in
+                Logger.info("Update succeeded.")
+            }.catch { error in
+                Logger.error("Update failed: \(error)")
+            }.retainUntilComplete()
     }
 
-    internal class func updateProfileOnService(update: PendingProfileUpdate) -> Promise<PendingProfileUpdate> {
+    fileprivate class func attemptToUpdateProfileOnService(update: PendingProfileUpdate,
+                                                           retryDelay: TimeInterval = 1) -> Promise<Void> {
         self.profileManager.isUpdatingProfileOnService = true
 
-        if FeatureFlags.versionedProfiledUpdate {
-            return updateProfileOnServiceVersioned(update: update)
-        } else {
-            return updateProfileOnServiceUnversioned(update: update)
-        }
-    }
+        // Do this outside of any transaction; it should never use a sneaky
+        // transaction itself, but hypothetically could.
+        let userProfile = self.profileManager.localUserProfile()
 
-    internal class func updateProfileOnServiceVersioned(update: PendingProfileUpdate) -> Promise<PendingProfileUpdate> {
-        return VersionedProfiles.updateProfilePromise(profileName: update.profileName, profileAvatarData: update.profileAvatarData)
-            .map(on: .global()) { versionedUpdate in
-                self.tryToCompleteProfileUpdate(update: update,
-                                                avatarUrlPath: versionedUpdate.avatarUrlPath)
-                return update
-        }
-    }
+        let attempt = ProfileUpdateAttempt(update: update,
+                                           userProfile: userProfile)
 
-    private class func tryToCompleteProfileUpdate(update: PendingProfileUpdate,
-                                                  avatarUrlPath: String?) {
-        databaseStorage.write { transaction in
-            guard tryToDequeueProfileUpdate(update: update, transaction: transaction) else {
-                return
+        let promise = writeProfileAvatarToDisk(attempt: attempt)
+            .then(on: DispatchQueue.global()) { () -> Promise<Void> in
+                // Optimistically update local profile state.
+                databaseStorage.write { transaction in
+                    self.updateLocalProfile(with: attempt, transaction: transaction)
+                }
+
+                // We use a "self-only" contact sync to indicate to desktop
+                // that we've changed our profile and that it should do a
+                // profile fetch for "self".
+                //
+                // NOTE: We also inform the desktop in the failure case,
+                //       since that _may have_ affected service state.
+                if self.tsAccountManager.isRegisteredPrimaryDevice {
+                    self.syncManager.syncLocalContact().retainUntilComplete()
+                }
+
+                // Notify all our devices that the profile has changed.
+                // Older linked devices may not handle this message.
+                self.syncManager.sendFetchLatestProfileSyncMessage()
+
+                if FeatureFlags.versionedProfiledUpdate {
+                    return updateProfileOnServiceVersioned(attempt: attempt)
+                } else {
+                    return updateProfileOnServiceUnversioned(attempt: attempt)
+                }
+        }.done(on: .global()) { _ in
+            self.databaseStorage.write { transaction in
+                guard tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction) else {
+                    return
+                }
+
+                if attempt.update.profileAvatarData != nil {
+                    if attempt.profileAvatarFilename == nil {
+                        owsFailDebug("Missing profileAvatarFilename.")
+                    }
+                    if attempt.avatarUrlPath == nil {
+                        owsFailDebug("Missing avatarUrlPath.")
+                    }
+                }
+
+                self.updateLocalProfile(with: attempt, transaction: transaction)
+
+                self.profileManager.isUpdatingProfileOnService = false
             }
+        }
 
-            if update.profileAvatarData != nil && avatarUrlPath == nil {
-                owsFailDebug("Missing avatarUrlPath.")
-            }
-
+        promise.ensure {
             self.profileManager.isUpdatingProfileOnService = false
 
-            self.profileManager.profileUpdateDidComplete(profileName: update.profileName,
-                                                         profileAvatarData: update.profileAvatarData,
-                                                         avatarUrlPath: avatarUrlPath,
-                                                         transaction: transaction)
+            // There may be another update enqueued that we should kick off.
+            // Or we may need to retry.
+            //
+            // We don't want to get in a retry loop, so we use exponential backoff.
+            self.updateProfileOnServiceIfNecessary(retryDelay: retryDelay * 2)
+        }.retainUntilComplete()
+
+        return promise
+    }
+
+    private class func writeProfileAvatarToDisk(attempt: ProfileUpdateAttempt) -> Promise<Void> {
+        guard let profileAvatarData = attempt.update.profileAvatarData else {
+            return Promise.value(())
         }
+        let (promise, resolver) = Promise<Void>.pending()
+        DispatchQueue.global().async {
+            self.profileManager.writeAvatarToDisk(with: profileAvatarData,
+                                                  success: { profileAvatarFilename in
+                                                    attempt.profileAvatarFilename = profileAvatarFilename
+                                                    resolver.fulfill(())
+            }, failure: { (error) in
+                resolver.reject(error)
+            })
+        }
+        return promise
+    }
+
+    private class func updateProfileOnServiceUnversioned(attempt: ProfileUpdateAttempt) -> Promise<Void> {
+        return updateProfileNameOnServiceUnversioned(attempt: attempt)
+            .then { _ in
+                return updateProfileAvatarOnServiceUnversioned(attempt: attempt)
+            }
+    }
+
+    private class func updateProfileNameOnServiceUnversioned(attempt: ProfileUpdateAttempt) -> Promise<Void> {
+        let (promise, resolver) = Promise<Void>.pending()
+        DispatchQueue.global().async {
+            self.profileManager.updateService(unversionedProfileName: attempt.update.profileName,
+                                              success: {
+                                                resolver.fulfill(())
+            }, failure: { error in
+                resolver.reject(error)
+            })
+        }
+        return promise
+    }
+
+    private class func updateProfileAvatarOnServiceUnversioned(attempt: ProfileUpdateAttempt) -> Promise<Void> {
+        let (promise, resolver) = Promise<Void>.pending()
+        DispatchQueue.global().async {
+            self.profileManager.updateService(unversionedProfileAvatarData: attempt.update.profileAvatarData,
+                                              success: { avatarUrlPath in
+                                                attempt.avatarUrlPath = avatarUrlPath
+
+                                                resolver.fulfill(())
+            }, failure: { error in
+                resolver.reject(error)
+            })
+        }
+        return promise
+    }
+
+    private class func updateProfileOnServiceVersioned(attempt: ProfileUpdateAttempt) -> Promise<Void> {
+        return VersionedProfiles.updateProfilePromise(profileName: attempt.update.profileName, profileAvatarData: attempt.update.profileAvatarData)
+            .map(on: .global()) { versionedUpdate in
+                attempt.avatarUrlPath = versionedUpdate.avatarUrlPath
+        }
+    }
+
+    private class func updateLocalProfile(with attempt: ProfileUpdateAttempt,
+                                          transaction: SDSAnyWriteTransaction) {
+        attempt.userProfile.update(profileName: attempt.update.profileName,
+                                   avatarUrlPath: nil,
+                                   avatarFileName: attempt.profileAvatarFilename,
+                                   transaction: transaction,
+                                   completion: nil)
     }
 
     // MARK: - Update Queue
@@ -81,12 +242,12 @@ public extension OWSProfileManager {
     private static let kPendingProfileUpdateKey = "kPendingProfileUpdateKey"
 
     private class func enqueueProfileUpdate(profileName: String?, profileAvatarData: Data?) -> PendingProfileUpdate {
+        // Note that this might overwrite a pending profile update.
+        // That's desirable.  We only ever want to retain the
+        // latest changes.
         let update = PendingProfileUpdate(profileName: profileName, profileAvatarData: profileAvatarData)
         databaseStorage.write { transaction in
             self.settingsStore.setObject(update, key: kPendingProfileUpdateKey, transaction: transaction)
-
-            // Optimistically update local profile state.
-            self.profileManager.profileUpdateWasEnqueued(profileName: profileName, profileAvatarData: profileAvatarData, transaction: transaction)
         }
         return update
     }
@@ -122,16 +283,7 @@ public extension OWSProfileManager {
 // MARK: -
 
 @objc
-public extension OWSProfileManager {
-    class func updateProfilePromiseObj(profileName: String?, profileAvatarData: Data?) -> AnyPromise {
-        return AnyPromise(updateProfilePromise(profileName: profileName, profileAvatarData: profileAvatarData))
-    }
-}
-
-// MARK: -
-
-@objc
-class PendingProfileUpdate: MTLModel {
+public class PendingProfileUpdate: MTLModel {
     @objc
     var id: UUID?
 
@@ -167,5 +319,23 @@ class PendingProfileUpdate: MTLModel {
             return false
         }
         return thisId == otherId
+    }
+}
+
+// MARK: -
+
+@objc
+public class ProfileUpdateAttempt: NSObject {
+    let update: PendingProfileUpdate
+
+    let userProfile: OWSUserProfile
+
+    var profileAvatarFilename: String?
+
+    var avatarUrlPath: String?
+
+    init(update: PendingProfileUpdate, userProfile: OWSUserProfile) {
+        self.update = update
+        self.userProfile = userProfile
     }
 }

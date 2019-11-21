@@ -10,6 +10,7 @@
 #import "Signal-Swift.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/OWSNavigationController.h>
@@ -43,7 +44,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 @property (nonatomic) OWSFlatButton *saveButton;
 
-@property (nonatomic, nullable) UIImage *avatar;
+@property (nonatomic, nullable) NSData *avatarData;
 
 @property (nonatomic) BOOL hasUnsavedChanges;
 
@@ -99,14 +100,14 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     _avatarViewHelper = [AvatarViewHelper new];
     _avatarViewHelper.delegate = self;
 
-    _avatar = [OWSProfileManager.sharedManager localProfileAvatarImage];
+    _avatarData = [OWSProfileManager.sharedManager localProfileAvatarData];
 
     [self createViews];
     [self updateNavigationItem];
 
     if (self.profileViewMode == ProfileViewMode_Registration) {
         // mark as dirty if re-registration has content
-        if (self.profileNameTextField.text.length > 0 || self.avatar != nil) {
+        if (self.profileNameTextField.text.length > 0 || self.avatarData != nil) {
             self.hasUnsavedChanges = YES;
         }
     }
@@ -432,17 +433,17 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         presentFromViewController:self
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      [OWSProfileManager.sharedManager updateLocalProfileName:normalizedProfileName
-                          avatarImage:weakSelf.avatar
-                          success:^{
-                              dispatch_async(dispatch_get_main_queue(), ^{
+                      [[OWSProfileManager updateLocalProfilePromiseObjWithProfileName:normalizedProfileName
+                                                                    profileAvatarData:weakSelf.avatarData]
+
+                              .then(^{
                                   [modalActivityIndicator dismissWithCompletion:^{
                                       [weakSelf updateProfileCompleted];
                                   }];
-                              });
-                          }
-                          failure:^{
-                              dispatch_async(dispatch_get_main_queue(), ^{
+                              })
+                              .catch(^(NSError *error) {
+                                  OWSFailDebug(@"Error: %@", error);
+
                                   [modalActivityIndicator dismissWithCompletion:^{
                                       [OWSActionSheets
                                           showErrorAlertWithMessage:NSLocalizedString(
@@ -450,8 +451,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                                                         @"Error message shown when a "
                                                                         @"profile update fails.")];
                                   }];
-                              });
-                          }];
+                              }) retainUntilComplete];
                   }];
 }
 
@@ -536,13 +536,16 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 #pragma mark - Avatar
 
-- (void)setAvatar:(nullable UIImage *)avatar
+- (void)setAvatarImage:(nullable UIImage *)avatarImage
 {
     OWSAssertIsOnMainThread();
 
-    _avatar = avatar;
-
-    self.hasUnsavedChanges = YES;
+    NSData *_Nullable avatarData = nil;
+    if (avatarImage != nil) {
+        avatarData = [OWSProfileManager avatarDataForAvatarImage:avatarImage];
+    }
+    self.hasUnsavedChanges = ![NSObject isNullableObject:avatarData equalTo:_avatarData];
+    _avatarData = avatarData;
 
     [self updateAvatarView];
 }
@@ -554,8 +557,12 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)updateAvatarView
 {
-    self.avatarView.image = (self.avatar
-            ?: [[[OWSContactAvatarBuilder alloc] initForLocalUserWithDiameter:self.avatarSize] buildDefaultImage]);
+    if (self.avatarData != nil) {
+        self.avatarView.image = [UIImage imageWithData:self.avatarData];
+    } else {
+        self.avatarView.image =
+            [[[OWSContactAvatarBuilder alloc] initForLocalUserWithDiameter:self.avatarSize] buildDefaultImage];
+    }
 }
 
 - (void)updateUsername
@@ -663,8 +670,8 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     OWSAssertIsOnMainThread();
     OWSAssertDebug(image);
 
-    self.avatar = [image resizedImageToFillPixelSize:CGSizeMake(kOWSProfileManager_MaxAvatarDiameter,
-                                                         kOWSProfileManager_MaxAvatarDiameter)];
+    [self setAvatarImage:[image resizedImageToFillPixelSize:CGSizeMake(kOWSProfileManager_MaxAvatarDiameter,
+                                                                kOWSProfileManager_MaxAvatarDiameter)]];
 }
 
 - (UIViewController *)fromViewController
@@ -684,7 +691,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)clearAvatar
 {
-    self.avatar = nil;
+    [self setAvatarImage:nil];
 }
 
 #pragma mark - OWSNavigationView
