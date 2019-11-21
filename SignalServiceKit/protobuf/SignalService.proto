@@ -148,7 +148,7 @@ message DataMessage {
     END_SESSION             = 1;
     EXPIRATION_TIMER_UPDATE = 2;
     PROFILE_KEY_UPDATE      = 4;
-    UNLINK_DEVICE           = 8;
+    UNLINK_DEVICE           = 128;
   }
 
   message Quote {
