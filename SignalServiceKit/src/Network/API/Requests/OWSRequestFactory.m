@@ -146,12 +146,44 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/messages"] method:@"GET" parameters:@{}];
 }
 
-+ (TSRequest *)getProfileRequestWithAddress:(SignalServiceAddress *)address
-                                udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
++ (TSRequest *)getUnversionedProfileRequestWithAddress:(SignalServiceAddress *)address
+                                           udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
 {
     OWSAssertDebug(address.isValid);
 
-    NSString *path = [NSString stringWithFormat:textSecureProfileAPIFormat, address.serviceIdentifier];
+    NSString *path = [NSString stringWithFormat:@"v1/profile/%@", address.serviceIdentifier];
+    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+    if (udAccessKey != nil) {
+        [self useUDAuthWithRequest:request accessKey:udAccessKey];
+    }
+    return request;
+}
+
++ (TSRequest *)getVersionedProfileRequestWithAddress:(SignalServiceAddress *)address
+                                   profileKeyVersion:(nullable NSData *)profileKeyVersion
+                                   credentialRequest:(nullable NSData *)credentialRequest
+                                         udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
+{
+    OWSAssertDebug(address.isValid);
+    OWSAssertDebug(address.uuid != nil);
+
+    NSString *uuidParam = address.uuid.UUIDString.lowercaseString;
+    NSString *_Nullable profileKeyVersionParam = profileKeyVersion.base64EncodedString.encodeURIComponent;
+    NSString *_Nullable credentialRequestParam = credentialRequest.hexadecimalString.lowercaseString;
+
+    // GET /v1/profile/{uuid}/{version}/{profile_key_credential_request}
+    NSString *path;
+    if (profileKeyVersion.length > 0 && credentialRequest.length > 0) {
+        path = [NSString stringWithFormat:@"v1/profile/%@/%@/%@",
+                         uuidParam,
+                         profileKeyVersionParam,
+                         credentialRequestParam];
+    } else if (profileKeyVersion.length > 0) {
+        path = [NSString stringWithFormat:@"v1/profile/%@/%@", uuidParam, profileKeyVersionParam];
+    } else {
+        path = [NSString stringWithFormat:@"v1/profile/%@", uuidParam];
+    }
+
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
     if (udAccessKey != nil) {
         [self useUDAuthWithRequest:request accessKey:udAccessKey];
@@ -781,10 +813,8 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     NSString *base64EncodedName = [encryptedPaddedName base64EncodedString];
     // name length must match exactly
     if (base64EncodedName.length == kEncodedNameLength) {
-        // Remove any "/" in the base64 (all other base64 chars are URL safe.
-        // Apples built-in `stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URL*]]` doesn't offer a
-        // flavor for encoding "/".
-        NSString *urlEncodedName = [base64EncodedName stringByReplacingOccurrencesOfString:@"/" withString:@"%2F"];
+        NSString *_Nullable urlEncodedName = base64EncodedName.encodeURIComponent;
+        OWSFailDebug(@"Couldn't encode name.");
         urlString = [NSString stringWithFormat:textSecureSetProfileNameAPIFormat, urlEncodedName];
     } else {
         // if name length doesn't match exactly, assume blank name

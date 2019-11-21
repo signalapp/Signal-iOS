@@ -21,6 +21,7 @@ public class SignalServiceProfile: NSObject {
     public let unidentifiedAccessVerifier: Data?
     public let hasUnrestrictedUnidentifiedAccess: Bool
     public let supportsUUID: Bool
+    public let credential: Data?
 
     public init(address: SignalServiceAddress?, responseObject: Any?) throws {
         guard let params = ParamParser(responseObject: responseObject) else {
@@ -69,5 +70,7 @@ public class SignalServiceProfile: NSObject {
         } else {
             self.supportsUUID = false
         }
+
+        self.credential = try params.optionalBase64EncodedData(key: "credential")
     }
 }
