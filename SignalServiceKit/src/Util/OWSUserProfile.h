@@ -81,11 +81,6 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:profileKey:profi
                   transaction:(SDSAnyWriteTransaction *)transaction
                    completion:(nullable OWSUserProfileCompletion)completion;
 
-- (void)updateWithAvatarUrlPath:(nullable NSString *)avatarUrlPath
-                 avatarFileName:(nullable NSString *)avatarFileName
-                    transaction:(SDSAnyWriteTransaction *)transaction
-                     completion:(nullable OWSUserProfileCompletion)completion;
-
 - (void)updateWithAvatarFileName:(nullable NSString *)avatarFileName
                      transaction:(SDSAnyWriteTransaction *)transaction
                       completion:(nullable OWSUserProfileCompletion)completion;

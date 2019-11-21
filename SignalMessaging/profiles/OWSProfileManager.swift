@@ -282,8 +282,7 @@ extension OWSProfileManager {
 
 // MARK: -
 
-@objc
-public class PendingProfileUpdate: MTLModel {
+fileprivate class PendingProfileUpdate: MTLModel {
     @objc
     var id: UUID?
 
@@ -324,8 +323,7 @@ public class PendingProfileUpdate: MTLModel {
 
 // MARK: -
 
-@objc
-public class ProfileUpdateAttempt: NSObject {
+fileprivate class ProfileUpdateAttempt {
     let update: PendingProfileUpdate
 
     let userProfile: OWSUserProfile
