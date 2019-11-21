@@ -135,9 +135,14 @@ final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableView
     
     private func removeDeviceLink(_ deviceLink: DeviceLink) {
         LokiStorageAPI.removeDeviceLink(deviceLink).done { [weak self] in
-            guard let thread = TSContactThread.fetch(uniqueId: TSContactThread.threadId(fromContactId: deviceLink.other.hexEncodedPublicKey)) else { return }
+            let linkedDeviceHexEncodedPublicKey = deviceLink.other.hexEncodedPublicKey
+            guard let thread = TSContactThread.fetch(uniqueId: TSContactThread.threadId(fromContactId: linkedDeviceHexEncodedPublicKey)) else { return }
             let unlinkDeviceMessage = UnlinkDeviceMessage(thread: thread)!
             ThreadUtil.enqueue(unlinkDeviceMessage)
+            let storage = OWSPrimaryStorage.shared()
+            storage.dbReadWriteConnection.readWrite { transaction in
+                storage.archiveAllSessions(forContact: linkedDeviceHexEncodedPublicKey, protocolContext: transaction)
+            }
             self?.updateDeviceLinks()
         }.catch { [weak self] _ in
             let alert = UIAlertController(title: NSLocalizedString("Couldn't Unlink Device", comment: ""), message: NSLocalizedString("Please check your internet connection and try again", comment: ""), preferredStyle: .alert)

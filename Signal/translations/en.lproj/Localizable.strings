@@ -2665,6 +2665,7 @@
 "Enter a Name" = "Enter a Name";
 "Error" = "Error";
 "Please pick a name" = "Please pick a name";
+"Couldn't Link Device" = "Couldn't Link Device";
 "Couldn't Unlink Device" = "Couldn't Unlink Device";
 "Please check your internet connection and try again" = "Please check your internet connection and try again";
 "Device Unlinked" = "Device Unlinked";
