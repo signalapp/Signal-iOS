@@ -378,12 +378,16 @@ private class TrimVideoOperation: OWSOperation {
             self.render.resolver.fulfill(filePath)
             self.reportSuccess()
         }.catch { error in
-            owsFailDebug("Error: \(error)")
+            if case VideoEditorError.cancelled = error {
+                // operation was cancelled - this is normal.
+            } else {
+                owsFailDebug("Error: \(error)")
+            }
             self.render.resolver.reject(error)
             VideoEditorModel.serialQueue.sync {
                 // Discard failed render.
                 if self.model.currentRender === self.render {
-                   self.model.currentRender = nil
+                    self.model.currentRender = nil
                 }
             }
             self.reportError(withUndefinedRetry: error)

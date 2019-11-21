@@ -273,9 +273,9 @@ class SendMediaNavigationController: OWSNavigationController {
         doneButton.updateCount()
     }
 
-    func fadeTo(viewControllers: [UIViewController]) {
+    func fadeTo(viewControllers: [UIViewController], duration: CFTimeInterval) {
         let transition: CATransition = CATransition()
-        transition.duration = 0.08
+        transition.duration = duration
         transition.type = CATransitionType.fade
         view.layer.add(transition, forKey: nil)
         setViewControllers(viewControllers, animated: false)
@@ -293,7 +293,7 @@ class SendMediaNavigationController: OWSNavigationController {
             guard isGranted else { return }
 
             BenchEventStart(title: "Show-Camera", eventId: "Show-Camera")
-            self.fadeTo(viewControllers: [self.captureViewController])
+            self.fadeTo(viewControllers: [self.captureViewController], duration: 0.08)
         }
     }
 
@@ -302,7 +302,7 @@ class SendMediaNavigationController: OWSNavigationController {
             guard isGranted else { return }
 
             BenchEventStart(title: "Show-Media-Library", eventId: "Show-Media-Library")
-            self.fadeTo(viewControllers: [self.mediaLibraryViewController])
+            self.fadeTo(viewControllers: [self.mediaLibraryViewController], duration: 0.08)
         }
     }
 
@@ -378,16 +378,18 @@ class SendMediaNavigationController: OWSNavigationController {
         approvalViewController.approvalDelegate = self
         approvalViewController.messageText = sendMediaNavDelegate.sendMediaNavInitialMessageText(self)
 
-        pushViewController(approvalViewController, animated: animated)
+        if animated {
+            fadeTo(viewControllers: viewControllers + [approvalViewController], duration: 0.3)
+        } else {
+            pushViewController(approvalViewController, animated: false)
+        }
     }
 
     private func didRequestExit(dontAbandonText: String) {
         if attachmentDraftCollection.count == 0 {
             self.sendMediaNavDelegate?.sendMediaNavDidCancel(self)
         } else {
-            let alertTitle = NSLocalizedString("SEND_MEDIA_ABANDON_TITLE", comment: "alert title when user attempts to leave the send media flow when they have an in-progress album")
-
-            let alert = ActionSheetController(title: alertTitle, message: nil)
+            let alert = ActionSheetController(title: nil, message: nil)
 
             let confirmAbandonText = NSLocalizedString("SEND_MEDIA_CONFIRM_ABANDON_ALBUM", comment: "alert action, confirming the user wants to exit the media flow and abandon any photos they've taken")
             let confirmAbandonAction = ActionSheetAction(title: confirmAbandonText,
