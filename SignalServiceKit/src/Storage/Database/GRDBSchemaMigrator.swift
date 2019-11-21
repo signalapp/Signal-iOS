@@ -47,6 +47,7 @@ public class GRDBSchemaMigrator: NSObject {
         case signalAccount_add_contactAvatars_indices
         case jobRecords_add_attachmentId
         case createMediaGalleryItems
+        case dedupeSignalRecipients
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
         // We only need to do this for breaking changes.
@@ -161,6 +162,25 @@ public class GRDBSchemaMigrator: NSObject {
                           columns: ["attachmentId"])
 
             try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
+        }
+
+        migrator.registerMigration(MigrationId.dedupeSignalRecipients.rawValue) { db in
+            try autoreleasepool {
+                try dedupeSignalRecipients(transaction: GRDBWriteTransaction(database: db).asAnyWrite)
+            }
+
+            try db.drop(index: "index_signal_recipients_on_recipientPhoneNumber")
+            try db.drop(index: "index_signal_recipients_on_recipientUUID")
+
+            try db.create(index: "index_signal_recipients_on_recipientPhoneNumber",
+                          on: "model_SignalRecipient",
+                          columns: ["recipientPhoneNumber"],
+                          unique: true)
+
+            try db.create(index: "index_signal_recipients_on_recipientUUID",
+                          on: "model_SignalRecipient",
+                          columns: ["recipientUUID"],
+                          unique: true)
         }
 
         return migrator
@@ -824,6 +844,56 @@ func createInitialGalleryRecords(transaction: GRDBWriteTransaction) throws {
             }
 
             try GRDBMediaGalleryFinder.insertGalleryRecord(attachmentStream: attachmentStream, transaction: transaction)
+        }
+    }
+}
+
+public func dedupeSignalRecipients(transaction: SDSAnyWriteTransaction) throws {
+    BenchEventStart(title: "Deduping Signal Recipients", eventId: "dedupeSignalRecipients")
+    defer { BenchEventComplete(eventId: "dedupeSignalRecipients") }
+
+    var recipients: [SignalServiceAddress: [String]] = [:]
+
+    SignalRecipient.anyEnumerate(transaction: transaction) { (recipient, _) in
+        if let existing = recipients[recipient.address] {
+            recipients[recipient.address] = existing + [recipient.uniqueId]
+        } else {
+            recipients[recipient.address] = [recipient.uniqueId]
+        }
+    }
+
+    var duplicatedRecipients: [SignalServiceAddress: [String]] = [:]
+    for (address, recipients) in recipients {
+        if recipients.count > 1 {
+            duplicatedRecipients[address] = recipients
+        }
+    }
+
+    guard duplicatedRecipients.count > 0 else {
+        Logger.info("No duplicated recipients")
+        return
+    }
+
+    for (address, recipientIds) in duplicatedRecipients {
+        // Since we have duplicate recipients for an address, we want to keep the one returned by the
+        // finder, since that is the one whose uniqueId is used as the `accountId` for the
+        // accountId finder.
+        guard let primaryRecipient = SignalRecipient.registeredRecipient(for: address,
+                                                                         mustHaveDevices: false,
+                                                                         transaction: transaction) else {
+                                                                            owsFailDebug("primaryRecipient was unexpectedly nil")
+                                                                            continue
+
+        }
+
+        let redundantRecipientIds = recipientIds.filter { $0 != primaryRecipient.uniqueId }
+        for redundantId in redundantRecipientIds {
+            guard let redundantRecipient = SignalRecipient.anyFetch(uniqueId: redundantId, transaction: transaction) else {
+                owsFailDebug("redundantRecipient was unexpectedly nil")
+                continue
+            }
+            Logger.info("removing redundant recipient: \(redundantRecipient)")
+            redundantRecipient.anyRemove(transaction: transaction)
         }
     }
 }

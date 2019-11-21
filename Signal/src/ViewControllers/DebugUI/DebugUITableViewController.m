@@ -114,6 +114,13 @@ NS_ASSUME_NONNULL_BEGIN
                        [viewController.navigationController pushViewController:fileBrowser animated:YES];
                    }];
     [subsectionItems addObject:documentsFileBrowserItem];
+    OWSTableItem *dataStoreItem = [OWSTableItem disclosureItemWithText:@"Data Store Reports"
+                                                           actionBlock:^{
+                                                               [viewController.navigationController
+                                                                   pushViewController:[DebugUIReportsViewController new]
+                                                                             animated:YES];
+                                                           }];
+    [subsectionItems addObject:dataStoreItem];
     [subsectionItems
         addObject:[self itemForSubsection:[DebugUIBackup new] viewController:viewController thread:thread]];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIMisc new] viewController:viewController thread:thread]];
