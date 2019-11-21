@@ -48,6 +48,7 @@ final class NukeDataModal : Modal {
     // MARK: Interaction
     @objc private func nuke() {
         Analytics.shared.track("Data Nuked")
+        UserDefaults.removeAll() // Not done in the nuke data implementation as unlinking requires this to happen later
         NotificationCenter.default.post(name: .dataNukeRequested, object: nil)
     }
 }

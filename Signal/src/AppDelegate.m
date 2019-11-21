@@ -1614,11 +1614,22 @@ static NSTimeInterval launchStartedAt;
 
 - (void)handleDataNukeRequested:(NSNotification *)notification {
     [ThreadUtil deleteAllContent];
+    [SSKEnvironment.shared.messageSenderJobQueue clearAllJobs];
     [SSKEnvironment.shared.identityManager clearIdentityKey];
     [LKAPI clearRandomSnodePool];
     [self stopLongPollerIfNeeded];
     [self.lokiNewsFeedPoller stop];
     [self.lokiMessengerUpdatesFeedPoller stop];
+    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [transaction removeAllObjectsInCollection:LKPublicChatAPI.lastMessageServerIDCollection];
+        [transaction removeAllObjectsInCollection:LKPublicChatAPI.lastDeletionServerIDCollection];
+        [transaction removeAllObjectsInCollection:@"LKMessageIDCollection"];
+        [transaction removeAllObjectsInCollection:@"LKLastMessageHashCollection"];
+        NSDictionary<NSString *, LKPublicChat *> *allPublicChats = [LKDatabaseUtilities getAllPublicChats:transaction];
+        for (NSString *threadID in allPublicChats.allKeys) {
+            [LKDatabaseUtilities removePublicChatForThreadID:threadID transaction:transaction];
+        }
+    }];
     [LKPublicChatManager.shared stopPollers];
     [SSKEnvironment.shared.tsAccountManager resetForReregistration];
     UIViewController *rootVC = [OnboardingController new].initialViewController;

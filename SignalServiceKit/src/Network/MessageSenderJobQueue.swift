@@ -96,6 +96,17 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
     public var isSetup: Bool = false
 
+    @objc public func clearAllJobs() {
+        self.dbConnection.readWrite { transaction in
+            let statuses: [SSKJobRecordStatus] = [ .unknown, .ready, .running, .permanentlyFailed, .unknown ]
+            var records: [SSKJobRecord] = []
+            statuses.forEach {
+                records += self.finder.allRecords(label: self.jobRecordLabel, status: $0, transaction: transaction)
+            }
+            records.forEach { $0.remove(with: transaction) }
+        }
+    }
+
     public func didMarkAsReady(oldJobRecord: SSKMessageSenderJobRecord, transaction: YapDatabaseReadWriteTransaction) {
         if let messageId = oldJobRecord.messageId, let message = TSOutgoingMessage.fetch(uniqueId: messageId, transaction: transaction) {
             message.updateWithMarkingAllUnsentRecipientsAsSending(with: transaction)

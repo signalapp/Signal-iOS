@@ -3,7 +3,7 @@ import PromiseKit
 @objc(LKPublicChatManager)
 public final class LokiPublicChatManager : NSObject {
     private let storage = OWSPrimaryStorage.shared()
-    private var chats: [String:LokiPublicChat] = [:]
+    @objc public var chats: [String:LokiPublicChat] = [:]
     private var pollers: [String:LokiPublicChatPoller] = [:]
     private var isPolling = false
     
@@ -43,7 +43,6 @@ public final class LokiPublicChatManager : NSObject {
     
     @objc public func stopPollers() {
         for poller in pollers.values { poller.stop() }
-        pollers.removeAll()
         isPolling = false
     }
     
@@ -99,7 +98,7 @@ public final class LokiPublicChatManager : NSObject {
         return AnyPromise.from(addChat(server: server, channel: channel))
     }
     
-    private func refreshChatsAndPollers() {
+    @objc func refreshChatsAndPollers() {
         storage.dbReadConnection.read { transaction in
             let newChats = LokiDatabaseUtilities.getAllPublicChats(in: transaction)
             

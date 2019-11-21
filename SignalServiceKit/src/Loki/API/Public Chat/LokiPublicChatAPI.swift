@@ -30,8 +30,8 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     
     // MARK: Database
     override internal class var authTokenCollection: String { "LokiGroupChatAuthTokenCollection" } // Should ideally be LokiPublicChatAuthTokenCollection
-    private static let lastMessageServerIDCollection = "LokiGroupChatLastMessageServerIDCollection" // Should ideally be LokiPublicChatLastMessageServerIDCollection
-    private static let lastDeletionServerIDCollection = "LokiGroupChatLastDeletionServerIDCollection" // Should ideally be LokiPublicChatLastDeletionServerIDCollection
+    @objc public static let lastMessageServerIDCollection = "LokiGroupChatLastMessageServerIDCollection" // Should ideally be LokiPublicChatLastMessageServerIDCollection
+    @objc public static let lastDeletionServerIDCollection = "LokiGroupChatLastDeletionServerIDCollection" // Should ideally be LokiPublicChatLastDeletionServerIDCollection
     
     private static func getLastMessageServerID(for group: UInt64, on server: String) -> UInt? {
         var result: UInt? = nil
@@ -138,7 +138,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                     existingMessageID = storage.getIDForMessage(withServerID: UInt(result.serverID!), in: transaction)
                 }
                 guard existingMessageID == nil else {
-                    print("[Loki] Ignorning duplicate message.")
+                    print("[Loki] Ignoring duplicate message.")
                     return nil
                 }
                 return result
@@ -304,7 +304,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         }
     }
     
-    public static func clearCaches(for channel: UInt64, on server: String) {
+    @objc public static func clearCaches(for channel: UInt64, on server: String) {
         removeLastMessageServerID(for: channel, on: server)
         removeLastDeletionServerID(for: channel, on: server)
     }
