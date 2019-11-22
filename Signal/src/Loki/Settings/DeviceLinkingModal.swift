@@ -108,7 +108,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         mnemonicLabel.isHidden = (mode == .master)
         if mode == .slave {
             let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey.removing05PrefixIfNeeded()
-            mnemonicLabel.text = Mnemonic.encode(hexEncodedString: hexEncodedPublicKey).split(separator: " ")[0..<3].joined(separator: " ")
+            mnemonicLabel.text = Mnemonic.hash(hexEncodedString: hexEncodedPublicKey)
         }
         let buttonHeight = cancelButton.button.titleLabel!.font.pointSize * 48 / 17
         authorizeButton.set(.height, to: buttonHeight)
@@ -130,7 +130,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         titleLabel.text = NSLocalizedString("Linking Request Received", comment: "")
         subtitleLabel.text = NSLocalizedString("Please check that the words below match the ones shown on your other device", comment: "")
         let hexEncodedPublicKey = deviceLink.slave.hexEncodedPublicKey.removing05PrefixIfNeeded()
-        mnemonicLabel.text = Mnemonic.encode(hexEncodedString: hexEncodedPublicKey).split(separator: " ")[0..<3].joined(separator: " ")
+        mnemonicLabel.text = Mnemonic.hash(hexEncodedString: hexEncodedPublicKey)
         mnemonicLabel.isHidden = false
         authorizeButton.isHidden = false
     }

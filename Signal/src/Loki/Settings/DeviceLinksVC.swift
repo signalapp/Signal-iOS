@@ -206,7 +206,7 @@ private extension DeviceLinksVC {
         // MARK: Updating
         private func update() {
             titleLabel.text = device.displayName
-            subtitleLabel.text = Mnemonic.encode(hexEncodedString: device.hexEncodedPublicKey.removing05PrefixIfNeeded()).split(separator: " ")[0..<3].joined(separator: " ")
+            subtitleLabel.text = Mnemonic.hash(hexEncodedString: device.hexEncodedPublicKey.removing05PrefixIfNeeded())
         }
     }
 }

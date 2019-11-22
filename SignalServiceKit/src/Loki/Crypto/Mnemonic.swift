@@ -58,6 +58,10 @@ public enum Mnemonic {
         }
     }
     
+    public static func hash(hexEncodedString string: String, language: Language = .english) -> String {
+        return encode(hexEncodedString: string).split(separator: " ")[0..<3].joined(separator: " ")
+    }
+    
     public static func encode(hexEncodedString string: String, language: Language = .english) -> String {
         var string = string
         let wordSet = language.loadWordSet()
@@ -145,6 +149,11 @@ private extension String {
 public final class ObjCMnemonic : NSObject {
     
     override private init() { }
+    
+    @objc(hashHexEncodedString:)
+    public static func hash(hexEncodedString string: String) -> String {
+        return Mnemonic.hash(hexEncodedString: string)
+    }
     
     @objc(encodeHexEncodedString:)
     public static func encode(hexEncodedString string: String) -> String {

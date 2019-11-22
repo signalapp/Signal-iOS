@@ -125,15 +125,13 @@
 #endif
 
     OWSTableSection *section = [OWSTableSection new];
-    if (isMasterDevice) {
-        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            return [weakSelf profileHeaderCell];
+    [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
+        return [weakSelf profileHeaderCell];
+    } customRowHeight:100.f actionBlock:^{
+        if (isMasterDevice) {
+            [weakSelf showProfile];
         }
-                             customRowHeight:100.f
-                             actionBlock:^{
-                                 [weakSelf showProfile];
-                             }]];
-    }
+    }]];
     
     if (OWSSignalService.sharedInstance.isCensorshipCircumventionActive) {
         [section
@@ -313,6 +311,9 @@
 
 - (UITableViewCell *)profileHeaderCell
 {
+    NSString *masterDeviceHexEncodedPublicKey = [NSUserDefaults.standardUserDefaults stringForKey:@"masterDeviceHexEncodedPublicKey"];
+    BOOL isMasterDevice = (masterDeviceHexEncodedPublicKey == nil);
+    
     UITableViewCell *cell = [OWSTableItem newCell];
     cell.preservesSuperviewLayoutMargins = YES;
     cell.contentView.preservesSuperviewLayoutMargins = YES;
@@ -331,7 +332,7 @@
     [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
     avatarView.contactID = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
 
-    if (!localProfileAvatarImage) {
+    if (isMasterDevice && !localProfileAvatarImage) {
         UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
         UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
         [cell.contentView addSubview:cameraImageView];
@@ -350,11 +351,13 @@
         titleLabel.text = localProfileName;
         titleLabel.textColor = [Theme primaryColor];
         titleLabel.font = [UIFont ows_dynamicTypeTitle2Font];
-    } else {
+    } else if (isMasterDevice) {
         titleLabel.text = NSLocalizedString(
             @"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT", @"Text prompting user to edit their profile name.");
         titleLabel.textColor = [UIColor ows_materialBlueColor];
         titleLabel.font = [UIFont ows_dynamicTypeHeadlineFont];
+    } else {
+        titleLabel.hidden = YES;
     }
     titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [nameView addSubview:titleLabel];
@@ -365,27 +368,43 @@
     UILabel *subtitleLabel = [UILabel new];
     subtitleLabel.textColor = [Theme secondaryColor];
     subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
-    subtitleLabel.attributedText = [[NSAttributedString alloc]
-        initWithString:[PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager
-                                                                                                       localNumber]]];
+    NSString *hexEncodedPublicKey = masterDeviceHexEncodedPublicKey ?: TSAccountManager.localNumber;
+    subtitleLabel.attributedText = [[NSAttributedString alloc] initWithString:hexEncodedPublicKey];
     subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [nameView addSubview:subtitleLabel];
     [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:titleLabel];
-    [subtitleLabel autoPinLeadingToSuperviewMargin];
-    [subtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    if (isMasterDevice) {
+        [subtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    }
     [subtitleLabel autoPinWidthToSuperview];
+    
+    if (!isMasterDevice) {
+        UILabel *linkedDeviceLabel = [UILabel new];
+        linkedDeviceLabel.textColor = [Theme secondaryColor];
+        linkedDeviceLabel.font = [UIFont ows_regularFontWithSize:12.f];
+        NSString *shortID = [LKMnemonic hashHexEncodedString:[TSAccountManager.localNumber removing05PrefixIfNeeded]];
+        linkedDeviceLabel.attributedText = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"Linked device (%@)", ""), shortID]];
+        linkedDeviceLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        [nameView addSubview:linkedDeviceLabel];
+        [linkedDeviceLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:subtitleLabel];
+        [linkedDeviceLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+        [linkedDeviceLabel autoPinWidthToSuperview];
+        [nameView autoPinTrailingToSuperviewMargin];
+    }
 
-    UIImage *disclosureImage = [UIImage imageNamed:(CurrentAppContext().isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
-    OWSAssertDebug(disclosureImage);
-    UIImageView *disclosureButton =
-        [[UIImageView alloc] initWithImage:[disclosureImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
-    disclosureButton.tintColor = [UIColor colorWithRGBHex:0xcccccc];
-    [cell.contentView addSubview:disclosureButton];
-    [disclosureButton autoVCenterInSuperview];
-    [disclosureButton autoPinTrailingToSuperviewMargin];
-    [disclosureButton autoPinLeadingToTrailingEdgeOfView:nameView offset:16.f];
-    [disclosureButton setContentCompressionResistancePriority:(UILayoutPriorityDefaultHigh + 1)
-                                                      forAxis:UILayoutConstraintAxisHorizontal];
+    if (isMasterDevice) {
+        UIImage *disclosureImage = [UIImage imageNamed:(CurrentAppContext().isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
+        OWSAssertDebug(disclosureImage);
+        UIImageView *disclosureButton =
+            [[UIImageView alloc] initWithImage:[disclosureImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
+        disclosureButton.tintColor = [UIColor colorWithRGBHex:0xcccccc];
+        [cell.contentView addSubview:disclosureButton];
+        [disclosureButton autoVCenterInSuperview];
+        [disclosureButton autoPinTrailingToSuperviewMargin];
+        [disclosureButton autoPinLeadingToTrailingEdgeOfView:nameView offset:16.f];
+        [disclosureButton setContentCompressionResistancePriority:(UILayoutPriorityDefaultHigh + 1)
+                                                          forAxis:UILayoutConstraintAxisHorizontal];
+    }
 
     cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"profile");
 
