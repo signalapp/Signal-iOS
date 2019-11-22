@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -20,6 +20,8 @@ public class DeviceSleepManager: NSObject {
 
     @objc
     public static let sharedInstance = DeviceSleepManager()
+
+    let serialQueue = DispatchQueue(label: "DeviceSleepManager")
 
     private class SleepBlock: CustomDebugStringConvertible {
         weak var blockObject: NSObject?
@@ -53,31 +55,32 @@ public class DeviceSleepManager: NSObject {
     private func didEnterBackground() {
         AssertIsOnMainThread()
 
-        ensureSleepBlocking()
+        serialQueue.sync {
+            ensureSleepBlocking()
+        }
     }
 
     @objc
     public func addBlock(blockObject: NSObject) {
-        AssertIsOnMainThread()
-
-        blocks.append(SleepBlock(blockObject: blockObject))
-
-        ensureSleepBlocking()
+        serialQueue.sync {
+            blocks.append(SleepBlock(blockObject: blockObject))
+            ensureSleepBlocking()
+        }
     }
 
     @objc
     public func removeBlock(blockObject: NSObject) {
-        AssertIsOnMainThread()
+        serialQueue.sync {
+            blocks = blocks.filter {
+                $0.blockObject != nil && $0.blockObject != blockObject
+            }
 
-        blocks = blocks.filter {
-            $0.blockObject != nil && $0.blockObject != blockObject
+            ensureSleepBlocking()
         }
-
-        ensureSleepBlocking()
     }
 
     private func ensureSleepBlocking() {
-        AssertIsOnMainThread()
+        assertOnQueue(serialQueue)
 
         // Cull expired blocks.
         blocks = blocks.filter {
@@ -85,6 +88,18 @@ public class DeviceSleepManager: NSObject {
         }
         let shouldBlock = blocks.count > 0
 
-        CurrentAppContext().ensureSleepBlocking(shouldBlock, blockingObjects: blocks)
+        let description: String
+        switch blocks.count {
+        case 0:
+            description = "no blocking objects"
+        case 1:
+            description = "\(blocks[0])"
+        default:
+            description = "\(blocks[0]) and \(blocks.count - 1) others"
+        }
+
+        DispatchQueue.main.async {
+            CurrentAppContext().ensureSleepBlocking(shouldBlock, blockingObjectsDescription: description)
+        }
     }
 }

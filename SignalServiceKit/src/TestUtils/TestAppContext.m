@@ -103,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 }
 
-- (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjects:(NSArray<id> *)blockingObjects
+- (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjectsDescription:(NSString *)blockingObjectsDescription
 {
 }
 

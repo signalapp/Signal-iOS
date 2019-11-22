@@ -88,7 +88,7 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 - (void)endBackgroundTask:(UIBackgroundTaskIdentifier)backgroundTaskIdentifier;
 
 // Should be a NOOP if isMainApp is NO.
-- (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjects:(NSArray<id> *)blockingObjects;
+- (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjectsDescription:(NSString *)blockingObjectsDescription;
 
 // Should only be called if isMainApp is YES.
 - (void)setMainAppBadgeNumber:(NSInteger)value;

@@ -206,7 +206,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(backgroundTaskIdentifier == UIBackgroundTaskInvalid);
 }
 
-- (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjects:(NSArray<id> *)blockingObjects
+- (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjectsDescription:(NSString *)blockingObjectsDescription
 {
     OWSLogDebug(@"Ignoring request to block sleep.");
 }

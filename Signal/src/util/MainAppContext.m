@@ -244,16 +244,11 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     [UIApplication.sharedApplication endBackgroundTask:backgroundTaskIdentifier];
 }
 
-- (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjects:(NSArray<id> *)blockingObjects
+- (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjectsDescription:(NSString *)blockingObjectsDescription
 {
     if (UIApplication.sharedApplication.isIdleTimerDisabled != shouldBeBlocking) {
         if (shouldBeBlocking) {
-            NSMutableString *logString =
-                [NSMutableString stringWithFormat:@"Blocking sleep because of: %@", blockingObjects.firstObject];
-            if (blockingObjects.count > 1) {
-                [logString appendString:[NSString stringWithFormat:@"(and %lu others)", blockingObjects.count - 1]];
-            }
-            OWSLogInfo(@"%@", logString);
+            OWSLogInfo(@"Blocking sleep because of: %@", blockingObjectsDescription);
         } else {
             OWSLogInfo(@"Unblocking Sleep.");
         }
