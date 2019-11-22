@@ -140,9 +140,18 @@ extension OWSProfileManager {
                     }
 
                     self.updateLocalProfile(with: attempt, transaction: transaction)
-
-                    self.profileManager.isUpdatingProfileOnService = false
                 }
+        }.catch(on: .global()) { error in
+            if IsNSErrorNetworkFailure(error) {
+                owsFailDebug("Retrying after error: \(error)")
+            } else {
+                owsFailDebug("Error: \(error)")
+
+                // Dequeue to avoid getting stuck in retry loop.
+                self.databaseStorage.write { transaction in
+                    _ = tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction)
+                }
+            }
         }
 
         promise.ensure {
