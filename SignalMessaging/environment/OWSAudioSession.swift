@@ -46,7 +46,7 @@ public class AudioActivity: NSObject {
     // MARK: 
 
     override public var description: String {
-        return "<\(self.logTag) audioDescription: \"\(audioDescription)\">"
+        return "<AudioActivity: \"\(audioDescription)\">"
     }
 }
 
@@ -253,6 +253,26 @@ public class OWSAudioSession: NSObject {
         }
         set {
             rtcAudioSession.isAudioEnabled = newValue
+        }
+    }
+}
+
+extension OWSAudioBehavior: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .unknown:
+            return "OWSAudioBehavior.unknown"
+        case .playback:
+            return "OWSAudioBehavior.playback"
+        case .audioMessagePlayback:
+            return "OWSAudioBehavior.audioMessagePlayback"
+        case .playAndRecord:
+            return "OWSAudioBehavior.playAndRecord"
+        case .call:
+            return "OWSAudioBehavior.call"
+        @unknown default:
+            owsFailDebug("")
+            return "OWSAudioBehavior.unknown default"
         }
     }
 }
