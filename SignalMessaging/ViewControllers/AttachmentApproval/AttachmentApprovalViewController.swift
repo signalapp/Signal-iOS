@@ -664,14 +664,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     func editedAttachmentPromise(imageEditorModel: ImageEditorModel,
                                  attachmentApprovalItem: AttachmentApprovalItem) -> Promise<SignalAttachment> {
         assert(imageEditorModel.isDirty())
-        // Currently edited images are exported on the main thread.
-        let promise: Promise<UIImage> = firstly { () -> Promise<UIImage> in
+        return DispatchQueue.main.async(.promise) { () -> UIImage in
             guard let dstImage = imageEditorModel.renderOutput() else {
                 throw OWSAssertionError("Could not render for output.")
             }
-            return Promise.value(dstImage)
-        }
-        return promise.map(on: .global()) { (dstImage: UIImage) -> SignalAttachment in
+            return dstImage
+        }.map(on: .global()) { (dstImage: UIImage) -> SignalAttachment in
             var dataUTI = kUTTypeImage as String
             guard let dstData: Data = {
                 let isLossy: Bool = attachmentApprovalItem.attachment.mimeType.caseInsensitiveCompare(OWSMimeTypeImageJpeg) == .orderedSame
