@@ -525,10 +525,10 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Deseja realmente eliminar a sua conta?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "This will reset the application by deleting all of your messages from this device. You can always link with your phone again, but that will not restore deleted messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Isto irá repor as definições de origem da aplicação, eliminando todas as mensagens neste dispositivo. Pode voltar a associar o seu telemóvel novamente, mas isso, não irá restaurar as mensagens eliminadas. A aplicação fechar-se-á após este processo estar completo.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Are you sure you want to delete all data?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Tem a certeza que deseja eliminar todos os dados?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Não poderá receber ou enviar mensagens deste grupo.";
@@ -1042,10 +1042,10 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "O número de segurança mudou.";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Your device is no longer linked. Please re-link to send further messages.";
+"ERROR_SENDING_DELINKED" = "O seu dispositivo já não se encontra associado. Por favor, volte a associá-lo para poder enviar mais mensagens.";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "Your device is no longer registered. Please re-register to send further messages.";
+"ERROR_SENDING_DEREGISTERED" = "O seu dispositivo já não se encontra registado. Por favor, volte a registá-lo para poder enviar mais mensagens.";
 
 /* Error indicating a send failure due to an expired application. */
 "ERROR_SENDING_EXPIRED" = "A sua versão do Signal expirou. Por favor, atualize para poder enviar mais mensagens.";
@@ -1249,7 +1249,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Chamada não atendida visto que o número de segurança mudou.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, conversation history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Você pode enviar ou receber mensagens sincronizadas a partir do seu telemóvel ou iPad. ↵Para sua segurança, o histórico de conversas não é transferido para os novos dispositivos ligados.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ está no Signal!";
@@ -1300,10 +1300,10 @@
 "KEY_COMMAND_CONVERSATION_INFO" = "Ir para a informação de conversas";
 
 /* A keyboard command to focus the current conversation's input field. */
-"KEY_COMMAND_FOCUS_COMPOSER" = "Focus Input Bar";
+"KEY_COMMAND_FOCUS_COMPOSER" = "Focar a barra de entrada";
 
 /* A keyboard command to open the current conversations GIF picker. */
-"KEY_COMMAND_GIF_SEARCH" = "Go to GIF Search";
+"KEY_COMMAND_GIF_SEARCH" = "Ir para a pesquisa GIF";
 
 /* A keyboard command to present the new group dialog. */
 "KEY_COMMAND_NEW_GROUP" = "Novo grupo";
@@ -1327,7 +1327,7 @@
 "KEY_COMMAND_STICKERS" = "Exibir autocolantes";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Conversation";
+"KEY_COMMAND_UNARCHIVE" = "Desarquivar conversa";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Abandonar";
@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Poderá receber mensagens enquanto %@ estiver a reiniciar.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
+"NOTIFICATIONS_FOOTER_WARNING" = "Ações incluem \"Marcar como lida\", \"Responder\", e \"Ligar de volta\".";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Sem nome ou conteúdo";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Sons";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nome, Conteúdo e Ações";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Apenas nome";
@@ -1767,10 +1767,10 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Associar iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Ao tocar em \"Registar iPad\" você irá criar uma novíssima conta do Signal ou mover uma conta existente para este iPad. Isto irá desativar o Signal em qualquer outro dispositivo atualmente registado com o mesmo número de telemóvel.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link iPhone” will let you connect your phone to an existing account. Linking your phone is generally not recommended and will limit some functionality, such as calling.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Ao tocar em 'Ligar iPhone' irá permitir que você ligue o seu telemóvel a uma conta já existente. Ligar o seu telemóvel geralmente não é recomendado e irá limitar algumas funções como o telefonar.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Registar este iPad";
@@ -1779,19 +1779,19 @@
 "ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Associar este iPhone";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registering this iPad will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Ao registar este iPad irá desativar o Signal em qualquer outro dispositivo atualmente registado com este número de telefone.";
 
 /* warning to the user that linking a phone is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Linking your iPhone is not recommended and will limit core functionality.";
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Associar o seu iPhone não é recomendado e irá limitar a funcionalidade do núcleo.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Ativar permissões";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifications let you see when messages arrive and receive updates about new conversation activity.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "As notificações permitem que veja quando as mensagens chegam e que receba atualizações acerca da atividade relativas à novas conversas.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Get the message";
+"ONBOARDING_PERMISSIONS_TITLE" = "Obter a mensagem";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Para começar introduza o seu número de telefone";
@@ -2325,7 +2325,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Não é possível procurar o código de ligação";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Your other device is running a legacy version of Signal that doesn't support scanning iPad QR codes. Please install the latest Signal release and try again.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "O seu outro dispositivo está a correr uma versão legada do Signal que não suporta a digitalização de códigos QR do iPad. Por favor, instale a última versão do Signal e tente novamente.";
 
 /* alert title for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Atualizar o dispositivo de digitalização";
@@ -2358,7 +2358,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Instale o Signal no seu telemóvel";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tap on your profile picture to open Signal Settings on your phone. Then \"Linked Devices\" and \"Link New Device\" to scan this code with your phone:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Toque na sua imagem de perfil para abrir as 'Definições do Signal' no seu telemóvel. Depois em 'Dispositivos ligados' e 'Ligar novo dispositivo' para digitalizar este código par ao seu telemóvel:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Obtenha ajuda ligando aqui o seu iPad";
@@ -2622,7 +2622,7 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Veja e partilhe quando as mensagens são lidas. Esta definição é opcional e aplica-se a todas as suas conversas.";
 
 /* Label for re-link button. */
-"SETTINGS_RELINK_BUTTON" = "Re-link";
+"SETTINGS_RELINK_BUTTON" = "Voltar a ligar";
 
 /* Label for re-registration button. */
 "SETTINGS_REREGISTER_BUTTON" = "Voltar a registar";
@@ -2631,7 +2631,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Tempo para o bloqueio de ecrã ";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Desbloqueie o ecrã do Signal utilizando o Touch ID, Face ID, ou o código do seu dispositivo iOS. Poderá continuar a atender as chamadas recebidas e notificações de mensagens enquanto o ecrã de bloqueio se encontrar ativo. As definições das notificações do Signal permitem alterar a informação que é apresentada.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Bloqueio de ecrã ";

@@ -505,18 +505,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_signal_recipients_on_recipientPhoneNumber"
-        ON "model_SignalRecipient"("recipientPhoneNumber"
-)
-;
-
-CREATE
-    INDEX "index_signal_recipients_on_recipientUUID"
-        ON "model_SignalRecipient"("recipientUUID"
-)
-;
-
-CREATE
     INDEX "index_thread_on_contactPhoneNumber"
         ON "model_TSThread"("contactPhoneNumber"
 )
@@ -769,5 +757,17 @@ CREATE
 CREATE
     INDEX "index_media_gallery_items_on_attachmentId"
         ON "media_gallery_items"("attachmentId"
+)
+;
+
+CREATE
+    UNIQUE INDEX "index_signal_recipients_on_recipientPhoneNumber"
+        ON "model_SignalRecipient"("recipientPhoneNumber"
+)
+;
+
+CREATE
+    UNIQUE INDEX "index_signal_recipients_on_recipientUUID"
+        ON "model_SignalRecipient"("recipientUUID"
 )
 ;

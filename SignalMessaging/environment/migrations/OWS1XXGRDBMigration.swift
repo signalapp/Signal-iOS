@@ -28,11 +28,30 @@ public class OWS1XXGRDBMigration: YDBDatabaseMigration {
             if self.storageCoordinator.state != .beforeYDBToGRDBMigration {
                 owsFail("unexpected storage coordinator state: \(self.storageCoordinator.state)")
             } else {
+
+                self.databaseStorage.write { transaction in
+                    do {
+                        // We need to dedupe the recipients *before* migrating to
+                        // GRDB since GRDB enforces uniqueness constraints on SignalRecipients.
+                        try dedupeSignalRecipients(transaction: transaction)
+                    } catch {
+                        // we don't bother failing hard here.
+                        // If for some reason duplicates remain, then the YDBToGRDBMigration will
+                        // fail hard anyway. And conversely, if it doesn't fail then there were
+                        // no duplicate SignalRecipients.
+                        owsFailDebug("error: \(error)")
+                    }
+                }
+
                 self.storageCoordinator.migrationYDBToGRDBWillBegin()
                 assert(self.storageCoordinator.state == .duringYDBToGRDBMigration)
 
                 Bench(title: "\(self.logTag)") {
-                    try! YDBToGRDBMigration().run()
+                    do {
+                        try YDBToGRDBMigration().run()
+                    } catch {
+                        owsFail("error: \(error)")
+                    }
                 }
 
                 self.storageCoordinator.migrationYDBToGRDBDidComplete()

@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Je hebt misschien berichten ontvangen terwijl je %@ aan het herstarten was.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
+"NOTIFICATIONS_FOOTER_WARNING" = "Handelingen omvatten ‘Markeren als gelezen’, ‘Reageren’ en ‘Terugbellen’.";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Geen naam en geen inhoud";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Geluiden";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Naam, inhoud en handelingen";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Alleen naam";
@@ -2337,7 +2337,7 @@
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Kies een naam voor dit apparaat";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Je zult dit apparaat zien in het menu “Gekoppelde apparaten”.";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Je zult dit apparaat zien in het menu ‘Gekoppelde apparaten’.";
 
 /* text field placeholder */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Kies een naam";
@@ -2631,7 +2631,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Schermvergrendelingstime-out";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Ontgrendel Signal door middel van aanraak-identificatie, gezichtsherkenning of het wachtwoord voor je iOS-apparaat. Zolang Signal's schermvergrendeling is ingeschakeld kun je nog steeds inkomende oproepen beantwoorden en notificaties zien voor oproepen en berichten zonder te ontgrendelen. Signal's instellingen voor meldingen maken het mogelijk de hoeveelheid informatie die wordt weergegeven in meldingen aan te passen.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Schermvergrendeling";

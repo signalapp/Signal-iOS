@@ -1294,7 +1294,7 @@
 "KEY_COMMAND_ARCHIVE" = "存档会话";
 
 /* A keyboard command to open the current conversation's attachment picker. */
-"KEY_COMMAND_ATTACHMENTS" = "Show Attachments";
+"KEY_COMMAND_ATTACHMENTS" = "显示附件";
 
 /* A keyboard command to open the current conversation's settings. */
 "KEY_COMMAND_CONVERSATION_INFO" = "Go to Conversation Info";
@@ -1324,7 +1324,7 @@
 "KEY_COMMAND_SETTINGS" = "设置";
 
 /* A keyboard command to open the current conversation's sticker picker. */
-"KEY_COMMAND_STICKERS" = "Show Stickers";
+"KEY_COMMAND_STICKERS" = "显示表情包";
 
 /* A keyboard command to unarchive the current coversation. */
 "KEY_COMMAND_UNARCHIVE" = "激活对话";
@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "您可能在%@重启时收到了新消息。";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
+"NOTIFICATIONS_FOOTER_WARNING" = "操作包括“标记已读”，“回复”，“回拨”。";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "没有名字或者内容";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "声音";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "发送人，内容，操作";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "只显示名称";
@@ -2322,7 +2322,7 @@
 "SEARCH_SECTION_MESSAGES" = "消息";
 
 /* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "无法获取关联码";
 
 /* alert message for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "您的另一台设备正在使用老旧版本的Signal，故而无法扫描iPad二维码。请安装最新版本的Signal之后重试。";
@@ -2925,7 +2925,7 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "确定解绑 \"%@\"?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Device no longer linked. Re-link Signal with your phone to continue messaging.";
+"UNLINKED_WARNING" = "设备处于未关联状态。请将Signal重新关联至手机以继续收发消息。";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "解绑设备失败。";
@@ -3006,7 +3006,7 @@
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */
-"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Usernames may not begin with a number.";
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "用户名不能以数字开头。";
 
 /* The title for the username view. */
 "USERNAME_TITLE" = "用户名";
