@@ -6,7 +6,7 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
 
     // MARK: Components
     private lazy var registerStackView: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [ explanationLabel1, UIView.spacer(withHeight: 32), mnemonicLabel, UIView.spacer(withHeight: 24), copyButton, restoreButton, linkButton1 ])
+        let result = UIStackView(arrangedSubviews: [ explanationLabel1, UIView.spacer(withHeight: 32), mnemonicLabel, UIView.spacer(withHeight: 24), copyButton, restoreButton1, linkButton1 ])
         result.accessibilityIdentifier = "onboarding.keyPairStep.registerStackView"
         result.axis = .vertical
         return result
@@ -39,22 +39,22 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
         return result
     }()
     
-    private lazy var restoreButton: OWSFlatButton = {
+    private lazy var restoreButton1: OWSFlatButton = {
         let result = createLinkButton(title: NSLocalizedString("Restore Using Seed", comment: ""), selector: #selector(handleSwitchModeButton1Tapped))
-        result.accessibilityIdentifier = "onboarding.keyPairStep.restoreButton"
+        result.accessibilityIdentifier = "onboarding.keyPairStep.restoreButton1"
         result.setBackgroundColors(upColor: .clear, downColor: .clear)
         return result
     }()
     
     private lazy var linkButton1: OWSFlatButton = {
-        let result = createLinkButton(title: NSLocalizedString("Link Device", comment: ""), selector: #selector(handleLinkButtonTapped))
+        let result = createLinkButton(title: NSLocalizedString("Link Device", comment: ""), selector: #selector(handleSwitchModeButton2Tapped))
         result.accessibilityIdentifier = "onboarding.keyPairStep.linkButton1"
         result.setBackgroundColors(upColor: .clear, downColor: .clear)
         return result
     }()
     
     private lazy var restoreStackView: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [ explanationLabel2, UIView.spacer(withHeight: 32), errorLabel, errorLabelSpacer, mnemonicTextField, UIView.spacer(withHeight: 24), registerButton, linkButton2 ])
+        let result = UIStackView(arrangedSubviews: [ explanationLabel2, UIView.spacer(withHeight: 32), errorLabel1, errorLabel1Spacer, mnemonicTextField, UIView.spacer(withHeight: 24), registerButton1, linkButton2 ])
         result.accessibilityIdentifier = "onboarding.keyPairStep.restoreStackView"
         result.axis = .vertical
         return result
@@ -70,9 +70,9 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
         return result
     }()
     
-    private lazy var errorLabel: UILabel = {
+    private lazy var errorLabel1: UILabel = {
         let result = createExplanationLabel(text: "")
-        result.accessibilityIdentifier = "onboarding.keyPairStep.errorLabel"
+        result.accessibilityIdentifier = "onboarding.keyPairStep.errorLabel1"
         result.textColor = UIColor.red
         var fontTraits = result.font.fontDescriptor.symbolicTraits
         fontTraits.insert(.traitBold)
@@ -80,7 +80,7 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
         return result
     }()
     
-    private lazy var errorLabelSpacer: UIView = {
+    private lazy var errorLabel1Spacer: UIView = {
         let result = UIView.spacer(withHeight: 32)
         result.isHidden = true
         return result
@@ -100,16 +100,77 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
         return result
     }()
     
-    private lazy var registerButton: OWSFlatButton = {
+    private lazy var registerButton1: OWSFlatButton = {
         let result = createLinkButton(title: NSLocalizedString("Register a New Account", comment: ""), selector: #selector(handleSwitchModeButton1Tapped))
-        result.accessibilityIdentifier = "onboarding.keyPairStep.registerButton"
+        result.accessibilityIdentifier = "onboarding.keyPairStep.registerButton1"
         result.setBackgroundColors(upColor: .clear, downColor: .clear)
         return result
     }()
     
     private lazy var linkButton2: OWSFlatButton = {
-        let result = createLinkButton(title: NSLocalizedString("Link Device", comment: ""), selector: #selector(handleLinkButtonTapped))
+        let result = createLinkButton(title: NSLocalizedString("Link Device", comment: ""), selector: #selector(handleSwitchModeButton2Tapped))
         result.accessibilityIdentifier = "onboarding.keyPairStep.linkButton2"
+        result.setBackgroundColors(upColor: .clear, downColor: .clear)
+        return result
+    }()
+    
+    private lazy var linkStackView: UIStackView = {
+        let result = UIStackView(arrangedSubviews: [ explanationLabel3, UIView.spacer(withHeight: 32), errorLabel2, errorLabel2Spacer, masterHexEncodedPublicKeyTextField, UIView.spacer(withHeight: 24), registerButton2, restoreButton2 ])
+        result.accessibilityIdentifier = "onboarding.keyPairStep.linkStackView"
+        result.axis = .vertical
+        return result
+    }()
+
+    private lazy var explanationLabel3: UILabel = {
+        let result = createExplanationLabel(text: NSLocalizedString("Link to an existing device by going into its in-app settings and clicking \"Link Device\".", comment: ""))
+        result.accessibilityIdentifier = "onboarding.keyPairStep.explanationLabel3"
+        result.textColor = Theme.primaryColor
+        var fontTraits = result.font.fontDescriptor.symbolicTraits
+        fontTraits.insert(.traitBold)
+        result.font = UIFont(descriptor: result.font.fontDescriptor.withSymbolicTraits(fontTraits)!, size: result.font.pointSize)
+        return result
+    }()
+
+    private lazy var errorLabel2: UILabel = {
+        let result = createExplanationLabel(text: "")
+        result.accessibilityIdentifier = "onboarding.keyPairStep.errorLabel2"
+        result.textColor = UIColor.red
+        var fontTraits = result.font.fontDescriptor.symbolicTraits
+        fontTraits.insert(.traitBold)
+        result.font = UIFont(descriptor: result.font.fontDescriptor.withSymbolicTraits(fontTraits)!, size: 12)
+        return result
+    }()
+
+    private lazy var errorLabel2Spacer: UIView = {
+        let result = UIView.spacer(withHeight: 32)
+        result.isHidden = true
+        return result
+    }()
+
+    private lazy var masterHexEncodedPublicKeyTextField: UITextField = {
+        let result = UITextField(frame: CGRect.zero)
+        result.textColor = Theme.primaryColor
+        result.font = UIFont.ows_dynamicTypeBodyClamped
+        result.textAlignment = .center
+        let placeholder = NSMutableAttributedString(string: NSLocalizedString("Enter the Other Device's Public Key", comment: ""))
+        placeholder.addAttribute(.foregroundColor, value: Theme.placeholderColor, range: NSRange(location: 0, length: placeholder.length))
+        result.attributedPlaceholder = placeholder
+        result.tintColor = UIColor.lokiGreen()
+        result.accessibilityIdentifier = "onboarding.keyPairStep.masterHexEncodedPublicKeyTextField"
+        result.keyboardAppearance = .dark
+        return result
+    }()
+
+    private lazy var registerButton2: OWSFlatButton = {
+        let result = createLinkButton(title: NSLocalizedString("Register a New Account", comment: ""), selector: #selector(handleSwitchModeButton1Tapped))
+        result.accessibilityIdentifier = "onboarding.keyPairStep.registerButton2"
+        result.setBackgroundColors(upColor: .clear, downColor: .clear)
+        return result
+    }()
+
+    private lazy var restoreButton2: OWSFlatButton = {
+        let result = createLinkButton(title: NSLocalizedString("Restore Using Seed", comment: ""), selector: #selector(handleSwitchModeButton2Tapped))
+        result.accessibilityIdentifier = "onboarding.keyPairStep.restoreButton2"
         result.setBackgroundColors(upColor: .clear, downColor: .clear)
         return result
     }()
@@ -121,7 +182,7 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
     }()
     
     // MARK: Types
-    enum Mode { case register, restore }
+    enum Mode { case register, restore, link }
     
     // MARK: Lifecycle
     override func viewDidLoad() {
@@ -143,6 +204,7 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
         let mainView = UIView(frame: CGRect.zero)
         mainView.addSubview(restoreStackView)
         mainView.addSubview(registerStackView)
+        mainView.addSubview(linkStackView)
         let mainStackView = UIStackView(arrangedSubviews: [ titleLabel, mainView, mainButton ])
         mainStackView.axis = .vertical
         mainStackView.layoutMargins = UIEdgeInsets(top: 32, left: 32, bottom: 32, right: 32)
@@ -156,6 +218,8 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
         registerStackView.autoVCenterInSuperview()
         restoreStackView.autoPinWidthToSuperview()
         restoreStackView.autoVCenterInSuperview()
+        linkStackView.autoPinWidthToSuperview()
+        linkStackView.autoVCenterInSuperview()
     }
     
     // MARK: General
@@ -170,8 +234,9 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
     private func handleModeChanged() {
         let (activeStackView, otherStackViews) = { () -> (UIStackView, [UIStackView]) in
             switch mode {
-            case .register: return (registerStackView, [ restoreStackView ])
-            case .restore: return (restoreStackView, [ registerStackView ])
+            case .register: return (registerStackView, [ restoreStackView, linkStackView ])
+            case .restore: return (restoreStackView, [ registerStackView, linkStackView ])
+            case .link: return (linkStackView, [ registerStackView, restoreStackView ])
             }
         }()
         UIView.animate(withDuration: 0.25) {
@@ -182,12 +247,29 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
             switch mode {
             case .register: return NSLocalizedString("Register", comment: "")
             case .restore: return NSLocalizedString("Restore", comment: "")
+            case .link: return NSLocalizedString("Link", comment: "")
             }
         }()
         UIView.transition(with: mainButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
             self.mainButton.setTitle(mainButtonTitle)
         }, completion: nil)
         if mode != .restore { mnemonicTextField.resignFirstResponder() }
+        if mode != .link { masterHexEncodedPublicKeyTextField.resignFirstResponder() }
+        if mode == .link {
+            ows_ask(forCameraPermissions: { [weak self] hasCameraAccess in
+                guard let self = self else { return }
+                if hasCameraAccess {
+                    let message = NSLocalizedString("Link to an existing device by going into its in-app settings and clicking \"Link Device\".", comment: "")
+                    let scanQRCodeWrapperVC = ScanQRCodeWrapperVC(message: message)
+                    scanQRCodeWrapperVC.delegate = self
+                    scanQRCodeWrapperVC.isPresentedModally = true
+                    let navigationVC = OWSNavigationController(rootViewController: scanQRCodeWrapperVC)
+                    self.present(navigationVC, animated: true, completion: nil)
+                } else {
+                    // Do nothing
+                }
+            })
+        }
     }
     
     private func updateSeed() {
@@ -217,23 +299,16 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
         switch mode {
         case .register: mode = .restore
         case .restore: mode = .register
+        case .link: mode = .register
         }
     }
     
-    @objc private func handleLinkButtonTapped() {
-        ows_ask(forCameraPermissions: { [weak self] hasCameraAccess in
-            guard let self = self else { return }
-            if hasCameraAccess {
-                let message = NSLocalizedString("Link to an existing device by going into its in-app settings and clicking \"Link Device\".", comment: "")
-                let scanQRCodeWrapperVC = ScanQRCodeWrapperVC(message: message)
-                scanQRCodeWrapperVC.delegate = self
-                scanQRCodeWrapperVC.isPresentedModally = true
-                let navigationVC = OWSNavigationController(rootViewController: scanQRCodeWrapperVC)
-                self.present(navigationVC, animated: true, completion: nil)
-            } else {
-                // Do nothing
-            }
-        })
+    @objc private func handleSwitchModeButton2Tapped() {
+        switch mode {
+        case .register: mode = .link
+        case .restore: mode = .link
+        case .link: mode = .restore
+        }
     }
     
     func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {
@@ -249,27 +324,31 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
     
     private func proceed(with masterHexEncodedPublicKey: String? = nil) {
         var seed: Data
-        if let masterHexEncodedPublicKey = masterHexEncodedPublicKey {
-            seed = self.seed
-            if !ECKeyPair.isValidHexEncodedPublicKey(candidate: masterHexEncodedPublicKey) {
-                let alert = UIAlertController(title: NSLocalizedString("Invalid QR Code", comment: ""), message: NSLocalizedString("Please make sure the QR code you scanned is correct and try again.", comment: ""), preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), accessibilityIdentifier: nil, style: .default, handler: nil))
-                return present(alert, animated: true, completion: nil)
+        let mode = self.mode
+        switch mode {
+        case .register: seed = self.seed
+        case .restore:
+            let mnemonic = mnemonicTextField.text!
+            do {
+                let hexEncodedSeed = try Mnemonic.decode(mnemonic: mnemonic)
+                seed = Data(hex: hexEncodedSeed)
+            } catch let error {
+                let error = error as? Mnemonic.DecodingError ?? Mnemonic.DecodingError.generic
+                errorLabel1Spacer.isHidden = false
+                return errorLabel1.text = error.errorDescription
             }
-            Analytics.shared.track("Device Linking Attempted")
-        } else {
-            let mode = self.mode
-            switch mode {
-            case .register: seed = self.seed
-            case .restore:
-                let mnemonic = mnemonicTextField.text!
-                do {
-                    let hexEncodedSeed = try Mnemonic.decode(mnemonic: mnemonic)
-                    seed = Data(hex: hexEncodedSeed)
-                } catch let error {
-                    let error = error as? Mnemonic.DecodingError ?? Mnemonic.DecodingError.generic
-                    errorLabelSpacer.isHidden = false
-                    return errorLabel.text = error.errorDescription
+        case .link:
+            seed = self.seed
+            let isUsingQRCode = masterHexEncodedPublicKey != nil
+            let masterHexEncodedPublicKey = masterHexEncodedPublicKey ?? masterHexEncodedPublicKeyTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces)
+            if !ECKeyPair.isValidHexEncodedPublicKey(candidate: masterHexEncodedPublicKey) {
+                if isUsingQRCode {
+                    let alert = UIAlertController(title: NSLocalizedString("Invalid QR Code", comment: ""), message: NSLocalizedString("Please make sure the QR code you scanned is correct and try again.", comment: ""), preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), accessibilityIdentifier: nil, style: .default, handler: nil))
+                    return present(alert, animated: true, completion: nil)
+                } else {
+                    errorLabel2Spacer.isHidden = false
+                    return errorLabel2.text = NSLocalizedString("Invalid public key", comment: "")
                 }
             }
         }
@@ -286,8 +365,11 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
         switch mode {
         case .register: Analytics.shared.track("Seed Created")
         case .restore: Analytics.shared.track("Seed Restored")
+        case .link: Analytics.shared.track("Device Linking Attempted")
         }
-        if let masterHexEncodedPublicKey = masterHexEncodedPublicKey {
+        if mode == .link {
+            let isUsingQRCode = masterHexEncodedPublicKey != nil
+            let masterHexEncodedPublicKey = masterHexEncodedPublicKey ?? masterHexEncodedPublicKeyTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces)
             TSAccountManager.sharedInstance().didRegister()
             setUserInteractionEnabled(false)
             let _ = LokiStorageAPI.getDeviceLinks(associatedWith: masterHexEncodedPublicKey).done(on: DispatchQueue.main) { [weak self] deviceLinks in
@@ -338,7 +420,7 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
     
     // MARK: Convenience
     private func setUserInteractionEnabled(_ isEnabled: Bool) {
-        [ copyButton, restoreButton, linkButton1, registerButton, linkButton2, mainButton ].forEach {
+        [ copyButton, restoreButton1, linkButton1, registerButton1, linkButton2, registerButton2, restoreButton2, mainButton ].forEach {
             $0.isUserInteractionEnabled = isEnabled
         }
     }
