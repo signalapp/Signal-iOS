@@ -386,6 +386,17 @@ protocol CallAudioServiceDelegate: class {
         AssertIsOnMainThread()
         Logger.debug("")
 
+        // Sometimes (usually but not always) upon ending a call, the currentPlayer does not get
+        // played to completion. This is necessary in order for the players
+        // audioActivity to remove itself from OWSAudioSession. Otherwise future AudioActivities,
+        // like recording a voice note, will be prevented from having their needs met.
+        //
+        // Furthermore, no interruption delegate is called nor AVAudioSessionInterruptionNotification
+        // is posted. I'm not sure why we have to do this.
+        if let audioPlayer = currentPlayer {
+            audioPlayer.stop()
+        }
+
         // Stop solo audio, revert to default.
         isSpeakerphoneEnabled = false
         setAudioSession(category: .soloAmbient)
