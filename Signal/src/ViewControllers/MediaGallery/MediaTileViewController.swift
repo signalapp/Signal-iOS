@@ -433,30 +433,31 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     }
 
     func updateLayout() {
-        let containerWidth: CGFloat
+        let rawSize: CGSize
         if #available(iOS 11.0, *) {
-            containerWidth = self.view.safeAreaLayoutGuide.layoutFrame.size.width
+            rawSize = view.safeAreaLayoutGuide.layoutFrame.size
         } else {
-            containerWidth = self.view.frame.size.width
+            rawSize = view.frame.size
         }
+        let containerSize = CGSize(width: floor(rawSize.width), height: floor(rawSize.height))
 
         let kItemsPerPortraitRow = 4
-        let minimumViewWidth = min(view.frame.width, view.frame.height)
+        let minimumViewWidth = min(containerSize.width, containerSize.height)
         let approxItemWidth = minimumViewWidth / CGFloat(kItemsPerPortraitRow)
 
-        let itemCount = round(containerWidth / approxItemWidth)
+        let itemCount = round(containerSize.width / approxItemWidth)
         let interSpaceWidth = (itemCount - 1) * type(of: self).kInterItemSpacing
-        let availableWidth = containerWidth - interSpaceWidth
+        let availableWidth = containerSize.width - interSpaceWidth
 
         let itemWidth = floor(availableWidth / CGFloat(itemCount))
         let newItemSize = CGSize(width: itemWidth, height: itemWidth)
         let remainingSpace = availableWidth - (itemCount * itemWidth)
-
-        if (newItemSize != mediaTileViewLayout.itemSize) {
+        let hInset = remainingSpace / 2
+        if (newItemSize != mediaTileViewLayout.itemSize || hInset != mediaTileViewLayout.sectionInset.left) {
             mediaTileViewLayout.itemSize = newItemSize
             // Inset any remaining space around the outside edges to ensure all inter-item spacing is exactly equal, otherwise
             // we may get slightly different gaps between rows vs. columns
-            mediaTileViewLayout.sectionInset = UIEdgeInsets(top: 0, leading: remainingSpace / 2, bottom: 0, trailing: remainingSpace / 2)
+            mediaTileViewLayout.sectionInset = UIEdgeInsets(top: 0, leading: hInset, bottom: 0, trailing: hInset)
             mediaTileViewLayout.invalidateLayout()
         }
     }
