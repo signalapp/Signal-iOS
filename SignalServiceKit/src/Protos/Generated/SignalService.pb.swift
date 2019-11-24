@@ -1890,7 +1890,6 @@ struct SignalServiceProtos_SyncMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    /// @required
     var blob: SignalServiceProtos_AttachmentPointer {
       get {return _storage._blob ?? SignalServiceProtos_AttachmentPointer()}
       set {_uniqueStorage()._blob = newValue}

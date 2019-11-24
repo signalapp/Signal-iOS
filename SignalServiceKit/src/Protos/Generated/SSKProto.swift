@@ -4410,13 +4410,16 @@ extension SSKProtoSyncMessageSent.SSKProtoSyncMessageSentBuilder {
 
     // MARK: - SSKProtoSyncMessageContactsBuilder
 
-    @objc public class func builder(blob: SSKProtoAttachmentPointer) -> SSKProtoSyncMessageContactsBuilder {
-        return SSKProtoSyncMessageContactsBuilder(blob: blob)
+    @objc public class func builder() -> SSKProtoSyncMessageContactsBuilder {
+        return SSKProtoSyncMessageContactsBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoSyncMessageContactsBuilder {
-        let builder = SSKProtoSyncMessageContactsBuilder(blob: blob)
+        let builder = SSKProtoSyncMessageContactsBuilder()
+        if let _value = blob {
+            builder.setBlob(_value)
+        }
         if hasIsComplete {
             builder.setIsComplete(isComplete)
         }
@@ -4431,12 +4434,6 @@ extension SSKProtoSyncMessageSent.SSKProtoSyncMessageSentBuilder {
         private var proto = SignalServiceProtos_SyncMessage.Contacts()
 
         @objc fileprivate override init() {}
-
-        @objc fileprivate init(blob: SSKProtoAttachmentPointer) {
-            super.init()
-
-            setBlob(blob)
-        }
 
         @objc public func setBlob(_ valueParam: SSKProtoAttachmentPointer) {
             proto.blob = valueParam.proto
@@ -4461,7 +4458,7 @@ extension SSKProtoSyncMessageSent.SSKProtoSyncMessageSentBuilder {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.Contacts
 
-    @objc public let blob: SSKProtoAttachmentPointer
+    @objc public let blob: SSKProtoAttachmentPointer?
 
     @objc public var isComplete: Bool {
         return proto.isComplete
@@ -4481,7 +4478,7 @@ extension SSKProtoSyncMessageSent.SSKProtoSyncMessageSentBuilder {
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.Contacts,
-                 blob: SSKProtoAttachmentPointer) {
+                 blob: SSKProtoAttachmentPointer?) {
         self.proto = proto
         self.blob = blob
     }
@@ -4497,10 +4494,10 @@ extension SSKProtoSyncMessageSent.SSKProtoSyncMessageSentBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Contacts) throws -> SSKProtoSyncMessageContacts {
-        guard proto.hasBlob else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: blob")
+        var blob: SSKProtoAttachmentPointer? = nil
+        if proto.hasBlob {
+            blob = try SSKProtoAttachmentPointer.parseProto(proto.blob)
         }
-        let blob = try SSKProtoAttachmentPointer.parseProto(proto.blob)
 
         // MARK: - Begin Validation Logic for SSKProtoSyncMessageContacts -
 

@@ -76,7 +76,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.attachmentIds.count == 0) {
         SSKProtoAttachmentPointerBuilder *attachmentProtoBuilder = [SSKProtoAttachmentPointer builderWithId:0];
         SSKProtoAttachmentPointer *attachmentProto = [attachmentProtoBuilder buildAndReturnError:&error];
-        contactsBuilder = [SSKProtoSyncMessageContacts builderWithBlob:attachmentProto];
+        contactsBuilder = [SSKProtoSyncMessageContacts builder];
+        [contactsBuilder setBlob:attachmentProto];
         __block NSData *data;
         [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             data = [self buildPlainTextAttachmentDataWithTransaction:transaction];
@@ -88,7 +89,8 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Couldn't build protobuf.");
             return nil;
         }
-        contactsBuilder = [SSKProtoSyncMessageContacts builderWithBlob:attachmentProto];
+        contactsBuilder = [SSKProtoSyncMessageContacts builder];
+        [contactsBuilder setBlob:attachmentProto];
     }
     [contactsBuilder setIsComplete:YES];
     

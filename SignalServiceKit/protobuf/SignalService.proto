@@ -309,7 +309,6 @@ message SyncMessage {
   }
 
   message Contacts {
-    // @required
     optional AttachmentPointer blob       = 1;
     // Signal-iOS renamed this property.
     optional bool              isComplete = 2 [default = false];
