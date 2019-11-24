@@ -14,6 +14,12 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     
     private lazy var spinner = NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: .white, padding: nil)
     
+    private lazy var qrCodeImageView: UIImageView = {
+        let result = UIImageView()
+        result.contentMode = .scaleAspectFit
+        return result
+    }()
+    
     private lazy var titleLabel: UILabel = {
         let result = UILabel()
         result.textColor = Theme.primaryColor
@@ -87,12 +93,33 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     }
     
     override func populateContentView() {
-        let stackView = UIStackView(arrangedSubviews: [ topSpacer, spinner, UIView.spacer(withHeight: 8), titleLabel, subtitleLabel, mnemonicLabel, buttonStackView, bottomSpacer ])
+        let stackView = UIStackView(arrangedSubviews: [ topSpacer, titleLabel, subtitleLabel, mnemonicLabel, buttonStackView, bottomSpacer ])
+        switch mode {
+        case .master:
+            stackView.insertArrangedSubview(qrCodeImageView, at: 1)
+            stackView.insertArrangedSubview(UIView.spacer(withHeight: 2), at: 2)
+        case .slave:
+            stackView.insertArrangedSubview(spinner, at: 1)
+            stackView.insertArrangedSubview(UIView.spacer(withHeight: 8), at: 2)
+        }
         contentView.addSubview(stackView)
         stackView.spacing = 16
         stackView.axis = .vertical
-        spinner.set(.height, to: 64)
-        spinner.startAnimating()
+        switch mode {
+        case .master:
+            qrCodeImageView.set(.height, to: 128)
+            let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+            let data = hexEncodedPublicKey.data(using: .utf8)
+            let filter = CIFilter(name: "CIQRCodeGenerator")!
+            filter.setValue(data, forKey: "inputMessage")
+            let qrCodeAsCIImage = filter.outputImage!
+            let scaledQRCodeAsCIImage = qrCodeAsCIImage.transformed(by: CGAffineTransform(scaleX: 4.8, y: 4.8))
+            let qrCode = UIImage(ciImage: scaledQRCodeAsCIImage)
+            qrCodeImageView.image = qrCode
+        case .slave:
+            spinner.set(.height, to: 64)
+            spinner.startAnimating()
+        }
         titleLabel.text = {
             switch mode {
             case .master: return NSLocalizedString("Waiting for Device", comment: "")
@@ -125,8 +152,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     func requestUserAuthorization(for deviceLink: DeviceLink) {
         self.deviceLink = deviceLink
         topSpacer.isHidden = true
-        spinner.stopAnimating()
-        spinner.isHidden = true
+        qrCodeImageView.isHidden = true
         titleLabel.text = NSLocalizedString("Linking Request Received", comment: "")
         subtitleLabel.text = NSLocalizedString("Please check that the words below match the ones shown on your other device", comment: "")
         let hexEncodedPublicKey = deviceLink.slave.hexEncodedPublicKey.removing05PrefixIfNeeded()
