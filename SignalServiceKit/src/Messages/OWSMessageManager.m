@@ -562,7 +562,7 @@ NS_ASSUME_NONNULL_BEGIN
             if (dataMessage.group.unwrappedType == SSKProtoGroupContextTypeUpdate) {
                 // Accept group updates for unknown groups.
             } else if (dataMessage.group.unwrappedType == SSKProtoGroupContextTypeDeliver) {
-                [self sendGroupInfoRequest:dataMessage.group.id envelope:envelope transaction:transaction];
+                [self sendGroupInfoRequestWithGroupId:dataMessage.group.id envelope:envelope transaction:transaction];
                 return;
             } else {
                 OWSLogInfo(@"Ignoring group message for unknown group from: %@", envelope.sourceAddress);
@@ -595,9 +595,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)sendGroupInfoRequest:(NSData *)groupId
-                    envelope:(SSKProtoEnvelope *)envelope
-                 transaction:(SDSAnyWriteTransaction *)transaction
+- (void)sendGroupInfoRequestWithGroupId:(NSData *)groupId
+                               envelope:(SSKProtoEnvelope *)envelope
+                            transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!envelope) {
         OWSFailDebug(@"Missing envelope.");
