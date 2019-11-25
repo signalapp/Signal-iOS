@@ -99,10 +99,8 @@ public class FeatureFlags: NSObject {
         if CurrentAppContext().isRunningTests {
             // We should be running the tests using both .ydbTests or .grdbTests.
             return .grdbTests
-        } else if build.includes(.beta) {
-            return .grdbForAll
         } else {
-            return .grdbForAlreadyMigrated
+            return .grdbForAll
         }
     }
 
