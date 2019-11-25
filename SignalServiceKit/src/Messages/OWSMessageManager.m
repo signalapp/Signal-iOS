@@ -1469,6 +1469,18 @@ NS_ASSUME_NONNULL_BEGIN
                     return nil;
                 }
 
+                // At this point, if the group already exists but we have no local details, it likely
+                // means we previously learned about the group from linked device transcript.
+                //
+                // In that case, ask the sender for the group details now so we can learn the
+                // members, title, and avatar.
+                if (groupThread.groupModel.groupName == nil && groupThread.groupModel.groupAvatarData == nil
+                    && groupThread.groupModel.externalGroupMembers.count == 0) {
+                    [self sendGroupInfoRequestWithGroupId:groupThread.groupModel.groupId
+                                                 envelope:envelope
+                                              transaction:transaction];
+                }
+
                 if (dataMessage.reaction) {
                     [OWSReactionManager processIncomingReaction:dataMessage.reaction
                                                        threadId:groupThread.uniqueId

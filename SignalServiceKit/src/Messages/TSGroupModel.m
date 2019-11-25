@@ -242,6 +242,13 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     return [Randomness generateRandomBytes:kGroupIdLength];
 }
 
+- (NSArray<SignalServiceAddress *> *)externalGroupMembers
+{
+    return [self.groupMembers filter:^(SignalServiceAddress *groupMemberId) {
+        return !groupMemberId.isLocalAddress;
+    }];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
