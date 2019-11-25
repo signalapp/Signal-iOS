@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.isRecipientUpdate) {
         // Fetch, don't create.  We don't want recipient updates to resurrect messages or threads.
         if (_groupId != nil) {
-            _thread = [TSGroupThread threadWithGroupId:_groupId transaction:transaction];
+            _thread = [TSGroupThread getThreadWithGroupId:_groupId transaction:transaction];
         } else {
             OWSFailDebug(@"We should never receive a 'recipient update' for messages in contact threads.");
         }
