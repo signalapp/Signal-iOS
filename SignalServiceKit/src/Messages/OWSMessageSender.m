@@ -678,7 +678,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             isNoteToSelf = [LKDatabaseUtilities isUserLinkedDevice:((TSContactThread *)thread).contactIdentifier in:transaction];
         }];
-        if (isNoteToSelf) {
+        if (isNoteToSelf && message.shouldSyncTranscript) {
             [self sendSyncTranscriptForMessage:message isRecipientUpdate:NO success:^{ } failure:^(NSError *error) { }];
             successHandler();
             return;
@@ -1674,7 +1674,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // Loki: Both for friend request messages and device link messages we don't require a session
             BOOL isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
             BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class];
-            if (!isFriendRequest && !isDeviceLinkMessage) {
+            if (!isFriendRequest && !(isDeviceLinkMessage && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest)) {
                 [self throws_ensureRecipientHasSessionForMessageSend:messageSend recipientID:recipientID deviceId:@(OWSDevicePrimaryDeviceId)];
             }
 
@@ -1919,7 +1919,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // Loki: Both for friend request messages and device link messages we use fallback encryption as we don't necessarily have a session yet
     BOOL isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
     BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class];
-    if (isFriendRequest || isDeviceLinkMessage) {
+    if (isFriendRequest || (isDeviceLinkMessage && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest)) {
         return [self throws_encryptedFriendRequestOrDeviceLinkMessageForMessageSend:messageSend deviceId:@(OWSDevicePrimaryDeviceId) plainText:plainText];
     }
 

@@ -9,7 +9,7 @@ public final class DisplayNameUtilities : NSObject {
     }
     
     private static var userDisplayName: String? {
-        return SSKEnvironment.shared.profileManager.localProfileName()!
+        return SSKEnvironment.shared.profileManager.localProfileName()
     }
     
     @objc public static func getPrivateChatDisplayName(for hexEncodedPublicKey: String) -> String? {
