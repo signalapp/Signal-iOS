@@ -256,19 +256,7 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
         if mode != .restore { mnemonicTextField.resignFirstResponder() }
         if mode != .link { masterHexEncodedPublicKeyTextField.resignFirstResponder() }
         if mode == .link {
-            ows_ask(forCameraPermissions: { [weak self] hasCameraAccess in
-                guard let self = self else { return }
-                if hasCameraAccess {
-                    let message = NSLocalizedString("Link to an existing device by going into its in-app settings and clicking \"Link Device\".", comment: "")
-                    let scanQRCodeWrapperVC = ScanQRCodeWrapperVC(message: message)
-                    scanQRCodeWrapperVC.delegate = self
-                    scanQRCodeWrapperVC.isPresentedModally = true
-                    let navigationVC = OWSNavigationController(rootViewController: scanQRCodeWrapperVC)
-                    self.present(navigationVC, animated: true, completion: nil)
-                } else {
-                    // Do nothing
-                }
-            })
+            showQRCodeScanner()
         }
     }
     
@@ -311,6 +299,22 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
         }
     }
     
+    private func showQRCodeScanner() {
+        ows_ask(forCameraPermissions: { [weak self] hasCameraAccess in
+            guard let self = self else { return }
+            if hasCameraAccess {
+                let message = NSLocalizedString("Link to an existing device by going into its in-app settings and clicking \"Link Device\".", comment: "")
+                let scanQRCodeWrapperVC = ScanQRCodeWrapperVC(message: message)
+                scanQRCodeWrapperVC.delegate = self
+                scanQRCodeWrapperVC.isPresentedModally = true
+                let navigationVC = OWSNavigationController(rootViewController: scanQRCodeWrapperVC)
+                self.present(navigationVC, animated: true, completion: nil)
+            } else {
+                // Do nothing
+            }
+        })
+    }
+    
     func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {
         dismiss(animated: true, completion: nil)
         DispatchQueue.main.async { [weak self] in
@@ -341,6 +345,9 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
             seed = self.seed
             let isUsingQRCode = masterHexEncodedPublicKey != nil
             let masterHexEncodedPublicKey = masterHexEncodedPublicKey ?? masterHexEncodedPublicKeyTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces)
+            if !isUsingQRCode && masterHexEncodedPublicKey.isEmpty {
+                return showQRCodeScanner()
+            }
             if !ECKeyPair.isValidHexEncodedPublicKey(candidate: masterHexEncodedPublicKey) {
                 if isUsingQRCode {
                     let alert = UIAlertController(title: NSLocalizedString("Invalid QR Code", comment: ""), message: NSLocalizedString("Please make sure the QR code you scanned is correct and try again.", comment: ""), preferredStyle: .alert)
