@@ -538,8 +538,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 - (void)fetchAndUpdateLocalUsersProfile
 {
-    OWSAssertIsOnMainThread();
-
     SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
     if (!localAddress.isValid) {
         return;
