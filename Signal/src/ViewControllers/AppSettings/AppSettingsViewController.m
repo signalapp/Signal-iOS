@@ -200,11 +200,13 @@
                                               actionBlock:^{
                                                   [weakSelf showNotifications];
                                               }]];
-    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"Linked Devices", @"")
-                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"linked_devices")
-                                              actionBlock:^{
-                                                  [weakSelf showLinkedDevices];
-                                              }]];
+    if (isMasterDevice) {
+        [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"Linked Devices", @"")
+                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"linked_devices")
+                                                  actionBlock:^{
+                                                      [weakSelf showLinkedDevices];
+                                                  }]];
+    }
     // Loki: Original code
     // ========
 //    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"")
