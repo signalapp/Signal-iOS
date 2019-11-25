@@ -1165,7 +1165,7 @@
 "GROUP_MEMBERS_SEND_MESSAGE" = "Messaggio";
 
 /* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "Il nuovo titolo è '%@'";
+"GROUP_TITLE_CHANGED" = "Il nuovo titolo è '%@'. ";
 
 /* No comment provided by engineer. */
 "GROUP_UPDATED" = "Gruppo aggiornato.";
@@ -1249,7 +1249,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Chiamata persa perché il codice di sicurezza è cambiato.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "Puoi inviare o ricevere messaggi sincronizzati dal tuo telefono o iPad. ↵Per la tua sicurezza, la cronologia delle conversazioni non viene trasferita ai nuovi dispositivi associati.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Puoi inviare o ricevere messaggi sincronizzati dal tuo telefono o iPad. Per la tua sicurezza, la cronologia delle conversazioni non viene trasferita ai nuovi dispositivi associati.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ è su Signal!";

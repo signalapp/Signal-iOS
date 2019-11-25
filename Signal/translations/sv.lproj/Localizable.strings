@@ -1701,7 +1701,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Du kan ha fått nya meddelanden medan din %@ startades om.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
+"NOTIFICATIONS_FOOTER_WARNING" = "Åtgärderna inkluderar \"Markera som läst\", \"Svara\" och \"Ring tillbaka.\"";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Inget namn eller meddelande";
@@ -1713,7 +1713,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Ljud";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Namn, innehåll och åtgärder";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Bara namn";
@@ -2631,7 +2631,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Timeout för skärmlås";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Lås upp Signals skärm med Touch ID, Face ID eller din iOS-enhets lösenord. Du kan fortfarande svara på inkommande samtal och ta emot meddelanden om samtal och meddelanden medan skärmlåset är aktiverat. Med Signals aviseringsinställningar kan du anpassa informationen som visas.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Skärmlås";
