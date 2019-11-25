@@ -35,14 +35,16 @@
     SSKProtoContentBuilder *contentBuilder = SSKProtoContent.builder;
     NSError *error;
     // Build the pre key bundle message
-    PreKeyBundle *preKeyBundle = [OWSPrimaryStorage.sharedManager generatePreKeyBundleForContact:recipient.recipientId];
-    SSKProtoPrekeyBundleMessageBuilder *preKeyBundleMessageBuilder = [SSKProtoPrekeyBundleMessage builderFromPreKeyBundle:preKeyBundle];
-    SSKProtoPrekeyBundleMessage *preKeyBundleMessage = [preKeyBundleMessageBuilder buildAndReturnError:&error];
-    if (error || preKeyBundleMessage == nil) {
-        OWSFailDebug(@"Failed to build pre key bundle message for: %@ due to error: %@.", recipient.recipientId, error);
-        return nil;
-    } else {
-        [contentBuilder setPrekeyBundleMessage:preKeyBundleMessage];
+    if (self.kind == LKDeviceLinkMessageKindRequest) {
+        PreKeyBundle *preKeyBundle = [OWSPrimaryStorage.sharedManager generatePreKeyBundleForContact:recipient.recipientId];
+        SSKProtoPrekeyBundleMessageBuilder *preKeyBundleMessageBuilder = [SSKProtoPrekeyBundleMessage builderFromPreKeyBundle:preKeyBundle];
+        SSKProtoPrekeyBundleMessage *preKeyBundleMessage = [preKeyBundleMessageBuilder buildAndReturnError:&error];
+        if (error || preKeyBundleMessage == nil) {
+            OWSFailDebug(@"Failed to build pre key bundle message for: %@ due to error: %@.", recipient.recipientId, error);
+            return nil;
+        } else {
+            [contentBuilder setPrekeyBundleMessage:preKeyBundleMessage];
+        }
     }
     // Build the device link message
     SSKProtoLokiDeviceLinkMessageBuilder *deviceLinkMessageBuilder = [SSKProtoLokiDeviceLinkMessage builder];
