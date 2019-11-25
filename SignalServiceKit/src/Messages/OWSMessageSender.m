@@ -678,7 +678,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             isNoteToSelf = [LKDatabaseUtilities isUserLinkedDevice:((TSContactThread *)thread).contactIdentifier in:transaction];
         }];
-        if (isNoteToSelf && message.shouldSyncTranscript) {
+        if (isNoteToSelf) {
             [self sendSyncTranscriptForMessage:message isRecipientUpdate:NO success:^{ } failure:^(NSError *error) { }];
             successHandler();
             return;

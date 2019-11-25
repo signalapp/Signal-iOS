@@ -1649,12 +1649,14 @@ typedef enum : NSUInteger {
     if ([self.thread isKindOfClass:TSContactThread.class]) {
         NSString *senderID = ((TSContactThread *)self.thread).contactIdentifier;
         __block NSSet<TSContactThread *> *linkedDeviceThreads;
+        __block BOOL isNoteToSelf;
         [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             linkedDeviceThreads = [LKDatabaseUtilities getLinkedDeviceThreadsFor:senderID in:transaction];
+            isNoteToSelf = [LKDatabaseUtilities isUserLinkedDevice:senderID in:transaction];
         }];
         if ([linkedDeviceThreads contains:^BOOL(TSContactThread *thread) {
             return thread.isContactFriend;
-        }]) {
+        }] || isNoteToSelf) {
             isEnabled = true;
             isAttachmentButtonHidden = false;
         } else if (![linkedDeviceThreads contains:^BOOL(TSContactThread *thread) {
