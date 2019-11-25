@@ -25,7 +25,8 @@ public final class LokiStorageAPI : LokiDotNetAPI {
     /// Gets the device links associated with the given hex encoded public keys from the
     /// server and stores and returns the valid ones.
     public static func getDeviceLinks(associatedWith hexEncodedPublicKeys: Set<String>) -> Promise<Set<DeviceLink>> {
-        print("[Loki] Getting device links for: \(hexEncodedPublicKeys).")
+        let hexEncodedPublicKeysDescription = "[ \(hexEncodedPublicKeys.joined(separator: ", ")) ]"
+        print("[Loki] Getting device links for: \(hexEncodedPublicKeysDescription).")
         return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<Set<DeviceLink>> in
             let queryParameters = "ids=\(hexEncodedPublicKeys.map { "@\($0)" }.joined(separator: ","))&include_user_annotations=1"
             let url = URL(string: "\(server)/users?\(queryParameters)")!
