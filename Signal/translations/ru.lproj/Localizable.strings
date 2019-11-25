@@ -1249,7 +1249,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Звонок не был принят, так как код безопасности собеседника изменился.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "Вы можете отправлять или получать синхронизированные сообщения от вашего телефона или iPad.\nДля вашей безопасности история переписки не переносится на новые привязанные устройства.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Сообщения, которые вы теперь отправляете и получаете с телефона или iPad, будут синхронизироваться.\nДля вашей безопасности история переписки не переносится на вновь привязанные устройства.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ теперь в Signal!";
@@ -1767,10 +1767,10 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Привязать iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Нажатие «Зарегистрировать iPad» позволит вам создать совершенно новую учётную запись Signal или перенести существующую учётную запись на этот iPad. Это отключит Signal на любом другом устройстве, на данный момент зарегистрированном с использованием того же номера телефона.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Нажатие «Зарегистрировать iPad» позволит вам создать совершенно новую учётную запись Signal или перенести на этот iPad существующую. Это отключит Signal на любом другом устройстве, где он сейчас зарегистрирован на тот же номер телефона.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Нажатие «Привязать iPhone» позволит вам привязать ваш телефон к уже существующей учётной записи. Привязка вашего телефона обычно не рекомендуется и ограничит некоторую функциональность, например звонки.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Нажатие «Привязать iPhone» позволит вам привязать ваш телефон к уже существующей учётной записи. Привязка вашего телефона обычно не рекомендуется и ограничит некоторую функциональность, например, звонки.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Зарегистрировать этот iPad";
@@ -1779,7 +1779,7 @@
 "ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Привязать этот iPhone";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Регистрация данного iPad отключит Signal на любом другом устройстве, зарегистрированном с использованием того же номера телефона.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Регистрация данного iPad отключит Signal на любом другом устройстве, где он зарегистрирован на тот же номер телефона.";
 
 /* warning to the user that linking a phone is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Привязка вашего iPhone не рекомендована и ограничит основную функциональность.";
