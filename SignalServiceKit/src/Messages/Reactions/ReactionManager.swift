@@ -14,6 +14,8 @@ public class ReactionManager: NSObject {
         return .sharedInstance()
     }
 
+    public static let emojiSet = ["❤️", "👍", "👎", "😂", "😮", "😢", "😡"]
+
     @objc(localUserReactedToMessage:emoji:isRemoving:transaction:)
     public class func localUserReacted(to message: TSMessage, emoji: String, isRemoving: Bool, transaction: SDSAnyWriteTransaction) {
         guard FeatureFlags.reactionSend else {

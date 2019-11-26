@@ -9,8 +9,6 @@ protocol MessageReactionPickerDelegate: class {
 }
 
 class MessageReactionPicker: UIStackView {
-    static let emojiSet = ["❤️", "👍", "👎", "😂", "😮", "😢", "😡"]
-
     let pickerDiameter: CGFloat = 48
     let pickerPadding: CGFloat = 2
     var reactionHeight: CGFloat { return pickerDiameter - (2 * pickerPadding) }
@@ -18,24 +16,28 @@ class MessageReactionPicker: UIStackView {
     private var buttonForEmoji = [String: OWSFlatButton]()
     private var selectedEmoji: String?
     private weak var delegate: MessageReactionPickerDelegate?
-    private lazy var backgroundView = addBackgroundView(withBackgroundColor: Theme.backgroundColor, cornerRadius: pickerDiameter / 2)
+    private var backgroundView: UIView?
     init(selectedEmoji: String?, delegate: MessageReactionPickerDelegate) {
         self.selectedEmoji = selectedEmoji
         self.delegate = delegate
 
         super.init(frame: .zero)
 
-        backgroundView.layer.shadowColor = UIColor.black.withAlphaComponent(0.24).cgColor
-        backgroundView.layer.shadowOffset = CGSize(width: 0, height: 8)
-        backgroundView.layer.shadowOpacity = 1
-        backgroundView.layer.shadowRadius = 8
+        backgroundView = addBackgroundView(
+            withBackgroundColor: Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_white,
+            cornerRadius: pickerDiameter / 2
+        )
+        backgroundView?.layer.shadowColor = UIColor.black.withAlphaComponent(0.24).cgColor
+        backgroundView?.layer.shadowOffset = CGSize(width: 0, height: 8)
+        backgroundView?.layer.shadowOpacity = 1
+        backgroundView?.layer.shadowRadius = 8
 
         autoSetDimension(.height, toSize: pickerDiameter)
 
         isLayoutMarginsRelativeArrangement = true
         layoutMargins = UIEdgeInsets(top: pickerPadding, leading: pickerPadding, bottom: pickerPadding, trailing: pickerPadding)
 
-        for emoji in MessageReactionPicker.emojiSet {
+        for emoji in ReactionManager.emojiSet {
             let button = OWSFlatButton()
             button.autoSetDimensions(to: CGSize(square: reactionHeight))
             button.setTitle(title: emoji, font: .systemFont(ofSize: 30), titleColor: Theme.primaryTextColor)
@@ -51,15 +53,15 @@ class MessageReactionPicker: UIStackView {
                 selectedBackgroundView.backgroundColor = .ows_signalBlue
                 selectedBackgroundView.clipsToBounds = true
                 selectedBackgroundView.layer.cornerRadius = reactionHeight / 2
-                backgroundView.addSubview(selectedBackgroundView)
+                backgroundView?.addSubview(selectedBackgroundView)
                 selectedBackgroundView.autoPin(toEdgesOf: button)
             }
         }
     }
 
     func playPresentationAnimation(duration: TimeInterval) {
-        backgroundView.alpha = 0
-        UIView.animate(withDuration: duration) { self.backgroundView.alpha = 1 }
+        backgroundView?.alpha = 0
+        UIView.animate(withDuration: duration) { self.backgroundView?.alpha = 1 }
 
         let delayStep = duration / Double(arrangedSubviews.count + 1)
         var delay: TimeInterval = 0
@@ -69,7 +71,7 @@ class MessageReactionPicker: UIStackView {
             UIView.animate(withDuration: delayStep, delay: delay, options: .curveEaseOut, animations: {
                 view.transform = .identity
                 view.alpha = 1
-            }) { _ in }
+            })
             delay += delayStep
         }
     }

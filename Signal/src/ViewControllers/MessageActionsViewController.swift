@@ -130,7 +130,7 @@ class MessageActionsViewController: UIViewController {
         addSnapshotFocusedView()
         addReactionPickerIfNecessary()
 
-        reactionPicker?.playPresentationAnimation(duration: 0.5)
+        reactionPicker?.playPresentationAnimation(duration: 0.4)
 
         UIView.animate(withDuration: 0.15, animations: {
             self.backdropView.alpha = 1
@@ -162,20 +162,17 @@ class MessageActionsViewController: UIViewController {
     // MARK: - Reaction handling
 
     lazy var interactionAllowsReactions: Bool = {
-        switch focusedInteraction.interactionType() {
-        case .outgoingMessage:
-            guard let outgoingMessage = focusedInteraction as? TSOutgoingMessage else {
-                owsFailDebug("unexpected interaction")
-                return false
-            }
+        guard FeatureFlags.reactionSend else { return false }
 
+        switch focusedInteraction {
+        case let outgoingMessage as TSOutgoingMessage:
             switch outgoingMessage.messageState {
             case .failed, .sending:
                 return false
             default:
                 return true
             }
-        case .incomingMessage:
+        case is TSIncomingMessage:
             return true
         default:
             return false
@@ -200,8 +197,8 @@ class MessageActionsViewController: UIViewController {
         // The picker always starts 40pts above the touch point
         pickerOrigin.y -= 40 + picker.height()
 
-        // If the picker is not at least 16pts away from the edge of the screen, it
-        // should shift to be so.
+        // If the picker is not at least 16pts away from the edge
+        // of the screen, we offset it so that it is.
 
         let edgeThresholds: UIEdgeInsets = { () -> UIEdgeInsets in
             guard #available(iOS 11, *) else { return .zero }
