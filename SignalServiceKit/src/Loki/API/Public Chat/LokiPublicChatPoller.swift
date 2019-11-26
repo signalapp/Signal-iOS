@@ -62,7 +62,8 @@ public final class LokiPublicChatPoller : NSObject {
                     let displayNameUpdatees = LokiPublicChatAPI.displayNameUpdatees[publicChat.id] ?? []
                     LokiPublicChatAPI.displayNameUpdatees[publicChat.id] = displayNameUpdatees.union(newDisplayNameUpdatees)
                 }
-                messages.forEach { message in
+                // Sorting the messages by timestamp before importing them fixes an issue where messages that quote older messages can't find those older messages
+                messages.sorted { $0.timestamp < $1.timestamp }.forEach { message in
                     var wasSentByCurrentUser = false
                     OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
                         wasSentByCurrentUser = LokiDatabaseUtilities.isUserLinkedDevice(message.hexEncodedPublicKey, transaction: transaction)

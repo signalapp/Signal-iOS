@@ -80,7 +80,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         if let lastMessageServerID = getLastMessageServerID(for: channel, on: server) {
             queryParameters += "&since_id=\(lastMessageServerID)"
         } else {
-            queryParameters += "&count=-\(fallbackBatchCount)"
+            queryParameters += "&count=\(fallbackBatchCount)&include_deleted=0"
         }
         let url = URL(string: "\(server)/channels/\(channel)/messages?\(queryParameters)")!
         let request = TSRequest(url: url)
@@ -99,9 +99,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                         print("[Loki] Couldn't parse message for public chat channel with ID: \(channel) on server: \(server) from: \(message).")
                         return nil
                 }
-
-                let avatarUrl = value["avatar"] as? String ?? nil;
-
+                let profilePictureURL = value["avatar"] as? String ?? nil
                 let displayName = user["name"] as? String ?? NSLocalizedString("Anonymous", comment: "")
                 let lastMessageServerID = getLastMessageServerID(for: channel, on: server)
                 if serverID > (lastMessageServerID ?? 0) { setLastMessageServerID(for: channel, on: server, to: serverID) }
@@ -124,11 +122,14 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                     let linkPreviewURL = value["linkPreviewUrl"] as? String
                     let linkPreviewTitle = value["linkPreviewTitle"] as? String
                     if kind == .linkPreview {
-                        guard linkPreviewURL != nil && linkPreviewTitle != nil else { return nil }
+                        guard linkPreviewURL != nil && linkPreviewTitle != nil else {
+                            print("[Loki] Ignoring public chat message with invalid link preview.")
+                            return nil
+                        }
                     }
                     return LokiPublicChatMessage.Attachment(kind: kind, server: server, serverID: serverID, contentType: contentType, size: size, fileName: fileName, flags: flags, width: width, height: height, caption: caption, url: url, linkPreviewURL: linkPreviewURL, linkPreviewTitle: linkPreviewTitle)
                 }
-                let result = LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, avatar: avatarUrl, body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature)
+                let result = LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, avatar: profilePictureURL, body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature)
                 guard result.hasValidSignature() else {
                     print("[Loki] Ignoring public chat message with invalid signature.")
                     return nil
@@ -138,7 +139,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                     existingMessageID = storage.getIDForMessage(withServerID: UInt(result.serverID!), in: transaction)
                 }
                 guard existingMessageID == nil else {
-                    print("[Loki] Ignoring duplicate message.")
+                    print("[Loki] Ignoring duplicate public chat message.")
                     return nil
                 }
                 return result
