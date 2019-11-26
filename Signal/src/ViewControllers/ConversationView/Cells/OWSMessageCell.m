@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
 @property (nonatomic) UITapGestureRecognizer *avatarTapGestureRecognizer;
 @property (nonatomic) UIPanGestureRecognizer *panGestureRecognizer;
+@property (nonatomic) UILongPressGestureRecognizer *longPressGestureRecognizer;
 @property (nonatomic) UIView *swipeableContentView;
 @property (nonatomic) UIImageView *swipeToReplyImageView;
 @property (nonatomic) CGFloat swipeableContentViewInitialX;
@@ -81,9 +82,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                         action:@selector(handleTapGesture:)];
     self.tapGestureRecognizer.delegate = self;
 
-    UILongPressGestureRecognizer *longPress =
+    self.longPressGestureRecognizer =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
-    [self.contentView addGestureRecognizer:longPress];
+    [self.contentView addGestureRecognizer:self.longPressGestureRecognizer];
 
     self.panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self
                                                                           action:@selector(handlePanGesture:)];
@@ -532,40 +533,50 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(self.delegate);
 
-    if (sender.state != UIGestureRecognizerStateBegan) {
-        return;
-    }
+    switch (sender.state) {
+        case UIGestureRecognizerStateBegan:
+            if ([self isGestureInCellHeader:sender]) {
+                return;
+            }
 
-    if ([self isGestureInCellHeader:sender]) {
-        return;
-    }
-
-    BOOL shouldAllowReply = [self shouldAllowReply];
-    CGPoint locationInMessageBubble = [sender locationInView:self.messageView];
-    switch ([self.messageView gestureLocationForLocation:locationInMessageBubble]) {
-        case OWSMessageGestureLocation_Default:
-        case OWSMessageGestureLocation_OversizeText:
-        case OWSMessageGestureLocation_LinkPreview: {
-            [self.delegate conversationCell:self
-                           shouldAllowReply:shouldAllowReply
-                   didLongpressTextViewItem:self.viewItem];
+            BOOL shouldAllowReply = [self shouldAllowReply];
+            CGPoint locationInMessageBubble = [sender locationInView:self.messageView];
+            switch ([self.messageView gestureLocationForLocation:locationInMessageBubble]) {
+                case OWSMessageGestureLocation_Default:
+                case OWSMessageGestureLocation_OversizeText:
+                case OWSMessageGestureLocation_LinkPreview: {
+                    [self.delegate conversationCell:self
+                                   shouldAllowReply:shouldAllowReply
+                           didLongpressTextViewItem:self.viewItem];
+                    break;
+                }
+                case OWSMessageGestureLocation_Media: {
+                    [self.delegate conversationCell:self
+                                   shouldAllowReply:shouldAllowReply
+                          didLongpressMediaViewItem:self.viewItem];
+                    break;
+                }
+                case OWSMessageGestureLocation_QuotedReply: {
+                    [self.delegate conversationCell:self
+                                   shouldAllowReply:shouldAllowReply
+                          didLongpressQuoteViewItem:self.viewItem];
+                    break;
+                }
+                case OWSMessageGestureLocation_Sticker:
+                    OWSAssertDebug(self.viewItem.stickerInfo != nil);
+                    [self.delegate conversationCell:self didLongpressSticker:self.viewItem];
+                    break;
+            }
             break;
-        }
-        case OWSMessageGestureLocation_Media: {
-            [self.delegate conversationCell:self
-                           shouldAllowReply:shouldAllowReply
-                  didLongpressMediaViewItem:self.viewItem];
+        case UIGestureRecognizerStateEnded:
+            [self.delegate conversationCell:self didEndLongpress:self.viewItem];
             break;
-        }
-        case OWSMessageGestureLocation_QuotedReply: {
-            [self.delegate conversationCell:self
-                           shouldAllowReply:shouldAllowReply
-                  didLongpressQuoteViewItem:self.viewItem];
+        case UIGestureRecognizerStateChanged:
+            [self.delegate conversationCell:self didChangeLongpress:self.viewItem];
             break;
-        }
-        case OWSMessageGestureLocation_Sticker:
-            OWSAssertDebug(self.viewItem.stickerInfo != nil);
-            [self.delegate conversationCell:self didLongpressSticker:self.viewItem];
+        case UIGestureRecognizerStateFailed:
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStatePossible:
             break;
     }
 }
