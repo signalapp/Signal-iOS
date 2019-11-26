@@ -673,7 +673,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     // Loki: Handle note to self case
-    if ([thread isKindOfClass:[TSContactThread class]]) {
+    if ([thread isKindOfClass:[TSContactThread class]] && ![message isKindOfClass:OWSOutgoingSyncMessage.class] && ![message isKindOfClass:LKDeviceLinkMessage.class]) {
         __block BOOL isNoteToSelf;
         [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             isNoteToSelf = [LKDatabaseUtilities isUserLinkedDevice:((TSContactThread *)thread).contactIdentifier in:transaction];
@@ -1241,10 +1241,23 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             failedMessageSend(error);
         }) retainUntilComplete];
     } else {
+        NSString *targetHexEncodedPublicKey = recipient.recipientId;
+        NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        __block BOOL isUserLinkedDevice;
+        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            isUserLinkedDevice = [LKDatabaseUtilities isUserLinkedDevice:targetHexEncodedPublicKey in:transaction];
+        }];
+        if ([targetHexEncodedPublicKey isEqual:userHexEncodedPublicKey]) {
+            [LKLogger print:[NSString stringWithFormat:@"[Loki] Sending %@ to self.", message.class]];
+        } else if (isUserLinkedDevice) {
+            [LKLogger print:[NSString stringWithFormat:@"[Loki] Sending %@ to %@ (one of the current user's linked devices).", message.class, recipient.recipientId]];
+        } else {
+            [LKLogger print:[NSString stringWithFormat:@"[Loki] Sending %@ to %@.", message.class, recipient.recipientId]];
+        }
         NSDictionary *signalMessageInfo = deviceMessages.firstObject;
         SSKProtoEnvelopeType type = ((NSNumber *)signalMessageInfo[@"type"]).integerValue;
         uint64_t timestamp = message.timestamp;
-        NSString *senderID = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        NSString *senderID = userHexEncodedPublicKey;
         uint32_t senderDeviceID = OWSDevicePrimaryDeviceId;
         NSString *content = signalMessageInfo[@"content"];
         NSString *recipientID = signalMessageInfo[@"destination"];
@@ -1578,7 +1591,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     
     BOOL isPublicChatMessage = message.thread.isGroupThread;
     
-    BOOL shouldSendTranscript = (AreRecipientUpdatesEnabled() || !message.hasSyncedTranscript) && !isNoteToSelf && !isPublicChatMessage;
+    BOOL shouldSendTranscript = (AreRecipientUpdatesEnabled() || !message.hasSyncedTranscript) && !isNoteToSelf && !isPublicChatMessage && !([message isKindOfClass:LKDeviceLinkMessage.class]);
     if (!shouldSendTranscript) {
         return success();
     }
