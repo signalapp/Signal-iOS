@@ -16,6 +16,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, GroupsVersion) { GroupsVersionV1 = 0, GroupsV
 @interface TSGroupModel : MTLModel
 
 @property (nonatomic) NSArray<SignalServiceAddress *> *groupMembers;
+@property (nonatomic) NSArray<SignalServiceAddress *> *externalGroupMembers;
 @property (nullable, readonly, nonatomic) NSString *groupName;
 @property (readonly, nonatomic) NSData *groupId;
 

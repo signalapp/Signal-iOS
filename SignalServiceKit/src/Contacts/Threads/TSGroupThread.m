@@ -98,14 +98,6 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return self;
 }
 
-+ (nullable instancetype)threadWithGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(groupId.length > 0);
-
-    NSString *uniqueId = [self threadIdFromGroupId:groupId];
-    return [TSGroupThread anyFetchGroupThreadWithUniqueId:uniqueId transaction:transaction];
-}
-
 + (nullable instancetype)getThreadWithGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(groupId.length > 0);
@@ -128,17 +120,6 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return thread;
 }
 
-+ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId
-{
-    OWSAssertDebug(groupId.length > 0);
-
-    __block TSGroupThread *thread;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        thread = [self getOrCreateThreadWithGroupId:groupId transaction:transaction];
-    }];
-    return thread;
-}
-
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
                                     transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -153,18 +134,6 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
         thread = [[TSGroupThread alloc] initWithGroupModel:groupModel];
         [thread anyInsertWithTransaction:transaction];
     }
-    return thread;
-}
-
-+ (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
-{
-    OWSAssertDebug(groupModel);
-    OWSAssertDebug(groupModel.groupId.length > 0);
-
-    __block TSGroupThread *thread;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        thread = [self getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
-    }];
     return thread;
 }
 

@@ -543,8 +543,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (dataMessage.group) {
-        TSGroupThread *_Nullable groupThread =
-            [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
+        TSGroupThread *_Nullable groupThread = [TSGroupThread getThreadWithGroupId:dataMessage.group.id
+                                                                       transaction:transaction];
 
         if (!dataMessage.group.hasType) {
             OWSFailDebug(@"Group message is missing type.");
@@ -562,7 +562,7 @@ NS_ASSUME_NONNULL_BEGIN
             if (dataMessage.group.unwrappedType == SSKProtoGroupContextTypeUpdate) {
                 // Accept group updates for unknown groups.
             } else if (dataMessage.group.unwrappedType == SSKProtoGroupContextTypeDeliver) {
-                [self sendGroupInfoRequest:dataMessage.group.id envelope:envelope transaction:transaction];
+                [self sendGroupInfoRequestWithGroupId:dataMessage.group.id envelope:envelope transaction:transaction];
                 return;
             } else {
                 OWSLogInfo(@"Ignoring group message for unknown group from: %@", envelope.sourceAddress);
@@ -595,9 +595,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)sendGroupInfoRequest:(NSData *)groupId
-                    envelope:(SSKProtoEnvelope *)envelope
-                 transaction:(SDSAnyWriteTransaction *)transaction
+- (void)sendGroupInfoRequestWithGroupId:(NSData *)groupId
+                               envelope:(SSKProtoEnvelope *)envelope
+                            transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!envelope) {
         OWSFailDebug(@"Missing envelope.");
@@ -758,7 +758,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSThread *_Nullable thread;
     if (typingMessage.hasGroupID) {
-        TSGroupThread *groupThread = [TSGroupThread threadWithGroupId:typingMessage.groupID transaction:transaction];
+        TSGroupThread *groupThread = [TSGroupThread getThreadWithGroupId:typingMessage.groupID transaction:transaction];
 
         if (!groupThread.isLocalUserInGroup) {
             OWSLogInfo(@"Ignoring messages for left group.");
@@ -824,7 +824,7 @@ NS_ASSUME_NONNULL_BEGIN
     //
     // We distinguish between the old group state (if any) and the new group
     // state.
-    TSGroupThread *_Nullable oldGroupThread = [TSGroupThread threadWithGroupId:groupId transaction:transaction];
+    TSGroupThread *_Nullable oldGroupThread = [TSGroupThread getThreadWithGroupId:groupId transaction:transaction];
     if (oldGroupThread) {
         // Don't trust other clients; ensure all known group members remain in
         // the group unless it is a "quit" message in which case we should only
@@ -931,8 +931,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    TSGroupThread *_Nullable groupThread =
-        [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
+    TSGroupThread *_Nullable groupThread = [TSGroupThread getThreadWithGroupId:dataMessage.group.id
+                                                                   transaction:transaction];
     if (!groupThread) {
         OWSFailDebug(@"Missing group for group avatar update");
         return;
@@ -1357,7 +1357,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSLogInfo(@"Received 'Request Group Info' message for group: %@ from: %@", groupId, envelope.sourceAddress);
 
-    TSGroupThread *_Nullable gThread = [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
+    TSGroupThread *_Nullable gThread = [TSGroupThread getThreadWithGroupId:dataMessage.group.id
+                                                               transaction:transaction];
     if (!gThread) {
         OWSLogWarn(@"Unknown group: %@", groupId);
         return;
@@ -1446,7 +1447,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Group messages create the group if it doesn't already exist.
         //
         // We distinguish between the old group state (if any) and the new group state.
-        TSGroupThread *_Nullable groupThread = [TSGroupThread threadWithGroupId:groupId transaction:transaction];
+        TSGroupThread *_Nullable groupThread = [TSGroupThread getThreadWithGroupId:groupId transaction:transaction];
 
         if (dataMessage.hasRequiredProtocolVersion
             && dataMessage.requiredProtocolVersion > SSKProtos.currentProtocolVersion) {
@@ -1466,6 +1467,18 @@ NS_ASSUME_NONNULL_BEGIN
                 if (!groupThread) {
                     OWSFailDebug(@"ignoring deliver group message from unknown group.");
                     return nil;
+                }
+
+                // At this point, if the group already exists but we have no local details, it likely
+                // means we previously learned about the group from linked device transcript.
+                //
+                // In that case, ask the sender for the group details now so we can learn the
+                // members, title, and avatar.
+                if (groupThread.groupModel.groupName == nil && groupThread.groupModel.groupAvatarData == nil
+                    && groupThread.groupModel.externalGroupMembers.count == 0) {
+                    [self sendGroupInfoRequestWithGroupId:groupThread.groupModel.groupId
+                                                 envelope:envelope
+                                              transaction:transaction];
                 }
 
                 if (dataMessage.reaction) {
@@ -1782,7 +1795,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (dataMessage.group) {
         NSData *groupId = dataMessage.group.id;
         OWSAssertDebug(groupId.length > 0);
-        TSGroupThread *_Nullable groupThread = [TSGroupThread threadWithGroupId:groupId transaction:transaction];
+        TSGroupThread *_Nullable groupThread = [TSGroupThread getThreadWithGroupId:groupId transaction:transaction];
         // This method should only be called from a code path that has already verified
         // that this is a "known" group.
         OWSAssertDebug(groupThread);
