@@ -37,11 +37,20 @@ class CameraFirstCaptureNavigationController: SendMediaNavigationController {
     }
 }
 
+public let fixedBottomSafeAreaInset: CGFloat = 20
+public let fixedHorizontalMargin: CGFloat = 16
+
 @objc
 class SendMediaNavigationController: OWSNavigationController {
-
     static var bottomButtonsCenterOffset: CGFloat {
-        return -1 * (CaptureButton.recordingDiameter / 2 + 4)
+        if UIDevice.current.hasIPhoneXNotch {
+            // we pin to a constant rather than margin, because on notched devices the
+            // safeAreaInsets/margins change as the device rotates *EVEN THOUGH* the interface
+            // is locked to portrait.
+            return -1 * (CaptureButton.recordingDiameter / 2 + 4) - fixedBottomSafeAreaInset
+        } else {
+            return -1 * (CaptureButton.recordingDiameter / 2 + 4)
+        }
     }
 
     static var trailingButtonsOffset: CGFloat = -28
@@ -97,17 +106,20 @@ class SendMediaNavigationController: OWSNavigationController {
             mediaLibraryModeButton.autoAlignAxis(.vertical, toSameAxisOf: cameraModeButton)
             mediaLibraryModeButton.autoAlignAxis(.horizontal, toSameAxisOf: cameraModeButton)
         } else {
-            batchModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
-            batchModeButton.autoPinEdge(toSuperviewMargin: .trailing)
+            // we pin to edges rather than margin, because on notched devices the safeAreaInsets/margins change
+            // as the device rotates *EVEN THOUGH* the interface is locked to portrait.
 
-            doneButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
-            doneButton.autoPinEdge(toSuperviewMargin: .trailing)
+            batchModeButton.centerYAnchor.constraint(equalTo: view.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
+            batchModeButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
 
-            cameraModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
-            cameraModeButton.autoPinEdge(toSuperviewMargin: .leading)
+            doneButton.centerYAnchor.constraint(equalTo: view.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
+            doneButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
 
-            mediaLibraryModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
-            mediaLibraryModeButton.autoPinEdge(toSuperviewMargin: .leading)
+            cameraModeButton.centerYAnchor.constraint(equalTo: view.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
+            cameraModeButton.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
+
+            mediaLibraryModeButton.centerYAnchor.constraint(equalTo: view.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
+            mediaLibraryModeButton.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
         }
     }
 
@@ -411,13 +423,7 @@ class SendMediaNavigationController: OWSNavigationController {
 
 extension SendMediaNavigationController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        if let navbarTheme = preferredNavbarStyle(viewController: viewController) {
-            if let owsNavBar = navigationBar as? OWSNavigationBar {
-                owsNavBar.switchToStyle(navbarTheme)
-            } else {
-                owsFailDebug("unexpected navigationBar: \(navigationBar)")
-            }
-        }
+        updateNavbarTheme(for: viewController, animated: animated)
 
         switch viewController {
         case is PhotoCaptureViewController:
@@ -440,13 +446,7 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
 
     // In case back navigation was canceled, we re-apply whatever is showing.
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        if let navbarTheme = preferredNavbarStyle(viewController: viewController) {
-            if let owsNavBar = navigationBar as? OWSNavigationBar {
-                owsNavBar.switchToStyle(navbarTheme)
-            } else {
-                owsFailDebug("unexpected navigationBar: \(navigationBar)")
-            }
-        }
+        updateNavbarTheme(for: viewController, animated: animated)
         updateViewState(topViewController: viewController, animated: false)
     }
 
@@ -456,19 +456,32 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
 
     // MARK: - Helpers
 
-    private func preferredNavbarStyle(viewController: UIViewController) -> OWSNavigationBar.NavigationBarStyle? {
+    private func updateNavbarTheme(for viewController: UIViewController, animated: Bool) {
+        let showNavbar: (OWSNavigationBar.NavigationBarStyle) -> Void = { navigationBarStyle in
+            if self.isNavigationBarHidden {
+                self.setNavigationBarHidden(false, animated: animated)
+            }
+            guard let owsNavBar = self.navigationBar as? OWSNavigationBar else {
+                owsFailDebug("unexpected navigationBar: \(self.navigationBar)")
+                return
+            }
+            owsNavBar.switchToStyle(navigationBarStyle)
+        }
+
         switch viewController {
-        case is AttachmentApprovalViewController:
-            return .clear
-        case is ImagePickerGridController:
-            return .alwaysDark
         case is PhotoCaptureViewController:
-            return .clear
+            if !isNavigationBarHidden {
+                setNavigationBarHidden(true, animated: animated)
+            }
+        case is AttachmentApprovalViewController:
+            showNavbar(.clear)
+        case is ImagePickerGridController:
+            showNavbar(.alwaysDark)
         case is ConversationPickerViewController:
-            return .default
+            showNavbar(.default)
         default:
             owsFailDebug("unexpected viewController: \(viewController)")
-            return nil
+            return
         }
     }
 
