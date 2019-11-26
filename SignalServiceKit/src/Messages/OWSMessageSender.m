@@ -954,7 +954,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // Send to master destination
             if (masterDestination != nil) {
                 TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:masterDestination.hexEncodedPublicKey];
-                if (thread.isContactFriend || isSilentMessage || (isFriendRequestMessage && contactID == masterDestination.hexEncodedPublicKey)) {
+                if (thread.isContactFriend || isSilentMessage || isFriendRequestMessage) {
                     OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:masterDestination];
                     [self sendMessage:messageSendCopy];
                 } else {
@@ -969,7 +969,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // Send to slave destinations (using a best attempt approach (i.e. ignoring the message send result) for now)
             for (LKDestination *slaveDestination in slaveDestinations) {
                 TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:slaveDestination.hexEncodedPublicKey];
-                if (thread.isContactFriend || isSilentMessage || (isFriendRequestMessage && contactID == slaveDestination.hexEncodedPublicKey)) {
+                if (thread.isContactFriend || isSilentMessage || isFriendRequestMessage) {
                     OWSMessageSend *messageSendCopy = [messageSend copyWithDestination:slaveDestination];
                     [self sendMessage:messageSendCopy];
                 } else {
@@ -1627,7 +1627,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             failure(error);
         }];
-    [self sendMessage:messageSend];
+    [self sendMessageToDestinationAndLinkedDevices:messageSend];
 }
 
 - (NSArray<NSDictionary *> *)throws_deviceMessagesForMessageSend:(OWSMessageSend *)messageSend
@@ -1652,20 +1652,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         messageSend.isLocalNumber,
         messageSend.isUDSend);
 
-    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    // Loki: Multi device is handled elsewhere so just send to the provided recipient ID here
+    NSArray<NSString *> *recipientIDs = @[ recipient.recipientId ];
     
-    __block NSMutableSet<NSString *> *recipientIDs = [NSSet setWithObject:recipient.uniqueId];
-    if ([messageSend.message isKindOfClass:OWSOutgoingSyncMessage.class]) {
-        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:userHexEncodedPublicKey in:transaction] ?: userHexEncodedPublicKey;
-            recipientIDs = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction].mutableCopy;
-        }];
-    }
-
-    if (messageSend.isLocalNumber) {
-        [recipientIDs removeObject:userHexEncodedPublicKey];
-    }
-
     for (NSString *recipientID in recipientIDs) {
         @try {
             // This may involve blocking network requests, so we do it _before_
