@@ -159,7 +159,7 @@ class StorageServiceOperation: OWSOperation {
         return .shared
     }
 
-    static var keyValueStore: SDSKeyValueStore {
+    public static var keyValueStore: SDSKeyValueStore {
         return SDSKeyValueStore(collection: "kOWSStorageServiceOperation_IdentifierMap")
     }
 

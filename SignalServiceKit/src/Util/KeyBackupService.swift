@@ -407,7 +407,7 @@ public class KeyBackupService: NSObject {
 
     // PRAGMA MARK: - Key Storage
 
-    private static var keyValueStore: SDSKeyValueStore {
+    public static var keyValueStore: SDSKeyValueStore {
         return SDSKeyValueStore(collection: "kOWSKeyBackupService_Keys")
     }
 
@@ -658,9 +658,13 @@ public class KeyBackupService: NSObject {
 
     // PRAGMA MARK: - Token
 
+    public static var tokenStore: SDSKeyValueStore {
+        return SDSKeyValueStore(collection: "kOWSKeyBackupService_Token")
+    }
+
     private struct Token {
         private static var keyValueStore: SDSKeyValueStore {
-            return SDSKeyValueStore(collection: "kOWSKeyBackupService_Token")
+            return KeyBackupService.tokenStore
         }
 
         private static let backupIdKey = "backupIdKey"
