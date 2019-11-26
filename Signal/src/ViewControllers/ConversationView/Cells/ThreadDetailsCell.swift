@@ -144,7 +144,11 @@ public class ThreadDetailsCell: ConversationViewCell {
         case let groupThread as TSGroupThread:
             title = groupThread.groupNameOrDefault
         case let contactThread as TSContactThread:
-            title = Environment.shared.contactsManager.displayName(for: contactThread.contactAddress)
+            if contactThread.isNoteToSelf {
+                title = MessageStrings.noteToSelf
+            } else {
+                title = Environment.shared.contactsManager.displayName(for: contactThread.contactAddress)
+            }
         default:
             return owsFailDebug("interaction incorrect thread type")
         }
@@ -167,6 +171,9 @@ public class ThreadDetailsCell: ConversationViewCell {
             let formatString = NSLocalizedString("THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT",
                                                  comment: "The number of members in a group. Embeds {{member count}}")
             details = String(format: formatString, groupThread.groupModel.groupMembers.count)
+        case let contactThread as TSContactThread where contactThread.isNoteToSelf:
+            details = NSLocalizedString("THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION",
+                                        comment: "Subtitle appearing at the top of the users 'note to self' conversation")
         case let contactThread as TSContactThread:
             let threadName = self.contactsManager.displayName(for: contactThread.contactAddress)
             if let phoneNumber = contactThread.contactAddress.phoneNumber, phoneNumber != threadName {
@@ -199,6 +206,10 @@ public class ThreadDetailsCell: ConversationViewCell {
 
         guard let viewItem = self.viewItem else {
             return owsFailDebug("Missing viewItem")
+        }
+
+        if let contactThread = viewItem.thread as? TSContactThread, contactThread.isNoteToSelf {
+            return
         }
 
         let mutualGroupNames = viewItem.mutualGroupNames ?? []
