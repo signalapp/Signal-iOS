@@ -11,6 +11,19 @@ public extension UIEdgeInsets {
                   bottom: bottom,
                   right: CurrentAppContext().isRTL ? leading : trailing)
     }
+
+    func plus(_ inset: CGFloat) -> UIEdgeInsets {
+        var newInsets = self
+        newInsets.top += inset
+        newInsets.bottom += inset
+        newInsets.left += inset
+        newInsets.right += inset
+        return newInsets
+    }
+
+    func minus(_ inset: CGFloat) -> UIEdgeInsets {
+        return plus(-inset)
+    }
 }
 
 // MARK: -

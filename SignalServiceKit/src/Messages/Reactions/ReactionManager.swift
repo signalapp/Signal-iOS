@@ -15,7 +15,7 @@ public class ReactionManager: NSObject {
     }
 
     @objc(localUserReactedToMessage:emoji:isRemoving:transaction:)
-    class func localUserReacted(to message: TSMessage, emoji: String, isRemoving: Bool, transaction: SDSAnyWriteTransaction) {
+    public class func localUserReacted(to message: TSMessage, emoji: String, isRemoving: Bool, transaction: SDSAnyWriteTransaction) {
         guard FeatureFlags.reactionSend else {
             Logger.info("Not sending reaction, feature disabled")
             return

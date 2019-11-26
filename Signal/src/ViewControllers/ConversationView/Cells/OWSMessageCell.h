@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) UITapGestureRecognizer *tapGestureRecognizer;
 @property (nonatomic, readonly) UITapGestureRecognizer *avatarTapGestureRecognizer;
 @property (nonatomic, readonly) UIPanGestureRecognizer *panGestureRecognizer;
+@property (nonatomic, readonly) UILongPressGestureRecognizer *longPressGestureRecognizer;
 
 + (NSString *)cellReuseIdentifier;
 

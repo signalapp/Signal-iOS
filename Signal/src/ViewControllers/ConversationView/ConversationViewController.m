@@ -2076,12 +2076,35 @@ typedef enum : NSUInteger {
                              }];
 }
 
+- (void)messageActionsViewControllerRequestedDismissal:(MessageActionsViewController *)messageActionsViewController
+                                          withReaction:(NSString *)reaction
+                                            isRemoving:(BOOL)isRemoving
+{
+    [self
+        dismissMessageActionsAnimated:YES
+                           completion:^{
+                               if (![messageActionsViewController.focusedInteraction isKindOfClass:[TSMessage class]]) {
+                                   OWSFailDebug(@"Not sending reaction for unexpected interaction type");
+                                   return;
+                               }
+
+                               TSMessage *message = (TSMessage *)messageActionsViewController.focusedInteraction;
+
+                               [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                   [OWSReactionManager localUserReactedToMessage:message
+                                                                           emoji:reaction
+                                                                      isRemoving:isRemoving
+                                                                     transaction:transaction];
+                               }];
+                           }];
+}
+
 - (void)presentMessageActions:(NSArray<MessageAction *> *)messageActions withFocusedCell:(ConversationViewCell *)cell
 {
     MessageActionsViewController *messageActionsViewController =
-        [[MessageActionsViewController alloc] initWithFocusedInteraction:cell.viewItem.interaction
-                                                             focusedView:cell
-                                                                 actions:messageActions];
+        [[MessageActionsViewController alloc] initWithFocusedViewItem:cell.viewItem
+                                                          focusedView:cell
+                                                              actions:messageActions];
     messageActionsViewController.delegate = self;
 
     self.messageActionsViewController = messageActionsViewController;
@@ -2291,6 +2314,28 @@ typedef enum : NSUInteger {
     MemberActionSheet *actionSheet = [[MemberActionSheet alloc] initWithAddress:incomingMessage.authorAddress
                                                              contactsViewHelper:self.contactsViewHelper];
     [actionSheet presentFromViewController:self];
+}
+
+- (void)conversationCell:(ConversationViewCell *)cell didChangeLongpress:(id<ConversationViewItem>)viewItem
+{
+    if (!
+        [self.messageActionsViewController.focusedInteraction.uniqueId isEqualToString:viewItem.interaction.uniqueId]) {
+        OWSFailDebug(@"Received longpress update for unexpected cell");
+        return;
+    }
+
+    [self.messageActionsViewController didChangeLongpress];
+}
+
+- (void)conversationCell:(ConversationViewCell *)cell didEndLongpress:(id<ConversationViewItem>)viewItem
+{
+    if (!
+        [self.messageActionsViewController.focusedInteraction.uniqueId isEqualToString:viewItem.interaction.uniqueId]) {
+        OWSFailDebug(@"Received longpress update for unexpected cell");
+        return;
+    }
+
+    [self.messageActionsViewController didEndLongpress];
 }
 
 - (void)conversationCell:(ConversationViewCell *)cell didReplyToItem:(id<ConversationViewItem>)viewItem
