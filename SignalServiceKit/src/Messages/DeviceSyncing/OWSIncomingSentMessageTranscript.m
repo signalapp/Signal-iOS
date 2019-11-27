@@ -25,6 +25,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSIncomingSentMessageTranscript
 
+#pragma mark - Dependencies
+
++ (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
+#pragma mark -
+
 - (nullable instancetype)initWithProto:(SSKProtoSyncMessageSent *)sentProto transaction:(SDSAnyWriteTransaction *)transaction
 {
     self = [super init];
@@ -74,17 +85,80 @@ NS_ASSUME_NONNULL_BEGIN
         _requiredProtocolVersion = @(_dataMessage.requiredProtocolVersion);
     }
 
+    if (sentProto.unidentifiedStatus.count > 0) {
+        NSMutableArray<SignalServiceAddress *> *nonUdRecipientAddresses = [NSMutableArray new];
+        NSMutableArray<SignalServiceAddress *> *udRecipientAddresses = [NSMutableArray new];
+        for (SSKProtoSyncMessageSentUnidentifiedDeliveryStatus *statusProto in sentProto.unidentifiedStatus) {
+            if (!statusProto.hasValidDestination) {
+                OWSFailDebug(@"Delivery status proto is missing destination.");
+                continue;
+            }
+            if (!statusProto.hasUnidentified) {
+                OWSFailDebug(@"Delivery status proto is missing value.");
+                continue;
+            }
+            SignalServiceAddress *recipientAddress = statusProto.destinationAddress;
+            if (statusProto.unidentified) {
+                [udRecipientAddresses addObject:recipientAddress];
+            } else {
+                [nonUdRecipientAddresses addObject:recipientAddress];
+            }
+        }
+        _nonUdRecipientAddresses = [nonUdRecipientAddresses copy];
+        _udRecipientAddresses = [udRecipientAddresses copy];
+    }
+
     if (self.isRecipientUpdate) {
         // Fetch, don't create.  We don't want recipient updates to resurrect messages or threads.
         if (_groupId != nil) {
-            _thread = [TSGroupThread getThreadWithGroupId:_groupId transaction:transaction];
+            _thread = [TSGroupThread fetchWithGroupId:_groupId transaction:transaction];
         } else {
             OWSFailDebug(@"We should never receive a 'recipient update' for messages in contact threads.");
         }
         // Skip the other processing for recipient updates.
     } else {
         if (_groupId != nil) {
-            _thread = [TSGroupThread getOrCreateThreadWithGroupId:_groupId transaction:transaction];
+            // If we receive a sent message sync transcript from a linked device for an unknown
+            // group, we would previously create the group.  We should either stop doing this
+            // or we need to send the group secrets with the transcript.
+            //
+            // GroupsV2 TODO:
+            _thread = [TSGroupThread fetchWithGroupId:_groupId transaction:transaction];
+            if (_thread == nil) {
+                if (SSKFeatureFlags.incomingGroupsV2) {
+                    OWSFailDebug(@"Received sync transcript for unknown group.");
+                    return nil;
+                }
+                NSMutableArray<SignalServiceAddress *> *members = [NSMutableArray new];
+                if (_nonUdRecipientAddresses != nil) {
+                    [members addObjectsFromArray:_nonUdRecipientAddresses];
+                }
+                if (_udRecipientAddresses != nil) {
+                    [members addObjectsFromArray:_udRecipientAddresses];
+                }
+                SignalServiceAddress *_Nullable localAddress
+                    = OWSIncomingSentMessageTranscript.tsAccountManager.localAddress;
+                if (localAddress == nil) {
+                    OWSFailDebug(@"Missing localAddress.");
+                    return nil;
+                }
+                [members addObject:localAddress];
+                NSError *_Nullable groupError;
+                _thread = [GroupManager upsertExistingGroupObjcWithMembers:members
+                                                                      name:nil
+                                                                avatarData:nil
+                                                                   groupId:_groupId
+                                                             groupsVersion:GroupsVersionV1
+                                                     groupSecretParamsData:nil
+                                                         shouldSendMessage:false
+                                                               transaction:transaction
+                                                                     error:&groupError]
+                              .thread;
+                if (groupError && _thread == nil) {
+                    OWSFailDebug(@"groupError: %@", groupError);
+                    return nil;
+                }
+            }
         } else {
             _thread = [TSContactThread getOrCreateThreadWithContactAddress:_recipientAddress transaction:transaction];
         }
@@ -109,29 +183,6 @@ NS_ASSUME_NONNULL_BEGIN
         if (stickerError && ![MessageSticker isNoStickerError:stickerError]) {
             OWSFailDebug(@"stickerError: %@", stickerError);
         }
-    }
-
-    if (sentProto.unidentifiedStatus.count > 0) {
-        NSMutableArray<SignalServiceAddress *> *nonUdRecipientAddresses = [NSMutableArray new];
-        NSMutableArray<SignalServiceAddress *> *udRecipientAddresses = [NSMutableArray new];
-        for (SSKProtoSyncMessageSentUnidentifiedDeliveryStatus *statusProto in sentProto.unidentifiedStatus) {
-            if (!statusProto.hasValidDestination) {
-                OWSFailDebug(@"Delivery status proto is missing destination.");
-                continue;
-            }
-            if (!statusProto.hasUnidentified) {
-                OWSFailDebug(@"Delivery status proto is missing value.");
-                continue;
-            }
-            SignalServiceAddress *recipientAddress = statusProto.destinationAddress;
-            if (statusProto.unidentified) {
-                [udRecipientAddresses addObject:recipientAddress];
-            } else {
-                [nonUdRecipientAddresses addObject:recipientAddress];
-            }
-        }
-        _nonUdRecipientAddresses = [nonUdRecipientAddresses copy];
-        _udRecipientAddresses = [udRecipientAddresses copy];
     }
 
     return self;

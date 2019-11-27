@@ -99,9 +99,9 @@ class GroupAndContactStreamTest: SignalBaseTest {
 
             var thread: TSGroupThread!
             write { transaction in
-                thread = try! GroupManager.createGroupForTests(transaction: transaction,
-                                                               members: groupMembers,
-                                                               groupId: groupId)
+                thread = try! GroupManager.createGroupForTests(members: groupMembers,
+                                                               groupId: groupId,
+                                                               transaction: transaction)
 
                 thread.anyInsert(transaction: transaction)
                 thread.updateConversationColorName(.burlap, transaction: transaction)
@@ -118,10 +118,10 @@ class GroupAndContactStreamTest: SignalBaseTest {
 
             var thread: TSGroupThread!
             write {
-                thread = try! GroupManager.createGroupForTests(transaction: $0,
-                                                               members: groupMembers,
+                thread = try! GroupManager.createGroupForTests(members: groupMembers,
                                                                name: "Book Club",
-                                                               groupId: groupId)
+                                                               groupId: groupId,
+                                                               transaction: $0)
                 thread.shouldThreadBeVisible = true
                 thread.anyOverwritingUpdate(transaction: $0)
                 thread.updateConversationColorName(.taupe, transaction: $0)
@@ -139,10 +139,10 @@ class GroupAndContactStreamTest: SignalBaseTest {
 
             var thread: TSGroupThread!
             write { transaction in
-                thread = try! GroupManager.createGroupForTests(transaction: transaction,
-                                                               members: groupMembers,
+                thread = try! GroupManager.createGroupForTests(members: groupMembers,
                                                                name: "Cook Blub",
-                                                               groupId: groupId)
+                                                               groupId: groupId,
+                                                               transaction: transaction)
                 thread.shouldThreadBeVisible = true
                 thread.anyOverwritingUpdate(transaction: transaction)
                 thread.updateConversationColorName(.blue, transaction: transaction)
@@ -189,7 +189,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
                 SignalServiceAddress(phoneNumber: "+13213214321"),
                 SignalServiceAddress(uuidString: "31ce1412-9a28-4e6f-b4ee-a25c3179d085"),
                 SignalServiceAddress(uuidString: "1d4ab045-88fb-4c4e-9f6a-f921124bd529", phoneNumber: "+13213214323")
-            ])
+                ])
 
             XCTAssertEqual(group.conversationColorName, ConversationColorName.burlap.rawValue)
             XCTAssertEqual(group.isBlocked, false)
@@ -206,7 +206,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
             XCTAssertEqual(group.memberAddresses, [
                 SignalServiceAddress(phoneNumber: "+13213214321"),
                 SignalServiceAddress(uuidString: "55555555-88fb-4c4e-9f6a-f921124bd529", phoneNumber: "+15553214323")
-            ])
+                ])
             XCTAssertEqual(group.conversationColorName, ConversationColorName.taupe.rawValue)
             XCTAssertEqual(group.isBlocked, false)
             XCTAssertEqual(group.expireTimer, 0)

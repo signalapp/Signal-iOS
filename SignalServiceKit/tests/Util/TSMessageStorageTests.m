@@ -148,14 +148,14 @@
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         NSError *error;
-        TSGroupThread *thread = [GroupManager createGroupForTestsObjcWithTransaction:transaction
-                                                                             members:@[
-                                                                                       self.localAddress,
-                                                                                       self.otherAddress,
-                                                                                       ]
-                                                                                name:@"fdsfsd"
-                                                                          avatarData:nil
-                                                                               error:&error];
+        TSGroupThread *thread = [GroupManager createGroupForTestsObjcWithMembers:@[
+            self.localAddress,
+            self.otherAddress,
+        ]
+                                                                            name:@"fdsfsd"
+                                                                      avatarData:nil
+                                                                     transaction:transaction
+                                                                           error:&error];
         if (error != nil) {
             OWSFailDebug(@"Error: %@", error);
         }

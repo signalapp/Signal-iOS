@@ -483,19 +483,19 @@ NS_ASSUME_NONNULL_BEGIN
     __block TSGroupThread *thread;
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         NSError *error;
-        thread = [GroupManager createGroupForTestsObjcWithTransaction:transaction
-                                                              members:@[
-                                                                  successfulRecipient.address,
-                                                                  successfulRecipient2.address,
-                                                              ]
-                                                                 name:@"group title"
-                                                           avatarData:nil
-                                                                error:&error];
+        thread = [GroupManager createGroupForTestsObjcWithMembers:@[
+            successfulRecipient.address,
+            successfulRecipient2.address,
+        ]
+                                                             name:@"group title"
+                                                       avatarData:nil
+                                                      transaction:transaction
+                                                            error:&error];
         if (error != nil) {
             OWSFailDebug(@"Error: %@", error);
         }
     }];
-        
+
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:1
                                                                      inThread:groupThread
                                                                   messageBody:@"We want punks in the palace."];

@@ -233,6 +233,9 @@ public class FeatureFlags: NSObject {
     public static let tryToCreateNewGroupsV2 = false
 
     @objc
+    public static let incomingGroupsV2 = false
+
+    @objc
     public static let linkedPhones = build.includes(.internalPreview)
 
     @objc

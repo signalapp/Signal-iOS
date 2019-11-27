@@ -194,13 +194,14 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
         if let groupsVersionReceived = groupDetails.groupsVersion {
             groupsVersion = groupsVersionReceived
         }
-        let result = try GroupManager.ensureExistingGroup(transaction: transaction,
-                                                          members: groupDetails.memberAddresses,
+        let result = try GroupManager.upsertExistingGroup(members: groupDetails.memberAddresses,
                                                           name: groupDetails.name,
                                                           avatarData: groupDetails.avatarData,
                                                           groupId: groupDetails.groupId,
                                                           groupsVersion: groupsVersion,
-                                                          groupSecretParamsData: groupDetails.groupSecretParamsData)
+                                                          groupSecretParamsData: groupDetails.groupSecretParamsData,
+                                                          shouldSendMessage: false,
+                                                          transaction: transaction)
 
         let groupThread = result.thread
         let groupModel = groupThread.groupModel

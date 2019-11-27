@@ -40,19 +40,12 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
 
 @property (nonatomic, strong) TSGroupModel *groupModel;
 
-// GroupsV2 TODO: Remove.
-// TODO: We might want to make this initializer private once we
-//       convert getOrCreateThreadWithContactId to take "any" transaction.
-- (instancetype)initWithGroupModel:(TSGroupModel *)groupModel;
+// This method should only be called by GroupManager.
+- (instancetype)initWithGroupModelPrivate:(TSGroupModel *)groupModel;
 
-+ (nullable instancetype)getThreadWithGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction;
-
-// GroupsV2 TODO: Remove.
-+ (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
-                                    transaction:(SDSAnyWriteTransaction *)transaction;
-
-// GroupsV2 TODO: Remove.
-+ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId transaction:(SDSAnyWriteTransaction *)transaction;
++ (nullable instancetype)fetchWithGroupId:(NSData *)groupId
+                              transaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(fetch(groupId:transaction:));
 
 + (NSString *)threadIdFromGroupId:(NSData *)groupId;
 

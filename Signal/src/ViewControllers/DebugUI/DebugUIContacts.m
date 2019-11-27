@@ -125,6 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
         groupId:nil
         name:groupName
         avatarData:nil
+        sendMessage:YES
         success:^(TSGroupThread *thread) {
             [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
         }
