@@ -176,7 +176,9 @@ public class GRDBMediaGalleryFinder: NSObject {
         }
 
         guard let message = TSMessage.anyFetchMessage(uniqueId: messageUniqueId, transaction: transaction.asAnyRead) else {
-            owsFailDebug("message was unexpectedly nil")
+            // This can happen *during* the YDB migration. We use `skipTouchObservations` as a proxy for
+            // "are we running the ydb migration"
+            assert(UIDatabaseObserver.skipTouchObservations, "message was unexpectedly nil")
             return
         }
 

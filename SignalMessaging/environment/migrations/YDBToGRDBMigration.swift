@@ -147,6 +147,14 @@ extension YDBToGRDBMigration {
 
         try self.migrate(migratorGroups: migratorGroups)
 
+        try storage.write { transaction in
+            do {
+                try createInitialGalleryRecords(transaction: transaction)
+            } catch {
+                owsFail("error: \(error)")
+            }
+        }
+
         removeYdb()
 
         let migrationDuration = abs(startDate.timeIntervalSinceNow)
