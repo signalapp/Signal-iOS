@@ -278,12 +278,14 @@ class ParsedClass:
 		        
         
 class TypeInfo:
-    def __init__(self, swift_type, objc_type, should_use_blob = False, is_codable = False, is_enum = False):
+    def __init__(self, swift_type, objc_type, should_use_blob = False, is_codable = False, is_enum = False, field_override_column_type = None, field_override_record_swift_type = None):
         self._swift_type = swift_type
         self._objc_type = objc_type
         self.should_use_blob = should_use_blob
         self.is_codable = is_codable
         self.is_enum = is_enum
+        self.field_override_column_type = field_override_column_type
+        self.field_override_record_swift_type = field_override_record_swift_type
 
     def swift_type(self):
         return self._swift_type
@@ -298,9 +300,8 @@ class TypeInfo:
     # TODO:
     def database_column_type(self, value_name):
         # print 'self._swift_type', self._swift_type, self._objc_type
-        # Special case this oddball type.
-        if value_name == 'conversationColorName':
-            return '.unicodeString'
+        if self.field_override_column_type is not None:
+            return self.field_override_column_type
         elif self.should_use_blob or self.is_codable:
             return '.blob'
         elif self.is_enum:
@@ -456,8 +457,8 @@ class TypeInfo:
     
         value_expr = value_name
     
-        if value_name == 'model.conversationColorName':
-            return '%s.rawValue' % ( value_expr, )
+        if property.field_override_serialize_record_invocation() is not None:
+            return property.field_override_serialize_record_invocation() % ( value_expr, )
         elif self.is_codable:
             pass
         elif self.should_use_blob:
@@ -502,8 +503,8 @@ class TypeInfo:
 
     def record_field_type(self, value_name):
         # Special case this oddball type.
-        if value_name == 'conversationColorName':
-            return 'String'
+        if self.field_override_record_swift_type is not None:
+            return  self.field_override_record_swift_type
         elif self.is_codable:
             pass
         elif self.should_use_blob:
@@ -568,7 +569,9 @@ class ParsedProperty:
     
     # NOTE: This method recurses to unpack types like: NSArray<NSArray<SomeClassName *> *> *
     def convert_objc_class_to_swift(self, objc_type, unpack_nsnumber=True):
-        if not objc_type.endswith(' *'):
+        if objc_type == 'id':
+            return 'AnyObject'
+        elif not objc_type.endswith(' *'):
             return None
         
         swift_primitive = self.try_to_convert_objc_primitive_to_swift(objc_type, unpack_nsnumber=unpack_nsnumber)
@@ -603,10 +606,9 @@ class ParsedProperty:
 
         if objc_type is None:
             fail('Missing type')
-            
-        elif is_flagged_as_enum_property(self):
-            enum_type = objc_type
-            return TypeInfo(enum_type, objc_type, is_enum=True)
+           
+        elif self.field_override_swift_type():
+            return TypeInfo(self.field_override_swift_type(), objc_type, should_use_blob=self.field_override_should_use_blob(), is_enum=self.field_override_is_enum(), field_override_column_type=self.field_override_column_type(), field_override_record_swift_type=self.field_override_record_swift_type())
         elif objc_type in enum_type_map:
             enum_type = objc_type
             return TypeInfo(enum_type, objc_type, is_enum=True)
@@ -644,8 +646,8 @@ class ParsedProperty:
             return True
         elif objc_type in ('struct CGSize', 'struct CGRect', 'struct CGPoint', ):
             return True
-        elif is_flagged_as_enum_property(self):
-            return True
+        elif self.field_override_is_objc_codable() is not None:
+            return self.field_override_is_objc_codable()
         elif objc_type in enum_type_map:
             return True
         elif objc_type.startswith('enum '):
@@ -666,12 +668,46 @@ class ParsedProperty:
             return self.is_objc_type_codable(split1) and self.is_objc_type_codable(split2)
         
         return False
-        
-        
+
+    def field_override_swift_type(self):
+        return self._field_override("swift_type")
+
+    def field_override_is_objc_codable(self):
+        return self._field_override("is_objc_codable")
+
+    def field_override_is_enum(self):
+        return self._field_override("is_enum")
+
+    def field_override_column_type(self):
+        return self._field_override("column_type")
+
+    def field_override_record_swift_type(self):
+        return self._field_override("record_swift_type")
+
+    def field_override_serialize_record_invocation(self):
+        return self._field_override("serialize_record_invocation")
+
+    def field_override_should_use_blob(self):
+        return self._field_override("should_use_blob")
+
+    def field_override_objc_initializer_type(self):
+        return self._field_override("objc_initializer_type")
+
+    def _field_override(self, override_field):
+        manually_typed_fields = configuration_json.get('manually_typed_fields')
+        if manually_typed_fields is None:
+            fail('Configuration JSON is missing manually_typed_fields')
+        key = self.class_name + '.' + self.name
+
+        if key in manually_typed_fields:
+            return manually_typed_fields[key][override_field]
+        else:
+            return None
+
     def type_info(self):
         if self.swift_type is not None:
             should_use_blob = (self.swift_type.startswith('[') or self.swift_type.startswith('{') or is_swift_class_name(self.swift_type))
-            return TypeInfo(self.swift_type, objc_type, should_use_blob=should_use_blob, is_codable=USE_CODABLE_FOR_PRIMITIVES)
+            return TypeInfo(self.swift_type, objc_type, should_use_blob=should_use_blob, is_codable=USE_CODABLE_FOR_PRIMITIVES, field_override_column_type=self.field_override_column_type)
         
         return self.try_to_convert_objc_type_to_type_info()
 
@@ -679,12 +715,9 @@ class ParsedProperty:
         return self.type_info().swift_type()
 
     def objc_type_safe(self):
-        # Special case this oddball type.
-        # 
-        # TODO: We might want to handle this within TypeInfo.
-        if self.name == 'conversationColorName':
-            return 'ConversationColorName'
-        
+        if self.field_override_objc_initializer_type() is not None:
+            return self.field_override_objc_initializer_type()
+
         result = self.type_info().objc_type()
         
         if result.startswith('enum '):
@@ -2062,15 +2095,6 @@ def should_ignore_class(clazz):
          return False
     super_clazz = global_class_map[clazz.super_class_name]
     return should_ignore_class(super_clazz)
-
-
-def is_flagged_as_enum_property(property):
-    enum_properties = configuration_json.get('enum_properties')
-    if enum_properties is None:
-        fail('Configuration JSON is missing list of properties to treat as enums.')
-    key = property.class_name + '.' + property.name
-    return key in enum_properties
-
 
 def accessor_name_for_property(property):
     custom_accessors = configuration_json.get('custom_accessors')

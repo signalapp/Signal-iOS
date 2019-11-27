@@ -6,6 +6,7 @@ parse_and_regenerate:
 	cd $(REPO_ROOT) && \
 		Scripts/sds_codegen/sds_codegen.sh
 
+regen: regenerate
 regenerate:
 	cd $(REPO_ROOT) && \
 		Scripts/sds_codegen/sds_regenerate.sh
