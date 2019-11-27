@@ -88,7 +88,8 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
                                                                 name:nil
                                                           avatarData:nil
                                                              members:@[ localAddress ]
-                                                       groupsVersion:GroupManager.defaultGroupsVersion];
+                                                       groupsVersion:GroupManager.defaultGroupsVersion
+                                               groupSecretParamsData:nil];
 
     self = [self initWithGroupModel:groupModel];
     if (!self) {
@@ -273,6 +274,26 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     // Avatars are stored directly in the database, so there's no need
     // to keep the attachment around after assigning the image.
     [attachmentStream anyRemoveWithTransaction:transaction];
+}
+
+- (void)updateWithGroupModel:(TSGroupModel *)groupModel transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(groupModel);
+    OWSAssertDebug(transaction);
+
+    BOOL didAvatarChange = ![NSObject isNullableObject:groupModel.groupAvatarData
+                                               equalTo:self.groupModel.groupAvatarData];
+
+    [self anyUpdateGroupThreadWithTransaction:transaction
+                                        block:^(TSGroupThread *thread) {
+                                            thread.groupModel = [groupModel copy];
+                                        }];
+
+    if (didAvatarChange) {
+        [transaction addCompletionWithBlock:^{
+            [self fireAvatarChangedNotification];
+        }];
+    }
 }
 
 - (void)fireAvatarChangedNotification

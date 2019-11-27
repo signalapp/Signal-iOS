@@ -826,6 +826,10 @@ NS_ASSUME_NONNULL_BEGIN
     // state.
     TSGroupThread *_Nullable oldGroupThread = [TSGroupThread getThreadWithGroupId:groupId transaction:transaction];
     if (oldGroupThread) {
+        if (oldGroupThread.groupModel.groupsVersion != GroupsVersionV1) {
+            OWSFailDebug(@"Group update for invalid group version.");
+            return;
+        }
         // Don't trust other clients; ensure all known group members remain in
         // the group unless it is a "quit" message in which case we should only
         // remove the quiting member below.
@@ -836,21 +840,21 @@ NS_ASSUME_NONNULL_BEGIN
             // GroupsV2 TODO
         case SSKProtoGroupContextTypeUpdate: {
             // Ensures that the thread exists but doesn't update it.
-            TSGroupThread *newGroupThread = [TSGroupThread getOrCreateThreadWithGroupId:groupId
-                                                                            transaction:transaction];
-
-            TSGroupModel *newGroupModel =
-                [[TSGroupModel alloc] initWithGroupId:dataMessage.group.id
-                                                 name:dataMessage.group.name
-                                           avatarData:oldGroupThread.groupModel.groupAvatarData
-                                              members:newMembers.allObjects
-                                        groupsVersion:oldGroupThread.groupModel.groupsVersion];
-            NSString *updateGroupInfo = [newGroupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel
-                                                                              contactsManager:self.contactsManager];
-            [newGroupThread anyUpdateGroupThreadWithTransaction:transaction
-                                                          block:^(TSGroupThread *thread) {
-                                                              thread.groupModel = newGroupModel;
-                                                          }];
+            NSError *_Nullable error;
+            EnsureGroupResult *_Nullable result =
+                [GroupManager ensureExistingGroupObjcWithTransaction:transaction
+                                                             members:newMembers.allObjects
+                                                                name:dataMessage.group.name
+                                                          avatarData:oldGroupThread.groupModel.groupAvatarData
+                                                             groupId:dataMessage.group.id
+                                                       groupsVersion:GroupsVersionV1
+                                               groupSecretParamsData:nil
+                                                               error:&error];
+            if (error != nil || result == nil) {
+                OWSFailDebug(@"Error: %@", error);
+                return;
+            }
+            TSGroupThread *newGroupThread = result.thread;
 
             [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                                                       thread:newGroupThread
@@ -859,10 +863,13 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                  transaction:transaction];
 
             // MJK TODO - should be safe to remove senderTimestamp
+            NSString *updateDescription =
+                [oldGroupThread.groupModel getInfoStringAboutUpdateTo:newGroupThread.groupModel
+                                                      contactsManager:self.contactsManager];
             TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                          inThread:newGroupThread
                                                                       messageType:TSInfoMessageTypeGroupUpdate
-                                                                    customMessage:updateGroupInfo];
+                                                                    customMessage:updateDescription];
             [infoMessage anyInsertWithTransaction:transaction];
 
             if (dataMessage.group.avatar != nil) {

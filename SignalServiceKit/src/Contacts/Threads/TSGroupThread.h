@@ -40,14 +40,18 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
 
 @property (nonatomic, strong) TSGroupModel *groupModel;
 
+// GroupsV2 TODO: Remove.
 // TODO: We might want to make this initializer private once we
 //       convert getOrCreateThreadWithContactId to take "any" transaction.
 - (instancetype)initWithGroupModel:(TSGroupModel *)groupModel;
 
 + (nullable instancetype)getThreadWithGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction;
+
+// GroupsV2 TODO: Remove.
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
                                     transaction:(SDSAnyWriteTransaction *)transaction;
 
+// GroupsV2 TODO: Remove.
 + (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId transaction:(SDSAnyWriteTransaction *)transaction;
 
 + (NSString *)threadIdFromGroupId:(NSData *)groupId;
@@ -61,16 +65,22 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
 + (NSArray<TSGroupThread *> *)groupThreadsWithAddress:(SignalServiceAddress *)address
                                           transaction:(SDSAnyReadTransaction *)transaction;
 
+// GroupsV2 TODO: Remove.
 - (void)leaveGroupWithSneakyTransaction;
 - (void)leaveGroupWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Avatar
 
+// GroupsV2 TODO: Remove.
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream;
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream
                              transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)fireAvatarChangedNotification;
+#pragma mark - Update With...
+
+- (void)updateWithGroupModel:(TSGroupModel *)groupModel transaction:(SDSAnyWriteTransaction *)transaction;
+
+#pragma mark -
 
 + (ConversationColorName)defaultConversationColorNameForGroupId:(NSData *)groupId;
 

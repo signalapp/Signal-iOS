@@ -98,6 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
     AccountServiceClient *accountServiceClient = [FakeAccountServiceClient new];
     OWSFakeStorageServiceManager *storageServiceManager = [OWSFakeStorageServiceManager new];
     SSKPreferences *sskPreferences = [SSKPreferences new];
+    id<GroupsV2> groupsV2 = [[MockGroupsV2 alloc] init];
 
     self = [super initWithContactsManager:contactsManager
                        linkPreviewManager:linkPreviewManager
@@ -134,7 +135,8 @@ NS_ASSUME_NONNULL_BEGIN
                      accountServiceClient:accountServiceClient
                     storageServiceManager:storageServiceManager
                        storageCoordinator:storageCoordinator
-                           sskPreferences:sskPreferences];
+                           sskPreferences:sskPreferences
+                                 groupsV2:groupsV2];
 
     if (!self) {
         return nil;

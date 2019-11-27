@@ -26,6 +26,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, GroupsVersion) { GroupsVersionV1 = 0, GroupsV
 @property (nullable, nonatomic) NSData *groupAvatarData;
 
 @property (nonatomic) GroupsVersion groupsVersion;
+@property (nullable, nonatomic) NSData *groupSecretParamsData;
 
 - (void)setGroupAvatarDataWithImage:(nullable UIImage *)image;
 
@@ -40,7 +41,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, GroupsVersion) { GroupsVersionV1 = 0, GroupsV
                            name:(nullable NSString *)name
                      avatarData:(nullable NSData *)avatarData
                         members:(NSArray<SignalServiceAddress *> *)members
-                  groupsVersion:(GroupsVersion)groupsVersion NS_DESIGNATED_INITIALIZER;
+                  groupsVersion:(GroupsVersion)groupsVersion
+          groupSecretParamsData:(nullable NSData *)groupSecretParamsData NS_DESIGNATED_INITIALIZER;
 
 - (BOOL)isEqual:(id)other;
 - (BOOL)isEqualToGroupModel:(TSGroupModel *)model;

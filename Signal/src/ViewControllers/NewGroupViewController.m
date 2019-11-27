@@ -115,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    @"The title for the 'create group' button.")
                                          style:UIBarButtonItemStylePlain
                                         target:self
-                                        action:@selector(createGroup)
+                                        action:@selector(createNewGroup)
                        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"create")];
     self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(0, -10, 0, 10);
     self.navigationItem.rightBarButtonItem.accessibilityLabel
@@ -281,7 +281,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Actions
 
-- (void)createGroup
+- (void)createNewGroup
 {
     OWSAssertIsOnMainThread();
 
@@ -299,7 +299,7 @@ NS_ASSUME_NONNULL_BEGIN
         presentFromViewController:self
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      [GroupManager createGroupObjcWithMembers:members
+                      [GroupManager createNewGroupObjcWithMembers:members
                           groupId:self.groupId
                           name:groupName
                           avatarImage:self.groupAvatar
