@@ -43,10 +43,22 @@ class ReactionBubblesView: UIView {
         bubble1.isHidden = false
 
         guard reactionState.emojiCounts.count >= 2 else { return }
-        bubble2.configure(
-            for: reactionState.emojiCounts[1].emoji,
-            fromLocalUser: reactionState.emojiCounts[1].emoji == reactionState.localUserEmoji
-        )
+
+        // If the local user has reacted, and it's not the most popular
+        // reaction, always show it as the second bubble regardless of
+        // where it falls within the count ordering.
+        if let localEmoji = reactionState.localUserEmoji, reactionState.emojiCounts[0].emoji != localEmoji {
+            bubble2.configure(
+                for: localEmoji,
+                fromLocalUser: true
+            )
+        } else {
+            bubble2.configure(
+                for: reactionState.emojiCounts[1].emoji,
+                fromLocalUser: false
+            )
+        }
+
         bubble2.isHidden = false
     }
 }
