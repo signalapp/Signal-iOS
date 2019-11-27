@@ -47,8 +47,9 @@ public class GRDBSchemaMigrator: NSObject {
         case signalAccount_add_contactAvatars_indices
         case jobRecords_add_attachmentId
         case createMediaGalleryItems
-        case dedupeSignalRecipients
         case createReaction
+        case dedupeSignalRecipients
+        case indexMediaGallery2
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
         // We only need to do this for breaking changes.
@@ -213,6 +214,11 @@ public class GRDBSchemaMigrator: NSObject {
                           on: "model_SignalRecipient",
                           columns: ["recipientUUID"],
                           unique: true)
+        }
+
+        migrator.registerMigration(MigrationId.indexMediaGallery2.rawValue) { db in
+            // re-index the media gallery for those who failed to create during the initial YDB migration
+            try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
         }
 
         return migrator
@@ -852,8 +858,9 @@ private func createV1Schema(db: Database) throws {
     try GRDBFullTextSearchFinder.createTables(database: db)
 }
 
-func createInitialGalleryRecords(transaction: GRDBWriteTransaction) throws {
+public func createInitialGalleryRecords(transaction: GRDBWriteTransaction) throws {
     try Bench(title: "createInitialGalleryRecords", logInProduction: true) {
+        try MediaGalleryRecord.deleteAll(transaction.database)
         let scope = AttachmentRecord.filter(sql: "\(attachmentColumn: .recordType) = \(SDSRecordType.attachmentStream.rawValue)")
 
         let totalCount = try scope.fetchCount(transaction.database)
