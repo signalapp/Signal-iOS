@@ -269,7 +269,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     NSMutableArray<SignalAccount *> *friends = @[].mutableCopy;
     [TSContactThread enumerateCollectionObjectsUsingBlock:^(TSContactThread *thread, BOOL *stop) {
         NSString *hexEncodedPublicKey = thread.contactIdentifier;
-        if (hexEncodedPublicKey != nil) {
+        if (hexEncodedPublicKey != nil && thread.isContactFriend) {
             [friends addObject:[[SignalAccount alloc] initWithRecipientId:hexEncodedPublicKey]];
         }
     }];

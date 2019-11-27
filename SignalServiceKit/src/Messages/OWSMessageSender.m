@@ -992,6 +992,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     TSOutgoingMessage *message = messageSend.message;
     SignalRecipient *recipient = messageSend.recipient;
 
+    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    if ([messageSend.recipient.recipientId isEqual:userHexEncodedPublicKey]) {
+        [LKLogger print:[NSString stringWithFormat:@"[Loki] Ignoring %@ addressed to self.", message.class]];
+        return messageSend.success();
+    }
+        
     OWSLogInfo(@"attempting to send message: %@, timestamp: %llu, recipient: %@",
         message.class,
         message.timestamp,
