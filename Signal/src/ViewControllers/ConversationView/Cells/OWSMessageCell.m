@@ -396,6 +396,10 @@ NS_ASSUME_NONNULL_BEGIN
 // Returns true IFF we should display reactions bubbles
 - (BOOL)updateReactionsView
 {
+    if (!SSKFeatureFlags.reactionReceive) {
+        return NO;
+    }
+
     if (self.viewItem.reactionState == nil) {
         return NO;
     }
