@@ -584,6 +584,8 @@
 		B89841E322B7579F00B1BDC6 /* NewConversationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B89841E222B7579F00B1BDC6 /* NewConversationVC.swift */; };
 		B8B26C8F234D629C004ED98C /* MentionCandidateSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B26C8E234D629C004ED98C /* MentionCandidateSelectionView.swift */; };
 		B8B26C91234D8CBD004ED98C /* MentionCandidateSelectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B26C90234D8CBD004ED98C /* MentionCandidateSelectionViewDelegate.swift */; };
+		B8BB82A0238F322400BA5194 /* UIColor+Loki.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB829F238F322400BA5194 /* UIColor+Loki.swift */; };
+		B8BB82A2238F356100BA5194 /* CGFloat+Loki.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82A1238F356100BA5194 /* CGFloat+Loki.swift */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		BFF3FB9730634F37D25903F4 /* Pods_Signal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D17BB5C25D615AB49813100C /* Pods_Signal.framework */; };
@@ -1396,6 +1398,8 @@
 		B89841E222B7579F00B1BDC6 /* NewConversationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationVC.swift; sourceTree = "<group>"; };
 		B8B26C8E234D629C004ED98C /* MentionCandidateSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionCandidateSelectionView.swift; sourceTree = "<group>"; };
 		B8B26C90234D8CBD004ED98C /* MentionCandidateSelectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionCandidateSelectionViewDelegate.swift; sourceTree = "<group>"; };
+		B8BB829F238F322400BA5194 /* UIColor+Loki.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Loki.swift"; sourceTree = "<group>"; };
+		B8BB82A1238F356100BA5194 /* CGFloat+Loki.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGFloat+Loki.swift"; sourceTree = "<group>"; };
 		B90418E4183E9DD40038554A /* DateUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtil.h; sourceTree = "<group>"; };
 		B90418E5183E9DD40038554A /* DateUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtil.m; sourceTree = "<group>"; };
 		B97940251832BD2400BD66CB /* UIUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIUtil.h; sourceTree = "<group>"; };
@@ -2700,9 +2704,19 @@
 			children = (
 				B84664F4235022F30083A1CD /* MentionUtilities.swift */,
 				B86BD08323399ACF000F5AE3 /* Modal.swift */,
+				B8BB82A3238F356800BA5194 /* Style Guide */,
 				B885D5F52334A32100EE0D8E /* UIView+Constraint.swift */,
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		B8BB82A3238F356800BA5194 /* Style Guide */ = {
+			isa = PBXGroup;
+			children = (
+				B8BB82A1238F356100BA5194 /* CGFloat+Loki.swift */,
+				B8BB829F238F322400BA5194 /* UIColor+Loki.swift */,
+			);
+			path = "Style Guide";
 			sourceTree = "<group>";
 		};
 		B8BFFF392355426100102A27 /* Messaging */ = {
@@ -3763,6 +3777,7 @@
 				4505C2BF1E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */,
 				EF764C351DB67CC5000D9A87 /* UIViewController+Permissions.m in Sources */,
 				45CD81EF1DC030E7004C9430 /* SyncPushTokensJob.swift in Sources */,
+				B8BB82A0238F322400BA5194 /* UIColor+Loki.swift in Sources */,
 				34D2CCE0206939B400CB1A14 /* DebugUIMessagesAssetLoader.m in Sources */,
 				4CEB78C92178EBAB00F315D2 /* OWSSessionResetJobRecord.m in Sources */,
 				45794E861E00620000066731 /* CallUIAdapter.swift in Sources */,
@@ -3794,6 +3809,7 @@
 				B80C6B572384A56D00FDBC8B /* DeviceLinksVC.swift in Sources */,
 				34A8B3512190A40E00218A25 /* MediaAlbumCellView.swift in Sources */,
 				34D1F0AE1F867BFC0066283D /* OWSMessageCell.m in Sources */,
+				B8BB82A2238F356100BA5194 /* CGFloat+Loki.swift in Sources */,
 				4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */,
 				4CB5F26720F6E1E2004D1B42 /* MenuActionsViewController.swift in Sources */,
 				3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */,
