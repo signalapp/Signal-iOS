@@ -814,11 +814,11 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     // name length must match exactly
     if (base64EncodedName.length == kEncodedNameLength) {
         NSString *_Nullable urlEncodedName = base64EncodedName.encodeURIComponent;
-        OWSFailDebug(@"Couldn't encode name.");
         urlString = [NSString stringWithFormat:textSecureSetProfileNameAPIFormat, urlEncodedName];
     } else {
         // if name length doesn't match exactly, assume blank name
         OWSAssertDebug(encryptedPaddedName == nil);
+        OWSFailDebug(@"Couldn't encode name.");
         urlString = [NSString stringWithFormat:textSecureSetProfileNameAPIFormat, @""];
     }
     

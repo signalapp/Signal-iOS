@@ -20,7 +20,7 @@ public extension OWSProfileManager {
     class func updateLocalProfilePromise(profileName: String?, profileAvatarData: Data?) -> Promise<Void> {
         return DispatchQueue.global().async(.promise) {
             return enqueueProfileUpdate(profileName: profileName, profileAvatarData: profileAvatarData)
-            }.then(on: .global()) { update in
+            }.then { update in
                 return self.attemptToUpdateProfileOnService(update: update)
             }.done(on: .global()) { () -> Void in
                 Logger.verbose("Profile update did complete.")
@@ -72,6 +72,8 @@ extension OWSProfileManager {
     // MARK: -
 
     public class func updateProfileOnServiceIfNecessary(retryDelay: TimeInterval = 1) {
+        AssertIsOnMainThread()
+
         guard AppReadiness.isAppReady() else {
             return
         }
@@ -100,6 +102,8 @@ extension OWSProfileManager {
 
     fileprivate class func attemptToUpdateProfileOnService(update: PendingProfileUpdate,
                                                            retryDelay: TimeInterval = 1) -> Promise<Void> {
+        AssertIsOnMainThread()
+
         Logger.verbose("")
 
         self.profileManager.isUpdatingProfileOnService = true
@@ -141,8 +145,11 @@ extension OWSProfileManager {
                     self.updateLocalProfile(with: attempt, transaction: transaction)
                 }
 
-                self.attemptDidComplete(retryDelay: retryDelay)
+                self.attemptDidComplete(retryDelay: retryDelay, didSucceed: true)
             }.recover(on: .global()) { error in
+                // We retry network errors forever (with exponential backoff).
+                // Other errors cause us to give up immediately.
+                // Note that we only ever retry the latest profile update.
                 if IsNSErrorNetworkFailure(error) {
                     owsFailDebug("Retrying after error: \(error)")
                 } else {
@@ -153,7 +160,7 @@ extension OWSProfileManager {
                         _ = tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction)
                     }
                 }
-                self.attemptDidComplete(retryDelay: retryDelay)
+                self.attemptDidComplete(retryDelay: retryDelay, didSucceed: false)
 
                 // We don't actually want to recover; in this block we
                 // handle the business logic consequences of the error,
@@ -165,7 +172,7 @@ extension OWSProfileManager {
         return promise
     }
 
-    private class func attemptDidComplete(retryDelay: TimeInterval) {
+    private class func attemptDidComplete(retryDelay: TimeInterval, didSucceed: Bool) {
         // We use a "self-only" contact sync to indicate to desktop
         // that we've changed our profile and that it should do a
         // profile fetch for "self".
@@ -180,15 +187,22 @@ extension OWSProfileManager {
         // Older linked devices may not handle this message.
         self.syncManager.sendFetchLatestProfileSyncMessage()
 
-        self.profileManager.isUpdatingProfileOnService = false
+        DispatchQueue.main.async {
+            // Clear this flag immediately.
+            self.profileManager.isUpdatingProfileOnService = false
 
-        // There may be another update enqueued that we should kick off.
-        // Or we may need to retry.
-        //
-        // We don't want to get in a retry loop, so we use exponential backoff.
-        DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
-            self.updateProfileOnServiceIfNecessary(retryDelay: (retryDelay + 1) * 2)
-        })
+            // There may be another update enqueued that we should kick off.
+            // Or we may need to retry.
+            if didSucceed {
+                self.updateProfileOnServiceIfNecessary()
+            } else {
+                // We don't want to get in a retry loop, so we use exponential backoff
+                // in the failure case.
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
+                    self.updateProfileOnServiceIfNecessary(retryDelay: (retryDelay + 1) * 2)
+                })
+            }
+        }
     }
 
     private class func writeProfileAvatarToDisk(attempt: ProfileUpdateAttempt) -> Promise<Void> {
@@ -310,51 +324,46 @@ extension OWSProfileManager {
 
 // MARK: -
 
-private class PendingProfileUpdate: MTLModel {
+class PendingProfileUpdate: NSObject, NSCoding {
     // This property is optional so that MTLModel can populate it after initialization.
     // It should always be set in practice.
-    @objc
-    var id: UUID?
+    let id: UUID
 
     // If nil, we are clearing the profile name.
-    @objc
-    var profileName: String?
+    let profileName: String?
 
     // If nil, we are clearing the profile avatar.
-    @objc
-    var profileAvatarData: Data?
+    let profileAvatarData: Data?
 
-    @objc
-    override init() {
-        super.init()
-    }
-
-    @objc
     init(profileName: String?, profileAvatarData: Data?) {
         self.id = UUID()
         self.profileName = profileName
         self.profileAvatarData = profileAvatarData
-        super.init()
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    required init(dictionary: [String: Any]!) throws {
-        try super.init(dictionary: dictionary)
     }
 
     func hasSameIdAs(_ other: PendingProfileUpdate) -> Bool {
-        guard let thisId = id else {
-            owsFailDebug("Missing id.")
-            return false
+        return self.id == other.id
+    }
+
+    // MARK: - NSCoding
+
+    @objc
+    public func encode(with aCoder: NSCoder) {
+        aCoder.encode(id.uuidString, forKey: "id")
+        aCoder.encode(profileName, forKey: "profileName")
+        aCoder.encode(profileAvatarData, forKey: "profileAvatarData")
+    }
+
+    @objc
+    public required init?(coder aDecoder: NSCoder) {
+        guard let idString = aDecoder.decodeObject(forKey: "id") as? String,
+            let id = UUID(uuidString: idString) else {
+            owsFailDebug("Missing id")
+            return nil
         }
-        guard let otherId = other.id else {
-            owsFailDebug("Missing id.")
-            return false
-        }
-        return thisId == otherId
+        self.id = id
+        self.profileName = aDecoder.decodeObject(forKey: "profileName") as? String
+        self.profileAvatarData = aDecoder.decodeObject(forKey: "profileAvatarData") as? Data
     }
 }
 

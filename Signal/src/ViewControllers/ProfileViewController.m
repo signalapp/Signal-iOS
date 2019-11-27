@@ -11,6 +11,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <PromiseKit/AnyPromise.h>
+#import <Reachability/Reachability.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/OWSNavigationController.h>
@@ -50,6 +51,8 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 @property (nonatomic) ProfileViewMode profileViewMode;
 
+@property (nonatomic) Reachability *reachability;
+
 @end
 
 #pragma mark -
@@ -87,6 +90,8 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                                  key:kProfileView_LastPresentedDate
                                          transaction:transaction];
     }];
+
+    self.reachability = [Reachability reachabilityForInternetConnection];
 
     return self;
 }
@@ -425,6 +430,15 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
             showErrorAlertWithMessage:NSLocalizedString(@"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG",
                                           @"Error message shown when user tries to update profile with a profile name "
                                           @"that is too long.")];
+        return;
+    }
+
+    if (!self.reachability.isReachable) {
+        [OWSActionSheets
+            showErrorAlertWithMessage:
+                NSLocalizedString(@"PROFILE_VIEW_NO_CONNECTION",
+                    @"Error shown when the user tries to update their profile when the app is not connected to the "
+                    @"internet.")];
         return;
     }
 
