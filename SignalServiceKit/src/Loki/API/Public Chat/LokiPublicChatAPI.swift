@@ -75,7 +75,6 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     
     // MARK: Public API
     public static func getMessages(for channel: UInt64, on server: String) -> Promise<[LokiPublicChatMessage]> {
-        print("[Loki] Getting messages for public chat channel with ID: \(channel) on server: \(server).")
         var queryParameters = "include_annotations=1"
         if let lastMessageServerID = getLastMessageServerID(for: channel, on: server) {
             queryParameters += "&since_id=\(lastMessageServerID)"
