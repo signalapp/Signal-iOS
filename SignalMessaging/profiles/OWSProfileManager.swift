@@ -123,9 +123,8 @@ extension OWSProfileManager {
                 } else {
                     return updateProfileOnServiceUnversioned(attempt: attempt)
                 }
-            }.done(on: .global()) { _ in
-
-                self.databaseStorage.write { transaction in
+            }.done(on: DispatchQueue.global()) { _ in
+                _ = self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> Void in
                     guard tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction) else {
                         return
                     }
@@ -141,46 +140,55 @@ extension OWSProfileManager {
 
                     self.updateLocalProfile(with: attempt, transaction: transaction)
                 }
-        }.catch(on: .global()) { error in
-            if IsNSErrorNetworkFailure(error) {
-                owsFailDebug("Retrying after error: \(error)")
-            } else {
-                owsFailDebug("Error: \(error)")
 
-                // Dequeue to avoid getting stuck in retry loop.
-                self.databaseStorage.write { transaction in
-                    _ = tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction)
+                self.attemptDidComplete(retryDelay: retryDelay)
+            }.recover(on: .global()) { error in
+                if IsNSErrorNetworkFailure(error) {
+                    owsFailDebug("Retrying after error: \(error)")
+                } else {
+                    owsFailDebug("Error: \(error)")
+
+                    // Dequeue to avoid getting stuck in retry loop.
+                    self.databaseStorage.write { transaction in
+                        _ = tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction)
+                    }
                 }
+                self.attemptDidComplete(retryDelay: retryDelay)
+
+                // We don't actually want to recover; in this block we
+                // handle the business logic consequences of the error,
+                // but we re-throw so that the UI can distinguish
+                // success and failure.
+                throw error
             }
-        }
-
-        promise.ensure {
-            // We use a "self-only" contact sync to indicate to desktop
-            // that we've changed our profile and that it should do a
-            // profile fetch for "self".
-            //
-            // NOTE: We also inform the desktop in the failure case,
-            //       since that _may have_ affected service state.
-            if self.tsAccountManager.isRegisteredPrimaryDevice {
-                self.syncManager.syncLocalContact().retainUntilComplete()
-            }
-
-            // Notify all our devices that the profile has changed.
-            // Older linked devices may not handle this message.
-            self.syncManager.sendFetchLatestProfileSyncMessage()
-
-            self.profileManager.isUpdatingProfileOnService = false
-
-            // There may be another update enqueued that we should kick off.
-            // Or we may need to retry.
-            //
-            // We don't want to get in a retry loop, so we use exponential backoff.
-            DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
-                self.updateProfileOnServiceIfNecessary(retryDelay: (retryDelay + 1) * 2)
-            })
-        }.retainUntilComplete()
 
         return promise
+    }
+
+    private class func attemptDidComplete(retryDelay: TimeInterval) {
+        // We use a "self-only" contact sync to indicate to desktop
+        // that we've changed our profile and that it should do a
+        // profile fetch for "self".
+        //
+        // NOTE: We also inform the desktop in the failure case,
+        //       since that _may have_ affected service state.
+        if self.tsAccountManager.isRegisteredPrimaryDevice {
+            self.syncManager.syncLocalContact().retainUntilComplete()
+        }
+
+        // Notify all our devices that the profile has changed.
+        // Older linked devices may not handle this message.
+        self.syncManager.sendFetchLatestProfileSyncMessage()
+
+        self.profileManager.isUpdatingProfileOnService = false
+
+        // There may be another update enqueued that we should kick off.
+        // Or we may need to retry.
+        //
+        // We don't want to get in a retry loop, so we use exponential backoff.
+        DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
+            self.updateProfileOnServiceIfNecessary(retryDelay: (retryDelay + 1) * 2)
+        })
     }
 
     private class func writeProfileAvatarToDisk(attempt: ProfileUpdateAttempt) -> Promise<Void> {
