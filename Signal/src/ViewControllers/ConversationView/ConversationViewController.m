@@ -3701,11 +3701,11 @@ typedef enum : NSUInteger {
                                 }];
 }
 
-- (void)updateGroupWithId:(NSData *)groupId
-                  members:(NSArray<SignalServiceAddress *> *)members
-           administrators:(NSArray<SignalServiceAddress *> *)administrators
-                     name:(nullable NSString *)name
-               avatarData:(nullable NSData *)avatarData
+- (void)conversationSettingsDidUpdateGroupWithId:(NSData *)groupId
+                                         members:(NSArray<SignalServiceAddress *> *)members
+                                  administrators:(NSArray<SignalServiceAddress *> *)administrators
+                                            name:(nullable NSString *)name
+                                      avatarData:(nullable NSData *)avatarData
 {
     OWSAssertDebug(groupId.length > 0);
     OWSAssertDebug(members.count > 0);
