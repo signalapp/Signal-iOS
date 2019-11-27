@@ -2,6 +2,7 @@ import PromiseKit
 
 @objc(LKAPI)
 public final class LokiAPI : NSObject {
+    private static var syncMessageTimestamps: [String:Set<UInt64>] = [:]
     public static var lastDeviceLinkUpdate: [String:Date] = [:] // Hex encoded public key to date
     @objc public static var userHexEncodedPublicKeyCache: [String:Set<String>] = [:] // Thread ID to set of user hex encoded public keys
     
@@ -117,7 +118,6 @@ public final class LokiAPI : NSObject {
                 let deviceLinks = storage.getDeviceLinks(for: masterHexEncodedPublicKey, in: transaction)
                 let slaveDestinations = deviceLinks.map { Destination(hexEncodedPublicKey: $0.slave.hexEncodedPublicKey, kind: .slave) }
                 destinations.append(contentsOf: slaveDestinations)
-                destinations = destinations.filter { $0.hexEncodedPublicKey != userHexEncodedPublicKey }
                 seal.fulfill(destinations)
             }
         }
@@ -262,6 +262,14 @@ public final class LokiAPI : NSObject {
             }
             return envelope
         }
+    }
+    
+    @objc public static func isDuplicateSyncMessage(_ syncMessage: SSKProtoSyncMessageSent, from hexEncodedPublicKey: String) -> Bool {
+        var timestamps: Set<UInt64> = syncMessageTimestamps[hexEncodedPublicKey] ?? []
+        let result = timestamps.contains(syncMessage.timestamp)
+        timestamps.insert(syncMessage.timestamp)
+        syncMessageTimestamps[hexEncodedPublicKey] = timestamps
+        return result
     }
 
     // MARK: Message Hash Caching

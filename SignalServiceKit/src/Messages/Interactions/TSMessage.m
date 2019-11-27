@@ -497,7 +497,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 #pragma mark - Group Chat
 
-- (BOOL) isGroupChatMessage {
+- (BOOL)isGroupChatMessage {
     return self.groupChatServerID > 0;
 }
 

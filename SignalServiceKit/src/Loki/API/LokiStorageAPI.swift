@@ -27,7 +27,7 @@ public final class LokiStorageAPI : LokiDotNetAPI {
     public static func getDeviceLinks(associatedWith hexEncodedPublicKeys: Set<String>) -> Promise<Set<DeviceLink>> {
         let hexEncodedPublicKeysDescription = "[ \(hexEncodedPublicKeys.joined(separator: ", ")) ]"
         print("[Loki] Getting device links for: \(hexEncodedPublicKeysDescription).")
-        return getAuthToken(for: server).then(on: DispatchQueue.main) { token -> Promise<Set<DeviceLink>> in
+        return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<Set<DeviceLink>> in
             let queryParameters = "ids=\(hexEncodedPublicKeys.map { "@\($0)" }.joined(separator: ","))&include_user_annotations=1"
             let url = URL(string: "\(server)/users?\(queryParameters)")!
             let request = TSRequest(url: url)

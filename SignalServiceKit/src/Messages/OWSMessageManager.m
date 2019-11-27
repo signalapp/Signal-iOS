@@ -433,6 +433,12 @@ NS_ASSUME_NONNULL_BEGIN
         }
         OWSLogInfo(@"handling content: <Content: %@>", [self descriptionForContent:contentProto]);
         
+        // Loki: Workaround for duplicate sync transcript issue
+        if (contentProto.syncMessage != nil && contentProto.syncMessage.sent != nil) {
+            BOOL isDuplicate = [LKAPI isDuplicateSyncMessage:contentProto.syncMessage.sent from:envelope.source];
+            if (isDuplicate) { return; }
+        }
+        
         // Loki: Handle device linking message if needed
         if (contentProto.lokiDeviceLinkMessage != nil) {
             NSString *masterHexEncodedPublicKey = contentProto.lokiDeviceLinkMessage.masterHexEncodedPublicKey;
