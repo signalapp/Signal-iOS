@@ -401,7 +401,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self.reactionBubblesView configureWith:self.viewItem.reactionState];
-    [self.contentView addSubview:self.reactionBubblesView];
+    [self.messageView addSubview:self.reactionBubblesView];
 
     return YES;
 }
