@@ -1046,6 +1046,14 @@ NS_ASSUME_NONNULL_BEGIN
     switch (groupContext.unwrappedType) {
             // GroupsV2 TODO
         case SSKProtoGroupContextTypeUpdate: {
+            SignalServiceAddress *groupUpdateSourceAddress;
+            if (envelope.sourceAddress == nil) {
+                OWSFailDebug(@"failure: envelope.sourceAddress == nil");
+                return;
+            } else {
+                groupUpdateSourceAddress = envelope.sourceAddress;
+            }
+
             // Ensures that the thread exists but doesn't update it.
             NSError *_Nullable error;
             // We don't need to set administrators; this is a v1 group.
@@ -1058,6 +1066,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                groupsVersion:GroupsVersionV1
                                        groupSecretParamsData:nil
                                            shouldSendMessage:false
+                                    groupUpdateSourceAddress:groupUpdateSourceAddress
                                                  transaction:transaction
                                                        error:&error];
             if (error != nil || result == nil) {
@@ -1071,16 +1080,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                     createdByRemoteRecipient:nil
                                                                       createdInExistingGroup:YES
                                                                                  transaction:transaction];
-
-            // MJK TODO - should be safe to remove senderTimestamp
-            NSString *updateDescription =
-                [oldGroupThread.groupModel getInfoStringAboutUpdateTo:newGroupThread.groupModel
-                                                      contactsManager:self.contactsManager];
-            TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                         inThread:newGroupThread
-                                                                      messageType:TSInfoMessageTypeGroupUpdate
-                                                                    customMessage:updateDescription];
-            [infoMessage anyInsertWithTransaction:transaction];
 
             if (groupContext.avatar != nil) {
                 OWSLogVerbose(@"Data message had group avatar attachment");
@@ -1629,15 +1628,11 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSString *updateGroupInfo =
-        [gThread.groupModel getInfoStringAboutUpdateTo:gThread.groupModel contactsManager:self.contactsManager];
-
     uint32_t expiresInSeconds = [gThread disappearingMessagesDurationWithTransaction:transaction];
     TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:gThread
                                                            groupMetaMessage:TSGroupMetaMessageUpdate
                                                            expiresInSeconds:expiresInSeconds];
 
-    [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
     // Only send this group update to the requester.
     [message updateWithSendingToSingleGroupRecipient:envelope.sourceAddress transaction:transaction];
 

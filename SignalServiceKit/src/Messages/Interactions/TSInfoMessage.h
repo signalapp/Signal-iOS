@@ -28,11 +28,19 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageSyncedThread
 };
 
+
+typedef NSString *InfoMessageUserInfoKey NS_STRING_ENUM;
+
+extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyOldGroupModel;
+extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyNewGroupModel;
+extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyGroupUpdateSourceAddress;
+
 + (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread address:(SignalServiceAddress *)address;
 
-@property (atomic, readonly) TSInfoMessageType messageType;
-@property (atomic, readonly, nullable) NSString *customMessage;
-@property (atomic, readonly, nullable) SignalServiceAddress *unregisteredAddress;
+@property (nonatomic, readonly) TSInfoMessageType messageType;
+@property (nonatomic, readonly, nullable) NSString *customMessage;
+@property (nonatomic, readonly, nullable) NSDictionary<InfoMessageUserInfoKey, id> *infoMessageUserInfo;
+@property (nonatomic, readonly, nullable) SignalServiceAddress *unregisteredAddress;
 
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
                                 inThread:(TSThread *)thread
@@ -91,10 +99,14 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueTh
                       messageType:(TSInfoMessageType)infoMessage
                     customMessage:(NSString *)customMessage;
 
+- (instancetype)initWithThread:(TSThread *)thread
+                   messageType:(TSInfoMessageType)infoMessage
+           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo;
+
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
                       messageType:(TSInfoMessageType)infoMessage
-          unregisteredAddress:(SignalServiceAddress *)unregisteredAddress;
+              unregisteredAddress:(SignalServiceAddress *)unregisteredAddress;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread

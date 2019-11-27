@@ -58,8 +58,6 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
 + (NSArray<TSGroupThread *> *)groupThreadsWithAddress:(SignalServiceAddress *)address
                                           transaction:(SDSAnyReadTransaction *)transaction;
 
-// GroupsV2 TODO: Remove.
-- (void)leaveGroupWithSneakyTransaction;
 - (void)leaveGroupWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Avatar

@@ -421,9 +421,8 @@ public class GroupsV2Impl: NSObject, GroupsV2, GroupsV2Swift {
                     // GroupsV2 TODO: We could make this a single GroupManager method.
                     let groupModel = try GroupManager.buildGroupModel(groupV2State: groupState,
                                                                       transaction: transaction)
-                    _ = try GroupManager.upsertGroupThread(groupModel: groupModel,
-                                                           addCreatedMessageIfNecessary: true,
-                                                           transaction: transaction)
+                    _ = try GroupManager.upsertGroupV2Thread(groupModel: groupModel,
+                                                             transaction: transaction)
                 }
                 // GroupsV2 TODO: Remove this logging.
                 Logger.verbose("GroupV2State: \(groupState.debugDescription)")

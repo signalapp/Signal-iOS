@@ -169,13 +169,6 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
 }
 
-- (void)leaveGroupWithSneakyTransaction
-{
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self leaveGroupWithTransaction:transaction];
-    }];
-}
-
 - (void)leaveGroupWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     SignalServiceAddress *_Nullable localAddress = [TSAccountManager localAddressWithTransaction:transaction];

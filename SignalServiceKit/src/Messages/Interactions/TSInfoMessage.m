@@ -10,6 +10,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyOldGroupModel = @"InfoMessageUserInfoKeyOldGroupModel";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyNewGroupModel = @"InfoMessageUserInfoKeyNewGroupModel";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyGroupUpdateSourceAddress
+    = @"InfoMessageUserInfoKeyGroupUpdateSourceAddress";
+
 NSUInteger TSInfoMessageSchemaVersion = 2;
 
 @interface TSInfoMessage ()
@@ -91,6 +96,20 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     if (self) {
         _customMessage = customMessage;
     }
+    return self;
+}
+
+- (instancetype)initWithThread:(TSThread *)thread
+                   messageType:(TSInfoMessageType)infoMessageType
+           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
+{
+    self = [self initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread messageType:infoMessageType];
+    if (!self) {
+        return self;
+    }
+
+    _infoMessageUserInfo = infoMessageUserInfo;
+
     return self;
 }
 
@@ -229,7 +248,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         case TSInfoMessageTypeGroupQuit:
             return NSLocalizedString(@"GROUP_YOU_LEFT", nil);
         case TSInfoMessageTypeGroupUpdate:
-            return _customMessage != nil ? _customMessage : NSLocalizedString(@"GROUP_UPDATED", nil);
+            return [self groupUpdateDescriptionWithTransaction:transaction];
         case TSInfoMessageAddToContactsOffer:
             return NSLocalizedString(@"ADD_TO_CONTACTS_OFFER",
                 @"Message shown in conversation view that offers to add an unknown user to your phone's contacts.");
