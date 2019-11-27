@@ -266,6 +266,8 @@ public final class LokiAPI : NSObject {
     
     @objc public static func isDuplicateSyncMessage(_ syncMessage: SSKProtoSyncMessageSent, from hexEncodedPublicKey: String) -> Bool {
         var timestamps: Set<UInt64> = syncMessageTimestamps[hexEncodedPublicKey] ?? []
+        let hasTimestamp = syncMessage.timestamp != 0
+        guard hasTimestamp else { return false }
         let result = timestamps.contains(syncMessage.timestamp)
         timestamps.insert(syncMessage.timestamp)
         syncMessageTimestamps[hexEncodedPublicKey] = timestamps

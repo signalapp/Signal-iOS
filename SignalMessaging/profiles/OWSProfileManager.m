@@ -340,6 +340,11 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     }
 }
 
+- (void)updateUserProfileWithDisplayName:(nullable NSString*)displayName profilePictureURL:(nullable NSString*)profilePictureURL transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self updateLocalProfileName:displayName avatarImage:nil success:^{ } failure:^{ }];
+}
+
 - (nullable NSString *)profilePictureURL
 {
     return self.localUserProfile.avatarUrlPath;

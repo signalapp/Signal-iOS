@@ -165,6 +165,11 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         let deviceLink = self.deviceLink!
         let linkingAuthorizationMessage = DeviceLinkingUtilities.getLinkingAuthorizationMessage(for: deviceLink)
         ThreadUtil.enqueue(linkingAuthorizationMessage)
+        SSKEnvironment.shared.messageSender.send(linkingAuthorizationMessage, success: {
+            let _ = SSKEnvironment.shared.syncManager.syncAllContacts()
+        }) { _ in
+            print("[Loki] Failed to send device link authorization message.")
+        }
         let session = DeviceLinkingSession.current!
         session.stopListeningForLinkingRequests()
         session.markLinkingRequestAsProcessed()
@@ -175,9 +180,6 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
             self.delegate?.handleDeviceLinkAuthorized(signedDeviceLink) // Intentionally capture self strongly
         }.catch { error in
             print("[Loki] Failed to add device link due to error: \(error).")
-        }
-        Timer.scheduledTimer(withTimeInterval: 8, repeats: false) { _ in
-            let _ = SSKEnvironment.shared.syncManager.syncAllContacts()
         }
     }
     

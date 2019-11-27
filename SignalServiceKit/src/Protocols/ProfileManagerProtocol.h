@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)profilePictureURL;
 
 - (nullable NSData *)profileKeyDataForRecipientId:(NSString *)recipientId;
+- (void)updateUserProfileWithDisplayName:(nullable NSString*)displayName profilePictureURL:(nullable NSString*)profilePictureURL transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)setProfileKeyData:(NSData *)profileKeyData forRecipientId:(NSString *)recipientId;
 
 - (BOOL)isUserInProfileWhitelist:(NSString *)recipientId;
