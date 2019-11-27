@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    SSKProtoDataMessageBuilder *builder = [SSKProtoDataMessage builder];
+    SSKProtoDataMessageBuilder *builder = [super dataMessageBuilderWithThread:thread transaction:transaction];
     [builder setTimestamp:self.timestamp];
     [builder setReaction:reactionProto];
     [builder setRequiredProtocolVersion:SSKProtoDataMessageProtocolVersionReactions];
