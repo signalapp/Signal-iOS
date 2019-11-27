@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -46,6 +46,7 @@ public enum ThemeIcon: UInt {
     case message
     case call
     case info
+    case groupMessage
 }
 
 @objc
@@ -142,6 +143,8 @@ public extension Theme {
             return isDarkThemeEnabled ? "button_phone_white" : "phone-right-outline-24"
         case .info:
             return isDarkThemeEnabled ? "info-solid-24" : "ic_info"
+        case .groupMessage:
+            return "group-solid-24"
         }
     }
 }

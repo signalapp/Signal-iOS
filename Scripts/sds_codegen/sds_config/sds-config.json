@@ -65,7 +65,7 @@
 			"serialize_record_invocation": "%s.rawValue",
 			"should_use_blob": false
 		},
-		"TSInfoMessage.userInfo": {
+		"TSInfoMessage.infoMessageUserInfo": {
 			"swift_type": "[InfoMessageUserInfoKey: AnyObject]",
 			"objc_initializer_type": "NSDictionary<InfoMessageUserInfoKey, id> *",
 			"is_objc_codable": false,

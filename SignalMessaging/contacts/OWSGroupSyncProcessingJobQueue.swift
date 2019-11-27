@@ -203,6 +203,7 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
                                                           groupsVersion: groupsVersion,
                                                           groupSecretParamsData: groupDetails.groupSecretParamsData,
                                                           shouldSendMessage: false,
+                                                          groupUpdateSourceAddress: nil,
                                                           transaction: transaction)
 
         let groupThread = result.thread

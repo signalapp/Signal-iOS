@@ -212,56 +212,6 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     return YES;
 }
 
-- (NSString *)getInfoStringAboutUpdateTo:(TSGroupModel *)newModel contactsManager:(id<ContactsManagerProtocol>)contactsManager {
-    NSString *updatedGroupInfoString = @"";
-    if (self == newModel) {
-        return NSLocalizedString(@"GROUP_UPDATED", @"");
-    }
-    if (![NSObject isNullableObject:_groupName equalTo:newModel.groupName] && newModel.groupName.length > 0) {
-        updatedGroupInfoString = [updatedGroupInfoString
-            stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_TITLE_CHANGED", @""),
-                                              newModel.groupNameOrDefault]];
-    }
-    if (![NSObject isNullableObject:self.groupAvatarData equalTo:newModel.groupAvatarData]) {
-        // Group avatar changed.
-        updatedGroupInfoString =
-            [updatedGroupInfoString stringByAppendingString:NSLocalizedString(@"GROUP_AVATAR_CHANGED", @"")];
-    }
-    if ([updatedGroupInfoString length] == 0) {
-        updatedGroupInfoString = NSLocalizedString(@"GROUP_UPDATED", @"");
-    }
-    NSSet *oldMembers = [NSSet setWithArray:_groupMembers];
-    NSSet *newMembers = [NSSet setWithArray:newModel.groupMembers];
-
-    NSMutableSet *membersWhoJoined = [NSMutableSet setWithSet:newMembers];
-    [membersWhoJoined minusSet:oldMembers];
-
-    NSMutableSet *membersWhoLeft = [NSMutableSet setWithSet:oldMembers];
-    [membersWhoLeft minusSet:newMembers];
-
-
-    if ([membersWhoLeft count] > 0) {
-        NSArray *oldMembersNames = [[membersWhoLeft allObjects] map:^NSString *(SignalServiceAddress *item) {
-            return [contactsManager displayNameForAddress:item];
-        }];
-        updatedGroupInfoString = [updatedGroupInfoString
-                                  stringByAppendingString:[NSString
-                                                           stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""),
-                                                           [oldMembersNames componentsJoinedByString:@", "]]];
-    }
-    
-    if ([membersWhoJoined count] > 0) {
-        NSArray *newMembersNames = [[membersWhoJoined allObjects] map:^NSString *(SignalServiceAddress *item) {
-            return [contactsManager displayNameForAddress:item];
-        }];
-        updatedGroupInfoString = [updatedGroupInfoString
-                                  stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_JOINED", @""),
-                                                           [newMembersNames componentsJoinedByString:@", "]]];
-    }
-
-    return updatedGroupInfoString;
-}
-
 #endif
 
 - (nullable NSString *)groupName

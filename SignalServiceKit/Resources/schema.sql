@@ -94,6 +94,7 @@ CREATE
             ,"unregisteredAddress" BLOB
             ,"verificationState" INTEGER
             ,"wasReceivedByUD" INTEGER
+            ,"infoMessageUserInfo" BLOB
         )
 ;
 
@@ -624,6 +625,30 @@ CREATE
 
 CREATE
     TABLE
+        IF NOT EXISTS "media_gallery_items" (
+            "attachmentId" INTEGER NOT NULL UNIQUE
+            ,"albumMessageId" INTEGER NOT NULL
+            ,"threadId" INTEGER NOT NULL
+            ,"originalAlbumOrder" INTEGER NOT NULL
+        )
+;
+
+CREATE
+    INDEX "index_media_gallery_items_for_gallery"
+        ON "media_gallery_items"("threadId"
+    ,"albumMessageId"
+    ,"originalAlbumOrder"
+)
+;
+
+CREATE
+    INDEX "index_media_gallery_items_on_attachmentId"
+        ON "media_gallery_items"("attachmentId"
+)
+;
+
+CREATE
+    TABLE
         IF NOT EXISTS "model_OWSReaction" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
             ,"recordType" INTEGER NOT NULL
@@ -655,30 +680,6 @@ CREATE
     INDEX "index_model_OWSReaction_on_uniqueMessageId_and_reactorUUID"
         ON "model_OWSReaction"("uniqueMessageId"
     ,"reactorUUID"
-)
-;
-
-CREATE
-    TABLE
-        IF NOT EXISTS "media_gallery_items" (
-            "attachmentId" INTEGER NOT NULL UNIQUE
-            ,"albumMessageId" INTEGER NOT NULL
-            ,"threadId" INTEGER NOT NULL
-            ,"originalAlbumOrder" INTEGER NOT NULL
-        )
-;
-
-CREATE
-    INDEX "index_media_gallery_items_for_gallery"
-        ON "media_gallery_items"("threadId"
-    ,"albumMessageId"
-    ,"originalAlbumOrder"
-)
-;
-
-CREATE
-    INDEX "index_media_gallery_items_on_attachmentId"
-        ON "media_gallery_items"("attachmentId"
 )
 ;
 

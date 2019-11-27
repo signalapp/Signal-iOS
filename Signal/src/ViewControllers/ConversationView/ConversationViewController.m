@@ -3710,6 +3710,12 @@ typedef enum : NSUInteger {
     OWSAssertDebug(groupId.length > 0);
     OWSAssertDebug(members.count > 0);
 
+    SignalServiceAddress *localAddress = self.tsAccountManager.localAddress;
+    if (localAddress == nil) {
+        OWSFailDebug(@"localAddress was unexpectedly nil");
+        return;
+    }
+
     __block NSError *_Nullable error;
     __block TSGroupThread *_Nullable newThread;
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
@@ -3719,6 +3725,7 @@ typedef enum : NSUInteger {
                                                             name:name
                                                       avatarData:avatarData
                                                shouldSendMessage:YES
+                                        groupUpdateSourceAddress:localAddress
                                                      transaction:transaction
                                                            error:&error];
     }];
@@ -5375,12 +5382,7 @@ typedef enum : NSUInteger {
 
             // Quit the group if we're a member
             if (groupThread.isLocalUserInGroup) {
-                TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:groupThread
-                                                                       groupMetaMessage:TSGroupMetaMessageQuit
-                                                                       expiresInSeconds:0];
-
-                [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
-                [groupThread leaveGroupWithTransaction:transaction];
+                [ThreadUtil leaveGroupThread:groupThread transaction:transaction];
             }
         }
 
