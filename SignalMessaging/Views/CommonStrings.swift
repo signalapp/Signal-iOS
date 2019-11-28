@@ -100,6 +100,9 @@ public class NotificationStrings: NSObject {
 
     @objc
     static public let failedToSendBody = NSLocalizedString("SEND_FAILED_NOTIFICATION_BODY", comment: "notification body")
+
+    @objc
+    static public let incomingReactionFormat = NSLocalizedString("REACTION_INCOMING_NOTIFICATION_BODY_FORMAT", comment: "notification body")
 }
 
 @objc public class CallStrings: NSObject {

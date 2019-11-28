@@ -355,7 +355,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         let messageText = rawMessageText.filterStringForDisplay()
 
-        let senderName = contactsManager.displayName(for: incomingMessage.authorAddress)
+        let senderName = contactsManager.displayName(for: incomingMessage.authorAddress, transaction: transaction)
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -418,6 +418,70 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                 threadIdentifier: threadIdentifier,
                                 userInfo: userInfo,
                                 sound: sound)
+        }
+    }
+
+    public func notifyUser(for reaction: OWSReaction, in thread: TSThread, transaction: SDSAnyReadTransaction) {
+
+        guard !thread.isMuted else { return }
+
+        // Reaction notifications only get displayed if we can
+        // include the reaction details, otherwise we don't
+        // disturb the user for a non-message
+        guard previewType == .namePreview else { return }
+
+        let senderName = contactsManager.displayName(for: reaction.reactor, transaction: transaction)
+
+        let notificationTitle: String
+
+        switch thread {
+        case is TSContactThread:
+            notificationTitle = senderName
+        case let groupThread as TSGroupThread:
+            notificationTitle = String(
+                format: NotificationStrings.incomingGroupMessageTitleFormat,
+                senderName,
+                groupThread.groupNameOrDefault
+            )
+        default:
+            owsFailDebug("unexpected thread: \(thread)")
+            return
+        }
+
+        let notificationBody = String(format: NotificationStrings.incomingReactionFormat, reaction.emoji)
+
+        // Don't reply from lockscreen if anyone in this conversation is
+        // "no longer verified".
+        var didIdentityChange = false
+        for address in thread.recipientAddresses {
+            if self.identityManager.verificationState(for: address) == .noLongerVerified {
+                didIdentityChange = true
+                break
+            }
+        }
+
+        let category: AppNotificationCategory
+        if didIdentityChange {
+            category = .incomingMessageFromNoLongerVerifiedIdentity
+        } else if !shouldShowActions {
+            category = .incomingMessageWithoutActions
+        } else {
+            category = .incomingMessageWithActions
+        }
+        let userInfo = [
+            AppNotificationUserInfoKey.threadId: thread.uniqueId
+        ]
+
+        DispatchQueue.main.async {
+            let sound = self.requestSound(thread: thread)
+            self.adaptee.notify(
+                category: category,
+                title: notificationTitle,
+                body: notificationBody,
+                threadIdentifier: thread.uniqueId,
+                userInfo: userInfo,
+                sound: sound
+            )
         }
     }
 
