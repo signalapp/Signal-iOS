@@ -276,7 +276,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
     // TODO: Remove this.
     if (self.homeViewMode == HomeViewMode_Inbox) {
-        [SignalApp.sharedApp setHomeViewController:self];
+//        [SignalApp.sharedApp setHomeViewController:self];
     }
 
     UIStackView *reminderStackView = [UIStackView new];

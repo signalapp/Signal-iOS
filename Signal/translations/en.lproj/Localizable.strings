@@ -2672,3 +2672,8 @@
 "Your device was unlinked successfully" = "Your device was unlinked successfully";
 "Unnamed Device" = "Unnamed Device";
 "Linked device (%@)" = "Linked device (%@)";
+
+// MARK: - Redesign
+"Messages" = "Messages";
+"Note to Self" = "Note to Self";
+"New Group" = "New Group";

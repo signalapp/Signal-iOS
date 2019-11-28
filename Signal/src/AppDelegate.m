@@ -877,7 +877,7 @@ static NSTimeInterval launchStartedAt;
             return;
         }
 
-        [SignalApp.sharedApp.homeViewController showNewConversationVC];
+//        [SignalApp.sharedApp.homeViewController showNewConversationVC];
 
         completionHandler(YES);
     }];
@@ -1418,7 +1418,7 @@ static NSTimeInterval launchStartedAt;
         if (self.backup.hasPendingRestoreDecision) {
             rootViewController = [BackupRestoreViewController new];
         } else {
-            rootViewController = [HomeViewController new];
+            rootViewController = [HomeVC new];
         }
     } else {
         rootViewController = [[OnboardingController new] initialViewController];

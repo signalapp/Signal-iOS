@@ -1,8 +1,8 @@
 
 @objc(LKIdenticon)
-final class Identicon : NSObject {
+public final class Identicon : NSObject {
     
-    @objc static func generateIcon(string: String, size: CGFloat) -> UIImage {
+    @objc public static func generateIcon(string: String, size: CGFloat) -> UIImage {
         let icon = JazzIcon(seed: string)
         let iconLayer = icon.generateLayer(ofSize: size)
         let rect = CGRect(origin: CGPoint.zero, size: iconLayer.frame.size)
