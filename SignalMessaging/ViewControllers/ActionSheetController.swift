@@ -113,7 +113,7 @@ public class ActionSheetController: OWSViewController {
         scrollView.autoMatch(.height, to: .height, of: view, withOffset: 0, relation: .lessThanOrEqual)
 
         // Prefer to be full width, but don't exceed the maximum width
-        scrollView.autoSetDimension(.width, toSize: 375, relation: .lessThanOrEqual)
+        scrollView.autoSetDimension(.width, toSize: 414, relation: .lessThanOrEqual)
         NSLayoutConstraint.autoSetPriority(.defaultHigh) {
             scrollView.autoPinWidthToSuperview()
         }
@@ -450,9 +450,7 @@ private class ActionSheetPresentationController: UIPresentationController {
 
     override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-
-        let alpha: CGFloat = Theme.isDarkThemeEnabled ? 0.7 : 0.6
-        backdropView.backgroundColor = UIColor.black.withAlphaComponent(alpha)
+        backdropView.backgroundColor = Theme.backdropColor
     }
 
     override func presentationTransitionWillBegin() {

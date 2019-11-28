@@ -12,10 +12,6 @@ class ReactionBubblesView: UIView {
     init() {
         super.init(frame: .zero)
 
-        autoSetDimension(.height, toSize: 62, relation: .lessThanOrEqual)
-        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
-            autoSetDimension(.height, toSize: 34, relation: .greaterThanOrEqual)
-        }
         addSubview(bubble2)
         addSubview(bubble1)
 
@@ -23,6 +19,11 @@ class ReactionBubblesView: UIView {
         bubble1.autoPinWidthToSuperview()
         bubble2.autoPinWidthToSuperview()
         bubble2.autoPinEdge(toSuperviewEdge: .bottom)
+        bubble2.autoPinEdge(.top, to: .top, of: bubble1, withOffset: 4, relation: .greaterThanOrEqual)
+
+        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
+            autoSetDimension(.height, toSize: 62)
+        }
     }
 
     required init?(coder aDecoder: NSCoder) {
