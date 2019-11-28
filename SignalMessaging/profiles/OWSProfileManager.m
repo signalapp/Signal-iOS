@@ -1056,9 +1056,11 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         }
         NSString *_Nullable avatarUrlPathAtStart = userProfile.avatarUrlPath;
 
-        if (userProfile.avatarUrlPath.length < 1) {
+        if (userProfile.profileKey.keyData.length < 1 || userProfile.avatarUrlPath.length < 1) {
             return;
         }
+        
+        OWSAES256Key *profileKeyAtStart = userProfile.profileKey;
 
         NSString *fileName = [self generateAvatarFilename];
         NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:fileName];
@@ -1077,7 +1079,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         NSString *tempDirectory = OWSTemporaryDirectory();
         NSString *tempFilePath = [tempDirectory stringByAppendingPathComponent:fileName];
 
-
         NSString *profilePictureURL = userProfile.avatarUrlPath;
         NSError *serializationError;
         NSMutableURLRequest *request =
@@ -1091,9 +1092,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         }
 
         NSURLSession* session = [NSURLSession sharedSession];
-
         NSURLSessionTask* downloadTask = [session downloadTaskWithRequest:request completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
-
+            
             @synchronized(self.currentAvatarDownloads)
             {
                 [self.currentAvatarDownloads removeObject:userProfile.recipientId];
@@ -1105,32 +1105,68 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             }
 
             NSFileManager *fileManager = [NSFileManager defaultManager];
-            NSURL *fileURL = [NSURL fileURLWithPath:filePath];
+            NSURL *tempFileUrl = [NSURL fileURLWithPath:tempFilePath];
             NSError *moveError;
-            if (![fileManager moveItemAtURL:location toURL:fileURL error:&moveError]) {
+            if (![fileManager moveItemAtURL:location toURL:tempFileUrl error:&moveError]) {
                 OWSLogError(@"MoveItemAtURL for avatar failed: %@", moveError);
                 return;
             }
+            
+            NSData *_Nullable encryptedData = (error ? nil : [NSData dataWithContentsOfFile:tempFilePath]);
+            NSData *_Nullable decryptedData = [self decryptProfileData:encryptedData profileKey:profileKeyAtStart];
+            UIImage *_Nullable image = nil;
+            if (decryptedData) {
+                BOOL success = [decryptedData writeToFile:filePath atomically:YES];
+                if (success) {
+                    image = [UIImage imageWithContentsOfFile:filePath];
+                }
+            }
+            
+            OWSUserProfile *latestUserProfile = [OWSUserProfile getOrBuildUserProfileForRecipientId:userProfile.recipientId dbConnection:self.dbConnection];
 
-            UIImage *image = [UIImage imageWithContentsOfFile:[fileURL path]];
-            if (image) {
-                dispatch_async(dispatch_get_main_queue(), ^{
+            if (latestUserProfile.profileKey.keyData.length < 1
+                || ![latestUserProfile.profileKey isEqual:userProfile.profileKey]) {
+                OWSLogWarn(@"Ignoring avatar download for obsolete user profile.");
+            } else if (![avatarUrlPathAtStart isEqualToString:latestUserProfile.avatarUrlPath]) {
+                OWSLogInfo(@"avatar url has changed during download");
+                if (latestUserProfile.avatarUrlPath.length > 0) {
+                    [self downloadAvatarForUserProfile:latestUserProfile];
+                }
+            } else if (error) {
+                if ([response isKindOfClass:NSHTTPURLResponse.class]
+                    && ((NSHTTPURLResponse *)response).statusCode == 403) {
+                    OWSLogInfo(@"no avatar for: %@", userProfile.recipientId);
+                } else {
+                    OWSLogError(@"avatar download for %@ failed with error: %@", userProfile.recipientId, error);
+                }
+            } else if (!encryptedData) {
+                OWSLogError(@"avatar encrypted data for %@ could not be read.", userProfile.recipientId);
+            } else if (!decryptedData) {
+                OWSLogError(@"avatar data for %@ could not be decrypted.", userProfile.recipientId);
+            } else if (!image) {
+                OWSLogError(@"avatar image for %@ could not be loaded with error: %@", userProfile.recipientId, error);
+            } else {
+                [self updateProfileAvatarCache:image filename:fileName];
 
-                    [self updateProfileAvatarCache:image filename:fileName];
-                    
-                    OWSUserProfile *latestUserProfile =
-                        [OWSUserProfile getOrBuildUserProfileForRecipientId:userProfile.recipientId
-                                                               dbConnection:self.dbConnection];
-
-                    [latestUserProfile updateWithAvatarFileName:fileName dbConnection:self.dbConnection completion:^{
-                        [[NSNotificationCenter defaultCenter]
-                            postNotificationNameAsync:OWSContactsManagerSignalAccountsDidChangeNotification
-                            object:nil];
-                    }];
-                });
+                [latestUserProfile updateWithAvatarFileName:fileName dbConnection:self.dbConnection completion:^{
+                    [[NSNotificationCenter defaultCenter]
+                        postNotificationNameAsync:OWSContactsManagerSignalAccountsDidChangeNotification
+                        object:nil];
+                }];
             }
 
+            // If we're updating the profile that corresponds to our local number,
+            // update the local profile as well.
+            if (userProfile.address.isLocalAddress) {
+                OWSUserProfile *localUserProfile = self.localUserProfile;
+                OWSAssertDebug(localUserProfile);
 
+                [localUserProfile updateWithAvatarFileName:fileName dbConnection:self.dbConnection completion:nil];
+                [self updateProfileAvatarCache:image filename:fileName];
+            }
+
+            OWSAssertDebug(backgroundTask);
+            backgroundTask = nil;
         }];
 
         [downloadTask resume];
