@@ -340,9 +340,18 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     }
 }
 
-- (void)updateUserProfileWithDisplayName:(nullable NSString*)displayName profilePictureURL:(nullable NSString*)profilePictureURL transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateUserProfileWithDisplayName:(nullable NSString*)displayName transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [self updateLocalProfileName:displayName avatarImage:nil success:^{ } failure:^{ }];
+    [self.localUserProfile updateWithProfileName:displayName transaction:transaction];
+}
+
+- (void)updateUserPofileKeyData:(NSData *)profileKeyData avatarURL:(nullable NSString *)avatarURL transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    OWSAES256Key *profileKey = [OWSAES256Key keyWithData:profileKeyData];
+    if (profileKey != nil) {
+        [self.localUserProfile updateWithProfileKey:profileKey transaction:transaction completion:^{
+            [self.localUserProfile updateWithAvatarUrlPath:avatarURL transaction:transaction];
+        }];
+    }
 }
 
 - (nullable NSString *)profilePictureURL
@@ -409,7 +418,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // We always want to encrypt a profile with a new profile key
         // This ensures that other users know that our profile picture was updated
-        OWSAES256Key newProfileKey = [OWSAES256Key generateRandomKey];
+        OWSAES256Key *newProfileKey = [OWSAES256Key generateRandomKey];
         NSData *_Nullable encryptedAvatarData;
         if (avatarData) {
             encryptedAvatarData = [self encryptProfileData:avatarData profileKey:newProfileKey];
@@ -942,7 +951,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     }];
 }
 
-- (void)setProfileKeyData:(NSData *)profileKeyData forRecipientId:(NSString *)recipientId
+- (void)setProfileKeyData:(NSData *)profileKeyData forRecipientId:(NSString *)recipientId avatarURL:(nullable NSString *)avatarURL
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         OWSAES256Key *_Nullable profileKey = [OWSAES256Key keyWithData:profileKeyData];
@@ -950,26 +959,33 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             OWSFailDebug(@"Failed to make profile key for key data");
             return;
         }
-
-        OWSUserProfile *userProfile =
-            [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection];
-
+        
+        OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection];
+        
         OWSAssertDebug(userProfile);
         if (userProfile.profileKey && [userProfile.profileKey.keyData isEqual:profileKey.keyData]) {
             // Ignore redundant update.
             return;
         }
-
+        
         [userProfile clearWithProfileKey:profileKey
                             dbConnection:self.dbConnection
                               completion:^{
-                                  dispatch_async(dispatch_get_main_queue(), ^{
-                                      [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown
-                                                                    recipientId:recipientId];
-                                      [self fetchProfileForRecipientId:recipientId];
-                                  });
-                              }];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown
+                                              recipientId:recipientId];
+                [userProfile updateWithProfileName:userProfile.profileName avatarUrlPath:avatarURL dbConnection:self.dbConnection completion:^{
+                    [self downloadAvatarForUserProfile:userProfile];
+                }];
+                // [self fetchProfileForRecipientId:recipientId];
+            });
+        }];
     });
+}
+
+- (void)setProfileKeyData:(NSData *)profileKeyData forRecipientId:(NSString *)recipientId
+{
+    [self setProfileKeyData:profileKeyData forRecipientId:recipientId avatarURL:nil];
 }
 
 - (nullable NSData *)profileKeyDataForRecipientId:(NSString *)recipientId
@@ -1157,7 +1173,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
             // If we're updating the profile that corresponds to our local number,
             // update the local profile as well.
-            if (userProfile.address.isLocalAddress) {
+            if ([self.tsAccountManager.localNumber isEqualToString:userProfile.recipientId]) {
                 OWSUserProfile *localUserProfile = self.localUserProfile;
                 OWSAssertDebug(localUserProfile);
 
@@ -1229,17 +1245,10 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     });
 }
 
-- (void)updateProfileForContactWithID:(NSString *)contactID displayName:(NSString *)displayName profilePictureURL:(NSString *)profilePictureURL with:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateProfileForContactWithID:(NSString *)contactID displayName:(NSString *)displayName with:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForRecipientId:contactID transaction:transaction];
-    NSString *oldProfilePictureURL = userProfile.avatarUrlPath;
-    // Note: we keep using the old file name until we have the new one
-    // (otherwise the profile picuture would disspear for a short time)
-    NSString *oldAvatarFileName = userProfile.avatarFileName;
-    [userProfile updateWithProfileName:displayName avatarUrlPath:profilePictureURL avatarFileName:oldAvatarFileName transaction:transaction completion:nil];
-    if (profilePictureURL && ![oldProfilePictureURL isEqual:profilePictureURL]) {
-        [self downloadAvatarForUserProfile:userProfile];
-    }
+    [userProfile updateWithProfileName:displayName avatarUrlPath:userProfile.avatarUrlPath avatarFileName:userProfile.avatarFileName transaction:transaction completion:nil];
 }
 
 - (BOOL)isNullableDataEqual:(NSData *_Nullable)left toData:(NSData *_Nullable)right

@@ -554,17 +554,9 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
     }
+    
+    [self handleProfileKeyUpdateIfNeeded:dataMessage recipientId:envelope.source];
 
-    if ([dataMessage hasProfileKey]) {
-        NSData *profileKey = [dataMessage profileKey];
-        NSString *recipientId = envelope.source;
-        if (profileKey.length == kAES256_KeyByteLength) {
-            [self.profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
-        } else {
-            OWSFailDebug(
-                @"Unexpected profile key length:%lu on message from:%@", (unsigned long)profileKey.length, recipientId);
-        }
-    }
 
     if (dataMessage.group) {
         TSGroupThread *_Nullable groupThread =
@@ -932,10 +924,14 @@ NS_ASSUME_NONNULL_BEGIN
         // Loki: Try to update using the provided profile
         if (wasSentByMasterDevice) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                SSKProtoDataMessageLokiProfile *profile = syncMessage.sent.message.profile;
+                SSKProtoDataMessage *dataMessage = syncMessage.sent.message;
+                SSKProtoDataMessageLokiProfile *profile = dataMessage.profile;
                 NSString *displayName = profile.displayName;
                 NSString *profilePictureURL = profile.profilePicture;
-                [self.profileManager updateUserProfileWithDisplayName:displayName profilePictureURL:profilePictureURL transaction:transaction];
+                [self.profileManager updateUserProfileWithDisplayName:displayName transaction:transaction];
+                if ([dataMessage hasProfileKey]) {
+                    [self.profileManager updateUserPofileKeyData:dataMessage.profileKey avatarURL:profilePictureURL transaction:transaction];
+                }
             });
         }
 
@@ -1203,9 +1199,14 @@ NS_ASSUME_NONNULL_BEGIN
             envelopeAddress(envelope));
         return;
     }
+    
+    if (dataMessage.profile == nil) {
+        OWSFailDebug(@"received profile key message without loki profile attached from: %@", envelopeAddress(envelope));
+        return;
+    }
 
     id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
-    [profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
+    [profileManager setProfileKeyData:profileKey forRecipientId:recipientId avatarURL:dataMessage.profile.profilePicture];
 }
 
 - (void)handleUnlinkDeviceMessageWithEnvelope:(SSKProtoEnvelope *)envelope dataMessage:(SSKProtoDataMessage *)dataMessage transaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -1388,9 +1389,9 @@ NS_ASSUME_NONNULL_BEGIN
         TSContactThread *thread =
             [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
 
-        NSString *profilePictureURL = dataMessage.profile.profilePicture;
+        // Only set the display name here, the logic for updating profile pictures is handled when we're setting profile key
         NSString *displayName = dataMessage.profile.displayName;
-        [self.profileManager updateProfileForContactWithID:thread.contactIdentifier displayName:displayName profilePictureURL:profilePictureURL with:transaction];
+        [self.profileManager updateProfileForContactWithID:thread.contactIdentifier displayName:displayName with:transaction];
 
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
@@ -1588,13 +1589,8 @@ NS_ASSUME_NONNULL_BEGIN
         if (rawDisplayName != nil && rawDisplayName.length > 0) {
             displayName = [NSString stringWithFormat:@"%@ (...%@)", rawDisplayName, [incomingMessage.authorId substringFromIndex:incomingMessage.authorId.length - 8]];
         }
-        NSString *rawProfilePictureURL = dataMessage.profile.profilePicture;
-        NSString *profilePictureURL = nil;
-        if (rawProfilePictureURL != nil && rawProfilePictureURL.length > 0) {
-            profilePictureURL = rawProfilePictureURL;
-        }
-
-        [self.profileManager updateProfileForContactWithID:thread.contactIdentifier displayName:displayName profilePictureURL:profilePictureURL with:transaction];
+        [self.profileManager updateProfileForContactWithID:thread.contactIdentifier displayName:displayName with:transaction];
+        [self handleProfileKeyUpdateIfNeeded:dataMessage recipientId:thread.contactIdentifier];
 
         // Loki: Parse Loki specific properties if needed
         if (envelope.isPtpMessage) { incomingMessage.isP2P = YES; }
@@ -1632,6 +1628,19 @@ NS_ASSUME_NONNULL_BEGIN
                           transaction:transaction];
         
         return incomingMessage;
+    }
+}
+
+- (void)handleProfileKeyUpdateIfNeeded:(SSKProtoDataMessage *)dataMessage recipientId:(NSString *)recipientId {
+    if ([dataMessage hasProfileKey]) {
+        NSData *profileKey = [dataMessage profileKey];
+        NSString *url = dataMessage.profile != nil ? dataMessage.profile.profilePicture : nil;
+        if (profileKey.length == kAES256_KeyByteLength) {
+            [self.profileManager setProfileKeyData:profileKey forRecipientId:recipientId avatarURL:url];
+        } else {
+            OWSFailDebug(
+                         @"Unexpected profile key length:%lu on message from:%@", (unsigned long)profileKey.length, recipientId);
+        }
     }
 }
 

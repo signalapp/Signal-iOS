@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
     return _localProfileKey;
 }
 
-- (void)updateUserProfileWithDisplayName:(nullable NSString*)displayName profilePictureURL:(nullable NSString*)profilePictureURL transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateUserProfileWithDisplayName:(nullable NSString*)displayName transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     // Do nothing
 }

@@ -316,6 +316,20 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
             completion:completion];
 }
 
+- (void)updateWithProfileName:(nullable NSString *)profileName transaction:(YapDatabaseReadWriteTransaction*)transaction
+{
+    [self updateWithProfileName:profileName avatarUrlPath:self.avatarUrlPath avatarFileName:self.avatarFileName transaction:transaction completion:nil];
+}
+
+- (void)updateWithAvatarUrlPath:(NSString *)avatarUrlPath transaction:(YapDatabaseReadWriteTransaction*)transaction {
+    [self applyChanges:^(OWSUserProfile *userProfile) {
+        [userProfile setAvatarUrlPath:avatarUrlPath];
+    }
+           functionName:__PRETTY_FUNCTION__
+           transaction:transaction
+            completion:nil];
+}
+
 - (void)updateWithAvatarUrlPath:(nullable NSString *)avatarUrlPath
                  avatarFileName:(nullable NSString *)avatarFileName
                    dbConnection:(YapDatabaseConnection *)dbConnection

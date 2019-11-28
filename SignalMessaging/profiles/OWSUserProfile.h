@@ -73,9 +73,16 @@ extern NSString *const kLocalProfileUniqueId;
                 dbConnection:(YapDatabaseConnection *)dbConnection
                   completion:(nullable OWSUserProfileCompletion)completion;
 
+- (void)updateWithProfileKey:(OWSAES256Key *)profileKey
+                 transaction:(YapDatabaseReadWriteTransaction *)transaction
+                  completion:(nullable OWSUserProfileCompletion)completion;
+
 - (void)clearWithProfileKey:(OWSAES256Key *)profileKey
                dbConnection:(YapDatabaseConnection *)dbConnection
                  completion:(nullable OWSUserProfileCompletion)completion;
+
+- (void)updateWithProfileName:(nullable NSString *)profileName transaction:(YapDatabaseReadWriteTransaction*)transaction;
+- (void)updateWithAvatarUrlPath:(NSString *)avatarUrlPath transaction:(YapDatabaseReadWriteTransaction*)transaction;
 
 #pragma mark - Profile Avatars Directory
 
