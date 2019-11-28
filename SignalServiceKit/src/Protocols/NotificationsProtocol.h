@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSReaction;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class TSErrorMessage;
@@ -19,6 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage *)incomingMessage
                             inThread:(TSThread *)thread
                          transaction:(SDSAnyReadTransaction *)transaction;
+
+- (void)notifyUserForReaction:(OWSReaction *)reaction
+                     inThread:(TSThread *)thread
+                  transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)notifyUserForErrorMessage:(TSErrorMessage *)errorMessage
                            thread:(TSThread *)thread

@@ -93,13 +93,22 @@ public class ReactionManager: NSObject {
         if reaction.remove {
             message.removeReaction(for: reactor, transaction: transaction)
         } else {
-            message.recordReaction(
+            let reaction = message.recordReaction(
                 for: reactor,
                 emoji: reaction.emoji,
                 sentAtTimestamp: timestamp,
                 receivedAtTimestamp: NSDate.ows_millisecondTimeStamp(),
                 transaction: transaction
             )
+
+            // If this is a reaction to a message we sent, notify the user.
+            if message is TSOutgoingMessage, !reactor.isLocalAddress {
+                guard let thread = TSThread.anyFetch(uniqueId: threadId, transaction: transaction) else {
+                    return owsFailDebug("Failed to lookup thread for reaction notification.")
+                }
+
+                SSKEnvironment.shared.notificationsManager.notifyUser(for: reaction, in: thread, transaction: transaction)
+            }
         }
     }
 }
