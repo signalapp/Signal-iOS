@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSOutgoingReactionMessage ()
 
-@property (nonatomic, readonly) TSMessage *message;
+@property (nonatomic, readonly) NSString *messageUniqueId;
 @property (nonatomic, readonly) NSString *emoji;
 @property (nonatomic, readonly) BOOL isRemoving;
 
@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _message = message;
+    _messageUniqueId = message.uniqueId;
     _emoji = emoji;
     _isRemoving = isRemoving;
 
@@ -61,16 +61,21 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SSKProtoDataMessageBuilder *)dataMessageBuilderWithThread:(TSThread *)thread
                                                           transaction:(SDSAnyReadTransaction *)transaction
 {
-    SSKProtoDataMessageReactionBuilder *reactionBuilder = [SSKProtoDataMessageReaction builderWithEmoji:self.emoji
-                                                                                                 remove:self.isRemoving
-                                                                                              timestamp:self.message.timestamp];
+    TSMessage *_Nullable message = [TSMessage anyFetchMessageWithUniqueId:self.messageUniqueId transaction:transaction];
+    if (!message) {
+        OWSFailDebug(@"unexpectedly missing message for reaction");
+        return nil;
+    }
+
+    SSKProtoDataMessageReactionBuilder *reactionBuilder =
+        [SSKProtoDataMessageReaction builderWithEmoji:self.emoji remove:self.isRemoving timestamp:message.timestamp];
 
     SignalServiceAddress *_Nullable messageAuthor;
 
-    if ([self.message isKindOfClass:[TSOutgoingMessage class]]) {
+    if ([message isKindOfClass:[TSOutgoingMessage class]]) {
         messageAuthor = TSAccountManager.sharedInstance.localAddress;
-    } else if ([self.message isKindOfClass:[TSIncomingMessage class]]) {
-        messageAuthor = ((TSIncomingMessage *)self.message).authorAddress;
+    } else if ([message isKindOfClass:[TSIncomingMessage class]]) {
+        messageAuthor = ((TSIncomingMessage *)message).authorAddress;
     }
 
     if (!messageAuthor) {
@@ -118,9 +123,15 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    TSMessage *_Nullable message = [TSMessage anyFetchMessageWithUniqueId:self.messageUniqueId transaction:transaction];
+    if (!message) {
+        OWSFailDebug(@"unexpectedly missing message for reaction");
+        return;
+    }
+
     OWSLogError(@"Failed to send reaction to all recipients: %@", error.localizedDescription);
 
-    OWSReaction *_Nullable currentReaction = [self.message reactionForReactor:localAddress transaction:transaction];
+    OWSReaction *_Nullable currentReaction = [message reactionForReactor:localAddress transaction:transaction];
 
     if (![NSString isNullableObject:currentReaction.uniqueId equalTo:self.createdReaction.uniqueId]) {
         OWSLogInfo(@"Skipping reversion, changes have been made since we tried to send this message.");
@@ -128,13 +139,13 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (self.previousReaction) {
-        [self.message recordReactionForReactor:self.previousReaction.reactor
-                                         emoji:self.previousReaction.emoji
-                               sentAtTimestamp:self.previousReaction.sentAtTimestamp
-                           receivedAtTimestamp:self.previousReaction.receivedAtTimestamp
-                                   transaction:transaction];
+        [message recordReactionForReactor:self.previousReaction.reactor
+                                    emoji:self.previousReaction.emoji
+                          sentAtTimestamp:self.previousReaction.sentAtTimestamp
+                      receivedAtTimestamp:self.previousReaction.receivedAtTimestamp
+                              transaction:transaction];
     } else {
-        [self.message removeReactionForReactor:localAddress transaction:transaction];
+        [message removeReactionForReactor:localAddress transaction:transaction];
     }
 }
 
