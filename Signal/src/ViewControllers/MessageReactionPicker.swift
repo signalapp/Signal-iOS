@@ -24,7 +24,7 @@ class MessageReactionPicker: UIStackView {
         super.init(frame: .zero)
 
         backgroundView = addBackgroundView(
-            withBackgroundColor: Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_white,
+            withBackgroundColor: Theme.reactionBackgroundColor,
             cornerRadius: pickerDiameter / 2
         )
         backgroundView?.layer.shadowColor = UIColor.black.withAlphaComponent(0.24).cgColor

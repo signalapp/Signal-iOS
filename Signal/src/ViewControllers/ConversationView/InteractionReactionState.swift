@@ -6,6 +6,9 @@ import Foundation
 
 @objc
 class InteractionReactionState: NSObject {
+    @objc
+    var hasReactions: Bool { return !emojiCounts.isEmpty }
+
     let emojiCounts: [(emoji: String, count: Int)]
     let localUserEmoji: String?
 
