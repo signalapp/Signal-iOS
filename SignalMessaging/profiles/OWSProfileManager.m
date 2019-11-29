@@ -270,6 +270,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     void (^tryToUpdateService)(NSString *_Nullable, NSString *_Nullable) = ^(
         NSString *_Nullable avatarUrlPath, NSString *_Nullable avatarFileName) {
         [self updateServiceWithProfileName:profileName
+                                 avatarUrl:avatarUrlPath
             success:^{
                 OWSUserProfile *userProfile = self.localUserProfile;
                 OWSAssertDebug(userProfile);
@@ -447,6 +448,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 }
 
 - (void)updateServiceWithProfileName:(nullable NSString *)localProfileName
+                           avatarUrl:(nullable NSString *)avatarURL
                              success:(void (^)(void))successBlock
                              failure:(ProfileManagerFailureBlock)failureBlock {
     OWSAssertDebug(successBlock);
@@ -461,6 +463,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
     for (NSString *server in servers) {
         [[LKPublicChatAPI setDisplayName:localProfileName on:server] retainUntilComplete];
+        [[LKPublicChatAPI setAvatar:avatarURL profileKey:self.localProfileKey.keyData on:server] retainUntilComplete];
     }
     
     successBlock();
@@ -636,6 +639,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             }
             return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
                 [self updateServiceWithProfileName:oldProfileName
+                 avatarUrl:localUserProfile.avatarUrlPath
                     success:^{
                         OWSLogInfo(@"Update to profile name succeeded.");
 

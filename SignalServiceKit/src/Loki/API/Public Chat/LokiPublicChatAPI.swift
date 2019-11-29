@@ -12,6 +12,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     // MARK: Public Chat
     private static let channelInfoType = "net.patter-app.settings"
     private static let attachmentType = "net.app.core.oembed"
+    public static let avatarType = "network.loki.messenger.avatar"
     @objc public static let publicChatMessageType = "network.loki.messenger.publicChat"
     
     @objc public static let defaultChats: [LokiPublicChat] = {
@@ -287,6 +288,24 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         }.retryingIfNeeded(maxRetryCount: 3)
     }
     
+    public static func setAvatar(with url: String?, profileKey: Data, on server: String) -> Promise<Void> {
+        print("[Loki] Updating avatar on server: \(server).")
+        return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<Void> in
+            var annotation: JSON = ["type" : avatarType]
+            if let url = url {
+                annotation["value"] = ["profileKey": profileKey.base64EncodedString(), "url" : url]
+            }
+            let parameters: JSON = [ "annotations" : [annotation] ]
+            let url = URL(string: "\(server)/users/me")!
+            let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
+            request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { _ in }.recover(on: DispatchQueue.global()) { error in
+                print("Couldn't update avatar due to error: \(error).")
+                throw error
+            }
+        }.retryingIfNeeded(maxRetryCount: 3)
+    }
+    
     public static func getInfo(for channel: UInt64, on server: String) -> Promise<LokiPublicChatInfo> {
         let url = URL(string: "\(server)/channels/\(channel)?include_annotations=1")!
         let request = TSRequest(url: url)
@@ -328,5 +347,10 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     @objc(setDisplayName:on:)
     public static func objc_setDisplayName(to newDisplayName: String?, on server: String) -> AnyPromise {
         return AnyPromise.from(setDisplayName(to: newDisplayName, on: server))
+    }
+    
+    @objc(setAvatar:profileKey:on:)
+    public static func objc_setAvatar(with url: String?, profileKey: Data, on server: String) -> AnyPromise {
+        return AnyPromise.from(setAvatar(with: url, profileKey: profileKey, on: server))
     }
 }
