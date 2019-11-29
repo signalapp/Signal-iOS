@@ -9,6 +9,10 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocol {
         Logger.warn("skipping notification for: \(incomingMessage.description)")
     }
 
+    public func notifyUser(for reaction: OWSReaction, in thread: TSThread, transaction: SDSAnyReadTransaction) {
+        Logger.warn("skipping notification for: \(reaction.description)")
+    }
+
     public func notifyUser(for errorMessage: TSErrorMessage, thread: TSThread, transaction: SDSAnyWriteTransaction) {
         Logger.warn("skipping notification for: \(errorMessage.description)")
     }

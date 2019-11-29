@@ -1088,10 +1088,22 @@ NS_ASSUME_NONNULL_BEGIN
 
         // If the sent transcript represents a group state change, e.g. an update or quit
         // make sure we reflect that information locally as well.
-        if ([self isDataMessageGroupStateChange:syncMessage.sent.message]) {
-            [self handleGroupStateChangeWithEnvelope:envelope
-                                         dataMessage:syncMessage.sent.message
-                                         transaction:transaction];
+        if ([self isDataMessageGroupStateChange:dataMessage]) {
+            [self handleGroupStateChangeWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
+        } else if (dataMessage.reaction != nil) {
+            TSThread *thread;
+            if (dataMessage.group && dataMessage.group.id.length > 0) {
+                thread = [TSGroupThread getOrCreateThreadWithGroupId:dataMessage.group.id transaction:transaction];
+            } else {
+                thread = [TSContactThread getOrCreateThreadWithContactAddress:syncMessage.sent.destinationAddress
+                                                                  transaction:transaction];
+            }
+
+            [OWSReactionManager processIncomingReaction:syncMessage.sent.message.reaction
+                                               threadId:thread.uniqueId
+                                                reactor:envelope.sourceAddress
+                                              timestamp:syncMessage.sent.timestamp
+                                            transaction:transaction];
         } else {
             [OWSRecordTranscriptJob
                 processIncomingSentMessageTranscript:transcript

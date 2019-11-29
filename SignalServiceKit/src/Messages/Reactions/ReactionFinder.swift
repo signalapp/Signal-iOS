@@ -366,6 +366,7 @@ struct GRDBReactionFinderAdapter: ReactionFinderAdapter {
             SELECT * FROM \(ReactionRecord.databaseTableName)
             WHERE \(reactionColumn: .uniqueMessageId) = ?
             AND \(reactionColumn: .emoji) = ?
+            ORDER BY \(reactionColumn: .receivedAtTimestamp) DESC
         """
         let cursor = OWSReaction.grdbFetchCursor(sql: sql, arguments: [uniqueMessageId, emoji], transaction: transaction)
 
