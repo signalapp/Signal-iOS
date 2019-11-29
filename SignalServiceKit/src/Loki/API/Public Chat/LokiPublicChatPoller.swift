@@ -122,11 +122,12 @@ public final class LokiPublicChatPoller : NSObject {
                         dataMessage.setPreview([ try! signalLinkPreview.build() ])
                     }
                     let profile = SSKProtoDataMessageLokiProfile.builder()
-                    if let profilePicture = message.avatar {
-                        profile.setProfilePicture(profilePicture)
-                        profile.setDisplayName(message.displayName)
-                        dataMessage.setProfile(try! profile.build())
+                    profile.setDisplayName(message.displayName)
+                    if let avatar = message.avatar {
+                        profile.setProfilePicture(avatar.url)
+                        dataMessage.setProfileKey(avatar.profileKey)
                     }
+                    dataMessage.setProfile(try! profile.build())
                     dataMessage.setTimestamp(message.timestamp)
                     dataMessage.setGroup(try! groupContext.build())
                     if let quote = message.quote {

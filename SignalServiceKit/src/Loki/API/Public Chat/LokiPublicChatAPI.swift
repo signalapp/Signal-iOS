@@ -99,8 +99,12 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                         print("[Loki] Couldn't parse message for public chat channel with ID: \(channel) on server: \(server) from: \(message).")
                         return nil
                 }
-                let profilePictureURL = value["avatar"] as? String ?? nil
+                var avatar: LokiPublicChatMessage.Avatar? = nil
                 let displayName = user["name"] as? String ?? NSLocalizedString("Anonymous", comment: "")
+                if let userAnnotations = user["annotations"] as? [JSON], let avatarAnnoration = userAnnotations.first(where: { $0["type"] as? String == avatarType }),
+                    let avatarValue = avatarAnnoration["value"] as? JSON, let profileKeyString = avatarValue["profileKey"] as? String, let profileKey = Data(base64Encoded: profileKeyString), let url = avatarValue["url"] as? String {
+                    avatar = LokiPublicChatMessage.Avatar(profileKey: profileKey, url: url)
+                }
                 let lastMessageServerID = getLastMessageServerID(for: channel, on: server)
                 if serverID > (lastMessageServerID ?? 0) { setLastMessageServerID(for: channel, on: server, to: serverID) }
                 let quote: LokiPublicChatMessage.Quote?
@@ -129,7 +133,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                     }
                     return LokiPublicChatMessage.Attachment(kind: kind, server: server, serverID: serverID, contentType: contentType, size: size, fileName: fileName, flags: flags, width: width, height: height, caption: caption, url: url, linkPreviewURL: linkPreviewURL, linkPreviewTitle: linkPreviewTitle)
                 }
-                let result = LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, avatar: profilePictureURL, body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature)
+                let result = LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, avatar: avatar, body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature)
                 guard result.hasValidSignature() else {
                     print("[Loki] Ignoring public chat message with invalid signature.")
                     return nil

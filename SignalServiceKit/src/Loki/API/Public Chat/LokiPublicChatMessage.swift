@@ -5,7 +5,7 @@ public final class LokiPublicChatMessage : NSObject {
     public let serverID: UInt64?
     public let hexEncodedPublicKey: String
     public let displayName: String
-    public let avatar: String?
+    public let avatar: Avatar?
     public let body: String
     /// - Note: Expressed as milliseconds since 00:00:00 UTC on 1 January 1970.
     public let timestamp: UInt64
@@ -22,6 +22,11 @@ public final class LokiPublicChatMessage : NSObject {
     private let attachmentType = "net.app.core.oembed"
     
     // MARK: Types
+    public struct Avatar {
+        public let profileKey: Data
+        public let url: String
+    }
+    
     public struct Quote {
         public let quotedMessageTimestamp: UInt64
         public let quoteeHexEncodedPublicKey: String
@@ -67,7 +72,7 @@ public final class LokiPublicChatMessage : NSObject {
     }
     
     // MARK: Initialization
-    public init(serverID: UInt64?, hexEncodedPublicKey: String, displayName: String, avatar: String?, body: String, type: String, timestamp: UInt64, quote: Quote?, attachments: [Attachment], signature: Signature?) {
+    public init(serverID: UInt64?, hexEncodedPublicKey: String, displayName: String, avatar: Avatar?, body: String, type: String, timestamp: UInt64, quote: Quote?, attachments: [Attachment], signature: Signature?) {
         self.serverID = serverID
         self.hexEncodedPublicKey = hexEncodedPublicKey
         self.displayName = displayName
@@ -81,7 +86,7 @@ public final class LokiPublicChatMessage : NSObject {
         super.init()
     }
     
-    @objc public convenience init(hexEncodedPublicKey: String, displayName: String, avatar: String?, body: String, type: String, timestamp: UInt64, quotedMessageTimestamp: UInt64, quoteeHexEncodedPublicKey: String?, quotedMessageBody: String?, quotedMessageServerID: UInt64, signatureData: Data?, signatureVersion: UInt64) {
+    @objc public convenience init(hexEncodedPublicKey: String, displayName: String, body: String, type: String, timestamp: UInt64, quotedMessageTimestamp: UInt64, quoteeHexEncodedPublicKey: String?, quotedMessageBody: String?, quotedMessageServerID: UInt64, signatureData: Data?, signatureVersion: UInt64) {
         let quote: Quote?
         if quotedMessageTimestamp != 0, let quoteeHexEncodedPublicKey = quoteeHexEncodedPublicKey, let quotedMessageBody = quotedMessageBody {
             let quotedMessageServerID = (quotedMessageServerID != 0) ? quotedMessageServerID : nil
@@ -95,7 +100,7 @@ public final class LokiPublicChatMessage : NSObject {
         } else {
             signature = nil
         }
-        self.init(serverID: nil, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, avatar: avatar, body: body, type: type, timestamp: timestamp, quote: quote, attachments: [], signature: signature)
+        self.init(serverID: nil, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, avatar: nil, body: body, type: type, timestamp: timestamp, quote: quote, attachments: [], signature: signature)
     }
     
     // MARK: Crypto
