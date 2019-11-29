@@ -916,6 +916,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         NSData *groupId = groupThread.groupModel.groupId;
         return [self isGroupIdInProfileWhitelist:groupId];
+    } else if (thread.friendRequestStatus == LKThreadFriendRequestStatusFriends) {
+        return true;
     } else {
         NSString *recipientId = thread.contactIdentifier;
         return [self isUserInProfileWhitelist:recipientId];
@@ -1067,7 +1069,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (userProfile.avatarUrlPath.length < 1) {
-            OWSFailDebug(@"Malformed avatar URL: %@", userProfile.avatarUrlPath);
+            OWSLogDebug(@"Skipping downloading avatar for %@ because url is not set", userProfile.recipientId);
             return;
         }
         NSString *_Nullable avatarUrlPathAtStart = userProfile.avatarUrlPath;

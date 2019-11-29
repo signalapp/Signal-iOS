@@ -8,6 +8,7 @@
 #import "OWSContactsOutputStream.h"
 #import "OWSIdentityManager.h"
 #import "ProfileManagerProtocol.h"
+#import "ProtoUtils.h"
 #import "SSKEnvironment.h"
 #import "SignalAccount.h"
 #import "TSAccountManager.h"
@@ -111,6 +112,8 @@ NS_ASSUME_NONNULL_BEGIN
     [profileBuilder setProfilePicture:profilePictureURL ?: @""];
     SSKProtoDataMessageBuilder *messageBuilder = [SSKProtoDataMessage builder];
     [messageBuilder setProfile:[profileBuilder buildAndReturnError:nil]];
+    [ProtoUtils addLocalProfileKeyToDataMessageBuilder:messageBuilder];
+    
     SSKProtoSyncMessageSentBuilder *transcriptBuilder = [SSKProtoSyncMessageSent builder];
     [transcriptBuilder setMessage:[messageBuilder buildAndReturnError:nil]];
     [syncMessageBuilder setSent:[transcriptBuilder buildAndReturnError:nil]];
