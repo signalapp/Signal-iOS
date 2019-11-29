@@ -3521,7 +3521,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "$PROJECT_DIR/Scripts/update_plist_info.sh\n";
+			shellScript = "\"${PROJECT_DIR}\"/Scripts/update_plist_info.sh\n";
 		};
 		43FC5EFFCB0E75A4C409DD75 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -3590,7 +3590,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which swiftlint >/dev/null; then\n# disabled for now. too many lint errors outside of the scope of this branch\n#(cd Signal && swiftlint)\n# never fail.\nexit 0\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi";
+			shellScript = "if which swiftlint >/dev/null; then\n# disabled for now. too many lint errors outside of the scope of this branch\n#(cd Signal && swiftlint)\n# never fail.\nexit 0\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 		4C10B1BE23176D250099396B /* [Carthage] Copy Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -3772,7 +3772,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "$PROJECT_DIR/Scripts/update_share_plist_info.sh\n";
+			shellScript = "\"${PROJECT_DIR}\"/Scripts/update_share_plist_info.sh\n";
 		};
 		B4E9B04E862FB64FC9A8F79B /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
