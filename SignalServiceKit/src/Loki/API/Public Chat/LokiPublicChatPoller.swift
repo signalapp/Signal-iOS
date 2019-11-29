@@ -163,6 +163,13 @@ public final class LokiPublicChatPoller : NSObject {
                         transaction.setObject(senderDisplayName, forKey: senderHexEncodedPublicKey, inCollection: publicChat.id)
                         let messageServerID = message.serverID
                         SSKEnvironment.shared.messageManager.throws_processEnvelope(try! envelope.build(), plaintextData: try! content.build().serializedData(), wasReceivedByUD: false, transaction: transaction, serverID: messageServerID ?? 0)
+                        
+                        // If we got a message from our primary device then we should use its avatar
+                        if let avatar = message.avatar, masterHexEncodedPublicKey == message.hexEncodedPublicKey {
+                            SSKEnvironment.shared.profileManager.updateUserProfile(withDisplayName: message.displayName, transaction: transaction)
+                            SSKEnvironment.shared.profileManager.updateUserProfileKeyData(avatar.profileKey, avatarURL: avatar.url, transaction: transaction)
+                            SSKEnvironment.shared.profileManager.updateService(withProfileName: message.displayName, avatarUrl: avatar.url)
+                        }
                     }
                 }
             }

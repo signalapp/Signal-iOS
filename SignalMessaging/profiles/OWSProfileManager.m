@@ -346,11 +346,13 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     [self.localUserProfile updateWithProfileName:displayName transaction:transaction];
 }
 
-- (void)updateUserPofileKeyData:(NSData *)profileKeyData avatarURL:(nullable NSString *)avatarURL transaction:(YapDatabaseReadWriteTransaction *)transaction {
+- (void)updateUserProfileKeyData:(NSData *)profileKeyData avatarURL:(nullable NSString *)avatarURL transaction:(YapDatabaseReadWriteTransaction *)transaction {
     OWSAES256Key *profileKey = [OWSAES256Key keyWithData:profileKeyData];
     if (profileKey != nil) {
         [self.localUserProfile updateWithProfileKey:profileKey transaction:transaction completion:^{
-            [self.localUserProfile updateWithAvatarUrlPath:avatarURL transaction:transaction];
+            [self.localUserProfile updateWithAvatarUrlPath:avatarURL transaction:transaction completion:^{
+                [self downloadAvatarForUserProfile:self.localUserProfile];
+            }];
         }];
     }
 }
@@ -467,6 +469,10 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     }
     
     successBlock();
+}
+
+- (void)updateServiceWithProfileName:(nullable NSString *)localProfileName avatarUrl:(nullable NSString *)avatarURL {
+    [self updateServiceWithProfileName:localProfileName avatarUrl:avatarURL success:^{} failure:^(NSError * _Nonnull error) {}];
 }
 
 - (void)fetchLocalUsersProfile

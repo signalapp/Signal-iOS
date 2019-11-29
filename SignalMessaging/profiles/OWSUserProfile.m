@@ -321,13 +321,13 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
     [self updateWithProfileName:profileName avatarUrlPath:self.avatarUrlPath avatarFileName:self.avatarFileName transaction:transaction completion:nil];
 }
 
-- (void)updateWithAvatarUrlPath:(NSString *)avatarUrlPath transaction:(YapDatabaseReadWriteTransaction*)transaction {
+- (void)updateWithAvatarUrlPath:(NSString *)avatarUrlPath transaction:(YapDatabaseReadWriteTransaction*)transaction completion:(nullable OWSUserProfileCompletion)completion {
     [self applyChanges:^(OWSUserProfile *userProfile) {
         [userProfile setAvatarUrlPath:avatarUrlPath];
     }
            functionName:__PRETTY_FUNCTION__
            transaction:transaction
-            completion:nil];
+            completion:completion];
 }
 
 - (void)updateWithAvatarUrlPath:(nullable NSString *)avatarUrlPath

@@ -82,7 +82,7 @@ extern NSString *const kLocalProfileUniqueId;
                  completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithProfileName:(nullable NSString *)profileName transaction:(YapDatabaseReadWriteTransaction*)transaction;
-- (void)updateWithAvatarUrlPath:(NSString *)avatarUrlPath transaction:(YapDatabaseReadWriteTransaction*)transaction;
+- (void)updateWithAvatarUrlPath:(NSString *)avatarUrlPath transaction:(YapDatabaseReadWriteTransaction*)transaction completion:(nullable OWSUserProfileCompletion)completion;
 
 #pragma mark - Profile Avatars Directory
 

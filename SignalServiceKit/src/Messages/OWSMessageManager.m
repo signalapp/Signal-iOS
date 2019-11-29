@@ -930,7 +930,7 @@ NS_ASSUME_NONNULL_BEGIN
                 NSString *profilePictureURL = profile.profilePicture;
                 [self.profileManager updateUserProfileWithDisplayName:displayName transaction:transaction];
                 if ([dataMessage hasProfileKey]) {
-                    [self.profileManager updateUserPofileKeyData:dataMessage.profileKey avatarURL:profilePictureURL transaction:transaction];
+                    [self.profileManager updateUserProfileKeyData:dataMessage.profileKey avatarURL:profilePictureURL transaction:transaction];
                 }
             });
         }
