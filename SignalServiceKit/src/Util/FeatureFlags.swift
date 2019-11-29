@@ -18,7 +18,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
+let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .internalPreview
 
 // MARK: -
 
@@ -128,7 +128,7 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
-    public static var audibleErrorLogging = build.includes(.internalPreview)
+    public static var audibleErrorLogging = build.includes(.dev)
 
     @objc
     public static var storageModeDescription: String {
@@ -236,10 +236,10 @@ public class FeatureFlags: NSObject {
     public static let linkedPhones = build.includes(.internalPreview)
 
     @objc
-    public static let reactionReceive = build.includes(.dev)
+    public static let reactionReceive = build.includes(.internalPreview)
 
     @objc
-    public static let reactionSend = build.includes(.dev)
+    public static let reactionSend = build.includes(.internalPreview)
 
     @objc
     public static let isUsingProductionService = true
