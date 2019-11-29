@@ -438,22 +438,7 @@ NS_ASSUME_NONNULL_BEGIN
             BOOL isDuplicate = [LKAPI isDuplicateSyncMessage:contentProto.syncMessage.sent from:envelope.source];
             if (isDuplicate) { return; }
         }
-        
-        // Loki: Handle device linking message if needed
-        if (contentProto.lokiDeviceLinkMessage != nil) {
-            NSString *masterHexEncodedPublicKey = contentProto.lokiDeviceLinkMessage.masterHexEncodedPublicKey;
-            NSString *slaveHexEncodedPublicKey = contentProto.lokiDeviceLinkMessage.slaveHexEncodedPublicKey;
-            NSData *masterSignature = contentProto.lokiDeviceLinkMessage.masterSignature;
-            NSData *slaveSignature = contentProto.lokiDeviceLinkMessage.slaveSignature;
-            if (masterSignature != nil) { // Authorization
-                OWSLogInfo(@"[Loki] Received a device linking authorization from: %@", envelope.source); // Not masterHexEncodedPublicKey
-                [LKDeviceLinkingSession.current processLinkingAuthorizationFrom:masterHexEncodedPublicKey for:slaveHexEncodedPublicKey masterSignature:masterSignature slaveSignature:slaveSignature];
-            } else if (slaveSignature != nil) { // Request
-                OWSLogInfo(@"[Loki] Received a device linking request from: %@", envelope.source); // Not slaveHexEncodedPublicKey
-                [LKDeviceLinkingSession.current processLinkingRequestFrom:slaveHexEncodedPublicKey to:masterHexEncodedPublicKey with:slaveSignature];
-            }
-        }
-        
+
         // Loki: Handle pre key bundle message if needed
         if (contentProto.prekeyBundleMessage != nil) {
             OWSLogInfo(@"[Loki] Received a pre key bundle message from: %@.", envelope.source);
@@ -471,7 +456,25 @@ NS_ASSUME_NONNULL_BEGIN
             [LKP2PAPI didReceiveLokiAddressMessageForContact:envelope.source address:address port:port receivedThroughP2P:envelope.isPtpMessage];
         }
 
-        if (contentProto.syncMessage) {
+        // Loki: Handle device linking message if needed
+        if (contentProto.lokiDeviceLinkMessage != nil) {
+            NSString *masterHexEncodedPublicKey = contentProto.lokiDeviceLinkMessage.masterHexEncodedPublicKey;
+            NSString *slaveHexEncodedPublicKey = contentProto.lokiDeviceLinkMessage.slaveHexEncodedPublicKey;
+            NSData *masterSignature = contentProto.lokiDeviceLinkMessage.masterSignature;
+            NSData *slaveSignature = contentProto.lokiDeviceLinkMessage.slaveSignature;
+            if (masterSignature != nil) { // Authorization
+                OWSLogInfo(@"[Loki] Received a device linking authorization from: %@", envelope.source); // Not masterHexEncodedPublicKey
+                [LKDeviceLinkingSession.current processLinkingAuthorizationFrom:masterHexEncodedPublicKey for:slaveHexEncodedPublicKey masterSignature:masterSignature slaveSignature:slaveSignature];
+                
+                // Set any profile information
+                if (contentProto.dataMessage) {
+                    [self handleLokiProfileForUserIfNeeded:contentProto.dataMessage transaction:transaction];
+                }
+            } else if (slaveSignature != nil) { // Request
+                OWSLogInfo(@"[Loki] Received a device linking request from: %@", envelope.source); // Not slaveHexEncodedPublicKey
+                [LKDeviceLinkingSession.current processLinkingRequestFrom:slaveHexEncodedPublicKey to:masterHexEncodedPublicKey with:slaveSignature];
+            }
+        } else if (contentProto.syncMessage) {
             [self throws_handleIncomingEnvelope:envelope
                                 withSyncMessage:contentProto.syncMessage
                                     transaction:transaction
@@ -915,109 +918,66 @@ NS_ASSUME_NONNULL_BEGIN
         OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorSyncMessageFromUnknownSource], envelope);
         return;
     }
-
+    
+    NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:userHexEncodedPublicKey in:transaction];
+    BOOL wasSentByMasterDevice = [masterHexEncodedPublicKey isEqual:envelope.source];
     if (syncMessage.sent) {
-        NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-        NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:userHexEncodedPublicKey in:transaction];
-        BOOL wasSentByMasterDevice = [masterHexEncodedPublicKey isEqual:envelope.source];
-        
+
         // Loki: Try to update using the provided profile
         if (wasSentByMasterDevice) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                SSKProtoDataMessage *dataMessage = syncMessage.sent.message;
-                SSKProtoDataMessageLokiProfile *profile = dataMessage.profile;
-                NSString *displayName = profile.displayName;
-                NSString *profilePictureURL = profile.profilePicture;
-                [self.profileManager updateUserProfileWithDisplayName:displayName transaction:transaction];
-                if ([dataMessage hasProfileKey]) {
-                    [self.profileManager updateUserProfileKeyData:dataMessage.profileKey avatarURL:profilePictureURL transaction:transaction];
-                }
-            });
+            [self handleLokiProfileForUserIfNeeded:syncMessage.sent.message transaction:transaction];
         }
-
-        // Loki: Handle contact sync if needed
-        if (syncMessage.contacts != nil) {
-            if (wasSentByMasterDevice) {
-                NSLog(@"[Loki] Received contact sync message.");
-                NSData *data = syncMessage.contacts.data;
-                ContactParser *parser = [[ContactParser alloc] initWithData:data];
-                NSArray<NSString *> *hexEncodedPublicKeys = [parser parseHexEncodedPublicKeys];
-                // Try to establish sessions
-                for (NSString *hexEncodedPublicKey in hexEncodedPublicKeys) {
-                    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
-                    LKThreadFriendRequestStatus friendRequestStatus = thread.friendRequestStatus;
-                    switch (friendRequestStatus) {
-                        case LKThreadFriendRequestStatusNone: {
-                            OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
-                            OWSMessageSend *automatedFriendRequestMessage = [messageSender getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:hexEncodedPublicKey];
-                            dispatch_async(OWSDispatch.sendingQueue, ^{
-                                [messageSender sendMessage:automatedFriendRequestMessage];
-                            });
-                            break;
-                        }
-                        case LKThreadFriendRequestStatusRequestReceived: {
-                            [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];
-                            // The two lines below are equivalent to calling [ThreadUtil enqueueFriendRequestAcceptanceMessageInThread:thread]
-                            LKEphemeralMessage *backgroundMessage = [[LKEphemeralMessage alloc] initInThread:thread];
-                            [self.messageSenderJobQueue addMessage:backgroundMessage transaction:transaction];
-                            break;
-                        }
-                        default: break; // Do nothing
-                    }
-                }
-            }
-        } else {
-            OWSIncomingSentMessageTranscript *transcript =
-                [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent transaction:transaction];
-
-            SSKProtoDataMessage *_Nullable dataMessage = syncMessage.sent.message;
-            if (!dataMessage) {
-                OWSFailDebug(@"Missing dataMessage.");
-                return;
-            }
-            NSString *destination = syncMessage.sent.destination;
-            if (dataMessage && destination.length > 0 && dataMessage.hasProfileKey) {
-                // If we observe a linked device sending our profile key to another
-                // user, we can infer that that user belongs in our profile whitelist.
-                if (dataMessage.group) {
-                    [self.profileManager addGroupIdToProfileWhitelist:dataMessage.group.id];
-                } else {
-                    [self.profileManager addUserToProfileWhitelist:destination];
-                }
-            }
-
-            if ([self isDataMessageGroupAvatarUpdate:syncMessage.sent.message] && !syncMessage.sent.isRecipientUpdate) {
-                [OWSRecordTranscriptJob
-                    processIncomingSentMessageTranscript:transcript
-                                                serverID:0
-                                       attachmentHandler:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                                           OWSAssertDebug(attachmentStreams.count == 1);
-                                           TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
-                                           [self.dbConnection readWriteWithBlock:^(
-                                               YapDatabaseReadWriteTransaction *transaction) {
-                                               TSGroupThread *_Nullable groupThread =
-                                                   [TSGroupThread threadWithGroupId:dataMessage.group.id
-                                                                        transaction:transaction];
-                                               if (!groupThread) {
-                                                   OWSFailDebug(@"ignoring sync group avatar update for unknown group.");
-                                                   return;
-                                               }
-
-                                               [groupThread updateAvatarWithAttachmentStream:attachmentStream
-                                                                                 transaction:transaction];
-                                           }];
-                                       }
-                                             transaction:transaction];
+        
+        OWSIncomingSentMessageTranscript *transcript =
+        [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent transaction:transaction];
+        
+        SSKProtoDataMessage *_Nullable dataMessage = syncMessage.sent.message;
+        if (!dataMessage) {
+            OWSFailDebug(@"Missing dataMessage.");
+            return;
+        }
+        NSString *destination = syncMessage.sent.destination;
+        if (dataMessage && destination.length > 0 && dataMessage.hasProfileKey) {
+            // If we observe a linked device sending our profile key to another
+            // user, we can infer that that user belongs in our profile whitelist.
+            if (dataMessage.group) {
+                [self.profileManager addGroupIdToProfileWhitelist:dataMessage.group.id];
             } else {
-                [OWSRecordTranscriptJob
-                    processIncomingSentMessageTranscript:transcript
-                                                serverID:serverID
-                                       attachmentHandler:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                                           OWSLogDebug(@"successfully fetched transcript attachments: %lu",
-                                               (unsigned long)attachmentStreams.count);
-                                       }
-                                             transaction:transaction];
+                [self.profileManager addUserToProfileWhitelist:destination];
             }
+        }
+        
+        if ([self isDataMessageGroupAvatarUpdate:syncMessage.sent.message] && !syncMessage.sent.isRecipientUpdate) {
+            [OWSRecordTranscriptJob
+             processIncomingSentMessageTranscript:transcript
+             serverID:0
+             attachmentHandler:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                OWSAssertDebug(attachmentStreams.count == 1);
+                TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
+                [self.dbConnection readWriteWithBlock:^(
+                                                        YapDatabaseReadWriteTransaction *transaction) {
+                    TSGroupThread *_Nullable groupThread =
+                    [TSGroupThread threadWithGroupId:dataMessage.group.id
+                                         transaction:transaction];
+                    if (!groupThread) {
+                        OWSFailDebug(@"ignoring sync group avatar update for unknown group.");
+                        return;
+                    }
+                    
+                    [groupThread updateAvatarWithAttachmentStream:attachmentStream
+                                                      transaction:transaction];
+                }];
+            }
+             transaction:transaction];
+        } else {
+            [OWSRecordTranscriptJob
+             processIncomingSentMessageTranscript:transcript
+             serverID:serverID
+             attachmentHandler:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                OWSLogDebug(@"successfully fetched transcript attachments: %lu",
+                            (unsigned long)attachmentStreams.count);
+            }
+             transaction:transaction];
         }
     } else if (syncMessage.request) {
         if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeContacts) {
@@ -1066,8 +1026,50 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (syncMessage.verified) {
         OWSLogInfo(@"Received verification state for %@", syncMessage.verified.destination);
         [self.identityManager throws_processIncomingSyncMessage:syncMessage.verified transaction:transaction];
+    } else if (syncMessage.contacts != nil) {
+        if (false && wasSentByMasterDevice && syncMessage.contacts.data.length > 0) {
+            NSLog(@"[Loki] Received contact sync message.");
+            NSData *data = syncMessage.contacts.data;
+            ContactParser *parser = [[ContactParser alloc] initWithData:data];
+            NSArray<NSString *> *hexEncodedPublicKeys = [parser parseHexEncodedPublicKeys];
+            // Try to establish sessions
+            for (NSString *hexEncodedPublicKey in hexEncodedPublicKeys) {
+                TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
+                LKThreadFriendRequestStatus friendRequestStatus = thread.friendRequestStatus;
+                switch (friendRequestStatus) {
+                    case LKThreadFriendRequestStatusNone: {
+                        OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
+                        OWSMessageSend *automatedFriendRequestMessage = [messageSender getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:hexEncodedPublicKey];
+                        dispatch_async(OWSDispatch.sendingQueue, ^{
+                            [messageSender sendMessage:automatedFriendRequestMessage];
+                        });
+                        break;
+                    }
+                    case LKThreadFriendRequestStatusRequestReceived: {
+                        [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];
+                        // The two lines below are equivalent to calling [ThreadUtil enqueueFriendRequestAcceptanceMessageInThread:thread]
+                        LKEphemeralMessage *backgroundMessage = [[LKEphemeralMessage alloc] initInThread:thread];
+                        [self.messageSenderJobQueue addMessage:backgroundMessage transaction:transaction];
+                        break;
+                    }
+                    default: break; // Do nothing
+                }
+            }
+        }
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
+    }
+}
+
+- (void)handleLokiProfileForUserIfNeeded:(SSKProtoDataMessage *)dataMessage transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    if (dataMessage.profile != nil) {
+        SSKProtoDataMessageLokiProfile *profile = dataMessage.profile;
+        NSString *displayName = profile.displayName;
+        NSString *profilePictureURL = profile.profilePicture;
+        [self.profileManager updateUserProfileWithDisplayName:displayName transaction:transaction];
+        if ([dataMessage hasProfileKey]) {
+            [self.profileManager updateUserProfileKeyData:dataMessage.profileKey avatarURL:profilePictureURL transaction:transaction];
+        }
     }
 }
 

@@ -103,21 +103,6 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessage builder];
     [syncMessageBuilder setContacts:contactsProto];
     
-    // Loki: Set display name & profile picture
-    id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
-    NSString *displayName = profileManager.localProfileName;
-    NSString *profilePictureURL = profileManager.profilePictureURL;
-    SSKProtoDataMessageLokiProfileBuilder *profileBuilder = [SSKProtoDataMessageLokiProfile builder];
-    [profileBuilder setDisplayName:displayName];
-    [profileBuilder setProfilePicture:profilePictureURL ?: @""];
-    SSKProtoDataMessageBuilder *messageBuilder = [SSKProtoDataMessage builder];
-    [messageBuilder setProfile:[profileBuilder buildAndReturnError:nil]];
-    [ProtoUtils addLocalProfileKeyToDataMessageBuilder:messageBuilder];
-    
-    SSKProtoSyncMessageSentBuilder *transcriptBuilder = [SSKProtoSyncMessageSent builder];
-    [transcriptBuilder setMessage:[messageBuilder buildAndReturnError:nil]];
-    [syncMessageBuilder setSent:[transcriptBuilder buildAndReturnError:nil]];
-    
     return syncMessageBuilder;
 }
 
