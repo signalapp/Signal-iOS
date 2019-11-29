@@ -1,6 +1,6 @@
 
-@objc(LKNewPublicChatVC)
-final class NewPublicChatVC : OWSViewController {
+@objc(LKJoinPublicChatVC)
+final class JoinPublicChatVC : OWSViewController {
 
     // MARK: Components
     private lazy var urlTextField: UITextField = {

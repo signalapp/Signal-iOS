@@ -1,22 +1,23 @@
 
-public final class ProfilePictureView : UIView {
+final class ProfilePictureView : UIView {
     private var imageViewWidthConstraint: NSLayoutConstraint!
     private var imageViewHeightConstraint: NSLayoutConstraint!
-    public var size: CGFloat!
-    public var hexEncodedPublicKey: String!
-    public var additionalHexEncodedPublicKey: String?
+    var size: CGFloat!
+    var hexEncodedPublicKey: String!
+    var additionalHexEncodedPublicKey: String?
+    var onTap: (() -> Void)? = nil
     
     // MARK: Components
     private lazy var imageView = getImageView()
     private lazy var additionalImageView = getImageView()
     
     // MARK: Lifecycle
-    public override init(frame: CGRect) {
+    override init(frame: CGRect) {
         super.init(frame: frame)
         initialize()
     }
     
-    public required init?(coder: NSCoder) {
+    required init?(coder: NSCoder) {
         super.init(coder: coder)
         initialize()
     }
@@ -34,13 +35,24 @@ public final class ProfilePictureView : UIView {
         additionalImageView.set(.width, to: additionalImageViewSize)
         additionalImageView.set(.height, to: additionalImageViewSize)
         additionalImageView.layer.cornerRadius = additionalImageViewSize / 2
+        // Set up gesture recognizer
+        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        addGestureRecognizer(gestureRecognizer)
     }
     
     // MARK: Updating
-    public func update() {
+    func update() {
         if let imageViewWidthConstraint = imageViewWidthConstraint, let imageViewHeightConstraint = imageViewHeightConstraint {
             imageView.removeConstraint(imageViewWidthConstraint)
             imageView.removeConstraint(imageViewHeightConstraint)
+        }
+        func getProfilePicture(of size: CGFloat, for hexEncodedPublicKey: String) -> UIImage {
+            let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+            if hexEncodedPublicKey == userHexEncodedPublicKey, let profilePicture = OWSProfileManager.shared().localProfileAvatarImage() {
+                return profilePicture
+            } else {
+                return Identicon.generateIcon(string: hexEncodedPublicKey, size: size)
+            }
         }
         let size: CGFloat
         if let additionalHexEncodedPublicKey = additionalHexEncodedPublicKey {
@@ -48,7 +60,7 @@ public final class ProfilePictureView : UIView {
             imageViewWidthConstraint = imageView.set(.width, to: size)
             imageViewHeightConstraint = imageView.set(.height, to: size)
             additionalImageView.isHidden = false
-            additionalImageView.image = Identicon.generateIcon(string: additionalHexEncodedPublicKey, size: size)
+            additionalImageView.image = getProfilePicture(of: size, for: additionalHexEncodedPublicKey)
         } else {
             size = self.size
             imageViewWidthConstraint = imageView.pin(.trailing, to: .trailing, of: self)
@@ -56,8 +68,13 @@ public final class ProfilePictureView : UIView {
             additionalImageView.isHidden = true
             additionalImageView.image = nil
         }
-        imageView.image = Identicon.generateIcon(string: hexEncodedPublicKey, size: size)
+        imageView.image = getProfilePicture(of: size, for: hexEncodedPublicKey)
         imageView.layer.cornerRadius = size / 2
+    }
+    
+    // MARK: Interaction
+    @objc private func handleTap() {
+        onTap?()
     }
     
     // MARK: Convenience
@@ -65,8 +82,9 @@ public final class ProfilePictureView : UIView {
         let result = UIImageView()
         result.layer.masksToBounds = true
         result.backgroundColor = Colors.unimportant
-        result.layer.borderColor = Colors.border.cgColor
+        result.layer.borderColor = Colors.profilePictureBorder.cgColor
         result.layer.borderWidth = Values.profilePictureBorderThickness
+        result.contentMode = .scaleAspectFit
         return result
     }
 }

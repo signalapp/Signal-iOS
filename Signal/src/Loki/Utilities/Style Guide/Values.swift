@@ -1,26 +1,32 @@
 
 @objc(LKValues)
-public final class Values : NSObject {
+final class Values : NSObject {
     
     // MARK: - Alpha Values
-    @objc public static let inactiveElementOpacity = CGFloat(0.6)
+    @objc static let inactiveElementOpacity = CGFloat(0.6)
+    @objc static let conversationCellTimestampOpacity = CGFloat(0.4)
     
     // MARK: - Font Sizes
-    @objc public static let smallFontSize = CGFloat(13)
-    @objc public static let mediumFontSize = CGFloat(15)
-    @objc public static let largeFontSize = CGFloat(20)
-    @objc public static let veryLargeFontSize = CGFloat(25)
-    @objc public static let massiveFontSize = CGFloat(50)
+    @objc static let smallFontSize = CGFloat(13)
+    @objc static let mediumFontSize = CGFloat(15)
+    @objc static let largeFontSize = CGFloat(20)
+    @objc static let veryLargeFontSize = CGFloat(25)
+    @objc static let massiveFontSize = CGFloat(50)
     
     // MARK: - Element Sizes
-    @objc public static let buttonHeight = CGFloat(34)
-    @objc public static let accentLineThickness = CGFloat(4)
-    @objc public static let smallProfilePictureSize = CGFloat(35)
-    @objc public static let mediumProfilePictureSize = CGFloat(45)
-    @objc public static let largeProfilePictureSize = CGFloat(65)
-    @objc public static let profilePictureBorderThickness = CGFloat(1)
+    @objc static let buttonHeight = CGFloat(34)
+    @objc static let accentLineThickness = CGFloat(4)
+    @objc static let verySmallProfilePictureSize = CGFloat(26)
+    @objc static let smallProfilePictureSize = CGFloat(35)
+    @objc static let mediumProfilePictureSize = CGFloat(45)
+    @objc static let largeProfilePictureSize = CGFloat(65)
+    @objc static let profilePictureBorderThickness = CGFloat(1)
+    @objc static let conversationCellStatusIndicatorSize = CGFloat(14)
+    @objc static let searchBarHeight = CGFloat(36)
+    @objc static let newConversationButtonSize = CGFloat(45)
     
     // MARK: - Distances
-    @objc public static let smallSpacing = CGFloat(8)
-    @objc public static let mediumSpacing = CGFloat(16)
+    @objc static let smallSpacing = CGFloat(8)
+    @objc static let mediumSpacing = CGFloat(16)
+    @objc static let largeSpacing = CGFloat(24)
 }
