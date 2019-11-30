@@ -25,8 +25,6 @@ public class LoadingViewController: UIViewController {
         view.addSubview(logoView)
 
         logoView.autoCenterInSuperview()
-        logoView.autoPinToSquareAspectRatio()
-        logoView.autoMatch(.width, to: .width, of: view, withMultiplier: 1/3)
 
         self.topLabel = buildLabel()
         topLabel.alpha = 0
