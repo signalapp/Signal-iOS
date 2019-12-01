@@ -192,7 +192,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         profilePictureView.set(.height, to: profilePictureSize)
         profilePictureView.onTap = { [weak self] in self?.openSettings() }
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profilePictureView)
-        let createPrivateGroupChatButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Contacts"), style: .plain, target: self, action: #selector(createPrivateGroupChat))
+        let createPrivateGroupChatButton = UIBarButtonItem(image: #imageLiteral(resourceName: "People"), style: .plain, target: self, action: #selector(createPrivateGroupChat))
         createPrivateGroupChatButton.tintColor = Colors.text
         let joinPublicChatButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Globe"), style: .plain, target: self, action: #selector(joinPublicChat))
         joinPublicChatButton.tintColor = Colors.text

@@ -142,9 +142,9 @@ final class ConversationCell : UITableViewCell {
             let image: UIImage
             let status = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: lastMessage)
             switch status {
-            case .calculatingPoW, .uploading, .sending: image = #imageLiteral(resourceName: "Cog")
-            case .sent, .skipped, .delivered: image = #imageLiteral(resourceName: "TickOutline")
-            case .read: image = #imageLiteral(resourceName: "TickFilled")
+            case .calculatingPoW, .uploading, .sending: image = #imageLiteral(resourceName: "CircleDotDotDot")
+            case .sent, .skipped, .delivered: image = #imageLiteral(resourceName: "CircleCheck")
+            case .read: image = #imageLiteral(resourceName: "FilledCircleCheck")
             case .failed: image = #imageLiteral(resourceName: "message_status_failed")
             }
             statusIndicatorView.image = image
