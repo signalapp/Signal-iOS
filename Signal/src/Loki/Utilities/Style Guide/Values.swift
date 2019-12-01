@@ -29,4 +29,5 @@ final class Values : NSObject {
     @objc static let smallSpacing = CGFloat(8)
     @objc static let mediumSpacing = CGFloat(16)
     @objc static let largeSpacing = CGFloat(24)
+    @objc static let newConversationButtonBottomOffset = CGFloat(52)
 }

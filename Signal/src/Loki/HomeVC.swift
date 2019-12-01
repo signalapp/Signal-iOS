@@ -63,13 +63,25 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         searchBar.sizeToFit()
         tableView.contentOffset = CGPoint(x: 0, y: searchBar.frame.height)
         // Set up new conversation button
-//        let newConversationButton = UIImageView(image: #imageLiteral(resourceName: "ic_plus_24").asTintedImage(color: UIColor(hex: 0x121212)))
-//        newConversationButton.backgroundColor = Colors.accent
-//        newConversationButton.set(.width, to: Values.newConversationButtonSize)
-//        newConversationButton.set(.height, to: Values.newConversationButtonSize)
-//        view.addSubview(newConversationButton)
-//        newConversationButton.center(.horizontal, in: view)
-//        newConversationButton.center(.vertical, in: view)
+        let newConversationButton = UIButton()
+        newConversationButton.setTitle("+", for: UIControl.State.normal)
+        newConversationButton.titleLabel!.font = .systemFont(ofSize: 35)
+        newConversationButton.setTitleColor(UIColor(hex: 0x121212), for: UIControl.State.normal)
+        newConversationButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: 1, bottom: 4, right: 0) // Slight adjustment to make the plus exactly centered
+        newConversationButton.backgroundColor = Colors.accent
+        let newConversationButtonSize = Values.newConversationButtonSize
+        newConversationButton.layer.cornerRadius = newConversationButtonSize / 2
+        newConversationButton.layer.shadowPath = UIBezierPath(ovalIn: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: newConversationButtonSize, height: newConversationButtonSize))).cgPath
+        newConversationButton.layer.shadowColor = Colors.newConversationButtonShadow.cgColor
+        newConversationButton.layer.shadowOffset = CGSize(width: 0, height: 0.8)
+        newConversationButton.layer.shadowOpacity = 1
+        newConversationButton.layer.shadowRadius = 6
+        newConversationButton.layer.masksToBounds = false
+        newConversationButton.set(.width, to: newConversationButtonSize)
+        newConversationButton.set(.height, to: newConversationButtonSize)
+        view.addSubview(newConversationButton)
+        newConversationButton.center(.horizontal, in: view)
+        newConversationButton.pin(.bottom, to: .bottom, of: view, withInset: -Values.newConversationButtonBottomOffset) // Negative due to how the constraint is set up
         // Set up previewing
         if (traitCollection.forceTouchCapability == .available) {
             registerForPreviewing(with: self, sourceView: tableView)

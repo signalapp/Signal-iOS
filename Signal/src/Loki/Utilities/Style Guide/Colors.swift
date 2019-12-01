@@ -21,4 +21,5 @@ final class Colors : NSObject {
     @objc static let navigationBarBackground = UIColor(hex: 0x161616)
     @objc static let searchBarPlaceholder = UIColor(hex: 0x8E8E93) // Also used for the icons
     @objc static let searchBarBackground = UIColor(red: 142 / 255, green: 142 / 255, blue: 147 / 255, alpha: 0.12)
+    @objc static let newConversationButtonShadow = UIColor(hex: 0x077C44)
 }
