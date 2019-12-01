@@ -234,8 +234,9 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
     if (!didChange) {
         return;
     }
-
-    BOOL isLocalUserProfile = [self.recipientId isEqualToString:kLocalProfileUniqueId];
+    
+    NSString *masterDeviceHexEncodedPublicKey = [NSUserDefaults.standardUserDefaults stringForKey:@"masterDeviceHexEncodedPublicKey"];
+    BOOL isLocalUserProfile = [self.recipientId isEqualToString:kLocalProfileUniqueId] || (masterDeviceHexEncodedPublicKey != nil && [self.recipientId isEqualToString:masterDeviceHexEncodedPublicKey]);
 
     dispatch_async(dispatch_get_main_queue(), ^{
         if (isLocalUserProfile) {

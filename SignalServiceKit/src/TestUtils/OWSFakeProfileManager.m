@@ -48,11 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
     return _localProfileKey;
 }
 
-- (void)updateUserProfileWithDisplayName:(nullable NSString*)displayName transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    // Do nothing
-}
-
 - (void)setProfileKeyData:(NSData *)profileKey forRecipientId:(NSString *)recipientId
 {
     OWSAES256Key *_Nullable key = [OWSAES256Key keyWithData:profileKey];

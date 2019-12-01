@@ -314,6 +314,7 @@
 - (UITableViewCell *)profileHeaderCell
 {
     NSString *masterDeviceHexEncodedPublicKey = [NSUserDefaults.standardUserDefaults stringForKey:@"masterDeviceHexEncodedPublicKey"];
+    NSString *hexEncodedPublicKey = masterDeviceHexEncodedPublicKey ?: TSAccountManager.localNumber;
     BOOL isMasterDevice = (masterDeviceHexEncodedPublicKey == nil);
     
     UITableViewCell *cell = [OWSTableItem newCell];
@@ -321,7 +322,7 @@
     cell.contentView.preservesSuperviewLayoutMargins = YES;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
-    UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager localProfileAvatarImage];
+    UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager profileAvatarForRecipientId:hexEncodedPublicKey];
     UIImage *avatarImage = (localProfileAvatarImage
             ?: [[[OWSContactAvatarBuilder alloc] initForLocalUserWithDiameter:kLargeAvatarSize] buildDefaultImage]);
     OWSAssertDebug(avatarImage);
@@ -334,7 +335,7 @@
     [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
     avatarView.contactID = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
 
-    if (isMasterDevice && !localProfileAvatarImage) {
+    if (isMasterDevice && !OWSProfileManager.sharedManager.localProfileAvatarImage) {
         UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
         UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
         [cell.contentView addSubview:cameraImageView];
@@ -348,7 +349,7 @@
     [nameView autoPinLeadingToTrailingEdgeOfView:avatarView offset:16.f];
 
     UILabel *titleLabel = [UILabel new];
-    NSString *_Nullable localProfileName = [OWSProfileManager.sharedManager localProfileName];
+    NSString *_Nullable localProfileName = [OWSProfileManager.sharedManager profileNameForRecipientId:hexEncodedPublicKey];
     if (localProfileName.length > 0) {
         titleLabel.text = localProfileName;
         titleLabel.textColor = [Theme primaryColor];
@@ -370,7 +371,6 @@
     UILabel *subtitleLabel = [UILabel new];
     subtitleLabel.textColor = [Theme secondaryColor];
     subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
-    NSString *hexEncodedPublicKey = masterDeviceHexEncodedPublicKey ?: TSAccountManager.localNumber;
     subtitleLabel.attributedText = [[NSAttributedString alloc] initWithString:hexEncodedPublicKey];
     subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [nameView addSubview:subtitleLabel];

@@ -341,22 +341,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     }
 }
 
-- (void)updateUserProfileWithDisplayName:(nullable NSString*)displayName transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [self.localUserProfile updateWithProfileName:displayName transaction:transaction];
-}
-
-- (void)updateUserProfileKeyData:(NSData *)profileKeyData avatarURL:(nullable NSString *)avatarURL transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    OWSAES256Key *profileKey = [OWSAES256Key keyWithData:profileKeyData];
-    if (profileKey != nil) {
-        [self.localUserProfile updateWithProfileKey:profileKey transaction:transaction completion:^{
-            [self.localUserProfile updateWithAvatarUrlPath:avatarURL transaction:transaction completion:^{
-                [self downloadAvatarForUserProfile:self.localUserProfile];
-            }];
-        }];
-    }
-}
-
 - (nullable NSString *)profilePictureURL
 {
     return self.localUserProfile.avatarUrlPath;
@@ -422,30 +406,35 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         // We always want to encrypt a profile with a new profile key
         // This ensures that other users know that our profile picture was updated
         OWSAES256Key *newProfileKey = [OWSAES256Key generateRandomKey];
-        NSData *_Nullable encryptedAvatarData;
-        if (avatarData) {
-            encryptedAvatarData = [self encryptProfileData:avatarData profileKey:newProfileKey];
-            OWSAssertDebug(encryptedAvatarData.length > 0);
-        }
         
-        [[LKStorageAPI setProfilePicture:encryptedAvatarData]
-        .thenOn(dispatch_get_main_queue(), ^(NSString *url) {
-            [self.localUserProfile updateWithProfileKey:newProfileKey dbConnection:self.dbConnection completion:^{
-               successBlock(url);
-            }];
-        })
-        .catchOn(dispatch_get_main_queue(), ^(id result) {
-            // There appears to be a bug in PromiseKit that sometimes causes catchOn
-            // to be invoked with the fulfilled promise's value as the error. The below
-            // is a quick and dirty workaround.
-            if ([result isKindOfClass:NSString.class]) {
+        if (avatarData) {
+            NSData *encryptedAvatarData = [self encryptProfileData:avatarData profileKey:newProfileKey];
+            OWSAssertDebug(encryptedAvatarData.length > 0);
+            
+            [[LKStorageAPI setProfilePicture:encryptedAvatarData]
+            .thenOn(dispatch_get_main_queue(), ^(NSString *url) {
                 [self.localUserProfile updateWithProfileKey:newProfileKey dbConnection:self.dbConnection completion:^{
-                    successBlock(result);
+                   successBlock(url);
                 }];
-            } else {
-                failureBlock(result);
-            }
-        }) retainUntilComplete];
+            })
+            .catchOn(dispatch_get_main_queue(), ^(id result) {
+                // There appears to be a bug in PromiseKit that sometimes causes catchOn
+                // to be invoked with the fulfilled promise's value as the error. The below
+                // is a quick and dirty workaround.
+                if ([result isKindOfClass:NSString.class]) {
+                    [self.localUserProfile updateWithProfileKey:newProfileKey dbConnection:self.dbConnection completion:^{
+                        successBlock(result);
+                    }];
+                } else {
+                    failureBlock(result);
+                }
+            }) retainUntilComplete];
+        } else {
+            // Update our profile key and set the url to nil if avatar data is nil
+            [self.localUserProfile updateWithProfileKey:newProfileKey dbConnection:self.dbConnection completion:^{
+                successBlock(nil);
+            }];
+        }
     });
 }
 

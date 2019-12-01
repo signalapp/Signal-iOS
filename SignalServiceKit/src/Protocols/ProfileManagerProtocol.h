@@ -32,8 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)fetchProfileForRecipientId:(NSString *)recipientId;
 
-- (void)updateUserProfileWithDisplayName:(nullable NSString*)displayName transaction:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)updateUserProfileKeyData:(NSData *)profileKeyData avatarURL:(nullable NSString *)avatarURL transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateProfileForContactWithID:(NSString *)contactID displayName:(NSString *)displayName with:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateServiceWithProfileName:(nullable NSString *)localProfileName avatarUrl:(nullable NSString *)avatarURL;
 

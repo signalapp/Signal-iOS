@@ -468,7 +468,8 @@ NS_ASSUME_NONNULL_BEGIN
                 
                 // Set any profile information
                 if (contentProto.dataMessage) {
-                    [self handleLokiProfileForUserIfNeeded:contentProto.dataMessage transaction:transaction];
+                    [self handleProfileNameUpdateIfNeeded:contentProto.dataMessage recipientId:masterHexEncodedPublicKey transaction:transaction];
+                    [self handleProfileKeyUpdateIfNeeded:contentProto.dataMessage recipientId:masterHexEncodedPublicKey];
                 }
             } else if (slaveSignature != nil) { // Request
                 OWSLogInfo(@"[Loki] Received a device linking request from: %@", envelope.source); // Not slaveHexEncodedPublicKey
@@ -925,7 +926,8 @@ NS_ASSUME_NONNULL_BEGIN
 
         // Loki: Try to update using the provided profile
         if (wasSentByMasterDevice) {
-            [self handleLokiProfileForUserIfNeeded:syncMessage.sent.message transaction:transaction];
+            [self handleProfileNameUpdateIfNeeded:syncMessage.sent.message recipientId:masterHexEncodedPublicKey transaction:transaction];
+            [self handleProfileKeyUpdateIfNeeded:syncMessage.sent.message recipientId:masterHexEncodedPublicKey];
         }
         
         OWSIncomingSentMessageTranscript *transcript =
@@ -1058,18 +1060,6 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
-    }
-}
-
-- (void)handleLokiProfileForUserIfNeeded:(SSKProtoDataMessage *)dataMessage transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    if (dataMessage.profile != nil) {
-        SSKProtoDataMessageLokiProfile *profile = dataMessage.profile;
-        NSString *displayName = profile.displayName;
-        NSString *profilePictureURL = profile.profilePicture;
-        [self.profileManager updateUserProfileWithDisplayName:displayName transaction:transaction];
-        if ([dataMessage hasProfileKey]) {
-            [self.profileManager updateUserProfileKeyData:dataMessage.profileKey avatarURL:profilePictureURL transaction:transaction];
-        }
     }
 }
 
@@ -1392,8 +1382,7 @@ NS_ASSUME_NONNULL_BEGIN
             [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
 
         // Only set the display name here, the logic for updating profile pictures is handled when we're setting profile key
-        NSString *displayName = dataMessage.profile.displayName;
-        [self.profileManager updateProfileForContactWithID:thread.contactIdentifier displayName:displayName with:transaction];
+        [self handleProfileNameUpdateIfNeeded:dataMessage recipientId:thread.contactIdentifier transaction:transaction];
 
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
@@ -1630,6 +1619,12 @@ NS_ASSUME_NONNULL_BEGIN
                           transaction:transaction];
         
         return incomingMessage;
+    }
+}
+
+- (void)handleProfileNameUpdateIfNeeded:(SSKProtoDataMessage *)dataMessage recipientId:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    if (dataMessage.profile != nil) {
+        [self.profileManager updateProfileForContactWithID:recipientId displayName:dataMessage.profile.displayName with:transaction];
     }
 }
 
