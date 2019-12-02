@@ -65,7 +65,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)writeUInt32:(UInt32)value {
     NSData *data = [[NSData alloc] initWithBytes:&value length:sizeof(value)];
-    return [self writeData:data];
+    // Both Android and desktop seem to like this better
+    const char *bytes = data.bytes;
+    char *reversedBytes = malloc(sizeof(char) * data.length);
+    int i = data.length - 1;
+    for (int j = 0; j < data.length; i++) {
+        reversedBytes[i] = bytes[j];
+        i = i - 1;
+    }
+    NSData *reversedData = [NSData dataWithBytes:reversedBytes length:data.length];
+    return [self writeData:reversedData];
 }
 
 - (BOOL)writeVariableLengthUInt32:(UInt32)value
