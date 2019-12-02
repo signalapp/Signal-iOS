@@ -759,7 +759,9 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     UIBarButtonItem *settingsButton;
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
         const NSUInteger kAvatarSize = 28;
-        UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager localProfileAvatarImage];
+        NSString *masterDeviceHexEncodedPublicKey = [NSUserDefaults.standardUserDefaults stringForKey:@"masterDeviceHexEncodedPublicKey"];
+        NSString *hexEncodedPublicKey = masterDeviceHexEncodedPublicKey ?: TSAccountManager.localNumber;
+        UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager profileAvatarForRecipientId:hexEncodedPublicKey];
         UIImage *avatarImage = (localProfileAvatarImage
                 ?: [[[OWSContactAvatarBuilder alloc] initForLocalUserWithDiameter:kAvatarSize] buildDefaultImage]);
         OWSAssertDebug(avatarImage);

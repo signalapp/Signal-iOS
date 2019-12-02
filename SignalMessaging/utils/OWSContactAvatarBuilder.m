@@ -93,7 +93,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)buildSavedImage
 {
-    if ([self.signalId isEqualToString:TSAccountManager.localNumber]) {
+    NSString *masterDeviceHexEncodedPublicKey = [NSUserDefaults.standardUserDefaults stringForKey:@"masterDeviceHexEncodedPublicKey"];
+    if ([self.signalId isEqualToString:TSAccountManager.localNumber] || (masterDeviceHexEncodedPublicKey != nil && [self.signalId isEqualToString:masterDeviceHexEncodedPublicKey])) {
         NSString *noteToSelfCacheKey = [NSString stringWithFormat:@"%@:note-to-self", self.cacheKey];
         UIImage *_Nullable cachedAvatar =
             [OWSContactAvatarBuilder.contactsManager.avatarCache imageForKey:noteToSelfCacheKey

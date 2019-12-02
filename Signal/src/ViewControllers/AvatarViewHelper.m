@@ -58,8 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 [self.delegate clearAvatar];
                                                             }];
 
-        // TODO: enable this once we support removing avatars (as opposed to replacing)
-        // [actionSheet addAction:clearAction];
+        [actionSheet addAction:clearAction];
     }
 
     [self.delegate.fromViewController presentAlert:actionSheet];
