@@ -351,7 +351,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 {
     [self applyChanges:^(OWSUserProfile *userProfile) {
         [userProfile setProfileKey:profileKey];
-        [userProfile setProfileName:nil];
+        // [userProfile setProfileName:nil]; - Loki disabled until we include profile name inside the encrypted profile from the url
         // Always setAvatarUrlPath: before you setAvatarFileName: since
         // setAvatarUrlPath: may clear the avatar filename.
         [userProfile setAvatarUrlPath:nil];

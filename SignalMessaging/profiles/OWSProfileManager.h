@@ -83,8 +83,6 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
                profileNameEncrypted:(nullable NSData *)profileNameEncrypted
                       avatarUrlPath:(nullable NSString *)avatarUrlPath;
 
-- (void)updateProfileForContactWithID:(NSString *)contactID displayName:(NSString *)displayName with:(YapDatabaseReadWriteTransaction *)transaction;
-
 #pragma mark - User Interface
 
 - (void)presentAddThreadToProfileWhitelist:(TSThread *)thread

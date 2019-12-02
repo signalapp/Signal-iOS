@@ -975,7 +975,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown
                                               recipientId:recipientId];
-                [userProfile updateWithProfileName:userProfile.profileName avatarUrlPath:avatarURL dbConnection:self.dbConnection completion:^{
+                [userProfile updateWithAvatarUrlPath:avatarURL avatarFileName:nil dbConnection:self.dbConnection completion:^{
                     [self downloadAvatarForUserProfile:userProfile];
                 }];
                 // [self fetchProfileForRecipientId:recipientId];
