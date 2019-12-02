@@ -3,8 +3,9 @@
 final class Values : NSObject {
     
     // MARK: - Alpha Values
-    @objc static let inactiveElementOpacity = CGFloat(0.6)
+    @objc static let unimportantElementOpacity = CGFloat(0.6)
     @objc static let conversationCellTimestampOpacity = CGFloat(0.4)
+    @objc static let textFieldBorderOpacity = CGFloat(0.4)
     
     // MARK: - Font Sizes
     @objc static let smallFontSize = CGFloat(13)
@@ -20,14 +21,19 @@ final class Values : NSObject {
     @objc static let smallProfilePictureSize = CGFloat(35)
     @objc static let mediumProfilePictureSize = CGFloat(45)
     @objc static let largeProfilePictureSize = CGFloat(65)
-    @objc static let profilePictureBorderThickness = CGFloat(1)
+    @objc static let borderThickness = CGFloat(1)
     @objc static let conversationCellStatusIndicatorSize = CGFloat(14)
     @objc static let searchBarHeight = CGFloat(36)
     @objc static let newConversationButtonSize = CGFloat(45)
+    @objc static let textFieldHeight = CGFloat(80)
+    @objc static let textFieldCornerRadius = CGFloat(8)
+    @objc static let separatorCornerRadius = CGFloat(10)
+    @objc static var separatorThickness: CGFloat { return 1 / UIScreen.main.scale }
     
     // MARK: - Distances
     @objc static let smallSpacing = CGFloat(8)
     @objc static let mediumSpacing = CGFloat(16)
     @objc static let largeSpacing = CGFloat(24)
+    @objc static let veryLargeSpacing = CGFloat(35)
     @objc static let newConversationButtonBottomOffset = CGFloat(52)
 }

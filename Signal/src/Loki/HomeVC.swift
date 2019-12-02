@@ -32,6 +32,26 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         return result
     }()
     
+    private lazy var newConversationButton: UIButton = {
+        let result = UIButton()
+        result.setTitle("+", for: UIControl.State.normal)
+        result.titleLabel!.font = .systemFont(ofSize: 35)
+        result.setTitleColor(UIColor(hex: 0x121212), for: UIControl.State.normal)
+        result.titleEdgeInsets = UIEdgeInsets(top: 0, left: 1, bottom: 4, right: 0) // Slight adjustment to make the plus exactly centered
+        result.backgroundColor = Colors.accent
+        let size = Values.newConversationButtonSize
+        result.layer.cornerRadius = size / 2
+        result.layer.shadowPath = UIBezierPath(ovalIn: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: size, height: size))).cgPath
+        result.layer.shadowColor = Colors.newConversationButtonShadow.cgColor
+        result.layer.shadowOffset = CGSize(width: 0, height: 0.8)
+        result.layer.shadowOpacity = 1
+        result.layer.shadowRadius = 6
+        result.layer.masksToBounds = false
+        result.set(.width, to: size)
+        result.set(.height, to: size)
+        return result
+    }()
+    
     // MARK: Lifecycle
     override func viewDidLoad() {
         // Set gradient background
@@ -63,22 +83,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         searchBar.sizeToFit()
         tableView.contentOffset = CGPoint(x: 0, y: searchBar.frame.height)
         // Set up new conversation button
-        let newConversationButton = UIButton()
-        newConversationButton.setTitle("+", for: UIControl.State.normal)
-        newConversationButton.titleLabel!.font = .systemFont(ofSize: 35)
-        newConversationButton.setTitleColor(UIColor(hex: 0x121212), for: UIControl.State.normal)
-        newConversationButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: 1, bottom: 4, right: 0) // Slight adjustment to make the plus exactly centered
-        newConversationButton.backgroundColor = Colors.accent
-        let newConversationButtonSize = Values.newConversationButtonSize
-        newConversationButton.layer.cornerRadius = newConversationButtonSize / 2
-        newConversationButton.layer.shadowPath = UIBezierPath(ovalIn: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: newConversationButtonSize, height: newConversationButtonSize))).cgPath
-        newConversationButton.layer.shadowColor = Colors.newConversationButtonShadow.cgColor
-        newConversationButton.layer.shadowOffset = CGSize(width: 0, height: 0.8)
-        newConversationButton.layer.shadowOpacity = 1
-        newConversationButton.layer.shadowRadius = 6
-        newConversationButton.layer.masksToBounds = false
-        newConversationButton.set(.width, to: newConversationButtonSize)
-        newConversationButton.set(.height, to: newConversationButtonSize)
+        newConversationButton.addTarget(self, action: #selector(createPrivateChat), for: UIControl.Event.touchUpInside)
         view.addSubview(newConversationButton)
         newConversationButton.center(.horizontal, in: view)
         newConversationButton.pin(.bottom, to: .bottom, of: view, withInset: -Values.newConversationButtonBottomOffset) // Negative due to how the constraint is set up
@@ -229,14 +234,14 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let thread = self.thread(at: indexPath.row) else { return }
-        show(thread, with: ConversationViewAction.none, animated: true)
+        show(thread, with: ConversationViewAction.none, highlightedMessageID: nil, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
-    private func show(_ thread: TSThread, with action: ConversationViewAction, animated: Bool) {
+    @objc func show(_ thread: TSThread, with action: ConversationViewAction, highlightedMessageID: String?, animated: Bool) {
         DispatchMainThreadSafe {
             let conversationVC = ConversationViewController()
-            conversationVC.configure(for: thread, action: action, focusMessageId: nil) // TODO: focusMessageId
+            conversationVC.configure(for: thread, action: action, focusMessageId: highlightedMessageID)
             self.navigationController?.setViewControllers([ self, conversationVC ], animated: true)
         }
     }
@@ -293,6 +298,12 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     
     @objc private func createPrivateGroupChat() {
         // TODO: Implement
+    }
+    
+    @objc func createPrivateChat() {
+        let newConversationVC = NewConversationVCV2()
+        let navigationController = OWSNavigationController(rootViewController: newConversationVC)
+        present(navigationController, animated: true, completion: nil)
     }
     
     // MARK: Convenience

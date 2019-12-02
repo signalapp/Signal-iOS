@@ -117,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
         
-//        [self.homeViewController presentThread:thread action:action focusMessageId:focusMessageId animated:isAnimated];
+        [self.homeViewController show:thread with:action highlightedMessageID:focusMessageId animated:isAnimated];
     });
 }
 
@@ -145,10 +145,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
 
-//        [self.homeViewController presentThread:thread
-//                                        action:ConversationViewActionNone
-//                                focusMessageId:nil
-//                                      animated:isAnimated];
+        [self.homeViewController show:thread with:ConversationViewActionNone highlightedMessageID:nil animated:isAnimated];
     });
 }
 

@@ -877,7 +877,7 @@ static NSTimeInterval launchStartedAt;
             return;
         }
 
-//        [SignalApp.sharedApp.homeViewController showNewConversationVC];
+        [SignalApp.sharedApp.homeViewController createPrivateChat];
 
         completionHandler(YES);
     }];

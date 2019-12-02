@@ -3,15 +3,15 @@ final class SearchBar : UISearchBar {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        update()
+        setUpStyle()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        update()
+        setUpStyle()
     }
     
-    private func update() {
+    private func setUpStyle() {
         searchBarStyle = .minimal // Hide the border around the search bar
         barStyle = .black // Use Apple's black design as a base
         tintColor = Colors.accent // The cursor color

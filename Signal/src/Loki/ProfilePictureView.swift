@@ -14,15 +14,15 @@ final class ProfilePictureView : UIView {
     // MARK: Lifecycle
     override init(frame: CGRect) {
         super.init(frame: frame)
-        initialize()
+        setUpViewHierarchy()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        initialize()
+        setUpViewHierarchy()
     }
     
-    private func initialize() {
+    private func setUpViewHierarchy() {
         // Set up image view
         addSubview(imageView)
         imageView.pin(.leading, to: .leading, of: self)
@@ -82,8 +82,8 @@ final class ProfilePictureView : UIView {
         let result = UIImageView()
         result.layer.masksToBounds = true
         result.backgroundColor = Colors.unimportant
-        result.layer.borderColor = Colors.profilePictureBorder.cgColor
-        result.layer.borderWidth = Values.profilePictureBorderThickness
+        result.layer.borderColor = Colors.border.cgColor
+        result.layer.borderWidth = Values.borderThickness
         result.contentMode = .scaleAspectFit
         return result
     }
