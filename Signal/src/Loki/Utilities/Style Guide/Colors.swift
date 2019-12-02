@@ -23,4 +23,5 @@ final class Colors : NSObject {
     @objc static let searchBarBackground = UIColor(red: 142 / 255, green: 142 / 255, blue: 147 / 255, alpha: 0.12)
     @objc static let newConversationButtonShadow = UIColor(hex: 0x077C44)
     @objc static let separator = UIColor(hex: 0x36383C)
+    @objc static let unimportantButtonBackground = UIColor(hex: 0x323232)
 }

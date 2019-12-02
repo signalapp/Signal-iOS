@@ -2683,3 +2683,6 @@
 "Enter public key of recipient" = "Enter public key of recipient";
 "Users can share their public key by going into their account settings and tapping \"Share Public Key\", or by sharing their QR code." = "Users can share their public key by going into their account settings and tapping \"Share Public Key\", or by sharing their QR code.";
 "Your Public Key" = "Your Public Key";
+"Copy" = "Copy";
+"Share" = "Share";
+"Next" = "Next";

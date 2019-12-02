@@ -14,6 +14,22 @@ final class NewConversationVCV2 : OWSViewController, OWSQRScannerDelegate {
     // MARK: Components
     private lazy var publicKeyTextField = TextField(placeholder: NSLocalizedString("Enter public key of recipient", comment: ""))
     
+    private lazy var userPublicKeyLabel: UILabel = {
+        let result = UILabel()
+        result.textColor = Colors.text
+        result.font = Fonts.spaceMono(ofSize: Values.mediumFontSize)
+        result.numberOfLines = 0
+        result.textAlignment = .center
+        result.lineBreakMode = .byCharWrapping
+        return result
+    }()
+    
+    private lazy var copyButton: Button = {
+        let result = Button(style: .unimportant)
+        result.setTitle(NSLocalizedString("Copy", comment: ""), for: UIControl.State.normal)
+        return result
+    }()
+    
     // MARK: Lifecycle
     override func viewDidLoad() {
         // Set gradient background
@@ -39,7 +55,7 @@ final class NewConversationVCV2 : OWSViewController, OWSQRScannerDelegate {
         navigationItem.titleView = titleLabel
         // Set up explanation label
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.unimportant
+        explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
         explanationLabel.text = NSLocalizedString("Users can share their public key by going into their account settings and tapping \"Share Public Key\", or by sharing their QR code.", comment: "")
         explanationLabel.numberOfLines = 0
@@ -47,40 +63,22 @@ final class NewConversationVCV2 : OWSViewController, OWSQRScannerDelegate {
         explanationLabel.lineBreakMode = .byWordWrapping
         // Set up separator
         let separator = Separator(title: NSLocalizedString("Your Public Key", comment: ""))
-        
-        
-        
-//        // Background color & margins
-//        view.backgroundColor = Theme.backgroundColor
-//        view.layoutMargins = .zero
-//        // Navigation bar
-//        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(close))
-//        title = NSLocalizedString("New Conversation", comment: "")
-//        // Separator
-//        let separator = UIView()
-//        separator.autoSetDimension(.height, toSize: 1 / UIScreen.main.scale)
-//        separator.backgroundColor = Theme.hairlineColor
-//        // Explanation label
-//        let explanationLabel = UILabel()
-//        explanationLabel.textColor = Theme.primaryColor
-//        explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
-//        explanationLabel.text = NSLocalizedString("Enter the public key of the person you'd like to securely message. They can share their public key with you by going into Loki Messenger's in-app settings and clicking \"Share Public Key\".", comment: "")
-//        explanationLabel.numberOfLines = 0
-//        explanationLabel.lineBreakMode = .byWordWrapping
-//        // QR code button
-//        let qrCodeButtonFont = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
-//        let qrCodeButtonHeight = qrCodeButtonFont.pointSize * 48 / 17
-//        let qrCodeButton = OWSFlatButton.button(title: NSLocalizedString("Scan a QR Code Instead", comment: ""), font: qrCodeButtonFont, titleColor: .lokiGreen(), backgroundColor: .clear, target: self, selector: #selector(scanQRCode))
-//        qrCodeButton.setBackgroundColors(upColor: .clear, downColor: .clear)
-//        qrCodeButton.autoSetDimension(.height, toSize: qrCodeButtonHeight)
-//        qrCodeButton.button.contentHorizontalAlignment = .left
-//        // Next button
-//        let nextButtonFont = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
-//        let nextButtonHeight = nextButtonFont.pointSize * 48 / 17
-//        let nextButton = OWSFlatButton.button(title: NSLocalizedString("Next", comment: ""), font: nextButtonFont, titleColor: .white, backgroundColor: .lokiGreen(), target: self, selector: #selector(handleNextButtonTapped))
-//        nextButton.autoSetDimension(.height, toSize: nextButtonHeight)
+        separator.set(.height, to: 25)
+        // Set up user public key label
+        userPublicKeyLabel.text = userHexEncodedPublicKey
+        // Set up share button
+        let shareButton = Button(style: .unimportant)
+        shareButton.setTitle(NSLocalizedString("Share", comment: ""), for: UIControl.State.normal)
+        // Set up button container
+        let buttonContainer = UIStackView(arrangedSubviews: [ copyButton, shareButton ])
+        buttonContainer.axis = .horizontal
+        buttonContainer.spacing = Values.mediumSpacing
+        buttonContainer.distribution = .fillEqually
+        // Next button
+        let nextButton = Button(style: .prominent)
+        nextButton.setTitle(NSLocalizedString("Next", comment: ""), for: UIControl.State.normal)
         // Stack view
-        let stackView = UIStackView(arrangedSubviews: [ publicKeyTextField, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, UIView.spacer(withHeight: Values.veryLargeSpacing), separator, UIView.vStretchingSpacer() ])
+        let stackView = UIStackView(arrangedSubviews: [ publicKeyTextField, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, UIView.spacer(withHeight: Values.veryLargeSpacing), separator, UIView.spacer(withHeight: Values.veryLargeSpacing), userPublicKeyLabel, UIView.spacer(withHeight: Values.veryLargeSpacing), buttonContainer, UIView.spacer(withHeight: Values.veryLargeSpacing), nextButton, UIView.vStretchingSpacer() ])
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(top: Values.mediumSpacing, left: Values.largeSpacing, bottom: Values.mediumSpacing, right: Values.largeSpacing)
