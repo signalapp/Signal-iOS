@@ -468,8 +468,9 @@ NS_ASSUME_NONNULL_BEGIN
                 
                 // Set any profile information
                 if (contentProto.dataMessage) {
-                    [self handleProfileNameUpdateIfNeeded:contentProto.dataMessage recipientId:masterHexEncodedPublicKey transaction:transaction];
-                    [self handleProfileKeyUpdateIfNeeded:contentProto.dataMessage recipientId:masterHexEncodedPublicKey];
+                    SSKProtoDataMessage *dataMessage = contentProto.dataMessage;
+                    [self handleProfileNameUpdateIfNeeded:dataMessage recipientId:masterHexEncodedPublicKey transaction:transaction];
+                    [self handleProfileKeyUpdateIfNeeded:dataMessage recipientId:masterHexEncodedPublicKey];
                 }
             } else if (slaveSignature != nil) { // Request
                 OWSLogInfo(@"[Loki] Received a device linking request from: %@", envelope.source); // Not slaveHexEncodedPublicKey
@@ -924,12 +925,6 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL wasSentByMasterDevice = [masterHexEncodedPublicKey isEqual:envelope.source];
     if (syncMessage.sent) {
 
-        // Loki: Try to update using the provided profile
-        if (wasSentByMasterDevice) {
-            [self handleProfileNameUpdateIfNeeded:syncMessage.sent.message recipientId:masterHexEncodedPublicKey transaction:transaction];
-            [self handleProfileKeyUpdateIfNeeded:syncMessage.sent.message recipientId:masterHexEncodedPublicKey];
-        }
-        
         OWSIncomingSentMessageTranscript *transcript =
         [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent transaction:transaction];
         
@@ -938,6 +933,13 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Missing dataMessage.");
             return;
         }
+        
+        // Loki: Try to update using the provided profile
+       if (wasSentByMasterDevice) {
+           [self handleProfileNameUpdateIfNeeded:dataMessage recipientId:masterHexEncodedPublicKey transaction:transaction];
+           [self handleProfileKeyUpdateIfNeeded:dataMessage recipientId:masterHexEncodedPublicKey];
+       }
+        
         NSString *destination = syncMessage.sent.destination;
         if (dataMessage && destination.length > 0 && dataMessage.hasProfileKey) {
             // If we observe a linked device sending our profile key to another
@@ -1029,7 +1031,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogInfo(@"Received verification state for %@", syncMessage.verified.destination);
         [self.identityManager throws_processIncomingSyncMessage:syncMessage.verified transaction:transaction];
     } else if (syncMessage.contacts != nil) {
-        if (false && wasSentByMasterDevice && syncMessage.contacts.data.length > 0) {
+        if (wasSentByMasterDevice && syncMessage.contacts.data.length > 0) {
             NSLog(@"[Loki] Received contact sync message.");
             NSData *data = syncMessage.contacts.data;
             ContactParser *parser = [[ContactParser alloc] initWithData:data];
@@ -1623,13 +1625,13 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)handleProfileNameUpdateIfNeeded:(SSKProtoDataMessage *)dataMessage recipientId:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    if (dataMessage.profile != nil) {
+    if (dataMessage != nil && dataMessage.profile != nil) {
         [self.profileManager updateProfileForContactWithID:recipientId displayName:dataMessage.profile.displayName with:transaction];
     }
 }
 
 - (void)handleProfileKeyUpdateIfNeeded:(SSKProtoDataMessage *)dataMessage recipientId:(NSString *)recipientId {
-    if ([dataMessage hasProfileKey]) {
+    if (dataMessage != nil && [dataMessage hasProfileKey]) {
         NSData *profileKey = [dataMessage profileKey];
         NSString *url = dataMessage.profile != nil ? dataMessage.profile.profilePicture : nil;
         if (profileKey.length == kAES256_KeyByteLength) {
