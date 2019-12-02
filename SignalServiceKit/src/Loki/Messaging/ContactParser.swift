@@ -14,6 +14,7 @@
             guard let size = uncheckedSize else { break }
             let sizeAsInt = Int(size)
             index += 4
+            guard index + sizeAsInt < data.count else { break }
             let protoAsData = data[index..<(index+sizeAsInt)]
             guard let proto = try? SSKProtoContactDetails.parseData(protoAsData) else { break }
             index += sizeAsInt
