@@ -465,8 +465,7 @@ NS_ASSUME_NONNULL_BEGIN
             if (masterSignature != nil) { // Authorization
                 OWSLogInfo(@"[Loki] Received a device linking authorization from: %@", envelope.source); // Not masterHexEncodedPublicKey
                 [LKDeviceLinkingSession.current processLinkingAuthorizationFrom:masterHexEncodedPublicKey for:slaveHexEncodedPublicKey masterSignature:masterSignature slaveSignature:slaveSignature];
-                
-                // Set any profile information
+                // Set any profile info
                 if (contentProto.dataMessage) {
                     SSKProtoDataMessage *dataMessage = contentProto.dataMessage;
                     [self handleProfileNameUpdateIfNeeded:dataMessage recipientId:masterHexEncodedPublicKey transaction:transaction];

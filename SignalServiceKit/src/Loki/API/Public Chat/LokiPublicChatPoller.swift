@@ -163,8 +163,7 @@ public final class LokiPublicChatPoller : NSObject {
                         transaction.setObject(senderDisplayName, forKey: senderHexEncodedPublicKey, inCollection: publicChat.id)
                         let messageServerID = message.serverID
                         SSKEnvironment.shared.messageManager.throws_processEnvelope(try! envelope.build(), plaintextData: try! content.build().serializedData(), wasReceivedByUD: false, transaction: transaction, serverID: messageServerID ?? 0)
-                        
-                        // If we got a message from our primary device then we should use its avatar
+                        // If we got a message from our master device then we should use its profile picture
                         if let avatar = message.avatar, masterHexEncodedPublicKey == message.hexEncodedPublicKey {
                             if (message.displayName.count > 0) {
                                 SSKEnvironment.shared.profileManager.updateProfileForContact(withID: masterHexEncodedPublicKey!, displayName: message.displayName, with: transaction)

@@ -37,8 +37,8 @@
 - (SSKProtoContentBuilder *)prepareCustomContentBuilder:(SignalRecipient *)recipient {
     SSKProtoContentBuilder *contentBuilder = SSKProtoContent.builder;
     NSError *error;
-    // Build the pre key bundle message
     if (self.kind == LKDeviceLinkMessageKindRequest) {
+        // Build the pre key bundle message
         PreKeyBundle *preKeyBundle = [OWSPrimaryStorage.sharedManager generatePreKeyBundleForContact:recipient.recipientId];
         SSKProtoPrekeyBundleMessageBuilder *preKeyBundleMessageBuilder = [SSKProtoPrekeyBundleMessage builderFromPreKeyBundle:preKeyBundle];
         SSKProtoPrekeyBundleMessage *preKeyBundleMessage = [preKeyBundleMessageBuilder buildAndReturnError:&error];
@@ -49,7 +49,7 @@
             [contentBuilder setPrekeyBundleMessage:preKeyBundleMessage];
         }
     } else {
-        // Loki: Set display name & profile picture
+        // Set display name & profile picture
         id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
         NSString *displayName = profileManager.localProfileName;
         NSString *profilePictureURL = profileManager.profilePictureURL;

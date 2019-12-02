@@ -101,8 +101,8 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                 }
                 var avatar: LokiPublicChatMessage.Avatar? = nil
                 let displayName = user["name"] as? String ?? NSLocalizedString("Anonymous", comment: "")
-                if let userAnnotations = user["annotations"] as? [JSON], let avatarAnnoration = userAnnotations.first(where: { $0["type"] as? String == avatarType }),
-                    let avatarValue = avatarAnnoration["value"] as? JSON, let profileKeyString = avatarValue["profileKey"] as? String, let profileKey = Data(base64Encoded: profileKeyString), let url = avatarValue["url"] as? String {
+                if let userAnnotations = user["annotations"] as? [JSON], let avatarAnnotation = userAnnotations.first(where: { $0["type"] as? String == avatarType }),
+                    let avatarValue = avatarAnnotation["value"] as? JSON, let profileKeyString = avatarValue["profileKey"] as? String, let profileKey = Data(base64Encoded: profileKeyString), let url = avatarValue["url"] as? String {
                     avatar = LokiPublicChatMessage.Avatar(profileKey: profileKey, url: url)
                 }
                 let lastMessageServerID = getLastMessageServerID(for: channel, on: server)
@@ -292,19 +292,19 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         }.retryingIfNeeded(maxRetryCount: 3)
     }
     
-    public static func setAvatar(with url: String?, profileKey: Data, on server: String) -> Promise<Void> {
-        print("[Loki] Updating avatar on server: \(server).")
+    public static func setProfilePictureURL(to url: String?, using profileKey: Data, on server: String) -> Promise<Void> {
+        print("[Loki] Updating profile picture on server: \(server).")
         return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<Void> in
-            var annotation: JSON = ["type" : avatarType]
+            var annotation: JSON = [ "type" : avatarType ]
             if let url = url {
-                annotation["value"] = ["profileKey": profileKey.base64EncodedString(), "url" : url]
+                annotation["value"] = [ "profileKey" : profileKey.base64EncodedString(), "url" : url ]
             }
-            let parameters: JSON = [ "annotations" : [annotation] ]
+            let parameters: JSON = [ "annotations" : [ annotation ] ]
             let url = URL(string: "\(server)/users/me")!
             let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
             return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { _ in }.recover(on: DispatchQueue.global()) { error in
-                print("Couldn't update avatar due to error: \(error).")
+                print("[Loki] Couldn't update profile picture due to error: \(error).")
                 throw error
             }
         }.retryingIfNeeded(maxRetryCount: 3)
@@ -353,8 +353,8 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         return AnyPromise.from(setDisplayName(to: newDisplayName, on: server))
     }
     
-    @objc(setAvatar:profileKey:on:)
-    public static func objc_setAvatar(with url: String?, profileKey: Data, on server: String) -> AnyPromise {
-        return AnyPromise.from(setAvatar(with: url, profileKey: profileKey, on: server))
+    @objc(setProfilePictureURL:usingProfileKey:on:)
+    public static func objc_setProfilePicture(to url: String?, using profileKey: Data, on server: String) -> AnyPromise {
+        return AnyPromise.from(setProfilePictureURL(to: url, using: profileKey, on: server))
     }
 }

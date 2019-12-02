@@ -454,7 +454,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
     for (NSString *server in servers) {
         [[LKPublicChatAPI setDisplayName:localProfileName on:server] retainUntilComplete];
-        [[LKPublicChatAPI setAvatar:avatarURL profileKey:self.localProfileKey.keyData on:server] retainUntilComplete];
+        [[LKPublicChatAPI setProfilePictureURL:avatarURL usingProfileKey:self.localProfileKey.keyData on:server] retainUntilComplete];
     }
     
     successBlock();
