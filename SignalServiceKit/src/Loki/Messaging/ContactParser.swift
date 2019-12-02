@@ -10,8 +10,11 @@
         var index = 0
         var result: [String] = []
         while index < data.endIndex {
-            let uncheckedSize: UInt32? = try? data[index..<(index+4)].withUnsafeBytes { $0.pointee }
-            guard let size = uncheckedSize else { break }
+            var uncheckedSize: UInt32? = try? data[index..<(index+4)].withUnsafeBytes { $0.pointee }
+            if let size = uncheckedSize, size >= data.count, let intermediate = try? data[index..<(index+4)].reversed() {
+                uncheckedSize = Data(intermediate).withUnsafeBytes { $0.pointee }
+            }
+            guard let size = uncheckedSize, size < data.count else { break }
             let sizeAsInt = Int(size)
             index += 4
             guard index + sizeAsInt < data.count else { break }
