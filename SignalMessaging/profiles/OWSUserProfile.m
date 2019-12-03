@@ -234,8 +234,9 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
     if (!didChange) {
         return;
     }
-
-    BOOL isLocalUserProfile = [self.recipientId isEqualToString:kLocalProfileUniqueId];
+    
+    NSString *masterDeviceHexEncodedPublicKey = [NSUserDefaults.standardUserDefaults stringForKey:@"masterDeviceHexEncodedPublicKey"];
+    BOOL isLocalUserProfile = [self.recipientId isEqualToString:kLocalProfileUniqueId] || (masterDeviceHexEncodedPublicKey != nil && [self.recipientId isEqualToString:masterDeviceHexEncodedPublicKey]);
 
     dispatch_async(dispatch_get_main_queue(), ^{
         if (isLocalUserProfile) {
@@ -350,7 +351,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 {
     [self applyChanges:^(OWSUserProfile *userProfile) {
         [userProfile setProfileKey:profileKey];
-        [userProfile setProfileName:nil];
+        // [userProfile setProfileName:nil]; - Loki disabled until we include profile name inside the encrypted profile from the url
         // Always setAvatarUrlPath: before you setAvatarFileName: since
         // setAvatarUrlPath: may clear the avatar filename.
         [userProfile setAvatarUrlPath:nil];

@@ -12,6 +12,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     // MARK: Public Chat
     private static let channelInfoType = "net.patter-app.settings"
     private static let attachmentType = "net.app.core.oembed"
+    public static let avatarType = "network.loki.messenger.avatar"
     @objc public static let publicChatMessageType = "network.loki.messenger.publicChat"
     
     @objc public static let defaultChats: [LokiPublicChat] = {
@@ -98,8 +99,12 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                         print("[Loki] Couldn't parse message for public chat channel with ID: \(channel) on server: \(server) from: \(message).")
                         return nil
                 }
-                let profilePictureURL = value["avatar"] as? String ?? nil
+                var avatar: LokiPublicChatMessage.Avatar? = nil
                 let displayName = user["name"] as? String ?? NSLocalizedString("Anonymous", comment: "")
+                if let userAnnotations = user["annotations"] as? [JSON], let avatarAnnotation = userAnnotations.first(where: { $0["type"] as? String == avatarType }),
+                    let avatarValue = avatarAnnotation["value"] as? JSON, let profileKeyString = avatarValue["profileKey"] as? String, let profileKey = Data(base64Encoded: profileKeyString), let url = avatarValue["url"] as? String {
+                    avatar = LokiPublicChatMessage.Avatar(profileKey: profileKey, url: url)
+                }
                 let lastMessageServerID = getLastMessageServerID(for: channel, on: server)
                 if serverID > (lastMessageServerID ?? 0) { setLastMessageServerID(for: channel, on: server, to: serverID) }
                 let quote: LokiPublicChatMessage.Quote?
@@ -128,7 +133,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                     }
                     return LokiPublicChatMessage.Attachment(kind: kind, server: server, serverID: serverID, contentType: contentType, size: size, fileName: fileName, flags: flags, width: width, height: height, caption: caption, url: url, linkPreviewURL: linkPreviewURL, linkPreviewTitle: linkPreviewTitle)
                 }
-                let result = LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, avatar: profilePictureURL, body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature)
+                let result = LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, avatar: avatar, body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature)
                 guard result.hasValidSignature() else {
                     print("[Loki] Ignoring public chat message with invalid signature.")
                     return nil
@@ -287,6 +292,24 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         }.retryingIfNeeded(maxRetryCount: 3)
     }
     
+    public static func setProfilePictureURL(to url: String?, using profileKey: Data, on server: String) -> Promise<Void> {
+        print("[Loki] Updating profile picture on server: \(server).")
+        return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<Void> in
+            var annotation: JSON = [ "type" : avatarType ]
+            if let url = url {
+                annotation["value"] = [ "profileKey" : profileKey.base64EncodedString(), "url" : url ]
+            }
+            let parameters: JSON = [ "annotations" : [ annotation ] ]
+            let url = URL(string: "\(server)/users/me")!
+            let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
+            request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map { _ in }.recover(on: DispatchQueue.global()) { error in
+                print("[Loki] Couldn't update profile picture due to error: \(error).")
+                throw error
+            }
+        }.retryingIfNeeded(maxRetryCount: 3)
+    }
+    
     public static func getInfo(for channel: UInt64, on server: String) -> Promise<LokiPublicChatInfo> {
         let url = URL(string: "\(server)/channels/\(channel)?include_annotations=1")!
         let request = TSRequest(url: url)
@@ -328,5 +351,10 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     @objc(setDisplayName:on:)
     public static func objc_setDisplayName(to newDisplayName: String?, on server: String) -> AnyPromise {
         return AnyPromise.from(setDisplayName(to: newDisplayName, on: server))
+    }
+    
+    @objc(setProfilePictureURL:usingProfileKey:on:)
+    public static func objc_setProfilePicture(to url: String?, using profileKey: Data, on server: String) -> AnyPromise {
+        return AnyPromise.from(setProfilePictureURL(to: url, using: profileKey, on: server))
     }
 }

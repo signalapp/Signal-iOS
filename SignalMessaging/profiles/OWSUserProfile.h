@@ -73,6 +73,10 @@ extern NSString *const kLocalProfileUniqueId;
                 dbConnection:(YapDatabaseConnection *)dbConnection
                   completion:(nullable OWSUserProfileCompletion)completion;
 
+- (void)updateWithProfileKey:(OWSAES256Key *)profileKey
+                 transaction:(YapDatabaseReadWriteTransaction *)transaction
+                  completion:(nullable OWSUserProfileCompletion)completion;
+
 - (void)clearWithProfileKey:(OWSAES256Key *)profileKey
                dbConnection:(YapDatabaseConnection *)dbConnection
                  completion:(nullable OWSUserProfileCompletion)completion;

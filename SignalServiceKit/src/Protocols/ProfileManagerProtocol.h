@@ -5,6 +5,7 @@
 @class OWSAES256Key;
 @class TSThread;
 @class YapDatabaseReadWriteTransaction;
+@class OWSUserProfile;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,8 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)profilePictureURL;
 
 - (nullable NSData *)profileKeyDataForRecipientId:(NSString *)recipientId;
-- (void)updateUserProfileWithDisplayName:(nullable NSString*)displayName profilePictureURL:(nullable NSString*)profilePictureURL transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)setProfileKeyData:(NSData *)profileKeyData forRecipientId:(NSString *)recipientId;
+- (void)setProfileKeyData:(NSData *)profileKeyData forRecipientId:(NSString *)recipientId avatarURL:(nullable NSString *)avatarURL;
 
 - (BOOL)isUserInProfileWhitelist:(NSString *)recipientId;
 
@@ -31,7 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)fetchProfileForRecipientId:(NSString *)recipientId;
 
-- (void)updateProfileForContactWithID:(NSString *)contactID displayName:(NSString *)displayName profilePictureURL:(NSString *)profilePictureURL with:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateProfileForContactWithID:(NSString *)contactID displayName:(NSString *)displayName with:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateServiceWithProfileName:(nullable NSString *)localProfileName avatarUrl:(nullable NSString *)avatarURL;
 
 @end
 

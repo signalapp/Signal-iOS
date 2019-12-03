@@ -122,11 +122,12 @@ public final class LokiPublicChatPoller : NSObject {
                         dataMessage.setPreview([ try! signalLinkPreview.build() ])
                     }
                     let profile = SSKProtoDataMessageLokiProfile.builder()
-                    if let profilePicture = message.avatar {
-                        profile.setProfilePicture(profilePicture)
-                        profile.setDisplayName(message.displayName)
-                        dataMessage.setProfile(try! profile.build())
+                    profile.setDisplayName(message.displayName)
+                    if let avatar = message.avatar {
+                        profile.setProfilePicture(avatar.url)
+                        dataMessage.setProfileKey(avatar.profileKey)
                     }
+                    dataMessage.setProfile(try! profile.build())
                     dataMessage.setTimestamp(message.timestamp)
                     dataMessage.setGroup(try! groupContext.build())
                     if let quote = message.quote {
@@ -162,6 +163,14 @@ public final class LokiPublicChatPoller : NSObject {
                         transaction.setObject(senderDisplayName, forKey: senderHexEncodedPublicKey, inCollection: publicChat.id)
                         let messageServerID = message.serverID
                         SSKEnvironment.shared.messageManager.throws_processEnvelope(try! envelope.build(), plaintextData: try! content.build().serializedData(), wasReceivedByUD: false, transaction: transaction, serverID: messageServerID ?? 0)
+                        // If we got a message from our master device then we should use its profile picture
+                        if let avatar = message.avatar, masterHexEncodedPublicKey == message.hexEncodedPublicKey {
+                            if (message.displayName.count > 0) {
+                                SSKEnvironment.shared.profileManager.updateProfileForContact(withID: masterHexEncodedPublicKey!, displayName: message.displayName, with: transaction)
+                            }
+                            SSKEnvironment.shared.profileManager.updateService(withProfileName: message.displayName, avatarUrl: avatar.url)
+                            SSKEnvironment.shared.profileManager.setProfileKeyData(avatar.profileKey, forRecipientId: masterHexEncodedPublicKey!, avatarURL: avatar.url)
+                        }
                     }
                 }
             }

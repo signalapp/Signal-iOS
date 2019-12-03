@@ -1,6 +1,9 @@
 #import "LKDeviceLinkMessage.h"
 #import "OWSIdentityManager.h"
 #import "OWSPrimaryStorage+Loki.h"
+#import "ProfileManagerProtocol.h"
+#import "ProtoUtils.h"
+#import "SSKEnvironment.h"
 #import "SignalRecipient.h"
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
@@ -34,8 +37,8 @@
 - (SSKProtoContentBuilder *)prepareCustomContentBuilder:(SignalRecipient *)recipient {
     SSKProtoContentBuilder *contentBuilder = SSKProtoContent.builder;
     NSError *error;
-    // Build the pre key bundle message
     if (self.kind == LKDeviceLinkMessageKindRequest) {
+        // Build the pre key bundle message
         PreKeyBundle *preKeyBundle = [OWSPrimaryStorage.sharedManager generatePreKeyBundleForContact:recipient.recipientId];
         SSKProtoPrekeyBundleMessageBuilder *preKeyBundleMessageBuilder = [SSKProtoPrekeyBundleMessage builderFromPreKeyBundle:preKeyBundle];
         SSKProtoPrekeyBundleMessage *preKeyBundleMessage = [preKeyBundleMessageBuilder buildAndReturnError:&error];
@@ -45,6 +48,18 @@
         } else {
             [contentBuilder setPrekeyBundleMessage:preKeyBundleMessage];
         }
+    } else {
+        // Set display name & profile picture
+        id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
+        NSString *displayName = profileManager.localProfileName;
+        NSString *profilePictureURL = profileManager.profilePictureURL;
+        SSKProtoDataMessageLokiProfileBuilder *profileBuilder = [SSKProtoDataMessageLokiProfile builder];
+        [profileBuilder setDisplayName:displayName];
+        [profileBuilder setProfilePicture:profilePictureURL ?: @""];
+        SSKProtoDataMessageBuilder *messageBuilder = [SSKProtoDataMessage builder];
+        [messageBuilder setProfile:[profileBuilder buildAndReturnError:nil]];
+        [ProtoUtils addLocalProfileKeyToDataMessageBuilder:messageBuilder];
+        [contentBuilder setDataMessage:messageBuilder];
     }
     // Build the device link message
     SSKProtoLokiDeviceLinkMessageBuilder *deviceLinkMessageBuilder = [SSKProtoLokiDeviceLinkMessage builder];
