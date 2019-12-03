@@ -37,6 +37,7 @@
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/StickerInfo.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
@@ -510,10 +511,9 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 #endif
 }
 
-- (BOOL)application:(UIApplication *)application
-              openURL:(NSURL *)url
-    sourceApplication:(NSString *)sourceApplication
-           annotation:(id)annotation
+- (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
 {
     OWSAssertIsOnMainThread();
 
@@ -530,59 +530,68 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
         return NO;
     }
 
-    if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
+    return [self tryToOpenUrl:url];
+}
+
+- (BOOL)tryToOpenUrl:(NSURL *)url
+{
+    OWSAssertDebug(!self.didAppLaunchFail);
+
+    if (!AppReadiness.isAppReady) {
+        OWSFailDebug(@"Ignoring URL; app is not ready.");
+        return NO;
+    }
+
+    if ([StickerPackInfo isStickerPackShareUrl:url]) {
+        StickerPackInfo *_Nullable stickerPackInfo = [StickerPackInfo parseStickerPackShareUrl:url];
+        if (stickerPackInfo == nil) {
+            OWSFailDebug(@"Could not parse sticker pack share URL: %@", url);
+            return NO;
+        }
+        return [self tryToShowStickerPackView:stickerPackInfo];
+    } else if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
         if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![self.tsAccountManager isRegistered]) {
             return [SignalApp.sharedApp receivedVerificationCode:[url.path substringFromIndex:1]];
-        } else if ([url.host hasPrefix:kURLHostAddStickersPrefix] && [self.tsAccountManager isRegistered]) {
-            if (!SSKFeatureFlags.stickerAutoEnable && !SSKFeatureFlags.stickerSend) {
-                return NO;
-            }
-            StickerPackInfo *_Nullable stickerPackInfo = [self parseAddStickersUrl:url];
-            if (stickerPackInfo == nil) {
-                OWSFailDebug(@"Invalid URL: %@", url);
-                return NO;
-            }
-            StickerPackViewController *packView =
-                [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
-            UIViewController *rootViewController = self.window.rootViewController;
-            if (rootViewController.presentedViewController) {
-                [rootViewController dismissViewControllerAnimated:NO
-                                                       completion:^{
-                                                           [rootViewController presentViewController:packView
-                                                                                            animated:NO
-                                                                                          completion:nil];
-                                                       }];
-            } else {
-                [rootViewController presentViewController:packView animated:NO completion:nil];
-            }
-            return YES;
         } else {
-            OWSFailDebug(@"Application opened with an unknown URL action: %@", url.host);
+            OWSFailDebug(@"Unknown URL host: %@", url.host);
         }
     } else {
-        OWSFailDebug(@"Application opened with an unknown URL scheme: %@", url.scheme);
+        OWSFailDebug(@"Unknown URL scheme: %@", url.scheme);
     }
+
     return NO;
 }
 
-- (nullable StickerPackInfo *)parseAddStickersUrl:(NSURL *)url
+- (BOOL)tryToShowStickerPackView:(StickerPackInfo *)stickerPackInfo
 {
-    NSString *_Nullable packIdHex;
-    NSString *_Nullable packKeyHex;
-    NSURLComponents *components = [NSURLComponents componentsWithString:url.absoluteString];
-    for (NSURLQueryItem *queryItem in [components queryItems]) {
-        if ([queryItem.name isEqualToString:@"pack_id"]) {
-            OWSAssertDebug(packIdHex == nil);
-            packIdHex = queryItem.value;
-        } else if ([queryItem.name isEqualToString:@"pack_key"]) {
-            OWSAssertDebug(packKeyHex == nil);
-            packKeyHex = queryItem.value;
-        } else {
-            OWSLogWarn(@"Unknown query item: %@", queryItem.name);
-        }
+    OWSAssertDebug(!self.didAppLaunchFail);
+
+    if (!AppReadiness.isAppReady) {
+        OWSFailDebug(@"Ignoring sticker pack URL; app is not ready.");
+        return NO;
+    }
+    if (!self.tsAccountManager.isRegistered) {
+        OWSFailDebug(@"Ignoring sticker pack URL; not registered.");
+        return NO;
+    }
+    if (!SSKFeatureFlags.stickerAutoEnable && !SSKFeatureFlags.stickerSend) {
+        OWSFailDebug(@"Ignoring sticker pack URL; stickers not enabled.");
+        return NO;
     }
 
-    return [StickerPackInfo parsePackIdHex:packIdHex packKeyHex:packKeyHex];
+    StickerPackViewController *packView = [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
+    UIViewController *rootViewController = self.window.rootViewController;
+    if (rootViewController.presentedViewController) {
+        [rootViewController dismissViewControllerAnimated:NO
+                                               completion:^{
+                                                   [rootViewController presentViewController:packView
+                                                                                    animated:NO
+                                                                                  completion:nil];
+                                               }];
+    } else {
+        [rootViewController presentViewController:packView animated:NO completion:nil];
+    }
+    return YES;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -983,6 +992,16 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
             OutboundCallInitiator *outboundCallInitiator = AppEnvironment.shared.outboundCallInitiator;
             OWSAssertDebug(outboundCallInitiator);
             [outboundCallInitiator initiateCallWithAddress:address];
+        }];
+        return YES;
+    } else if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        if (userActivity.webpageURL == nil) {
+            OWSFailDebug(@"Missing webpageURL.");
+            return NO;
+        }
+        NSURL *url = userActivity.webpageURL;
+        [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+            [self tryToOpenUrl:url];
         }];
         return YES;
     } else {
