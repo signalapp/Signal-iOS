@@ -189,13 +189,10 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
 
     private func process(groupDetails: GroupDetails, transaction: SDSAnyWriteTransaction) throws {
 
+        // GroupsV2 TODO: Eventually we might want to default to V2.
         var groupsVersion: GroupsVersion = .V1
-        if let groupsVersionRaw = groupDetails.groupsVersion {
-            if let parsedVersion = GroupsVersion(rawValue: UInt(groupsVersionRaw)) {
-                groupsVersion = parsedVersion
-            } else {
-                throw OWSErrorMakeAssertionError("Invalid group version: \(groupsVersionRaw)")
-            }
+        if let groupsVersionReceived = groupDetails.groupsVersion {
+            groupsVersion = groupsVersionReceived
         }
         let result = try GroupManager.ensureExistingGroup(transaction: transaction,
                                                           members: groupDetails.memberAddresses,

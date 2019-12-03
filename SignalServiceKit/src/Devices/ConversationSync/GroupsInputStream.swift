@@ -14,7 +14,7 @@ public struct GroupDetails {
     public let avatarData: Data?
     public let isArchived: Bool?
     public let inboxSortOrder: UInt32?
-    public let groupsVersion: UInt32?
+    public let groupsVersion: GroupsVersion?
     public let groupSecretParamsData: Data?
 }
 
@@ -48,7 +48,7 @@ public class GroupsInputStream {
         }
 
         // GroupsV2 TODO: Send and receive these values.
-        let groupsVersion: UInt32? = UInt32(GroupsVersion.V1.rawValue)
+        let groupsVersion: GroupsVersion? = GroupsVersion.V1
         let groupSecretParamsData: Data? = nil
 
         return GroupDetails(groupId: groupDetails.id,

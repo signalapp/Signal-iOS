@@ -191,7 +191,7 @@ public class VersionedProfiles: NSObject {
                                               udAccessKey: SMKUDAccessKey?) throws -> VersionedProfileRequest {
         guard address.isValid,
             let uuid: UUID = address.uuid else {
-                throw OWSErrorMakeAssertionError("Invalid address: \(address)")
+                throw OWSAssertionError("Invalid address: \(address)")
         }
 
         var requestContext: ProfileKeyCredentialRequestContext?
@@ -280,7 +280,7 @@ public class VersionedProfiles: NSObject {
                                                 transaction: SDSAnyReadTransaction) throws -> Data? {
         guard address.isValid,
             let uuid = address.uuid else {
-                throw OWSErrorMakeAssertionError("Invalid address: \(address)")
+                throw OWSAssertionError("Invalid address: \(address)")
         }
         return credentialStore.getData(uuid.uuidString, transaction: transaction)
     }
@@ -300,6 +300,6 @@ public class VersionedProfiles: NSObject {
 
 public extension Array where Element == UInt8 {
     var asData: Data {
-        return NSData(bytes: self, length: self.count) as Data
+        return Data(self)
     }
 }

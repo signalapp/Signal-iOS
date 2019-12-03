@@ -64,7 +64,7 @@ public class GroupManager: NSObject {
 
     // MARK: - Create New Group
     //
-    // MARK: "New" groups are being created for the first time; they might need to be created on the service.
+    // "New" groups are being created for the first time; they might need to be created on the service.
 
     private static func buildGroupModel(groupId groupIdParam: Data?,
                                         name nameParam: String?,
@@ -81,11 +81,11 @@ public class GroupManager: NSObject {
             groupId = TSGroupModel.generateRandomGroupId()
         }
         guard groupId.count == kGroupIdLength else {
-            throw OWSErrorMakeAssertionError("Invalid groupId.")
+            throw OWSAssertionError("Invalid groupId.")
         }
         for recipientAddress in membersParam {
             guard recipientAddress.isValid else {
-                throw OWSErrorMakeAssertionError("Invalid address.")
+                throw OWSAssertionError("Invalid address.")
             }
         }
         var name: String?
@@ -112,7 +112,7 @@ public class GroupManager: NSObject {
             } else {
                 groupSecretParamsData = groupSecretParamsDataParam
                 guard groupSecretParamsData != nil else {
-                    throw OWSErrorMakeAssertionError("Missing or invalid groupSecretParamsData.")
+                    throw OWSAssertionError("Missing or invalid groupSecretParamsData.")
                 }
             }
         }
@@ -131,7 +131,7 @@ public class GroupManager: NSObject {
                 Logger.warn("Creating legacy group; member without UUID.")
                 return .V1
             }
-            // TODO: Check whether recipient supports Groups v2.
+            // GroupsV2 TODO: Check whether recipient supports Groups v2.
         }
         return defaultGroupsVersion
     }
@@ -277,7 +277,7 @@ public class GroupManager: NSObject {
 
     // MARK: - Ensure Existing Group
     //
-    // MARK: "Existing" groups have already been created, we just need to make sure they're in the database.
+    // "Existing" groups have already been created, we just need to make sure they're in the database.
 
     public static func ensureExistingGroup(transaction: SDSAnyWriteTransaction,
                                            members: [SignalServiceAddress],
@@ -340,17 +340,17 @@ public class GroupManager: NSObject {
 
         // Always ensure we're a member of any group we're updating.
         guard let localAddress = self.tsAccountManager.localAddress else {
-            throw OWSErrorMakeAssertionError("Missing localAddress.")
+            throw OWSAssertionError("Missing localAddress.")
         }
         let members: [SignalServiceAddress] = membersParam + [localAddress]
 
         let thread = try self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> TSGroupThread in
             guard let thread = TSGroupThread.getWithGroupId(groupId, transaction: transaction) else {
-                throw OWSErrorMakeAssertionError("Thread does not exist.")
+                throw OWSAssertionError("Thread does not exist.")
             }
             let oldGroupModel = thread.groupModel
             guard oldGroupModel.groupId.count > 0 else {
-                throw OWSErrorMakeAssertionError("Missing or invalid group id.")
+                throw OWSAssertionError("Missing or invalid group id.")
             }
             let newGroupModel = try buildGroupModel(groupId: oldGroupModel.groupId,
                                                     name: name,
@@ -403,22 +403,20 @@ public class GroupManager: NSObject {
 
         if let avatarData = newGroupModel.groupAvatarData,
             avatarData.count > 0 {
-            if let avatarDataSource = DataSourceValue.dataSource(with: avatarData, fileExtension: "png") {
+            if let dataSource = DataSourceValue.dataSource(with: avatarData, fileExtension: "png") {
 
                 // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
                 // which causes this code to be called. Once we're more aggressive about durable sending retry,
                 // we could get rid of this "retryable tappable error message".
-                return Promise { resolver in
-                    self.messageSender.sendTemporaryAttachment(avatarDataSource,
-                                                               contentType: OWSMimeTypeImagePng,
-                                                               in: message,
-                                                               success: {
-                                                                Logger.debug("Successfully sent group update with avatar")
-                                                                resolver.fulfill(())
-                    }, failure: { error in
+                return self.messageSender.sendTemporaryAttachment(.promise,
+                                                                  dataSource: dataSource,
+                                                                  contentType: OWSMimeTypeImagePng,
+                                                                  message: message)
+                    .done(on: .global()) { _ in
+                        Logger.debug("Successfully sent group update with avatar")
+                    }.recover(on: .global()) { error in
                         owsFailDebug("Failed to send group avatar update with error: \(error)")
-                        resolver.reject(error)
-                    })
+                        throw error
                 }
             }
         }
@@ -426,15 +424,12 @@ public class GroupManager: NSObject {
         // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
         // which causes this code to be called. Once we're more aggressive about durable sending retry,
         // we could get rid of this "retryable tappable error message".
-        return Promise { resolver in
-            self.messageSender.sendMessage(message.asPreparer,
-                                           success: {
-                                            Logger.debug("Successfully sent group update")
-                                            resolver.fulfill(())
-            }, failure: { error in
+        return self.messageSender.sendMessage(.promise, message.asPreparer)
+            .done(on: .global()) { _ in
+                Logger.debug("Successfully sent group update")
+            }.recover(on: .global()) { error in
                 owsFailDebug("Failed to send group update with error: \(error)")
-                resolver.reject(error)
-            })
+                throw error
         }
     }
 

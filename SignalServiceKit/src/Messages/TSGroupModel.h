@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern const int32_t kGroupIdLength;
 
-typedef NS_CLOSED_ENUM(NSUInteger, GroupsVersion) { GroupsVersionV1 = 0, GroupsVersionV2 };
+typedef NS_CLOSED_ENUM(uint32_t, GroupsVersion) { GroupsVersionV1 = 0, GroupsVersionV2 };
 
 @interface TSGroupModel : MTLModel
 
