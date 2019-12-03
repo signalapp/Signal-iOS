@@ -1,5 +1,5 @@
 
-final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegate, UIViewControllerPreviewingDelegate {
+final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIViewControllerPreviewingDelegate {
     private var threadViewModelCache: [String:ThreadViewModel] = [:]
     private var isObservingDatabase = true
     private var isViewVisible = false { didSet { updateIsObservingDatabase() } }
@@ -54,6 +54,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     
     // MARK: Lifecycle
     override func viewDidLoad() {
+        SignalApp.shared().homeViewController = self
         // Set gradient background
         view.backgroundColor = .clear
         let gradient = Gradients.defaultLokiBackground
@@ -65,7 +66,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
             navigationBar.isTranslucent = false
             navigationBar.barTintColor = Colors.navigationBarBackground
         }
-        // Set up the navigation bar buttons
+        // Set up navigation bar buttons
         updateNavigationBarButtons()
         // Customize title
         let titleLabel = UILabel()
@@ -218,6 +219,10 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     }
     
     // MARK: Interaction
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        searchBar.resignFirstResponder()
+    }
+    
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
         guard let indexPath = tableView.indexPathForRow(at: location), let thread = self.thread(at: indexPath.row) else { return nil }
         previewingContext.sourceRect = tableView.rectForRow(at: indexPath)
@@ -302,7 +307,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     }
     
     @objc func createPrivateChat() {
-        let newConversationVC = NewConversationVCV2()
+        let newConversationVC = NewConversationVC()
         let navigationController = OWSNavigationController(rootViewController: newConversationVC)
         present(navigationController, animated: true, completion: nil)
     }

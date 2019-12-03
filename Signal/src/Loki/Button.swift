@@ -36,8 +36,13 @@ final class Button : UIButton {
         case .unimportant: textColor = Colors.text
         case .prominent: textColor = Colors.accent
         }
-        set(.height, to: Values.buttonHeight)
-        layer.cornerRadius = Values.buttonHeight / 2
+        let height: CGFloat
+        switch style {
+        case .unimportant: height = Values.mediumButtonHeight
+        case .prominent: height = Values.largeButtonHeight
+        }
+        set(.height, to: height)
+        layer.cornerRadius = height / 2
         backgroundColor = fillColor
         layer.borderColor = borderColor.cgColor
         layer.borderWidth = Values.borderThickness

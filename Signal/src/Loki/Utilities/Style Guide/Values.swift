@@ -15,7 +15,8 @@ final class Values : NSObject {
     @objc static let massiveFontSize = CGFloat(50)
     
     // MARK: - Element Sizes
-    @objc static let buttonHeight = CGFloat(34)
+    @objc static let mediumButtonHeight = CGFloat(34)
+    @objc static let largeButtonHeight = CGFloat(45)
     @objc static let accentLineThickness = CGFloat(4)
     @objc static let verySmallProfilePictureSize = CGFloat(26)
     @objc static let smallProfilePictureSize = CGFloat(35)

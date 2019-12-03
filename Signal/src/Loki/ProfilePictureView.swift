@@ -43,12 +43,7 @@ final class ProfilePictureView : UIView {
             imageView.removeConstraint(imageViewHeightConstraint)
         }
         func getProfilePicture(of size: CGFloat, for hexEncodedPublicKey: String) -> UIImage {
-            let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
-            if hexEncodedPublicKey == userHexEncodedPublicKey, let profilePicture = OWSProfileManager.shared().localProfileAvatarImage() {
-                return profilePicture
-            } else {
-                return Identicon.generateIcon(string: hexEncodedPublicKey, size: size)
-            }
+            return OWSProfileManager.shared().profileAvatar(forRecipientId: hexEncodedPublicKey) ?? Identicon.generateIcon(string: hexEncodedPublicKey, size: size)
         }
         let size: CGFloat
         if let additionalHexEncodedPublicKey = additionalHexEncodedPublicKey {
