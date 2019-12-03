@@ -5,7 +5,6 @@ final class ProfilePictureView : UIView {
     var size: CGFloat!
     var hexEncodedPublicKey: String!
     var additionalHexEncodedPublicKey: String?
-    var onTap: (() -> Void)? = nil
     
     // MARK: Components
     private lazy var imageView = getImageView()
@@ -35,9 +34,6 @@ final class ProfilePictureView : UIView {
         additionalImageView.set(.width, to: additionalImageViewSize)
         additionalImageView.set(.height, to: additionalImageViewSize)
         additionalImageView.layer.cornerRadius = additionalImageViewSize / 2
-        // Set up gesture recognizer
-        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-        addGestureRecognizer(gestureRecognizer)
     }
     
     // MARK: Updating
@@ -70,11 +66,6 @@ final class ProfilePictureView : UIView {
         }
         imageView.image = getProfilePicture(of: size, for: hexEncodedPublicKey)
         imageView.layer.cornerRadius = size / 2
-    }
-    
-    // MARK: Interaction
-    @objc private func handleTap() {
-        onTap?()
     }
     
     // MARK: Convenience

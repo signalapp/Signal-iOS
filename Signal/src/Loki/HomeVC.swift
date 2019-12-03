@@ -173,11 +173,11 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
             let key = rowChange.collectionKey.key
             threadViewModelCache[key] = nil
             switch rowChange.type {
-            case .delete: tableView.deleteRows(at: [ rowChange.indexPath! ], with: UITableView.RowAnimation.automatic)
-            case .insert: tableView.insertRows(at: [ rowChange.newIndexPath! ], with: UITableView.RowAnimation.automatic)
+            case .delete: tableView.deleteRows(at: [ rowChange.indexPath! ], with: UITableView.RowAnimation.fade)
+            case .insert: tableView.insertRows(at: [ rowChange.newIndexPath! ], with: UITableView.RowAnimation.fade)
             case .move:
-                tableView.deleteRows(at: [ rowChange.indexPath! ], with: UITableView.RowAnimation.automatic)
-                tableView.insertRows(at: [ rowChange.newIndexPath! ], with: UITableView.RowAnimation.automatic)
+                tableView.deleteRows(at: [ rowChange.indexPath! ], with: UITableView.RowAnimation.fade)
+                tableView.insertRows(at: [ rowChange.newIndexPath! ], with: UITableView.RowAnimation.fade)
             case .update:
                 tableView.reloadRows(at: [ rowChange.indexPath! ], with: UITableView.RowAnimation.none)
             default: break
@@ -207,7 +207,8 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         profilePictureView.update()
         profilePictureView.set(.width, to: profilePictureSize)
         profilePictureView.set(.height, to: profilePictureSize)
-        profilePictureView.onTap = { [weak self] in self?.openSettings() }
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openSettings))
+        profilePictureView.addGestureRecognizer(tapGestureRecognizer)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profilePictureView)
         let createPrivateGroupChatButton = UIBarButtonItem(image: #imageLiteral(resourceName: "People"), style: .plain, target: self, action: #selector(createPrivateGroupChat))
         createPrivateGroupChatButton.tintColor = Colors.text

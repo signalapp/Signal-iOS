@@ -27,7 +27,7 @@ final class Values : NSObject {
     @objc static let newConversationButtonSize = CGFloat(45)
     @objc static let textFieldHeight = CGFloat(80)
     @objc static let textFieldCornerRadius = CGFloat(8)
-    @objc static let separatorCornerRadius = CGFloat(10)
+    @objc static let separatorLabelHeight = CGFloat(24)
     @objc static var separatorThickness: CGFloat { return 1 / UIScreen.main.scale }
     
     // MARK: - Distances
