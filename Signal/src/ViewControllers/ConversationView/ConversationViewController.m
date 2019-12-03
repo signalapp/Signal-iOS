@@ -216,6 +216,8 @@ typedef enum : NSUInteger {
 @property (nonatomic) CGPoint messageActionsOriginalContentOffset;
 @property (nonatomic) CGFloat messageActionsOriginalFocusY;
 
+@property (nonatomic, nullable, weak) ReactionsDetailSheet *reactionsDetailSheet;
+
 @end
 
 #pragma mark -
@@ -1260,6 +1262,7 @@ typedef enum : NSUInteger {
     self.isViewCompletelyAppeared = NO;
 
     [self dismissMessageActionsAnimated:NO];
+    [self dismissReactionsDetailSheetAnimated:NO];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -2336,6 +2339,67 @@ typedef enum : NSUInteger {
     }
 
     [self.messageActionsViewController didEndLongpress];
+}
+
+- (void)conversationCell:(ConversationViewCell *)cell didTapReactions:(id<ConversationViewItem>)viewItem
+{
+    OWSAssertDebug(viewItem);
+
+    if (!viewItem.reactionState.hasReactions) {
+        OWSFailDebug(@"missing reaction state");
+        return;
+    }
+
+    if (![viewItem.interaction isKindOfClass:[TSMessage class]]) {
+        OWSFailDebug(@"Unexpected interaction type");
+        return;
+    }
+
+    ReactionsDetailSheet *detailSheet =
+        [[ReactionsDetailSheet alloc] initWithReactionState:viewItem.reactionState
+                                                    message:(TSMessage *)viewItem.interaction];
+    [self presentViewController:detailSheet animated:YES completion:nil];
+    self.reactionsDetailSheet = detailSheet;
+}
+
+- (void)reloadReactionsDetailSheetWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    if (!self.reactionsDetailSheet) {
+        return;
+    }
+
+    NSString *messageId = self.reactionsDetailSheet.messageId;
+
+    NSNumber *_Nullable index = self.conversationViewModel.viewState.interactionIndexMap[messageId];
+    if (index == nil) {
+        // The message no longer exists, dismiss the sheet.
+        [self dismissReactionsDetailSheetAnimated:YES];
+    }
+
+    id<ConversationViewItem> viewItem = [self viewItemForIndex:index.integerValue];
+
+    InteractionReactionState *_Nullable reactionState = viewItem.reactionState;
+    if (!reactionState.hasReactions) {
+        // There are no longer reactions on this message, dismiss the sheet.
+        [self dismissReactionsDetailSheetAnimated:YES];
+        return;
+    }
+
+    // Update the detail sheet with the latest reaction
+    // state, in case the reactions have changed.
+    [self.reactionsDetailSheet setReactionState:reactionState transaction:transaction];
+}
+
+- (void)dismissReactionsDetailSheetAnimated:(BOOL)animated
+{
+    if (!self.reactionsDetailSheet) {
+        return;
+    }
+
+    [self.reactionsDetailSheet dismissViewControllerAnimated:animated
+                                                  completion:^{
+                                                      self.reactionsDetailSheet = nil;
+                                                  }];
 }
 
 - (void)conversationCell:(ConversationViewCell *)cell didReplyToItem:(id<ConversationViewItem>)viewItem
@@ -3837,6 +3901,7 @@ typedef enum : NSUInteger {
     // Re-styling the message actions is tricky,
     // since this happens rarely just dismiss
     [self dismissMessageActionsAnimated:NO];
+    [self dismissReactionsDetailSheetAnimated:NO];
 }
 
 - (void)reloadData
@@ -4550,8 +4615,8 @@ typedef enum : NSUInteger {
     // gesture doesn't get added to a view until this point.
     if ([cell isKindOfClass:[OWSMessageCell class]]) {
         OWSMessageCell *messageCell = (OWSMessageCell *)cell;
-        [self.tapGestureRecognizer requireGestureRecognizerToFail:messageCell.tapGestureRecognizer];
-        [self.tapGestureRecognizer requireGestureRecognizerToFail:messageCell.avatarTapGestureRecognizer];
+        [self.tapGestureRecognizer requireGestureRecognizerToFail:messageCell.messageViewTapGestureRecognizer];
+        [self.tapGestureRecognizer requireGestureRecognizerToFail:messageCell.contentViewTapGestureRecognizer];
     }
 
 #ifdef DEBUG
@@ -4877,6 +4942,8 @@ typedef enum : NSUInteger {
     // If the message has been deleted / disappeared, we need to dismiss
     [self dismissMessageActionsIfNecessary];
 
+    [self reloadReactionsDetailSheetWithTransaction:transaction];
+
     if (self.isGroupConversation) {
         [self.thread anyReloadWithTransaction:transaction];
         [self updateNavigationTitle];
@@ -5091,6 +5158,7 @@ typedef enum : NSUInteger {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
     [self dismissMessageActionsAnimated:NO];
+    [self dismissReactionsDetailSheetAnimated:NO];
 
     // Snapshot the "last visible row".
     NSIndexPath *_Nullable lastVisibleIndexPath = self.lastVisibleIndexPath;

@@ -311,6 +311,16 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
     return Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray15Color;
 }
 
++ (UIColor *)reactionBackgroundColor
+{
+    return Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_whiteColor;
+}
+
++ (UIColor *)backdropColor
+{
+    return UIColor.ows_blackAlpha40Color;
+}
+
 #pragma mark - Global App Colors
 
 + (UIColor *)navbarBackgroundColor

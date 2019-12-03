@@ -65,13 +65,12 @@ class MessageActionsViewController: UIViewController {
     override func loadView() {
         view = UIView()
 
-        let alpha: CGFloat = Theme.isDarkThemeEnabled ? 0.4 : 0.2
-        backdropView.backgroundColor = UIColor.black.withAlphaComponent(alpha)
+        backdropView.backgroundColor = Theme.backdropColor
 
         view.addSubview(backdropView)
         backdropView.autoPinEdgesToSuperviewEdges()
 
-        bottomBar.backgroundColor = Theme.toolbarBackgroundColor
+        bottomBar.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_white
         view.addSubview(bottomBar)
         bottomBar.autoPinWidthToSuperview()
 
@@ -194,8 +193,8 @@ class MessageActionsViewController: UIViewController {
 
         var pickerOrigin = initialTouchLocation.minus(CGPoint(x: picker.width() / 2, y: picker.height() / 2))
 
-        // The picker always starts 40pts above the touch point
-        pickerOrigin.y -= 40 + picker.height()
+        // The picker always starts 25pts above the touch point
+        pickerOrigin.y -= 25 + picker.height()
 
         // If the picker is not at least 16pts away from the edge
         // of the screen, we offset it so that it is.
@@ -316,7 +315,7 @@ private class MessageActionsToolbar: UIToolbar {
 
         autoresizingMask = .flexibleHeight
         translatesAutoresizingMaskIntoConstraints = false
-        barTintColor = Theme.toolbarBackgroundColor
+        barTintColor = Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_white
         setShadowImage(UIImage(), forToolbarPosition: .any)
 
         buildItems()
@@ -348,6 +347,13 @@ private class MessageActionsToolbar: UIToolbar {
                 newItems.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil))
             }
         }
+
+        // If we only have a single button, center it.
+        if newItems.count == 1 {
+            newItems.insert(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), at: 0)
+            newItems.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil))
+        }
+
         items = newItems
     }
 

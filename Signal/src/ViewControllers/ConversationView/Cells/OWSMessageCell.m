@@ -28,8 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
 
-@property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
-@property (nonatomic) UITapGestureRecognizer *avatarTapGestureRecognizer;
+@property (nonatomic) UITapGestureRecognizer *messageViewTapGestureRecognizer;
+@property (nonatomic) UITapGestureRecognizer *contentViewTapGestureRecognizer;
 @property (nonatomic) UIPanGestureRecognizer *panGestureRecognizer;
 @property (nonatomic) UILongPressGestureRecognizer *longPressGestureRecognizer;
 @property (nonatomic) UIView *swipeableContentView;
@@ -78,9 +78,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.contentView.userInteractionEnabled = YES;
 
-    self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                        action:@selector(handleTapGesture:)];
-    self.tapGestureRecognizer.delegate = self;
+    self.messageViewTapGestureRecognizer =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleMessageViewTapGesture:)];
+    self.messageViewTapGestureRecognizer.delegate = self;
 
     self.longPressGestureRecognizer =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
@@ -90,14 +90,14 @@ NS_ASSUME_NONNULL_BEGIN
                                                                           action:@selector(handlePanGesture:)];
     self.panGestureRecognizer.delegate = self;
     [self.contentView addGestureRecognizer:self.panGestureRecognizer];
-    [self.tapGestureRecognizer requireGestureRecognizerToFail:self.panGestureRecognizer];
+    [self.messageViewTapGestureRecognizer requireGestureRecognizerToFail:self.panGestureRecognizer];
 
-    self.avatarTapGestureRecognizer =
-        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleAvatarTapGesture:)];
-    self.avatarTapGestureRecognizer.delegate = self;
-    [self.contentView addGestureRecognizer:self.avatarTapGestureRecognizer];
-    [self.avatarTapGestureRecognizer requireGestureRecognizerToFail:self.panGestureRecognizer];
-    [self.avatarTapGestureRecognizer requireGestureRecognizerToFail:self.tapGestureRecognizer];
+    self.contentViewTapGestureRecognizer =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleContentViewTapGesture:)];
+    self.contentViewTapGestureRecognizer.delegate = self;
+    [self.contentView addGestureRecognizer:self.contentViewTapGestureRecognizer];
+    [self.contentViewTapGestureRecognizer requireGestureRecognizerToFail:self.panGestureRecognizer];
+    [self.contentViewTapGestureRecognizer requireGestureRecognizerToFail:self.messageViewTapGestureRecognizer];
 
     self.reactionBubblesView = [ReactionBubblesView new];
 
@@ -186,7 +186,7 @@ NS_ASSUME_NONNULL_BEGIN
     [messageView loadContent];
     [self.contentView addSubview:messageView];
     [messageView autoPinBottomToSuperviewMarginWithInset:0];
-    [messageView addGestureRecognizer:self.tapGestureRecognizer];
+    [messageView addGestureRecognizer:self.messageViewTapGestureRecognizer];
 
     if (self.viewItem.hasCellHeader) {
         CGFloat headerHeight =
@@ -396,12 +396,16 @@ NS_ASSUME_NONNULL_BEGIN
 // Returns true IFF we should display reactions bubbles
 - (BOOL)updateReactionsView
 {
-    if (self.viewItem.reactionState == nil) {
+    if (!SSKFeatureFlags.reactionReceive) {
+        return NO;
+    }
+
+    if (!self.viewItem.reactionState.hasReactions) {
         return NO;
     }
 
     [self.reactionBubblesView configureWith:self.viewItem.reactionState];
-    [self.contentView addSubview:self.reactionBubblesView];
+    [self.messageView addSubview:self.reactionBubblesView];
 
     return YES;
 }
@@ -490,7 +494,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Gesture recognizers
 
-- (void)handleTapGesture:(UITapGestureRecognizer *)sender
+- (void)handleMessageViewTapGesture:(UITapGestureRecognizer *)sender
 {
     OWSAssertDebug(self.delegate);
 
@@ -517,16 +521,19 @@ NS_ASSUME_NONNULL_BEGIN
     [self.messageView handleTapGesture:sender];
 }
 
-- (void)handleAvatarTapGesture:(UITapGestureRecognizer *)sender
+- (void)handleContentViewTapGesture:(UITapGestureRecognizer *)sender
 {
     OWSAssertDebug(self.delegate);
 
-    if (![self isGestureInAvatar:sender]) {
-        OWSFailDebug(@"Received unexpected gesture");
+    if ([self isGestureInReactions:sender]) {
+        [self.delegate conversationCell:self didTapReactions:self.viewItem];
+        return;
+    } else if ([self isGestureInAvatar:sender]) {
+        [self.delegate conversationCell:self didTapAvatar:self.viewItem];
         return;
     }
 
-    [self.delegate conversationCell:self didTapAvatar:self.viewItem];
+    OWSFailDebug(@"Received unexpected gesture");
 }
 
 - (void)handleLongPressGesture:(UILongPressGestureRecognizer *)sender
@@ -620,6 +627,18 @@ NS_ASSUME_NONNULL_BEGIN
     return CGRectContainsPoint(self.avatarView.frame, tapPoint);
 }
 
+- (BOOL)isGestureInReactions:(UIGestureRecognizer *)sender
+{
+    OWSAssertDebug(self.viewItem);
+
+    if (!self.viewItem.reactionState.hasReactions) {
+        return NO;
+    }
+
+    CGPoint tapPoint = [sender locationInView:self.messageView];
+    return CGRectContainsPoint(self.reactionBubblesView.frame, tapPoint);
+}
+
 # pragma mark - UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
@@ -629,10 +648,11 @@ NS_ASSUME_NONNULL_BEGIN
         // to avoid conflicts with the conversation view scroll view.
         CGPoint velocity = [self.panGestureRecognizer velocityInView:self];
         return fabs(velocity.x) > fabs(velocity.y);
-    } else if (gestureRecognizer == self.tapGestureRecognizer) {
-        return [self.messageView willHandleTapGesture:self.tapGestureRecognizer];
-    } else if (gestureRecognizer == self.avatarTapGestureRecognizer) {
-        return [self isGestureInAvatar:self.avatarTapGestureRecognizer];
+    } else if (gestureRecognizer == self.messageViewTapGestureRecognizer) {
+        return [self.messageView willHandleTapGesture:self.messageViewTapGestureRecognizer];
+    } else if (gestureRecognizer == self.contentViewTapGestureRecognizer) {
+        return [self isGestureInAvatar:self.contentViewTapGestureRecognizer] ||
+            [self isGestureInReactions:self.contentViewTapGestureRecognizer];
     }
 
     return YES;

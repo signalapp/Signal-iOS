@@ -12,10 +12,6 @@ class ReactionBubblesView: UIView {
     init() {
         super.init(frame: .zero)
 
-        autoSetDimension(.height, toSize: 62, relation: .lessThanOrEqual)
-        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
-            autoSetDimension(.height, toSize: 34, relation: .greaterThanOrEqual)
-        }
         addSubview(bubble2)
         addSubview(bubble1)
 
@@ -23,6 +19,11 @@ class ReactionBubblesView: UIView {
         bubble1.autoPinWidthToSuperview()
         bubble2.autoPinWidthToSuperview()
         bubble2.autoPinEdge(toSuperviewEdge: .bottom)
+        bubble2.autoPinEdge(.top, to: .top, of: bubble1, withOffset: 4, relation: .greaterThanOrEqual)
+
+        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
+            autoSetDimension(.height, toSize: 62)
+        }
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -43,10 +44,22 @@ class ReactionBubblesView: UIView {
         bubble1.isHidden = false
 
         guard reactionState.emojiCounts.count >= 2 else { return }
-        bubble2.configure(
-            for: reactionState.emojiCounts[1].emoji,
-            fromLocalUser: reactionState.emojiCounts[1].emoji == reactionState.localUserEmoji
-        )
+
+        // If the local user has reacted, and it's not the most popular
+        // reaction, always show it as the second bubble regardless of
+        // where it falls within the count ordering.
+        if let localEmoji = reactionState.localUserEmoji, reactionState.emojiCounts[0].emoji != localEmoji {
+            bubble2.configure(
+                for: localEmoji,
+                fromLocalUser: true
+            )
+        } else {
+            bubble2.configure(
+                for: reactionState.emojiCounts[1].emoji,
+                fromLocalUser: false
+            )
+        }
+
         bubble2.isHidden = false
     }
 }
