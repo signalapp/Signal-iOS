@@ -153,7 +153,6 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 
 // If avatarData is nil, we are clearing the avatar.
 - (AnyPromise *)uploadAvatarToService:(nullable NSData *)avatarData
-                     clearLocalAvatar:(dispatch_block_t)clearLocalAvatar
                         progressBlock:(UploadProgressBlock)progressBlock
 {
     OWSAssertDebug(avatarData == nil || avatarData.length > 0);
@@ -172,7 +171,6 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 
                     if (avatarData == nil) {
                         OWSLogDebug(@"successfully cleared avatar");
-                        clearLocalAvatar();
                         return resolve(@(1));
                     }
 
@@ -182,18 +180,11 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
                                 return resolve(@(1));
                             })
                             .catchInBackground(^(NSError *error) {
-                                clearLocalAvatar();
 
                                 resolve(error);
                             }) retainUntilComplete];
                 }
                 failure:^(NSURLSessionDataTask *task, NSError *error) {
-                    // Only clear the local avatar if we have a response. Otherwise, we
-                    // had a network failure and probably didn't reach the service.
-                    if (task.response != nil) {
-                        clearLocalAvatar();
-                    }
-
                     OWSLogError(@"Failed to get profile avatar upload form: %@", error);
                     resolve(error);
                 }];
