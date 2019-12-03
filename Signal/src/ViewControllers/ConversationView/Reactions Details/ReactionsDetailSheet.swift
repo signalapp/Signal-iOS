@@ -323,7 +323,7 @@ class ReactionsDetailSheet: UIViewController {
 
     // MARK: - Paging
 
-    /// This array always includes three reactors views, where the indeces represent:
+    /// This array always includes three reactors views, where the indices represent:
     /// 0 - Previous Page
     /// 1 - Current Page
     /// 2 - Next Page

@@ -43,11 +43,6 @@ public class EmojiCountsCollectionView: UICollectionView {
         autoSetDimension(.height, toSize: itemHeight + contentInset.top + contentInset.bottom)
     }
 
-    // Reload visible items to refresh the "selected" state
-    func updateSelections() {
-        reloadItems(at: indexPathsForVisibleItems)
-    }
-
     func setSelectedIndex(_ index: Int) {
         selectItem(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .centeredHorizontally)
     }
@@ -143,7 +138,7 @@ class EmojiCountCell: UICollectionViewCell {
 
     func configure(with item: EmojiItem) {
         emoji.text = item.emoji
-        count.text = "\(item.count)"
+        count.text = "\(OWSFormat.formatInt(Int32(item.count)))"
     }
 
     override func layoutSubviews() {
