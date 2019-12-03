@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
     const char *bytes = data.bytes;
     char *reversedBytes = malloc(sizeof(char) * data.length);
     int i = data.length - 1;
-    for (int j = 0; j < data.length; i++) {
+    for (int j = 0; j < data.length; j++) {
         reversedBytes[i] = bytes[j];
         i = i - 1;
     }
