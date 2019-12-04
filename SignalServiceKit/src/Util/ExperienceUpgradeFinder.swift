@@ -41,7 +41,8 @@ public enum ExperienceUpgradeId: String {
             upgrades.append(stickers)
         }
 
-        if FeatureFlags.pinsForEveryone {
+        if FeatureFlags.pinsForEveryone,
+            TSAccountManager.sharedInstance().isRegisteredPrimaryDevice {
             upgrades.append(pins)
         }
 
