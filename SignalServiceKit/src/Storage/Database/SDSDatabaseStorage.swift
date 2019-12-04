@@ -161,7 +161,7 @@ public class SDSDatabaseStorage: SDSTransactable {
                 return try GRDBDatabaseStorageAdapter(baseDir: type(of: self).baseDir())
             }
         } catch {
-            owsFail("\(error)")
+            owsFail("\(error.grdbErrorForLogging)")
         }
     }
 
@@ -351,7 +351,7 @@ public class SDSDatabaseStorage: SDSTransactable {
                     block(transaction.asAnyRead)
                 }
             } catch {
-                owsFail("error: \(error)")
+                owsFail("error: \(error.grdbErrorForLogging)")
             }
         case .ydb:
             yapStorage.uiRead { transaction in
@@ -369,7 +369,7 @@ public class SDSDatabaseStorage: SDSTransactable {
                     block(transaction.asAnyRead)
                 }
             } catch {
-                owsFail("error: \(error)")
+                owsFail("error: \(error.grdbErrorForLogging)")
             }
         case .ydb:
             yapStorage.read { transaction in
@@ -395,7 +395,7 @@ public class SDSDatabaseStorage: SDSTransactable {
                     }
                 }
             } catch {
-                owsFail("error: \(error)")
+                owsFail("error: \(error.grdbErrorForLogging)")
             }
         case .ydb:
             yapStorage.write { transaction in
