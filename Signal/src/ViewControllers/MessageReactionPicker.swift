@@ -9,9 +9,10 @@ protocol MessageReactionPickerDelegate: class {
 }
 
 class MessageReactionPicker: UIStackView {
-    let pickerDiameter: CGFloat = 48
-    let pickerPadding: CGFloat = 2
-    var reactionHeight: CGFloat { return pickerDiameter - (2 * pickerPadding) }
+    let pickerDiameter: CGFloat = 56
+    let pickerPadding: CGFloat = 6
+    var reactionHeight: CGFloat { return pickerDiameter - (pickerPadding * 2) }
+    var selectedBackgroundHeight: CGFloat { return pickerDiameter - 4 }
 
     private var buttonForEmoji = [String: OWSFlatButton]()
     private var selectedEmoji: String?
@@ -23,14 +24,23 @@ class MessageReactionPicker: UIStackView {
 
         super.init(frame: .zero)
 
-        backgroundView = addBackgroundView(
-            withBackgroundColor: Theme.reactionBackgroundColor,
-            cornerRadius: pickerDiameter / 2
-        )
-        backgroundView?.layer.shadowColor = UIColor.black.withAlphaComponent(0.24).cgColor
-        backgroundView?.layer.shadowOffset = CGSize(width: 0, height: 8)
-        backgroundView?.layer.shadowOpacity = 1
-        backgroundView?.layer.shadowRadius = 8
+        if UIAccessibility.isReduceTransparencyEnabled {
+            backgroundView = addBackgroundView(
+                withBackgroundColor: .ows_blackAlpha80,
+                cornerRadius: pickerDiameter / 2
+            )
+        } else {
+            let backgroundView = UIView()
+            addSubview(backgroundView)
+            backgroundView.autoPinEdgesToSuperviewEdges()
+            backgroundView.layer.cornerRadius = pickerDiameter / 2
+            backgroundView.clipsToBounds = true
+            self.backgroundView = backgroundView
+
+            let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+            backgroundView.addSubview(blurEffectView)
+            blurEffectView.autoPinEdgesToSuperviewEdges()
+        }
 
         autoSetDimension(.height, toSize: pickerDiameter)
 
@@ -40,7 +50,7 @@ class MessageReactionPicker: UIStackView {
         for emoji in ReactionManager.emojiSet {
             let button = OWSFlatButton()
             button.autoSetDimensions(to: CGSize(square: reactionHeight))
-            button.setTitle(title: emoji, font: .systemFont(ofSize: 30), titleColor: Theme.primaryTextColor)
+            button.setTitle(title: emoji, font: .systemFont(ofSize: 32), titleColor: Theme.primaryTextColor)
             button.setPressedBlock { [weak self] in
                 self?.delegate?.didSelectReaction(reaction: emoji, isRemoving: emoji == self?.selectedEmoji)
             }
@@ -50,11 +60,13 @@ class MessageReactionPicker: UIStackView {
             // Add a circle behind the currently selected emoji
             if selectedEmoji == emoji {
                 let selectedBackgroundView = UIView()
-                selectedBackgroundView.backgroundColor = .ows_signalBlue
+                selectedBackgroundView.backgroundColor = .ows_whiteAlpha30
                 selectedBackgroundView.clipsToBounds = true
-                selectedBackgroundView.layer.cornerRadius = reactionHeight / 2
+                selectedBackgroundView.layer.cornerRadius = selectedBackgroundHeight / 2
                 backgroundView?.addSubview(selectedBackgroundView)
-                selectedBackgroundView.autoPin(toEdgesOf: button)
+                selectedBackgroundView.autoSetDimensions(to: CGSize(square: selectedBackgroundHeight))
+                selectedBackgroundView.autoAlignAxis(.horizontal, toSameAxisOf: button)
+                selectedBackgroundView.autoAlignAxis(.vertical, toSameAxisOf: button)
             }
         }
     }
