@@ -338,6 +338,12 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
             attachmentPointer =
                 [TSAttachmentPointer anyFetchAttachmentPointerWithUniqueId:job.attachmentId transaction:transaction];
             if (attachmentPointer == nil) {
+                // This isn't necessarily a bug.  For example:
+                //
+                // * Receive an incoming message with an attachment.
+                // * Kick off download of that attachment.
+                // * Receive read receipt for that message, causing it to be disappeared immediately.
+                // * Try to download that attachment - but it's missing.
                 OWSFailDebug(@"Missing attachment.");
                 return;
             }
