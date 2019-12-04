@@ -11,29 +11,29 @@ public enum StorageServiceProtoError: Error {
     case invalidProtobuf(description: String)
 }
 
-// MARK: - StorageServiceProtoContact
+// MARK: - StorageServiceProtoStorageItem
 
 @objc
-public class StorageServiceProtoContact: NSObject {
+public class StorageServiceProtoStorageItem: NSObject {
 
-    // MARK: - StorageServiceProtoContactBuilder
+    // MARK: - StorageServiceProtoStorageItemBuilder
 
     @objc
-    public class func builder(key: Data, value: Data) -> StorageServiceProtoContactBuilder {
-        return StorageServiceProtoContactBuilder(key: key, value: value)
+    public class func builder(key: Data, value: Data) -> StorageServiceProtoStorageItemBuilder {
+        return StorageServiceProtoStorageItemBuilder(key: key, value: value)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
-    public func asBuilder() -> StorageServiceProtoContactBuilder {
-        let builder = StorageServiceProtoContactBuilder(key: key, value: value)
+    public func asBuilder() -> StorageServiceProtoStorageItemBuilder {
+        let builder = StorageServiceProtoStorageItemBuilder(key: key, value: value)
         return builder
     }
 
     @objc
-    public class StorageServiceProtoContactBuilder: NSObject {
+    public class StorageServiceProtoStorageItemBuilder: NSObject {
 
-        private var proto = StorageServiceProtos_Contact()
+        private var proto = StorageServiceProtos_StorageItem()
 
         @objc
         fileprivate override init() {}
@@ -69,17 +69,17 @@ public class StorageServiceProtoContact: NSObject {
         }
 
         @objc
-        public func build() throws -> StorageServiceProtoContact {
-            return try StorageServiceProtoContact.parseProto(proto)
+        public func build() throws -> StorageServiceProtoStorageItem {
+            return try StorageServiceProtoStorageItem.parseProto(proto)
         }
 
         @objc
         public func buildSerializedData() throws -> Data {
-            return try StorageServiceProtoContact.parseProto(proto).serializedData()
+            return try StorageServiceProtoStorageItem.parseProto(proto).serializedData()
         }
     }
 
-    fileprivate let proto: StorageServiceProtos_Contact
+    fileprivate let proto: StorageServiceProtos_StorageItem
 
     @objc
     public let key: Data
@@ -87,7 +87,7 @@ public class StorageServiceProtoContact: NSObject {
     @objc
     public let value: Data
 
-    private init(proto: StorageServiceProtos_Contact,
+    private init(proto: StorageServiceProtos_StorageItem,
                  key: Data,
                  value: Data) {
         self.proto = proto
@@ -101,12 +101,12 @@ public class StorageServiceProtoContact: NSObject {
     }
 
     @objc
-    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoContact {
-        let proto = try StorageServiceProtos_Contact(serializedData: serializedData)
+    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoStorageItem {
+        let proto = try StorageServiceProtos_StorageItem(serializedData: serializedData)
         return try parseProto(proto)
     }
 
-    fileprivate class func parseProto(_ proto: StorageServiceProtos_Contact) throws -> StorageServiceProtoContact {
+    fileprivate class func parseProto(_ proto: StorageServiceProtos_StorageItem) throws -> StorageServiceProtoStorageItem {
         guard proto.hasKey else {
             throw StorageServiceProtoError.invalidProtobuf(description: "\(logTag) missing required field: key")
         }
@@ -117,13 +117,13 @@ public class StorageServiceProtoContact: NSObject {
         }
         let value = proto.value
 
-        // MARK: - Begin Validation Logic for StorageServiceProtoContact -
+        // MARK: - Begin Validation Logic for StorageServiceProtoStorageItem -
 
-        // MARK: - End Validation Logic for StorageServiceProtoContact -
+        // MARK: - End Validation Logic for StorageServiceProtoStorageItem -
 
-        let result = StorageServiceProtoContact(proto: proto,
-                                                key: key,
-                                                value: value)
+        let result = StorageServiceProtoStorageItem(proto: proto,
+                                                    key: key,
+                                                    value: value)
         return result
     }
 
@@ -135,155 +135,45 @@ public class StorageServiceProtoContact: NSObject {
 
 #if DEBUG
 
-extension StorageServiceProtoContact {
+extension StorageServiceProtoStorageItem {
     @objc
     public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
-extension StorageServiceProtoContact.StorageServiceProtoContactBuilder {
+extension StorageServiceProtoStorageItem.StorageServiceProtoStorageItemBuilder {
     @objc
-    public func buildIgnoringErrors() -> StorageServiceProtoContact? {
+    public func buildIgnoringErrors() -> StorageServiceProtoStorageItem? {
         return try! self.build()
     }
 }
 
 #endif
 
-// MARK: - StorageServiceProtoContacts
+// MARK: - StorageServiceProtoStorageManifest
 
 @objc
-public class StorageServiceProtoContacts: NSObject {
+public class StorageServiceProtoStorageManifest: NSObject {
 
-    // MARK: - StorageServiceProtoContactsBuilder
+    // MARK: - StorageServiceProtoStorageManifestBuilder
 
     @objc
-    public class func builder() -> StorageServiceProtoContactsBuilder {
-        return StorageServiceProtoContactsBuilder()
+    public class func builder(version: UInt64, value: Data) -> StorageServiceProtoStorageManifestBuilder {
+        return StorageServiceProtoStorageManifestBuilder(version: version, value: value)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
-    public func asBuilder() -> StorageServiceProtoContactsBuilder {
-        let builder = StorageServiceProtoContactsBuilder()
-        builder.setContacts(contacts)
+    public func asBuilder() -> StorageServiceProtoStorageManifestBuilder {
+        let builder = StorageServiceProtoStorageManifestBuilder(version: version, value: value)
         return builder
     }
 
     @objc
-    public class StorageServiceProtoContactsBuilder: NSObject {
+    public class StorageServiceProtoStorageManifestBuilder: NSObject {
 
-        private var proto = StorageServiceProtos_Contacts()
-
-        @objc
-        fileprivate override init() {}
-
-        @objc
-        public func addContacts(_ valueParam: StorageServiceProtoContact) {
-            var items = proto.contacts
-            items.append(valueParam.proto)
-            proto.contacts = items
-        }
-
-        @objc
-        public func setContacts(_ wrappedItems: [StorageServiceProtoContact]) {
-            proto.contacts = wrappedItems.map { $0.proto }
-        }
-
-        @objc
-        public func build() throws -> StorageServiceProtoContacts {
-            return try StorageServiceProtoContacts.parseProto(proto)
-        }
-
-        @objc
-        public func buildSerializedData() throws -> Data {
-            return try StorageServiceProtoContacts.parseProto(proto).serializedData()
-        }
-    }
-
-    fileprivate let proto: StorageServiceProtos_Contacts
-
-    @objc
-    public let contacts: [StorageServiceProtoContact]
-
-    private init(proto: StorageServiceProtos_Contacts,
-                 contacts: [StorageServiceProtoContact]) {
-        self.proto = proto
-        self.contacts = contacts
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.proto.serializedData()
-    }
-
-    @objc
-    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoContacts {
-        let proto = try StorageServiceProtos_Contacts(serializedData: serializedData)
-        return try parseProto(proto)
-    }
-
-    fileprivate class func parseProto(_ proto: StorageServiceProtos_Contacts) throws -> StorageServiceProtoContacts {
-        var contacts: [StorageServiceProtoContact] = []
-        contacts = try proto.contacts.map { try StorageServiceProtoContact.parseProto($0) }
-
-        // MARK: - Begin Validation Logic for StorageServiceProtoContacts -
-
-        // MARK: - End Validation Logic for StorageServiceProtoContacts -
-
-        let result = StorageServiceProtoContacts(proto: proto,
-                                                 contacts: contacts)
-        return result
-    }
-
-    @objc
-    public override var debugDescription: String {
-        return "\(proto)"
-    }
-}
-
-#if DEBUG
-
-extension StorageServiceProtoContacts {
-    @objc
-    public func serializedDataIgnoringErrors() -> Data? {
-        return try! self.serializedData()
-    }
-}
-
-extension StorageServiceProtoContacts.StorageServiceProtoContactsBuilder {
-    @objc
-    public func buildIgnoringErrors() -> StorageServiceProtoContacts? {
-        return try! self.build()
-    }
-}
-
-#endif
-
-// MARK: - StorageServiceProtoContactsManifest
-
-@objc
-public class StorageServiceProtoContactsManifest: NSObject {
-
-    // MARK: - StorageServiceProtoContactsManifestBuilder
-
-    @objc
-    public class func builder(version: UInt64, value: Data) -> StorageServiceProtoContactsManifestBuilder {
-        return StorageServiceProtoContactsManifestBuilder(version: version, value: value)
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc
-    public func asBuilder() -> StorageServiceProtoContactsManifestBuilder {
-        let builder = StorageServiceProtoContactsManifestBuilder(version: version, value: value)
-        return builder
-    }
-
-    @objc
-    public class StorageServiceProtoContactsManifestBuilder: NSObject {
-
-        private var proto = StorageServiceProtos_ContactsManifest()
+        private var proto = StorageServiceProtos_StorageManifest()
 
         @objc
         fileprivate override init() {}
@@ -313,17 +203,17 @@ public class StorageServiceProtoContactsManifest: NSObject {
         }
 
         @objc
-        public func build() throws -> StorageServiceProtoContactsManifest {
-            return try StorageServiceProtoContactsManifest.parseProto(proto)
+        public func build() throws -> StorageServiceProtoStorageManifest {
+            return try StorageServiceProtoStorageManifest.parseProto(proto)
         }
 
         @objc
         public func buildSerializedData() throws -> Data {
-            return try StorageServiceProtoContactsManifest.parseProto(proto).serializedData()
+            return try StorageServiceProtoStorageManifest.parseProto(proto).serializedData()
         }
     }
 
-    fileprivate let proto: StorageServiceProtos_ContactsManifest
+    fileprivate let proto: StorageServiceProtos_StorageManifest
 
     @objc
     public let version: UInt64
@@ -331,7 +221,7 @@ public class StorageServiceProtoContactsManifest: NSObject {
     @objc
     public let value: Data
 
-    private init(proto: StorageServiceProtos_ContactsManifest,
+    private init(proto: StorageServiceProtos_StorageManifest,
                  version: UInt64,
                  value: Data) {
         self.proto = proto
@@ -345,12 +235,12 @@ public class StorageServiceProtoContactsManifest: NSObject {
     }
 
     @objc
-    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoContactsManifest {
-        let proto = try StorageServiceProtos_ContactsManifest(serializedData: serializedData)
+    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoStorageManifest {
+        let proto = try StorageServiceProtos_StorageManifest(serializedData: serializedData)
         return try parseProto(proto)
     }
 
-    fileprivate class func parseProto(_ proto: StorageServiceProtos_ContactsManifest) throws -> StorageServiceProtoContactsManifest {
+    fileprivate class func parseProto(_ proto: StorageServiceProtos_StorageManifest) throws -> StorageServiceProtoStorageManifest {
         guard proto.hasVersion else {
             throw StorageServiceProtoError.invalidProtobuf(description: "\(logTag) missing required field: version")
         }
@@ -361,13 +251,13 @@ public class StorageServiceProtoContactsManifest: NSObject {
         }
         let value = proto.value
 
-        // MARK: - Begin Validation Logic for StorageServiceProtoContactsManifest -
+        // MARK: - Begin Validation Logic for StorageServiceProtoStorageManifest -
 
-        // MARK: - End Validation Logic for StorageServiceProtoContactsManifest -
+        // MARK: - End Validation Logic for StorageServiceProtoStorageManifest -
 
-        let result = StorageServiceProtoContactsManifest(proto: proto,
-                                                         version: version,
-                                                         value: value)
+        let result = StorageServiceProtoStorageManifest(proto: proto,
+                                                        version: version,
+                                                        value: value)
         return result
     }
 
@@ -379,16 +269,126 @@ public class StorageServiceProtoContactsManifest: NSObject {
 
 #if DEBUG
 
-extension StorageServiceProtoContactsManifest {
+extension StorageServiceProtoStorageManifest {
     @objc
     public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
-extension StorageServiceProtoContactsManifest.StorageServiceProtoContactsManifestBuilder {
+extension StorageServiceProtoStorageManifest.StorageServiceProtoStorageManifestBuilder {
     @objc
-    public func buildIgnoringErrors() -> StorageServiceProtoContactsManifest? {
+    public func buildIgnoringErrors() -> StorageServiceProtoStorageManifest? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - StorageServiceProtoStorageItems
+
+@objc
+public class StorageServiceProtoStorageItems: NSObject {
+
+    // MARK: - StorageServiceProtoStorageItemsBuilder
+
+    @objc
+    public class func builder() -> StorageServiceProtoStorageItemsBuilder {
+        return StorageServiceProtoStorageItemsBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> StorageServiceProtoStorageItemsBuilder {
+        let builder = StorageServiceProtoStorageItemsBuilder()
+        builder.setItems(items)
+        return builder
+    }
+
+    @objc
+    public class StorageServiceProtoStorageItemsBuilder: NSObject {
+
+        private var proto = StorageServiceProtos_StorageItems()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        public func addItems(_ valueParam: StorageServiceProtoStorageItem) {
+            var items = proto.items
+            items.append(valueParam.proto)
+            proto.items = items
+        }
+
+        @objc
+        public func setItems(_ wrappedItems: [StorageServiceProtoStorageItem]) {
+            proto.items = wrappedItems.map { $0.proto }
+        }
+
+        @objc
+        public func build() throws -> StorageServiceProtoStorageItems {
+            return try StorageServiceProtoStorageItems.parseProto(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try StorageServiceProtoStorageItems.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: StorageServiceProtos_StorageItems
+
+    @objc
+    public let items: [StorageServiceProtoStorageItem]
+
+    private init(proto: StorageServiceProtos_StorageItems,
+                 items: [StorageServiceProtoStorageItem]) {
+        self.proto = proto
+        self.items = items
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoStorageItems {
+        let proto = try StorageServiceProtos_StorageItems(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: StorageServiceProtos_StorageItems) throws -> StorageServiceProtoStorageItems {
+        var items: [StorageServiceProtoStorageItem] = []
+        items = try proto.items.map { try StorageServiceProtoStorageItem.parseProto($0) }
+
+        // MARK: - Begin Validation Logic for StorageServiceProtoStorageItems -
+
+        // MARK: - End Validation Logic for StorageServiceProtoStorageItems -
+
+        let result = StorageServiceProtoStorageItems(proto: proto,
+                                                     items: items)
+        return result
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension StorageServiceProtoStorageItems {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension StorageServiceProtoStorageItems.StorageServiceProtoStorageItemsBuilder {
+    @objc
+    public func buildIgnoringErrors() -> StorageServiceProtoStorageItems? {
         return try! self.build()
     }
 }
@@ -520,7 +520,7 @@ public class StorageServiceProtoWriteOperation: NSObject {
         if let _value = manifest {
             builder.setManifest(_value)
         }
-        builder.setInsertContact(insertContact)
+        builder.setInsertItem(insertItem)
         builder.setDeleteKey(deleteKey)
         return builder
     }
@@ -535,25 +535,25 @@ public class StorageServiceProtoWriteOperation: NSObject {
 
         @objc
         @available(swift, obsoleted: 1.0)
-        public func setManifest(_ valueParam: StorageServiceProtoContactsManifest?) {
+        public func setManifest(_ valueParam: StorageServiceProtoStorageManifest?) {
             guard let valueParam = valueParam else { return }
             proto.manifest = valueParam.proto
         }
 
-        public func setManifest(_ valueParam: StorageServiceProtoContactsManifest) {
+        public func setManifest(_ valueParam: StorageServiceProtoStorageManifest) {
             proto.manifest = valueParam.proto
         }
 
         @objc
-        public func addInsertContact(_ valueParam: StorageServiceProtoContact) {
-            var items = proto.insertContact
+        public func addInsertItem(_ valueParam: StorageServiceProtoStorageItem) {
+            var items = proto.insertItem
             items.append(valueParam.proto)
-            proto.insertContact = items
+            proto.insertItem = items
         }
 
         @objc
-        public func setInsertContact(_ wrappedItems: [StorageServiceProtoContact]) {
-            proto.insertContact = wrappedItems.map { $0.proto }
+        public func setInsertItem(_ wrappedItems: [StorageServiceProtoStorageItem]) {
+            proto.insertItem = wrappedItems.map { $0.proto }
         }
 
         @objc
@@ -582,10 +582,10 @@ public class StorageServiceProtoWriteOperation: NSObject {
     fileprivate let proto: StorageServiceProtos_WriteOperation
 
     @objc
-    public let manifest: StorageServiceProtoContactsManifest?
+    public let manifest: StorageServiceProtoStorageManifest?
 
     @objc
-    public let insertContact: [StorageServiceProtoContact]
+    public let insertItem: [StorageServiceProtoStorageItem]
 
     @objc
     public var deleteKey: [Data] {
@@ -593,11 +593,11 @@ public class StorageServiceProtoWriteOperation: NSObject {
     }
 
     private init(proto: StorageServiceProtos_WriteOperation,
-                 manifest: StorageServiceProtoContactsManifest?,
-                 insertContact: [StorageServiceProtoContact]) {
+                 manifest: StorageServiceProtoStorageManifest?,
+                 insertItem: [StorageServiceProtoStorageItem]) {
         self.proto = proto
         self.manifest = manifest
-        self.insertContact = insertContact
+        self.insertItem = insertItem
     }
 
     @objc
@@ -612,13 +612,13 @@ public class StorageServiceProtoWriteOperation: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: StorageServiceProtos_WriteOperation) throws -> StorageServiceProtoWriteOperation {
-        var manifest: StorageServiceProtoContactsManifest? = nil
+        var manifest: StorageServiceProtoStorageManifest?
         if proto.hasManifest {
-            manifest = try StorageServiceProtoContactsManifest.parseProto(proto.manifest)
+            manifest = try StorageServiceProtoStorageManifest.parseProto(proto.manifest)
         }
 
-        var insertContact: [StorageServiceProtoContact] = []
-        insertContact = try proto.insertContact.map { try StorageServiceProtoContact.parseProto($0) }
+        var insertItem: [StorageServiceProtoStorageItem] = []
+        insertItem = try proto.insertItem.map { try StorageServiceProtoStorageItem.parseProto($0) }
 
         // MARK: - Begin Validation Logic for StorageServiceProtoWriteOperation -
 
@@ -626,7 +626,7 @@ public class StorageServiceProtoWriteOperation: NSObject {
 
         let result = StorageServiceProtoWriteOperation(proto: proto,
                                                        manifest: manifest,
-                                                       insertContact: insertContact)
+                                                       insertItem: insertItem)
         return result
     }
 
@@ -648,6 +648,164 @@ extension StorageServiceProtoWriteOperation {
 extension StorageServiceProtoWriteOperation.StorageServiceProtoWriteOperationBuilder {
     @objc
     public func buildIgnoringErrors() -> StorageServiceProtoWriteOperation? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - StorageServiceProtoStorageRecordType
+
+@objc
+public enum StorageServiceProtoStorageRecordType: Int32 {
+    case unknown = 0
+    case contact = 1
+}
+
+private func StorageServiceProtoStorageRecordTypeWrap(_ value: StorageServiceProtos_StorageRecord.TypeEnum) -> StorageServiceProtoStorageRecordType {
+    switch value {
+    case .unknown: return .unknown
+    case .contact: return .contact
+    }
+}
+
+private func StorageServiceProtoStorageRecordTypeUnwrap(_ value: StorageServiceProtoStorageRecordType) -> StorageServiceProtos_StorageRecord.TypeEnum {
+    switch value {
+    case .unknown: return .unknown
+    case .contact: return .contact
+    }
+}
+
+// MARK: - StorageServiceProtoStorageRecord
+
+@objc
+public class StorageServiceProtoStorageRecord: NSObject {
+
+    // MARK: - StorageServiceProtoStorageRecordBuilder
+
+    @objc
+    public class func builder(type: UInt32) -> StorageServiceProtoStorageRecordBuilder {
+        return StorageServiceProtoStorageRecordBuilder(type: type)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> StorageServiceProtoStorageRecordBuilder {
+        let builder = StorageServiceProtoStorageRecordBuilder(type: type)
+        if let _value = contact {
+            builder.setContact(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class StorageServiceProtoStorageRecordBuilder: NSObject {
+
+        private var proto = StorageServiceProtos_StorageRecord()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        fileprivate init(type: UInt32) {
+            super.init()
+
+            setType(type)
+        }
+
+        @objc
+        public func setType(_ valueParam: UInt32) {
+            proto.type = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setContact(_ valueParam: StorageServiceProtoContactRecord?) {
+            guard let valueParam = valueParam else { return }
+            proto.contact = valueParam.proto
+        }
+
+        public func setContact(_ valueParam: StorageServiceProtoContactRecord) {
+            proto.contact = valueParam.proto
+        }
+
+        @objc
+        public func build() throws -> StorageServiceProtoStorageRecord {
+            return try StorageServiceProtoStorageRecord.parseProto(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try StorageServiceProtoStorageRecord.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: StorageServiceProtos_StorageRecord
+
+    @objc
+    public let type: UInt32
+
+    @objc
+    public let contact: StorageServiceProtoContactRecord?
+
+    private init(proto: StorageServiceProtos_StorageRecord,
+                 type: UInt32,
+                 contact: StorageServiceProtoContactRecord?) {
+        self.proto = proto
+        self.type = type
+        self.contact = contact
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoStorageRecord {
+        let proto = try StorageServiceProtos_StorageRecord(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: StorageServiceProtos_StorageRecord) throws -> StorageServiceProtoStorageRecord {
+        guard proto.hasType else {
+            throw StorageServiceProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
+        }
+        let type = proto.type
+
+        var contact: StorageServiceProtoContactRecord?
+        if proto.hasContact {
+            contact = try StorageServiceProtoContactRecord.parseProto(proto.contact)
+        }
+
+        // MARK: - Begin Validation Logic for StorageServiceProtoStorageRecord -
+
+        // MARK: - End Validation Logic for StorageServiceProtoStorageRecord -
+
+        let result = StorageServiceProtoStorageRecord(proto: proto,
+                                                      type: type,
+                                                      contact: contact)
+        return result
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension StorageServiceProtoStorageRecord {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension StorageServiceProtoStorageRecord.StorageServiceProtoStorageRecordBuilder {
+    @objc
+    public func buildIgnoringErrors() -> StorageServiceProtoStorageRecord? {
         return try! self.build()
     }
 }
@@ -843,8 +1001,8 @@ public class StorageServiceProtoContactRecordProfile: NSObject {
         if let _value = key {
             builder.setKey(_value)
         }
-        if let _value = avatar {
-            builder.setAvatar(_value)
+        if let _value = username {
+            builder.setUsername(_value)
         }
         return builder
     }
@@ -881,13 +1039,13 @@ public class StorageServiceProtoContactRecordProfile: NSObject {
 
         @objc
         @available(swift, obsoleted: 1.0)
-        public func setAvatar(_ valueParam: Data?) {
+        public func setUsername(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
-            proto.avatar = valueParam
+            proto.username = valueParam
         }
 
-        public func setAvatar(_ valueParam: Data) {
-            proto.avatar = valueParam
+        public func setUsername(_ valueParam: String) {
+            proto.username = valueParam
         }
 
         @objc
@@ -928,15 +1086,15 @@ public class StorageServiceProtoContactRecordProfile: NSObject {
     }
 
     @objc
-    public var avatar: Data? {
-        guard hasAvatar else {
+    public var username: String? {
+        guard hasUsername else {
             return nil
         }
-        return proto.avatar
+        return proto.username
     }
     @objc
-    public var hasAvatar: Bool {
-        return proto.hasAvatar
+    public var hasUsername: Bool {
+        return proto.hasUsername
     }
 
     private init(proto: StorageServiceProtos_ContactRecord.Profile) {
@@ -995,14 +1153,14 @@ public class StorageServiceProtoContactRecord: NSObject {
     // MARK: - StorageServiceProtoContactRecordBuilder
 
     @objc
-    public class func builder(key: Data) -> StorageServiceProtoContactRecordBuilder {
-        return StorageServiceProtoContactRecordBuilder(key: key)
+    public class func builder() -> StorageServiceProtoContactRecordBuilder {
+        return StorageServiceProtoContactRecordBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> StorageServiceProtoContactRecordBuilder {
-        let builder = StorageServiceProtoContactRecordBuilder(key: key)
+        let builder = StorageServiceProtoContactRecordBuilder()
         if let _value = serviceUuid {
             builder.setServiceUuid(_value)
         }
@@ -1021,6 +1179,9 @@ public class StorageServiceProtoContactRecord: NSObject {
         if hasWhitelisted {
             builder.setWhitelisted(whitelisted)
         }
+        if let _value = nickname {
+            builder.setNickname(_value)
+        }
         return builder
     }
 
@@ -1031,24 +1192,6 @@ public class StorageServiceProtoContactRecord: NSObject {
 
         @objc
         fileprivate override init() {}
-
-        @objc
-        fileprivate init(key: Data) {
-            super.init()
-
-            setKey(key)
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setKey(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.key = valueParam
-        }
-
-        public func setKey(_ valueParam: Data) {
-            proto.key = valueParam
-        }
 
         @objc
         @available(swift, obsoleted: 1.0)
@@ -1105,6 +1248,17 @@ public class StorageServiceProtoContactRecord: NSObject {
         }
 
         @objc
+        @available(swift, obsoleted: 1.0)
+        public func setNickname(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.nickname = valueParam
+        }
+
+        public func setNickname(_ valueParam: String) {
+            proto.nickname = valueParam
+        }
+
+        @objc
         public func build() throws -> StorageServiceProtoContactRecord {
             return try StorageServiceProtoContactRecord.parseProto(proto)
         }
@@ -1116,9 +1270,6 @@ public class StorageServiceProtoContactRecord: NSObject {
     }
 
     fileprivate let proto: StorageServiceProtos_ContactRecord
-
-    @objc
-    public let key: Data
 
     @objc
     public let profile: StorageServiceProtoContactRecordProfile?
@@ -1169,6 +1320,18 @@ public class StorageServiceProtoContactRecord: NSObject {
     }
 
     @objc
+    public var nickname: String? {
+        guard hasNickname else {
+            return nil
+        }
+        return proto.nickname
+    }
+    @objc
+    public var hasNickname: Bool {
+        return proto.hasNickname
+    }
+
+    @objc
     public var hasValidService: Bool {
         return serviceAddress != nil
     }
@@ -1190,7 +1353,7 @@ public class StorageServiceProtoContactRecord: NSObject {
         let phoneNumber: String? = {
             guard hasServiceE164 else {
                 // Shouldn’t happen in prod yet
-                assert(FeatureFlags.allowUUIDOnlyContacts)
+//                assert(FeatureFlags.allowUUIDOnlyContacts)
                 return nil
             }
 
@@ -1217,11 +1380,9 @@ public class StorageServiceProtoContactRecord: NSObject {
     }
 
     private init(proto: StorageServiceProtos_ContactRecord,
-                 key: Data,
                  profile: StorageServiceProtoContactRecordProfile?,
                  identity: StorageServiceProtoContactRecordIdentity?) {
         self.proto = proto
-        self.key = key
         self.profile = profile
         self.identity = identity
     }
@@ -1238,17 +1399,12 @@ public class StorageServiceProtoContactRecord: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: StorageServiceProtos_ContactRecord) throws -> StorageServiceProtoContactRecord {
-        guard proto.hasKey else {
-            throw StorageServiceProtoError.invalidProtobuf(description: "\(logTag) missing required field: key")
-        }
-        let key = proto.key
-
-        var profile: StorageServiceProtoContactRecordProfile? = nil
+        var profile: StorageServiceProtoContactRecordProfile?
         if proto.hasProfile {
             profile = try StorageServiceProtoContactRecordProfile.parseProto(proto.profile)
         }
 
-        var identity: StorageServiceProtoContactRecordIdentity? = nil
+        var identity: StorageServiceProtoContactRecordIdentity?
         if proto.hasIdentity {
             identity = try StorageServiceProtoContactRecordIdentity.parseProto(proto.identity)
         }
@@ -1258,7 +1414,6 @@ public class StorageServiceProtoContactRecord: NSObject {
         // MARK: - End Validation Logic for StorageServiceProtoContactRecord -
 
         let result = StorageServiceProtoContactRecord(proto: proto,
-                                                      key: key,
                                                       profile: profile,
                                                       identity: identity)
         return result
