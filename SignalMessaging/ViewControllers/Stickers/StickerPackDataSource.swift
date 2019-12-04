@@ -51,11 +51,17 @@ public class BaseStickerPackDataSource: NSObject {
     func fireDidChange() {
         AssertIsOnMainThread()
 
-        for delegate in delegates {
-            guard let delegate = delegate.value else {
-                continue
+        // Inform any observing views or data sources that they of the change.
+        // We do this async since we are likely inside of a transaction
+        // to avoid opening another transaction within it.
+        let delegates = self.delegates
+        DispatchQueue.main.async {
+            for delegate in delegates {
+                guard let delegate = delegate.value else {
+                    continue
+                }
+                delegate.stickerPackDataDidChange()
             }
-            delegate.stickerPackDataDidChange()
         }
     }
 
