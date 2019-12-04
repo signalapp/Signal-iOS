@@ -302,7 +302,8 @@ public class GroupManager: NSObject {
                                                         members: members,
                                                         name: name,
                                                         avatarData: avatarData,
-                                                        shouldSendMessage: true)
+                                                        shouldSendMessage: true,
+                                                        transaction: transaction)
             return EnsureGroupResult(action: .updated, thread: updatedThread)
         } else {
             let thread = TSGroupThread(groupModel: groupModel)
@@ -336,7 +337,8 @@ public class GroupManager: NSObject {
                                            members membersParam: [SignalServiceAddress],
                                            name: String? = nil,
                                            avatarData: Data? = nil,
-                                           shouldSendMessage: Bool) throws -> TSGroupThread {
+                                           shouldSendMessage: Bool,
+                                           transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
 
         // Always ensure we're a member of any group we're updating.
         guard let localAddress = self.tsAccountManager.localAddress else {
@@ -344,36 +346,33 @@ public class GroupManager: NSObject {
         }
         let members: [SignalServiceAddress] = membersParam + [localAddress]
 
-        let thread = try self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> TSGroupThread in
-            guard let thread = TSGroupThread.getWithGroupId(groupId, transaction: transaction) else {
-                throw OWSAssertionError("Thread does not exist.")
-            }
-            let oldGroupModel = thread.groupModel
-            guard oldGroupModel.groupId.count > 0 else {
-                throw OWSAssertionError("Missing or invalid group id.")
-            }
-            let newGroupModel = try buildGroupModel(groupId: oldGroupModel.groupId,
-                                                    name: name,
-                                                    members: members,
-                                                    avatarData: avatarData,
-                                                    groupsVersion: oldGroupModel.groupsVersion,
-                                                    groupSecretParamsData: oldGroupModel.groupSecretParamsData)
-            if oldGroupModel.isEqual(to: newGroupModel) {
-                // Skip redundant update.
-                return thread
-            }
-
-            thread.update(with: newGroupModel, transaction: transaction)
-
-            if shouldSendMessage {
-                self.sendGroupUpdateMessage(thread: thread,
-                                            oldGroupModel: oldGroupModel,
-                                            newGroupModel: newGroupModel,
-                                            transaction: transaction).retainUntilComplete()
-            }
-
+        guard let thread = TSGroupThread.getWithGroupId(groupId, transaction: transaction) else {
+            throw OWSAssertionError("Thread does not exist.")
+        }
+        let oldGroupModel = thread.groupModel
+        guard oldGroupModel.groupId.count > 0 else {
+            throw OWSAssertionError("Missing or invalid group id.")
+        }
+        let newGroupModel = try buildGroupModel(groupId: oldGroupModel.groupId,
+                                                name: name,
+                                                members: members,
+                                                avatarData: avatarData,
+                                                groupsVersion: oldGroupModel.groupsVersion,
+                                                groupSecretParamsData: oldGroupModel.groupSecretParamsData)
+        if oldGroupModel.isEqual(to: newGroupModel) {
+            // Skip redundant update.
             return thread
         }
+
+        thread.update(with: newGroupModel, transaction: transaction)
+
+        if shouldSendMessage {
+            self.sendGroupUpdateMessage(thread: thread,
+                                        oldGroupModel: oldGroupModel,
+                                        newGroupModel: newGroupModel,
+                                        transaction: transaction).retainUntilComplete()
+        }
+
         return thread
     }
 

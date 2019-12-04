@@ -190,11 +190,10 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     if (self == newModel) {
         return NSLocalizedString(@"GROUP_UPDATED", @"");
     }
-    // TODO: This is false if _groupName is nil.
-    if (![_groupName isEqual:newModel.groupName]) {
+    if (![NSObject isNullableObject:_groupName equalTo:newModel.groupName] && newModel.groupName.length > 0) {
         updatedGroupInfoString = [updatedGroupInfoString
             stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_TITLE_CHANGED", @""),
-                                                               newModel.groupName]];
+                                              newModel.groupNameOrDefault]];
     }
     if (![NSObject isNullableObject:self.groupAvatarData equalTo:newModel.groupAvatarData]) {
         // Group avatar changed.

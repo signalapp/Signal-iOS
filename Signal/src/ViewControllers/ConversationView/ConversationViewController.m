@@ -3633,13 +3633,17 @@ typedef enum : NSUInteger {
     OWSAssertDebug(groupId.length > 0);
     OWSAssertDebug(members.count > 0);
 
-    NSError *_Nullable error;
-    TSGroupThread *_Nullable newThread = [GroupManager updateExistingGroupWithGroupId:groupId
-                                                                              members:members
-                                                                                 name:name
-                                                                           avatarData:avatarData
-                                                                    shouldSendMessage:YES
-                                                                                error:&error];
+    __block NSError *_Nullable error;
+    __block TSGroupThread *_Nullable newThread;
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        newThread = [GroupManager updateExistingGroupWithGroupId:groupId
+                                                         members:members
+                                                            name:name
+                                                      avatarData:avatarData
+                                               shouldSendMessage:YES
+                                                     transaction:transaction
+                                                           error:&error];
+    }];
     if (error != nil || newThread == nil) {
         OWSFailDebug(@"Error: %@", error);
         return;
