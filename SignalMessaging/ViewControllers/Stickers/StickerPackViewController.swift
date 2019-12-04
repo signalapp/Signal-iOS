@@ -62,16 +62,26 @@ public class StickerPackViewController: OWSViewController {
 
     // MARK: - View Lifecycle
 
+    @objc
+    public func present(from fromViewController: UIViewController,
+                        animated: Bool) {
+        AssertIsOnMainThread()
+
+        fromViewController.presentFormSheet(self, animated: animated)
+    }
+
     override public func loadView() {
         super.loadView()
 
         if UIAccessibility.isReduceTransparencyEnabled {
             view.backgroundColor = Theme.darkThemeBackgroundColor
         } else {
-            view.backgroundColor = UIColor(white: 0, alpha: 0.6)
+            view.backgroundColor = .clear
             view.isOpaque = false
 
-            let blurEffect = Theme.barBlurEffect
+            // Unlike Theme.barBlurEffect, we use light blur in dark theme
+            // and dark blur in light theme.
+            let blurEffect = UIBlurEffect(style: Theme.isDarkThemeEnabled ? .light : .dark)
             let blurEffectView = UIVisualEffectView(effect: blurEffect)
             view.addSubview(blurEffectView)
             blurEffectView.autoPinEdgesToSuperviewEdges()

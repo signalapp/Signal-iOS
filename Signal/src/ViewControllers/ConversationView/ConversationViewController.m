@@ -2661,12 +2661,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    if (!SSKFeatureFlags.stickerAutoEnable && !SSKFeatureFlags.stickerSend) {
-        return;
-    }
-
-    StickerPackViewController *packView = [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
-    [self presentFormSheetViewController:packView animated:YES completion:nil];
+    [self showStickerPack:stickerPackInfo];
 }
 
 - (void)didTapFailedIncomingAttachment:(id<ConversationViewItem>)viewItem
@@ -2807,7 +2802,7 @@ typedef enum : NSUInteger {
     }
 
     StickerPackViewController *packView = [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
-    [self presentFormSheetViewController:packView animated:YES completion:nil];
+    [packView presentFrom:self animated:YES];
 }
 
 #pragma mark - OWSMessageViewOnceViewDelegate
