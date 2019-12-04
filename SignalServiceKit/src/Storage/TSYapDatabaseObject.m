@@ -263,7 +263,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (self.grdbId != nil) {
         OWSAssertDebug(self.grdbId.longLongValue == rowId);
-        OWSFailDebug(@"grdbId set more than once.");
     }
     self.grdbId = @(rowId);
 }
