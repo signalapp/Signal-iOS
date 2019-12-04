@@ -6,7 +6,6 @@ import Foundation
 
 @objc
 public extension NSDate {
-    @objc
     var ows_millisecondsSince1970: UInt64 {
         return NSDate.ows_millisecondsSince1970(for: self as Date)
     }
@@ -15,5 +14,9 @@ public extension NSDate {
 public extension Date {
     var ows_millisecondsSince1970: UInt64 {
         return (self as NSDate).ows_millisecondsSince1970
+    }
+
+    static func ows_millisecondTimestamp() -> UInt64 {
+        return NSDate.ows_millisecondTimeStamp()
     }
 }

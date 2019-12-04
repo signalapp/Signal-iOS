@@ -10,7 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyReadTransaction;
 @class TSOutgoingMessage;
 @class TSThread;
-@class ThreadDynamicInteractions;
 
 @protocol ConversationViewItem;
 
@@ -43,6 +42,7 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 // as that won't preserve ordering.
 @property (nonatomic, readonly) NSArray<NSString *> *interactionIds;
 @property (nonatomic, readonly, nullable) NSNumber *unreadIndicatorIndex;
+@property (nonatomic, readonly, nullable) NSNumber *focusItemIndex;
 
 @end
 
@@ -84,7 +84,6 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 
 - (void)conversationViewModelWillLoadMoreItems;
 - (void)conversationViewModelDidLoadMoreItems;
-- (void)conversationViewModelDidLoadPrevPage;
 - (void)conversationViewModelRangeDidChangeWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 // Called after the view model recovers from a severe error
@@ -101,33 +100,32 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 
 @property (nonatomic, readonly) ConversationViewState *viewState;
 @property (nonatomic, nullable) NSString *focusMessageIdOnOpen;
-@property (nonatomic, readonly, nullable) ThreadDynamicInteractions *dynamicInteractions;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithThread:(TSThread *)thread
           focusMessageIdOnOpen:(nullable NSString *)focusMessageIdOnOpen
                       delegate:(id<ConversationViewModelDelegate>)delegate NS_DESIGNATED_INITIALIZER;
 
-- (void)ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:(BOOL)updateIfNecessary;
-
-- (void)ensureDynamicInteractionsAndUpdateIfNecessary:(BOOL)updateIfNecessary
-                                          transaction:(SDSAnyReadTransaction *)transaction;
-
 - (void)clearUnreadMessagesIndicator;
 
-- (void)loadAnotherPageOfMessagesWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (nullable NSIndexPath *)indexPathForViewItem:(id<ConversationViewItem>)viewItem;
 
 - (void)viewDidResetContentAndLayoutWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)viewDidLoad;
 
-- (BOOL)canLoadMoreItems;
+- (BOOL)canLoadOlderItems;
+- (BOOL)canLoadNewerItems;
+- (void)appendOlderItemsWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (void)appendNewerItemsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable NSIndexPath *)ensureLoadWindowContainsQuotedReply:(OWSQuotedReplyModel *)quotedReply
                                                   transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable NSIndexPath *)ensureLoadWindowContainsInteractionId:(NSString *)interactionId
                                                     transaction:(SDSAnyReadTransaction *)transaction;
+
+- (void)ensureLoadWindowContainsNewestItemsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)appendUnsavedOutgoingTextMessage:(TSOutgoingMessage *)outgoingMessage;
 

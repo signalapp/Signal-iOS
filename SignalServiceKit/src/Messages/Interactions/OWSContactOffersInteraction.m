@@ -27,7 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
                     hasBlockOffer:(BOOL)hasBlockOffer
             hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
     hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
-              beforeInteractionId:(NSString *)beforeInteractionId
 {
     self = [super initWithUniqueId:uniqueId timestamp:timestamp inThread:thread];
 
@@ -38,7 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
     _hasBlockOffer = hasBlockOffer;
     _hasAddToContactsOffer = hasAddToContactsOffer;
     _hasAddToProfileWhitelistOffer = hasAddToProfileWhitelistOffer;
-    _beforeInteractionId = beforeInteractionId;
 
     return self;
 }

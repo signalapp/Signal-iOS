@@ -14,8 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL hasAddToContactsOffer;
 @property (nonatomic, readonly) BOOL hasAddToProfileWhitelistOffer;
 
-@property (nonatomic, readonly) NSString *beforeInteractionId;
-
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
@@ -26,8 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
                            thread:(TSThread *)thread
                     hasBlockOffer:(BOOL)hasBlockOffer
             hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
-    hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
-              beforeInteractionId:(NSString *)beforeInteractionId NS_DESIGNATED_INITIALIZER;
+    hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer NS_DESIGNATED_INITIALIZER;
+
 
 @end
 

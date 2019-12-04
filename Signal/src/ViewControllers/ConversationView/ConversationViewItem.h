@@ -44,7 +44,6 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 @class InteractionReactionState;
 @class OWSLinkPreview;
 @class OWSQuotedReplyModel;
-@class OWSUnreadIndicator;
 @class SDSAnyReadTransaction;
 @class SignalServiceAddress;
 @class StickerInfo;
@@ -107,8 +106,6 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 @property (nonatomic) BOOL shouldHideFooter;
 @property (nonatomic) BOOL isFirstInCluster;
 @property (nonatomic) BOOL isLastInCluster;
-
-@property (nonatomic, nullable) OWSUnreadIndicator *unreadIndicator;
 
 - (ConversationViewCell *)dequeueCellForCollectionView:(UICollectionView *)collectionView
                                              indexPath:(NSIndexPath *)indexPath;
