@@ -710,7 +710,7 @@ extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
         }
 
         let packView = StickerPackViewController(stickerPackInfo: stickerPackInfo)
-        present(packView, animated: true)
+        packView.present(from: self, animated: true)
     }
 
     func didTapAudioViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream) {

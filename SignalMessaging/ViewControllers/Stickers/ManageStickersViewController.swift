@@ -482,7 +482,7 @@ public class ManageStickersViewController: OWSTableViewController {
         Logger.verbose("")
 
         let packView = StickerPackViewController(stickerPackInfo: packInfo)
-        present(packView, animated: true)
+        packView.present(from: self, animated: true)
     }
 
     private func share(packInfo: StickerPackInfo) {

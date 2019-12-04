@@ -605,12 +605,10 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
         if (rootViewController.presentedViewController) {
             [rootViewController dismissViewControllerAnimated:NO
                                                    completion:^{
-                                                       [rootViewController presentViewController:packView
-                                                                                        animated:NO
-                                                                                      completion:nil];
+                                                       [packView presentFrom:rootViewController animated:NO];
                                                    }];
         } else {
-            [rootViewController presentViewController:packView animated:NO completion:nil];
+            [packView presentFrom:rootViewController animated:NO];
         }
     }];
     return YES;
