@@ -56,11 +56,7 @@ public extension SDSRecord {
                 try self.insert(transaction.database)
             }
         } catch {
-            if let databaseError = error as? DatabaseError {
-                Logger.error("resultCode: \(databaseError.resultCode), extendedResultCode: \(databaseError.extendedResultCode), message: \(databaseError.message), ")
-            }
-            // TODO:
-            owsFail("Write failed: \(error)")
+            owsFail("Write failed: \(error.grdbErrorForLogging)")
         }
     }
 
@@ -78,11 +74,7 @@ public extension SDSRecord {
             statement.unsafeSetArguments(arguments)
             try statement.execute()
         } catch {
-            if let databaseError = error as? DatabaseError {
-                Logger.error("resultCode: \(databaseError.resultCode), extendedResultCode: \(databaseError.extendedResultCode), message: \(databaseError.message), ")
-            }
-            // TODO:
-            owsFail("Write failed: \(error)")
+            owsFail("Write failed: \(error.grdbErrorForLogging)")
         }
     }
 }

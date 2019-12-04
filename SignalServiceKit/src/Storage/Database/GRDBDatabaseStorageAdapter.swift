@@ -612,3 +612,23 @@ extension GRDBDatabaseStorageAdapter {
         return GrdbTruncationResult(walSizePages: walSizePages, pagesCheckpointed: pagesCheckpointed)
     }
 }
+
+// MARK: -
+
+public extension Error {
+    var grdbErrorForLogging: Error {
+        // If not a GRDB error, return unmodified.
+        guard let grdbError = self as? GRDB.DatabaseError else {
+            return self
+        }
+        // DatabaseError.description includes the arguments.
+        Logger.verbose("grdbError: \(grdbError))")
+        // DatabaseError.description does not include the extendedResultCode.
+        Logger.verbose("resultCode: \(grdbError.resultCode), extendedResultCode: \(grdbError.extendedResultCode), message: \(String(describing: grdbError.message)), sql: \(String(describing: grdbError.sql))")
+        let error = GRDB.DatabaseError(resultCode: grdbError.extendedResultCode,
+                                       message: grdbError.message,
+                                       sql: nil,
+                                       arguments: nil)
+        return error
+    }
+}

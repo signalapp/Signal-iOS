@@ -95,7 +95,7 @@ public extension SDSTransactable {
         }
 
         if let error = thrown {
-            throw error
+            throw error.grdbErrorForLogging
         }
 
         return value
@@ -120,7 +120,7 @@ public extension SDSTransactable {
             }
         }
         if let error = thrown {
-            throw error
+            throw error.grdbErrorForLogging
         }
         return value
     }
