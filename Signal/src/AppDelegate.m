@@ -517,19 +517,6 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 {
     OWSAssertIsOnMainThread();
 
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
-        return NO;
-    }
-
-    if (!AppReadiness.isAppReady) {
-        OWSLogWarn(@"Ignoring openURL: app not ready.");
-        // We don't need to use [AppReadiness runNowOrWhenAppDidBecomeReady:];
-        // the only URLs we handle in Signal iOS at the moment are used
-        // for resuming the verification step of the registration flow.
-        return NO;
-    }
-
     return [self tryToOpenUrl:url];
 }
 
@@ -537,8 +524,8 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 {
     OWSAssertDebug(!self.didAppLaunchFail);
 
-    if (!AppReadiness.isAppReady) {
-        OWSFailDebug(@"Ignoring URL; app is not ready.");
+    if (self.didAppLaunchFail) {
+        OWSFailDebug(@"app launch failed");
         return NO;
     }
 
@@ -551,8 +538,23 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
         return [self tryToShowStickerPackView:stickerPackInfo];
     } else if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
         if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![self.tsAccountManager isRegistered]) {
+            if (!AppReadiness.isAppReady) {
+                OWSFailDebug(@"Ignoring URL; app is not ready.");
+                return NO;
+            }
             return [SignalApp.sharedApp receivedVerificationCode:[url.path substringFromIndex:1]];
+        } else if ([url.host hasPrefix:kURLHostAddStickersPrefix] && [self.tsAccountManager isRegistered]) {
+            if (!SSKFeatureFlags.stickerAutoEnable && !SSKFeatureFlags.stickerSend) {
+                return NO;
+            }
+            StickerPackInfo *_Nullable stickerPackInfo = [self parseAddStickersUrl:url];
+            if (stickerPackInfo == nil) {
+                OWSFailDebug(@"Invalid URL: %@", url);
+                return NO;
+            }
+            return [self tryToShowStickerPackView:stickerPackInfo];
         } else {
+            OWSLogVerbose(@"Invalid URL: %@", url);
             OWSFailDebug(@"Unknown URL host: %@", url.host);
         }
     } else {
@@ -562,35 +564,55 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
     return NO;
 }
 
+- (nullable StickerPackInfo *)parseAddStickersUrl:(NSURL *)url
+{
+    NSString *_Nullable packIdHex;
+    NSString *_Nullable packKeyHex;
+    NSURLComponents *components = [NSURLComponents componentsWithString:url.absoluteString];
+    for (NSURLQueryItem *queryItem in [components queryItems]) {
+        if ([queryItem.name isEqualToString:@"pack_id"]) {
+            OWSAssertDebug(packIdHex == nil);
+            packIdHex = queryItem.value;
+        } else if ([queryItem.name isEqualToString:@"pack_key"]) {
+            OWSAssertDebug(packKeyHex == nil);
+            packKeyHex = queryItem.value;
+        } else {
+            OWSLogWarn(@"Unknown query item: %@", queryItem.name);
+        }
+    }
+
+    return [StickerPackInfo parsePackIdHex:packIdHex packKeyHex:packKeyHex];
+}
+
 - (BOOL)tryToShowStickerPackView:(StickerPackInfo *)stickerPackInfo
 {
     OWSAssertDebug(!self.didAppLaunchFail);
 
-    if (!AppReadiness.isAppReady) {
-        OWSFailDebug(@"Ignoring sticker pack URL; app is not ready.");
-        return NO;
-    }
-    if (!self.tsAccountManager.isRegistered) {
-        OWSFailDebug(@"Ignoring sticker pack URL; not registered.");
-        return NO;
-    }
     if (!SSKFeatureFlags.stickerAutoEnable && !SSKFeatureFlags.stickerSend) {
         OWSFailDebug(@"Ignoring sticker pack URL; stickers not enabled.");
         return NO;
     }
 
-    StickerPackViewController *packView = [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
-    UIViewController *rootViewController = self.window.rootViewController;
-    if (rootViewController.presentedViewController) {
-        [rootViewController dismissViewControllerAnimated:NO
-                                               completion:^{
-                                                   [rootViewController presentViewController:packView
-                                                                                    animated:NO
-                                                                                  completion:nil];
-                                               }];
-    } else {
-        [rootViewController presentViewController:packView animated:NO completion:nil];
-    }
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        if (!self.tsAccountManager.isRegistered) {
+            OWSFailDebug(@"Ignoring sticker pack URL; not registered.");
+            return;
+        }
+
+        StickerPackViewController *packView =
+            [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
+        UIViewController *rootViewController = self.window.rootViewController;
+        if (rootViewController.presentedViewController) {
+            [rootViewController dismissViewControllerAnimated:NO
+                                                   completion:^{
+                                                       [rootViewController presentViewController:packView
+                                                                                        animated:NO
+                                                                                      completion:nil];
+                                                   }];
+        } else {
+            [rootViewController presentViewController:packView animated:NO completion:nil];
+        }
+    }];
     return YES;
 }
 
@@ -999,11 +1021,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
             OWSFailDebug(@"Missing webpageURL.");
             return NO;
         }
-        NSURL *url = userActivity.webpageURL;
-        [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-            [self tryToOpenUrl:url];
-        }];
-        return YES;
+        return [self tryToOpenUrl:userActivity.webpageURL];
     } else {
         OWSLogWarn(@"userActivity: %@, but not yet supported.", userActivity.activityType);
     }
