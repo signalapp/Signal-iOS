@@ -2683,14 +2683,7 @@
 				B86BD0872339A1ED000F5AE3 /* Onboarding */,
 				B86BD08223399ABF000F5AE3 /* Settings */,
 				B86BD0882339A253000F5AE3 /* Utilities */,
-				B8BB82A4238F627000BA5194 /* HomeVC.swift */,
-				B8BB82AA238F669C00BA5194 /* ConversationCell.swift */,
-				B8B5BCEB2394D869003823C9 /* Button.swift */,
-				B8BB82B02390C37000BA5194 /* SearchBar.swift */,
-				B8BB82B423947F2D00BA5194 /* TextField.swift */,
-				B8BB82B82394911B00BA5194 /* Separator.swift */,
-				B8BB82AC238F734800BA5194 /* ProfilePictureView.swift */,
-				B8CCF638239721E20091D419 /* TabBar.swift */,
+				B8CCF63A2397572B0091D419 /* Redesign */,
 			);
 			path = Loki;
 			sourceTree = "<group>";
@@ -2735,8 +2728,6 @@
 			children = (
 				B84664F4235022F30083A1CD /* MentionUtilities.swift */,
 				B86BD08323399ACF000F5AE3 /* Modal.swift */,
-				B8BB82A3238F356800BA5194 /* Style Guide */,
-				B885D5F52334A32100EE0D8E /* UIView+Constraints.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -2769,11 +2760,52 @@
 				B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */,
 				B8B26C8E234D629C004ED98C /* MentionCandidateSelectionView.swift */,
 				B8B26C90234D8CBD004ED98C /* MentionCandidateSelectionViewDelegate.swift */,
-				B8CCF63623961D6D0091D419 /* NewPrivateChatVC.swift */,
 				24BD2608234DA2050008EB0A /* JoinPublicChatVC.swift */,
 				B893063E2383961A005EAA8E /* ScanQRCodeWrapperVC.swift */,
 			);
 			path = Messaging;
+			sourceTree = "<group>";
+		};
+		B8CCF63A2397572B0091D419 /* Redesign */ = {
+			isa = PBXGroup;
+			children = (
+				B8CCF63B239757C10091D419 /* Components */,
+				B8BB82A3238F356800BA5194 /* Style Guide */,
+				B8CCF63C239757DB0091D419 /* Utilities */,
+				B8CCF63D2397580E0091D419 /* View Controllers */,
+			);
+			path = Redesign;
+			sourceTree = "<group>";
+		};
+		B8CCF63B239757C10091D419 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				B8B5BCEB2394D869003823C9 /* Button.swift */,
+				B8BB82AA238F669C00BA5194 /* ConversationCell.swift */,
+				B8BB82AC238F734800BA5194 /* ProfilePictureView.swift */,
+				B8BB82B02390C37000BA5194 /* SearchBar.swift */,
+				B8BB82B82394911B00BA5194 /* Separator.swift */,
+				B8CCF638239721E20091D419 /* TabBar.swift */,
+				B8BB82B423947F2D00BA5194 /* TextField.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		B8CCF63C239757DB0091D419 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				B885D5F52334A32100EE0D8E /* UIView+Constraints.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		B8CCF63D2397580E0091D419 /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				B8BB82A4238F627000BA5194 /* HomeVC.swift */,
+				B8CCF63623961D6D0091D419 /* NewPrivateChatVC.swift */,
+			);
+			path = "View Controllers";
 			sourceTree = "<group>";
 		};
 		D221A07E169C9E5E00537ABF = {
