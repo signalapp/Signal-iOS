@@ -75,16 +75,31 @@ class MessageReactionPicker: UIStackView {
         backgroundView?.alpha = 0
         UIView.animate(withDuration: duration) { self.backgroundView?.alpha = 1 }
 
-        let delayStep = duration / Double(arrangedSubviews.count + 1)
         var delay: TimeInterval = 0
         for view in arrangedSubviews {
             view.alpha = 0
-            view.transform = CGAffineTransform.scale(1.5).translatedBy(x: 0, y: -15)
-            UIView.animate(withDuration: delayStep, delay: delay, options: .curveEaseOut, animations: {
+            view.transform = CGAffineTransform(translationX: 0, y: 24)
+            UIView.animate(withDuration: duration, delay: delay, options: .curveEaseIn, animations: {
                 view.transform = .identity
                 view.alpha = 1
             })
-            delay += delayStep
+            delay += 0.01
+        }
+    }
+
+    func playDismissalAnimation(duration: TimeInterval, completion: @escaping () -> Void) {
+        UIView.animate(withDuration: duration) { self.backgroundView?.alpha = 0 }
+
+        var delay: TimeInterval = 0
+        for view in arrangedSubviews.reversed() {
+            UIView.animate(withDuration: duration, delay: delay, options: .curveEaseOut, animations: {
+                view.alpha = 0
+                view.transform = CGAffineTransform(translationX: 0, y: 24)
+            }, completion: { _ in
+                guard view == self.arrangedSubviews.first else { return }
+                completion()
+            })
+            delay += 0.01
         }
     }
 
@@ -111,7 +126,7 @@ class MessageReactionPicker: UIStackView {
 
         UIView.animate(withDuration: animated ? 0.15 : 0) {
             previouslyFocusedButton?.transform = .identity
-            focusedButton?.transform = CGAffineTransform.scale(1.5).translatedBy(x: 0, y: -15)
+            focusedButton?.transform = CGAffineTransform.scale(1.5).translatedBy(x: 0, y: -24)
         }
     }
 

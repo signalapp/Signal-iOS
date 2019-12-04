@@ -129,9 +129,9 @@ class MessageActionsViewController: UIViewController {
         addSnapshotFocusedView()
         addReactionPickerIfNecessary()
 
-        reactionPicker?.playPresentationAnimation(duration: 0.4)
+        reactionPicker?.playPresentationAnimation(duration: 0.2)
 
-        UIView.animate(withDuration: 0.15, animations: {
+        UIView.animate(withDuration: 0.2, animations: {
             self.backdropView.alpha = 1
             self.bottomBar.alpha = 1
             animateAlongside?()
@@ -146,15 +146,16 @@ class MessageActionsViewController: UIViewController {
             return owsFailDebug("trying to dismiss when not presented")
         }
 
-        UIView.animate(withDuration: 0.15, animations: {
+        reactionPicker?.playDismissalAnimation(duration: 0.2) {
+            self.view.removeFromSuperview()
+            completion?()
+        }
+
+        UIView.animate(withDuration: 0.2) {
             self.backdropView.alpha = 0
             self.bottomBar.alpha = 0
             self.snapshotFocusedView?.alpha = 0
-            self.reactionPicker?.alpha = 0
             animateAlongside?()
-        }) { _ in
-            self.view.removeFromSuperview()
-            completion?()
         }
     }
 
