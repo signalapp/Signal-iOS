@@ -2616,7 +2616,6 @@
 "Scan a QR Code Instead" = "Scan a QR Code Instead";
 "Loki Messenger needs camera access to scan QR codes." = "Loki Messenger needs camera access to scan QR codes.";
 "You can enable camera access in your device settings." = "You can enable camera access in your device settings.";
-"Scan the QR code of the person you'd like to securely message. They can find their QR code by going into Loki Messenger's in-app settings and clicking \"Show QR Code\"." = "Scan the QR code of the person you'd like to securely message. They can find their QR code by going into Loki Messenger's in-app settings and clicking \"Show QR Code\".";
 "Scan QR Code" = "Scan QR Code";
 "Loki" = "Loki";
 "Can't Start Conversation" = "Can't Start Conversation";
@@ -2687,3 +2686,6 @@
 "Copied" = "Copied";
 "Share" = "Share";
 "Next" = "Next";
+"Loki Messenger needs camera access to scan QR codes" = "Loki Messenger needs camera access to scan QR codes";
+"Enable Camera Access" = "Enable Camera Access";
+"Scan the QR code of the person you'd like to securely message. They can find their QR code by going into Loki Messenger's in-app settings and tapping \"Show QR Code\"." = "Scan the QR code of the person you'd like to securely message. They can find their QR code by going into Loki Messenger's in-app settings and tapping \"Show QR Code\".";

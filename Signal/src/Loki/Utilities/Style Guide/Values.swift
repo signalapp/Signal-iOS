@@ -30,11 +30,13 @@ final class Values : NSObject {
     @objc static let textFieldCornerRadius = CGFloat(8)
     @objc static let separatorLabelHeight = CGFloat(24)
     @objc static var separatorThickness: CGFloat { return 1 / UIScreen.main.scale }
+    @objc static let tabBarHeight = CGFloat(48)
     
     // MARK: - Distances
     @objc static let smallSpacing = CGFloat(8)
     @objc static let mediumSpacing = CGFloat(16)
     @objc static let largeSpacing = CGFloat(24)
     @objc static let veryLargeSpacing = CGFloat(35)
+    @objc static let massiveSpacing = CGFloat(64)
     @objc static let newConversationButtonBottomOffset = CGFloat(52)
 }

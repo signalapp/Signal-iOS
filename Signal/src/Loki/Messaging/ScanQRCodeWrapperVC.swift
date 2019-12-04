@@ -15,21 +15,23 @@ final class ScanQRCodeWrapperVC : UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        preconditionFailure("Use init(title:) instead.")
+        preconditionFailure("Use init(message:) instead.")
     }
     
     override init(nibName: String?, bundle: Bundle?) {
-        preconditionFailure("Use init(title:) instead.")
+        preconditionFailure("Use init(message:) instead.")
     }
     
     override func viewDidLoad() {
-        // Navigation bar
+        // Set up navigation bar if needed
         if isPresentedModally {
-            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(objc_dismiss))
+            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(close))
         }
-        // Background color
-        view.backgroundColor = Theme.backgroundColor
-        // Scan QR code VC
+        // Set gradient background
+        view.backgroundColor = .clear
+        let gradient = Gradients.defaultLokiBackground
+        view.setGradient(gradient)
+        // Set up scan QR code VC
         scanQRCodeVC.scanDelegate = delegate
         let scanQRCodeVCView = scanQRCodeVC.view!
         view.addSubview(scanQRCodeVCView)
@@ -37,18 +39,18 @@ final class ScanQRCodeWrapperVC : UIViewController {
         scanQRCodeVCView.pin(.trailing, to: .trailing, of: view)
         scanQRCodeVCView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
         scanQRCodeVCView.autoPinToSquareAspectRatio()
-        // Bottom view
+        // Set up bottom view
         let bottomView = UIView()
         view.addSubview(bottomView)
         bottomView.pin(.top, to: .bottom, of: scanQRCodeVCView)
         bottomView.pin(.leading, to: .leading, of: view)
         bottomView.pin(.trailing, to: .trailing, of: view)
         bottomView.pin(.bottom, to: .bottom, of: view)
-        // Explanation label
+        // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.text = message
-        explanationLabel.textColor = Theme.primaryColor
-        explanationLabel.font = .ows_dynamicTypeSubheadlineClamped
+        explanationLabel.textColor = Colors.text
+        explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         explanationLabel.textAlignment = .center
@@ -68,7 +70,7 @@ final class ScanQRCodeWrapperVC : UIViewController {
     }
     
     // MARK: Interaction
-    @objc private func objc_dismiss() {
+    @objc private func close() {
         presentingViewController?.dismiss(animated: true, completion: nil)
     }
 }

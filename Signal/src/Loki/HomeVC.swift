@@ -307,8 +307,8 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     }
     
     @objc func createPrivateChat() {
-        let newConversationVC = NewConversationVC()
-        let navigationController = OWSNavigationController(rootViewController: newConversationVC)
+        let newPrivateChatVC = NewPrivateChatVC()
+        let navigationController = OWSNavigationController(rootViewController: newPrivateChatVC)
         present(navigationController, animated: true, completion: nil)
     }
     
