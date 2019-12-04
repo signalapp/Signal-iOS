@@ -1,16 +1,6 @@
 
 final class SettingsVC : UIViewController {
     
-    private lazy var settings: [Setting] = {
-        return [
-            Setting(title: NSLocalizedString("Privacy", comment: ""), color: Colors.text) { [weak self] in self?.showPrivacySettings() },
-            Setting(title: NSLocalizedString("Notifications", comment: ""), color: Colors.text) { [weak self] in self?.showNotificationSettings() },
-            Setting(title: NSLocalizedString("Linked Devices", comment: ""), color: Colors.text) { [weak self] in self?.showLinkedDevices() },
-            Setting(title: NSLocalizedString("Show Seed", comment: ""), color: Colors.text) { [weak self] in self?.showSeed() },
-            Setting(title: NSLocalizedString("Clear All Data", comment: ""), color: Colors.destructive) { [weak self] in self?.clearAllData() }
-        ]
-    }()
-    
     private lazy var userHexEncodedPublicKey: String = {
         let userDefaults = UserDefaults.standard
         if let masterHexEncodedPublicKey = userDefaults.string(forKey: "masterDeviceHexEncodedPublicKey") {
@@ -24,19 +14,29 @@ final class SettingsVC : UIViewController {
     override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
     
     // MARK: Components
+    private lazy var profilePictureView: ProfilePictureView = {
+        let result = ProfilePictureView()
+        let size = Values.largeProfilePictureSize
+        result.size = size
+        result.set(.width, to: size)
+        result.set(.height, to: size)
+        return result
+    }()
+    
+    private lazy var displayNameLabel: UILabel = {
+        let result = UILabel()
+        result.textColor = Colors.text
+        result.font = .boldSystemFont(ofSize: Values.largeFontSize)
+        result.lineBreakMode = .byTruncatingTail
+        return result
+    }()
+    
     private lazy var copyButton: Button = {
-        let result = Button(style: .prominent)
+        let result = Button(style: .prominent, size: .medium)
         result.setTitle(NSLocalizedString("Copy", comment: ""), for: UIControl.State.normal)
         result.addTarget(self, action: #selector(copyPublicKey), for: UIControl.Event.touchUpInside)
         return result
     }()
-    
-    // MARK: Types
-    private struct Setting {
-        let title: String
-        let color: UIColor
-        let onTap: () -> Void
-    }
     
     // MARK: Lifecycle
     override func viewDidLoad() {
@@ -64,19 +64,10 @@ final class SettingsVC : UIViewController {
         titleLabel.font = UIFont.boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = titleLabel
         // Set up profile picture view
-        let profilePictureView = ProfilePictureView()
         profilePictureView.hexEncodedPublicKey = userHexEncodedPublicKey
-        let profilePictureSize = Values.largeProfilePictureSize
-        profilePictureView.size = profilePictureSize
-        profilePictureView.set(.width, to: profilePictureSize)
-        profilePictureView.set(.height, to: profilePictureSize)
         profilePictureView.update()
         // Set up display name label
-        let displayNameLabel = UILabel()
-        displayNameLabel.textColor = Colors.text
-        displayNameLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
         displayNameLabel.text = OWSProfileManager.shared().profileName(forRecipientId: userHexEncodedPublicKey)
-        displayNameLabel.lineBreakMode = .byTruncatingTail
         // Set up header view
         let headerStackView = UIStackView(arrangedSubviews: [ profilePictureView, displayNameLabel ])
         headerStackView.axis = .vertical
@@ -93,7 +84,7 @@ final class SettingsVC : UIViewController {
         publicKeyLabel.lineBreakMode = .byCharWrapping
         publicKeyLabel.text = userHexEncodedPublicKey
         // Set up share button
-        let shareButton = Button(style: .regular)
+        let shareButton = Button(style: .regular, size: .medium)
         shareButton.setTitle(NSLocalizedString("Share", comment: ""), for: UIControl.State.normal)
         shareButton.addTarget(self, action: #selector(sharePublicKey), for: UIControl.Event.touchUpInside)
         // Set up button container
@@ -101,29 +92,73 @@ final class SettingsVC : UIViewController {
         buttonContainer.axis = .horizontal
         buttonContainer.spacing = Values.mediumSpacing
         buttonContainer.distribution = .fillEqually
-        // Set up settings stack view
-        let settingViews: [UIButton] = settings.map { setting in
-            let button = UIButton()
-            button.setTitle(setting.title, for: UIControl.State.normal)
-            button.setTitleColor(setting.color, for: UIControl.State.normal)
-            button.titleLabel!.textAlignment = .center
-            button.set(.height, to: 75)
-            return button
-        }
-        let settingsStackView = UIStackView(arrangedSubviews: settingViews)
-        settingsStackView.axis = .vertical
-        settingsStackView.alignment = .fill
+        // Set up top stack view
+        let topStackView = UIStackView(arrangedSubviews: [ headerStackView, separator, publicKeyLabel, buttonContainer ])
+        topStackView.axis = .vertical
+        topStackView.spacing = Values.largeSpacing
+        topStackView.alignment = .fill
+        topStackView.layoutMargins = UIEdgeInsets(top: 0, left: Values.largeSpacing, bottom: 0, right: Values.largeSpacing)
+        topStackView.isLayoutMarginsRelativeArrangement = true
+        // Set up setting buttons stack view
+        let settingButtonsStackView = UIStackView(arrangedSubviews: getSettingButtons())
+        settingButtonsStackView.axis = .vertical
+        settingButtonsStackView.alignment = .fill
         // Set up stack view
-        let stackView = UIStackView(arrangedSubviews: [ headerStackView, separator, publicKeyLabel, buttonContainer, settingsStackView, UIView.vStretchingSpacer() ])
+        let stackView = UIStackView(arrangedSubviews: [ topStackView, settingButtonsStackView ])
         stackView.axis = .vertical
         stackView.spacing = Values.largeSpacing
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: Values.mediumSpacing, left: Values.largeSpacing, bottom: Values.mediumSpacing, right: Values.largeSpacing)
+        stackView.layoutMargins = UIEdgeInsets(top: Values.mediumSpacing, left: 0, bottom: Values.mediumSpacing, right: 0)
         stackView.isLayoutMarginsRelativeArrangement = true
-        view.addSubview(stackView)
-        stackView.pin(to: view)
+        stackView.set(.width, to: UIScreen.main.bounds.width)
+        // Set up scroll view
+        let scrollView = UIScrollView()
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.addSubview(stackView)
+        stackView.pin(to: scrollView)
+        view.addSubview(scrollView)
+        scrollView.pin(to: view)
     }
     
+    private func getSettingButtons() -> [UIButton] {
+        func getSettingButton(withTitle title: String, color: UIColor, action selector: Selector) -> UIButton {
+            let button = UIButton()
+            button.setTitle(title, for: UIControl.State.normal)
+            button.setTitleColor(color, for: UIControl.State.normal)
+            button.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+            button.titleLabel!.textAlignment = .center
+            func getImage(withColor color: UIColor) -> UIImage {
+                let rect = CGRect(origin: CGPoint.zero, size: CGSize(width: 1, height: 1))
+                UIGraphicsBeginImageContext(rect.size)
+                let context = UIGraphicsGetCurrentContext()!
+                context.setFillColor(color.cgColor)
+                context.fill(rect)
+                let image = UIGraphicsGetImageFromCurrentImageContext()
+                UIGraphicsEndImageContext()
+                return image!
+            }
+            button.setBackgroundImage(getImage(withColor: Colors.settingButtonBackground), for: UIControl.State.normal)
+            button.setBackgroundImage(getImage(withColor: Colors.settingButtonSelected), for: UIControl.State.highlighted)
+            button.addTarget(self, action: selector, for: UIControl.Event.touchUpInside)
+            button.set(.height, to: Values.settingsButtonHeight)
+            return button
+        }
+        return [
+            getSettingButton(withTitle: NSLocalizedString("Privacy", comment: ""), color: Colors.text, action: #selector(showPrivacySettings)),
+            getSettingButton(withTitle: NSLocalizedString("Notifications", comment: ""), color: Colors.text, action: #selector(showNotificationSettings)),
+            getSettingButton(withTitle: NSLocalizedString("Linked Devices", comment: ""), color: Colors.text, action: #selector(showLinkedDevices)),
+            getSettingButton(withTitle: NSLocalizedString("Show Seed", comment: ""), color: Colors.text, action: #selector(showSeed)),
+            getSettingButton(withTitle: NSLocalizedString("Clear All Data", comment: ""), color: Colors.destructive, action: #selector(clearAllData))
+        ]
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        profilePictureView.update()
+        displayNameLabel.text = OWSProfileManager.shared().profileName(forRecipientId: userHexEncodedPublicKey)
+    }
+    
+    // MARK: General
     @objc private func enableCopyButton() {
         copyButton.isUserInteractionEnabled = true
         UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
@@ -137,7 +172,9 @@ final class SettingsVC : UIViewController {
     }
     
     @objc private func showQRCode() {
-        // TODO: Implement
+        let qrCodeModal = QRCodeModal()
+        qrCodeModal.modalPresentationStyle = .overFullScreen
+        present(qrCodeModal, animated: true, completion: nil)
     }
     
     @objc private func copyPublicKey() {
@@ -154,23 +191,30 @@ final class SettingsVC : UIViewController {
         navigationController!.present(shareVC, animated: true, completion: nil)
     }
     
-    private func showPrivacySettings() {
-        
+    @objc private func showPrivacySettings() {
+        let privacySettingsVC = PrivacySettingsTableViewController()
+        navigationController!.pushViewController(privacySettingsVC, animated: true)
     }
     
-    private func showNotificationSettings() {
-        
+    @objc private func showNotificationSettings() {
+        let notificationSettingsVC = NotificationSettingsViewController()
+        navigationController!.pushViewController(notificationSettingsVC, animated: true)
     }
     
-    private func showLinkedDevices() {
-        
+    @objc private func showLinkedDevices() {
+        let deviceLinksVC = DeviceLinksVC()
+        navigationController!.pushViewController(deviceLinksVC, animated: true)
     }
     
-    private func showSeed() {
-        
+    @objc private func showSeed() {
+        let seedModal = SeedModal()
+        seedModal.modalPresentationStyle = .overFullScreen
+        present(seedModal, animated: true, completion: nil)
     }
     
-    private func clearAllData() {
-        
+    @objc private func clearAllData() {
+        let nukeDataModal = NukeDataModal()
+        nukeDataModal.modalPresentationStyle = .overFullScreen
+        present(nukeDataModal, animated: true, completion: nil)
     }
 }

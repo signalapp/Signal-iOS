@@ -1,13 +1,19 @@
 
 final class Button : UIButton {
     private let style: Style
+    private let size: Size
     
     enum Style {
         case unimportant, regular, prominent
     }
     
-    init(style: Style) {
+    enum Size {
+        case medium, large
+    }
+    
+    init(style: Style, size: Size) {
         self.style = style
+        self.size = size
         super.init(frame: .zero)
         setUpStyle()
     }
@@ -39,7 +45,11 @@ final class Button : UIButton {
         case .regular: textColor = Colors.text
         case .prominent: textColor = Colors.accent
         }
-        let height = Values.buttonHeight
+        let height: CGFloat
+        switch size {
+        case .medium: height = Values.mediumButtonHeight
+        case .large: height = Values.largeButtonHeight
+        }
         set(.height, to: height)
         layer.cornerRadius = height / 2
         backgroundColor = fillColor

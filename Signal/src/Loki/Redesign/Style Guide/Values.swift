@@ -15,7 +15,8 @@ final class Values : NSObject {
     @objc static let massiveFontSize = CGFloat(50)
     
     // MARK: - Element Sizes
-    @objc static let buttonHeight = CGFloat(34)
+    @objc static let mediumButtonHeight = CGFloat(34)
+    @objc static let largeButtonHeight = CGFloat(45)
     @objc static let accentLineThickness = CGFloat(4)
     @objc static let verySmallProfilePictureSize = CGFloat(26)
     @objc static let smallProfilePictureSize = CGFloat(35)
@@ -30,6 +31,7 @@ final class Values : NSObject {
     @objc static let separatorLabelHeight = CGFloat(24)
     @objc static var separatorThickness: CGFloat { return 1 / UIScreen.main.scale }
     @objc static let tabBarHeight = CGFloat(48)
+    @objc static let settingsButtonHeight = CGFloat(75)
     
     // MARK: - Distances
     @objc static let smallSpacing = CGFloat(8)

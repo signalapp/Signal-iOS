@@ -25,4 +25,6 @@ final class Colors : NSObject {
     @objc static let newConversationButtonShadow = UIColor(hex: 0x077C44)
     @objc static let separator = UIColor(hex: 0x36383C)
     @objc static let unimportantButtonBackground = UIColor(hex: 0x323232)
+    @objc static let settingButtonBackground = UIColor(hex: 0x1B1B1B)
+    @objc static let settingButtonSelected = UIColor(hex: 0x0C0C0C)
 }

@@ -155,7 +155,7 @@ private final class EnterPublicKeyVC : UIViewController {
     private lazy var publicKeyTextField = TextField(placeholder: NSLocalizedString("Enter public key of recipient", comment: ""))
     
     private lazy var copyButton: Button = {
-        let result = Button(style: .unimportant)
+        let result = Button(style: .unimportant, size: .medium)
         result.setTitle(NSLocalizedString("Copy", comment: ""), for: UIControl.State.normal)
         result.addTarget(self, action: #selector(copyPublicKey), for: UIControl.Event.touchUpInside)
         return result
@@ -184,7 +184,7 @@ private final class EnterPublicKeyVC : UIViewController {
         userPublicKeyLabel.lineBreakMode = .byCharWrapping
         userPublicKeyLabel.text = userHexEncodedPublicKey
         // Set up share button
-        let shareButton = Button(style: .unimportant)
+        let shareButton = Button(style: .unimportant, size: .medium)
         shareButton.setTitle(NSLocalizedString("Share", comment: ""), for: UIControl.State.normal)
         shareButton.addTarget(self, action: #selector(sharePublicKey), for: UIControl.Event.touchUpInside)
         // Set up button container
@@ -193,7 +193,7 @@ private final class EnterPublicKeyVC : UIViewController {
         buttonContainer.spacing = Values.mediumSpacing
         buttonContainer.distribution = .fillEqually
         // Next button
-        let nextButton = Button(style: .prominent)
+        let nextButton = Button(style: .prominent, size: .large)
         nextButton.setTitle(NSLocalizedString("Next", comment: ""), for: UIControl.State.normal)
         nextButton.addTarget(self, action: #selector(startNewPrivateChatIfPossible), for: UIControl.Event.touchUpInside)
         let nextButtonContainer = UIView()
@@ -203,7 +203,7 @@ private final class EnterPublicKeyVC : UIViewController {
         nextButtonContainer.pin(.trailing, to: .trailing, of: nextButton, withInset: 80)
         nextButtonContainer.pin(.bottom, to: .bottom, of: nextButton)
         // Stack view
-        let stackView = UIStackView(arrangedSubviews: [ publicKeyTextField, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, UIView.vStretchingSpacer(), separator, UIView.spacer(withHeight: Values.veryLargeSpacing), userPublicKeyLabel, UIView.spacer(withHeight: Values.veryLargeSpacing), buttonContainer, UIView.spacer(withHeight: Values.veryLargeSpacing), nextButtonContainer ])
+        let stackView = UIStackView(arrangedSubviews: [ publicKeyTextField, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, UIView.spacer(withHeight: Values.largeSpacing), separator, UIView.spacer(withHeight: Values.veryLargeSpacing), userPublicKeyLabel, UIView.spacer(withHeight: Values.veryLargeSpacing), buttonContainer, UIView.vStretchingSpacer(), nextButtonContainer ])
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(top: Values.mediumSpacing, left: Values.largeSpacing, bottom: Values.mediumSpacing, right: Values.largeSpacing)
