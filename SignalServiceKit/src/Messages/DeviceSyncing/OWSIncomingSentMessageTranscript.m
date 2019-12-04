@@ -58,6 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
     _expirationDuration = _dataMessage.expireTimer;
     _body = _dataMessage.body;
     _dataMessageTimestamp = _dataMessage.timestamp;
+
+    // GroupsV2 TODO: Assert and abort if the group v2 is unknown.
     SSKProtoGroupContext *_Nullable group = _dataMessage.group;
     if (group != nil) {
         if (group.id.length < 1) {
@@ -85,29 +87,6 @@ NS_ASSUME_NONNULL_BEGIN
         _requiredProtocolVersion = @(_dataMessage.requiredProtocolVersion);
     }
 
-    if (sentProto.unidentifiedStatus.count > 0) {
-        NSMutableArray<SignalServiceAddress *> *nonUdRecipientAddresses = [NSMutableArray new];
-        NSMutableArray<SignalServiceAddress *> *udRecipientAddresses = [NSMutableArray new];
-        for (SSKProtoSyncMessageSentUnidentifiedDeliveryStatus *statusProto in sentProto.unidentifiedStatus) {
-            if (!statusProto.hasValidDestination) {
-                OWSFailDebug(@"Delivery status proto is missing destination.");
-                continue;
-            }
-            if (!statusProto.hasUnidentified) {
-                OWSFailDebug(@"Delivery status proto is missing value.");
-                continue;
-            }
-            SignalServiceAddress *recipientAddress = statusProto.destinationAddress;
-            if (statusProto.unidentified) {
-                [udRecipientAddresses addObject:recipientAddress];
-            } else {
-                [nonUdRecipientAddresses addObject:recipientAddress];
-            }
-        }
-        _nonUdRecipientAddresses = [nonUdRecipientAddresses copy];
-        _udRecipientAddresses = [udRecipientAddresses copy];
-    }
-
     if (self.isRecipientUpdate) {
         // Fetch, don't create.  We don't want recipient updates to resurrect messages or threads.
         if (_groupId != nil) {
@@ -118,46 +97,27 @@ NS_ASSUME_NONNULL_BEGIN
         // Skip the other processing for recipient updates.
     } else {
         if (_groupId != nil) {
-            // If we receive a sent message sync transcript from a linked device for an unknown
-            // group, we would previously create the group.  We should either stop doing this
-            // or we need to send the group secrets with the transcript.
-            //
-            // GroupsV2 TODO:
-            _thread = [TSGroupThread fetchWithGroupId:_groupId transaction:transaction];
-            if (_thread == nil) {
-                if (SSKFeatureFlags.incomingGroupsV2) {
-                    OWSFailDebug(@"Received sync transcript for unknown group.");
-                    return nil;
-                }
-                NSMutableArray<SignalServiceAddress *> *members = [NSMutableArray new];
-                if (_nonUdRecipientAddresses != nil) {
-                    [members addObjectsFromArray:_nonUdRecipientAddresses];
-                }
-                if (_udRecipientAddresses != nil) {
-                    [members addObjectsFromArray:_udRecipientAddresses];
-                }
-                SignalServiceAddress *_Nullable localAddress
-                    = OWSIncomingSentMessageTranscript.tsAccountManager.localAddress;
-                if (localAddress == nil) {
-                    OWSFailDebug(@"Missing localAddress.");
-                    return nil;
-                }
-                [members addObject:localAddress];
-                NSError *_Nullable groupError;
-                _thread = [GroupManager upsertExistingGroupObjcWithMembers:members
-                                                                      name:nil
-                                                                avatarData:nil
-                                                                   groupId:_groupId
-                                                             groupsVersion:GroupsVersionV1
-                                                     groupSecretParamsData:nil
-                                                         shouldSendMessage:false
-                                                               transaction:transaction
-                                                                     error:&groupError]
-                              .thread;
-                if (groupError && _thread == nil) {
-                    OWSFailDebug(@"groupError: %@", groupError);
-                    return nil;
-                }
+            SignalServiceAddress *_Nullable localAddress
+                = OWSIncomingSentMessageTranscript.tsAccountManager.localAddress;
+            if (localAddress == nil) {
+                OWSFailDebug(@"Missing localAddress.");
+                return nil;
+            }
+            NSArray<SignalServiceAddress *> *members = @[ localAddress ];
+            NSError *_Nullable groupError;
+            _thread = [GroupManager upsertExistingGroupObjcWithMembers:members
+                                                                  name:nil
+                                                            avatarData:nil
+                                                               groupId:_groupId
+                                                         groupsVersion:GroupsVersionV1
+                                                 groupSecretParamsData:nil
+                                                     shouldSendMessage:NO
+                                                           transaction:transaction
+                                                                 error:&groupError]
+                          .thread;
+            if (groupError != nil || _thread == nil) {
+                OWSFailDebug(@"Could not create group: %@", groupError);
+                return nil;
             }
         } else {
             _thread = [TSContactThread getOrCreateThreadWithContactAddress:_recipientAddress transaction:transaction];
@@ -183,6 +143,29 @@ NS_ASSUME_NONNULL_BEGIN
         if (stickerError && ![MessageSticker isNoStickerError:stickerError]) {
             OWSFailDebug(@"stickerError: %@", stickerError);
         }
+    }
+
+    if (sentProto.unidentifiedStatus.count > 0) {
+        NSMutableArray<SignalServiceAddress *> *nonUdRecipientAddresses = [NSMutableArray new];
+        NSMutableArray<SignalServiceAddress *> *udRecipientAddresses = [NSMutableArray new];
+        for (SSKProtoSyncMessageSentUnidentifiedDeliveryStatus *statusProto in sentProto.unidentifiedStatus) {
+            if (!statusProto.hasValidDestination) {
+                OWSFailDebug(@"Delivery status proto is missing destination.");
+                continue;
+            }
+            if (!statusProto.hasUnidentified) {
+                OWSFailDebug(@"Delivery status proto is missing value.");
+                continue;
+            }
+            SignalServiceAddress *recipientAddress = statusProto.destinationAddress;
+            if (statusProto.unidentified) {
+                [udRecipientAddresses addObject:recipientAddress];
+            } else {
+                [nonUdRecipientAddresses addObject:recipientAddress];
+            }
+        }
+        _nonUdRecipientAddresses = [nonUdRecipientAddresses copy];
+        _udRecipientAddresses = [udRecipientAddresses copy];
     }
 
     return self;
