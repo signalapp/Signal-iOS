@@ -2681,6 +2681,7 @@
 "New Conversation" = "New Conversation";
 "Enter public key of recipient" = "Enter public key of recipient";
 "Users can share their public key by going into their account settings and tapping \"Share Public Key\", or by sharing their QR code." = "Users can share their public key by going into their account settings and tapping \"Share Public Key\", or by sharing their QR code.";
+"Users can share their QR code by going into their account settings and tapping \"Share QR Code\"." = "Users can share their QR code by going into their account settings and tapping \"Share QR Code\".";
 "Your Public Key" = "Your Public Key";
 "Copy" = "Copy";
 "Copied" = "Copied";
@@ -2689,3 +2690,12 @@
 "Loki Messenger needs camera access to scan QR codes" = "Loki Messenger needs camera access to scan QR codes";
 "Enable Camera Access" = "Enable Camera Access";
 "Scan the QR code of the person you'd like to securely message. They can find their QR code by going into Loki Messenger's in-app settings and tapping \"Show QR Code\"." = "Scan the QR code of the person you'd like to securely message. They can find their QR code by going into Loki Messenger's in-app settings and tapping \"Show QR Code\".";
+"Enter Public Key" = "Enter Public Key";
+"Enter Chat URL" = "Enter Chat URL";
+"Scan QR Code" = "Scan QR Code";
+"Scan the QR code of the public chat you'd like to join" = "Scan the QR code of the public chat you'd like to join";
+"Join Public Chat" = "Join Public Chat";
+"Enter the URL of the public chat you'd like to join" = "Enter the URL of the public chat you'd like to join";
+"Invalid URL" = "Invalid URL";
+"Please check the URL you entered and try again" = "Please check the URL you entered and try again";
+"Couldn't Join" = "Couldn't Join";

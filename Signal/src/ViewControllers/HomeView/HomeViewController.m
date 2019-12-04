@@ -869,9 +869,9 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
 - (void)showNewPublicChatVC
 {
-    LKJoinPublicChatVC *joinPublicChatVC = [LKJoinPublicChatVC new];
-    OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:joinPublicChatVC];
-    [self.navigationController presentViewController:navigationController animated:YES completion:nil];
+//    LKJoinPublicChatVC *joinPublicChatVC = [LKJoinPublicChatVC new];
+//    OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:joinPublicChatVC];
+//    [self.navigationController presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated

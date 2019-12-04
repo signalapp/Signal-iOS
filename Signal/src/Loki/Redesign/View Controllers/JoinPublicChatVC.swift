@@ -1,13 +1,14 @@
 
-final class NewPrivateChatVC : UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
+final class JoinPublicChatVC : UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
     private var pages: [UIViewController] = []
+    private var isJoining = false
     private var targetVCIndex: Int?
     
     // MARK: Components
     private lazy var tabBar: TabBar = {
         let tabs = [
-            TabBar.Tab(title: NSLocalizedString("Enter Public Key", comment: "")) { [weak self] in
+            TabBar.Tab(title: NSLocalizedString("Enter Chat URL", comment: "")) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[0] ], direction: .forward, animated: false, completion: nil)
             },
@@ -19,20 +20,20 @@ final class NewPrivateChatVC : UIViewController, UIPageViewControllerDataSource,
         return TabBar(tabs: tabs)
     }()
     
-    private lazy var enterPublicKeyVC: EnterPublicKeyVC = {
-        let result = EnterPublicKeyVC()
-        result.newPrivateChatVC = self
+    private lazy var enterChatURLVC: EnterChatURLVC = {
+        let result = EnterChatURLVC()
+        result.joinPublicChatVC = self
         return result
     }()
     
     private lazy var scanQRCodePlaceholderVC: ScanQRCodePlaceholderVC = {
         let result = ScanQRCodePlaceholderVC()
-        result.newPrivateChatVC = self
+        result.joinPublicChatVC = self
         return result
     }()
     
     private lazy var scanQRCodeWrapperVC: ScanQRCodeWrapperVC = {
-        let message = NSLocalizedString("Users can share their QR code by going into their account settings and tapping \"Share QR Code\".", comment: "")
+        let message = NSLocalizedString("Scan the QR code of the public chat you'd like to join", comment: "")
         let result = ScanQRCodeWrapperVC(message: message)
         result.delegate = self
         return result
@@ -56,16 +57,16 @@ final class NewPrivateChatVC : UIViewController, UIPageViewControllerDataSource,
         navigationItem.leftBarButtonItem = closeButton
         // Customize title
         let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("New Conversation", comment: "")
+        titleLabel.text = NSLocalizedString("Join Public Chat", comment: "")
         titleLabel.textColor = Colors.text
         titleLabel.font = UIFont.boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = titleLabel
         // Set up page VC
         let hasCameraAccess = (AVCaptureDevice.authorizationStatus(for: .video) == .authorized)
-        pages = [ enterPublicKeyVC, (hasCameraAccess ? scanQRCodeWrapperVC : scanQRCodePlaceholderVC) ]
+        pages = [ enterChatURLVC, (hasCameraAccess ? scanQRCodeWrapperVC : scanQRCodePlaceholderVC) ]
         pageVC.dataSource = self
         pageVC.delegate = self
-        pageVC.setViewControllers([ enterPublicKeyVC ], direction: .forward, animated: false, completion: nil)
+        pageVC.setViewControllers([ enterChatURLVC ], direction: .forward, animated: false, completion: nil)
         // Set up tab bar
         view.addSubview(tabBar)
         tabBar.pin(.leading, to: .leading, of: view)
@@ -82,7 +83,7 @@ final class NewPrivateChatVC : UIViewController, UIPageViewControllerDataSource,
         pageVCView.set(.width, to: screen.width)
         let height = navigationController!.view.bounds.height - navigationBar.height() - Values.tabBarHeight
         pageVCView.set(.height, to: height)
-        enterPublicKeyVC.constrainHeight(to: height)
+        enterChatURLVC.constrainHeight(to: height)
         scanQRCodePlaceholderVC.constrainHeight(to: height)
     }
     
@@ -119,42 +120,49 @@ final class NewPrivateChatVC : UIViewController, UIPageViewControllerDataSource,
     }
     
     func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {
-        let hexEncodedPublicKey = string
-        startNewPrivateChatIfPossible(with: hexEncodedPublicKey)
+        let chatURL = string
+        joinPublicChatIfPossible(with: chatURL)
     }
     
-    fileprivate func startNewPrivateChatIfPossible(with hexEncodedPublicKey: String) {
-        if !ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) {
-            let alert = UIAlertController(title: NSLocalizedString("Invalid Public Key", comment: ""), message: NSLocalizedString("Please check the public key you entered and try again.", comment: ""), preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
-            presentAlert(alert)
-        } else {
-            let thread = TSContactThread.getOrCreateThread(contactId: hexEncodedPublicKey)
-            presentingViewController?.dismiss(animated: true, completion: nil)
-            SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
+    fileprivate func joinPublicChatIfPossible(with chatURL: String) {
+        guard !isJoining else { return }
+        guard let url = URL(string: chatURL), let scheme = url.scheme, scheme == "https", url.host != nil else {
+            return showError(title: NSLocalizedString("Invalid URL", comment: ""), message: NSLocalizedString("Please check the URL you entered and try again", comment: ""))
         }
+        isJoining = true
+        let channelID: UInt64 = 1
+        let urlAsString = url.absoluteString
+        let displayName = OWSProfileManager.shared().localProfileName()
+        // TODO: Profile picture & profile key
+        LokiPublicChatManager.shared.addChat(server: urlAsString, channel: channelID)
+        .done(on: .main) { [weak self] _ in
+            let _ = LokiPublicChatAPI.getMessages(for: channelID, on: urlAsString)
+            let _ = LokiPublicChatAPI.setDisplayName(to: displayName, on: urlAsString)
+            self?.presentingViewController!.dismiss(animated: true, completion: nil)
+        }
+        .catch(on: .main) { [weak self] _ in
+            self?.isJoining = false
+            self?.showError(title: NSLocalizedString("Couldn't Join", comment: ""))
+        }
+    }
+    
+    // MARK: Convenience
+    private func showError(title: String, message: String = "") {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+        presentAlert(alert)
     }
 }
 
-private final class EnterPublicKeyVC : UIViewController {
-    weak var newPrivateChatVC: NewPrivateChatVC!
-    
-    private lazy var userHexEncodedPublicKey: String = {
-        let userDefaults = UserDefaults.standard
-        if let masterHexEncodedPublicKey = userDefaults.string(forKey: "masterDeviceHexEncodedPublicKey") {
-            return masterHexEncodedPublicKey
-        } else {
-            return OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
-        }
-    }()
+private final class EnterChatURLVC : UIViewController {
+    weak var joinPublicChatVC: JoinPublicChatVC!
+    private var bottomConstraint: NSLayoutConstraint!
     
     // MARK: Components
-    private lazy var publicKeyTextField = TextField(placeholder: NSLocalizedString("Enter public key of recipient", comment: ""))
-    
-    private lazy var copyButton: Button = {
-        let result = Button(style: .unimportant)
-        result.setTitle(NSLocalizedString("Copy", comment: ""), for: UIControl.State.normal)
-        result.addTarget(self, action: #selector(copyPublicKey), for: UIControl.Event.touchUpInside)
+    private lazy var chatURLTextField: TextField = {
+        let result = TextField(placeholder: "https://chat.lokinet.org")
+        result.keyboardType = .URL
+        result.autocapitalizationType = .none
         return result
     }()
     
@@ -166,33 +174,14 @@ private final class EnterPublicKeyVC : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Users can share their public key by going into their account settings and tapping \"Share Public Key\", or by sharing their QR code.", comment: "")
+        explanationLabel.text = NSLocalizedString("Enter the URL of the public chat you'd like to join", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
-        // Set up separator
-        let separator = Separator(title: NSLocalizedString("Your Public Key", comment: ""))
-        // Set up user public key label
-        let userPublicKeyLabel = UILabel()
-        userPublicKeyLabel.textColor = Colors.text
-        userPublicKeyLabel.font = Fonts.spaceMono(ofSize: Values.mediumFontSize)
-        userPublicKeyLabel.numberOfLines = 0
-        userPublicKeyLabel.textAlignment = .center
-        userPublicKeyLabel.lineBreakMode = .byCharWrapping
-        userPublicKeyLabel.text = userHexEncodedPublicKey
-        // Set up share button
-        let shareButton = Button(style: .unimportant)
-        shareButton.setTitle(NSLocalizedString("Share", comment: ""), for: UIControl.State.normal)
-        shareButton.addTarget(self, action: #selector(sharePublicKey), for: UIControl.Event.touchUpInside)
-        // Set up button container
-        let buttonContainer = UIStackView(arrangedSubviews: [ copyButton, shareButton ])
-        buttonContainer.axis = .horizontal
-        buttonContainer.spacing = Values.mediumSpacing
-        buttonContainer.distribution = .fillEqually
         // Next button
         let nextButton = Button(style: .prominent)
         nextButton.setTitle(NSLocalizedString("Next", comment: ""), for: UIControl.State.normal)
-        nextButton.addTarget(self, action: #selector(startNewPrivateChatIfPossible), for: UIControl.Event.touchUpInside)
+        nextButton.addTarget(self, action: #selector(joinPublicChatIfPossible), for: UIControl.Event.touchUpInside)
         let nextButtonContainer = UIView()
         nextButtonContainer.addSubview(nextButton)
         nextButton.pin(.leading, to: .leading, of: nextButtonContainer, withInset: 80)
@@ -200,18 +189,29 @@ private final class EnterPublicKeyVC : UIViewController {
         nextButtonContainer.pin(.trailing, to: .trailing, of: nextButton, withInset: 80)
         nextButtonContainer.pin(.bottom, to: .bottom, of: nextButton)
         // Stack view
-        let stackView = UIStackView(arrangedSubviews: [ publicKeyTextField, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, UIView.vStretchingSpacer(), separator, UIView.spacer(withHeight: Values.veryLargeSpacing), userPublicKeyLabel, UIView.spacer(withHeight: Values.veryLargeSpacing), buttonContainer, UIView.spacer(withHeight: Values.veryLargeSpacing), nextButtonContainer ])
+        let stackView = UIStackView(arrangedSubviews: [ chatURLTextField, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, UIView.vStretchingSpacer(), nextButtonContainer ])
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(top: Values.mediumSpacing, left: Values.largeSpacing, bottom: Values.mediumSpacing, right: Values.largeSpacing)
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
-        stackView.pin(to: view)
+        stackView.pin(.leading, to: .leading, of: view)
+        stackView.pin(.top, to: .top, of: view)
+        view.pin(.trailing, to: .trailing, of: stackView)
+        bottomConstraint = view.pin(.bottom, to: .bottom, of: stackView)
         // Set up width constraint
         view.set(.width, to: UIScreen.main.bounds.width)
         // Dismiss keyboard on tap
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGestureRecognizer)
+        // Listen to keyboard notifications
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillChangeFrameNotification(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillHideNotification(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: General
@@ -220,39 +220,34 @@ private final class EnterPublicKeyVC : UIViewController {
     }
     
     @objc private func dismissKeyboard() {
-        publicKeyTextField.resignFirstResponder()
+        chatURLTextField.resignFirstResponder()
     }
     
-    @objc private func enableCopyButton() {
-        copyButton.isUserInteractionEnabled = true
-        UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
-            self.copyButton.setTitle(NSLocalizedString("Copy", comment: ""), for: UIControl.State.normal)
-        }, completion: nil)
+    // MARK: Updating
+    @objc private func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
+        guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
+        bottomConstraint.constant = newHeight
+        UIView.animate(withDuration: 0.25) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    @objc private func handleKeyboardWillHideNotification(_ notification: Notification) {
+        bottomConstraint.constant = 0
+        UIView.animate(withDuration: 0.25) {
+            self.view.layoutIfNeeded()
+        }
     }
     
     // MARK: Interaction
-    @objc private func copyPublicKey() {
-        UIPasteboard.general.string = userHexEncodedPublicKey
-        copyButton.isUserInteractionEnabled = false
-        UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
-            self.copyButton.setTitle(NSLocalizedString("Copied", comment: ""), for: UIControl.State.normal)
-        }, completion: nil)
-        Timer.scheduledTimer(timeInterval: 4, target: self, selector: #selector(enableCopyButton), userInfo: nil, repeats: false)
-    }
-    
-    @objc private func sharePublicKey() {
-        let shareVC = UIActivityViewController(activityItems: [ userHexEncodedPublicKey ], applicationActivities: nil)
-        newPrivateChatVC.navigationController!.present(shareVC, animated: true, completion: nil)
-    }
-    
-    @objc private func startNewPrivateChatIfPossible() {
-        let hexEncodedPublicKey = publicKeyTextField.text?.trimmingCharacters(in: .whitespaces) ?? ""
-        newPrivateChatVC.startNewPrivateChatIfPossible(with: hexEncodedPublicKey)
+    @objc private func joinPublicChatIfPossible() {
+        let chatURL = chatURLTextField.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        joinPublicChatVC.joinPublicChatIfPossible(with: chatURL)
     }
 }
 
 private final class ScanQRCodePlaceholderVC : UIViewController {
-    weak var newPrivateChatVC: NewPrivateChatVC!
+    weak var joinPublicChatVC: JoinPublicChatVC!
     
     override func viewDidLoad() {
         // Remove background color
@@ -292,7 +287,7 @@ private final class ScanQRCodePlaceholderVC : UIViewController {
     @objc private func requestCameraAccess() {
         ows_ask(forCameraPermissions: { [weak self] hasCameraAccess in
             if hasCameraAccess {
-                self?.newPrivateChatVC.handleCameraAccessGranted()
+                self?.joinPublicChatVC.handleCameraAccessGranted()
             } else {
                 // Do nothing
             }
