@@ -293,13 +293,17 @@ public class GroupManager: NSObject {
     public static func createGroupForTestsObjc(members: [SignalServiceAddress],
                                                name: String? = nil,
                                                avatarData: Data? = nil,
-                                               transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
-        let groupsVersion = self.defaultGroupsVersion
-        return try createGroupForTests(members: members,
-                                       name: name,
-                                       avatarData: avatarData,
-                                       groupsVersion: groupsVersion,
-                                       transaction: transaction)
+                                               transaction: SDSAnyWriteTransaction) -> TSGroupThread {
+        do {
+            let groupsVersion = self.defaultGroupsVersion
+            return try createGroupForTests(members: members,
+                                           name: name,
+                                           avatarData: avatarData,
+                                           groupsVersion: groupsVersion,
+                                           transaction: transaction)
+        } catch {
+            owsFail("Error: \(error)")
+        }
     }
 
     public static func createGroupForTests(members: [SignalServiceAddress],

@@ -482,18 +482,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     __block TSGroupThread *thread;
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        NSError *error;
         thread = [GroupManager createGroupForTestsObjcWithMembers:@[
             successfulRecipient.address,
             successfulRecipient2.address,
         ]
                                                              name:@"group title"
                                                        avatarData:nil
-                                                      transaction:transaction
-                                                            error:&error];
-        if (error != nil) {
-            OWSFailDebug(@"Error: %@", error);
-        }
+                                                      transaction:transaction];
     }];
 
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:1

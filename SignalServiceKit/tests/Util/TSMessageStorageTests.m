@@ -147,18 +147,13 @@
           @"privacy matters; privacy is what allows us to determine who we are and who we want to be.";
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        NSError *error;
         TSGroupThread *thread = [GroupManager createGroupForTestsObjcWithMembers:@[
             self.localAddress,
             self.otherAddress,
         ]
                                                                             name:@"fdsfsd"
                                                                       avatarData:nil
-                                                                     transaction:transaction
-                                                                           error:&error];
-        if (error != nil) {
-            OWSFailDebug(@"Error: %@", error);
-        }
+                                                                     transaction:transaction];
 
         NSMutableArray<TSIncomingMessage *> *messages = [NSMutableArray new];
         for (uint64_t i = 0; i < 10; i++) {

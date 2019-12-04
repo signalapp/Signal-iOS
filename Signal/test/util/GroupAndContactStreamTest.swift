@@ -102,8 +102,6 @@ class GroupAndContactStreamTest: SignalBaseTest {
                 thread = try! GroupManager.createGroupForTests(members: groupMembers,
                                                                groupId: groupId,
                                                                transaction: transaction)
-
-                thread.anyInsert(transaction: transaction)
                 thread.updateConversationColorName(.burlap, transaction: transaction)
             }
             return thread
@@ -187,8 +185,8 @@ class GroupAndContactStreamTest: SignalBaseTest {
             XCTAssertEqual(group.name, nil)
             XCTAssertEqual(group.memberAddresses, [
                 SignalServiceAddress(phoneNumber: "+13213214321"),
-                SignalServiceAddress(uuidString: "31ce1412-9a28-4e6f-b4ee-a25c3179d085"),
-                SignalServiceAddress(uuidString: "1d4ab045-88fb-4c4e-9f6a-f921124bd529", phoneNumber: "+13213214323")
+                SignalServiceAddress(uuidString: "1d4ab045-88fb-4c4e-9f6a-f921124bd529", phoneNumber: "+13213214323"),
+                SignalServiceAddress(uuidString: "31ce1412-9a28-4e6f-b4ee-a25c3179d085")
                 ])
 
             XCTAssertEqual(group.conversationColorName, ConversationColorName.burlap.rawValue)
