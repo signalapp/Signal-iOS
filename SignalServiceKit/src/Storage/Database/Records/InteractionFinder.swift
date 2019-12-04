@@ -48,6 +48,7 @@ protocol InteractionFinderAdapter {
     func enumerateUnstartedExpiringMessages(transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void)
     #endif
 
+    // Interactions are enumerated in reverse order.
     func enumerateSpecialMessages(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void)
 
     // The "reverse" index of the interaction. e.g. the last interaction
@@ -581,7 +582,8 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
             return
         }
         view.safe_enumerateKeysAndObjects(inGroup: threadUniqueId,
-                                          extensionName: TSThreadSpecialMessagesDatabaseViewExtensionName) { (_, _, object, _, stopPtr) in
+                                          extensionName: TSThreadSpecialMessagesDatabaseViewExtensionName,
+                                          with: NSEnumerationOptions.reverse) { (_, _, object, _, stopPtr) in
                                             guard let interaction = object as? TSInteraction else {
                                                 owsFailDebug("unexpected interaction: \(type(of: object))")
                                                 return
@@ -1061,6 +1063,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
             )
             OR \(interactionColumn: .recordType) IN ( ?, ?, ? )
         )
+        ORDER BY \(interactionColumn: .id) DESC
         """
         let arguments: StatementArguments = [threadUniqueId,
                                              TSErrorMessageType.nonBlockingIdentityChange.rawValue,
