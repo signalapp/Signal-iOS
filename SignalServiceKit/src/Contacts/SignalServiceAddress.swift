@@ -4,10 +4,6 @@
 
 import Foundation
 
-public enum SignalServiceAddressError: Error {
-    case assertionError(description: String)
-}
-
 @objc
 public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding {
     public static let supportsSecureCoding: Bool = true
