@@ -56,10 +56,6 @@ public class VersionedProfiles: NSObject {
     // Never instantiate this class.
     private override init() {}
 
-    private class func asData(bytes: [UInt8]) -> Data {
-        return NSData(bytes: bytes, length: bytes.count) as Data
-    }
-
     // MARK: - Update
 
     @objc
@@ -97,7 +93,7 @@ public class VersionedProfiles: NSObject {
             let localProfileKey = try self.parseProfileKey(profileKey: profileKey)
 
             let commitment = try localProfileKey.getCommitment()
-            let commitmentData = self.asData(bytes: commitment.serialize())
+            let commitmentData = commitment.serialize().asData
             let hasAvatar = profileAvatarData != nil
             var nameData: Data?
             if let profileName = profileName {
@@ -108,7 +104,7 @@ public class VersionedProfiles: NSObject {
             }
 
             let profileKeyVersion = try localProfileKey.getProfileKeyVersion()
-            let profileKeyVersionData = self.asData(bytes: profileKeyVersion.serialize())
+            let profileKeyVersionData = profileKeyVersion.serialize().asData
 
             let request = OWSRequestFactory.versionedProfileSetRequest(withName: nameData, hasAvatar: hasAvatar, version: profileKeyVersionData, commitment: commitmentData)
             return self.networkManager.makePromise(request: request)
@@ -195,7 +191,7 @@ public class VersionedProfiles: NSObject {
                                               udAccessKey: SMKUDAccessKey?) throws -> VersionedProfileRequest {
         guard address.isValid,
             let uuid: UUID = address.uuid else {
-                throw OWSErrorMakeAssertionError("Invalid address: \(address)")
+                throw OWSAssertionError("Invalid address: \(address)")
         }
 
         var requestContext: ProfileKeyCredentialRequestContext?
@@ -208,11 +204,11 @@ public class VersionedProfiles: NSObject {
             }
             let profileKey: ProfileKey = try self.parseProfileKey(profileKey: profileKeyForAddress)
             let profileKeyVersion = try profileKey.getProfileKeyVersion()
-            let profileKeyVersionData = asData(bytes: profileKeyVersion.serialize())
+            let profileKeyVersionData = profileKeyVersion.serialize().asData
             profileKeyVersionArg = profileKeyVersionData
 
             // We need to request a credential if we don't have one already.
-            let credential = try self.credentialData(for: address, transaction: transaction)
+            let credential = try self.profileKeyCredentialData(for: address, transaction: transaction)
             if credential == nil {
                 let clientZkProfileOperations = try self.clientZkProfileOperations()
                 let uuidData: Data = withUnsafeBytes(of: uuid.uuid) { Data($0) }
@@ -221,7 +217,7 @@ public class VersionedProfiles: NSObject {
                                                                                                      profileKey: profileKey)
                 requestContext = context
                 let credentialRequest = try context.getRequest()
-                credentialRequestArg = asData(bytes: credentialRequest.serialize())
+                credentialRequestArg = credentialRequest.serialize().asData
             }
         }
 
@@ -262,7 +258,7 @@ public class VersionedProfiles: NSObject {
             let credentialResponse = try ProfileKeyCredentialResponse(contents: [UInt8](credentialResponseData))
             let clientZkProfileOperations = try self.clientZkProfileOperations()
             let profileKeyCredential = try clientZkProfileOperations.receiveProfileKeyCredential(profileKeyCredentialRequestContext: requestContext, profileKeyCredentialResponse: credentialResponse)
-            let credentialData = self.asData(bytes: profileKeyCredential.serialize())
+            let credentialData = profileKeyCredential.serialize().asData
             guard credentialData.count > 0 else {
                 owsFailDebug("Invalid credential data.")
                 return
@@ -280,12 +276,30 @@ public class VersionedProfiles: NSObject {
 
     // MARK: - Credentials
 
-    private class func credentialData(for address: SignalServiceAddress,
-                                      transaction: SDSAnyReadTransaction) throws -> Data? {
+    public class func profileKeyCredentialData(for address: SignalServiceAddress,
+                                                transaction: SDSAnyReadTransaction) throws -> Data? {
         guard address.isValid,
             let uuid = address.uuid else {
-                throw OWSErrorMakeAssertionError("Invalid address: \(address)")
+                throw OWSAssertionError("Invalid address: \(address)")
         }
         return credentialStore.getData(uuid.uuidString, transaction: transaction)
+    }
+
+    public class func profileKeyCredential(for address: SignalServiceAddress,
+                                           transaction: SDSAnyReadTransaction) throws -> ProfileKeyCredential? {
+        guard let data = try profileKeyCredentialData(for: address, transaction: transaction) else {
+            return nil
+        }
+        let bytes = [UInt8](data)
+        let credential = try ProfileKeyCredential(contents: bytes)
+        return credential
+    }
+}
+
+// MARK: -
+
+public extension Array where Element == UInt8 {
+    var asData: Data {
+        return Data(self)
     }
 }

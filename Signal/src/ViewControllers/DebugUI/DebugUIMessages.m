@@ -4439,7 +4439,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         member,
         TSAccountManager.localAddress,
     ];
-    [GroupManager createGroupObjcWithMembers:members
+    [GroupManager createNewGroupObjcWithMembers:members
         groupId:nil
         name:groupName
         avatarData:nil

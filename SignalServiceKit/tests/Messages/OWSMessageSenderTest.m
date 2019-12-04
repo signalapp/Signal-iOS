@@ -484,13 +484,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         NSError *error;
         thread = [GroupManager createGroupForTestsObjcWithTransaction:transaction
-                                                                             members:@[
-                                                                                       successfulRecipient.address,
-                                                                                       successfulRecipient2.address,
-                                                                                       ]
+                                                              members:@[
+                                                                  successfulRecipient.address,
+                                                                  successfulRecipient2.address,
+                                                              ]
                                                                  name:@"group title"
-                                                                          avatarData:nil
-                                                                               error:&error];
+                                                           avatarData:nil
+                                                                error:&error];
         if (error != nil) {
             OWSFailDebug(@"Error: %@", error);
         }

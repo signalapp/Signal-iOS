@@ -121,7 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
         TSAccountManager.localAddress,
     ] mutableCopy];
 
-    [GroupManager createGroupObjcWithMembers:recipientAddresses
+    [GroupManager createNewGroupObjcWithMembers:recipientAddresses
         groupId:nil
         name:groupName
         avatarData:nil

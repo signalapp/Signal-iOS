@@ -817,8 +817,8 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
         urlString = [NSString stringWithFormat:textSecureSetProfileNameAPIFormat, urlEncodedName];
     } else {
         // if name length doesn't match exactly, assume blank name
-        OWSAssertDebug(encryptedPaddedName == nil);
         OWSFailDebug(@"Couldn't encode name.");
+        OWSAssertDebug(encryptedPaddedName == nil);
         urlString = [NSString stringWithFormat:textSecureSetProfileNameAPIFormat, @""];
     }
     
