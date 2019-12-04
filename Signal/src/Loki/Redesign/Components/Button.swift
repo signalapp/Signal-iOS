@@ -3,7 +3,7 @@ final class Button : UIButton {
     private let style: Style
     
     enum Style {
-        case unimportant, prominent
+        case unimportant, regular, prominent
     }
     
     init(style: Style) {
@@ -24,23 +24,22 @@ final class Button : UIButton {
         let fillColor: UIColor
         switch style {
         case .unimportant: fillColor = Colors.unimportantButtonBackground
+        case .regular: fillColor = UIColor.clear
         case .prominent: fillColor = UIColor.clear
         }
         let borderColor: UIColor
         switch style {
         case .unimportant: borderColor = Colors.unimportantButtonBackground
+        case .regular: borderColor = Colors.text
         case .prominent: borderColor = Colors.accent
         }
         let textColor: UIColor
         switch style {
         case .unimportant: textColor = Colors.text
+        case .regular: textColor = Colors.text
         case .prominent: textColor = Colors.accent
         }
-        let height: CGFloat
-        switch style {
-        case .unimportant: height = Values.mediumButtonHeight
-        case .prominent: height = Values.largeButtonHeight
-        }
+        let height = Values.buttonHeight
         set(.height, to: height)
         layer.cornerRadius = height / 2
         backgroundColor = fillColor

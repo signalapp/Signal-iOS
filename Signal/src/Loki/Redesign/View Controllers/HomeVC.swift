@@ -19,7 +19,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     private let editingDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
     
     // MARK: Settings
-    public override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
+    override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
     
     // MARK: Components
     private lazy var searchBar = SearchBar()
@@ -284,6 +284,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
             guard let self = self else { return }
             self.present(alert, animated: true, completion: nil)
         }
+        delete.backgroundColor = Colors.destructive
         if let publicChat = publicChat {
             return publicChat.isDeletable ? [ delete ] : []
         } else {
@@ -292,7 +293,8 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     }
     
     @objc private func openSettings() {
-        let navigationController = AppSettingsViewController.inModalNavigationController()
+        let settingsVC = SettingsVC()
+        let navigationController = OWSNavigationController(rootViewController: settingsVC)
         present(navigationController, animated: true, completion: nil)
     }
     

@@ -5,6 +5,9 @@ final class JoinPublicChatVC : UIViewController, UIPageViewControllerDataSource,
     private var isJoining = false
     private var targetVCIndex: Int?
     
+    // MARK: Settings
+    override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
+    
     // MARK: Components
     private lazy var tabBar: TabBar = {
         let tabs = [

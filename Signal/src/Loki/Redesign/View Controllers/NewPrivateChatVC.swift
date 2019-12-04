@@ -4,6 +4,9 @@ final class NewPrivateChatVC : UIViewController, UIPageViewControllerDataSource,
     private var pages: [UIViewController] = []
     private var targetVCIndex: Int?
     
+    // MARK: Settings
+    override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
+    
     // MARK: Components
     private lazy var tabBar: TabBar = {
         let tabs = [

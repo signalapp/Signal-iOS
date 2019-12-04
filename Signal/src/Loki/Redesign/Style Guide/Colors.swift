@@ -14,6 +14,7 @@ final class Colors : NSObject {
     
     @objc static let accent = UIColor(hex: 0x00F782)
     @objc static let text = UIColor(hex: 0xFFFFFF)
+    @objc static let destructive = UIColor(hex: 0xFF453A)
     @objc static let unimportant = UIColor(hex: 0xD8D8D8)
     @objc static let border = UIColor(hex: 0x979797)
     @objc static let conversationCellBackground = UIColor(hex: 0x1B1B1B)
