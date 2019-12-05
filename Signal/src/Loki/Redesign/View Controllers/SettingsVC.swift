@@ -25,7 +25,7 @@ final class SettingsVC : UIViewController {
     private lazy var displayNameLabel: UILabel = {
         let result = UILabel()
         result.textColor = Colors.text
-        result.font = .boldSystemFont(ofSize: Values.largeFontSize)
+        result.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         result.lineBreakMode = .byTruncatingTail
         return result
     }()
@@ -102,7 +102,13 @@ final class SettingsVC : UIViewController {
         topStackView.layoutMargins = UIEdgeInsets(top: 0, left: Values.largeSpacing, bottom: 0, right: Values.largeSpacing)
         topStackView.isLayoutMarginsRelativeArrangement = true
         // Set up setting buttons stack view
-        let settingButtonsStackView = UIStackView(arrangedSubviews: getSettingButtons())
+        func getSeparator() -> UIView {
+            let result = UIView()
+            result.backgroundColor = Colors.separator
+            result.set(.height, to: Values.separatorThickness)
+            return result
+        }
+        let settingButtonsStackView = UIStackView(arrangedSubviews: [ getSeparator() ] + getSettingButtons() + [ getSeparator() ] )
         settingButtonsStackView.axis = .vertical
         settingButtonsStackView.alignment = .fill
         // Set up stack view

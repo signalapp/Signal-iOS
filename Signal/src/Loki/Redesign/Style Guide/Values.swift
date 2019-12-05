@@ -22,7 +22,7 @@ final class Values : NSObject {
     @objc static let verySmallProfilePictureSize = CGFloat(26)
     @objc static let smallProfilePictureSize = CGFloat(35)
     @objc static let mediumProfilePictureSize = CGFloat(45)
-    @objc static let largeProfilePictureSize = CGFloat(65)
+    @objc static let largeProfilePictureSize = CGFloat(75)
     @objc static let borderThickness = CGFloat(1)
     @objc static let conversationCellStatusIndicatorSize = CGFloat(14)
     @objc static let searchBarHeight = CGFloat(36)

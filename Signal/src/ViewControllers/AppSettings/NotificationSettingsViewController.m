@@ -17,11 +17,29 @@
 {
     [super viewDidLoad];
 
-    [self setTitle:NSLocalizedString(@"SETTINGS_NOTIFICATIONS", nil)];
-
     [self updateTableContents];
     
-    [LKAnalytics.shared track:@"Notification Settings Opened"];
+    LKGradient *gradient = LKGradients.defaultLokiBackground;
+    self.view.backgroundColor = UIColor.clearColor;
+    [self.view setGradient:gradient];
+    
+    self.tableView.backgroundColor = UIColor.clearColor;
+    
+    UINavigationBar *navigationBar = self.navigationController.navigationBar;
+    [navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    navigationBar.shadowImage = [UIImage new];
+    [navigationBar setTranslucent:NO];
+    navigationBar.barTintColor = LKColors.navigationBarBackground;
+    
+    UILabel *titleLabel = [UILabel new];
+    titleLabel.text = NSLocalizedString(@"Notifications", @"");
+    titleLabel.textColor = LKColors.text;
+    titleLabel.font = [UIFont boldSystemFontOfSize:LKValues.veryLargeFontSize];
+    self.navigationItem.titleView = titleLabel;
+    
+    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Back", "") style:UIBarButtonItemStylePlain target:nil action:nil];
+    backButton.tintColor = LKColors.text;
+    self.navigationItem.backBarButtonItem = backButton;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -85,7 +103,7 @@
                                     [weakSelf.navigationController pushViewController:vc animated:YES];
                                 }]];
     backgroundSection.footerTitle
-        = NSLocalizedString(@"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION", @"table section footer");
+        = NSLocalizedString(@"Notifications can appear while your phone is locked. You may wish to limit what is shown in these notifications.", @"");
     [contents addSection:backgroundSection];
 
     self.contents = contents;

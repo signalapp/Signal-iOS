@@ -2716,3 +2716,7 @@
 "QR Code" = "QR Code";
 "Scan Me" = "Scan Me";
 "This is your unique public QR code. Other users may scan this in order to begin a conversation with you." = "This is your unique public QR code. Other users may scan this in order to begin a conversation with you.";
+"Privacy" = "Privacy";
+"Unlock Loki Messenger's screen using Touch ID, Face ID, or your iOS device passcode. You can still receive message notifications while Screen Lock is enabled. Loki Messenger's notification settings allow you to customize the information that is displayed." = "Unlock Loki Messenger's screen using Touch ID, Face ID, or your iOS device passcode. You can still receive message notifications while Screen Lock is enabled. Loki Messenger's notification settings allow you to customize the information that is displayed.";
+"Sound" = "Sound";
+"Content" = "Content";

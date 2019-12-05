@@ -6,6 +6,7 @@
 #import "Session-Swift.h"
 #import "SignalApp.h"
 #import <SignalMessaging/Environment.h>
+#import "Session-Swift.h"
 
 @implementation NotificationSettingsOptionsViewController
 
@@ -14,6 +15,24 @@
     [super viewDidLoad];
     
     [self updateTableContents];
+    
+    LKGradient *gradient = LKGradients.defaultLokiBackground;
+    self.view.backgroundColor = UIColor.clearColor;
+    [self.view setGradient:gradient];
+    
+    self.tableView.backgroundColor = UIColor.clearColor;
+    
+    UINavigationBar *navigationBar = self.navigationController.navigationBar;
+    [navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    navigationBar.shadowImage = [UIImage new];
+    [navigationBar setTranslucent:NO];
+    navigationBar.barTintColor = LKColors.navigationBarBackground;
+    
+    UILabel *titleLabel = [UILabel new];
+    titleLabel.text = NSLocalizedString(@"Content", @"");
+    titleLabel.textColor = LKColors.text;
+    titleLabel.font = [UIFont boldSystemFontOfSize:LKValues.veryLargeFontSize];
+    self.navigationItem.titleView = titleLabel;
 }
 
 #pragma mark - Table Contents
@@ -36,7 +55,7 @@
         [section addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
                                  UITableViewCell *cell = [OWSTableItem newCell];
-                                 cell.tintColor = UIColor.lokiGreen;
+                                 cell.tintColor = LKColors.accent;
                                  [[cell textLabel] setText:[prefs nameForNotificationPreviewType:notificationType]];
                                  if (selectedNotifType == notificationType) {
                                      cell.accessoryType = UITableViewCellAccessoryCheckmark;

@@ -8,6 +8,7 @@
 #import <SignalMessaging/OWSSounds.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIUtil.h>
+#import "Session-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -36,6 +37,24 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self updateTableContents];
     [self updateNavigationItems];
+    
+    LKGradient *gradient = LKGradients.defaultLokiBackground;
+    self.view.backgroundColor = UIColor.clearColor;
+    [self.view setGradient:gradient];
+    
+    self.tableView.backgroundColor = UIColor.clearColor;
+    
+    UINavigationBar *navigationBar = self.navigationController.navigationBar;
+    [navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    navigationBar.shadowImage = [UIImage new];
+    [navigationBar setTranslucent:NO];
+    navigationBar.barTintColor = LKColors.navigationBarBackground;
+    
+    UILabel *titleLabel = [UILabel new];
+    titleLabel.text = NSLocalizedString(@"Sound", @"");
+    titleLabel.textColor = LKColors.text;
+    titleLabel.font = [UIFont boldSystemFontOfSize:LKValues.veryLargeFontSize];
+    self.navigationItem.titleView = titleLabel;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -52,6 +71,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                       target:self
                                                       action:@selector(cancelWasPressed:)
                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"cancel")];
+    
+    cancelItem.tintColor = [UIColor colorWithRGBHex:0xFFFFFF]; // Colors.text
+    
     self.navigationItem.leftBarButtonItem = cancelItem;
 
     if (self.isDirty) {
