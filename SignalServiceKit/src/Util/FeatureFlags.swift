@@ -239,10 +239,10 @@ public class FeatureFlags: NSObject {
     public static let linkedPhones = build.includes(.internalPreview)
 
     @objc
-    public static let reactionReceive = build.includes(.dev)
+    public static let reactionReceive = build.includes(.beta)
 
     @objc
-    public static let reactionSend = build.includes(.dev)
+    public static let reactionSend = build.includes(.qa)
 
     @objc
     public static let isUsingProductionService = true
