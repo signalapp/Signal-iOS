@@ -110,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
             return cachedAvatar;
         }
 
-        UIImage *image = [self noteToSelfImageWithConversationColorName:self.colorName];
+        UIImage *image = [self noteToSelfImageWithConversationColorName:self.colorName diameter:(CGFloat)self.diameter];
         if (!image) {
             OWSFailDebug(@"Could not generate avatar.");
             return nil;
@@ -199,26 +199,25 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable UIImage *)noteToSelfImageWithConversationColorName:(ConversationColorName)conversationColorName
+                                                      diameter:(CGFloat)diameter
 {
-    UIImage *baseImage = [[UIImage imageNamed:@"note-to-self-avatar"] asTintedImageWithColor:UIColor.whiteColor];
+    UIImage *iconImage = [[UIImage imageNamed:@"note-112"] asTintedImageWithColor:UIColor.whiteColor];
     UIColor *backgroundColor = [OWSConversationColor conversationColorOrDefaultForColorName:conversationColorName].themeColor;
 
-    CGFloat paddingFactor = 1.6;
-    CGFloat paddedWidth = baseImage.size.width * paddingFactor;
-    CGFloat paddedheight = baseImage.size.height * paddingFactor;
-
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(paddedWidth, paddedheight), NO, 0.0);
+    CGFloat circleWidth = diameter;
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(circleWidth, circleWidth), NO, 0.0);
     CGContextRef _Nullable context = UIGraphicsGetCurrentContext();
     if (context == nil) {
         OWSFailDebug(@"failure: context was unexpectedly nil");
         return nil;
     }
     [backgroundColor setFill];
-    CGContextFillRect(context, CGRectMake(0, 0, paddedWidth, paddedheight));
+    CGContextFillRect(context, CGRectMake(0, 0, circleWidth, circleWidth));
 
-    CGPoint origin = CGPointMake((paddedWidth - baseImage.size.width) / 2.0f,
-                                 (paddedheight - baseImage.size.height) / 2.0f);
-    [baseImage drawAtPoint:origin];
+    CGFloat iconWidth = diameter * (CGFloat)0.625;
+    CGFloat iconOffset = (circleWidth - iconWidth) / 2;
+    CGRect iconRect = CGRectMake(iconOffset, iconOffset, iconWidth, iconWidth);
+    [iconImage drawInRect:iconRect];
 
     UIImage *paddedImage = UIGraphicsGetImageFromCurrentImageContext();
     if (paddedImage == nil) {
