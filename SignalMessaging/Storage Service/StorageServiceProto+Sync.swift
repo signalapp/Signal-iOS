@@ -38,14 +38,13 @@ extension StorageServiceProtoContactRecord {
 
     static func build(
         for accountId: AccountId,
-        contactIdentifier: StorageService.ContactIdentifier,
         transaction: SDSAnyReadTransaction
     ) throws -> StorageServiceProtoContactRecord {
         guard let address = OWSAccountIdFinder().address(forAccountId: accountId, transaction: transaction) else {
             throw StorageService.StorageError.assertion
         }
 
-        let builder = StorageServiceProtoContactRecord.builder(key: contactIdentifier.data)
+        let builder = StorageServiceProtoContactRecord.builder()
 
         if let phoneNumber = address.phoneNumber {
             builder.setServiceE164(phoneNumber)
@@ -201,9 +200,6 @@ extension StorageServiceProtoContactRecordIdentityState {
             return .default
         case .noLongerVerified:
             return .unverified
-        @unknown default:
-            owsFailDebug("unexpected verification state")
-            return .default
         }
     }
 
