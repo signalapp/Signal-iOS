@@ -142,7 +142,6 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
 
 @property (nonatomic, readonly) OWSAudioActivity *recordVoiceNoteAudioActivity;
-@property (nonatomic, readonly) NSTimeInterval viewControllerCreatedAt;
 
 @property (nonatomic, readonly) UIView *bottomBar;
 @property (nonatomic, nullable) NSLayoutConstraint *bottomBarBottomConstraint;
@@ -253,7 +252,6 @@ typedef enum : NSUInteger {
 
 - (void)commonInit
 {
-    _viewControllerCreatedAt = CACurrentMediaTime();
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _contactShareViewHelper = [[ContactShareViewHelper alloc] initWithContactsManager:self.contactsManager];
     _contactShareViewHelper.delegate = self;
@@ -766,8 +764,8 @@ typedef enum : NSUInteger {
     [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
 
     if (!self.viewHasEverAppeared) {
-        NSTimeInterval appearenceDuration = CACurrentMediaTime() - self.viewControllerCreatedAt;
-        OWSLogVerbose(@"First viewWillAppear took: %.2fms", appearenceDuration * 1000);
+        [BenchManager
+            completeEventWithEventId:[NSString stringWithFormat:@"presenting-conversation-%@", self.thread.uniqueId]];
     }
     [self updateInputToolbarLayout];
 
