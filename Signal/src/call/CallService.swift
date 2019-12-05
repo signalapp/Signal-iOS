@@ -444,6 +444,7 @@ private class SignalCallData: NSObject {
     @objc public func createCallUIAdapter() {
         AssertIsOnMainThread()
 
+        // TODO MULTIRING
         guard FeatureFlags.calling else {
             // The CallUIAdapter creates the callkit adaptee which in turn adds calling buttons
             // to the contacts app. They don't do anything, but it seems like they shouldn't be
