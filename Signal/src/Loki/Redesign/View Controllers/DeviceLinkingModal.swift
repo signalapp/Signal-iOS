@@ -195,7 +195,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         }
     }
     
-    @objc override func cancel() {
+    @objc override func close() {
         guard let session = DeviceLinkingSession.current else {
             return print("[Loki] Device linking session missing.") // Should never occur
         }

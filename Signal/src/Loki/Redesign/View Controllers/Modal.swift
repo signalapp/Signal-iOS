@@ -35,7 +35,10 @@ internal class Modal : UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(hex: 0x000000).withAlphaComponent(Values.modalBackgroundOpacity)
-        cancelButton.addTarget(self, action: #selector(cancel), for: UIControl.Event.touchUpInside)
+        cancelButton.addTarget(self, action: #selector(close), for: UIControl.Event.touchUpInside)
+        let swipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(close))
+        swipeGestureRecognizer.direction = .down
+        view.addGestureRecognizer(swipeGestureRecognizer)
         setUpViewHierarchy()
     }
     
@@ -69,11 +72,11 @@ internal class Modal : UIViewController {
         if contentView.frame.contains(location) {
             super.touchesBegan(touches, with: event)
         } else {
-            cancel()
+            close()
         }
     }
     
-    @objc func cancel() {
+    @objc func close() {
         dismiss(animated: true, completion: nil)
     }
 }
