@@ -27,7 +27,7 @@ final class QRCodeModal : Modal {
         let qrCode = UIImage(ciImage: scaledQRCodeAsCIImage)
         imageView.image = qrCode
         // Cancel button
-        let buttonHeight = cancelButton.button.titleLabel!.font.pointSize * 48 / 17
+        let buttonHeight = cancelButton.titleLabel!.font.pointSize * 48 / 17
         cancelButton.set(.height, to: buttonHeight)
         // Stack view
         let stackView = UIStackView(arrangedSubviews: [ UIView.spacer(withHeight: 2), label, UIView.spacer(withHeight: 2), imageView, cancelButton ])

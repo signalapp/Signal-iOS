@@ -2705,3 +2705,6 @@
 "Linked Devices" = "Linked Devices";
 "Show Seed" = "Show Seed";
 "Clear All Data" = "Clear All Data";
+"This will delete your entire account, including all data, any messages currently linked to your public key, as well as your personal key pair." = "This will delete your entire account, including all data, any messages currently linked to your public key, as well as your personal key pair.";
+"Delete" = "Delete";
+"This is your personal password. It can be used to restore your account or migrate your account to a new device." = "This is your personal password. It can be used to restore your account or migrate your account to a new device.";

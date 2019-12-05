@@ -2709,9 +2709,7 @@
 				B80C6B562384A56D00FDBC8B /* DeviceLinksVC.swift */,
 				B80C6B582384C4E700FDBC8B /* DeviceNameModal.swift */,
 				B80C6B5A2384C7F900FDBC8B /* DeviceNameModalDelegate.swift */,
-				B894D0742339EDCF00B4D94D /* NukeDataModal.swift */,
 				B86BD08023399883000F5AE3 /* QRCodeModal.swift */,
-				B86BD08523399CEF000F5AE3 /* SeedModal.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -2729,7 +2727,6 @@
 			isa = PBXGroup;
 			children = (
 				B84664F4235022F30083A1CD /* MentionUtilities.swift */,
-				B86BD08323399ACF000F5AE3 /* Modal.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -2782,8 +2779,11 @@
 			children = (
 				B8B5BCEB2394D869003823C9 /* Button.swift */,
 				B8BB82AA238F669C00BA5194 /* ConversationCell.swift */,
+				B86BD08323399ACF000F5AE3 /* Modal.swift */,
+				B894D0742339EDCF00B4D94D /* NukeDataModal.swift */,
 				B8BB82AC238F734800BA5194 /* ProfilePictureView.swift */,
 				B8BB82B02390C37000BA5194 /* SearchBar.swift */,
+				B86BD08523399CEF000F5AE3 /* SeedModal.swift */,
 				B8BB82B82394911B00BA5194 /* Separator.swift */,
 				B8CCF638239721E20091D419 /* TabBar.swift */,
 				B8BB82B423947F2D00BA5194 /* TextField.swift */,

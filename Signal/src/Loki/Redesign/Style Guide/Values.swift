@@ -6,6 +6,7 @@ final class Values : NSObject {
     @objc static let unimportantElementOpacity = CGFloat(0.6)
     @objc static let conversationCellTimestampOpacity = CGFloat(0.4)
     @objc static let textFieldBorderOpacity = CGFloat(0.4)
+    @objc static let modalBackgroundOpacity = CGFloat(0.75)
     
     // MARK: - Font Sizes
     @objc static let smallFontSize = CGFloat(13)
@@ -32,6 +33,8 @@ final class Values : NSObject {
     @objc static var separatorThickness: CGFloat { return 1 / UIScreen.main.scale }
     @objc static let tabBarHeight = CGFloat(48)
     @objc static let settingsButtonHeight = CGFloat(75)
+    @objc static let modalCornerRadius = CGFloat(10)
+    @objc static let modalButtonCornerRadius = CGFloat(5)
     
     // MARK: - Distances
     @objc static let smallSpacing = CGFloat(8)

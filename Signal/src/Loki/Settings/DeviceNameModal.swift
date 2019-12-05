@@ -47,7 +47,7 @@ final class DeviceNameModal : Modal {
         let buttonStackView = UIStackView(arrangedSubviews: [ okButton, cancelButton ])
         buttonStackView.axis = .horizontal
         buttonStackView.distribution = .fillEqually
-        let buttonHeight = cancelButton.button.titleLabel!.font.pointSize * 48 / 17
+        let buttonHeight = cancelButton.titleLabel!.font.pointSize * 48 / 17
         okButton.set(.height, to: buttonHeight)
         cancelButton.set(.height, to: buttonHeight)
         // Stack view

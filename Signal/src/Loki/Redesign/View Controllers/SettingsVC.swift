@@ -137,7 +137,7 @@ final class SettingsVC : UIViewController {
                 UIGraphicsEndImageContext()
                 return image!
             }
-            button.setBackgroundImage(getImage(withColor: Colors.settingButtonBackground), for: UIControl.State.normal)
+            button.setBackgroundImage(getImage(withColor: Colors.buttonBackground), for: UIControl.State.normal)
             button.setBackgroundImage(getImage(withColor: Colors.settingButtonSelected), for: UIControl.State.highlighted)
             button.addTarget(self, action: selector, for: UIControl.Event.touchUpInside)
             button.set(.height, to: Values.settingsButtonHeight)
@@ -209,12 +209,14 @@ final class SettingsVC : UIViewController {
     @objc private func showSeed() {
         let seedModal = SeedModal()
         seedModal.modalPresentationStyle = .overFullScreen
+        seedModal.modalTransitionStyle = .crossDissolve
         present(seedModal, animated: true, completion: nil)
     }
     
     @objc private func clearAllData() {
         let nukeDataModal = NukeDataModal()
         nukeDataModal.modalPresentationStyle = .overFullScreen
+        nukeDataModal.modalTransitionStyle = .crossDissolve
         present(nukeDataModal, animated: true, completion: nil)
     }
 }

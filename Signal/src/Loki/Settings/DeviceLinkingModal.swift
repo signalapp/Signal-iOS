@@ -137,7 +137,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
             let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey.removing05PrefixIfNeeded()
             mnemonicLabel.text = Mnemonic.hash(hexEncodedString: hexEncodedPublicKey)
         }
-        let buttonHeight = cancelButton.button.titleLabel!.font.pointSize * 48 / 17
+        let buttonHeight = cancelButton.titleLabel!.font.pointSize * 48 / 17
         authorizeButton.set(.height, to: buttonHeight)
         cancelButton.set(.height, to: buttonHeight)
         authorizeButton.isHidden = true
