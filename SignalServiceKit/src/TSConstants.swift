@@ -171,7 +171,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public let textSecureCDNReflectorHost = "europe-west1-signal-cdn-reflector.cloudfunctions.net"
     public let contactDiscoveryURL = "https://api-staging.directory.signal.org"
     public let keyBackupURL = "https://api-staging.backup.signal.org"
-    public let storageServiceURL = "https://storage.signal.org" // For now, staging is using the production URL
+    public let storageServiceURL = "https://storage-staging.signal.org"
     public let kUDTrustRoot = "BbqY1DzohE4NUZoVF+L18oUPrK3kILllLEJh2UnPSsEx"
 
     public let serviceCensorshipPrefix = "service-staging"

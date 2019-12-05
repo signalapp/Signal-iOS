@@ -29,19 +29,46 @@ public struct StorageService {
         }
     }
 
-    /// An identifier representing a given contact object.
-    /// This can be used to fetch specific contacts from the service.
-    public struct ContactIdentifier: Hashable {
+    /// An identifier representing a given storage item.
+    /// This can be used to fetch specific items from the service.
+    public struct StorageIdentifier: Hashable {
         public static let identifierLength: Int32 = 16
         public let data: Data
 
         public init(data: Data) {
-            if data.count != ContactIdentifier.identifierLength { owsFail("Initialized with invalid data") }
+            if data.count != StorageIdentifier.identifierLength { owsFail("Initialized with invalid data") }
             self.data = data
         }
 
-        public static func generate() -> ContactIdentifier {
+        public static func generate() -> StorageIdentifier {
             return .init(data: Randomness.generateRandomBytes(identifierLength))
+        }
+    }
+
+    public struct StorageItem {
+        public let identifier: StorageIdentifier
+        public let record: StorageServiceProtoStorageRecord
+
+        public var type: UInt32 { return record.type }
+
+        public var contactRecord: StorageServiceProtoContactRecord? {
+            guard type == StorageServiceProtoStorageRecordType.contact.rawValue else { return nil }
+            guard let contact = record.contact else {
+                owsFailDebug("unexpectedly missing contact record")
+                return nil
+            }
+            return contact
+        }
+
+        public init(identifier: StorageIdentifier, contact: StorageServiceProtoContactRecord) throws {
+            let storageRecord = StorageServiceProtoStorageRecord.builder(type: UInt32(StorageServiceProtoStorageRecordType.contact.rawValue))
+            storageRecord.setContact(contact)
+            self.init(identifier: identifier, record: try storageRecord.build())
+        }
+
+        public init(identifier: StorageIdentifier, record: StorageServiceProtoStorageRecord) {
+            self.identifier = identifier
+            self.record = record
         }
     }
 
@@ -51,10 +78,10 @@ public struct StorageService {
     public static func fetchManifest() -> Promise<StorageServiceProtoManifestRecord?> {
         Logger.info("")
 
-        return storageRequest(withMethod: "GET", endpoint: "v1/contacts/manifest").map(on: .global()) { response in
+        return storageRequest(withMethod: "GET", endpoint: "v1/storage/manifest").map(on: .global()) { response in
             switch response.status {
             case .success:
-                let encryptedManifestContainer = try StorageServiceProtoContactsManifest.parseData(response.data)
+                let encryptedManifestContainer = try StorageServiceProtoStorageManifest.parseData(response.data)
                 let manifestData: Data
                 do {
                     manifestData = try KeyBackupService.decrypt(keyType: .storageService, encryptedData: encryptedManifestContainer.value)
@@ -78,8 +105,8 @@ public struct StorageService {
     /// have been applied until we resolve the conflicts.
     public static func updateManifest(
         _ manifest: StorageServiceProtoManifestRecord,
-        newContacts: [StorageServiceProtoContactRecord],
-        deletedContacts: [ContactIdentifier]
+        newItems: [StorageItem],
+        deletedIdentifiers: [StorageIdentifier]
     ) -> Promise<StorageServiceProtoManifestRecord?> {
         Logger.info("")
 
@@ -90,26 +117,26 @@ public struct StorageService {
             let manifestData = try manifest.serializedData()
             let encryptedManifestData = try KeyBackupService.encrypt(keyType: .storageService, data: manifestData)
 
-            let manifestWrapperBuilder = StorageServiceProtoContactsManifest.builder(
+            let manifestWrapperBuilder = StorageServiceProtoStorageManifest.builder(
                 version: manifest.version,
                 value: encryptedManifestData
             )
             builder.setManifest(try manifestWrapperBuilder.build())
 
-            // Encrypt the new contacts
-            builder.setInsertContact(try newContacts.map { contact in
-                let contactData = try contact.serializedData()
-                let encryptedContactData = try KeyBackupService.encrypt(keyType: .storageService, data: contactData)
-                let contactWrapperBuilder = StorageServiceProtoContact.builder(key: contact.key, value: encryptedContactData)
-                return try contactWrapperBuilder.build()
+            // Encrypt the new items
+            builder.setInsertItem(try newItems.map { item in
+                let itemData = try item.record.serializedData()
+                let encryptedItemData = try KeyBackupService.encrypt(keyType: .storageService, data: itemData)
+                let itemWrapperBuilder = StorageServiceProtoStorageItem.builder(key: item.identifier.data, value: encryptedItemData)
+                return try itemWrapperBuilder.build()
             })
 
-            // Flag the deleted contacts
-            builder.setDeleteKey(deletedContacts.map { $0.data })
+            // Flag the deleted keys
+            builder.setDeleteKey(deletedIdentifiers.map { $0.data })
 
             return try builder.buildSerializedData()
         }.then(on: .global()) { data in
-            storageRequest(withMethod: "PUT", endpoint: "/v1/contacts", body: data)
+            storageRequest(withMethod: "PUT", endpoint: "/v1/storage", body: data)
         }.map(on: .global()) { response in
             switch response.status {
             case .success:
@@ -118,7 +145,7 @@ public struct StorageService {
                 return nil
             case .conflict:
                 // Our version was out of date, we should've received a copy of the latest version
-                let encryptedManifestData = try StorageServiceProtoContactsManifest.parseData(response.data).value
+                let encryptedManifestData = try StorageServiceProtoStorageManifest.parseData(response.data).value
                 let manifestData = try KeyBackupService.decrypt(keyType: .storageService, encryptedData: encryptedManifestData)
                 return try StorageServiceProtoManifestRecord.parseData(manifestData)
             default:
@@ -128,17 +155,17 @@ public struct StorageService {
         }
     }
 
-    /// Fetch a contact from the service
+    /// Fetch an item record from the service
     ///
-    /// Returns nil if this contact does not exist
-    public static func fetchContact(for key: ContactIdentifier) -> Promise<StorageServiceProtoContactRecord?> {
-        return fetchContacts(for: [key]).map { $0.first }
+    /// Returns nil if this record does not exist
+    public static func fetchItem(for key: StorageIdentifier) -> Promise<StorageItem?> {
+        return fetchItems(for: [key]).map { $0.first }
     }
 
-    /// Fetch a list of contacts from the service
+    /// Fetch a list of item records from the service
     ///
-    /// The response will include only the contacts that could be found on the service
-    public static func fetchContacts(for keys: [ContactIdentifier]) -> Promise<[StorageServiceProtoContactRecord]> {
+    /// The response will include only the items that could be found on the service
+    public static func fetchItems(for keys: [StorageIdentifier]) -> Promise<[StorageItem]> {
         Logger.info("")
 
         return DispatchQueue.global().async(.promise) {
@@ -146,19 +173,20 @@ public struct StorageService {
             builder.setReadKey(keys.map { $0.data })
             return try builder.buildSerializedData()
         }.then(on: .global()) { data in
-            storageRequest(withMethod: "PUT", endpoint: "v1/contacts/read", body: data)
+            storageRequest(withMethod: "PUT", endpoint: "v1/storage/read", body: data)
         }.map(on: .global()) { response in
             guard case .success = response.status else {
                 owsFailDebug("unexpected response \(response.status)")
                 throw StorageError.retryableAssertion
             }
 
-            let contactsProto = try StorageServiceProtoContacts.parseData(response.data)
+            let itemsProto = try StorageServiceProtoStorageItems.parseData(response.data)
 
-            return try contactsProto.contacts.map { contact in
-                let encryptedContactData = contact.value
-                let contactData = try KeyBackupService.decrypt(keyType: .storageService, encryptedData: encryptedContactData)
-                return try StorageServiceProtoContactRecord.parseData(contactData)
+            return try itemsProto.items.map { item in
+                let encryptedItemData = item.value
+                let itemData = try KeyBackupService.decrypt(keyType: .storageService, encryptedData: encryptedItemData)
+                let record = try StorageServiceProtoStorageRecord.parseData(itemData)
+                return StorageItem(identifier: StorageIdentifier(data: item.key), record: record)
             }
         }
     }
@@ -287,95 +315,6 @@ public struct StorageService {
     }
 }
 
-// MARK: - Objc Interface
-
-public extension StorageService {
-    static func updateManifestObjc(
-        _ manifest: StorageServiceProtoManifestRecord,
-        newContacts: [StorageServiceProtoContactRecord],
-        deletedContacts: [ContactIdentifierObjc]
-    ) -> Promise<StorageServiceProtoManifestRecord?> {
-        return updateManifest(manifest, newContacts: newContacts, deletedContacts: deletedContacts.map { $0.contactIdentifier })
-    }
-
-    static func fetchContactObjc(for key: ContactIdentifierObjc) -> Promise<StorageServiceProtoContactRecord?> {
-        return fetchContacts(for: [key.contactIdentifier]).map { $0.first }
-    }
-
-    static func fetchContactsObjc(for keys: [ContactIdentifierObjc]) -> Promise<[StorageServiceProtoContactRecord]> {
-        return fetchContacts(for: keys.map { $0.contactIdentifier })
-    }
-}
-
-@objc(OWSStorageService)
-@available(swift, obsoleted: 1.0)
-public class StorageServiceObjc: NSObject {
-    @objc
-    public static func fetchManifest() -> AnyPromise {
-        return AnyPromise(StorageService.fetchManifest())
-    }
-
-    @objc
-    public static func updateManifest(
-        _ manifest: StorageServiceProtoManifestRecord,
-        newContacts: [StorageServiceProtoContactRecord],
-        deletedContacts: [ContactIdentifierObjc]
-    ) -> AnyPromise {
-        return AnyPromise(StorageService.updateManifestObjc(
-            manifest,
-            newContacts: newContacts,
-            deletedContacts: deletedContacts
-        ))
-    }
-
-    @objc
-    public static func fetchContact(forKey key: ContactIdentifierObjc) -> AnyPromise {
-        return AnyPromise(StorageService.fetchContactObjc(for: key))
-    }
-
-    @objc
-    public static func fetchContacts(forKeys keys: [ContactIdentifierObjc]) -> AnyPromise {
-        return AnyPromise(StorageService.fetchContactsObjc(for: keys))
-    }
-}
-
-@objc(OWSContactKey)
-public class ContactIdentifierObjc: NSObject {
-    fileprivate let contactIdentifier: StorageService.ContactIdentifier
-
-    @objc
-    public var data: Data { return contactIdentifier.data }
-
-    @objc
-    public convenience init(data: Data) {
-        self.init(.init(data: data))
-    }
-
-    // This function isn't objc accessible, it's just used for casting in swift land
-    public init(_ contactIdentifier: StorageService.ContactIdentifier) {
-        self.contactIdentifier = contactIdentifier
-    }
-
-    @objc static func generate() -> ContactIdentifierObjc {
-        return ContactIdentifierObjc(.generate())
-    }
-
-    public override func isEqual(_ object: Any?) -> Bool {
-        guard let object = object as? ContactIdentifierObjc else { return false }
-        return contactIdentifier == object.contactIdentifier
-    }
-
-    public override var hash: Int {
-        return contactIdentifier.hashValue
-    }
-}
-
-// MARK: -
-
-public extension StorageServiceProtoContactRecord {
-    var contactIdentifier: StorageService.ContactIdentifier { return .init(data: key) }
-}
-
 // MARK: - Test Helpers
 
 #if DEBUG
@@ -383,17 +322,17 @@ public extension StorageServiceProtoContactRecord {
 public extension StorageService {
     static func test() {
         let testNames = ["abc", "def", "ghi", "jkl", "mno"]
-        var contactsInManifest = [StorageServiceProtoContactRecord]()
+        var recordsInManifest = [StorageItem]()
         for i in 0...4 {
-            let identifier = StorageService.ContactIdentifier.generate()
+            let identifier = StorageService.StorageIdentifier.generate()
 
-            let recordBuilder = StorageServiceProtoContactRecord.builder(key: identifier.data)
-            recordBuilder.setServiceUuid(testNames[i])
+            let contactRecordBuilder = StorageServiceProtoContactRecord.builder()
+            contactRecordBuilder.setServiceUuid(testNames[i])
 
-            contactsInManifest.append(try! recordBuilder.build())
+            recordsInManifest.append(try! StorageItem(identifier: identifier, contact: try! contactRecordBuilder.build()))
         }
 
-        let identifiersInManfest = contactsInManifest.map { $0.contactIdentifier }
+        let identifiersInManfest = recordsInManifest.map { $0.identifier }
 
         var ourManifestVersion: UInt64 = 0
 
@@ -404,13 +343,13 @@ public extension StorageService {
 
             // set keys
             let newManifestBuilder = StorageServiceProtoManifestRecord.builder(version: ourManifestVersion)
-            newManifestBuilder.setKeys(contactsInManifest.map { $0.key })
+            newManifestBuilder.setKeys(recordsInManifest.map { $0.identifier.data })
 
-            return (try! newManifestBuilder.build(), manifest?.keys.map { ContactIdentifier(data: $0) } ?? [])
+            return (try! newManifestBuilder.build(), manifest?.keys.map { StorageIdentifier(data: $0) } ?? [])
 
         // Update or create initial manifest with test data
         }.then { manifest, deletedKeys in
-            updateManifest(manifest, newContacts: contactsInManifest, deletedContacts: deletedKeys)
+            updateManifest(manifest, newItems: recordsInManifest, deletedIdentifiers: deletedKeys)
         }.map { manifest in
             guard manifest == nil else {
                 owsFailDebug("Manifest conflicted unexpectedly, should be nil")
@@ -436,34 +375,34 @@ public extension StorageService {
 
         // Fetch the first contact we just stored
         }.then {
-            fetchContact(for: identifiersInManfest.first!)
-        }.map { contact in
-            guard contact!.key == identifiersInManfest.first!.data else {
+            fetchItem(for: identifiersInManfest.first!)
+        }.map { item in
+            guard let item = item, item.identifier == identifiersInManfest.first! else {
                 owsFailDebug("this should be the contact we set")
                 throw StorageError.assertion
             }
 
-            guard contact!.serviceUuid == contactsInManifest.first!.serviceUuid else {
+            guard item.contactRecord!.serviceUuid == recordsInManifest.first!.contactRecord!.serviceUuid else {
                 owsFailDebug("this should be the contact we set")
                 throw StorageError.assertion
             }
 
         // Fetch all the contacts we stored
         }.then {
-            fetchContacts(for: identifiersInManfest)
-        }.map { contacts in
-            guard contacts.count == contactsInManifest.count else {
+            fetchItems(for: identifiersInManfest)
+        }.map { items in
+            guard items.count == recordsInManifest.count else {
                 owsFailDebug("wrong number of contacts")
                 throw StorageError.assertion
             }
 
-            for contact in contacts {
-                guard let matchingContact = contactsInManifest.first(where: { $0.key == contact.key }) else {
+            for item in items {
+                guard let matchingRecord = recordsInManifest.first(where: { $0.identifier == item.identifier }) else {
                     owsFailDebug("this should be a contact we set")
                     throw StorageError.assertion
                 }
 
-                guard contact.serviceUuid == matchingContact.serviceUuid else {
+                guard item.contactRecord!.serviceUuid == matchingRecord.contactRecord!.serviceUuid else {
                     owsFailDebug("this should be a contact we set")
                     throw StorageError.assertion
                 }
@@ -472,9 +411,9 @@ public extension StorageService {
 
         // Fetch a contact that doesn't exist
         }.then {
-            fetchContact(for: .generate())
-        }.map { contact in
-            guard contact == nil else {
+            fetchItem(for: .generate())
+        }.map { item in
+            guard item == nil else {
                 owsFailDebug("this contact should not exist")
                 throw StorageError.assertion
             }
@@ -485,7 +424,7 @@ public extension StorageService {
             let newManifestBuilder = StorageServiceProtoManifestRecord.builder(version: ourManifestVersion)
             return try! newManifestBuilder.build()
         }.then { manifest in
-            updateManifest(manifest, newContacts: [], deletedContacts: identifiersInManfest)
+            updateManifest(manifest, newItems: [], deletedIdentifiers: identifiersInManfest)
         }.map { manifest in
             guard manifest == nil else {
                 owsFailDebug("Manifest conflicted unexpectedly, should be nil")
@@ -513,16 +452,16 @@ public extension StorageService {
         }.map {
             let oldManifestBuilder = StorageServiceProtoManifestRecord.builder(version: 0)
 
-            let identifier = ContactIdentifier.generate()
+            let identifier = StorageIdentifier.generate()
 
-            let recordBuilder = StorageServiceProtoContactRecord.builder(key: identifier.data)
+            let recordBuilder = StorageServiceProtoContactRecord.builder()
             recordBuilder.setServiceUuid(testNames[0])
 
             oldManifestBuilder.setKeys([identifier.data])
 
-            return (try! oldManifestBuilder.build(), try! recordBuilder.build())
-        }.then { oldManifest, contact in
-            updateManifest(oldManifest, newContacts: [contact], deletedContacts: [])
+            return (try! oldManifestBuilder.build(), try! StorageItem(identifier: identifier, contact: try! recordBuilder.build()))
+        }.then { oldManifest, item in
+            updateManifest(oldManifest, newItems: [item], deletedIdentifiers: [])
         }.done { manifest in
             guard let manifest = manifest else {
                 owsFailDebug("manifest should exist, because there was a conflict")

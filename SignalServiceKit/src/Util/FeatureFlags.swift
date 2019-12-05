@@ -174,7 +174,7 @@ public class FeatureFlags: NSObject {
     public static let onlyModernNotificationClearance = build.includes(.beta)
 
     @objc
-    public static let registrationLockV2 = !isUsingProductionService && build.includes(.dev)
+    public static let registrationLockV2 = build.includes(.dev)
 
     @objc
     public static var allowUUIDOnlyContacts: Bool {
@@ -196,7 +196,7 @@ public class FeatureFlags: NSObject {
     public static let phoneNumberPrivacy = false
 
     @objc
-    public static let socialGraphOnServer = registrationLockV2 && !isUsingProductionService && build.includes(.dev)
+    public static let socialGraphOnServer = registrationLockV2 && build.includes(.dev)
 
     @objc
     public static let cameraFirstCaptureFlow = true
@@ -205,7 +205,7 @@ public class FeatureFlags: NSObject {
     public static let complainAboutSlowDBWrites = true
 
     @objc
-    public static let usernames = !isUsingProductionService && build.includes(.dev)
+    public static let usernames = allowUUIDOnlyContacts && build.includes(.dev)
 
     @objc
     public static let messageRequest = build.includes(.dev) && socialGraphOnServer
