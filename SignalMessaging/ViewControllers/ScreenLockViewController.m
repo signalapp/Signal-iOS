@@ -50,12 +50,6 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     [edgesView addSubview:imageView];
     [imageView autoHCenterInSuperview];
 
-    const CGSize applicationSize = CurrentAppContext().frame.size;
-    const CGFloat shortScreenDimension = MIN(applicationSize.width, applicationSize.height);
-    const CGFloat imageSize = (CGFloat)round(shortScreenDimension / 3.f);
-    [imageView autoSetDimension:ALDimensionWidth toSize:imageSize];
-    [imageView autoSetDimension:ALDimensionHeight toSize:imageSize];
-
     const CGFloat kButtonHeight = 40.f;
     OWSFlatButton *button =
         [OWSFlatButton buttonWithTitle:NSLocalizedString(@"SCREEN_LOCK_UNLOCK_SIGNAL",
