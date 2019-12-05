@@ -80,7 +80,7 @@ public extension DebugUIMessages {
         let members = uuidMembers + [TSAccountManager.localAddress!]
         let groupName = "UUID Group"
 
-        GroupManager.createNewGroup(members: members, name: groupName, sendMessage: true).retainUntilComplete()
+        GroupManager.createNewGroup(members: members, name: groupName, shouldSendMessage: true).retainUntilComplete()
     }
 }
 
