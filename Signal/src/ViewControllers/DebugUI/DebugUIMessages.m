@@ -4443,14 +4443,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         groupId:nil
         name:groupName
         avatarData:nil
+        sendMessage:YES
         success:^(TSGroupThread *thread) {
-            [GroupManager sendDurableNewGroupMessageObjcForThread:thread
-                success:^{
-                    success(thread);
-                }
-                failure:^(NSError *error) {
-                    OWSFailDebug(@"Error: %@", error);
-                }];
+            success(thread);
         }
         failure:^(NSError *error) {
             OWSFailDebug(@"Error: %@", error);

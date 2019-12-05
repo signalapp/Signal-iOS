@@ -57,7 +57,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 // --- CODE GENERATION MARKER
 
-- (instancetype)initWithGroupModel:(TSGroupModel *)groupModel
+- (instancetype)initWithGroupModelPrivate:(TSGroupModel *)groupModel
 {
     OWSAssertDebug(groupModel);
     OWSAssertDebug(groupModel.groupId.length > 0);
@@ -76,66 +76,12 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return self;
 }
 
-- (instancetype)initWithGroupId:(NSData *)groupId
++ (nullable instancetype)fetchWithGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(groupId.length > 0);
-
-    SignalServiceAddress *localAddress = TSAccountManager.localAddress;
-    OWSAssertDebug(localAddress.isValid);
-
-    // GroupsV2 TODO: Move to group manager.
-    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithGroupId:groupId
-                                                                name:nil
-                                                          avatarData:nil
-                                                             members:@[ localAddress ]
-                                                       groupsVersion:GroupManager.defaultGroupsVersion
-                                               groupSecretParamsData:nil];
-
-    self = [self initWithGroupModel:groupModel];
-    if (!self) {
-        return self;
-    }
-
-    return self;
-}
-
-+ (nullable instancetype)getThreadWithGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(groupId.length > 0);
-    OWSAssertDebug(transaction);
 
     NSString *uniqueId = [self threadIdFromGroupId:groupId];
     return [TSGroupThread anyFetchGroupThreadWithUniqueId:uniqueId transaction:transaction];
-}
-
-+ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(groupId.length > 0);
-    OWSAssertDebug(transaction);
-
-    TSGroupThread *thread = [self getThreadWithGroupId:groupId transaction:transaction];
-    if (!thread) {
-        thread = [[self alloc] initWithGroupId:groupId];
-        [thread anyInsertWithTransaction:transaction];
-    }
-    return thread;
-}
-
-+ (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
-                                    transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(groupModel);
-    OWSAssertDebug(groupModel.groupId.length > 0);
-    OWSAssertDebug(transaction);
-
-    TSGroupThread *thread = (TSGroupThread *)[self anyFetchWithUniqueId:[self threadIdFromGroupId:groupModel.groupId]
-                                                            transaction:transaction];
-
-    if (!thread) {
-        thread = [[TSGroupThread alloc] initWithGroupModel:groupModel];
-        [thread anyInsertWithTransaction:transaction];
-    }
-    return thread;
 }
 
 + (NSString *)threadIdFromGroupId:(NSData *)groupId

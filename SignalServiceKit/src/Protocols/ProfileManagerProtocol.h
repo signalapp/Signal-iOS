@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isThreadInProfileWhitelist:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
 
+- (void)addThreadToProfileWhitelist:(TSThread *)thread;
+
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address;
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address;
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId;
