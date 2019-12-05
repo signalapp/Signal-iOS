@@ -342,7 +342,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "I membri esistenti possono ora aggiungerti nel gruppo nuovamente.";
 
 /* Action sheet that will block an unknown user. */
-"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Blocco";
+"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Blocca";
 
 /* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Bloccare %@?";
@@ -502,6 +502,12 @@
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Confronta con gli appunti";
+
+/* Accessibility hint describing what you can do with the compose button */
+"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a conversation with.";
+
+/* Accessibility label from compose button. */
+"COMPOSE_BUTTON_LABEL" = "Compose";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Contatti";
@@ -1489,7 +1495,7 @@
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Accetta";
 
 /* A button used to block a user on an incoming message request. */
-"MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blocco";
+"MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blocca";
 
 /* A button used to block a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Elimina";
@@ -1642,6 +1648,9 @@
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Imposta foto del gruppo";
+
+/* Accessibility label for the new group button */
+"NEW_GROUP_BUTTON_LABEL" = "Create a new group";
 
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "Crea";

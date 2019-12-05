@@ -78,13 +78,13 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Σφάλμα";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
-"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Could Not Load Database";
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Δεν φορτώθηκε η βάση δεδομένων";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Please upgrade to the latest version of Signal.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Παρακαλώ αναβαθμίστε στην τελευταία έκδοση την εφαρμογή Signal";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Unknown Database Version.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Άγνωστη έκδοση βάσης δεδομένων";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Εισάγετε το όνομα σας";
@@ -120,19 +120,19 @@
 "ATTACHMENT" = "Συνημμένο";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Caption limit reached.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Φθάσατε στο όριο της λεζάντας.";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Προσθήκη λεζάντας...";
 
 /* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Caption";
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Λεζάντα";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Attachment failed to export.";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Αδυναμία εξαγωγής συνημμένου.";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
-"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Failed to Save";
+"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Αδυναμία αποθήκευσης";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Τύπος αρχείου: %@";
@@ -183,7 +183,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Το συννημένο είναι κενό.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose Media to Send";
+"ATTACHMENT_HINT" = "Επιλέξτε τα Μέσα προς Αποστολή";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "Κάμερα";
@@ -201,10 +201,10 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "Τοποθεσία";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Grant access to your photos in settings to send them here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Επιτρέψτε την πρόσβαση στις φωτογραφίες σας μέσα απο τις ρυθμίσεις ώστε να τις στέλνετε εδώ.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Once you’ve taken photos, you’ll be able to send your recents here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Μόλις βγάλετε φωτογραφίες, θα μπορείτε να στέλνετε τις πιο πρόσφατες εδώ.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Συνημμένο";
@@ -222,7 +222,7 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Φωνητικό Μήνυμα";
 
 /* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Audio Message";
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Ηχητικό Μήνυμα";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Μεγάφωνο";
@@ -351,7 +351,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Οι αποκλεισμένοι χρήστες δεν θα μπορούν να σας καλέσουν ή να σας στείλουν μηνύματα.";
 
 /* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Browse";
+"BROWSE_FILES_BUTTON" = "Πλοήγηση";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Συνέχεια";
@@ -363,7 +363,7 @@
 "BUTTON_NEXT" = "Επόμενο";
 
 /* Label for the 'okay' button. */
-"BUTTON_OKAY" = "Okay";
+"BUTTON_OKAY" = "Εντάξει";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Επιλογή";
@@ -381,16 +381,16 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "Απαιτείται πρόσβαση στο μικρόφωνο";
 
 /* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Incoming Call";
+"CALL_INCOMING_NOTIFICATION_BODY" = "Εισερχόμενη Κλήση";
 
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Κλήση";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "Αναπάντητη κλήση επειδή ο αριθμός ασφαλείας του καλούντος άλλαξε.";
 
 /* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Missed Call";
+"CALL_MISSED_NOTIFICATION_BODY" = "Αναπάντητη κλήση";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Δεν απαντάει";
@@ -417,7 +417,7 @@
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Απόρριψη εισερχόμενης κλήσης";
 
 /* tooltip label when remote party has enabled their video */
-"CALL_VIEW_ENABLE_VIDEO_HINT" = "Tap here to turn on your video";
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "Πατήστε εδώ για να ενεργοποιήσετε το βίντεό σας";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Τερματισμός κλήσης";
@@ -456,7 +456,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Χρήστης Signal";
 
 /* Accessibility hint describing what you can do with the camera button */
-"CAMERA_BUTTON_HINT" = "Take a picture and then send it";
+"CAMERA_BUTTON_HINT" = "Βγάλτε μια φωτογραφία και μετά στείλτε την";
 
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "Κάμερα";
@@ -503,6 +503,12 @@
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Σύγκριση με Πρόχειρο";
 
+/* Accessibility hint describing what you can do with the compose button */
+"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a conversation with.";
+
+/* Accessibility label from compose button. */
+"COMPOSE_BUTTON_LABEL" = "Compose";
+
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Επαφές";
 
@@ -510,10 +516,10 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Ομάδες";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Phone number search";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Εύρεση τηλεφωνικού αριθμού";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Username search";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Εύρεση Ονόματος Χρήστη";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Μπορείτε να ενεργοποιήσετε την πρόσβαση στις επαφές στην εφαρμογή Ρυθμίσεις του iOS για να δείτε ποιοι από τις επαφές σας είναι χρήστες του Signal.";
@@ -525,10 +531,10 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Είστε σίγουρος/η ότι θέλετε να διαγράψετε το λογαριασμό σας;";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "This will reset the application by deleting all of your messages from this device. You can always link with your phone again, but that will not restore deleted messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Αυτό θα επαναφέρει την εφαρμογή στην αρχική κατάσταση, διαγράφοντας τα μηνύματα και το λογαριασμό σας από τον διακομιστή. Η εφαρμογή θα κλείσει μετά την ολοκλήρωση αυτής της διαδικασίας.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Are you sure you want to delete all data?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Είστε σίγουρος ότι θέλετε να διαγράψετε όλα τα δεδομένα;";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Δε θα έχετε πια τη δυνατότητα αποστολής ή λήψης μηνυμάτων σε αυτήν την ομάδα.";
@@ -645,7 +651,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Διαγραφή συνομιλίας;";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ conversations.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Δεν μπορείτε να επιλέξετε παραπάνω απο %@ συνομιλίες.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Ομάδες";
@@ -654,19 +660,19 @@
 "CONVERSATION_PICKER_SECTION_RECENTS" = "Πρόσφατες συνομιλίες";
 
 /* table section header for section containing contacts */
-"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "People";
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Άνθρωποι";
 
 /* navbar header */
-"CONVERSATION_PICKER_TITLE" = "Choose Recipients";
+"CONVERSATION_PICKER_TITLE" = "Επιλέξτε Αποδέκτες";
 
 /* keyboard toolbar label when no messages match the search string */
-"CONVERSATION_SEARCH_NO_RESULTS" = "No matches";
+"CONVERSATION_SEARCH_NO_RESULTS" = "Κανένα αποτέλεσμα";
 
 /* keyboard toolbar label when exactly 1 message matches the search string */
-"CONVERSATION_SEARCH_ONE_RESULT" = "1 match";
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 αποτέλεσμα";
 
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d of %d matches";
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d απο %d αποτελέσματα";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Ρυθμίσεις Συνομιλίας";
@@ -675,7 +681,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Προσθήκη σε Υπάρχουσα Επαφή";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Προσθήκη στις επαφές Συστήματος";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Αποκλεισμός της ομάδας";
@@ -723,7 +729,7 @@
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Δημιουργία Νέας Επαφής";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "Search Conversation";
+"CONVERSATION_SETTINGS_SEARCH" = "Εύρεση Συνομιλίας";
 
 /* Label for button that opens conversation settings. */
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Πατήστε για Αλλαγή";
@@ -732,7 +738,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Αναίρεση Σίγασης";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "This user is in your contacts";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Αυτός ο χρήστης βρίσκεται στις επαφές σας";
 
 /* Indicates that user's profile has been shared with a group. */
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Η ομάδα μπορεί να δει το προφίλ σας.";
@@ -940,10 +946,10 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Τα PIN δεν ταιριάζουν.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too long. */
-"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN can be no longer than 20 digits.";
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "Το ΡΙΝ δεν μπορεί να υπερβαίνει τα 20 ψηφία.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too short. */
-"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN must be at least 4 digits.";
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "Το ΡΙΝ πρέπει να έχει τουλάχιστον 4 ψηφία.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Πληκτρολογήστε ένα PIN κλειδώματος εγγραφής. Θα σας ζητηθεί να εισάγετε αυτό το ΡΙΝ την επόμενη φορά που θα καταχωρήσετε αυτον τον αριθμό τηλεφώνου στο Signal.";
@@ -964,13 +970,13 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Η κλήση απέτυχε.";
 
 /* Label indicating that this OS version is no longer supported. */
-"END_OF_LIFE_OS_WARNING" = "The latest Signal features won’t work on this version of iOS. Please upgrade this device to receive future Signal updates.";
+"END_OF_LIFE_OS_WARNING" = "Οι πιο πρόσφατες δυνατότητες του Signal δεν λειτουργούν σε αυτή την έκδοση του iOS. Παρακαλώ αναβαθμίστε αυτή τη συσκευή για να λαμβάνετε μελλοντικές αναβαθμίσεις του Signal.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Δεν ήταν δυνατή η πρόσβαση στις επαφές.";
 
 /* Error indicating that 'save video' failed. */
-"ERROR_COULD_NOT_SAVE_VIDEO" = "Could not save video.";
+"ERROR_COULD_NOT_SAVE_VIDEO" = "Αποτυχία αποθήκευσης του βίντεο.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Η αποστολή του μηνύματος απέτυχε.";
@@ -1009,7 +1015,7 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Η επαφή δεν χρησιμοποιεί Signal.";
 
 /* Error message indicating that attachment download(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Attachment download failed.";
+"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Αποτυχία ανάκτησης του συνημμένου.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
 "ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Αποτυχία συνημμένου: Ζητήστε από την επαφή να ξανά στείλει το μήνυμα αφού ενημερώσει το Signal στην τελευταία έκδοση.";
@@ -1042,13 +1048,13 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Ο αριθμός ασφαλείας άλλαξε.";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Your device is no longer linked. Please re-link to send further messages.";
+"ERROR_SENDING_DELINKED" = "Η συσκευή σας δεν είναι πλέον συνδεδεμένη. Ξανά συνδέστε την για να στέλνετε μηνύματα.";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "Your device is no longer registered. Please re-register to send further messages.";
+"ERROR_SENDING_DEREGISTERED" = "Η συσκευή σας δεν είναι πλέον εγγεγραμμένη. Ξανά εγγράψτε την για να στέλνετε μηνύματα.";
 
 /* Error indicating a send failure due to an expired application. */
-"ERROR_SENDING_EXPIRED" = "Your version of Signal has expired. Please update to send further messages.";
+"ERROR_SENDING_EXPIRED" = "Αυτή η έκδοση του Signal έχει λήξει. Παρακαλώ αναβαθμίστε την για να στέλνετε μηνύματα.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Μη Εγγεγραμμένος Χρήστης: %@";
@@ -1057,10 +1063,10 @@
 "EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Όχι Τώρα";
 
 /* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Let's Go";
+"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Πάμε";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Your version of Signal has expired! Messages will no longer send successfully. Tap to update to the most recent version.";
+"EXPIRATION_ERROR" = "Αυτή η έκδοση του Signal έχει λήξει. Τα μηνύματά σας δεν θα παραδίδονται πλέον. Κάντε ταπ εδώ για να την αναβαθμίστε στην πιο πρόσφατη έκδοση.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Η έκδοση Signal σας θα λήξει σε %d ημέρες. Πατήστε για να αναβαθμίσετε στην πιο πρόσφατη έκδοση. ";
@@ -1087,10 +1093,10 @@
 "FINISH_GROUP_CREATION_LABEL" = "Ολοκλήρωση δημιουργίας ομάδας";
 
 /* Label and title for 'contact forwarding' views. */
-"FORWARD_CONTACT" = "Forward Contact";
+"FORWARD_CONTACT" = "Προώθηση Επαφής";
 
 /* Label and title for 'message forwarding' views. */
-"FORWARD_MESSAGE" = "Forward Message";
+"FORWARD_MESSAGE" = "Προώθηση Μηνύματος";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "Δεν έχετε πολυμέσα σε αυτή τη συνομιλία.";
@@ -1183,19 +1189,19 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Αναζήτηση";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Some of your contacts are already on Signal, including %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Κάποιες από τις επαφές σας βρίσκονται ήδη στο Signal, όπως %@.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@ and %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Κάποιες από τις επαφές σας βρίσκονται ήδη στο Signal, όπως οι %@ και %@";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@, %@ and %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Κάποιες από τις επαφές σας βρίσκονται ήδη στο Signal, όπως οι %@, %@ και %@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first conversation here.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Αρχίστε την πρώτη σας συνομιλία εδώ.";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Message Request";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Αίτημα Μηνύματος";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Δεν βρέθηκαν αποτελέσματα για '%@'";
@@ -1207,7 +1213,7 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Δεν μπορείτε να μοιραστείτε πάνω από %@ αντικείμενα.";
 
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Δεν ήταν δυνατό να επιλεχθεί το συνημμένο.";
@@ -1249,10 +1255,10 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Αναπάντητη κλήση επειδή ο αριθμός ασφαλείας του χρήστη έχει αλλάξει.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, conversation history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Μπορείτε να στείλετε ή να λάβετε συγχρονισμένα μηνύματα απο το iPhone ή το iPad σας.↵Για δική σας ασφάλεια, το ιστορικό συνομιλίας δεν μεταφέρεται στις νέες συνδεδεμένες συσκευές.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ is on Signal!";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ βρίσκεται στο Signal!";
 
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Αυτοκόλλητα";
@@ -1288,22 +1294,22 @@
 "KEEP_MESSAGES_FOREVER" = "Τα μηνύματα δεν εξαφανίζονται.";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "Go to All Media";
+"KEY_COMMAND_ALL_MEDIA" = "Μεταβείτε στο Όλα τα Μέσα";
 
 /* A keyboard command to archive the current coversation. */
 "KEY_COMMAND_ARCHIVE" = "Αρχειοθέτηση συνομιλίας";
 
 /* A keyboard command to open the current conversation's attachment picker. */
-"KEY_COMMAND_ATTACHMENTS" = "Show Attachments";
+"KEY_COMMAND_ATTACHMENTS" = "Εμφάνιση Συνημμένων";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Go to Conversation Info";
+"KEY_COMMAND_CONVERSATION_INFO" = "Μετάβαση στις Πληροφορίες Συνομιλίας";
 
 /* A keyboard command to focus the current conversation's input field. */
-"KEY_COMMAND_FOCUS_COMPOSER" = "Focus Input Bar";
+"KEY_COMMAND_FOCUS_COMPOSER" = "Εστίαση στην Μπάρα Εισαγωγής";
 
 /* A keyboard command to open the current conversations GIF picker. */
-"KEY_COMMAND_GIF_SEARCH" = "Go to GIF Search";
+"KEY_COMMAND_GIF_SEARCH" = "Μετάβαση στην Εύρεση GIF";
 
 /* A keyboard command to present the new group dialog. */
 "KEY_COMMAND_NEW_GROUP" = "Νέα ομάδα";
@@ -1312,10 +1318,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "Νέο μήνυμα";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Go to Next Conversation";
+"KEY_COMMAND_NEXT_CONVERSATION" = "Μετάβαση στην Επόμενη Συνομιλία";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Conversation";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Μετάβαση στην Προηγούμενη Συνομιλία";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "Αναζήτηση";
@@ -1324,10 +1330,10 @@
 "KEY_COMMAND_SETTINGS" = "Ρυθμίσεις";
 
 /* A keyboard command to open the current conversation's sticker picker. */
-"KEY_COMMAND_STICKERS" = "Show Stickers";
+"KEY_COMMAND_STICKERS" = "Εμφάνιση Αυτοκόλλητων";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Conversation";
+"KEY_COMMAND_UNARCHIVE" = "Αφαίρεση Αρχειοθετημένης Συνομιλίας";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Αποχώρηση";
@@ -1360,7 +1366,7 @@
 "LINK_NEW_DEVICE_TITLE" = "Σύνδεση Νέας Συσκευής";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link Preview";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Προεπισκόπηση Σύνδεσης";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Συσχετισμένες Συσκευές";
@@ -1372,10 +1378,10 @@
 "LIST_GROUP_MEMBERS_ACTION" = "Μέλη Ομάδας";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Search by name or address";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Εύρεση βάση ονόματος ή διεύθυνσης";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "Select Location";
+"LOCATION_PICKER_TITLE" = "Επιλογή Τοποθεσίας";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Καταγραφή";
@@ -1423,7 +1429,7 @@
 "MESSAGE_ACTION_DETAILS" = "Περισσότερες Πληροφορίες";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "Προώθηση Μηνύματος";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Απάντηση σε αυτό το Μήνυμα";
@@ -1495,19 +1501,19 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Διαγραφή";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "You must share your profile to continue your conversation with %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Πρέπει να μοιραστείτε το προφίλ σας για να συνεχίσετε την συνομιλία με τον %@.";
 
 /* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "You must share your profile to continue your conversation in %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "Πρέπει να μοιραστείτε το προφίλ σας για να συνεχίσετε την συνομιλία στο %@.";
 
 /* A button used to learn more about why you must share your profile. */
 "MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Μάθετε περισσότερα";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Επιτρέπετε τον %@ να σας στείλει μήνυμα; Δεν θα γνωρίζει ότι διαβάσατε το μήνυμά του μέχρι να το αποδεχτείτε.";
 
 /* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Do you want to join the group %@? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Θέλετε να συμμετέχετε στην ομάδα %@; Δεν θα γνωρίζουν ότι είδατε το μήνυμά τους μέχρι να το αποδεχτείτε.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Κοινή Χρήση Προφίλ";
@@ -1593,7 +1599,7 @@
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "Μπορείτε να ενεργοποιήσετε αυτήν την άδεια στην εφαρμογή Ρυθμίσεις του iOS.";
 
 /* Alert title indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_TITLE" = "Signal requires access to your location for this feature.";
+"MISSING_LOCATION_PERMISSION_TITLE" = "Το Signal χρειάζεται πρόσβαση στην τοποθεσία σας για αυτήν τη λειτουργία.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Μπορείτε να ενεργοποιήσετε αυτήν την άδεια στην εφαρμογή Ρυθμίσεις του iOS.";
@@ -1626,7 +1632,7 @@
 "NETWORK_STATUS_CONNECTING" = "Συνδέεται";
 
 /* Error indicating that this device is no longer linked. */
-"NETWORK_STATUS_DELINKED" = "No Longer Linked";
+"NETWORK_STATUS_DELINKED" = "Δεν υπάρχει πλέον σύνδεση";
 
 /* Error indicating that this device is no longer registered. */
 "NETWORK_STATUS_DEREGISTERED" = "Δεν είναι πλέον καταχωρημένη ";
@@ -1643,11 +1649,14 @@
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Επιλογή Φωτογραφίας Ομάδας";
 
+/* Accessibility label for the new group button */
+"NEW_GROUP_BUTTON_LABEL" = "Create a new group";
+
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "Δημιουργία";
 
 /* Error indicating that a new group could not be created. */
-"NEW_GROUP_CREATION_FAILED" = "New group could not be created.";
+"NEW_GROUP_CREATION_FAILED" = "Η νέα ομάδα δεν δημιουργήθηκε.";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Νέα ομάδα";
@@ -1656,7 +1665,7 @@
 "NEW_GROUP_MEMBER_LABEL" = "Μέλος";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ απο %@";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Όνομα ομάδας";
@@ -1689,10 +1698,10 @@
 "NO_SELECTED_CONVERSATION_TITLE" = "Καλώς ορίσατε στο Signal";
 
 /* A string prompting the user to send a new mesaage to a user */
-"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "New message to:";
+"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Νέο μήνυμα προς:";
 
 /* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "No user found. Invite via SMS?";
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Δεν βρέθηκε χρήστης. Αποστολή πρόσκλησης μέσω SMS;";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Να μην ξεχάσω ";
@@ -1701,7 +1710,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Μπορεί να έχετε λάβει μηνύματα κατά την επανεκκίνηση του %@ σας.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
+"NOTIFICATIONS_FOOTER_WARNING" = "Οι Ενέργειες περιλαμβάνουν \"Σημείωση ως Αναγνωσμένο,\" \"Απάντηση,\" και \"Επιστροφή Κλήσης.\"";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Κανένα Όνομα ή Περιεχόμενο";
@@ -1713,7 +1722,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Ήχοι";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Όνομα, Περιεχόμενο, και Ενέργειες";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Μόνο Όνομα";
@@ -1725,46 +1734,46 @@
 "OK" = "ΟΚ";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Incorrect PIN. Attempts exhausted.";
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Λανθασμένο ΡΙΝ. Εξαντλήθηκαν οι προσπάθειες.";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Αυτός ο αριθμός τηλεφώνου έχει ενεργοποιημένο το κλείδωμα εγγραφής. Παρακαλώ γράψε το PIN κλειδώματος εγγραφής";
 
 /* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_2" = "Your Registration Lock PIN is separate from the automated verification code that was sent to your phone during the last step.";
+"ONBOARDING_2FA_EXPLANATION_2" = "Το PIN κλειδώματος εγγραφής δεν είναι το ίδιο με τον αυτοματοποιημένο κωδικό που λάβατε στο κινητό στο προηγούμενο βήμα.";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Forgot your PIN?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Ξεχάσατε το PIN;";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN" = "Incorrect PIN";
+"ONBOARDING_2FA_INVALID_PIN" = "Λανθασμένο ΡΙΝ";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Incorrect PIN. %lu attempts remaining.";
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Λανθασμένο ΡΙΝ. Απομένουν %lu προσπάθειες. ";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Incorrect PIN. 1 attempt remaining.";
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Λανθασμένο ΡΙΝ. Απομένει 1 προσπάθεια. ";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "Κλείδωμα εγγραφής";
 
 /* Explanation of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Για να προστατέψουμε την ιδιωτικότητα και ασφάλεια το λογαριασμού σας, τον κλειδώσαμε για 7 μέρες.\n\nΜετά απο 7 μέρες αδράνειας, θα μπορέσετε να ξανα εγγράψετε το τηλεφωνικό σας νούμερο χωρίς το ΡΙΝ σας. Θα διαγραφεί όλο το περιεχόμενο. ";
 
 /* Label for the 'learn more' link in the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Learn more about locked accounts";
+"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Μάθετε περισσότερα σχετικά με τους κλειδωμένους λογαριασμούς";
 
 /* Title of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Account Locked";
+"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Κλειδωμένος Λογαριασμός";
 
 /* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "Add a touch of humanity to your messages";
+"ONBOARDING_CAPTCHA_TITLE" = "Προσθέστε μια ανθρώπινη πινελιά στα μηνύματά σας";
 
 /* button indicating that the user will register their ipad */
-"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Register iPad";
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Εγγραφή iPad";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link iPhone";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Σύνδεση iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
@@ -1989,13 +1998,13 @@
 "PIN_CREATION_TOO_LONG_ERROR" = "PIN must be no more than 20 digits.";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "Το ΡΙΝ πρέπει να έχει τουλάχιστον 4 ψηφία.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
-"PIN_REMINDER_FORGOT_PIN" = "Forgot your PIN?";
+"PIN_REMINDER_FORGOT_PIN" = "Ξεχάσατε το PIN;";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "Invalid PIN, try again.";
@@ -2004,7 +2013,7 @@
 "PIN_REMINDER_TITLE" = "Enter your Signal PIN";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "Το ΡΙΝ πρέπει να έχει τουλάχιστον 4 ψηφία.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Αναπαραγωγή Πολυμέσων";
@@ -2151,7 +2160,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "For your privacy and security, there is no way to recover your PIN. If you can’t remember your PIN, you may re-verify with SMS after 7 days of inactivity. In this case, your account will be wiped and all content deleted.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Forgot your PIN?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Ξεχάσατε το PIN;";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
@@ -2160,7 +2169,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Incorrect PIN";
+"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Λανθασμένο ΡΙΝ";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Υποβολή";

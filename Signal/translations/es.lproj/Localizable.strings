@@ -309,7 +309,7 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Desbloquear";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Los miembros podrán añadirte de nuevo al grupo.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Los participantes podrán añadirte de nuevo al grupo.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "¿Desbloquear grupo?";
@@ -339,7 +339,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ ha sido desbloqueado.";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Los miembros pueden añadirte de nuevo al grupo.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Los participantes pueden añadirte de nuevo al grupo.";
 
 /* Action sheet that will block an unknown user. */
 "BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Bloquear";
@@ -502,6 +502,12 @@
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Comparar con portapapeles";
+
+/* Accessibility hint describing what you can do with the compose button */
+"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a conversation with.";
+
+/* Accessibility label from compose button. */
+"COMPOSE_BUTTON_LABEL" = "Compose";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Contactos";
@@ -1135,7 +1141,7 @@
 "GROUP_CREATED" = "Grupo creado.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "No se han podido añadir todos los miembros al grupo. Toca para probar de nuevo.";
+"GROUP_CREATION_FAILED" = "No se han podido añadir todos los participantes al grupo. Toca para probar de nuevo.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Gestión del grupo";
@@ -1153,10 +1159,10 @@
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Retirar verificación a todos";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Esta acción retira la marca de verificación a todos los miembros del grupo cuyas cifras de seguridad han cambiado.";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Esta acción retira la marca de verificación a todos los participantes del grupo cuyas cifras de seguridad han cambiado.";
 
 /* Title for the 'members' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Miembros";
+"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Participantes";
 
 /* Title for the 'no longer verified' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "Con nueva identidad sin verificar";
@@ -1369,7 +1375,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Fallo al enlazar dispositivo";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Miembros del grupo";
+"LIST_GROUP_MEMBERS_ACTION" = "Participantes en el grupo";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Buscar por nombre o dirección";
@@ -1507,7 +1513,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "¿Deseas recibir mensajes de %@? No sabrá que has visto sus mensajes hasta que aceptes.";
 
 /* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "¿Deseas unirte al grupo «%@»? Los miembros no sabrán que has visto sus mensajes hasta que aceptes.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "¿Deseas unirte al grupo «%@»? Los participantes no sabrán que has visto sus mensajes hasta que aceptes.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Compartir perfil";
@@ -1555,16 +1561,16 @@
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "El estado de %@ ha cambiado a no verificado. Toca para ver opciones.";
 
 /* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Has bloqueado a 1 miembro de este grupo";
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Has bloqueado a 1 participante de este grupo";
 
 /* Indicates that this group conversation has been blocked. */
 "MESSAGES_VIEW_GROUP_BLOCKED" = "Has bloqueado este grupo";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Has bloqueado a %@ miembros en este grupo";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Has bloqueado a %@ participantes de este grupo";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "El estado de más de un miembro de este grupo ha cambiado a no verificado. Toca para ver opciones.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "El estado de más de un participante de este grupo ha cambiado a no verificado. Toca para ver opciones.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Toca aquí para ajustes del chat";
@@ -1643,6 +1649,9 @@
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Seleccionar foto de grupo";
 
+/* Accessibility label for the new group button */
+"NEW_GROUP_BUTTON_LABEL" = "Create a new group";
+
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "Crear";
 
@@ -1653,7 +1662,7 @@
 "NEW_GROUP_DEFAULT_TITLE" = "Nuevo grupo";
 
 /* An indicator that a user is a member of the new group. */
-"NEW_GROUP_MEMBER_LABEL" = "Miembro";
+"NEW_GROUP_MEMBER_LABEL" = "Participante";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ en %@";
@@ -2079,7 +2088,7 @@
 "PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Introducir nombre";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "El perfil de Signal será visible para tus contactos al iniciar un chat nuevo y cuando decidas compartirlo con otros usuarios y grupos.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "El perfil de Signal será visible a tus contactos al iniciar un chat nuevo y cuando decidas compartirlo con otros usuarios y grupos.";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Toca para más información.";
@@ -2817,7 +2826,7 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verificar cifras de seguridad";
 
 /* The number of members in a group. Embeds {{member count}} */
-"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu miembros";
+"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu participantes";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Participa en «%@», «%@» y %lu grupos adicionales";
@@ -2943,7 +2952,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Este dispositivo no es compatible con esta función.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "No se pueden eliminar miembros de grupos. El contacto tiene que abandonar el grupo o puedes crear un grupo nuevo sin ese contacto. ";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "No se pueden eliminar participantes de grupos. El usuario tiene que abandonar el grupo o puedes crear un grupo nuevo sin ese usuario. ";
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "No permitido";
@@ -2982,13 +2991,13 @@
 "UPGRADE_IOS_ALERT_TITLE" = "Actualizar iOS";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Los nombres de usuario son opcionales. Si decides crear un nombre de usuario, otros usuarios de Signal te podrán encontrar por ese nombre y ponerse en contacto contigo sin saber tu número de teléfono.";
+"USERNAME_DESCRIPTION" = "Los nombres de usuario son opcionales. Si decides crear un nombre de usuario, otros usuarios de Signal te podrán encontrar por ese nombre y ponerse en contacto contigo sin conocer tu número de teléfono.";
 
 /* Label for the username field in the username view. */
 "USERNAME_FIELD" = "Nombre de usuario";
 
 /* An error indicating that the supplied username contains disallowed characters. */
-"USERNAME_INVALID_CHARACTERS_ERROR" = "Los nombres de usuario sólo pueden contener a-z, 0-9 y _";
+"USERNAME_INVALID_CHARACTERS_ERROR" = "El nombre de usuario sólo puede contener a-Z, 0-9 y _";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR" = "Fallo al buscar el nombre de usuario. Inténtalo más tarde.";
@@ -3006,7 +3015,7 @@
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */
-"USERNAME_STARTS_WITH_NUMBER_ERROR" = "El nombre de usuario no pueden comenzar por un número.";
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "El nombre de usuario no puede comenzar por un número.";
 
 /* The title for the username view. */
 "USERNAME_TITLE" = "Nombre de usuario";

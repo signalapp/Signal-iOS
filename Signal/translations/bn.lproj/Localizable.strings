@@ -503,6 +503,12 @@
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "ক্লিপবোর্ডের সাথে তুলনা করুন";
 
+/* Accessibility hint describing what you can do with the compose button */
+"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a conversation with.";
+
+/* Accessibility label from compose button. */
+"COMPOSE_BUTTON_LABEL" = "Compose";
+
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "পরিচিতিসমূহ";
 
@@ -1643,6 +1649,9 @@
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "গ্রুপ ফটো সেট করুন";
 
+/* Accessibility label for the new group button */
+"NEW_GROUP_BUTTON_LABEL" = "Create a new group";
+
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "সৃষ্টি করুন";
 
@@ -1776,7 +1785,7 @@
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "এই আইপ্যাড নিবন্ধন করুন";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this iPhone";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "এই আইফোন যুক্ত করুন";
 
 /* warning to the user that registering an ipad is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registering this iPad will disable Signal on any other device currently registered with the same phone number.";

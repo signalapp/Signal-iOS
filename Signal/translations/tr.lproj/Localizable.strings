@@ -426,10 +426,10 @@
 "CALL_VIEW_MUTE_LABEL" = "Sessize al";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Gelen aramaları kilit ekranınızdan yanıtlamak için Signal'in gizlilik ayarlarından iOS Çağrı Entegrasyonu'nu etkinleştirebilirsiniz.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Gelen aramaları kilit ekranınızdan yanıtlamak için Signal'in gizlilik ayarlarından iOS Arama Entegrasyonu'nu etkinleştirebilirsiniz.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Gelen aramalarda isim ve telefon numarası görmek için Signal'in gizlilik ayarlarından iOS Çağrı Entegrasyonu'nu etkinleştirebilirsiniz.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Gelen aramalarda isim ve telefon numarası görmek için Signal'in gizlilik ayarlarından iOS Arama Entegrasyonu'nu etkinleştirebilirsiniz.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Şimdi Değil";
@@ -502,6 +502,12 @@
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Panodaki ile Karşılaştır";
+
+/* Accessibility hint describing what you can do with the compose button */
+"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a conversation with.";
+
+/* Accessibility label from compose button. */
+"COMPOSE_BUTTON_LABEL" = "Compose";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Kişiler";
@@ -1087,10 +1093,10 @@
 "FINISH_GROUP_CREATION_LABEL" = "Grup oluşturmayı tamamla";
 
 /* Label and title for 'contact forwarding' views. */
-"FORWARD_CONTACT" = "Kişiyi İlet";
+"FORWARD_CONTACT" = "Kişiyi Yönlendir";
 
 /* Label and title for 'message forwarding' views. */
-"FORWARD_MESSAGE" = "İletiyi İlet";
+"FORWARD_MESSAGE" = "İletiyi Yönlendir";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "Bu sohbette hiçbir içeriğiniz yok.";
@@ -1225,7 +1231,7 @@
 "IN_CALL_SECURING" = "Cevaplandı. Güvenli hale getiriliyor...";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Çağrı Sonlandı.";
+"IN_CALL_TERMINATED" = "Arama Sonlandı.";
 
 /* Label reminding the user that they are in archive mode. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Bu sohbetler arşivlendi ve sadece yeni iletiler alınırsa gelen kutusunda görünecekler.";
@@ -1237,7 +1243,7 @@
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Signal sohbet listesinde kişilerinizin adını görmek için iOS Ayarlar uygulamasından kişiler erişimini etkinleştirebilirsiniz.";
 
 /* info message text in conversation view */
-"INCOMING_CALL" = "Gelen çağrı";
+"INCOMING_CALL" = "Gelen arama";
 
 /* info message recorded in conversation history when local user declined a call */
 "INCOMING_DECLINED_CALL" = "Bir aramayı reddettiniz";
@@ -1423,7 +1429,7 @@
 "MESSAGE_ACTION_DETAILS" = "Daha Fazla Bilgi";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_MESSAGE" = "Bu İletiyi İlet";
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "Bu İletiyi Yönlendir";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Bu İletiyi Yanıtla";
@@ -1643,6 +1649,9 @@
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Grup Fotoğrafını Ayarla";
 
+/* Accessibility label for the new group button */
+"NEW_GROUP_BUTTON_LABEL" = "Create a new group";
+
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "Oluştur";
 
@@ -1860,7 +1869,7 @@
 "OUTAGE_WARNING" = "Signal teknik sorunlar yaşıyor. Hizmeti olabildiğince çabuk düzeltmek için sıkı çalışıyoruz.";
 
 /* info message text in conversation view */
-"OUTGOING_CALL" = "Giden çağrı";
+"OUTGOING_CALL" = "Giden arama";
 
 /* info message text in conversation view */
 "OUTGOING_INCOMPLETE_CALL" = "Giden arama ";
@@ -2430,7 +2439,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Sansür atlatma özelliğini devre dışı bıraktınız.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Sansür atlatma sadece İnternet'e bağlıyken etkinleştirilebilir.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Sansür atlatma sadece internete bağlıyken etkinleştirilebilir.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Sansür atlatma gerekli değil; zaten Signal hizmetine bağlandınız.";
@@ -2520,7 +2529,7 @@
 "SETTINGS_BLOCK_LIST_TITLE" = "Engellenen";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Çağrıları Daima Aktar";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Aramaları Daima Aktar";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "IP adresinizi kişinize göstermekten kaçınmak için tüm aramaları Signal sunucusundan aktarın. Etkinleştirildiğinde arama kalitesi düşecektir.";
@@ -2646,7 +2655,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Uygulama geçişleri esnasında Signal önizlemelerinin görülmez.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Çağrı Entegrasyonu, Signal çağrılarını kilit ekranınızda ve sistemin arama geçmişinde gösterir. İsteğe bağlı olarak kişinin adını ve numarasını da gösterebilirsiniz. ICloud etkinleştirilmiş ise, bu arama geçmişi Apple ile paylaşılacaktır.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Arama Entegrasyonu, Signal aramalarını kilit ekranınızda ve sistemin arama geçmişinde gösterir. İsteğe bağlı olarak kişinin adını ve numarasını da gösterebilirsiniz. ICloud etkinleştirilmiş ise, bu arama geçmişi Apple ile paylaşılacaktır.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "Bildirimler";
@@ -2676,7 +2685,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Kayıt Kilidi";
 
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "'Yazıyor' Göstergeleri";
+"SETTINGS_TYPING_INDICATORS" = "Yazma Göstergeleri";
 
 /* An explanation of the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS_FOOTER" = "İletiler yazılma sürecindeyken görün ve paylaşın. Bu ayar isteğe bağlıdır ve tüm sohbetler için geçerlidir.";

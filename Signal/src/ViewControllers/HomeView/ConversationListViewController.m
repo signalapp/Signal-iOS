@@ -825,6 +825,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                                 style:UIBarButtonItemStylePlain
                                                                target:self
                                                                action:@selector(showNewConversationView)];
+    compose.accessibilityLabel
+        = NSLocalizedString(@"COMPOSE_BUTTON_LABEL", @"Accessibility label from compose button.");
+    compose.accessibilityHint = NSLocalizedString(
+        @"COMPOSE_BUTTON_HINT", @"Accessibility hint describing what you can do with the compose button");
     compose.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"compose");
 
     if (SSKFeatureFlags.cameraFirstCaptureFlow) {
@@ -832,6 +836,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                                    style:UIBarButtonItemStylePlain
                                                                   target:self
                                                                   action:@selector(showCameraView)];
+        camera.accessibilityLabel
+            = NSLocalizedString(@"CAMERA_BUTTON_LABEL", @"Accessibility label for camera button.");
+        camera.accessibilityHint = NSLocalizedString(
+            @"CAMERA_BUTTON_HINT", @"Accessibility hint describing what you can do with the camera button");
         camera.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"camera");
 
         self.navigationItem.rightBarButtonItems = @[ compose, camera ];
