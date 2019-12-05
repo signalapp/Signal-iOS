@@ -61,10 +61,10 @@ final class ConversationCell : UITableViewCell {
     
     private func setUpViewHierarchy() {
         // Set the cell background color
-        backgroundColor = Colors.conversationCellBackground
+        backgroundColor = Colors.cellBackground
         // Set up the highlight color
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = Colors.conversationCellSelected
+        selectedBackgroundView.backgroundColor = Colors.cellSelected
         self.selectedBackgroundView = selectedBackgroundView
         // Set up the unread messages indicator view
         unreadMessagesIndicatorView.set(.width, to: Values.accentLineThickness)

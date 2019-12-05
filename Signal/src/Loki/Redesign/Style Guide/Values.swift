@@ -32,11 +32,12 @@ final class Values : NSObject {
     @objc static let separatorLabelHeight = CGFloat(24)
     @objc static var separatorThickness: CGFloat { return 1 / UIScreen.main.scale }
     @objc static let tabBarHeight = CGFloat(48)
-    @objc static let settingsButtonHeight = CGFloat(75)
+    @objc static let settingButtonHeight = CGFloat(75)
     @objc static let modalCornerRadius = CGFloat(10)
     @objc static let modalButtonCornerRadius = CGFloat(5)
     
     // MARK: - Distances
+    @objc static let verySmallSpacing = CGFloat(4)
     @objc static let smallSpacing = CGFloat(8)
     @objc static let mediumSpacing = CGFloat(16)
     @objc static let largeSpacing = CGFloat(24)

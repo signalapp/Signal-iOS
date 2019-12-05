@@ -17,8 +17,8 @@ final class Colors : NSObject {
     @objc static let destructive = UIColor(hex: 0xFF453A)
     @objc static let unimportant = UIColor(hex: 0xD8D8D8)
     @objc static let border = UIColor(hex: 0x979797)
-    @objc static let conversationCellBackground = UIColor(hex: 0x1B1B1B)
-    @objc static let conversationCellSelected = UIColor(hex: 0x0C0C0C)
+    @objc static let cellBackground = UIColor(hex: 0x1B1B1B)
+    @objc static let cellSelected = UIColor(hex: 0x0C0C0C)
     @objc static let navigationBarBackground = UIColor(hex: 0x161616)
     @objc static let searchBarPlaceholder = UIColor(hex: 0x8E8E93) // Also used for the icons
     @objc static let searchBarBackground = UIColor(red: 142 / 255, green: 142 / 255, blue: 147 / 255, alpha: 0.12)

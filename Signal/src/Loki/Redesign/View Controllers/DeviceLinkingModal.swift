@@ -10,9 +10,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     enum Mode : String { case master, slave }
     
     // MARK: Components
-    private lazy var topSpacer = UIView.spacer(withHeight: 8)
-    
-    private lazy var spinner = NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: .white, padding: nil)
+    private lazy var spinner = NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: Colors.text, padding: nil)
     
     private lazy var qrCodeImageView: UIImageView = {
         let result = UIImageView()
@@ -22,8 +20,8 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     
     private lazy var titleLabel: UILabel = {
         let result = UILabel()
-        result.textColor = Theme.primaryColor
-        result.font = UIFont.ows_dynamicTypeHeadlineClamped
+        result.textColor = Colors.text
+        result.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
         result.textAlignment = .center
@@ -32,8 +30,8 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     
     private lazy var subtitleLabel: UILabel = {
         let result = UILabel()
-        result.textColor = Theme.primaryColor
-        result.font = UIFont.ows_dynamicTypeCaption1Clamped
+        result.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        result.font = .systemFont(ofSize: Values.smallFontSize)
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
         result.textAlignment = .center
@@ -42,8 +40,8 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     
     private lazy var mnemonicLabel: UILabel = {
         let result = UILabel()
-        result.textColor = Theme.primaryColor
-        result.font = UIFont.ows_dynamicTypeCaption1Clamped
+        result.textColor = Colors.text
+        result.font = .systemFont(ofSize: Values.smallFontSize)
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
         result.textAlignment = .center
@@ -51,19 +49,23 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     }()
 
     private lazy var buttonStackView: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [ authorizeButton, cancelButton ])
+        let result = UIStackView(arrangedSubviews: [ cancelButton, authorizeButton ])
         result.axis = .horizontal
+        result.spacing = Values.mediumSpacing
         result.distribution = .fillEqually
         return result
     }()
     
-    private lazy var authorizeButton: OWSFlatButton = {
-        let result = OWSFlatButton.button(title: NSLocalizedString("Authorize", comment: ""), font: .ows_dynamicTypeBodyClamped, titleColor: .white, backgroundColor: .clear, target: self, selector: #selector(authorizeDeviceLink))
-        result.setBackgroundColors(upColor: .clear, downColor: .clear)
+    private lazy var authorizeButton: UIButton = {
+        let result = UIButton()
+        result.set(.height, to: Values.mediumButtonHeight)
+        result.layer.cornerRadius = Values.modalButtonCornerRadius
+        result.backgroundColor = Colors.accent
+        result.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
+        result.setTitleColor(Colors.text, for: UIControl.State.normal)
+        result.setTitle(NSLocalizedString("Authorize", comment: ""), for: UIControl.State.normal)
         return result
     }()
-
-    private lazy var bottomSpacer = UIView.spacer(withHeight: 8)
     
     // MARK: Lifecycle
     init(mode: Mode, delegate: DeviceLinkingModalDelegate?) {
@@ -93,17 +95,13 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     }
     
     override func populateContentView() {
-        let stackView = UIStackView(arrangedSubviews: [ topSpacer, titleLabel, subtitleLabel, mnemonicLabel, buttonStackView, bottomSpacer ])
+        let stackView = UIStackView(arrangedSubviews: [ titleLabel, subtitleLabel, mnemonicLabel, buttonStackView ])
         switch mode {
-        case .master:
-            stackView.insertArrangedSubview(qrCodeImageView, at: 1)
-            stackView.insertArrangedSubview(UIView.spacer(withHeight: 2), at: 2)
-        case .slave:
-            stackView.insertArrangedSubview(spinner, at: 1)
-            stackView.insertArrangedSubview(UIView.spacer(withHeight: 8), at: 2)
+        case .master: stackView.insertArrangedSubview(qrCodeImageView, at: 0)
+        case .slave: stackView.insertArrangedSubview(spinner, at: 0)
         }
         contentView.addSubview(stackView)
-        stackView.spacing = 16
+        stackView.spacing = Values.largeSpacing
         stackView.axis = .vertical
         switch mode {
         case .master:
@@ -137,21 +135,17 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
             let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey.removing05PrefixIfNeeded()
             mnemonicLabel.text = Mnemonic.hash(hexEncodedString: hexEncodedPublicKey)
         }
-        let buttonHeight = cancelButton.titleLabel!.font.pointSize * 48 / 17
-        authorizeButton.set(.height, to: buttonHeight)
-        cancelButton.set(.height, to: buttonHeight)
+        authorizeButton.addTarget(self, action: #selector(authorizeDeviceLink), for: UIControl.Event.touchUpInside)
         authorizeButton.isHidden = true
-        bottomSpacer.isHidden = true
-        stackView.pin(.leading, to: .leading, of: contentView, withInset: 16)
-        stackView.pin(.top, to: .top, of: contentView, withInset: 16)
-        contentView.pin(.trailing, to: .trailing, of: stackView, withInset: 16)
-        contentView.pin(.bottom, to: .bottom, of: stackView, withInset: 16)
+        stackView.pin(.leading, to: .leading, of: contentView, withInset: Values.largeSpacing)
+        stackView.pin(.top, to: .top, of: contentView, withInset: Values.largeSpacing)
+        contentView.pin(.trailing, to: .trailing, of: stackView, withInset: Values.largeSpacing)
+        contentView.pin(.bottom, to: .bottom, of: stackView, withInset: Values.largeSpacing)
     }
     
     // MARK: Device Linking
     func requestUserAuthorization(for deviceLink: DeviceLink) {
         self.deviceLink = deviceLink
-        topSpacer.isHidden = true
         qrCodeImageView.isHidden = true
         titleLabel.text = NSLocalizedString("Linking Request Received", comment: "")
         subtitleLabel.text = NSLocalizedString("Please check that the words below match the ones shown on your other device", comment: "")
@@ -186,14 +180,12 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     func handleDeviceLinkAuthorized(_ deviceLink: DeviceLink) {
         let session = DeviceLinkingSession.current!
         session.stopListeningForLinkingAuthorization()
-        topSpacer.isHidden = true
         spinner.stopAnimating()
         spinner.isHidden = true
         titleLabel.text = NSLocalizedString("Device Link Authorized", comment: "")
         subtitleLabel.text = NSLocalizedString("Your device has been linked successfully", comment: "")
         mnemonicLabel.isHidden = true
         buttonStackView.isHidden = true
-        bottomSpacer.isHidden = false
         LokiStorageAPI.addDeviceLink(deviceLink).catch { error in
             print("[Loki] Failed to add device link due to error: \(error).")
         }

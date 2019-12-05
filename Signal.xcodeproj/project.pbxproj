@@ -2704,11 +2704,6 @@
 		B86BD08223399ABF000F5AE3 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				B885D5F3233491AB00EE0D8E /* DeviceLinkingModal.swift */,
-				B894D0702339D6F300B4D94D /* DeviceLinkingModalDelegate.swift */,
-				B80C6B562384A56D00FDBC8B /* DeviceLinksVC.swift */,
-				B80C6B582384C4E700FDBC8B /* DeviceNameModal.swift */,
-				B80C6B5A2384C7F900FDBC8B /* DeviceNameModalDelegate.swift */,
 				B86BD08023399883000F5AE3 /* QRCodeModal.swift */,
 			);
 			path = Settings;
@@ -2779,11 +2774,8 @@
 			children = (
 				B8B5BCEB2394D869003823C9 /* Button.swift */,
 				B8BB82AA238F669C00BA5194 /* ConversationCell.swift */,
-				B86BD08323399ACF000F5AE3 /* Modal.swift */,
-				B894D0742339EDCF00B4D94D /* NukeDataModal.swift */,
 				B8BB82AC238F734800BA5194 /* ProfilePictureView.swift */,
 				B8BB82B02390C37000BA5194 /* SearchBar.swift */,
-				B86BD08523399CEF000F5AE3 /* SeedModal.swift */,
 				B8BB82B82394911B00BA5194 /* Separator.swift */,
 				B8CCF638239721E20091D419 /* TabBar.swift */,
 				B8BB82B423947F2D00BA5194 /* TextField.swift */,
@@ -2802,10 +2794,18 @@
 		B8CCF63D2397580E0091D419 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				B885D5F3233491AB00EE0D8E /* DeviceLinkingModal.swift */,
+				B894D0702339D6F300B4D94D /* DeviceLinkingModalDelegate.swift */,
+				B80C6B562384A56D00FDBC8B /* DeviceLinksVC.swift */,
+				B80C6B582384C4E700FDBC8B /* DeviceNameModal.swift */,
+				B80C6B5A2384C7F900FDBC8B /* DeviceNameModalDelegate.swift */,
 				B8BB82A4238F627000BA5194 /* HomeVC.swift */,
+				B86BD08323399ACF000F5AE3 /* Modal.swift */,
 				B8CCF63623961D6D0091D419 /* NewPrivateChatVC.swift */,
+				B894D0742339EDCF00B4D94D /* NukeDataModal.swift */,
 				B8CCF63E23975CFB0091D419 /* JoinPublicChatVC.swift */,
 				B893063E2383961A005EAA8E /* ScanQRCodeWrapperVC.swift */,
+				B86BD08523399CEF000F5AE3 /* SeedModal.swift */,
 				B8CCF6422397711F0091D419 /* SettingsVC.swift */,
 			);
 			path = "View Controllers";

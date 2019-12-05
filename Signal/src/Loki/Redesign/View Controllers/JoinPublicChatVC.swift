@@ -62,7 +62,7 @@ final class JoinPublicChatVC : UIViewController, UIPageViewControllerDataSource,
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("Join Public Chat", comment: "")
         titleLabel.textColor = Colors.text
-        titleLabel.font = UIFont.boldSystemFont(ofSize: Values.veryLargeFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = titleLabel
         // Set up page VC
         let hasCameraAccess = (AVCaptureDevice.authorizationStatus(for: .video) == .authorized)

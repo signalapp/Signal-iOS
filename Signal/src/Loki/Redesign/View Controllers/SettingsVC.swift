@@ -2,8 +2,7 @@
 final class SettingsVC : UIViewController {
     
     private lazy var userHexEncodedPublicKey: String = {
-        let userDefaults = UserDefaults.standard
-        if let masterHexEncodedPublicKey = userDefaults.string(forKey: "masterDeviceHexEncodedPublicKey") {
+        if let masterHexEncodedPublicKey = UserDefaults.standard.string(forKey: "masterDeviceHexEncodedPublicKey") {
             return masterHexEncodedPublicKey
         } else {
             return OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
@@ -54,6 +53,9 @@ final class SettingsVC : UIViewController {
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
         closeButton.tintColor = Colors.text
         navigationItem.leftBarButtonItem = closeButton
+        let backButton = UIBarButtonItem(title: NSLocalizedString("Back", comment: ""), style: .plain, target: nil, action: nil)
+        backButton.tintColor = Colors.text
+        navigationItem.backBarButtonItem = backButton
         let qrCodeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "QRCodeFilled"), style: .plain, target: self, action: #selector(showQRCode))
         qrCodeButton.tintColor = Colors.text
         navigationItem.rightBarButtonItem = qrCodeButton
@@ -61,7 +63,7 @@ final class SettingsVC : UIViewController {
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("Settings", comment: "")
         titleLabel.textColor = Colors.text
-        titleLabel.font = UIFont.boldSystemFont(ofSize: Values.veryLargeFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = titleLabel
         // Set up profile picture view
         profilePictureView.hexEncodedPublicKey = userHexEncodedPublicKey
@@ -140,16 +142,20 @@ final class SettingsVC : UIViewController {
             button.setBackgroundImage(getImage(withColor: Colors.buttonBackground), for: UIControl.State.normal)
             button.setBackgroundImage(getImage(withColor: Colors.settingButtonSelected), for: UIControl.State.highlighted)
             button.addTarget(self, action: selector, for: UIControl.Event.touchUpInside)
-            button.set(.height, to: Values.settingsButtonHeight)
+            button.set(.height, to: Values.settingButtonHeight)
             return button
         }
-        return [
+        var result = [
             getSettingButton(withTitle: NSLocalizedString("Privacy", comment: ""), color: Colors.text, action: #selector(showPrivacySettings)),
-            getSettingButton(withTitle: NSLocalizedString("Notifications", comment: ""), color: Colors.text, action: #selector(showNotificationSettings)),
-            getSettingButton(withTitle: NSLocalizedString("Linked Devices", comment: ""), color: Colors.text, action: #selector(showLinkedDevices)),
-            getSettingButton(withTitle: NSLocalizedString("Show Seed", comment: ""), color: Colors.text, action: #selector(showSeed)),
-            getSettingButton(withTitle: NSLocalizedString("Clear All Data", comment: ""), color: Colors.destructive, action: #selector(clearAllData))
+            getSettingButton(withTitle: NSLocalizedString("Notifications", comment: ""), color: Colors.text, action: #selector(showNotificationSettings))
         ]
+        let isMasterDevice = (UserDefaults.standard.string(forKey: "masterDeviceHexEncodedPublicKey") == nil)
+        if isMasterDevice {
+            result.append(getSettingButton(withTitle: NSLocalizedString("Linked Devices", comment: ""), color: Colors.text, action: #selector(showLinkedDevices)))
+            result.append(getSettingButton(withTitle: NSLocalizedString("Show Seed", comment: ""), color: Colors.text, action: #selector(showSeed)))
+        }
+        result.append(getSettingButton(withTitle: NSLocalizedString("Clear All Data", comment: ""), color: Colors.destructive, action: #selector(clearAllData)))
+        return result
     }
     
     override func viewWillAppear(_ animated: Bool) {

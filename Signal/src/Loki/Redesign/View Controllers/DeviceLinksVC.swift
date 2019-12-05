@@ -18,38 +18,53 @@ final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableView
     
     private lazy var callToActionView : UIStackView = {
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Theme.primaryColor
-        explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        explanationLabel.textColor = Colors.text
+        explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         explanationLabel.textAlignment = .center
         explanationLabel.text = NSLocalizedString("You don't have any linked devices yet", comment: "")
-        let linkNewDeviceButtonFont = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
-        let linkNewDeviceButtonHeight = linkNewDeviceButtonFont.pointSize * 48 / 17
-        let linkNewDeviceButton = OWSFlatButton.button(title: NSLocalizedString("Link a Device", comment: ""), font: linkNewDeviceButtonFont, titleColor: .lokiGreen(), backgroundColor: .clear, target: self, selector: #selector(linkNewDevice))
-        linkNewDeviceButton.setBackgroundColors(upColor: .clear, downColor: .clear)
-        linkNewDeviceButton.autoSetDimension(.height, toSize: linkNewDeviceButtonHeight)
-        linkNewDeviceButton.button.contentHorizontalAlignment = .left
+        let linkNewDeviceButton = Button(style: .prominent, size: .medium)
+        linkNewDeviceButton.setTitle(NSLocalizedString("Link a Device", comment: ""), for: UIControl.State.normal)
+        linkNewDeviceButton.addTarget(self, action: #selector(linkNewDevice), for: UIControl.Event.touchUpInside)
+        linkNewDeviceButton.set(.width, to: 160)
         let result = UIStackView(arrangedSubviews: [ explanationLabel, linkNewDeviceButton ])
         result.axis = .vertical
-        result.spacing = 4
+        result.spacing = Values.mediumSpacing
         result.alignment = .center
         return result
     }()
     
     // MARK: Lifecycle
     override func viewDidLoad() {
-        title = NSLocalizedString("Linked Devices", comment: "")
-        let masterDeviceHexEncodedPublicKey = UserDefaults.standard.string(forKey: "masterDeviceHexEncodedPublicKey")
-        let isMasterDevice = (masterDeviceHexEncodedPublicKey == nil)
-        if isMasterDevice {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(linkNewDevice))
-        }
-        view.backgroundColor = Theme.backgroundColor
+        // Set gradient background
+        view.backgroundColor = .clear
+        let gradient = Gradients.defaultLokiBackground
+        view.setGradient(gradient)
+        // Set navigation bar background color
+        let navigationBar = navigationController!.navigationBar
+        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+        navigationBar.shadowImage = UIImage()
+        navigationBar.isTranslucent = false
+        navigationBar.barTintColor = Colors.navigationBarBackground
+        // Customize title
+        let titleLabel = UILabel()
+        titleLabel.text = NSLocalizedString("Linked Devices", comment: "")
+        titleLabel.textColor = Colors.text
+        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        navigationItem.titleView = titleLabel
+        // Set up link new device button
+        let linkNewDeviceButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(linkNewDevice))
+        linkNewDeviceButton.tintColor = Colors.text
+        navigationItem.rightBarButtonItem = linkNewDeviceButton
+        // Set up constraints
         view.addSubview(tableView)
         tableView.pin(to: view)
         view.addSubview(callToActionView)
-        callToActionView.center(in: view)
+        callToActionView.center(.horizontal, in: view)
+        let verticalCenteringConstraint = callToActionView.center(.vertical, in: view)
+        verticalCenteringConstraint.constant = -16 // Makes things appear centered visually
+        // Perform initial update
         updateDeviceLinks()
     }
     
@@ -61,7 +76,7 @@ final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") as! Cell
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = Theme.cellSelectedColor
+        selectedBackgroundView.backgroundColor = Colors.cellSelected
         cell.selectedBackgroundView = selectedBackgroundView
         let device = deviceLinks[indexPath.row].other
         cell.device = device
@@ -102,6 +117,7 @@ final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableView
         if deviceLinks.isEmpty {
             let deviceLinkingModal = DeviceLinkingModal(mode: .master, delegate: self)
             deviceLinkingModal.modalPresentationStyle = .overFullScreen
+            deviceLinkingModal.modalTransitionStyle = .crossDissolve
             present(deviceLinkingModal, animated: true, completion: nil)
         } else {
             let alert = UIAlertController(title: NSLocalizedString("Multi Device Limit Reached", comment: ""), message: NSLocalizedString("It's currently not allowed to link more than one device.", comment: ""), preferredStyle: .alert)
@@ -119,6 +135,8 @@ final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableView
             let deviceNameModal = DeviceNameModal()
             deviceNameModal.device = deviceLink.other
             deviceNameModal.delegate = self
+            deviceNameModal.modalPresentationStyle = .overFullScreen
+            deviceNameModal.modalTransitionStyle = .crossDissolve
             self.present(deviceNameModal, animated: true, completion: nil)
         })
         sheet.addAction(UIAlertAction(title: NSLocalizedString("Unlink", comment: ""), style: .destructive) { [weak self] _ in
@@ -169,17 +187,16 @@ private extension DeviceLinksVC {
         // MARK: Components
         private lazy var titleLabel: UILabel = {
             let result = UILabel()
-            result.textColor = Theme.primaryColor
-            let font = UIFont.ows_dynamicTypeSubheadlineClamped
-            result.font = UIFont(descriptor: font.fontDescriptor.withSymbolicTraits(.traitBold)!, size: font.pointSize)
+            result.textColor = Colors.text
+            result.font = .boldSystemFont(ofSize: Values.mediumFontSize)
             result.lineBreakMode = .byTruncatingTail
             return result
         }()
         
         private lazy var subtitleLabel: UILabel = {
             let result = UILabel()
-            result.textColor = Theme.primaryColor
-            result.font = UIFont.ows_dynamicTypeCaption1Clamped
+            result.textColor = Colors.text
+            result.font = .systemFont(ofSize: Values.smallFontSize)
             result.lineBreakMode = .byTruncatingTail
             return result
         }()
@@ -196,18 +213,18 @@ private extension DeviceLinksVC {
         }
         
         private func setUpViewHierarchy() {
-            backgroundColor = .clear
+            backgroundColor = Colors.cellBackground
             let stackView = UIStackView(arrangedSubviews: [ titleLabel, subtitleLabel ])
             stackView.axis = .vertical
             stackView.distribution = .equalCentering
-            stackView.spacing = 4
+            stackView.spacing = Values.verySmallSpacing
             stackView.set(.height, to: 36)
             contentView.addSubview(stackView)
-            stackView.pin(.leading, to: .leading, of: contentView, withInset: 16)
-            stackView.pin(.top, to: .top, of: contentView, withInset: 8)
-            contentView.pin(.trailing, to: .trailing, of: stackView, withInset: 16)
-            contentView.pin(.bottom, to: .bottom, of: stackView, withInset: 8)
-            stackView.set(.width, to: UIScreen.main.bounds.width - 2 * 16)
+            stackView.pin(.leading, to: .leading, of: contentView, withInset: Values.largeSpacing)
+            stackView.pin(.top, to: .top, of: contentView, withInset: Values.mediumSpacing)
+            contentView.pin(.trailing, to: .trailing, of: stackView, withInset: Values.largeSpacing)
+            contentView.pin(.bottom, to: .bottom, of: stackView, withInset: Values.mediumSpacing)
+            stackView.set(.width, to: UIScreen.main.bounds.width - 2 * Values.largeSpacing)
         }
         
         // MARK: Updating

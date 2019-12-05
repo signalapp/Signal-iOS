@@ -19,8 +19,7 @@ final class Gradient : NSObject {
         let layer = CAGradientLayer()
         layer.frame = UIScreen.main.bounds
         layer.colors = [ gradient.start.cgColor, gradient.end.cgColor ]
-        let index = UInt32((self.layer.sublayers ?? []).count)
-        self.layer.insertSublayer(layer, at: index)
+        self.layer.insertSublayer(layer, at: 0)
     }
 }
 

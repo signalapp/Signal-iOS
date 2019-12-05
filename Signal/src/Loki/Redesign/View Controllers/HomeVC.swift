@@ -72,7 +72,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("Messages", comment: "")
         titleLabel.textColor = Colors.text
-        titleLabel.font = UIFont.boldSystemFont(ofSize: Values.veryLargeFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = titleLabel
         // Set up table view
         tableView.dataSource = self
