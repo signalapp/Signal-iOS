@@ -55,6 +55,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (NSString *)collection;
 
+// This method should only ever be called within a GRDB write transaction.
+- (void)clearRowId;
+
 #pragma mark -
 
 // GRDB TODO: As a perf optimization, we could only call these
