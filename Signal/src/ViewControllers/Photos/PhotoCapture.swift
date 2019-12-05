@@ -144,6 +144,12 @@ class PhotoCapture: NSObject {
 
     public func startVideoCapture() -> Promise<Void> {
         AssertIsOnMainThread()
+        guard !Platform.isSimulator else {
+            // Trying to actually set up the capture session will fail on a simulator
+            // since we don't have actual capture devices. But it's useful to be able
+            // to mostly run the capture code on the simulator to work with layout.
+            return Promise.value(())
+        }
 
         // If the session is already running, no need to do anything.
         guard !self.session.isRunning else { return Promise.value(()) }

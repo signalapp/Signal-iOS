@@ -70,7 +70,7 @@ class PhotoCaptureViewController: OWSViewController {
         if UIDevice.current.hasIPhoneXNotch {
             previewView.autoPinEdge(toSuperviewEdge: .bottom, withInset: fixedBottomSafeAreaInset)
         } else {
-            previewView.autoPinEdge(toSuperviewMargin: .bottom)
+            previewView.autoPinEdge(toSuperviewEdge: .bottom)
         }
         previewView.autoPin(toAspectRatio: 9/16, relation: .greaterThanOrEqual)
         previewView.autoPin(toAspectRatio: 3/4, relation: .lessThanOrEqual)
@@ -824,6 +824,10 @@ class CapturePreviewView: UIView {
 
     init(session: AVCaptureSession) {
         previewLayer = AVCaptureVideoPreviewLayer(session: session)
+        if Platform.isSimulator {
+            // helpful for debugging layout on simulator which has no real capture device
+            previewLayer.backgroundColor = UIColor.green.withAlphaComponent(0.4).cgColor
+        }
         super.init(frame: .zero)
         self.contentMode = .scaleAspectFill
         previewLayer.frame = bounds
