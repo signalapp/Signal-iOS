@@ -147,14 +147,10 @@ const NSUInteger kMinimumSearchLength = 2;
     [self addChildViewController:self.tableViewController];
     [self.view insertSubview:self.tableViewController.view atIndex:0];
 
-    [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
-    [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
-    [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [self.tableViewController.view autoPinEdgesToSuperviewEdges];
 
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableViewController.tableView.estimatedRowHeight = 60;
-
-    [self autoPinViewToBottomOfViewControllerOrKeyboard:self.tableViewController.view avoidNotch:NO];
     _tableViewController.tableView.tableHeaderView = searchBar;
 
     _noSignalContactsView = [self createNoSignalContactsView];

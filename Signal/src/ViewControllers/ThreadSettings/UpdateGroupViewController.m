@@ -138,7 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.recipientPicker.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
     [self.recipientPicker.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
     [self.recipientPicker.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:firstSection];
-    [self autoPinViewToBottomOfViewControllerOrKeyboard:self.recipientPicker.view avoidNotch:NO];
+    [self.recipientPicker.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 }
 
 - (void)setHasUnsavedChanges:(BOOL)hasUnsavedChanges
