@@ -503,6 +503,12 @@
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = " తాత్కాలికంగా  భద్రపరుచు ప్రదేశముతో పోల్చండి";
 
+/* Accessibility hint describing what you can do with the compose button */
+"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a conversation with.";
+
+/* Accessibility label from compose button. */
+"COMPOSE_BUTTON_LABEL" = "Compose";
+
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "పరిచయాలు ";
 
@@ -1249,7 +1255,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "వారి భద్రతా సంఖ్య మారినందున కాల్ తప్పిపోయింది.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, conversation history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "మీరు మీ ఫోన్ లేదా ఐప్యాడ్ నుండి సమకాలీకరించిన సందేశాలను పంపవచ్చు లేదా స్వీకరించవచ్చు. \nమీ భద్రత కోసం, సంభాషణ చరిత్ర కొత్త లింక్ చేసిన పరికరాలకు బదిలీ చేయబడదు.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ Signal లో ఉంది!";
@@ -1643,6 +1649,9 @@
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "సమూహ ఫోటోను సెట్ చేయండి";
 
+/* Accessibility label for the new group button */
+"NEW_GROUP_BUTTON_LABEL" = "Create a new group";
+
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "సృష్టించు";
 
@@ -1701,7 +1710,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "మీ %@  పునఃప్రారంభించేటప్పుడు మీకు సందేశాలు వచ్చాయి.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
+"NOTIFICATIONS_FOOTER_WARNING" = "చర్యలలో “చదివినట్లుగా గుర్తించండి,” “ప్రత్యుత్తరం ఇవ్వండి” మరియు “తిరిగి కాల్ చేయండి.”";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "పేరు లేదా కంటెంట్ లేదు";
@@ -1713,7 +1722,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "శబ్దాలు ";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "పేరు, కంటెంట్ మరియు చర్యలు";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "పేరు మాత్రమే ";
@@ -1761,28 +1770,28 @@
 "ONBOARDING_CAPTCHA_TITLE" = "మీ సందేశాలకు మానవత్వం యొక్క స్పర్శను జోడించండి";
 
 /* button indicating that the user will register their ipad */
-"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Register iPad";
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "ఐప్యాడ్ నమోదు";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link iPhone";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "ఐఫోన్ లింక్ చేయండి";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "“రిజిస్టర్ ఐప్యాడ్” నొక్కడం ద్వారా మీరు సరికొత్త Signal ఖాతాను సృష్టించడానికి లేదా ఇప్పటికే ఉన్న ఖాతాను ఈ ఐప్యాడ్‌కు తరలించడానికి అనుమతిస్తుంది. ఇది ప్రస్తుతం అదే ఫోన్ నంబర్‌తో నమోదు చేయబడిన ఇతర పరికరంలో Signal ను నిలిపివేస్తుంది.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link iPhone” will let you connect your phone to an existing account. Linking your phone is generally not recommended and will limit some functionality, such as calling.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "“లింక్ ఐఫోన్” నొక్కడం వల్ల మీ ఫోన్‌ను ఇప్పటికే ఉన్న ఖాతాకు కనెక్ట్ చేయడానికి మిమ్మల్ని అనుమతిస్తుంది. మీ ఫోన్‌ను లింక్ చేయడం సాధారణంగా సిఫారసు చేయబడదు మరియు కాల్ చేయడం వంటి కొన్ని కార్యాచరణలను పరిమితం చేస్తుంది.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "ఈ iPad ను నమోదు చేయండి";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this iPhone";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "ఈ ఐఫోన్‌ను లింక్ చేయండి";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registering this iPad will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "ఈ ఐప్యాడ్‌ను నమోదు చేయడం వల్ల ప్రస్తుతం అదే ఫోన్ నంబర్‌తో నమోదు చేయబడిన ఇతర పరికరాల్లో Signal నిలిపివేయబడుతుంది.";
 
 /* warning to the user that linking a phone is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Linking your iPhone is not recommended and will limit core functionality.";
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "మీ ఐఫోన్‌ను లింక్ చేయడం సిఫారసు చేయబడలేదు మరియు కోర్ కార్యాచరణను పరిమితం చేస్తుంది.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "అనుమతులను ప్రారంభించండి";
@@ -2325,10 +2334,10 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "లింకింగ్ కోడ్‌ను పొందడం సాధ్యం కాలేదు";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Your other device is running a legacy version of Signal that doesn't support scanning iPad QR codes. Please install the latest Signal release and try again.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "మీ ఇతర పరికరం ఐప్యాడ్ క్యూఆర్ కోడ్‌లను స్కాన్ చేయడానికి మద్దతు ఇవ్వని Signal యొక్క లెగసీ వెర్షన్‌ను రన్ చేస్తోంది. దయచేసి తాజా Signal విడుదలను ఇన్‌స్టాల్ చేసి, మళ్లీ ప్రయత్నించండి.";
 
 /* alert title for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Update Scanning Device";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "స్కానింగ్ పరికరాన్ని నవీకరించండి";
 
 /* alert title */
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "మీ పరికరాన్ని లింక్ చేయడంలో విఫలమైంది";
@@ -2631,7 +2640,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "స్క్రీన్ లాక్ సమయం ముగిసింది";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Touch ID, Face ID లేదా మీ iOS డివైస్ పాస్‌కోడ్ ఉపయోగించి Signal స్క్రీన్‌ను అన్‌లాక్ చేయండి. స్క్రీన్ లాక్ ప్రారంభించబడినప్పుడు మీరు ఇన్‌కమింగ్ కాల్‌లకు సమాధానం ఇవ్వవచ్చు మరియు సందేశ నోటిఫికేషన్‌లను స్వీకరించవచ్చు. Signal యొక్క నోటిఫికేషన్ సెట్టింగులు ప్రదర్శించబడే సమాచారాన్ని అనుకూలీకరించడానికి మిమ్మల్ని అనుమతిస్తాయి.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "స్క్రీన్ తాళం";
