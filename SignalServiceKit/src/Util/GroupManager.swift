@@ -168,7 +168,7 @@ public class GroupManager: NSObject {
                                       groupId: Data? = nil,
                                       name: String? = nil,
                                       avatarImage: UIImage?,
-                                      sendMessage: Bool) -> Promise<TSGroupThread> {
+                                      shouldSendMessage: Bool) -> Promise<TSGroupThread> {
 
         return DispatchQueue.global().async(.promise) {
             return TSGroupModel.data(forGroupAvatar: avatarImage)
@@ -177,7 +177,7 @@ public class GroupManager: NSObject {
                                       groupId: groupId,
                                       name: name,
                                       avatarData: avatarData,
-                                      sendMessage: sendMessage)
+                                      shouldSendMessage: shouldSendMessage)
         }
     }
 
@@ -185,7 +185,7 @@ public class GroupManager: NSObject {
                                       groupId: Data? = nil,
                                       name: String? = nil,
                                       avatarData: Data? = nil,
-                                      sendMessage: Bool) -> Promise<TSGroupThread> {
+                                      shouldSendMessage: Bool) -> Promise<TSGroupThread> {
 
         return DispatchQueue.global().async(.promise) {
             guard let localUuid = self.tsAccountManager.localUuid else {
@@ -211,7 +211,7 @@ public class GroupManager: NSObject {
             }.then(on: .global()) { (thread: TSGroupThread) -> Promise<TSGroupThread> in
                 self.profileManager.addThread(toProfileWhitelist: thread)
 
-                if sendMessage {
+                if shouldSendMessage {
                     return sendDurableNewGroupMessage(forThread: thread)
                         .map(on: .global()) { _ in
                             return thread
@@ -238,14 +238,14 @@ public class GroupManager: NSObject {
                                           groupId: Data?,
                                           name: String,
                                           avatarImage: UIImage?,
-                                          sendMessage: Bool,
+                                          shouldSendMessage: Bool,
                                           success: @escaping (TSGroupThread) -> Void,
                                           failure: @escaping (Error) -> Void) {
         createNewGroup(members: members,
                        groupId: groupId,
                        name: name,
                        avatarImage: avatarImage,
-                       sendMessage: sendMessage).done { thread in
+                       shouldSendMessage: shouldSendMessage).done { thread in
                         success(thread)
             }.catch { error in
                 failure(error)
@@ -258,14 +258,14 @@ public class GroupManager: NSObject {
                                           groupId: Data?,
                                           name: String,
                                           avatarData: Data?,
-                                          sendMessage: Bool,
+                                          shouldSendMessage: Bool,
                                           success: @escaping (TSGroupThread) -> Void,
                                           failure: @escaping (Error) -> Void) {
         createNewGroup(members: members,
                        groupId: groupId,
                        name: name,
                        avatarData: avatarData,
-                       sendMessage: sendMessage).done { thread in
+                       shouldSendMessage: shouldSendMessage).done { thread in
                         success(thread)
             }.catch { error in
                 failure(error)

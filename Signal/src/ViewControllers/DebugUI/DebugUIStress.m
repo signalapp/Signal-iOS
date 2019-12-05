@@ -522,7 +522,7 @@ NS_ASSUME_NONNULL_BEGIN
         groupId:nil
         name:groupName
         avatarData:groupThread.groupModel.groupAvatarData
-        sendMessage:NO
+        shouldSendMessage:NO
         success:^(TSGroupThread *thread) {
             [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
         }
@@ -555,7 +555,7 @@ NS_ASSUME_NONNULL_BEGIN
         groupId:nil
         name:NSUUID.UUID.UUIDString
         avatarData:nil
-        sendMessage:NO
+        shouldSendMessage:NO
         success:^(TSGroupThread *thread) {
             [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
         }

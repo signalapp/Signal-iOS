@@ -303,7 +303,7 @@ NS_ASSUME_NONNULL_BEGIN
                           groupId:self.groupId
                           name:groupName
                           avatarImage:self.groupAvatar
-                          sendMessage:YES
+                          shouldSendMessage:YES
                           success:^(TSGroupThread *thread) {
                               [self.presentingViewController
                                   dismissViewControllerAnimated:YES

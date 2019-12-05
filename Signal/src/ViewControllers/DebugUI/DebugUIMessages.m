@@ -4443,7 +4443,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         groupId:nil
         name:groupName
         avatarData:nil
-        sendMessage:YES
+        shouldSendMessage:YES
         success:^(TSGroupThread *thread) {
             success(thread);
         }
