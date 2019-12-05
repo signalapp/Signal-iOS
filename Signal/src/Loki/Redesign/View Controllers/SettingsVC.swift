@@ -178,9 +178,8 @@ final class SettingsVC : UIViewController {
     }
     
     @objc private func showQRCode() {
-        let qrCodeModal = QRCodeModal()
-        qrCodeModal.modalPresentationStyle = .overFullScreen
-        present(qrCodeModal, animated: true, completion: nil)
+        let qrCodeVC = QRCodeVC()
+        navigationController!.pushViewController(qrCodeVC, animated: true)
     }
     
     @objc private func copyPublicKey() {

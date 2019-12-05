@@ -2711,3 +2711,8 @@
 "Notifications can appear while your phone is locked. You may wish to limit what is shown in these notifications." = "Notifications can appear while your phone is locked. You may wish to limit what is shown in these notifications.";
 "Notifications" = "Notifications";
 "Back" = "Back";
+"View My QR Code" = "View My QR Code";
+"Scan someone's QR code to start a conversation with them" = "Scan someone's QR code to start a conversation with them";
+"QR Code" = "QR Code";
+"Scan Me" = "Scan Me";
+"This is your unique public QR code. Other users may scan this in order to begin a conversation with you." = "This is your unique public QR code. Other users may scan this in order to begin a conversation with you.";

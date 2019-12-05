@@ -191,7 +191,7 @@ private final class EnterChatURLVC : UIViewController {
         nextButton.pin(.top, to: .top, of: nextButtonContainer)
         nextButtonContainer.pin(.trailing, to: .trailing, of: nextButton, withInset: 80)
         nextButtonContainer.pin(.bottom, to: .bottom, of: nextButton)
-        // Stack view
+        // Set up stack view
         let stackView = UIStackView(arrangedSubviews: [ chatURLTextField, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, UIView.vStretchingSpacer(), nextButtonContainer ])
         stackView.axis = .vertical
         stackView.alignment = .fill

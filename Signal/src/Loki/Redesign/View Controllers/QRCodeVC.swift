@@ -1,8 +1,9 @@
 
-final class NewPrivateChatVC : UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
+final class QRCodeVC : UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
     private var pages: [UIViewController] = []
     private var targetVCIndex: Int?
+    private var tabBarTopConstraint: NSLayoutConstraint!
     
     // MARK: Settings
     override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
@@ -10,7 +11,7 @@ final class NewPrivateChatVC : UIViewController, UIPageViewControllerDataSource,
     // MARK: Components
     private lazy var tabBar: TabBar = {
         let tabs = [
-            TabBar.Tab(title: NSLocalizedString("Enter Public Key", comment: "")) { [weak self] in
+            TabBar.Tab(title: NSLocalizedString("View My QR Code", comment: "")) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[0] ], direction: .forward, animated: false, completion: nil)
             },
@@ -22,20 +23,20 @@ final class NewPrivateChatVC : UIViewController, UIPageViewControllerDataSource,
         return TabBar(tabs: tabs)
     }()
     
-    private lazy var enterPublicKeyVC: EnterPublicKeyVC = {
-        let result = EnterPublicKeyVC()
-        result.newPrivateChatVC = self
+    private lazy var viewMyQRCodeVC: ViewMyQRCodeVC = {
+        let result = ViewMyQRCodeVC()
+        result.qrCodeVC = self
         return result
     }()
     
     private lazy var scanQRCodePlaceholderVC: ScanQRCodePlaceholderVC = {
         let result = ScanQRCodePlaceholderVC()
-        result.newPrivateChatVC = self
+        result.qrCodeVC = self
         return result
     }()
     
     private lazy var scanQRCodeWrapperVC: ScanQRCodeWrapperVC = {
-        let message = NSLocalizedString("Users can share their QR code by going into their account settings and tapping \"Share QR Code\".", comment: "")
+        let message = NSLocalizedString("Scan someone's QR code to start a conversation with them", comment: "")
         let result = ScanQRCodeWrapperVC(message: message)
         result.delegate = self
         return result
@@ -53,26 +54,22 @@ final class NewPrivateChatVC : UIViewController, UIPageViewControllerDataSource,
         navigationBar.shadowImage = UIImage()
         navigationBar.isTranslucent = false
         navigationBar.barTintColor = Colors.navigationBarBackground
-        // Set up navigation bar buttons
-        let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
-        closeButton.tintColor = Colors.text
-        navigationItem.leftBarButtonItem = closeButton
         // Customize title
         let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("New Conversation", comment: "")
+        titleLabel.text = NSLocalizedString("QR Code", comment: "")
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = titleLabel
         // Set up page VC
         let hasCameraAccess = (AVCaptureDevice.authorizationStatus(for: .video) == .authorized)
-        pages = [ enterPublicKeyVC, (hasCameraAccess ? scanQRCodeWrapperVC : scanQRCodePlaceholderVC) ]
+        pages = [ viewMyQRCodeVC, (hasCameraAccess ? scanQRCodeWrapperVC : scanQRCodePlaceholderVC) ]
         pageVC.dataSource = self
         pageVC.delegate = self
-        pageVC.setViewControllers([ enterPublicKeyVC ], direction: .forward, animated: false, completion: nil)
+        pageVC.setViewControllers([ viewMyQRCodeVC ], direction: .forward, animated: false, completion: nil)
         // Set up tab bar
         view.addSubview(tabBar)
         tabBar.pin(.leading, to: .leading, of: view)
-        tabBar.pin(.top, to: .top, of: view, withInset: navigationBar.height())
+        tabBarTopConstraint = tabBar.pin(.top, to: .top, of: view)
         view.pin(.trailing, to: .trailing, of: tabBar)
         // Set up page VC constraints
         let pageVCView = pageVC.view!
@@ -85,8 +82,13 @@ final class NewPrivateChatVC : UIViewController, UIPageViewControllerDataSource,
         pageVCView.set(.width, to: screen.width)
         let height = navigationController!.view.bounds.height - navigationBar.height() - Values.tabBarHeight
         pageVCView.set(.height, to: height)
-        enterPublicKeyVC.constrainHeight(to: height)
+        viewMyQRCodeVC.constrainHeight(to: height)
         scanQRCodePlaceholderVC.constrainHeight(to: height)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        tabBarTopConstraint.constant = navigationController!.navigationBar.height()
     }
     
     // MARK: General
@@ -139,8 +141,9 @@ final class NewPrivateChatVC : UIViewController, UIPageViewControllerDataSource,
     }
 }
 
-private final class EnterPublicKeyVC : UIViewController {
-    weak var newPrivateChatVC: NewPrivateChatVC!
+private final class ViewMyQRCodeVC : UIViewController {
+    weak var qrCodeVC: QRCodeVC!
+    private var bottomConstraint: NSLayoutConstraint!
     
     private lazy var userHexEncodedPublicKey: String = {
         if let masterHexEncodedPublicKey = UserDefaults.standard.string(forKey: "masterDeviceHexEncodedPublicKey") {
@@ -150,70 +153,59 @@ private final class EnterPublicKeyVC : UIViewController {
         }
     }()
     
-    // MARK: Components
-    private lazy var publicKeyTextField = TextField(placeholder: NSLocalizedString("Enter public key of recipient", comment: ""))
-    
-    private lazy var copyButton: Button = {
-        let result = Button(style: .unimportant, size: .medium)
-        result.setTitle(NSLocalizedString("Copy", comment: ""), for: UIControl.State.normal)
-        result.addTarget(self, action: #selector(copyPublicKey), for: UIControl.Event.touchUpInside)
-        return result
-    }()
-    
     // MARK: Lifecycle
     override func viewDidLoad() {
         // Remove background color
         view.backgroundColor = .clear
+        // Set up title label
+        let titleLabel = UILabel()
+        titleLabel.textColor = Colors.text
+        titleLabel.font = .boldSystemFont(ofSize: Values.massiveFontSize)
+        titleLabel.text = NSLocalizedString("Scan Me", comment: "")
+        titleLabel.numberOfLines = 0
+        titleLabel.textAlignment = .center
+        titleLabel.lineBreakMode = .byWordWrapping
+        // Set up QR code image view
+        let qrCodeImageView = UIImageView()
+        let qrCode = QRCode.generate(for: userHexEncodedPublicKey)
+        qrCodeImageView.image = qrCode
+        qrCodeImageView.contentMode = .scaleAspectFit
         // Set up explanation label
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
-        explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Users can share their public key by going into their account settings and tapping \"Share Public Key\", or by sharing their QR code.", comment: "")
+        explanationLabel.textColor = Colors.text
+        explanationLabel.font = Fonts.spaceMono(ofSize: Values.mediumFontSize)
+        let text = NSLocalizedString("This is your unique public QR code. Other users may scan this in order to begin a conversation with you.", comment: "")
+        let attributedText = NSMutableAttributedString(string: text)
+        attributedText.addAttribute(.font, value: Fonts.boldSpaceMono(ofSize: Values.mediumFontSize), range: (text as NSString).range(of: "your unique public QR code"))
+        explanationLabel.attributedText = attributedText
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
-        // Set up separator
-        let separator = Separator(title: NSLocalizedString("Your Public Key", comment: ""))
-        // Set up user public key label
-        let userPublicKeyLabel = UILabel()
-        userPublicKeyLabel.textColor = Colors.text
-        userPublicKeyLabel.font = Fonts.spaceMono(ofSize: Values.mediumFontSize)
-        userPublicKeyLabel.numberOfLines = 0
-        userPublicKeyLabel.textAlignment = .center
-        userPublicKeyLabel.lineBreakMode = .byCharWrapping
-        userPublicKeyLabel.text = userHexEncodedPublicKey
         // Set up share button
-        let shareButton = Button(style: .unimportant, size: .medium)
+        let shareButton = Button(style: .regular, size: .large)
         shareButton.setTitle(NSLocalizedString("Share", comment: ""), for: UIControl.State.normal)
-        shareButton.addTarget(self, action: #selector(sharePublicKey), for: UIControl.Event.touchUpInside)
-        // Set up button container
-        let buttonContainer = UIStackView(arrangedSubviews: [ copyButton, shareButton ])
-        buttonContainer.axis = .horizontal
-        buttonContainer.spacing = Values.mediumSpacing
-        buttonContainer.distribution = .fillEqually
-        // Next button
-        let nextButton = Button(style: .prominent, size: .large)
-        nextButton.setTitle(NSLocalizedString("Next", comment: ""), for: UIControl.State.normal)
-        nextButton.addTarget(self, action: #selector(startNewPrivateChatIfPossible), for: UIControl.Event.touchUpInside)
-        let nextButtonContainer = UIView()
-        nextButtonContainer.addSubview(nextButton)
-        nextButton.pin(.leading, to: .leading, of: nextButtonContainer, withInset: 80)
-        nextButton.pin(.top, to: .top, of: nextButtonContainer)
-        nextButtonContainer.pin(.trailing, to: .trailing, of: nextButton, withInset: 80)
-        nextButtonContainer.pin(.bottom, to: .bottom, of: nextButton)
+        shareButton.addTarget(self, action: #selector(shareQRCode), for: UIControl.Event.touchUpInside)
+        // Set up share button container
+        let shareButtonContainer = UIView()
+        shareButtonContainer.addSubview(shareButton)
+        shareButton.pin(.leading, to: .leading, of: shareButtonContainer, withInset: 80)
+        shareButton.pin(.top, to: .top, of: shareButtonContainer)
+        shareButtonContainer.pin(.trailing, to: .trailing, of: shareButton, withInset: 80)
+        shareButtonContainer.pin(.bottom, to: .bottom, of: shareButton)
         // Set up stack view
-        let stackView = UIStackView(arrangedSubviews: [ publicKeyTextField, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, UIView.spacer(withHeight: Values.largeSpacing), separator, UIView.spacer(withHeight: Values.veryLargeSpacing), userPublicKeyLabel, UIView.spacer(withHeight: Values.veryLargeSpacing), buttonContainer, UIView.vStretchingSpacer(), nextButtonContainer ])
+        let stackView = UIStackView(arrangedSubviews: [ titleLabel, qrCodeImageView, explanationLabel, shareButtonContainer, UIView.vStretchingSpacer() ])
         stackView.axis = .vertical
+        stackView.spacing = Values.largeSpacing
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(top: Values.mediumSpacing, left: Values.largeSpacing, bottom: Values.mediumSpacing, right: Values.largeSpacing)
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
-        stackView.pin(to: view)
+        stackView.pin(.leading, to: .leading, of: view)
+        stackView.pin(.top, to: .top, of: view)
+        view.pin(.trailing, to: .trailing, of: stackView)
+        bottomConstraint = view.pin(.bottom, to: .bottom, of: stackView)
         // Set up width constraint
         view.set(.width, to: UIScreen.main.bounds.width)
-        // Dismiss keyboard on tap
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        view.addGestureRecognizer(tapGestureRecognizer)
     }
     
     // MARK: General
@@ -221,40 +213,16 @@ private final class EnterPublicKeyVC : UIViewController {
         view.set(.height, to: height)
     }
     
-    @objc private func dismissKeyboard() {
-        publicKeyTextField.resignFirstResponder()
-    }
-    
-    @objc private func enableCopyButton() {
-        copyButton.isUserInteractionEnabled = true
-        UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
-            self.copyButton.setTitle(NSLocalizedString("Copy", comment: ""), for: UIControl.State.normal)
-        }, completion: nil)
-    }
-    
     // MARK: Interaction
-    @objc private func copyPublicKey() {
-        UIPasteboard.general.string = userHexEncodedPublicKey
-        copyButton.isUserInteractionEnabled = false
-        UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
-            self.copyButton.setTitle(NSLocalizedString("Copied", comment: ""), for: UIControl.State.normal)
-        }, completion: nil)
-        Timer.scheduledTimer(timeInterval: 4, target: self, selector: #selector(enableCopyButton), userInfo: nil, repeats: false)
-    }
-    
-    @objc private func sharePublicKey() {
-        let shareVC = UIActivityViewController(activityItems: [ userHexEncodedPublicKey ], applicationActivities: nil)
-        newPrivateChatVC.navigationController!.present(shareVC, animated: true, completion: nil)
-    }
-    
-    @objc private func startNewPrivateChatIfPossible() {
-        let hexEncodedPublicKey = publicKeyTextField.text?.trimmingCharacters(in: .whitespaces) ?? ""
-        newPrivateChatVC.startNewPrivateChatIfPossible(with: hexEncodedPublicKey)
+    @objc private func shareQRCode() {
+        let qrCode = QRCode.generate(for: userHexEncodedPublicKey, isInverted: false)
+        let shareVC = UIActivityViewController(activityItems: [ qrCode ], applicationActivities: nil)
+        qrCodeVC.navigationController!.present(shareVC, animated: true, completion: nil)
     }
 }
 
 private final class ScanQRCodePlaceholderVC : UIViewController {
-    weak var newPrivateChatVC: NewPrivateChatVC!
+    weak var qrCodeVC: QRCodeVC!
     
     override func viewDidLoad() {
         // Remove background color
@@ -294,7 +262,7 @@ private final class ScanQRCodePlaceholderVC : UIViewController {
     @objc private func requestCameraAccess() {
         ows_ask(forCameraPermissions: { [weak self] hasCameraAccess in
             if hasCameraAccess {
-                self?.newPrivateChatVC.handleCameraAccessGranted()
+                self?.qrCodeVC.handleCameraAccessGranted()
             } else {
                 // Do nothing
             }
