@@ -97,15 +97,18 @@ NS_ASSUME_NONNULL_BEGIN
         // Skip the other processing for recipient updates.
     } else {
         if (_groupId != nil) {
-            SignalServiceAddress *_Nullable localAddress
-                = OWSIncomingSentMessageTranscript.tsAccountManager.localAddress;
-            if (localAddress == nil) {
-                OWSFailDebug(@"Missing localAddress.");
-                return nil;
-            }
-            NSArray<SignalServiceAddress *> *members = @[ localAddress ];
-            NSError *_Nullable groupError;
-            _thread = [GroupManager upsertExistingGroupObjcWithMembers:members
+            _thread = [TSGroupThread fetchWithGroupId:_groupId transaction:transaction];
+
+            if (_thread == nil) {
+                SignalServiceAddress *_Nullable localAddress
+                    = OWSIncomingSentMessageTranscript.tsAccountManager.localAddress;
+                if (localAddress == nil) {
+                    OWSFailDebug(@"Missing localAddress.");
+                    return nil;
+                }
+                NSArray<SignalServiceAddress *> *members = @[ localAddress ];
+                NSError *_Nullable groupError;
+                _thread = [GroupManager upsertExistingGroupWithMembers:members
                                                                   name:nil
                                                             avatarData:nil
                                                                groupId:_groupId
@@ -114,10 +117,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                      shouldSendMessage:NO
                                                            transaction:transaction
                                                                  error:&groupError]
-                          .thread;
-            if (groupError != nil || _thread == nil) {
-                OWSFailDebug(@"Could not create group: %@", groupError);
-                return nil;
+                              .thread;
+                if (groupError != nil || _thread == nil) {
+                    OWSFailDebug(@"Could not create group: %@", groupError);
+                    return nil;
+                }
             }
         } else {
             _thread = [TSContactThread getOrCreateThreadWithContactAddress:_recipientAddress transaction:transaction];

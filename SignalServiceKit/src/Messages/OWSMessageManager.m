@@ -842,15 +842,15 @@ NS_ASSUME_NONNULL_BEGIN
             // Ensures that the thread exists but doesn't update it.
             NSError *_Nullable error;
             EnsureGroupResult *_Nullable result =
-                [GroupManager upsertExistingGroupObjcWithMembers:newMembers.allObjects
-                                                            name:dataMessage.group.name
-                                                      avatarData:oldGroupThread.groupModel.groupAvatarData
-                                                         groupId:dataMessage.group.id
-                                                   groupsVersion:GroupsVersionV1
-                                           groupSecretParamsData:nil
-                                               shouldSendMessage:false
-                                                     transaction:transaction
-                                                           error:&error];
+                [GroupManager upsertExistingGroupWithMembers:newMembers.allObjects
+                                                        name:dataMessage.group.name
+                                                  avatarData:oldGroupThread.groupModel.groupAvatarData
+                                                     groupId:dataMessage.group.id
+                                               groupsVersion:GroupsVersionV1
+                                       groupSecretParamsData:nil
+                                           shouldSendMessage:false
+                                                 transaction:transaction
+                                                       error:&error];
             if (error != nil || result == nil) {
                 OWSFailDebug(@"Error: %@", error);
                 return;

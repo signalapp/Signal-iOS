@@ -333,6 +333,7 @@ public class GroupManager: NSObject {
     //
     // "Existing" groups have already been created, we just need to make sure they're in the database.
 
+    @objc(upsertExistingGroupWithMembers:name:avatarData:groupId:groupsVersion:groupSecretParamsData:shouldSendMessage:transaction:error:)
     public static func upsertExistingGroup(members: [SignalServiceAddress],
                                            name: String? = nil,
                                            avatarData: Data? = nil,
@@ -367,26 +368,6 @@ public class GroupManager: NSObject {
             thread.anyInsert(transaction: transaction)
             return EnsureGroupResult(action: .inserted, thread: thread)
         }
-    }
-
-    @objc(upsertExistingGroupObjcWithMembers:name:avatarData:groupId:groupsVersion:groupSecretParamsData:shouldSendMessage:transaction:error:)
-    public static func upsertExistingGroupObjc(members: [SignalServiceAddress],
-                                               name: String?,
-                                               avatarData: Data?,
-                                               groupId: Data,
-                                               groupsVersion: GroupsVersion,
-                                               groupSecretParamsData: Data? = nil,
-                                               shouldSendMessage: Bool,
-                                               transaction: SDSAnyWriteTransaction) throws -> EnsureGroupResult {
-
-        return try upsertExistingGroup(members: members,
-                                       name: name,
-                                       avatarData: avatarData,
-                                       groupId: groupId,
-                                       groupsVersion: groupsVersion,
-                                       groupSecretParamsData: groupSecretParamsData,
-                                       shouldSendMessage: shouldSendMessage,
-                                       transaction: transaction)
     }
 
     // MARK: - Update Existing Group
