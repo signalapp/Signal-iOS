@@ -30,7 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]
+        && !Platform.isSimulator) {
         OWSLogError(@"Camera ImagePicker source not available");
         callback(NO);
         return;
