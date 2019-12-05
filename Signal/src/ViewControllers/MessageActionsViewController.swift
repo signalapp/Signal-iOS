@@ -90,7 +90,7 @@ class MessageActionsViewController: UIViewController {
         guard let snapshotView = focusedView.snapshotView(afterScreenUpdates: false) else {
             return owsFailDebug("snapshotView was unexpectedly nil")
         }
-        view.addSubview(snapshotView)
+        view.insertSubview(snapshotView, belowSubview: bottomBar)
 
         guard let focusedViewSuperview = focusedView.superview else {
             return owsFailDebug("focusedViewSuperview was unexpectedly nil")
