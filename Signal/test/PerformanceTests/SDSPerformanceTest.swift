@@ -177,19 +177,15 @@ class SDSPerformanceTest: PerformanceBaseTest {
 
         createInteractionsForSafetyNumberTests(thread: thread)
 
-        measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
-
-            startMeasuring()
+        measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: true) {
             read { transaction in
                 let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
                 interactionFinder.enumerateBlockingSafetyNumberChanges(transaction: transaction) { (_, _) in
                     // Do nothing.
                 }
             }
-            stopMeasuring()
         }
 
-        // cleanup for next iteration
         write { transaction in
             thread.anyRemove(transaction: transaction)
         }
@@ -202,19 +198,15 @@ class SDSPerformanceTest: PerformanceBaseTest {
 
         createInteractionsForSafetyNumberTests(thread: thread)
 
-        measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
-
-            startMeasuring()
+        measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: true) {
             read { transaction in
                 let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
                 interactionFinder.enumerateNonBlockingSafetyNumberChanges(transaction: transaction) { (_, _) in
                     // Do nothing.
                 }
             }
-            stopMeasuring()
         }
 
-        // cleanup for next iteration
         write { transaction in
             thread.anyRemove(transaction: transaction)
         }
@@ -227,9 +219,7 @@ class SDSPerformanceTest: PerformanceBaseTest {
 
         createInteractionsForSafetyNumberTests(thread: thread)
 
-        measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
-
-            startMeasuring()
+        measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: true) {
             read { transaction in
                 ThreadUtil.ensureDynamicInteractions(for: thread,
                                                      hideUnreadMessagesIndicator: false,
@@ -238,10 +228,8 @@ class SDSPerformanceTest: PerformanceBaseTest {
                                                      maxRangeSize: 100,
                                                      transaction: transaction)
             }
-            stopMeasuring()
         }
 
-        // cleanup for next iteration
         write { transaction in
             thread.anyRemove(transaction: transaction)
         }
