@@ -378,9 +378,11 @@ NS_ASSUME_NONNULL_BEGIN
         [urls addObject:[NSURL fileURLWithPath:filePath]];
     }
     OWSLogVerbose(@"urls: %@", urls);
-    [AttachmentSharing showShareUIForURLs:urls completion:^{
-                                                            urls = nil;
-                                                            }];
+    [AttachmentSharing showShareUIForURLs:urls
+                                   sender:nil
+                               completion:^{
+                                   urls = nil;
+                               }];
 }
 
 + (void)shareImages:(NSUInteger)count

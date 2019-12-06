@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "AttachmentSharing.h"
@@ -12,61 +12,55 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation AttachmentSharing
 
-+ (void)showShareUIForAttachments:(NSArray<TSAttachmentStream *> *)attachmentStreams
-                       completion:(nullable AttachmentSharingCompletion)completion
-{
-    OWSAssertDebug(attachmentStreams.count > 0);
-
-    NSMutableArray<NSURL *> *urls = [NSMutableArray new];
-    for (TSAttachmentStream *attachmentStream in attachmentStreams) {
-        [urls addObject:attachmentStream.originalMediaURL];
-    }
-
-    [AttachmentSharing showShareUIForActivityItems:urls completion:completion];
-}
-
-+ (void)showShareUIForAttachment:(TSAttachmentStream *)stream
++ (void)showShareUIForAttachment:(TSAttachmentStream *)stream sender:(nullable id)sender
 {
     OWSAssertDebug(stream);
 
-    [self showShareUIForURL:stream.originalMediaURL];
+    [self showShareUIForURL:stream.originalMediaURL sender:sender];
+}
+
++ (void)showShareUIForURL:(NSURL *)url sender:(nullable id)sender
+{
+    [self showShareUIForURL:url sender:sender completion:nil];
 }
 
 + (void)showShareUIForURL:(NSURL *)url
-{
-    [self showShareUIForURL:url completion:nil];
-}
-
-+ (void)showShareUIForURL:(NSURL *)url completion:(nullable AttachmentSharingCompletion)completion
+                   sender:(nullable id)sender
+               completion:(nullable AttachmentSharingCompletion)completion
 {
     OWSAssertDebug(url);
-    
+
     [AttachmentSharing showShareUIForActivityItems:@[
-                                                     url,
-                                                     ]
+        url,
+    ]
+                                            sender:sender
                                         completion:completion];
 }
 
-+ (void)showShareUIForURLs:(NSArray<NSURL *> *)urls completion:(nullable AttachmentSharingCompletion)completion
++ (void)showShareUIForURLs:(NSArray<NSURL *> *)urls
+                    sender:(nullable id)sender
+                completion:(nullable AttachmentSharingCompletion)completion
 {
     OWSAssertDebug(urls.count > 0);
-    
-    [AttachmentSharing showShareUIForActivityItems:urls
-                                        completion:completion];
+
+    [AttachmentSharing showShareUIForActivityItems:urls sender:sender completion:completion];
+}
+
++ (void)showShareUIForText:(NSString *)text sender:(nullable id)sender
+{
+    [self showShareUIForText:text sender:sender completion:nil];
 }
 
 + (void)showShareUIForText:(NSString *)text
-{
-    [self showShareUIForText:text completion:nil];
-}
-
-+ (void)showShareUIForText:(NSString *)text completion:(nullable AttachmentSharingCompletion)completion
+                    sender:(nullable id)sender
+                completion:(nullable AttachmentSharingCompletion)completion
 {
     OWSAssertDebug(text);
 
     [AttachmentSharing showShareUIForActivityItems:@[
         text,
     ]
+                                            sender:sender
                                         completion:completion];
 }
 
@@ -78,11 +72,14 @@ NS_ASSUME_NONNULL_BEGIN
     [AttachmentSharing showShareUIForActivityItems:@[
         image,
     ]
+                                            sender:nil
                                         completion:nil];
 }
 #endif
 
-+ (void)showShareUIForActivityItems:(NSArray *)activityItems completion:(nullable AttachmentSharingCompletion)completion
++ (void)showShareUIForActivityItems:(NSArray *)activityItems
+                             sender:(nullable id)sender
+                         completion:(nullable AttachmentSharingCompletion)completion
 {
     OWSAssertDebug(activityItems);
 
@@ -110,6 +107,30 @@ NS_ASSUME_NONNULL_BEGIN
         while (fromViewController.presentedViewController) {
             fromViewController = fromViewController.presentedViewController;
         }
+
+        if (activityViewController.popoverPresentationController) {
+            if ([sender isKindOfClass:[UIBarButtonItem class]]) {
+                activityViewController.popoverPresentationController.barButtonItem = (UIBarButtonItem *)sender;
+            } else if ([sender isKindOfClass:[UIView class]]) {
+                UIView *viewSender = (UIView *)sender;
+                activityViewController.popoverPresentationController.sourceView = viewSender;
+                activityViewController.popoverPresentationController.sourceRect = viewSender.frame;
+            } else {
+                if (sender) {
+                    OWSFailDebug(@"Unexpected sender of type %@", NSStringFromClass([sender class]));
+                }
+
+                // Centered at the bottom of the screen.
+                CGRect sourceRect = CGRectZero;
+                sourceRect.origin.x = fromViewController.view.center.x;
+                sourceRect.origin.y = CGRectGetMaxY(fromViewController.view.frame);
+
+                activityViewController.popoverPresentationController.sourceView = fromViewController.view;
+                activityViewController.popoverPresentationController.sourceRect = sourceRect;
+                activityViewController.popoverPresentationController.permittedArrowDirections = 0;
+            }
+        }
+
         OWSAssertDebug(fromViewController);
         [fromViewController presentViewController:activityViewController animated:YES completion:nil];
     });

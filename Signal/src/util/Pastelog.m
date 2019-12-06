@@ -363,6 +363,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                                                style:ActionSheetActionStyleDefault
                                              handler:^(ActionSheetAction *action) {
                                                  [AttachmentSharing showShareUIForText:url.absoluteString
+                                                                                sender:nil
                                                                             completion:completion];
                                              }]];
         [alert addAction:[OWSActionSheets cancelAction]];

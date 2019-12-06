@@ -413,16 +413,6 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
         return
     }
 
-    func shareMediaAction() {
-        owsFailDebug("unexpected invocation")
-        return
-    }
-
-    func shareTextAction() {
-        owsFailDebug("unexpected invocation")
-        return
-    }
-
     func saveMediaAction() {
         owsFailDebug("unexpected invocation")
         return

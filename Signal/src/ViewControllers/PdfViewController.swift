@@ -136,9 +136,9 @@ public class PdfViewController: OWSViewController {
 
     // MARK: - Actions
 
-    @objc func shareButtonPressed() {
+    @objc func shareButtonPressed(_ sender: UIBarButtonItem) {
         // TODO: Maybe we could add better share actions for PDFs?
-        AttachmentSharing.showShareUI(forAttachment: attachmentStream)
+        AttachmentSharing.showShareUI(forAttachment: attachmentStream, sender: sender)
     }
 
     @objc func forwardButtonPressed() {
