@@ -484,32 +484,49 @@ NS_ASSUME_NONNULL_BEGIN
     // We use different views for performance reasons.
     NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *blockingSafetyNumberChanges = [NSMutableArray new];
     NSMutableArray<TSInteraction *> *nonBlockingSafetyNumberChanges = [NSMutableArray new];
-    // POSTYDB TODO: Make separate finder methods to find these messages.
     if (firstUnseenSortId != nil) {
         [interactionFinder
-            enumerateSpecialMessagesWithTransaction:transaction
-                                              block:^(TSInteraction *interaction, BOOL *stop) {
-                                                  if (interaction.sortId < firstUnseenSortId.unsignedLongLongValue) {
-                                                      // We only care about unseen safety number changes.
-                                                      *stop = YES;
-                                                      return;
-                                                  }
-
-                                                  if ([interaction
-                                                          isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
-                                                      TSInvalidIdentityKeyErrorMessage *errorMessage
-                                                          = (TSInvalidIdentityKeyErrorMessage *)interaction;
-                                                      [blockingSafetyNumberChanges addObject:errorMessage];
-                                                  } else if ([interaction isKindOfClass:[TSErrorMessage class]]) {
-                                                      TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
-                                                      OWSAssertDebug(errorMessage.errorType
-                                                          == TSErrorMessageNonBlockingIdentityChange);
-                                                      [nonBlockingSafetyNumberChanges addObject:errorMessage];
-                                                  } else {
-                                                      OWSFailDebug(@"Unexpected dynamic interaction type: %@",
-                                                          [interaction class]);
-                                                  }
-                                              }];
+            enumerateBlockingSafetyNumberChangesWithTransaction:transaction
+                                                          block:^(TSInteraction *interaction, BOOL *stop) {
+                                                              if (interaction.sortId
+                                                                  < firstUnseenSortId.unsignedLongLongValue) {
+                                                                  // We only care about unseen safety number changes.
+                                                                  return;
+                                                              }
+                                                              if (![interaction
+                                                                      isKindOfClass:[TSInvalidIdentityKeyErrorMessage
+                                                                                        class]]) {
+                                                                  OWSFailDebug(
+                                                                      @"Unexpected dynamic interaction type: %@",
+                                                                      [interaction class]);
+                                                                  return;
+                                                              }
+                                                              TSInvalidIdentityKeyErrorMessage *errorMessage
+                                                                  = (TSInvalidIdentityKeyErrorMessage *)interaction;
+                                                              [blockingSafetyNumberChanges addObject:errorMessage];
+                                                          }];
+        [interactionFinder
+            enumerateNonBlockingSafetyNumberChangesWithTransaction:transaction
+                                                             block:^(TSInteraction *interaction, BOOL *stop) {
+                                                                 if (interaction.sortId
+                                                                     < firstUnseenSortId.unsignedLongLongValue) {
+                                                                     // We only care about unseen safety number changes.
+                                                                     return;
+                                                                 }
+                                                                 if (![interaction
+                                                                         isKindOfClass:[TSErrorMessage class]]) {
+                                                                     OWSFailDebug(
+                                                                         @"Unexpected dynamic interaction type: %@",
+                                                                         [interaction class]);
+                                                                     return;
+                                                                 }
+                                                                 TSErrorMessage *errorMessage
+                                                                     = (TSErrorMessage *)interaction;
+                                                                 OWSAssertDebug(errorMessage.errorType
+                                                                     == TSErrorMessageNonBlockingIdentityChange);
+                                                                 [nonBlockingSafetyNumberChanges
+                                                                     addObject:errorMessage];
+                                                             }];
     }
 
     [self ensureUnreadIndicator:result
