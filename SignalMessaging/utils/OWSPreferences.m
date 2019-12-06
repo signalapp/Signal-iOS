@@ -48,6 +48,7 @@ NSString *const OWSPreferencesKey_IsGrdbReadyForAppExtensions = @"IsGrdbReadyFor
 NSString *const OWSPreferencesKey_IsAudibleErrorLoggingEnabled = @"IsAudibleErrorLoggingEnabled";
 NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySystemCallLogEnabled";
 NSString *const OWSPreferencesKeyIsViewOnceMessagesEnabled = @"OWSPreferencesKeyIsViewOnceMessagesEnabled";
+NSString *const OWSPreferencesKeyWasViewOnceTooltipShown = @"OWSPreferencesKeyWasViewOnceTooltipShown";
 
 @interface OWSPreferences ()
 
@@ -479,6 +480,16 @@ NSString *const OWSPreferencesKeyIsViewOnceMessagesEnabled = @"OWSPreferencesKey
 - (void)setIsViewOnceMessagesEnabled:(BOOL)value
 {
     [self setBool:value forKey:OWSPreferencesKeyIsViewOnceMessagesEnabled];
+}
+
+- (BOOL)wasViewOnceTooltipShown
+{
+    return [self boolForKey:OWSPreferencesKeyWasViewOnceTooltipShown defaultValue:NO];
+}
+
+- (void)setWasViewOnceTooltipShown
+{
+    [self setBool:YES forKey:OWSPreferencesKeyWasViewOnceTooltipShown];
 }
 
 #pragma mark direct call connectivity (non-TURN)

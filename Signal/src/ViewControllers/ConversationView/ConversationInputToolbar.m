@@ -572,14 +572,14 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     }
 
     __weak ConversationInputToolbar *weakSelf = self;
-    UIView *tooltip = [StickerTooltip presentTooltipFromView:self
-                                          widthReferenceView:self
-                                           tailReferenceView:self.stickerButton
-                                             stickerPack:stickerPack
-                                                       block:^{
-                                                           [weakSelf removeStickerTooltip];
-                                                           [weakSelf toggleKeyboardType:KeyboardType_Sticker];
-                                                       }];
+    UIView *tooltip = [[StickerTooltip alloc] initFromView:self
+                                        widthReferenceView:self
+                                         tailReferenceView:self.stickerButton
+                                               stickerPack:stickerPack
+                                            wasTappedBlock:^{
+                                                [weakSelf removeStickerTooltip];
+                                                [weakSelf toggleKeyboardType:KeyboardType_Sticker];
+                                            }];
     self.stickerTooltip = tooltip;
 
     const CGFloat tooltipDurationSeconds = 5.f;

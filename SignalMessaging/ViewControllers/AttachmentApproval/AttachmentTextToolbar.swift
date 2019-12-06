@@ -187,6 +187,8 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         viewOnceWrapper.isHidden = !options.contains(.canToggleViewOnce)
 
         updateHeight(textView: textView)
+
+        showViewOnceTooltipIfNecessary()
     }
 
     lazy var textView: UITextView = {
@@ -263,6 +265,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         // Toggle value.
         let isViewOnceMessagesEnabled = !preferences.isViewOnceMessagesEnabled()
         preferences.setIsViewOnceMessagesEnabled(isViewOnceMessagesEnabled)
+        preferences.setWasViewOnceTooltipShown()
 
         attachmentTextToolbarDelegate?.attachmentTextToolbarDidViewOnce(self)
 
@@ -340,5 +343,50 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
     private func clampedTextViewHeight(fixedWidth: CGFloat) -> CGFloat {
         let contentSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
         return CGFloatClamp(contentSize.height, kMinTextViewHeight, maxTextViewHeight)
+    }
+
+    // MARK: - Helpers
+
+    private var shouldShowViewOnceTooltip: Bool {
+        guard FeatureFlags.viewOnceSending else {
+            return false
+        }
+        guard !preferences.isViewOnceMessagesEnabled() else {
+            return false
+        }
+        guard !preferences.wasViewOnceTooltipShown() else {
+            return false
+        }
+        return true
+    }
+
+    private var viewOnceTooltip: UIView?
+
+    private func showViewOnceTooltipIfNecessary() {
+        guard shouldShowViewOnceTooltip else {
+            return
+        }
+        guard nil == viewOnceTooltip else {
+            // Already showing the tooltip.
+            return
+        }
+        guard !viewOnceButton.isHidden && !viewOnceWrapper.isHidden else {
+            return
+        }
+        let tooltip = ViewOnceTooltip(fromView: self, widthReferenceView: self, tailReferenceView: viewOnceButton) { [weak self] in
+            self?.removeViewOnceTooltip()
+        }
+        viewOnceTooltip = tooltip
+
+        preferences.setWasViewOnceTooltipShown()
+
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) { [weak self] in
+            self?.removeViewOnceTooltip()
+        }
+    }
+
+    private func removeViewOnceTooltip() {
+        viewOnceTooltip?.removeFromSuperview()
+        viewOnceTooltip = nil
     }
 }
