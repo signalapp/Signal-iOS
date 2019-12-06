@@ -1,5 +1,8 @@
 
-final class SettingsVC : UIViewController {
+final class SettingsVC : UIViewController, AvatarViewHelperDelegate {
+    private var profilePictureToBeUploaded: UIImage?
+    private var displayNameToBeUploaded: String?
+    private var isEditingDisplayName = false { didSet { handleIsEditingDisplayNameChanged() } }
     
     private lazy var userHexEncodedPublicKey: String = {
         if let masterHexEncodedPublicKey = UserDefaults.standard.string(forKey: "masterDeviceHexEncodedPublicKey") {
@@ -22,11 +25,24 @@ final class SettingsVC : UIViewController {
         return result
     }()
     
+    private lazy var profilePictureUtilities: AvatarViewHelper = {
+        let result = AvatarViewHelper()
+        result.delegate = self
+        return result
+    }()
+    
     private lazy var displayNameLabel: UILabel = {
         let result = UILabel()
         result.textColor = Colors.text
         result.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         result.lineBreakMode = .byTruncatingTail
+        result.textAlignment = .center
+        return result
+    }()
+    
+    private lazy var displayNameTextField: TextField = {
+        let result = TextField(placeholder: NSLocalizedString("Enter a display name", comment: ""), usesDefaultHeight: false)
+        result.textAlignment = .center
         return result
     }()
     
@@ -50,15 +66,10 @@ final class SettingsVC : UIViewController {
         navigationBar.isTranslucent = false
         navigationBar.barTintColor = Colors.navigationBarBackground
         // Set up navigation bar buttons
-        let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
-        closeButton.tintColor = Colors.text
-        navigationItem.leftBarButtonItem = closeButton
         let backButton = UIBarButtonItem(title: NSLocalizedString("Back", comment: ""), style: .plain, target: nil, action: nil)
         backButton.tintColor = Colors.text
         navigationItem.backBarButtonItem = backButton
-        let qrCodeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "QRCodeFilled"), style: .plain, target: self, action: #selector(showQRCode))
-        qrCodeButton.tintColor = Colors.text
-        navigationItem.rightBarButtonItem = qrCodeButton
+        updateNavigationBarButtons()
         // Customize title
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("Settings", comment: "")
@@ -66,12 +77,24 @@ final class SettingsVC : UIViewController {
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = titleLabel
         // Set up profile picture view
+        let profilePictureTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(showEditProfilePictureUI))
+        profilePictureView.addGestureRecognizer(profilePictureTapGestureRecognizer)
         profilePictureView.hexEncodedPublicKey = userHexEncodedPublicKey
         profilePictureView.update()
         // Set up display name label
         displayNameLabel.text = OWSProfileManager.shared().profileName(forRecipientId: userHexEncodedPublicKey)
+        // Set up display name container
+        let displayNameContainer = UIView()
+        displayNameContainer.addSubview(displayNameLabel)
+        displayNameLabel.pin(to: displayNameContainer)
+        displayNameContainer.addSubview(displayNameTextField)
+        displayNameTextField.pin(to: displayNameContainer)
+        displayNameContainer.set(.height, to: 40)
+        displayNameTextField.alpha = 0
+        let displayNameLabelTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(showEditDisplayNameUI))
+        displayNameContainer.addGestureRecognizer(displayNameLabelTapGestureRecognizer)
         // Set up header view
-        let headerStackView = UIStackView(arrangedSubviews: [ profilePictureView, displayNameLabel ])
+        let headerStackView = UIStackView(arrangedSubviews: [ profilePictureView, displayNameContainer ])
         headerStackView.axis = .vertical
         headerStackView.spacing = Values.smallSpacing
         headerStackView.alignment = .center
@@ -164,18 +187,97 @@ final class SettingsVC : UIViewController {
         return result
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        profilePictureView.update()
-        displayNameLabel.text = OWSProfileManager.shared().profileName(forRecipientId: userHexEncodedPublicKey)
-    }
-    
     // MARK: General
     @objc private func enableCopyButton() {
         copyButton.isUserInteractionEnabled = true
         UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
             self.copyButton.setTitle(NSLocalizedString("Copy", comment: ""), for: UIControl.State.normal)
         }, completion: nil)
+    }
+    
+    func avatarActionSheetTitle() -> String? {
+        return NSLocalizedString("Update Profile Picture", comment: "")
+    }
+    
+    func fromViewController() -> UIViewController {
+        return self
+    }
+    
+    func hasClearAvatarAction() -> Bool {
+        return true
+    }
+    
+    func clearAvatarActionLabel() -> String {
+        return NSLocalizedString("Clear", comment: "")
+    }
+    
+    // MARK: Updating
+    private func handleIsEditingDisplayNameChanged() {
+        updateNavigationBarButtons()
+        UIView.animate(withDuration: 0.25) {
+            self.displayNameLabel.alpha = self.isEditingDisplayName ? 0 : 1
+            self.displayNameTextField.alpha = self.isEditingDisplayName ? 1 : 0
+        }
+        if isEditingDisplayName {
+            displayNameTextField.becomeFirstResponder()
+        } else {
+            displayNameTextField.resignFirstResponder()
+        }
+    }
+    
+    private func updateNavigationBarButtons() {
+        if isEditingDisplayName {
+            let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleCancelDisplayNameEditingButtonTapped))
+            cancelButton.tintColor = Colors.text
+            navigationItem.leftBarButtonItem = cancelButton
+            let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(handleSaveDisplayNameButtonTapped))
+            doneButton.tintColor = Colors.text
+            navigationItem.rightBarButtonItem = doneButton
+        } else {
+            let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
+            closeButton.tintColor = Colors.text
+            navigationItem.leftBarButtonItem = closeButton
+            let qrCodeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "QRCodeFilled"), style: .plain, target: self, action: #selector(showQRCode))
+            qrCodeButton.tintColor = Colors.text
+            navigationItem.rightBarButtonItem = qrCodeButton
+        }
+    }
+    
+    func avatarDidChange(_ image: UIImage) {
+        let maxSize = Int(kOWSProfileManager_MaxAvatarDiameter)
+        profilePictureToBeUploaded = image.resizedImage(toFillPixelSize: CGSize(width: maxSize, height: maxSize))
+        updateProfile(isUpdatingDisplayName: false, isUpdatingProfilePicture: true)
+    }
+    
+    func clearAvatar() {
+        profilePictureToBeUploaded = nil
+        updateProfile(isUpdatingDisplayName: false, isUpdatingProfilePicture: true)
+    }
+    
+    private func updateProfile(isUpdatingDisplayName: Bool, isUpdatingProfilePicture: Bool) {
+        let displayName = displayNameToBeUploaded ?? OWSProfileManager.shared().profileName(forRecipientId: userHexEncodedPublicKey)
+        let profilePicture = profilePictureToBeUploaded ?? OWSProfileManager.shared().profileAvatar(forRecipientId: userHexEncodedPublicKey)
+        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] modalActivityIndicator in
+            OWSProfileManager.shared().updateLocalProfileName(displayName, avatarImage: profilePicture, success: {
+                DispatchQueue.main.async {
+                    modalActivityIndicator.dismiss {
+                        guard let self = self else { return }
+                        self.profilePictureView.update()
+                        self.displayNameLabel.text = displayName
+                        self.profilePictureToBeUploaded = nil
+                        self.displayNameToBeUploaded = nil
+                    }
+                }
+            }, failure: {
+                DispatchQueue.main.async {
+                    modalActivityIndicator.dismiss {
+                        let alert = UIAlertController(title: NSLocalizedString("Couldn't Update Profile", comment: ""), message: NSLocalizedString("Please check your internet connection and try again", comment: ""), preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+                        self?.present(alert, animated: true, completion: nil)
+                    }
+                }
+            })
+        }
     }
     
     // MARK: Interaction
@@ -186,6 +288,41 @@ final class SettingsVC : UIViewController {
     @objc private func showQRCode() {
         let qrCodeVC = QRCodeVC()
         navigationController!.pushViewController(qrCodeVC, animated: true)
+    }
+    
+    @objc private func handleCancelDisplayNameEditingButtonTapped() {
+        isEditingDisplayName = false
+    }
+    
+    @objc private func handleSaveDisplayNameButtonTapped() {
+        func showError(title: String, message: String = "") {
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+            presentAlert(alert)
+        }
+        let displayName = displayNameTextField.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        guard !displayName.isEmpty else {
+            return showError(title: NSLocalizedString("Please pick a display name", comment: ""))
+        }
+        let allowedCharacters = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_ ")
+        let hasInvalidCharacters = !displayName.allSatisfy { $0.unicodeScalars.allSatisfy { allowedCharacters.contains($0) } }
+        guard !hasInvalidCharacters else {
+            return showError(title: NSLocalizedString("Please pick a display name that consists of only a-z, A-Z, 0-9 and _ characters", comment: ""))
+        }
+        guard !OWSProfileManager.shared().isProfileNameTooLong(displayName) else {
+            return showError(title: NSLocalizedString("Please pick a shorter display name", comment: ""))
+        }
+        isEditingDisplayName = false
+        displayNameToBeUploaded = displayName
+        updateProfile(isUpdatingDisplayName: true, isUpdatingProfilePicture: false)
+    }
+    
+    @objc private func showEditProfilePictureUI() {
+        profilePictureUtilities.showChangeAvatarUI()
+    }
+    
+    @objc private func showEditDisplayNameUI() {
+        isEditingDisplayName = true
     }
     
     @objc private func copyPublicKey() {

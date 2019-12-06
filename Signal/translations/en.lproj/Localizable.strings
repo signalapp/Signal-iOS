@@ -2720,3 +2720,7 @@
 "Unlock Loki Messenger's screen using Touch ID, Face ID, or your iOS device passcode. You can still receive message notifications while Screen Lock is enabled. Loki Messenger's notification settings allow you to customize the information that is displayed." = "Unlock Loki Messenger's screen using Touch ID, Face ID, or your iOS device passcode. You can still receive message notifications while Screen Lock is enabled. Loki Messenger's notification settings allow you to customize the information that is displayed.";
 "Sound" = "Sound";
 "Content" = "Content";
+"Update Profile Picture" = "Update Profile Picture";
+"Couldn't Update Profile Picture" = "Couldn't Update Profile Picture";
+"Clear" = "Clear";
+"Enter a display name" = "Enter a display name";

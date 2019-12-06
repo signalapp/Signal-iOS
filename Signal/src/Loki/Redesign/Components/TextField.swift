@@ -1,7 +1,9 @@
 
 final class TextField : UITextField {
+    private let usesDefaultHeight: Bool
     
-    init(placeholder: String) {
+    init(placeholder: String, usesDefaultHeight: Bool = true) {
+        self.usesDefaultHeight = usesDefaultHeight
         super.init(frame: CGRect.zero)
         self.placeholder = placeholder
         setUpStyle()
@@ -24,17 +26,27 @@ final class TextField : UITextField {
         attributedPlaceholder = placeholder
         tintColor = Colors.accent
         keyboardAppearance = .dark
-        set(.height, to: Values.textFieldHeight)
+        if usesDefaultHeight {
+            set(.height, to: Values.textFieldHeight)
+        }
         layer.borderColor = Colors.border.withAlphaComponent(Values.textFieldBorderOpacity).cgColor
         layer.borderWidth = Values.borderThickness
         layer.cornerRadius = Values.textFieldCornerRadius
     }
     
     override func textRect(forBounds bounds: CGRect) -> CGRect {
-        return bounds.insetBy(dx: Values.largeSpacing, dy: Values.largeSpacing)
+        if usesDefaultHeight {
+            return bounds.insetBy(dx: Values.largeSpacing, dy: Values.largeSpacing)
+        } else {
+            return bounds.insetBy(dx: Values.mediumSpacing, dy: Values.smallSpacing)
+        }
     }
     
     override func editingRect(forBounds bounds: CGRect) -> CGRect {
-        return bounds.insetBy(dx: Values.largeSpacing, dy: Values.largeSpacing)
+        if usesDefaultHeight {
+            return bounds.insetBy(dx: Values.largeSpacing, dy: Values.largeSpacing)
+        } else {
+            return bounds.insetBy(dx: Values.mediumSpacing, dy: Values.smallSpacing)
+        }
     }
 }
