@@ -182,7 +182,7 @@ private final class EnterChatURLVC : UIViewController {
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
         // Next button
-        let nextButton = Button(style: .prominent, size: .large)
+        let nextButton = Button(style: .prominentOutline, size: .large)
         nextButton.setTitle(NSLocalizedString("Next", comment: ""), for: UIControl.State.normal)
         nextButton.addTarget(self, action: #selector(joinPublicChatIfPossible), for: UIControl.Event.touchUpInside)
         let nextButtonContainer = UIView()

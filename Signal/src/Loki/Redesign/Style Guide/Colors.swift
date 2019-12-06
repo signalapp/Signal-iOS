@@ -29,4 +29,6 @@ final class Colors : NSObject {
     @objc static let settingButtonSelected = UIColor(hex: 0x0C0C0C)
     @objc static let modalBackground = UIColor(hex: 0x101011)
     @objc static let modalBorder = UIColor(hex: 0x212121)
+    @objc static let fakeChatBubbleBackground = UIColor(hex: 0x3F4146)
+    @objc static let fakeChatBubbleText = UIColor(hex: 0x000000)
 }

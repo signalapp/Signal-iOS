@@ -47,7 +47,7 @@ final class SettingsVC : UIViewController, AvatarViewHelperDelegate {
     }()
     
     private lazy var copyButton: Button = {
-        let result = Button(style: .prominent, size: .medium)
+        let result = Button(style: .prominentOutline, size: .medium)
         result.setTitle(NSLocalizedString("Copy", comment: ""), for: UIControl.State.normal)
         result.addTarget(self, action: #selector(copyPublicKey), for: UIControl.Event.touchUpInside)
         return result

@@ -43,6 +43,13 @@ extension UIView {
         [ VerticalEdge.top, VerticalEdge.bottom ].forEach { pin($0, to: $0, of: view) }
     }
     
+    func pin(to view: UIView, withInset inset: CGFloat) {
+        pin(.leading, to: .leading, of: view, withInset: inset)
+        pin(.top, to: .top, of: view, withInset: inset)
+        view.pin(.trailing, to: .trailing, of: self, withInset: inset)
+        view.pin(.bottom, to: .bottom, of: self, withInset: inset)
+    }
+    
     @discardableResult
     func center(_ direction: Direction, in view: UIView) -> NSLayoutConstraint {
         translatesAutoresizingMaskIntoConstraints = false

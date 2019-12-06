@@ -567,6 +567,8 @@
 		B821F2F82272CED3002C88C0 /* DisplayNameVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F72272CED3002C88C0 /* DisplayNameVC.swift */; };
 		B821F2FA2272CEEE002C88C0 /* SeedVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F92272CEEE002C88C0 /* SeedVC.swift */; };
 		B82584A02315024B001B41CB /* LokiRSSFeedPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */; };
+		B82B40882399EB0E00A248E7 /* LandingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B40872399EB0E00A248E7 /* LandingVC.swift */; };
+		B82B408A2399EC0600A248E7 /* FakeChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B40892399EC0600A248E7 /* FakeChatView.swift */; };
 		B846365B22B7418B00AF1514 /* Identicon+ObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */; };
 		B84664F5235022F30083A1CD /* MentionUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84664F4235022F30083A1CD /* MentionUtilities.swift */; };
 		B86BD08423399ACF000F5AE3 /* Modal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08323399ACF000F5AE3 /* Modal.swift */; };
@@ -1397,6 +1399,8 @@
 		B821F2F72272CED3002C88C0 /* DisplayNameVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayNameVC.swift; sourceTree = "<group>"; };
 		B821F2F92272CEEE002C88C0 /* SeedVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedVC.swift; sourceTree = "<group>"; };
 		B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokiRSSFeedPoller.swift; sourceTree = "<group>"; };
+		B82B40872399EB0E00A248E7 /* LandingVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingVC.swift; sourceTree = "<group>"; };
+		B82B40892399EC0600A248E7 /* FakeChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeChatView.swift; sourceTree = "<group>"; };
 		B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Identicon+ObjC.swift"; sourceTree = "<group>"; };
 		B84664F4235022F30083A1CD /* MentionUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionUtilities.swift; sourceTree = "<group>"; };
 		B86BD08323399ACF000F5AE3 /* Modal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modal.swift; sourceTree = "<group>"; };
@@ -2770,6 +2774,7 @@
 			children = (
 				B8B5BCEB2394D869003823C9 /* Button.swift */,
 				B8BB82AA238F669C00BA5194 /* ConversationCell.swift */,
+				B82B40892399EC0600A248E7 /* FakeChatView.swift */,
 				B8BB82AC238F734800BA5194 /* ProfilePictureView.swift */,
 				B8BB82B02390C37000BA5194 /* SearchBar.swift */,
 				B8BB82B82394911B00BA5194 /* Separator.swift */,
@@ -2797,6 +2802,7 @@
 				B80C6B582384C4E700FDBC8B /* DeviceNameModal.swift */,
 				B80C6B5A2384C7F900FDBC8B /* DeviceNameModalDelegate.swift */,
 				B8BB82A4238F627000BA5194 /* HomeVC.swift */,
+				B82B40872399EB0E00A248E7 /* LandingVC.swift */,
 				B86BD08323399ACF000F5AE3 /* Modal.swift */,
 				B8CCF63623961D6D0091D419 /* NewPrivateChatVC.swift */,
 				B894D0742339EDCF00B4D94D /* NukeDataModal.swift */,
@@ -3846,8 +3852,10 @@
 				34B6A907218B5241007C4606 /* TypingIndicatorCell.swift in Sources */,
 				4CFD151D22415AA400F2450F /* CallVideoHintView.swift in Sources */,
 				34D1F0AB1F867BFC0066283D /* OWSContactOffersCell.m in Sources */,
+				B82B408A2399EC0600A248E7 /* FakeChatView.swift in Sources */,
 				B8BB82B92394911B00BA5194 /* Separator.swift in Sources */,
 				343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */,
+				B82B40882399EB0E00A248E7 /* LandingVC.swift in Sources */,
 				34386A51207D0C01009F5D9C /* HomeViewController.m in Sources */,
 				34D1F0A91F867BFC0066283D /* ConversationViewCell.m in Sources */,
 				34A4C62022175C5C0042EF2E /* OnboardingProfileViewController.swift in Sources */,

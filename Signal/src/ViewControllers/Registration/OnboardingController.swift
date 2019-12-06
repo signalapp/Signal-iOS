@@ -90,9 +90,7 @@ public class OnboardingController: NSObject {
     @objc
     public func initialViewController() -> UIViewController {
         AssertIsOnMainThread()
-
-        let view = OnboardingSplashViewController(onboardingController: self)
-        return view
+        return LandingVC()
     }
 
     // MARK: - Transitions

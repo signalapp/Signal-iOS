@@ -24,7 +24,7 @@ final class DeviceLinksVC : UIViewController, UITableViewDataSource, UITableView
         explanationLabel.lineBreakMode = .byWordWrapping
         explanationLabel.textAlignment = .center
         explanationLabel.text = NSLocalizedString("You don't have any linked devices yet", comment: "")
-        let linkNewDeviceButton = Button(style: .prominent, size: .medium)
+        let linkNewDeviceButton = Button(style: .prominentOutline, size: .medium)
         linkNewDeviceButton.setTitle(NSLocalizedString("Link a Device", comment: ""), for: UIControl.State.normal)
         linkNewDeviceButton.addTarget(self, action: #selector(linkNewDevice), for: UIControl.Event.touchUpInside)
         linkNewDeviceButton.set(.width, to: 160)

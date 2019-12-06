@@ -1422,7 +1422,7 @@ static NSTimeInterval launchStartedAt;
         }
     } else {
         rootViewController = [[OnboardingController new] initialViewController];
-        navigationBarHidden = YES;
+        navigationBarHidden = NO;
     }
     OWSAssertDebug(rootViewController);
     OWSNavigationController *navigationController =
