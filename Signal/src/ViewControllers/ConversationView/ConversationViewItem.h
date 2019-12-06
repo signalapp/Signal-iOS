@@ -173,7 +173,6 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 
 - (void)copyMediaAction;
 - (void)copyTextAction;
-- (void)shareMediaAction;
 - (void)saveMediaAction;
 - (void)deleteAction;
 

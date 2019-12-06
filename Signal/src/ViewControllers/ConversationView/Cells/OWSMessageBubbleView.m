@@ -1556,7 +1556,7 @@ NS_ASSUME_NONNULL_BEGIN
                     [OWSMimeTypePdf isEqualToString:self.viewItem.attachmentStream.contentType]) {
                     [self.delegate didTapPdfForItem:self.viewItem attachmentStream:self.viewItem.attachmentStream];
                 } else {
-                    [AttachmentSharing showShareUIForAttachment:self.viewItem.attachmentStream];
+                    [AttachmentSharing showShareUIForAttachment:self.viewItem.attachmentStream sender:self];
                 }
             }
             break;

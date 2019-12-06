@@ -363,7 +363,7 @@
                     return
                 }
 
-                AttachmentSharing.showShareUI(for: strongSelf.fileURL)
+                AttachmentSharing.showShareUI(for: strongSelf.fileURL, sender: nil)
             }
             managementItems.append(shareItem)
         }
