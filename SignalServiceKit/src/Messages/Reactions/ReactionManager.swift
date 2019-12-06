@@ -31,11 +31,26 @@ public class ReactionManager: NSObject {
             return owsFailDebug("missing local address")
         }
 
+        // Though we generally don't parse the expiration timer from
+        // reaction messages, older desktop instances will read it
+        // from the "unsupported" message resulting in the timer
+        // clearing. So we populate it to ensure that does not happen.
+        let expiresInSeconds: UInt32
+        if let configuration = OWSDisappearingMessagesConfiguration.anyFetch(
+            uniqueId: message.uniqueThreadId,
+            transaction: transaction
+        ), configuration.isEnabled {
+            expiresInSeconds = configuration.durationSeconds
+        } else {
+            expiresInSeconds = 0
+        }
+
         let outgoingMessage = OWSOutgoingReactionMessage(
             thread: message.thread(transaction: transaction),
             message: message,
             emoji: emoji,
-            isRemoving: isRemoving
+            isRemoving: isRemoving,
+            expiresInSeconds: expiresInSeconds
         )
 
         outgoingMessage.previousReaction = message.reaction(for: localAddress, transaction: transaction)

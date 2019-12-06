@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
                        message:(TSMessage *)message
                          emoji:(NSString *)emoji
                     isRemoving:(BOOL)isRemoving
+              expiresInSeconds:(uint32_t)expiresInSeconds
 {
     OWSAssertDebug([thread.uniqueId isEqualToString:message.uniqueThreadId]);
     OWSAssertDebug(emoji.isSingleEmoji);
@@ -33,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
                                           inThread:thread
                                        messageBody:nil
                                      attachmentIds:[NSMutableArray new]
-                                  expiresInSeconds:0
+                                  expiresInSeconds:expiresInSeconds
                                    expireStartedAt:0
                                     isVoiceMessage:NO
                                   groupMetaMessage:TSGroupMetaMessageUnspecified

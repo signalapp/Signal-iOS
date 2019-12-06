@@ -26,7 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread
                        message:(TSMessage *)message
                          emoji:(NSString *)emoji
-                    isRemoving:(BOOL)isRemoving;
+                    isRemoving:(BOOL)isRemoving
+              expiresInSeconds:(uint32_t)expiresInSeconds;
 
 @property (nonatomic, nullable) OWSReaction *createdReaction;
 @property (nonatomic, nullable) OWSReaction *previousReaction;
