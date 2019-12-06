@@ -439,6 +439,10 @@ typedef void (^CustomLayoutBlock)(void);
         }
     };
 
+    if (activityController.popoverPresentationController) {
+        activityController.popoverPresentationController.barButtonItem = self.shareButton;
+    }
+
     // This value was extracted by inspecting `activityType` in the activityController.completionHandler
     NSString *const iCloudActivityType = @"com.apple.CloudDocsUI.AddToiCloudDrive";
     activityController.excludedActivityTypes = @[

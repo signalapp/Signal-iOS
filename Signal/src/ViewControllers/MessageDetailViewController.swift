@@ -552,12 +552,12 @@ class MessageDetailViewController: OWSViewController {
 
     // MARK: - Actions
 
-    @objc func shareButtonPressed() {
+    @objc func shareButtonPressed(_ sender: UIBarButtonItem) {
         guard let attachmentStream = attachmentStream else {
             Logger.error("Share button should only be shown with attachment, but no attachment found.")
             return
         }
-        AttachmentSharing.showShareUI(forAttachment: attachmentStream)
+        AttachmentSharing.showShareUI(forAttachment: attachmentStream, sender: sender)
     }
 
     // MARK: - Actions

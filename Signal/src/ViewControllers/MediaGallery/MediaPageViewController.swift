@@ -406,7 +406,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }
 
     @objc
-    public func didPressShare(_ sender: Any) {
+    public func didPressShare(_ sender: UIBarButtonItem) {
         guard let currentViewController = self.viewControllers?[0] as? MediaDetailViewController else {
             owsFailDebug("currentViewController was unexpectedly nil")
             return
@@ -414,7 +414,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         let attachmentStream = currentViewController.galleryItem.attachmentStream
 
-        AttachmentSharing.showShareUI(forAttachment: attachmentStream)
+        AttachmentSharing.showShareUI(forAttachment: attachmentStream, sender: sender)
     }
 
     @objc
