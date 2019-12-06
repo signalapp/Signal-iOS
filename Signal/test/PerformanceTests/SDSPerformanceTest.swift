@@ -255,7 +255,7 @@ class SDSPerformanceTest: PerformanceBaseTest {
         }
 
         write { transaction in
-            let createBlockingSafetyNumberChanges = { ( count: UInt, markAsRead: Bool ) in
+            let createBlockingSafetyNumberChanges = { ( count: Int, markAsRead: Bool ) in
                 for _ in 0..<count {
                     let envelope = self.buildEnvelope(for: thread)
                     let message = TSInvalidIdentityKeyReceivingErrorMessage.untrustedKey(with: envelope,
@@ -267,7 +267,7 @@ class SDSPerformanceTest: PerformanceBaseTest {
                 }
             }
 
-            let createNonBlockingSafetyNumberChanges = { ( count: UInt, markAsRead: Bool ) in
+            let createNonBlockingSafetyNumberChanges = { ( count: Int, markAsRead: Bool ) in
                 for _ in 0..<count {
                     let address = thread.contactAddress
                     let timestamp = NSDate.ows_millisecondTimeStamp()
@@ -282,7 +282,7 @@ class SDSPerformanceTest: PerformanceBaseTest {
                 }
             }
 
-            let createNormalMessages = { ( count: UInt, markAsRead: Bool ) in
+            let createNormalMessages = { ( count: Int, markAsRead: Bool ) in
                 let factory = IncomingMessageFactory()
                 factory.threadCreator = { _ in return thread }
                 for _ in 0..<count {
@@ -294,8 +294,8 @@ class SDSPerformanceTest: PerformanceBaseTest {
                 }
             }
 
-            let safetyNumberChangeCount: UInt = 100
-            let normalMessageCount: UInt = 3000
+            let safetyNumberChangeCount: Int = 100
+            let normalMessageCount: Int = 10000
 
             createBlockingSafetyNumberChanges(safetyNumberChangeCount, true)
             createNonBlockingSafetyNumberChanges(safetyNumberChangeCount, true)
@@ -303,6 +303,11 @@ class SDSPerformanceTest: PerformanceBaseTest {
             createNormalMessages(1, false)
             createBlockingSafetyNumberChanges(1, false)
             createNonBlockingSafetyNumberChanges(1, false)
+
+            let expectedMessageCount = (safetyNumberChangeCount * 2 +
+                    normalMessageCount + 3)
+            XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
+            XCTAssertEqual(expectedMessageCount, TSInteraction.anyFetchAll(transaction: transaction).count)
         }
     }
 
