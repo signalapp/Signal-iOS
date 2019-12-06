@@ -3,7 +3,6 @@
 //
 
 #import "ThreadUtil.h"
-#import "OWSContactsManager.h"
 #import "OWSQuotedReplyModel.h"
 #import "OWSUnreadIndicator.h"
 #import <SignalCoreKit/NSDate+OWS.h>
@@ -12,7 +11,6 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSUnknownContactBlockOfferMessage.h>
@@ -81,11 +79,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (OWSProfileManager *)profileManager
 {
     return SSKEnvironment.shared.profileManager;
-}
-
-+ (OWSContactsManager *)contactsManager
-{
-    return Environment.shared.contactsManager;
 }
 
 + (TSAccountManager *)tsAccountManager
@@ -435,8 +428,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Dynamic Interactions
 
 + (ThreadDynamicInteractions *)ensureDynamicInteractionsForThread:(TSThread *)thread
-                                                  contactsManager:(OWSContactsManager *)contactsManager
-                                                  blockingManager:(OWSBlockingManager *)blockingManager
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
                                               lastUnreadIndicator:(nullable OWSUnreadIndicator *)lastUnreadIndicator
                                                    focusMessageId:(nullable NSString *)focusMessageId
@@ -444,8 +435,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                       transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
-    OWSAssertDebug(contactsManager);
-    OWSAssertDebug(blockingManager);
     OWSAssertDebug(maxRangeSize > 0);
     OWSAssertDebug(transaction);
 
@@ -484,32 +473,49 @@ NS_ASSUME_NONNULL_BEGIN
     // We use different views for performance reasons.
     NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *blockingSafetyNumberChanges = [NSMutableArray new];
     NSMutableArray<TSInteraction *> *nonBlockingSafetyNumberChanges = [NSMutableArray new];
-    // POSTYDB TODO: Make separate finder methods to find these messages.
     if (firstUnseenSortId != nil) {
         [interactionFinder
-            enumerateSpecialMessagesWithTransaction:transaction
-                                              block:^(TSInteraction *interaction, BOOL *stop) {
-                                                  if (interaction.sortId < firstUnseenSortId.unsignedLongLongValue) {
-                                                      // We only care about unseen safety number changes.
-                                                      *stop = YES;
-                                                      return;
-                                                  }
-
-                                                  if ([interaction
-                                                          isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
-                                                      TSInvalidIdentityKeyErrorMessage *errorMessage
-                                                          = (TSInvalidIdentityKeyErrorMessage *)interaction;
-                                                      [blockingSafetyNumberChanges addObject:errorMessage];
-                                                  } else if ([interaction isKindOfClass:[TSErrorMessage class]]) {
-                                                      TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
-                                                      OWSAssertDebug(errorMessage.errorType
-                                                          == TSErrorMessageNonBlockingIdentityChange);
-                                                      [nonBlockingSafetyNumberChanges addObject:errorMessage];
-                                                  } else {
-                                                      OWSFailDebug(@"Unexpected dynamic interaction type: %@",
-                                                          [interaction class]);
-                                                  }
-                                              }];
+            enumerateBlockingSafetyNumberChangesWithTransaction:transaction
+                                                          block:^(TSInteraction *interaction, BOOL *stop) {
+                                                              if (interaction.sortId
+                                                                  < firstUnseenSortId.unsignedLongLongValue) {
+                                                                  // We only care about unseen safety number changes.
+                                                                  return;
+                                                              }
+                                                              if (![interaction
+                                                                      isKindOfClass:[TSInvalidIdentityKeyErrorMessage
+                                                                                        class]]) {
+                                                                  OWSFailDebug(
+                                                                      @"Unexpected dynamic interaction type: %@",
+                                                                      [interaction class]);
+                                                                  return;
+                                                              }
+                                                              TSInvalidIdentityKeyErrorMessage *errorMessage
+                                                                  = (TSInvalidIdentityKeyErrorMessage *)interaction;
+                                                              [blockingSafetyNumberChanges addObject:errorMessage];
+                                                          }];
+        [interactionFinder
+            enumerateNonBlockingSafetyNumberChangesWithTransaction:transaction
+                                                             block:^(TSInteraction *interaction, BOOL *stop) {
+                                                                 if (interaction.sortId
+                                                                     < firstUnseenSortId.unsignedLongLongValue) {
+                                                                     // We only care about unseen safety number changes.
+                                                                     return;
+                                                                 }
+                                                                 if (![interaction
+                                                                         isKindOfClass:[TSErrorMessage class]]) {
+                                                                     OWSFailDebug(
+                                                                         @"Unexpected dynamic interaction type: %@",
+                                                                         [interaction class]);
+                                                                     return;
+                                                                 }
+                                                                 TSErrorMessage *errorMessage
+                                                                     = (TSErrorMessage *)interaction;
+                                                                 OWSAssertDebug(errorMessage.errorType
+                                                                     == TSErrorMessageNonBlockingIdentityChange);
+                                                                 [nonBlockingSafetyNumberChanges
+                                                                     addObject:errorMessage];
+                                                             }];
     }
 
     [self ensureUnreadIndicator:result
