@@ -42,21 +42,24 @@ final class LandingVC : UIViewController {
         // Set up main stack view
         let mainStackView = UIStackView(arrangedSubviews: [ titleLabelContainer, fakeChatView ])
         mainStackView.axis = .vertical
-        mainStackView.spacing = Values.mediumSpacing // The fake chat view has an internal top margin
+        mainStackView.spacing = Values.mediumSpacing // Not largeSpacing as the fake chat view has an internal top margin
         mainStackView.alignment = .fill
         view.addSubview(mainStackView)
         mainStackView.pin(.leading, to: .leading, of: view)
         view.pin(.trailing, to: .trailing, of: mainStackView)
         mainStackView.set(.height, to: Values.fakeChatViewHeight)
-        mainStackView.center(.vertical, in: view)
+        let verticalCenteringConstraint = mainStackView.center(.vertical, in: view)
+        verticalCenteringConstraint.constant = -20
         // Set up view
         let screen = UIScreen.main.bounds
+        view.frame = screen
         view.set(.width, to: screen.width)
         view.set(.height, to: screen.height)
         // Set up register button
         let registerButton = Button(style: .prominentFilled, size: .large)
         registerButton.setTitle(NSLocalizedString("Create Account", comment: ""), for: UIControl.State.normal)
         registerButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        registerButton.addTarget(self, action: #selector(register), for: UIControl.Event.touchUpInside)
         // Set up restore button
         let restoreButton = Button(style: .prominentOutline, size: .large)
         restoreButton.setTitle(NSLocalizedString("Continue your Loki Messenger", comment: ""), for: UIControl.State.normal)
@@ -69,6 +72,12 @@ final class LandingVC : UIViewController {
         view.addSubview(buttonStackView)
         buttonStackView.pin(.leading, to: .leading, of: view, withInset: Values.massiveSpacing)
         view.pin(.trailing, to: .trailing, of: buttonStackView, withInset: Values.massiveSpacing)
-        view.pin(.bottom, to: .bottom, of: buttonStackView, withInset: Values.restoreButtonBottomOffset)
+        view.pin(.bottom, to: .bottom, of: buttonStackView, withInset: Values.onboardingButtonBottomOffset)
+    }
+    
+    // MARK: Interaction
+    @objc private func register() {
+        let publicKeyVC = PublicKeyVC()
+        navigationController!.pushViewController(publicKeyVC, animated: true)
     }
 }

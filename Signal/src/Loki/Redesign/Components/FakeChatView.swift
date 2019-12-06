@@ -46,6 +46,9 @@ final class FakeChatView : UIView {
         let bubbleView = UIView()
         bubbleView.set(.width, to: Values.fakeChatBubbleWidth)
         bubbleView.layer.cornerRadius = Values.fakeChatBubbleCornerRadius
+        bubbleView.layer.shadowColor = UIColor.black.cgColor
+        bubbleView.layer.shadowRadius = 8
+        bubbleView.layer.shadowOpacity = 0.64
         let backgroundColor = wasSentByCurrentUser ? Colors.accent : Colors.fakeChatBubbleBackground
         bubbleView.backgroundColor = backgroundColor
         let label = UILabel()
@@ -56,7 +59,7 @@ final class FakeChatView : UIView {
         label.lineBreakMode = .byWordWrapping
         label.text = text
         bubbleView.addSubview(label)
-        label.pin(to: bubbleView, withInset: Values.smallSpacing)
+        label.pin(to: bubbleView, withInset: 12)
         result.addSubview(bubbleView)
         bubbleView.pin(.top, to: .top, of: result)
         result.pin(.bottom, to: .bottom, of: bubbleView)
