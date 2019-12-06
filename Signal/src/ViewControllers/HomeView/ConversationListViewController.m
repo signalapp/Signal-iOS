@@ -1312,7 +1312,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     if (!self.splitViewController.isCollapsed) {
         cell.selectedBackgroundView.backgroundColor
             = Theme.isDarkThemeEnabled ? UIColor.ows_gray65Color : UIColor.ows_gray15Color;
-        cell.contentView.backgroundColor = Theme.secondaryBackgroundColor;
         cell.backgroundColor = Theme.secondaryBackgroundColor;
     }
 

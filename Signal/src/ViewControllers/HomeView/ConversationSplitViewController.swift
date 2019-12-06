@@ -84,6 +84,9 @@ class ConversationSplitViewController: UISplitViewController {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 
+        // We don't want to hide anything on iOS 13, as the extra subview no longer exists
+        if #available(iOS 13, *) { hasHiddenExtraSubivew = true }
+
         // HACK: UISplitViewController adds an extra subview behind the navigation
         // bar area that extends across both views. As far as I can tell, it's not
         // possible to adjust the color of this view. It gets reset constantly.
