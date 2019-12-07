@@ -554,7 +554,9 @@ NS_ASSUME_NONNULL_BEGIN
 
         // OWSUserProfile
         [[OWSUserProfile getOrBuildUserProfileForAddress:address1
-                                             transaction:transaction] updateWithUsername:nil transaction:transaction];
+                                             transaction:transaction] updateWithUsername:nil
+                                                                           isUuidCapable:YES
+                                                                             transaction:transaction];
 
         // OWSBackupFragment
         //

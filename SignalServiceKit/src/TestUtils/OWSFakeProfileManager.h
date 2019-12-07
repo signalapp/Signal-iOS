@@ -10,6 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSFakeProfileManager : NSObject <ProfileManagerProtocol>
 
+@property (nonatomic) NSMutableDictionary<SignalServiceAddress *, NSNumber *> *stubbedUuidCapabilitiesMap;
+
 @end
 
 #endif

@@ -341,6 +341,7 @@ CREATE
             ,"recipientUUID" TEXT
             ,"username" TEXT
             ,"familyName" TEXT
+            ,"isUuidCapable" BOOLEAN NOT NULL DEFAULT 0
         )
 ;
 
