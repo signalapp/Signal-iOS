@@ -122,6 +122,7 @@
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSInfoMessage.h>
+#import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
