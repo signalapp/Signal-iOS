@@ -32,7 +32,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
     SSKProtoEnvelope *_Nullable _envelope;
 }
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 // We no longer create these messages, but they might exist on legacy clients so it's useful to be able to
 // create them with the debug UI
 + (nullable instancetype)untrustedKeyWithEnvelope:(SSKProtoEnvelope *)envelope

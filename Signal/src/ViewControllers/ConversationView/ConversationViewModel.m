@@ -539,8 +539,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     ThreadDynamicInteractions *dynamicInteractions =
         [ThreadUtil ensureDynamicInteractionsForThread:self.thread
-                                       contactsManager:self.contactsManager
-                                       blockingManager:self.blockingManager
                            hideUnreadMessagesIndicator:self.hasClearedUnreadMessagesIndicator
                                    lastUnreadIndicator:self.dynamicInteractions.unreadIndicator
                                         focusMessageId:self.focusMessageIdOnOpen

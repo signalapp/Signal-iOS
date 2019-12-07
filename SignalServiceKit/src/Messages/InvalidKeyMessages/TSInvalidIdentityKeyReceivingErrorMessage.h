@@ -47,7 +47,7 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueTh
 
 // --- CODE GENERATION MARKER
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 + (nullable instancetype)untrustedKeyWithEnvelope:(SSKProtoEnvelope *)envelope
                                   withTransaction:(SDSAnyWriteTransaction *)transaction;
 #endif

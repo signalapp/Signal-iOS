@@ -48,8 +48,12 @@ protocol InteractionFinderAdapter {
     func enumerateUnstartedExpiringMessages(transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void)
     #endif
 
-    // Interactions are enumerated in reverse order.
+    // Interactions are enumerated in no particular order.
     func enumerateSpecialMessages(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void)
+    // Interactions are enumerated in no particular order.
+    func enumerateBlockingSafetyNumberChanges(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void)
+    // Interactions are enumerated in no particular order.
+    func enumerateNonBlockingSafetyNumberChanges(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void)
 
     // The "reverse" index of the interaction. e.g. the last interaction
     // in the conversation will have position 0, the second-to-last will
@@ -358,6 +362,26 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     @objc
+    public func enumerateBlockingSafetyNumberChanges(transaction: SDSAnyReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return yapAdapter.enumerateBlockingSafetyNumberChanges(transaction: yapRead, block: block)
+        case .grdbRead(let grdbRead):
+            return grdbAdapter.enumerateBlockingSafetyNumberChanges(transaction: grdbRead, block: block)
+        }
+    }
+
+    @objc
+    public func enumerateNonBlockingSafetyNumberChanges(transaction: SDSAnyReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return yapAdapter.enumerateNonBlockingSafetyNumberChanges(transaction: yapRead, block: block)
+        case .grdbRead(let grdbRead):
+            return grdbAdapter.enumerateNonBlockingSafetyNumberChanges(transaction: grdbRead, block: block)
+        }
+    }
+
+    @objc
     public func threadPositionForInteraction(transaction: SDSAnyReadTransaction, interactionId: String) -> NSNumber? {
         switch transaction.readTransaction {
         case .yapRead(let yapRead):
@@ -589,6 +613,45 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
                                                 return
                                             }
                                             block(interaction, stopPtr)
+        }
+    }
+
+    func enumerateBlockingSafetyNumberChanges(transaction: YapDatabaseReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        guard let view: YapDatabaseViewTransaction = transaction.safeViewTransaction(TSThreadSpecialMessagesDatabaseViewExtensionName) else {
+            return
+        }
+        view.safe_enumerateKeysAndObjects(inGroup: threadUniqueId,
+                                          extensionName: TSThreadSpecialMessagesDatabaseViewExtensionName,
+                                          with: NSEnumerationOptions.reverse) { (_, _, object, _, stopPtr) in
+                                            guard let interaction = object as? TSInteraction else {
+                                                owsFailDebug("unexpected interaction: \(type(of: object))")
+                                                return
+                                            }
+                                            guard let message = interaction as? TSInvalidIdentityKeyErrorMessage else {
+                                                return
+                                            }
+                                            block(message, stopPtr)
+        }
+    }
+
+    func enumerateNonBlockingSafetyNumberChanges(transaction: YapDatabaseReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        guard let view: YapDatabaseViewTransaction = transaction.safeViewTransaction(TSThreadSpecialMessagesDatabaseViewExtensionName) else {
+            return
+        }
+        view.safe_enumerateKeysAndObjects(inGroup: threadUniqueId,
+                                          extensionName: TSThreadSpecialMessagesDatabaseViewExtensionName,
+                                          with: NSEnumerationOptions.reverse) { (_, _, object, _, stopPtr) in
+                                            guard let interaction = object as? TSInteraction else {
+                                                owsFailDebug("unexpected interaction: \(type(of: object))")
+                                                return
+                                            }
+                                            guard let message = interaction as? TSErrorMessage else {
+                                                return
+                                            }
+                                            guard message.errorType == .nonBlockingIdentityChange else {
+                                                return
+                                            }
+                                            block(message, stopPtr)
         }
     }
 
@@ -1077,6 +1140,70 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
             while let interaction = try cursor.next() {
                 guard interaction.isSpecialMessage else {
                     owsFailDebug("Not isSpecialMessage.")
+                    continue
+                }
+                var stop: ObjCBool = false
+                block(interaction, &stop)
+                if stop.boolValue {
+                    return
+                }
+            }
+        } catch {
+            owsFail("error: \(error)")
+        }
+    }
+
+    func enumerateBlockingSafetyNumberChanges(transaction: GRDBReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        let sql = """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND \(interactionColumn: .recordType) IN ( ?, ?, ? )
+        """
+        let arguments: StatementArguments = [threadUniqueId,
+                                             SDSRecordType.invalidIdentityKeyErrorMessage.rawValue,
+                                             SDSRecordType.invalidIdentityKeyReceivingErrorMessage.rawValue,
+                                             SDSRecordType.invalidIdentityKeySendingErrorMessage.rawValue
+        ]
+        let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
+        do {
+            while let interaction = try cursor.next() {
+                guard nil != interaction as? TSInvalidIdentityKeyErrorMessage else {
+                    owsFailDebug("Unexpected interaction: \(type(of: interaction)).")
+                    continue
+                }
+                var stop: ObjCBool = false
+                block(interaction, &stop)
+                if stop.boolValue {
+                    return
+                }
+            }
+        } catch {
+            owsFail("error: \(error)")
+        }
+    }
+
+    func enumerateNonBlockingSafetyNumberChanges(transaction: GRDBReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        let sql = """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND \(interactionColumn: .errorType) IS ?
+        AND \(interactionColumn: .recordType) IS ?
+        """
+        let arguments: StatementArguments = [threadUniqueId,
+                                             TSErrorMessageType.nonBlockingIdentityChange.rawValue,
+                                             SDSRecordType.errorMessage.rawValue
+        ]
+        let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
+        do {
+            while let interaction = try cursor.next() {
+                guard let message = interaction as? TSErrorMessage else {
+                    owsFailDebug("Unexpected interaction: \(type(of: interaction)).")
+                    continue
+                }
+                guard message.errorType == .nonBlockingIdentityChange else {
+                    owsFailDebug("Unexpected errorType: \(message.errorType).")
                     continue
                 }
                 var stop: ObjCBool = false
