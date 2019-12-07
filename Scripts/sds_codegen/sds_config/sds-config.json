@@ -46,6 +46,7 @@
 	},
 	"class_to_skip_serialization": [
 		"OWSOutgoingSyncMessage",
+		"OWSOutgoingReactionMessage",
 		"OWSEndSessionMessage",
 		"OWSDynamicOutgoingMessage",
 		"OWSDisappearingMessagesConfigurationMessage",
