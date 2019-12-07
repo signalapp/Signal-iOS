@@ -5,7 +5,7 @@
 import Foundation
 
 class EmojiReactorsTableView: UITableView {
-    private var reactorItems = [(thread: TSContactThread, displayName: String)]()
+    private var reactorItems = [(thread: TSContactThread, displayName: String, profileName: String?)]()
 
     var contactsManager: OWSContactsManager {
         return Environment.shared.contactsManager
@@ -38,10 +38,17 @@ class EmojiReactorsTableView: UITableView {
                 owsFailDebug("unexpectedly missing thread for address: \(address)")
                 return nil
             }
-            return (
-                thread: thread,
-                displayName: contactsManager.displayName(for: thread, transaction: transaction)
-            )
+
+            let displayName = contactsManager.displayName(for: thread, transaction: transaction)
+
+            let profileName: String?
+            if FeatureFlags.profileDisplayChanges || contactsManager.hasNameInSystemContacts(for: address) {
+                profileName = nil
+            } else {
+                profileName = contactsManager.formattedProfileName(for: address, transaction: transaction)
+            }
+
+            return (thread: thread, displayName: displayName, profileName: profileName)
         }
     }
 }
@@ -58,13 +65,13 @@ extension EmojiReactorsTableView: UITableViewDataSource {
             return cell
         }
 
-        guard let (thread, displayName) = reactorItems[safe: indexPath.row] else {
+        guard let (thread, displayName, profileName) = reactorItems[safe: indexPath.row] else {
             owsFailDebug("unexpected indexPath")
             return cell
         }
 
         contactCell.backgroundColor = .clear
-        contactCell.configure(thread: thread, displayName: displayName)
+        contactCell.configure(thread: thread, displayName: displayName, profileName: profileName)
 
         return contactCell
     }
@@ -76,6 +83,7 @@ private class EmojiReactorCell: UITableViewCell {
     let avatarView = AvatarImageView()
     let avatarDiameter: CGFloat = 36
     let nameLabel = UILabel()
+    let profileLabel = UILabel()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -90,19 +98,27 @@ private class EmojiReactorCell: UITableViewCell {
         avatarView.autoPinHeightToSuperviewMargins()
         avatarView.autoSetDimensions(to: CGSize(square: avatarDiameter))
 
+        let labelStackView = UIStackView()
+        labelStackView.axis = .vertical
+        contentView.addSubview(labelStackView)
+        labelStackView.autoPinTrailingToSuperviewMargin()
+        labelStackView.autoPinLeading(toTrailingEdgeOf: avatarView, offset: 8)
+        labelStackView.autoPinHeightToSuperviewMargins()
+
         nameLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
         nameLabel.textColor = Theme.primaryTextColor
-        contentView.addSubview(nameLabel)
-        nameLabel.autoPinTrailingToSuperviewMargin()
-        nameLabel.autoPinLeading(toTrailingEdgeOf: avatarView, offset: 8)
-        nameLabel.autoAlignAxis(.horizontal, toSameAxisOf: avatarView)
+        labelStackView.addArrangedSubview(nameLabel)
+
+        profileLabel.font = .ows_dynamicTypeCaption1Clamped
+        profileLabel.textColor = Theme.secondaryTextAndIconColor
+        labelStackView.addArrangedSubview(profileLabel)
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(thread: TSContactThread, displayName: String) {
+    func configure(thread: TSContactThread, displayName: String, profileName: String?) {
 
         let avatarBuilder = OWSContactAvatarBuilder(
             address: thread.contactAddress,
@@ -116,9 +132,12 @@ private class EmojiReactorCell: UITableViewCell {
                 comment: "Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}}"
             ), displayName)
             avatarView.image = OWSProfileManager.shared().localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
+            profileLabel.isHidden = true
         } else {
             nameLabel.text = displayName
             avatarView.image = avatarBuilder.build()
+            profileLabel.text = profileName
+            profileLabel.isHidden = profileName == nil
         }
     }
 }
