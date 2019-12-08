@@ -1,6 +1,13 @@
 
 final class LandingVC : UIViewController {
     
+    // MARK: Components
+    private lazy var fakeChatView: FakeChatView = {
+        let result = FakeChatView()
+        result.set(.height, to: Values.fakeChatViewHeight)
+        return result
+    }()
+    
     // MARK: Settings
     override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
     
@@ -37,24 +44,9 @@ final class LandingVC : UIViewController {
         titleLabel.pin(.top, to: .top, of: titleLabelContainer)
         titleLabelContainer.pin(.trailing, to: .trailing, of: titleLabel, withInset: Values.veryLargeSpacing)
         titleLabelContainer.pin(.bottom, to: .bottom, of: titleLabel)
-        // Set up fake chat view
-        let fakeChatView = FakeChatView()
-        // Set up main stack view
-        let mainStackView = UIStackView(arrangedSubviews: [ titleLabelContainer, fakeChatView ])
-        mainStackView.axis = .vertical
-        mainStackView.spacing = Values.mediumSpacing // Not largeSpacing as the fake chat view has an internal top margin
-        mainStackView.alignment = .fill
-        view.addSubview(mainStackView)
-        mainStackView.pin(.leading, to: .leading, of: view)
-        view.pin(.trailing, to: .trailing, of: mainStackView)
-        mainStackView.set(.height, to: Values.fakeChatViewHeight)
-        let verticalCenteringConstraint = mainStackView.center(.vertical, in: view)
-        verticalCenteringConstraint.constant = -20
-        // Set up view
-        let screen = UIScreen.main.bounds
-        view.frame = screen
-        view.set(.width, to: screen.width)
-        view.set(.height, to: screen.height)
+        // Set up spacers
+        let topSpacer = UIView.vStretchingSpacer()
+        let bottomSpacer = UIView.vStretchingSpacer()
         // Set up register button
         let registerButton = Button(style: .prominentFilled, size: .large)
         registerButton.setTitle(NSLocalizedString("Create Account", comment: ""), for: UIControl.State.normal)
@@ -69,10 +61,20 @@ final class LandingVC : UIViewController {
         buttonStackView.axis = .vertical
         buttonStackView.spacing = Values.mediumSpacing
         buttonStackView.alignment = .fill
-        view.addSubview(buttonStackView)
-        buttonStackView.pin(.leading, to: .leading, of: view, withInset: Values.massiveSpacing)
-        view.pin(.trailing, to: .trailing, of: buttonStackView, withInset: Values.massiveSpacing)
-        view.pin(.bottom, to: .bottom, of: buttonStackView, withInset: Values.onboardingButtonBottomOffset)
+        // Set up button stack view container
+        let buttonStackViewContainer = UIView()
+        buttonStackViewContainer.addSubview(buttonStackView)
+        buttonStackView.pin(.leading, to: .leading, of: buttonStackViewContainer, withInset: Values.massiveSpacing)
+        buttonStackView.pin(.top, to: .top, of: buttonStackViewContainer)
+        buttonStackViewContainer.pin(.trailing, to: .trailing, of: buttonStackView, withInset: Values.massiveSpacing)
+        buttonStackViewContainer.pin(.bottom, to: .bottom, of: buttonStackView)
+        // Set up main stack view
+        let mainStackView = UIStackView(arrangedSubviews: [ topSpacer, titleLabelContainer, UIView.spacer(withHeight: Values.mediumSpacing), fakeChatView, bottomSpacer, buttonStackViewContainer, UIView.spacer(withHeight: Values.onboardingButtonBottomOffset) ])
+        mainStackView.axis = .vertical
+        mainStackView.alignment = .fill
+        view.addSubview(mainStackView)
+        mainStackView.pin(to: view)
+        topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor, multiplier: 1).isActive = true
     }
     
     // MARK: Interaction

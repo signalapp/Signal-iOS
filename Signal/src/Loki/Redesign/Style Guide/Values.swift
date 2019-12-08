@@ -38,7 +38,7 @@ final class Values : NSObject {
     @objc static let modalButtonCornerRadius = CGFloat(5)
     @objc static let fakeChatBubbleWidth = CGFloat(224)
     @objc static let fakeChatBubbleCornerRadius = CGFloat(10)
-    @objc static let fakeChatViewHeight = CGFloat(320)
+    @objc static let fakeChatViewHeight = CGFloat(234)
     
     // MARK: - Distances
     @objc static let verySmallSpacing = CGFloat(4)
@@ -53,6 +53,6 @@ final class Values : NSObject {
     // MARK: - Animation Values
     @objc static let fakeChatStartDelay: TimeInterval = 2
     @objc static let fakeChatAnimationDuration: TimeInterval = 0.4
-    @objc static let fakeChatDelay: TimeInterval = 4
+    @objc static let fakeChatDelay: TimeInterval = 2
     @objc static let fakeChatMessagePopAnimationStartScale: CGFloat = 0.6
 }

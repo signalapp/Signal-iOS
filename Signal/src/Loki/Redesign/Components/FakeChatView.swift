@@ -11,6 +11,7 @@ final class FakeChatView : UIView {
     
     private lazy var scrollView: UIScrollView = {
         let result = UIScrollView()
+        result.showsHorizontalScrollIndicator = false
         result.showsVerticalScrollIndicator = false
         return result
     }()
@@ -79,7 +80,7 @@ final class FakeChatView : UIView {
             self?.showChatBubble(at: 0)
             Timer.scheduledTimer(withTimeInterval: delayBetweenMessages, repeats: false) { _ in
                 self?.showChatBubble(at: 1)
-                Timer.scheduledTimer(withTimeInterval: delayBetweenMessages, repeats: false) { _ in
+                Timer.scheduledTimer(withTimeInterval: 1.5 * delayBetweenMessages, repeats: false) { _ in
                     self?.showChatBubble(at: 2)
                     UIView.animate(withDuration: animationDuration) {
                         guard let self = self else { return }

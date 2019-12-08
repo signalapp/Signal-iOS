@@ -64,13 +64,29 @@ final class PublicKeyVC : UIViewController {
         publicKeyLabelContainer.layer.cornerRadius = Values.textFieldCornerRadius
         publicKeyLabelContainer.layer.borderWidth = Values.borderThickness
         publicKeyLabelContainer.layer.borderColor = Colors.text.cgColor
+        // Set up spacers
+        let topSpacer = UIView.vStretchingSpacer()
+        let bottomSpacer = UIView.vStretchingSpacer()
         // Set up register button
         let registerButton = Button(style: .prominentFilled, size: .large)
         registerButton.setTitle(NSLocalizedString("Continue", comment: ""), for: UIControl.State.normal)
         registerButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         registerButton.addTarget(self, action: #selector(register), for: UIControl.Event.touchUpInside)
+        // Set up button stack view
+        let buttonStackView = UIStackView(arrangedSubviews: [ registerButton, copyPublicKeyButton ])
+        buttonStackView.axis = .vertical
+        buttonStackView.spacing = Values.mediumSpacing
+        buttonStackView.alignment = .fill
+        // Set up button stack view container
+        let buttonStackViewContainer = UIView()
+        buttonStackViewContainer.addSubview(buttonStackView)
+        buttonStackView.pin(.leading, to: .leading, of: buttonStackViewContainer, withInset: Values.massiveSpacing)
+        buttonStackView.pin(.top, to: .top, of: buttonStackViewContainer)
+        buttonStackViewContainer.pin(.trailing, to: .trailing, of: buttonStackView, withInset: Values.massiveSpacing)
+        buttonStackViewContainer.pin(.bottom, to: .bottom, of: buttonStackView)
         // Set up legal label
         let legalLabel = UILabel()
+        legalLabel.set(.height, to: Values.onboardingButtonBottomOffset)
         legalLabel.textColor = Colors.text
         legalLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
         let legalLabelText = "By using this service, you agree to our Terms and Conditions and Privacy Statement"
@@ -81,36 +97,25 @@ final class PublicKeyVC : UIViewController {
         legalLabel.numberOfLines = 0
         legalLabel.textAlignment = .center
         legalLabel.lineBreakMode = .byWordWrapping
-        // Set up button stack view
-        let buttonStackView = UIStackView(arrangedSubviews: [ registerButton, copyPublicKeyButton, legalLabel ])
-        buttonStackView.axis = .vertical
-        buttonStackView.spacing = Values.mediumSpacing
-        buttonStackView.alignment = .fill
-        buttonStackView.layoutMargins = UIEdgeInsets(top: 0, left: Values.largeSpacing, bottom: Values.mediumSpacing, right: Values.largeSpacing)
-        buttonStackView.isLayoutMarginsRelativeArrangement = true
+        // Set up top stack view
+        let topStackView = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel, publicKeyLabelContainer ])
+        topStackView.axis = .vertical
+        topStackView.spacing = Values.veryLargeSpacing
+        topStackView.alignment = .fill
+        // Set up top stack view container
+        let topStackViewContainer = UIView()
+        topStackViewContainer.addSubview(topStackView)
+        topStackView.pin(.leading, to: .leading, of: topStackViewContainer, withInset: Values.veryLargeSpacing)
+        topStackView.pin(.top, to: .top, of: topStackViewContainer)
+        topStackViewContainer.pin(.trailing, to: .trailing, of: topStackView, withInset: Values.veryLargeSpacing)
+        topStackViewContainer.pin(.bottom, to: .bottom, of: topStackView)
         // Set up main stack view
-        let topSpacer = UIView()
-        let bottomSpacer = UIView()
-        let mainStackView = UIStackView(arrangedSubviews: [ topSpacer, titleLabel, explanationLabel, publicKeyLabelContainer, bottomSpacer, buttonStackView ])
+        let mainStackView = UIStackView(arrangedSubviews: [ topSpacer, topStackViewContainer, bottomSpacer, buttonStackViewContainer, legalLabel ])
         mainStackView.axis = .vertical
-        mainStackView.spacing = Values.largeSpacing
         mainStackView.alignment = .fill
-        mainStackView.layoutMargins = UIEdgeInsets(top: 0, left: Values.veryLargeSpacing, bottom: 0, right: Values.veryLargeSpacing)
-        mainStackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(mainStackView)
-        topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor, multiplier: 1).isActive = true
         mainStackView.pin(to: view)
-//        mainStackView.pin(.leading, to: .leading, of: view, withInset: Values.veryLargeSpacing)
-//        view.pin(.trailing, to: .trailing, of: mainStackView, withInset: Values.veryLargeSpacing)
-//        let verticalCenteringConstraint = mainStackView.center(.vertical, in: view)
-//        verticalCenteringConstraint.constant = -20
-        // Set up view
-//        let screen = UIScreen.main.bounds
-//        view.set(.width, to: screen.width)
-//        view.set(.height, to: screen.height)
-//        buttonStackView.pin(.leading, to: .leading, of: view, withInset: Values.massiveSpacing)
-//        view.pin(.trailing, to: .trailing, of: buttonStackView, withInset: Values.massiveSpacing)
-//        view.pin(.bottom, to: .bottom, of: buttonStackView, withInset: Values.onboardingButtonBottomOffset)
+        topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor, multiplier: 1).isActive = true
         // Peform initial seed update
         updateSeed()
     }
@@ -142,10 +147,8 @@ final class PublicKeyVC : UIViewController {
         let databaseConnection = identityManager.value(forKey: "dbConnection") as! YapDatabaseConnection
         databaseConnection.setObject(seed.toHexString(), forKey: "LKLokiSeed", inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
         databaseConnection.setObject(keyPair!, forKey: OWSPrimaryStorageIdentityKeyStoreIdentityKey, inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
-        let keyPair = identityManager.identityKeyPair()!
-        let hexEncodedPublicKey = keyPair.hexEncodedPublicKey
-        let accountManager = TSAccountManager.sharedInstance()
-        accountManager.phoneNumberAwaitingVerification = hexEncodedPublicKey
+        let hexEncodedPublicKey = keyPair!.hexEncodedPublicKey
+        TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = hexEncodedPublicKey
         TSAccountManager.sharedInstance().didRegister()
         UserDefaults.standard.set(true, forKey: "didUpdateForMainnet")
         OWSProfileManager.shared().updateLocalProfileName("User", avatarImage: nil, success: { }, failure: { }) // Try to save the user name but ignore the result
