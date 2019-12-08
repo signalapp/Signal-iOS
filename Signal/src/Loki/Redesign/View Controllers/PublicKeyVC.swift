@@ -21,6 +21,21 @@ final class PublicKeyVC : UIViewController {
         return result
     }()
     
+    private lazy var legalLabel: UILabel = {
+        let result = UILabel()
+        result.textColor = Colors.text
+        result.font = .systemFont(ofSize: Values.verySmallFontSize)
+        let text = "By using this service, you agree to our Terms and Conditions and Privacy Statement"
+        let attributedText = NSMutableAttributedString(string: text)
+        attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.verySmallFontSize), range: (text as NSString).range(of: "Terms and Conditions"))
+        attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.verySmallFontSize), range: (text as NSString).range(of: "Privacy Statement"))
+        result.attributedText = attributedText
+        result.numberOfLines = 0
+        result.textAlignment = .center
+        result.lineBreakMode = .byWordWrapping
+        return result
+    }()
+    
     // MARK: Settings
     override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
     
@@ -85,18 +100,17 @@ final class PublicKeyVC : UIViewController {
         buttonStackViewContainer.pin(.trailing, to: .trailing, of: buttonStackView, withInset: Values.massiveSpacing)
         buttonStackViewContainer.pin(.bottom, to: .bottom, of: buttonStackView)
         // Set up legal label
-        let legalLabel = UILabel()
-        legalLabel.set(.height, to: Values.onboardingButtonBottomOffset)
-        legalLabel.textColor = Colors.text
-        legalLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
-        let legalLabelText = "By using this service, you agree to our Terms and Conditions and Privacy Statement"
-        let attributedLegalLabelText = NSMutableAttributedString(string: legalLabelText)
-        attributedLegalLabelText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.verySmallFontSize), range: (legalLabelText as NSString).range(of: "Terms and Conditions"))
-        attributedLegalLabelText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.verySmallFontSize), range: (legalLabelText as NSString).range(of: "Privacy Statement"))
-        legalLabel.attributedText = attributedLegalLabelText
-        legalLabel.numberOfLines = 0
-        legalLabel.textAlignment = .center
-        legalLabel.lineBreakMode = .byWordWrapping
+        legalLabel.isUserInteractionEnabled = true
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleLegalLabelTapped))
+        legalLabel.addGestureRecognizer(tapGestureRecognizer)
+        // Set up legal label container
+        let legalLabelContainer = UIView()
+        legalLabelContainer.set(.height, to: Values.onboardingButtonBottomOffset)
+        legalLabelContainer.addSubview(legalLabel)
+        legalLabel.pin(.leading, to: .leading, of: legalLabelContainer, withInset: Values.massiveSpacing)
+        legalLabel.pin(.top, to: .top, of: legalLabelContainer)
+        legalLabelContainer.pin(.trailing, to: .trailing, of: legalLabel, withInset: Values.massiveSpacing)
+        legalLabelContainer.pin(.bottom, to: .bottom, of: legalLabel, withInset: 10)
         // Set up top stack view
         let topStackView = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel, publicKeyLabelContainer ])
         topStackView.axis = .vertical
@@ -110,7 +124,7 @@ final class PublicKeyVC : UIViewController {
         topStackViewContainer.pin(.trailing, to: .trailing, of: topStackView, withInset: Values.veryLargeSpacing)
         topStackViewContainer.pin(.bottom, to: .bottom, of: topStackView)
         // Set up main stack view
-        let mainStackView = UIStackView(arrangedSubviews: [ topSpacer, topStackViewContainer, bottomSpacer, buttonStackViewContainer, legalLabel ])
+        let mainStackView = UIStackView(arrangedSubviews: [ topSpacer, topStackViewContainer, bottomSpacer, buttonStackViewContainer, legalLabelContainer ])
         mainStackView.axis = .vertical
         mainStackView.alignment = .fill
         view.addSubview(mainStackView)
@@ -163,5 +177,10 @@ final class PublicKeyVC : UIViewController {
             self.copyPublicKeyButton.setTitle(NSLocalizedString("Copied", comment: ""), for: UIControl.State.normal)
         }, completion: nil)
         Timer.scheduledTimer(timeInterval: 4, target: self, selector: #selector(enableCopyButton), userInfo: nil, repeats: false)
+    }
+    
+    @objc private func handleLegalLabelTapped(_ tapGestureRecognizer: UITapGestureRecognizer) {
+        let url = URL(string: "https://github.com/loki-project/loki-messenger-ios/blob/master/privacy-policy.md")!
+        UIApplication.shared.open(url)
     }
 }
