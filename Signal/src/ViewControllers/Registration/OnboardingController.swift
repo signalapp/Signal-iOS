@@ -122,9 +122,9 @@ public class OnboardingController: NSObject {
     }
     
     public func pushDisplayNameVC(from viewController: UIViewController) {
-        AssertIsOnMainThread()
-        let displayNameVC = DisplayNameVC(onboardingController: self)
-        viewController.navigationController?.pushViewController(displayNameVC, animated: true)
+//        AssertIsOnMainThread()
+//        let displayNameVC = DisplayNameVC(onboardingController: self)
+//        viewController.navigationController?.pushViewController(displayNameVC, animated: true)
     }
 
     public func onboardingRegistrationSucceeded(viewController: UIViewController) {

@@ -1,5 +1,6 @@
 
 final class LandingVC : UIViewController {
+    private var fakeChatViewContentOffset: CGPoint!
     
     // MARK: Components
     private lazy var fakeChatView: FakeChatView = {
@@ -77,8 +78,17 @@ final class LandingVC : UIViewController {
         topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor, multiplier: 1).isActive = true
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        fakeChatView.contentOffset = fakeChatViewContentOffset
+    }
+    
     // MARK: Interaction
     @objc private func register() {
+        fakeChatViewContentOffset = fakeChatView.contentOffset
+        DispatchQueue.main.async {
+            self.fakeChatView.contentOffset = self.fakeChatViewContentOffset
+        }
         let publicKeyVC = PublicKeyVC()
         navigationController!.pushViewController(publicKeyVC, animated: true)
     }

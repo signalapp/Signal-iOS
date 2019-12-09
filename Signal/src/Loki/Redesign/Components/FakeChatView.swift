@@ -2,6 +2,11 @@
 final class FakeChatView : UIView {
     private let spacing = Values.mediumSpacing
     
+    var contentOffset: CGPoint {
+        get { return scrollView.contentOffset }
+        set { scrollView.contentOffset = newValue }
+    }
+    
     private lazy var chatBubbles = [
         getChatBubble(withText: NSLocalizedString("What is Loki Messenger? A completely decentralised private messaging application for all platforms.", comment: ""), wasSentByCurrentUser: true),
         getChatBubble(withText: NSLocalizedString("So no metadata collection, or personally identifiable information? How does it work?", comment: ""), wasSentByCurrentUser: false),
