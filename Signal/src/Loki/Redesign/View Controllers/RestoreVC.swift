@@ -2,6 +2,7 @@
 final class RestoreVC : UIViewController {
     private var spacer1HeightConstraint: NSLayoutConstraint!
     private var spacer2HeightConstraint: NSLayoutConstraint!
+    private var spacer3HeightConstraint: NSLayoutConstraint!
     private var restoreButtonBottomOffsetConstraint: NSLayoutConstraint!
     private var bottomConstraint: NSLayoutConstraint!
     
@@ -9,6 +10,21 @@ final class RestoreVC : UIViewController {
     private lazy var mnemonicTextField: TextField = {
         let result = TextField(placeholder: NSLocalizedString("Enter your seed", comment: ""))
         result.layer.borderColor = Colors.text.cgColor
+        return result
+    }()
+    
+    private lazy var legalLabel: UILabel = {
+        let result = UILabel()
+        result.textColor = Colors.text
+        result.font = .systemFont(ofSize: Values.verySmallFontSize)
+        let text = "By using this service, you agree to our Terms and Conditions and Privacy Statement"
+        let attributedText = NSMutableAttributedString(string: text)
+        attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.verySmallFontSize), range: (text as NSString).range(of: "Terms and Conditions"))
+        attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.verySmallFontSize), range: (text as NSString).range(of: "Privacy Statement"))
+        result.attributedText = attributedText
+        result.numberOfLines = 0
+        result.textAlignment = .center
+        result.lineBreakMode = .byWordWrapping
         return result
     }()
     
@@ -48,12 +64,18 @@ final class RestoreVC : UIViewController {
         explanationLabel.text = "explanation explanation explanation explanation explanation explanation explanation explanation explanation explanation explanation explanation explanation explanation explanation explanation"
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
+        // Set up legal label
+        legalLabel.isUserInteractionEnabled = true
+        let legalLabelTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleLegalLabelTapped))
+        legalLabel.addGestureRecognizer(legalLabelTapGestureRecognizer)
         // Set up spacers
         let topSpacer = UIView.vStretchingSpacer()
         let spacer1 = UIView()
         spacer1HeightConstraint = spacer1.set(.height, to: Values.veryLargeSpacing)
         let spacer2 = UIView()
         spacer2HeightConstraint = spacer2.set(.height, to: Values.veryLargeSpacing)
+        let spacer3 = UIView()
+        spacer3HeightConstraint = spacer3.set(.height, to: Values.veryLargeSpacing)
         let bottomSpacer = UIView.vStretchingSpacer()
         let restoreButtonBottomOffsetSpacer = UIView()
         restoreButtonBottomOffsetConstraint = restoreButtonBottomOffsetSpacer.set(.height, to: Values.onboardingButtonBottomOffset)
@@ -70,7 +92,7 @@ final class RestoreVC : UIViewController {
         restoreButtonContainer.pin(.trailing, to: .trailing, of: restoreButton, withInset: Values.massiveSpacing)
         restoreButtonContainer.pin(.bottom, to: .bottom, of: restoreButton)
         // Set up top stack view
-        let topStackView = UIStackView(arrangedSubviews: [ titleLabel, spacer1, explanationLabel, spacer2, mnemonicTextField ])
+        let topStackView = UIStackView(arrangedSubviews: [ titleLabel, spacer1, explanationLabel, spacer2, mnemonicTextField, spacer3, legalLabel ])
         topStackView.axis = .vertical
         topStackView.alignment = .fill
         // Set up top stack view container
@@ -120,6 +142,7 @@ final class RestoreVC : UIViewController {
         restoreButtonBottomOffsetConstraint.constant = Values.largeSpacing
         spacer1HeightConstraint.constant = Values.mediumSpacing
         spacer2HeightConstraint.constant = Values.mediumSpacing
+        spacer3HeightConstraint.constant = Values.mediumSpacing
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
         }
@@ -130,6 +153,7 @@ final class RestoreVC : UIViewController {
         restoreButtonBottomOffsetConstraint.constant = Values.onboardingButtonBottomOffset
         spacer1HeightConstraint.constant = Values.veryLargeSpacing
         spacer2HeightConstraint.constant = Values.veryLargeSpacing
+        spacer3HeightConstraint.constant = Values.veryLargeSpacing
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
         }
@@ -161,5 +185,10 @@ final class RestoreVC : UIViewController {
             let error = error as? Mnemonic.DecodingError ?? Mnemonic.DecodingError.generic
             showError(title: error.errorDescription!)
         }
+    }
+    
+    @objc private func handleLegalLabelTapped(_ tapGestureRecognizer: UITapGestureRecognizer) {
+        let url = URL(string: "https://github.com/loki-project/loki-messenger-ios/blob/master/privacy-policy.md")!
+        UIApplication.shared.open(url)
     }
 }

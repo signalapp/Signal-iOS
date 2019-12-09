@@ -125,13 +125,7 @@ final class SettingsVC : UIViewController, AvatarViewHelperDelegate {
         topStackView.layoutMargins = UIEdgeInsets(top: 0, left: Values.largeSpacing, bottom: 0, right: Values.largeSpacing)
         topStackView.isLayoutMarginsRelativeArrangement = true
         // Set up setting buttons stack view
-        func getSeparator() -> UIView {
-            let result = UIView()
-            result.backgroundColor = Colors.separator
-            result.set(.height, to: Values.separatorThickness)
-            return result
-        }
-        let settingButtonsStackView = UIStackView(arrangedSubviews: [ getSeparator() ] + getSettingButtons() + [ getSeparator() ] )
+        let settingButtonsStackView = UIStackView(arrangedSubviews: getSettingButtons() )
         settingButtonsStackView.axis = .vertical
         settingButtonsStackView.alignment = .fill
         // Set up stack view
@@ -151,7 +145,13 @@ final class SettingsVC : UIViewController, AvatarViewHelperDelegate {
         scrollView.pin(to: view)
     }
     
-    private func getSettingButtons() -> [UIButton] {
+    private func getSettingButtons() -> [UIView] {
+        func getSeparator() -> UIView {
+            let result = UIView()
+            result.backgroundColor = Colors.separator
+            result.set(.height, to: Values.separatorThickness)
+            return result
+        }
         func getSettingButton(withTitle title: String, color: UIColor, action selector: Selector) -> UIButton {
             let button = UIButton()
             button.setTitle(title, for: UIControl.State.normal)
@@ -175,15 +175,21 @@ final class SettingsVC : UIViewController, AvatarViewHelperDelegate {
             return button
         }
         var result = [
+            getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("Privacy", comment: ""), color: Colors.text, action: #selector(showPrivacySettings)),
+            getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("Notifications", comment: ""), color: Colors.text, action: #selector(showNotificationSettings))
         ]
         let isMasterDevice = (UserDefaults.standard.string(forKey: "masterDeviceHexEncodedPublicKey") == nil)
         if isMasterDevice {
+            result.append(getSeparator())
             result.append(getSettingButton(withTitle: NSLocalizedString("Linked Devices", comment: ""), color: Colors.text, action: #selector(showLinkedDevices)))
+            result.append(getSeparator())
             result.append(getSettingButton(withTitle: NSLocalizedString("Show Seed", comment: ""), color: Colors.text, action: #selector(showSeed)))
         }
+        result.append(getSeparator())
         result.append(getSettingButton(withTitle: NSLocalizedString("Clear All Data", comment: ""), color: Colors.destructive, action: #selector(clearAllData)))
+        result.append(getSeparator())
         return result
     }
     
