@@ -243,7 +243,7 @@ final class SettingsVC : UIViewController, AvatarViewHelperDelegate {
             let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
             closeButton.tintColor = Colors.text
             navigationItem.leftBarButtonItem = closeButton
-            let qrCodeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "QRCodeFilled"), style: .plain, target: self, action: #selector(showQRCode))
+            let qrCodeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "QRCode"), style: .plain, target: self, action: #selector(showQRCode))
             qrCodeButton.tintColor = Colors.text
             navigationItem.rightBarButtonItem = qrCodeButton
         }

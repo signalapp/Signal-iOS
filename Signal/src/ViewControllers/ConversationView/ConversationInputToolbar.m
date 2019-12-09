@@ -144,18 +144,14 @@ const CGFloat kMaxTextViewHeight = 120;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _attachmentButton);
 
     _sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.sendButton setTitle:MessageStrings.sendButton forState:UIControlStateNormal];
-    [self.sendButton setTitleColor:LKColors.text forState:UIControlStateNormal];
-    self.sendButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    self.sendButton.titleLabel.font = [UIFont boldSystemFontOfSize:LKValues.mediumFontSize];
-    self.sendButton.contentEdgeInsets = UIEdgeInsetsMake(0, 4, 0, 4);
-    [self.sendButton autoSetDimension:ALDimensionHeight toSize:kMinTextViewHeight];
-    [self.sendButton addTarget:self action:@selector(sendButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    UIImage *sendImage = [UIImage imageNamed:@"ArrowUp"];
+    [self.sendButton setImage:sendImage forState:UIControlStateNormal];
+    [self.sendButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _sendButton);
+    [self.sendButton addTarget:self action:@selector(sendButtonPressed) forControlEvents:UIControlEventTouchUpInside];
 
-    UIImage *voiceMemoIcon = [UIImage imageNamed:@"Microphone"];
-    OWSAssertDebug(voiceMemoIcon);
     _voiceMemoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    UIImage *voiceMemoIcon = [UIImage imageNamed:@"Microphone"];
     [self.voiceMemoButton setImage:voiceMemoIcon forState:UIControlStateNormal];
     [self.voiceMemoButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _voiceMemoButton);
@@ -210,9 +206,16 @@ const CGFloat kMaxTextViewHeight = 120;
     self.mentionCandidateSelectionViewSizeConstraint = [self.mentionCandidateSelectionView autoSetDimension:ALDimensionHeight toSize:0];
     self.mentionCandidateSelectionView.delegate = self;
     
+    // Button Container
+    UIView *buttonContainer = [UIView new];
+    [buttonContainer addSubview:self.voiceMemoButton];
+    [self.voiceMemoButton ows_autoPinToSuperviewEdges];
+    [buttonContainer addSubview:self.sendButton];
+    [self.sendButton ows_autoPinToSuperviewEdges];
+    
     // H Stack
     _hStack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ self.attachmentButton, vStackWrapper, self.voiceMemoButton, self.sendButton ]];
+        initWithArrangedSubviews:@[ self.attachmentButton, vStackWrapper, buttonContainer ]];
     self.hStack.axis = UILayoutConstraintAxisHorizontal;
     self.hStack.layoutMarginsRelativeArrangement = YES;
     self.hStack.layoutMargins = UIEdgeInsetsMake(LKValues.smallSpacing, LKValues.smallSpacing, LKValues.smallSpacing, LKValues.smallSpacing);
@@ -409,20 +412,20 @@ const CGFloat kMaxTextViewHeight = 120;
 {
     void (^updateBlock)(void) = ^{
         if (self.inputTextView.trimmedText.length > 0) {
-            if (!self.voiceMemoButton.isHidden) {
-                self.voiceMemoButton.hidden = YES;
+            if (self.voiceMemoButton.alpha != 0) {
+                self.voiceMemoButton.alpha = 0;
             }
 
-            if (self.sendButton.isHidden) {
-                self.sendButton.hidden = NO;
+            if (self.sendButton.alpha == 0) {
+                self.sendButton.alpha = 1;
             }
         } else {
-            if (self.voiceMemoButton.isHidden) {
-                self.voiceMemoButton.hidden = NO;
+            if (self.voiceMemoButton.alpha == 0) {
+                self.voiceMemoButton.alpha = 1;
             }
 
-            if (!self.sendButton.isHidden) {
-                self.sendButton.hidden = YES;
+            if (self.sendButton.alpha != 0) {
+                self.sendButton.alpha = 0;
             }
         }
         if (doLayout) {
