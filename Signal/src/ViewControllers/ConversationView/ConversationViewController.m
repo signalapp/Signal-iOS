@@ -1560,7 +1560,7 @@ typedef enum : NSUInteger {
         isAttachmentButtonHidden = false;
     }
     [self.inputToolbar setUserInteractionEnabled:isEnabled];
-    NSString *placeholderText = isEnabled ? NSLocalizedString(@"New Message", "") : NSLocalizedString(@"Pending Friend Request...", "");
+    NSString *placeholderText = isEnabled ? NSLocalizedString(@"Message", "") : NSLocalizedString(@"Pending Friend Request...", "");
     [self.inputToolbar setPlaceholderText:placeholderText];
     [self.inputToolbar setAttachmentButtonHidden:isAttachmentButtonHidden];
 }

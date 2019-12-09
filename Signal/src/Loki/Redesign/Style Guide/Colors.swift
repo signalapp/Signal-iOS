@@ -31,4 +31,6 @@ final class Colors : NSObject {
     @objc static let modalBorder = UIColor(hex: 0x212121)
     @objc static let fakeChatBubbleBackground = UIColor(hex: 0x3F4146)
     @objc static let fakeChatBubbleText = UIColor(hex: 0x000000)
+    @objc static let composeViewBackground = UIColor(hex: 0x1B1B1B)
+    @objc static let composeViewTextFieldBackground = UIColor(hex: 0x141414)
 }

@@ -211,11 +211,11 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openSettings))
         profilePictureView.addGestureRecognizer(tapGestureRecognizer)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profilePictureView)
-        let createPrivateGroupChatButton = UIBarButtonItem(image: #imageLiteral(resourceName: "People"), style: .plain, target: self, action: #selector(createPrivateGroupChat))
-        createPrivateGroupChatButton.tintColor = Colors.text
+//        let createPrivateGroupChatButton = UIBarButtonItem(image: #imageLiteral(resourceName: "People"), style: .plain, target: self, action: #selector(createPrivateGroupChat))
+//        createPrivateGroupChatButton.tintColor = Colors.text
         let joinPublicChatButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Globe"), style: .plain, target: self, action: #selector(joinPublicChat))
         joinPublicChatButton.tintColor = Colors.text
-        navigationItem.rightBarButtonItems = [ createPrivateGroupChatButton, joinPublicChatButton ]
+        navigationItem.rightBarButtonItems = [ /*createPrivateGroupChatButton,*/ joinPublicChatButton ]
     }
     
     // MARK: Interaction

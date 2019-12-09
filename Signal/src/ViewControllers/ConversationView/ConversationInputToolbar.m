@@ -28,8 +28,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, VoiceMemoRecordingState){
 
 static void *kConversationInputTextViewObservingContext = &kConversationInputTextViewObservingContext;
 
-const CGFloat kMinTextViewHeight = 36;
-const CGFloat kMaxTextViewHeight = 98;
+const CGFloat kMinTextViewHeight = 40;
+const CGFloat kMaxTextViewHeight = 120;
 
 #pragma mark -
 
@@ -119,25 +119,15 @@ const CGFloat kMaxTextViewHeight = 98;
 - (void)createContents
 {
     self.layoutMargins = UIEdgeInsetsZero;
-
-    if (UIAccessibilityIsReduceTransparencyEnabled()) {
-        self.backgroundColor = Theme.toolbarBackgroundColor;
-    } else {
-        CGFloat alpha = OWSNavigationBar.backgroundBlurMutingFactor;
-        self.backgroundColor = [UIColor.lokiDarkerGray colorWithAlphaComponent:alpha];
-
-        UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:Theme.barBlurEffect];
-        blurEffectView.layer.zPosition = -1;
-        [self addSubview:blurEffectView];
-        [blurEffectView autoPinEdgesToSuperviewEdges];
-    }
-
     self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+    
+    self.backgroundColor = LKColors.composeViewBackground;
 
     _inputTextView = [ConversationInputTextView new];
     self.inputTextView.textViewToolbarDelegate = self;
-    self.inputTextView.font = [UIFont ows_dynamicTypeBodyFont];
-    self.inputTextView.backgroundColor = Theme.toolbarBackgroundColor;
+    self.inputTextView.textColor = LKColors.text;
+    self.inputTextView.font = [UIFont systemFontOfSize:LKValues.mediumFontSize];
+    self.inputTextView.backgroundColor = LKColors.composeViewTextFieldBackground;
     [self.inputTextView setContentHuggingLow];
     [self.inputTextView setCompressionResistanceLow];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputTextView);
@@ -145,43 +135,34 @@ const CGFloat kMaxTextViewHeight = 98;
     _textViewHeightConstraint = [self.inputTextView autoSetDimension:ALDimensionHeight toSize:kMinTextViewHeight];
 
     _attachmentButton = [[UIButton alloc] init];
-    self.attachmentButton.accessibilityLabel
-        = NSLocalizedString(@"ATTACHMENT_LABEL", @"Accessibility label for attaching photos");
-    self.attachmentButton.accessibilityHint = NSLocalizedString(
-        @"ATTACHMENT_HINT", @"Accessibility hint describing what you can do with the attachment button");
-    [self.attachmentButton addTarget:self
-                              action:@selector(attachmentButtonPressed)
-                    forControlEvents:UIControlEventTouchUpInside];
-    UIImage *attachmentImage = [UIImage imageNamed:@"ic_circled_plus"];
-    [self.attachmentButton setImage:[attachmentImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
-                           forState:UIControlStateNormal];
-    self.attachmentButton.tintColor = Theme.navbarIconColor;
+    self.attachmentButton.accessibilityLabel = NSLocalizedString(@"ATTACHMENT_LABEL", @"Accessibility label for attaching photos");
+    self.attachmentButton.accessibilityHint = NSLocalizedString(@"ATTACHMENT_HINT", @"Accessibility hint describing what you can do with the attachment button");
+    [self.attachmentButton addTarget:self action:@selector(attachmentButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    UIImage *attachmentImage = [UIImage imageNamed:@"CirclePlus"];
+    [self.attachmentButton setImage:attachmentImage forState:UIControlStateNormal];
     [self.attachmentButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _attachmentButton);
 
     _sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.sendButton setTitle:MessageStrings.sendButton forState:UIControlStateNormal];
-    [self.sendButton setTitleColor:UIColor.lokiGreen forState:UIControlStateNormal];
+    [self.sendButton setTitleColor:LKColors.text forState:UIControlStateNormal];
     self.sendButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    self.sendButton.titleLabel.font = [UIFont ows_mediumFontWithSize:17.f];
+    self.sendButton.titleLabel.font = [UIFont boldSystemFontOfSize:LKValues.mediumFontSize];
     self.sendButton.contentEdgeInsets = UIEdgeInsetsMake(0, 4, 0, 4);
     [self.sendButton autoSetDimension:ALDimensionHeight toSize:kMinTextViewHeight];
     [self.sendButton addTarget:self action:@selector(sendButtonPressed) forControlEvents:UIControlEventTouchUpInside];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _sendButton);
 
-    UIImage *voiceMemoIcon = [UIImage imageNamed:@"voice-memo-button"];
+    UIImage *voiceMemoIcon = [UIImage imageNamed:@"Microphone"];
     OWSAssertDebug(voiceMemoIcon);
     _voiceMemoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.voiceMemoButton setImage:[voiceMemoIcon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
-                          forState:UIControlStateNormal];
-    self.voiceMemoButton.imageView.tintColor = Theme.navbarIconColor;
+    [self.voiceMemoButton setImage:voiceMemoIcon forState:UIControlStateNormal];
     [self.voiceMemoButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _voiceMemoButton);
 
     // We want to be permissive about the voice message gesture, so we hang
     // the long press GR on the button's wrapper, not the button itself.
-    UILongPressGestureRecognizer *longPressGestureRecognizer =
-        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+    UILongPressGestureRecognizer *longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
     longPressGestureRecognizer.minimumPressDuration = 0;
     self.voiceMemoGestureRecognizer = longPressGestureRecognizer;
     [self.voiceMemoButton addGestureRecognizer:longPressGestureRecognizer];
@@ -201,8 +182,7 @@ const CGFloat kMaxTextViewHeight = 98;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _linkPreviewWrapper);
 
     // V Stack
-    UIStackView *vStack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ self.quotedReplyWrapper, self.linkPreviewWrapper, self.inputTextView ]];
+    UIStackView *vStack = [[UIStackView alloc] initWithArrangedSubviews:@[ self.quotedReplyWrapper, self.linkPreviewWrapper, self.inputTextView ]];
     vStack.axis = UILayoutConstraintAxisVertical;
     [vStack setContentHuggingHorizontalLow];
     [vStack setCompressionResistanceHorizontalLow];
@@ -213,7 +193,7 @@ const CGFloat kMaxTextViewHeight = 98;
     }
 
     // V Stack Wrapper
-    const CGFloat vStackRounding = 18.f;
+    const CGFloat vStackRounding = kMinTextViewHeight / 2;
     UIView *vStackWrapper = [UIView containerView];
     vStackWrapper.layer.cornerRadius = vStackRounding;
     vStackWrapper.clipsToBounds = YES;
@@ -235,9 +215,9 @@ const CGFloat kMaxTextViewHeight = 98;
         initWithArrangedSubviews:@[ self.attachmentButton, vStackWrapper, self.voiceMemoButton, self.sendButton ]];
     self.hStack.axis = UILayoutConstraintAxisHorizontal;
     self.hStack.layoutMarginsRelativeArrangement = YES;
-    self.hStack.layoutMargins = UIEdgeInsetsMake(6, 6, 6, 6);
+    self.hStack.layoutMargins = UIEdgeInsetsMake(LKValues.smallSpacing, LKValues.smallSpacing, LKValues.smallSpacing, LKValues.smallSpacing);
     self.hStack.alignment = UIStackViewAlignmentBottom;
-    self.hStack.spacing = 8;
+    self.hStack.spacing = LKValues.smallSpacing;
 
     [self addSubview:self.hStack];
     [self.hStack autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.mentionCandidateSelectionView];
@@ -266,8 +246,9 @@ const CGFloat kMaxTextViewHeight = 98;
     self.borderView.userInteractionEnabled = NO;
     self.borderView.backgroundColor = UIColor.clearColor;
     self.borderView.opaque = NO;
-    self.borderView.layer.borderColor = Theme.secondaryColor.CGColor;
-    self.borderView.layer.borderWidth = CGHairlineWidth();
+    self.borderView.layer.borderColor = LKColors.text.CGColor;
+    self.borderView.layer.opacity = LKValues.composeViewTextFieldBorderOpacity;
+    self.borderView.layer.borderWidth = LKValues.composeViewTextFieldBorderThickness;
     self.borderView.layer.cornerRadius = vStackRounding;
     [self addSubview:self.borderView];
     [self.borderView autoPinToEdgesOfView:vStackWrapper];

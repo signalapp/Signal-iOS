@@ -7,6 +7,8 @@ final class Values : NSObject {
     @objc static let conversationCellTimestampOpacity = CGFloat(0.4)
     @objc static let textFieldBorderOpacity = CGFloat(0.4)
     @objc static let modalBackgroundOpacity = CGFloat(0.75)
+    @objc static let composeViewTextFieldBorderOpacity = CGFloat(0.12)
+    @objc static let composeViewTextFieldPlaceholderOpacity = CGFloat(0.4)
     
     // MARK: - Font Sizes
     @objc static let verySmallFontSize = CGFloat(10)
@@ -39,6 +41,7 @@ final class Values : NSObject {
     @objc static let fakeChatBubbleWidth = CGFloat(224)
     @objc static let fakeChatBubbleCornerRadius = CGFloat(10)
     @objc static let fakeChatViewHeight = CGFloat(234)
+    @objc static var composeViewTextFieldBorderThickness: CGFloat { return 1 / UIScreen.main.scale }
     
     // MARK: - Distances
     @objc static let verySmallSpacing = CGFloat(4)
