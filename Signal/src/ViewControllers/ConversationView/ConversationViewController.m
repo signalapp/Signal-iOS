@@ -418,6 +418,10 @@ typedef enum : NSUInteger {
                                              selector:@selector(handleThreadFriendRequestStatusChangedNotification:)
                                                  name:NSNotification.threadFriendRequestStatusChanged
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleThreadSessionRestoreDevicesChangedNotifiaction:)
+                                                 name:NSNotification.threadSessionRestoreDevicesChanged
+                                               object:nil];
 }
 
 - (BOOL)isGroupConversation
@@ -492,6 +496,17 @@ typedef enum : NSUInteger {
     [self.viewItems.lastObject clearCachedLayoutState];
     [self updateInputToolbar];
     [self resetContentAndLayout];
+}
+
+- (void)handleThreadSessionRestoreDevicesChangedNotifiaction:(NSNotification *)notification
+{
+    // Check thread
+    NSString *threadID = (NSString *)notification.object;
+    if (![threadID isEqualToString:self.thread.uniqueId]) { return; }
+    // Ensure thread instance is up to date
+    [self.thread reload];
+    // Update UI
+    // TODO: Show banner here
 }
 
 - (void)peekSetup

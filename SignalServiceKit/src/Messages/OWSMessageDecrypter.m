@@ -678,16 +678,33 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         OWSAssertDebug(errorMessage);
         if (errorMessage != nil) {
             [errorMessage saveWithTransaction:transaction];
+            [self handleSessionRestoreForErrorMessage:errorMessage envelope:envelope transaction:transaction];
             [self notifyUserForErrorMessage:errorMessage envelope:envelope transaction:transaction];
         }
     }];
+}
+
+- (void)handleSessionRestoreForErrorMessage:(TSErrorMessage *)errorMessage
+                                   envelope:(SSKProtoEnvelope *)envelope
+                                   transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction];
+    TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:masterHexEncodedPublicKey transaction:transaction];
+       
+   // Trigger a session restore prompt if we get specific errors
+   if (errorMessage.errorType == TSErrorMessageNoSession ||
+       errorMessage.errorType == TSErrorMessageInvalidMessage ||
+       errorMessage.errorType == TSErrorMessageInvalidKeyException) {
+       [((TSContactThread *) contactThread) addSessionRestoreDevice:masterHexEncodedPublicKey transaction:transaction];
+   }
 }
 
 - (void)notifyUserForErrorMessage:(TSErrorMessage *)errorMessage
                          envelope:(SSKProtoEnvelope *)envelope
                       transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+    NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction];
+    TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:masterHexEncodedPublicKey transaction:transaction];
     [SSKEnvironment.shared.notificationsManager notifyUserForErrorMessage:errorMessage
                                                                    thread:contactThread
                                                               transaction:transaction];
