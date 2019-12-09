@@ -587,18 +587,22 @@ const CGFloat kMaxTextViewHeight = 120;
     [self.voiceMemoLockView removeFromSuperview];
 
     self.voiceMemoUI = [UIView new];
-    self.voiceMemoUI.backgroundColor = Theme.toolbarBackgroundColor;
+    self.voiceMemoUI.backgroundColor = LKColors.composeViewBackground;
     [self addSubview:self.voiceMemoUI];
     [self.voiceMemoUI autoPinEdgesToSuperviewEdges];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _voiceMemoUI);
 
     self.voiceMemoContentView = [UIView new];
     [self.voiceMemoUI addSubview:self.voiceMemoContentView];
-    [self.voiceMemoContentView ows_autoPinToSuperviewEdges];
+    
+    [self.voiceMemoContentView autoPinLeadingToEdgeOfView:self.voiceMemoUI];
+    [self.voiceMemoContentView autoPinTopToSuperviewMargin];
+    [self.voiceMemoContentView autoPinTrailingToEdgeOfView:self.voiceMemoUI];
+    [self.voiceMemoContentView autoPinBottomToSuperviewMargin];
 
     self.recordingLabel = [UILabel new];
-    self.recordingLabel.textColor = [UIColor ows_destructiveRedColor];
-    self.recordingLabel.font = [UIFont ows_mediumFontWithSize:14.f];
+    self.recordingLabel.textColor = LKColors.destructive;
+    self.recordingLabel.font = [UIFont systemFontOfSize:LKValues.smallFontSize];
     [self.voiceMemoContentView addSubview:self.recordingLabel];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _recordingLabel);
 
@@ -611,24 +615,24 @@ const CGFloat kMaxTextViewHeight = 120;
 
     [self updateVoiceMemo];
 
-    UIImage *icon = [UIImage imageNamed:@"voice-memo-button"];
+    UIImage *icon = [UIImage imageNamed:@"Microphone"];
     OWSAssertDebug(icon);
     UIImageView *imageView =
         [[UIImageView alloc] initWithImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
-    imageView.tintColor = [UIColor ows_destructiveRedColor];
+    imageView.tintColor = LKColors.destructive;
     [imageView setContentHuggingHigh];
     [self.voiceMemoContentView addSubview:imageView];
 
     NSMutableAttributedString *cancelString = [NSMutableAttributedString new];
     const CGFloat cancelArrowFontSize = ScaleFromIPhone5To7Plus(18.4, 20.f);
-    const CGFloat cancelFontSize = ScaleFromIPhone5To7Plus(14.f, 16.f);
+    const CGFloat cancelFontSize = ScaleFromIPhone5To7Plus(LKValues.smallFontSize, LKValues.mediumFontSize);
     NSString *arrowHead = (CurrentAppContext().isRTL ? @"\uf105" : @"\uf104");
     [cancelString
         appendAttributedString:[[NSAttributedString alloc]
                                    initWithString:arrowHead
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : LKColors.destructive,
                                            NSBaselineOffsetAttributeName : @(-1.f),
                                        }]];
     [cancelString
@@ -636,7 +640,7 @@ const CGFloat kMaxTextViewHeight = 120;
                                    initWithString:@"  "
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : LKColors.destructive,
                                            NSBaselineOffsetAttributeName : @(-1.f),
                                        }]];
     [cancelString
@@ -644,15 +648,15 @@ const CGFloat kMaxTextViewHeight = 120;
                                    initWithString:NSLocalizedString(@"VOICE_MESSAGE_CANCEL_INSTRUCTIONS",
                                                       @"Indicates how to cancel a voice message.")
                                        attributes:@{
-                                           NSFontAttributeName : [UIFont ows_mediumFontWithSize:cancelFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSFontAttributeName : [UIFont systemFontOfSize:cancelFontSize],
+                                           NSForegroundColorAttributeName : LKColors.destructive,
                                        }]];
     [cancelString
         appendAttributedString:[[NSAttributedString alloc]
                                    initWithString:@"  "
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : LKColors.destructive,
                                            NSBaselineOffsetAttributeName : @(-1.f),
                                        }]];
     [cancelString
@@ -660,7 +664,7 @@ const CGFloat kMaxTextViewHeight = 120;
                                    initWithString:arrowHead
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : LKColors.destructive,
                                            NSBaselineOffsetAttributeName : @(-1.f),
                                        }]];
     UILabel *cancelLabel = [UILabel new];
@@ -671,7 +675,7 @@ const CGFloat kMaxTextViewHeight = 120;
     const CGFloat kRedCircleSize = 100.f;
     UIView *redCircleView = [UIView new];
     self.voiceMemoRedRecordingCircle = redCircleView;
-    redCircleView.backgroundColor = [UIColor ows_destructiveRedColor];
+    redCircleView.backgroundColor = LKColors.destructive;
     redCircleView.layer.cornerRadius = kRedCircleSize * 0.5f;
     [redCircleView autoSetDimension:ALDimensionWidth toSize:kRedCircleSize];
     [redCircleView autoSetDimension:ALDimensionHeight toSize:kRedCircleSize];
@@ -679,16 +683,16 @@ const CGFloat kMaxTextViewHeight = 120;
     [redCircleView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.voiceMemoButton];
     [redCircleView autoAlignAxis:ALAxisVertical toSameAxisOfView:self.voiceMemoButton];
 
-    UIImage *whiteIcon = [UIImage imageNamed:@"voice-message-large-white"];
+    UIImage *whiteIcon = [UIImage imageNamed:@"Microphone"];
     OWSAssertDebug(whiteIcon);
     UIImageView *whiteIconView = [[UIImageView alloc] initWithImage:whiteIcon];
     [redCircleView addSubview:whiteIconView];
     [whiteIconView autoCenterInSuperview];
 
     [imageView autoVCenterInSuperview];
-    [imageView autoPinLeadingToSuperviewMarginWithInset:10.f];
+    [imageView autoPinLeadingToSuperviewMarginWithInset:LKValues.smallSpacing];
     [self.recordingLabel autoVCenterInSuperview];
-    [self.recordingLabel autoPinLeadingToTrailingEdgeOfView:imageView offset:5.f];
+    [self.recordingLabel autoPinLeadingToTrailingEdgeOfView:imageView offset:4.f];
     [cancelLabel autoVCenterInSuperview];
     [cancelLabel autoHCenterInSuperview];
     [self.voiceMemoUI layoutIfNeeded];
@@ -794,10 +798,11 @@ const CGFloat kMaxTextViewHeight = 120;
         [weakSelf.inputToolbarDelegate voiceMemoGestureDidComplete];
     }];
     [sendVoiceMemoButton setTitle:MessageStrings.sendButton forState:UIControlStateNormal];
-    [sendVoiceMemoButton setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
+    [sendVoiceMemoButton setTitleColor:LKColors.text forState:UIControlStateNormal];
+    sendVoiceMemoButton.titleLabel.font = [UIFont boldSystemFontOfSize:LKValues.mediumFontSize];
     sendVoiceMemoButton.alpha = 0;
     [self.voiceMemoContentView addSubview:sendVoiceMemoButton];
-    [sendVoiceMemoButton autoPinEdgeToSuperviewMargin:ALEdgeTrailing withInset:10.f];
+    [sendVoiceMemoButton autoPinEdgeToSuperviewMargin:ALEdgeTrailing withInset:LKValues.smallSpacing];
     [sendVoiceMemoButton autoVCenterInSuperview];
     [sendVoiceMemoButton setCompressionResistanceHigh];
     [sendVoiceMemoButton setContentHuggingHigh];
@@ -807,7 +812,8 @@ const CGFloat kMaxTextViewHeight = 120;
         [weakSelf.inputToolbarDelegate voiceMemoGestureDidCancel];
     }];
     [cancelButton setTitle:CommonStrings.cancelButton forState:UIControlStateNormal];
-    [cancelButton setTitleColor:UIColor.ows_destructiveRedColor forState:UIControlStateNormal];
+    [cancelButton setTitleColor:LKColors.destructive forState:UIControlStateNormal];
+    cancelButton.titleLabel.font = [UIFont boldSystemFontOfSize:LKValues.mediumFontSize];
     cancelButton.alpha = 0;
     cancelButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, cancelButton);

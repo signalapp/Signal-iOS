@@ -51,7 +51,7 @@ public class VoiceMemoLockView: UIView {
     private lazy var lockIconView: UIImageView = {
         let imageTemplate = #imageLiteral(resourceName: "ic_lock_outline").withRenderingMode(.alwaysTemplate)
         let imageView = UIImageView(image: imageTemplate)
-        imageView.tintColor = .ows_destructiveRed
+        imageView.tintColor = Colors.destructive
         imageView.autoSetDimensions(to: CGSize(width: 24, height: 24))
         return imageView
     }()
@@ -59,7 +59,7 @@ public class VoiceMemoLockView: UIView {
     private lazy var chevronView: UIView = {
         let label = UILabel()
         label.text = "\u{2303}"
-        label.textColor = .ows_destructiveRed
+        label.textColor = Colors.destructive
         label.textAlignment = .center
         return label
     }()
@@ -69,10 +69,10 @@ public class VoiceMemoLockView: UIView {
 
         let width: CGFloat = 36
         view.autoSetDimension(.width, toSize: width)
-        view.backgroundColor = Theme.scrollButtonBackgroundColor
+        view.backgroundColor = Colors.composeViewBackground
         view.layer.cornerRadius = width / 2
-        view.layer.borderColor = Theme.offBackgroundColor.cgColor
-        view.layer.borderWidth = CGHairlineWidth()
+        view.layer.borderColor = Colors.text.withAlphaComponent(Values.composeViewTextFieldBorderOpacity).cgColor
+        view.layer.borderWidth = Values.composeViewTextFieldBorderThickness
 
         return view
     }()
