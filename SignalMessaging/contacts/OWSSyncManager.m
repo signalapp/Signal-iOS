@@ -264,6 +264,15 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     return [self syncContactsForSignalAccounts:@[ signalAccount ]];
 }
 
+- (AnyPromise *)syncContact:(NSString *)hexEncodedPubKey transaction:(YapDatabaseReadTransaction *)transaction
+{
+    TSContactThread *thread = [TSContactThread getThreadWithContactId:hexEncodedPubKey transaction:transaction];
+    if (thread != nil && thread.isContactFriend) {
+        return [self syncContactsForSignalAccounts:@[[[SignalAccount alloc] initWithRecipientId:hexEncodedPubKey]]];
+    }
+    return [AnyPromise promiseWithValue:@1];
+}
+
 - (AnyPromise *)syncAllContacts
 {
     NSMutableArray<SignalAccount *> *friends = @[].mutableCopy;

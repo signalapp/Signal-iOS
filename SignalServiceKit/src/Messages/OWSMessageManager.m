@@ -447,6 +447,17 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFailDebug(@"Failed to create a pre key bundle.");
             }
             [self.primaryStorage setPreKeyBundle:bundle forContact:envelope.source transaction:transaction];
+            
+            // If we got a friend request and we were friends with this user then we need to reset our session
+            if (envelope.type == SSKProtoEnvelopeTypeFriendRequest) {
+                TSContactThread *thread = [TSContactThread getThreadWithContactId:envelope.source transaction:transaction];
+                if (thread && thread.isContactFriend) {
+                    [self resetSessionWithContact:envelope.source transaction:transaction];
+                    
+                    // Let our other devices know that we have reset session
+                    [SSKEnvironment.shared.syncManager syncContact:envelope.source transaction:transaction];
+                }
+            }
         }
         
         // Loki: Handle address message if needed
@@ -535,7 +546,10 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"Missing transaction.");
         return;
     }
-
+    
+    // Loki - Don't process session restore message
+    if ((dataMessage.flags & SSKProtoDataMessageFlagsSessionRestore) != 0) { return; }
+    
     if ([self isDataMessageBlocked:dataMessage envelope:envelope]) {
         NSString *logMessage = [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.source];
         if (dataMessage.group) {
@@ -1081,23 +1095,21 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+    [self resetSessionWithContact:envelope.source transaction:transaction];
+}
+
+- (void)resetSessionWithContact:(NSString *)hexEncodedPublicKey
+                    transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
 
     // MJK TODO - safe to remove senderTimestamp
     [[[TSInfoMessage alloc] initWithTimestamp:NSDate.ows_millisecondTimeStamp
                                      inThread:thread
                                   messageType:TSInfoMessageTypeLokiSessionResetInProgress] saveWithTransaction:transaction];
-    /* Loki: Original code
-     * ================
-    [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                     inThread:thread
-                                  messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
-     * ================
-     */
 
     // Loki: Archive all our sessions
     // Ref: SignalServiceKit/Loki/Docs/SessionReset.md
-    [self.primaryStorage archiveAllSessionsForContact:envelope.source protocolContext:transaction];
+    [self.primaryStorage archiveAllSessionsForContact:hexEncodedPublicKey protocolContext:transaction];
     
     // Loki: Set our session reset state
     thread.sessionResetState = TSContactThreadSessionResetStateRequestReceived;
@@ -1107,13 +1119,7 @@ NS_ASSUME_NONNULL_BEGIN
     LKEphemeralMessage *emptyMessage = [[LKEphemeralMessage alloc] initInThread:thread];
     [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
 
-    NSLog(@"[Loki] Session reset received from %@.", envelope.source);
-    
-    /* Loki: Original code
-     * ================
-    [self.primaryStorage deleteAllSessionsForContact:envelope.source protocolContext:transaction];
-     * ================
-     */
+    NSLog(@"[Loki] Session reset received from %@.", hexEncodedPublicKey);
 }
 
 - (void)handleExpirationTimerUpdateMessageWithEnvelope:(SSKProtoEnvelope *)envelope
