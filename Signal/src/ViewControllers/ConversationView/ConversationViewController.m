@@ -119,7 +119,6 @@ typedef enum : NSUInteger {
     ContactsViewHelperDelegate,
     DisappearingTimerConfigurationViewDelegate,
     OWSConversationSettingsViewDelegate,
-    ConversationHeaderViewDelegate,
     ConversationViewLayoutDelegate,
     ConversationViewCellDelegate,
     ConversationInputTextViewDelegate,
@@ -160,7 +159,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, nullable) NSTimer *readTimer;
 @property (nonatomic) NSCache *cellMediaCache;
-@property (nonatomic) ConversationHeaderView *headerView;
+@property (nonatomic) ConversationTitleView *headerView;
 @property (nonatomic, nullable) UIView *bannerView;
 @property (nonatomic, nullable) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
 
@@ -435,10 +434,6 @@ typedef enum : NSUInteger {
     NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
     OWSAssertDebug(recipientId.length > 0);
     if (recipientId.length > 0 && [self.thread.recipientIdentifiers containsObject:recipientId]) {
-        if ([self.thread isKindOfClass:[TSContactThread class]]) {
-            // update title with profile name
-            [self updateNavigationTitle];
-        }
 
         if (self.isGroupConversation) {
             // Reload all cells if this is a group conversation,
@@ -477,7 +472,6 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    [self updateNavigationBarSubtitleLabel];
     [self ensureBannerState];
 }
 
@@ -627,16 +621,26 @@ typedef enum : NSUInteger {
     [self applyTheme];
     [self.conversationViewModel viewDidLoad];
     
-    // Loki: Track events
-    if (self.thread.isGroupThread) {
-        if (self.isRSSFeed) {
-            [LKAnalytics.shared track:@"RSS Feed Opened"];
-        } else {
-            [LKAnalytics.shared track:@"Loki Public Chat Opened"];
-        }
-    } else {
-        [LKAnalytics.shared track:@"Conversation Opened"];
-    }
+    // Loki: Set gradient background
+    self.collectionView.backgroundColor = UIColor.clearColor;
+    LKGradient *gradient = LKGradients.defaultLokiBackground;
+    self.view.backgroundColor = UIColor.clearColor;
+    [self.view setGradient:gradient];
+    
+    // Loki: Set navigation bar background color
+    UINavigationBar *navigationBar = self.navigationController.navigationBar;
+    [navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    navigationBar.shadowImage = [UIImage new];
+    [navigationBar setTranslucent:NO];
+    navigationBar.barTintColor = LKColors.navigationBarBackground;
+    
+    // Loki: Set up navigation bar buttons
+    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Back", "") style:UIBarButtonItemStylePlain target:nil action:nil];
+    backButton.tintColor = LKColors.text;
+    self.navigationItem.backBarButtonItem = backButton;
+    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Gear"] style:UIBarButtonItemStylePlain target:self action:@selector(showConversationSettings)];
+    settingsButton.tintColor = LKColors.text;
+    self.navigationItem.rightBarButtonItem = settingsButton;
 }
 
 - (void)createContents
@@ -803,7 +807,6 @@ typedef enum : NSUInteger {
     [self updateDisappearingMessagesConfiguration];
 
     [self updateBarButtonItems];
-    [self updateNavigationTitle];
 
     [self resetContentAndLayout];
 
@@ -1260,8 +1263,6 @@ typedef enum : NSUInteger {
     [ProfileFetcherJob runWithThread:self.thread];
     [self markVisibleMessagesAsRead];
     [self startReadTimer];
-    [self updateNavigationBarSubtitleLabel];
-    [self updateBackButtonUnreadCount];
     [self autoLoadMoreIfNecessary];
 
     if (!self.viewHasEverAppeared) {
@@ -1376,60 +1377,12 @@ typedef enum : NSUInteger {
 
 #pragma mark - Initiliazers
 
-- (void)updateNavigationTitle
-{
-    NSAttributedString *name;
-    if (self.thread.isGroupThread) {
-        if (self.thread.name.length == 0) {
-            name = [[NSAttributedString alloc] initWithString:[MessageStrings newGroupDefaultTitle]];
-        } else {
-            name = [[NSAttributedString alloc] initWithString:self.thread.name];
-        }
-    } else {
-        OWSAssertDebug(self.thread.contactIdentifier);
-
-        if (self.thread.isNoteToSelf) {
-            name = [[NSAttributedString alloc]
-                initWithString:NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.")
-                    attributes:@{
-                        NSFontAttributeName : self.headerView.titlePrimaryFont,
-                    }];
-        } else {
-            name = [self.contactsManager
-                attributedContactOrProfileNameForPhoneIdentifier:self.thread.contactIdentifier
-                                                     primaryFont:self.headerView.titlePrimaryFont
-                                                   secondaryFont:self.headerView.titleSecondaryFont];
-        }
-    }
-    self.title = nil;
-
-    if ([name isEqual:self.headerView.attributedTitle]) {
-        return;
-    }
-
-    self.headerView.attributedTitle = name;
-}
-
 - (void)createHeaderViews
 {
-    _backButtonUnreadCountView = [UIView new];
-    _backButtonUnreadCountView.layer.cornerRadius = self.unreadCountViewDiameter / 2;
-    _backButtonUnreadCountView.backgroundColor = [UIColor redColor];
-    _backButtonUnreadCountView.hidden = YES;
-    _backButtonUnreadCountView.userInteractionEnabled = NO;
-
-    _backButtonUnreadCountLabel = [UILabel new];
-    _backButtonUnreadCountLabel.backgroundColor = [UIColor clearColor];
-    _backButtonUnreadCountLabel.textColor = [UIColor whiteColor];
-    _backButtonUnreadCountLabel.font = [UIFont systemFontOfSize:11];
-    _backButtonUnreadCountLabel.textAlignment = NSTextAlignmentCenter;
-
-    ConversationHeaderView *headerView =
-        [[ConversationHeaderView alloc] initWithThread:self.thread contactsManager:self.contactsManager];
+    ConversationTitleView *headerView = [[ConversationTitleView alloc] initWithThread:self.thread];
     self.headerView = headerView;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, headerView);
 
-    headerView.delegate = self;
     self.navigationItem.titleView = headerView;
 
     if (@available(iOS 11, *)) {
@@ -1441,15 +1394,6 @@ typedef enum : NSUInteger {
         CGRect headerFrame = CGRectMake(0, 0, screenSize.width, 44);
         headerView.frame = headerFrame;
     }
-
-#ifdef USE_DEBUG_UI
-    [headerView addGestureRecognizer:[[UILongPressGestureRecognizer alloc]
-                                         initWithTarget:self
-                                                 action:@selector(navigationTitleLongPressed:)]];
-#endif
-
-
-    [self updateNavigationBarSubtitleLabel];
 }
 
 - (CGFloat)unreadCountViewDiameter
@@ -1480,9 +1424,6 @@ typedef enum : NSUInteger {
         [_backButtonUnreadCountView addSubview:_backButtonUnreadCountLabel];
         [_backButtonUnreadCountLabel autoPinWidthToSuperviewWithMargin:4];
         [_backButtonUnreadCountLabel autoPinHeightToSuperview];
-
-        // Initialize newly created unread count badge to accurately reflect the current unread count.
-        [self updateBackButtonUnreadCount];
     }
 
     self.navigationItem.leftBarButtonItem = backItem;
@@ -1495,6 +1436,8 @@ typedef enum : NSUInteger {
 
 - (void)updateBarButtonItems
 {
+    return; // Loki: Re-enable later?
+    
     self.navigationItem.hidesBackButton = NO;
     if (self.customBackButton) {
         self.navigationItem.leftBarButtonItem = self.customBackButton;
@@ -1583,62 +1526,6 @@ typedef enum : NSUInteger {
     }
 
     self.navigationItem.rightBarButtonItems = [barButtons copy];
-}
-
-- (void)updateNavigationBarSubtitleLabel
-{
-    BOOL hasCompactHeader = self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
-    if (hasCompactHeader) {
-        self.headerView.attributedSubtitle = nil;
-        return;
-    }
-
-    NSMutableAttributedString *subtitleText = [NSMutableAttributedString new];
-
-    UIColor *subtitleColor = [Theme.navbarTitleColor colorWithAlphaComponent:(CGFloat)0.9];
-    if (self.thread.isMuted) {
-        // Show a "mute" icon before the navigation bar subtitle if this thread is muted.
-        [subtitleText appendAttributedString:[[NSAttributedString alloc]
-                                                 initWithString:LocalizationNotNeeded(@"\ue067  ")
-                                                     attributes:@{
-                                                         NSFontAttributeName : [UIFont ows_elegantIconsFont:7.f],
-                                                         NSForegroundColorAttributeName : subtitleColor
-                                                     }]];
-    }
-
-    BOOL isVerified = YES;
-    for (NSString *recipientId in self.thread.recipientIdentifiers) {
-        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
-            != OWSVerificationStateVerified) {
-            isVerified = NO;
-            break;
-        }
-    }
-    if (isVerified) {
-        // Show a "checkmark" icon before the navigation bar subtitle if this thread is verified.
-        [subtitleText appendAttributedString:[[NSAttributedString alloc]
-                                                 initWithString:LocalizationNotNeeded(@"\uf00c ")
-                                                     attributes:@{
-                                                         NSFontAttributeName : [UIFont ows_fontAwesomeFont:10.f],
-                                                         NSForegroundColorAttributeName : subtitleColor,
-                                                     }]];
-    }
-
-
-    [subtitleText
-        appendAttributedString:[[NSAttributedString alloc]
-                                   initWithString:NSLocalizedString(@"MESSAGES_VIEW_TITLE_SUBTITLE",
-                                                      @"The subtitle for the messages view title indicates that the "
-                                                      @"title can be tapped to access settings for this conversation.")
-                                       attributes:@{
-                                           NSFontAttributeName : self.headerView.subtitleFont,
-                                           NSForegroundColorAttributeName : subtitleColor,
-                                       }]];
-
-
-    if (!self.thread.isGroupThread) {
-        self.headerView.attributedSubtitle = subtitleText;
-    }
 }
 
 #pragma mark - Updating
@@ -3754,33 +3641,6 @@ typedef enum : NSUInteger {
     }
 }
 
-#pragma mark Unread Badge
-
-- (void)updateBackButtonUnreadCount
-{
-    OWSAssertIsOnMainThread();
-    self.backButtonUnreadCount = [OWSMessageUtils.sharedManager unreadMessagesCountExcept:self.thread];
-}
-
-- (void)setBackButtonUnreadCount:(NSUInteger)unreadCount
-{
-    OWSAssertIsOnMainThread();
-    if (_backButtonUnreadCount == unreadCount) {
-        // No need to re-render same count.
-        return;
-    }
-    _backButtonUnreadCount = unreadCount;
-
-    OWSAssertDebug(_backButtonUnreadCountView != nil);
-    _backButtonUnreadCountView.hidden = unreadCount <= 0;
-
-    OWSAssertDebug(_backButtonUnreadCountLabel != nil);
-
-    // Max out the unread count at 99+.
-    const NSUInteger kMaxUnreadCount = 99;
-    _backButtonUnreadCountLabel.text = [OWSFormat formatInt:(int)MIN(kMaxUnreadCount, unreadCount)];
-}
-
 #pragma mark 3D Touch Preview Actions
 
 - (NSArray<id<UIPreviewActionItem>> *)previewActionItems
@@ -4115,8 +3975,6 @@ typedef enum : NSUInteger {
     // make sure toolbar extends below iPhoneX home button.
     self.view.backgroundColor = Theme.toolbarBackgroundColor;
     self.collectionView.backgroundColor = Theme.backgroundColor;
-
-    [self updateNavigationBarSubtitleLabel];
 }
 
 #pragma mark - AttachmentApprovalViewControllerDelegate
@@ -4282,7 +4140,6 @@ typedef enum : NSUInteger {
 - (void)conversationColorWasUpdated
 {
     [self.conversationStyle updateProperties];
-    [self.headerView updateAvatar];
     [self resetContentAndLayout];
 }
 
@@ -5083,8 +4940,6 @@ typedef enum : NSUInteger {
         return;
     }
 
-    [self updateBackButtonUnreadCount];
-    [self updateNavigationBarSubtitleLabel];
     [self dismissMenuActionsIfNecessary];
     [self updateInputToolbar];
 
@@ -5092,7 +4947,6 @@ typedef enum : NSUInteger {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.thread reloadWithTransaction:transaction];
         }];
-        [self updateNavigationTitle];
     }
 
     [self updateDisappearingMessagesConfiguration];
@@ -5349,7 +5203,6 @@ typedef enum : NSUInteger {
 {
     [super traitCollectionDidChange:previousTraitCollection];
 
-    [self updateNavigationBarSubtitleLabel];
     [self ensureBannerState];
     [self updateBarButtonItems];
 }

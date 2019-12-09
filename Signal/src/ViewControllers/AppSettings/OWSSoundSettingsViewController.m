@@ -38,18 +38,20 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateTableContents];
     [self updateNavigationItems];
     
+    // Loki: Set gradient background
+    self.tableView.backgroundColor = UIColor.clearColor;
     LKGradient *gradient = LKGradients.defaultLokiBackground;
     self.view.backgroundColor = UIColor.clearColor;
     [self.view setGradient:gradient];
     
-    self.tableView.backgroundColor = UIColor.clearColor;
-    
+    // Loki: Set navigation bar background color
     UINavigationBar *navigationBar = self.navigationController.navigationBar;
     [navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     navigationBar.shadowImage = [UIImage new];
     [navigationBar setTranslucent:NO];
     navigationBar.barTintColor = LKColors.navigationBarBackground;
     
+    // Loki: Customize title
     UILabel *titleLabel = [UILabel new];
     titleLabel.text = NSLocalizedString(@"Sound", @"");
     titleLabel.textColor = LKColors.text;

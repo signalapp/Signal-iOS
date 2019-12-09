@@ -19,24 +19,27 @@
 
     [self updateTableContents];
     
+    // Loki: Set gradient background
+    self.tableView.backgroundColor = UIColor.clearColor;
     LKGradient *gradient = LKGradients.defaultLokiBackground;
     self.view.backgroundColor = UIColor.clearColor;
     [self.view setGradient:gradient];
     
-    self.tableView.backgroundColor = UIColor.clearColor;
-    
+    // Loki: Set navigation bar background color
     UINavigationBar *navigationBar = self.navigationController.navigationBar;
     [navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     navigationBar.shadowImage = [UIImage new];
     [navigationBar setTranslucent:NO];
     navigationBar.barTintColor = LKColors.navigationBarBackground;
     
+    // Loki: Customize title
     UILabel *titleLabel = [UILabel new];
     titleLabel.text = NSLocalizedString(@"Notifications", @"");
     titleLabel.textColor = LKColors.text;
     titleLabel.font = [UIFont boldSystemFontOfSize:LKValues.veryLargeFontSize];
     self.navigationItem.titleView = titleLabel;
     
+    // Loki: Set up back button
     UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Back", "") style:UIBarButtonItemStylePlain target:nil action:nil];
     backButton.tintColor = LKColors.text;
     self.navigationItem.backBarButtonItem = backButton;
