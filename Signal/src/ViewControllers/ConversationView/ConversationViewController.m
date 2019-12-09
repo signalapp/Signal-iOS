@@ -162,6 +162,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) NSCache *cellMediaCache;
 @property (nonatomic) ConversationHeaderView *headerView;
 @property (nonatomic, nullable) UIView *bannerView;
+@property (nonatomic, nullable) UIView *restoreSessionBannerView;
 @property (nonatomic, nullable) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
 
 // Back Button Unread Count
@@ -506,7 +507,7 @@ typedef enum : NSUInteger {
     // Ensure thread instance is up to date
     [self.thread reload];
     // Update UI
-    // TODO: Show banner here
+    [self updateSessionRestoreBanner];
 }
 
 - (void)peekSetup
@@ -960,17 +961,37 @@ typedef enum : NSUInteger {
     return [result copy];
 }
 
+- (void)updateSessionRestoreBanner {
+    BOOL isContactThread = [self.thread isKindOfClass:[TSContactThread class]];
+    BOOL shouldRemoveBanner = !isContactThread;
+    if (isContactThread) {
+        TSContactThread *thread = (TSContactThread *)self.thread;
+        if (thread.sessionRestoreDevices.count > 0) {
+            if (self.restoreSessionBannerView) {
+                // TODO: Create banner here
+            }
+        } else {
+            shouldRemoveBanner = true;
+        }
+    }
+    
+    if (shouldRemoveBanner && self.restoreSessionBannerView) {
+        [self.restoreSessionBannerView removeFromSuperview];
+        self.restoreSessionBannerView = nil;
+    }
+}
+
 - (void)ensureBannerState
 {
     // This method should be called rarely, so it's simplest to discard and
     // rebuild the indicator view every time.
     [self.bannerView removeFromSuperview];
     self.bannerView = nil;
-
+    
     if (self.userHasScrolled) {
         return;
     }
-
+    
     NSArray<NSString *> *noLongerVerifiedRecipientIds = [self noLongerVerifiedRecipientIds];
 
     if (noLongerVerifiedRecipientIds.count > 0) {
@@ -1129,6 +1150,16 @@ typedef enum : NSUInteger {
     [self presentAddThreadToProfileWhitelistWithSuccess:^{
         [self ensureBannerState];
     }];
+}
+
+- (void)restoreSession {
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        TSContactThread *thread = (TSContactThread *)self.thread;
+        NSArray *devices = thread.sessionRestoreDevices;
+        // TODO: Send session restore to all devices
+        // TODO: Add message saying session restore was sent
+        [thread removeAllRessionRestoreDevicesWithTransaction:nil];
+    }
 }
 
 - (void)noLongerVerifiedBannerViewWasTapped:(UIGestureRecognizer *)sender

@@ -689,13 +689,14 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                                    transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction];
-    TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:masterHexEncodedPublicKey transaction:transaction];
+    NSString *hexEncodedPublicKey = masterHexEncodedPublicKey ?: envelope.source;
+    TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
        
    // Trigger a session restore prompt if we get specific errors
    if (errorMessage.errorType == TSErrorMessageNoSession ||
        errorMessage.errorType == TSErrorMessageInvalidMessage ||
        errorMessage.errorType == TSErrorMessageInvalidKeyException) {
-       [((TSContactThread *) contactThread) addSessionRestoreDevice:masterHexEncodedPublicKey transaction:transaction];
+       [((TSContactThread *) contactThread) addSessionRestoreDevice:hexEncodedPublicKey transaction:transaction];
    }
 }
 
@@ -704,7 +705,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                       transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction];
-    TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:masterHexEncodedPublicKey transaction:transaction];
+    NSString *hexEncodedPublicKey = masterHexEncodedPublicKey ?: envelope.source;
+    TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
     [SSKEnvironment.shared.notificationsManager notifyUserForErrorMessage:errorMessage
                                                                    thread:contactThread
                                                               transaction:transaction];
