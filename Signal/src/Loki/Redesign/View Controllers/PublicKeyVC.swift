@@ -161,13 +161,9 @@ final class PublicKeyVC : UIViewController {
         let databaseConnection = identityManager.value(forKey: "dbConnection") as! YapDatabaseConnection
         databaseConnection.setObject(seed.toHexString(), forKey: "LKLokiSeed", inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
         databaseConnection.setObject(keyPair!, forKey: OWSPrimaryStorageIdentityKeyStoreIdentityKey, inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
-        let hexEncodedPublicKey = keyPair!.hexEncodedPublicKey
-        TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = hexEncodedPublicKey
-        TSAccountManager.sharedInstance().didRegister()
-        UserDefaults.standard.set(true, forKey: "didUpdateForMainnet")
-        OWSProfileManager.shared().updateLocalProfileName("User", avatarImage: nil, success: { }, failure: { }) // Try to save the user name but ignore the result
-        let homeVC = HomeVC()
-        navigationController!.setViewControllers([ homeVC ], animated: true)
+        TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = keyPair!.hexEncodedPublicKey
+        let displayNameVC = DisplayNameVC()
+        navigationController!.pushViewController(displayNameVC, animated: true)
     }
     
     @objc private func copyPublicKey() {
