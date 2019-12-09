@@ -1,5 +1,5 @@
 
-final class PublicKeyVC : UIViewController {
+final class RegisterVC : UIViewController {
     private var seed: Data! { didSet { updateKeyPair() } }
     private var keyPair: ECKeyPair! { didSet { updatePublicKeyLabel() } }
     

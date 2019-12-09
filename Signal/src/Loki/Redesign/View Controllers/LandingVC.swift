@@ -57,6 +57,7 @@ final class LandingVC : UIViewController {
         let restoreButton = Button(style: .prominentOutline, size: .large)
         restoreButton.setTitle(NSLocalizedString("Continue your Loki Messenger", comment: ""), for: UIControl.State.normal)
         restoreButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        restoreButton.addTarget(self, action: #selector(restore), for: UIControl.Event.touchUpInside)
         // Set up button stack view
         let buttonStackView = UIStackView(arrangedSubviews: [ registerButton, restoreButton ])
         buttonStackView.axis = .vertical
@@ -89,7 +90,16 @@ final class LandingVC : UIViewController {
         DispatchQueue.main.async {
             self.fakeChatView.contentOffset = self.fakeChatViewContentOffset
         }
-        let publicKeyVC = PublicKeyVC()
-        navigationController!.pushViewController(publicKeyVC, animated: true)
+        let registerVC = RegisterVC()
+        navigationController!.pushViewController(registerVC, animated: true)
+    }
+    
+    @objc private func restore() {
+        fakeChatViewContentOffset = fakeChatView.contentOffset
+        DispatchQueue.main.async {
+            self.fakeChatView.contentOffset = self.fakeChatViewContentOffset
+        }
+        let restoreVC = RestoreVC()
+        navigationController!.pushViewController(restoreVC, animated: true)
     }
 }

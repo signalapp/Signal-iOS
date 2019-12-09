@@ -1,13 +1,13 @@
 
-final class DisplayNameVC : UIViewController {
+final class RestoreVC : UIViewController {
     private var spacer1HeightConstraint: NSLayoutConstraint!
     private var spacer2HeightConstraint: NSLayoutConstraint!
-    private var registerButtonBottomOffsetConstraint: NSLayoutConstraint!
+    private var restoreButtonBottomOffsetConstraint: NSLayoutConstraint!
     private var bottomConstraint: NSLayoutConstraint!
     
     // MARK: Components
-    private lazy var displayNameTextField: TextField = {
-        let result = TextField(placeholder: NSLocalizedString("Enter a display name", comment: ""))
+    private lazy var mnemonicTextField: TextField = {
+        let result = TextField(placeholder: NSLocalizedString("Enter your seed", comment: ""))
         result.layer.borderColor = Colors.text.cgColor
         return result
     }()
@@ -38,7 +38,7 @@ final class DisplayNameVC : UIViewController {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
-        titleLabel.text = NSLocalizedString("Pick your public display name", comment: "")
+        titleLabel.text = NSLocalizedString("Restore your account using your seed", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         // Set up explanation label
@@ -55,22 +55,22 @@ final class DisplayNameVC : UIViewController {
         let spacer2 = UIView()
         spacer2HeightConstraint = spacer2.set(.height, to: Values.veryLargeSpacing)
         let bottomSpacer = UIView.vStretchingSpacer()
-        let registerButtonBottomOffsetSpacer = UIView()
-        registerButtonBottomOffsetConstraint = registerButtonBottomOffsetSpacer.set(.height, to: Values.onboardingButtonBottomOffset)
-        // Set up register button
-        let registerButton = Button(style: .prominentFilled, size: .large)
-        registerButton.setTitle(NSLocalizedString("Continue", comment: ""), for: UIControl.State.normal)
-        registerButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        registerButton.addTarget(self, action: #selector(register), for: UIControl.Event.touchUpInside)
-        // Set up register button container
-        let registerButtonContainer = UIView()
-        registerButtonContainer.addSubview(registerButton)
-        registerButton.pin(.leading, to: .leading, of: registerButtonContainer, withInset: Values.massiveSpacing)
-        registerButton.pin(.top, to: .top, of: registerButtonContainer)
-        registerButtonContainer.pin(.trailing, to: .trailing, of: registerButton, withInset: Values.massiveSpacing)
-        registerButtonContainer.pin(.bottom, to: .bottom, of: registerButton)
+        let restoreButtonBottomOffsetSpacer = UIView()
+        restoreButtonBottomOffsetConstraint = restoreButtonBottomOffsetSpacer.set(.height, to: Values.onboardingButtonBottomOffset)
+        // Set up restore button
+        let restoreButton = Button(style: .prominentFilled, size: .large)
+        restoreButton.setTitle(NSLocalizedString("Continue", comment: ""), for: UIControl.State.normal)
+        restoreButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        restoreButton.addTarget(self, action: #selector(restore), for: UIControl.Event.touchUpInside)
+        // Set up restore button container
+        let restoreButtonContainer = UIView()
+        restoreButtonContainer.addSubview(restoreButton)
+        restoreButton.pin(.leading, to: .leading, of: restoreButtonContainer, withInset: Values.massiveSpacing)
+        restoreButton.pin(.top, to: .top, of: restoreButtonContainer)
+        restoreButtonContainer.pin(.trailing, to: .trailing, of: restoreButton, withInset: Values.massiveSpacing)
+        restoreButtonContainer.pin(.bottom, to: .bottom, of: restoreButton)
         // Set up top stack view
-        let topStackView = UIStackView(arrangedSubviews: [ titleLabel, spacer1, explanationLabel, spacer2, displayNameTextField ])
+        let topStackView = UIStackView(arrangedSubviews: [ titleLabel, spacer1, explanationLabel, spacer2, mnemonicTextField ])
         topStackView.axis = .vertical
         topStackView.alignment = .fill
         // Set up top stack view container
@@ -81,7 +81,7 @@ final class DisplayNameVC : UIViewController {
         topStackViewContainer.pin(.trailing, to: .trailing, of: topStackView, withInset: Values.veryLargeSpacing)
         topStackViewContainer.pin(.bottom, to: .bottom, of: topStackView)
         // Set up main stack view
-        let mainStackView = UIStackView(arrangedSubviews: [ topSpacer, topStackViewContainer, bottomSpacer, registerButtonContainer, registerButtonBottomOffsetSpacer ])
+        let mainStackView = UIStackView(arrangedSubviews: [ topSpacer, topStackViewContainer, bottomSpacer, restoreButtonContainer, restoreButtonBottomOffsetSpacer ])
         mainStackView.axis = .vertical
         mainStackView.alignment = .fill
         view.addSubview(mainStackView)
@@ -101,7 +101,7 @@ final class DisplayNameVC : UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        displayNameTextField.becomeFirstResponder()
+        mnemonicTextField.becomeFirstResponder()
     }
     
     deinit {
@@ -110,14 +110,14 @@ final class DisplayNameVC : UIViewController {
     
     // MARK: General
     @objc private func dismissKeyboard() {
-        displayNameTextField.resignFirstResponder()
+        mnemonicTextField.resignFirstResponder()
     }
     
     // MARK: Updating
     @objc private func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
         bottomConstraint.constant = -newHeight // Negative due to how the constraint is set up
-        registerButtonBottomOffsetConstraint.constant = Values.largeSpacing
+        restoreButtonBottomOffsetConstraint.constant = Values.largeSpacing
         spacer1HeightConstraint.constant = Values.mediumSpacing
         spacer2HeightConstraint.constant = Values.mediumSpacing
         UIView.animate(withDuration: 0.25) {
@@ -127,7 +127,7 @@ final class DisplayNameVC : UIViewController {
     
     @objc private func handleKeyboardWillHideNotification(_ notification: Notification) {
         bottomConstraint.constant = 0
-        registerButtonBottomOffsetConstraint.constant = Values.onboardingButtonBottomOffset
+        restoreButtonBottomOffsetConstraint.constant = Values.onboardingButtonBottomOffset
         spacer1HeightConstraint.constant = Values.veryLargeSpacing
         spacer2HeightConstraint.constant = Values.veryLargeSpacing
         UIView.animate(withDuration: 0.25) {
@@ -136,28 +136,30 @@ final class DisplayNameVC : UIViewController {
     }
     
     // MARK: Interaction
-    @objc private func register() {
+    @objc private func restore() {
         func showError(title: String, message: String = "") {
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
             presentAlert(alert)
         }
-        let displayName = displayNameTextField.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        guard !displayName.isEmpty else {
-            return showError(title: NSLocalizedString("Please pick a display name", comment: ""))
+        let mnemonic = mnemonicTextField.text!
+        do {
+            let hexEncodedSeed = try Mnemonic.decode(mnemonic: mnemonic)
+            let seed = Data(hex: hexEncodedSeed)
+            let keyPair = Curve25519.generateKeyPair(fromSeed: seed + seed)
+            let identityManager = OWSIdentityManager.shared()
+            let databaseConnection = identityManager.value(forKey: "dbConnection") as! YapDatabaseConnection
+            databaseConnection.setObject(seed.toHexString(), forKey: "LKLokiSeed", inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
+            databaseConnection.setObject(keyPair, forKey: OWSPrimaryStorageIdentityKeyStoreIdentityKey, inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
+            TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = keyPair.hexEncodedPublicKey
+            mnemonicTextField.resignFirstResponder()
+            Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false) { _ in
+                let displayNameVC = DisplayNameVC()
+                self.navigationController!.pushViewController(displayNameVC, animated: true)
+            }
+        } catch let error {
+            let error = error as? Mnemonic.DecodingError ?? Mnemonic.DecodingError.generic
+            showError(title: error.errorDescription!)
         }
-        let allowedCharacters = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_ ")
-        let hasInvalidCharacters = !displayName.allSatisfy { $0.unicodeScalars.allSatisfy { allowedCharacters.contains($0) } }
-        guard !hasInvalidCharacters else {
-            return showError(title: NSLocalizedString("Please pick a display name that consists of only a-z, A-Z, 0-9 and _ characters", comment: ""))
-        }
-        guard !OWSProfileManager.shared().isProfileNameTooLong(displayName) else {
-            return showError(title: NSLocalizedString("Please pick a shorter display name", comment: ""))
-        }
-        TSAccountManager.sharedInstance().didRegister()
-        UserDefaults.standard.set(true, forKey: "didUpdateForMainnet")
-        OWSProfileManager.shared().updateLocalProfileName(displayName, avatarImage: nil, success: { }, failure: { }) // Try to save the user name but ignore the result
-        let homeVC = HomeVC()
-        navigationController!.setViewControllers([ homeVC ], animated: true)
     }
 }
