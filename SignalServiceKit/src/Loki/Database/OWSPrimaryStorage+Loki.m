@@ -175,4 +175,16 @@
     return [transaction objectForKey:key inCollection:LKMessageIDCollection];
 }
 
+# pragma mark - Restoration
+
+#define LKGeneralCollection @"Loki"
+
+- (void)setRestorationTime:(NSTimeInterval)time {
+    [self.dbReadWriteConnection setDouble:time forKey:@"restoration_time" inCollection:LKGeneralCollection];
+}
+
+- (NSTimeInterval)getRestorationTime {
+    return [self.dbReadConnection doubleForKey:@"restoration_time" inCollection:LKGeneralCollection defaultValue:0];
+}
+
 @end

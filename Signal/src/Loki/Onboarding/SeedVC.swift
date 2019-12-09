@@ -407,6 +407,9 @@ final class SeedVC : OnboardingBaseViewController, DeviceLinkingModalDelegate, O
                 self.setUserInteractionEnabled(true)
             }
         } else {
+            if (mode == .restore) {
+                OWSPrimaryStorage.shared().setRestorationTime(Date().timeIntervalSince1970)
+            }
             onboardingController.pushDisplayNameVC(from: self)
         }
     }
