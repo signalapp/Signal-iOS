@@ -803,6 +803,7 @@ typedef enum : NSUInteger {
     OWSLogDebug(@"viewWillAppear");
 
     [self ensureBannerState];
+    [self updateSessionRestoreBanner];
 
     [super viewWillAppear:animated];
 
@@ -967,8 +968,20 @@ typedef enum : NSUInteger {
     if (isContactThread) {
         TSContactThread *thread = (TSContactThread *)self.thread;
         if (thread.sessionRestoreDevices.count > 0) {
-            if (self.restoreSessionBannerView) {
-                // TODO: Create banner here
+            if (!self.restoreSessionBannerView) {
+                LKSessionRestoreBannerView *bannerView = [[LKSessionRestoreBannerView alloc] initWithThread:thread];
+                [self.view addSubview:bannerView];
+                [bannerView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+                [bannerView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+                [bannerView autoPinEdgeToSuperviewEdge:ALEdgeRight];
+                [self.view layoutSubviews];
+                self.restoreSessionBannerView = bannerView;
+                [bannerView setOnRestore:^{
+                    [self restoreSession];
+                }];
+                [bannerView setOnDismiss:^{
+                    [thread removeAllRessionRestoreDevicesWithTransaction:nil];
+                }];
             }
         } else {
             shouldRemoveBanner = true;
@@ -1154,10 +1167,21 @@ typedef enum : NSUInteger {
 
 - (void)restoreSession {
     if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
         TSContactThread *thread = (TSContactThread *)self.thread;
         NSArray *devices = thread.sessionRestoreDevices;
-        // TODO: Send session restore to all devices
-        // TODO: Add message saying session restore was sent
+        for (NSString *device in devices) {
+            if (device.length == 0) { continue; }
+            OWSMessageSend *sessionRestoreMessage = [messageSender getSessionRestoreMessageForHexEncodedPublicKey:device];
+            if (sessionRestoreMessage) {
+                dispatch_async(OWSDispatch.sendingQueue, ^{
+                    [messageSender sendMessage:sessionRestoreMessage];
+                });
+            }
+        }
+        [[[TSInfoMessage alloc] initWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageType:TSInfoMessageTypeLokiSessionResetInProgress] save];
+        thread.sessionResetState = TSContactThreadSessionResetStateRequestReceived;
+        [thread save];
         [thread removeAllRessionRestoreDevicesWithTransaction:nil];
     }
 }

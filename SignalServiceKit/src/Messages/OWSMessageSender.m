@@ -45,6 +45,7 @@
 #import "TSThread.h"
 #import "TSContactThread.h"
 #import "LKFriendRequestMessage.h"
+#import "LKSessionRestoreMessage.h"
 #import "LKDeviceLinkMessage.h"
 #import "LKAddressMessage.h"
 #import <AxolotlKit/AxolotlExceptions.h>
@@ -915,15 +916,32 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return deviceMessages;
 }
 
+- (OWSMessageSend *)getSessionRestoreMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey
+{
+    __block TSContactThread *thread;
+    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        thread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
+        // Force hide secondary device thread
+        NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:hexEncodedPublicKey in:transaction];
+        thread.isForceHidden = masterHexEncodedPublicKey != nil && ![masterHexEncodedPublicKey isEqualToString:hexEncodedPublicKey];
+        [thread saveWithTransaction:transaction];
+    }];
+    if (!thread) { return nil; }
+    LKSessionRestoreMessage *message = [[LKSessionRestoreMessage alloc] initWithThread:thread];
+    message.skipSave = YES;
+    SignalRecipient *recipient = [[SignalRecipient alloc] initWithUniqueId:hexEncodedPublicKey];
+    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    return [[OWSMessageSend alloc] initWithMessage:message thread:thread recipient:recipient senderCertificate:nil udAccess:nil localNumber:userHexEncodedPublicKey success:^{ } failure:^(NSError *error) { }];
+}
+
 - (OWSMessageSend *)getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey
 {
     __block TSContactThread *thread;
     [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        thread = [TSContactThread fetchObjectWithUniqueID:[TSContactThread threadIdFromContactId:hexEncodedPublicKey] transaction:transaction];
-        if (thread == nil) {
-            thread = [[TSContactThread alloc] initWithContactId:hexEncodedPublicKey];
-        }
-        thread.isForceHidden = YES;
+        thread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
+        // Force hide secondary device thread
+        NSString *masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:hexEncodedPublicKey in:transaction];
+        thread.isForceHidden = masterHexEncodedPublicKey != nil && ![masterHexEncodedPublicKey isEqualToString:hexEncodedPublicKey];
         [thread saveWithTransaction:transaction];
     }];
     LKFriendRequestMessage *message = [[LKFriendRequestMessage alloc] initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:@"Please accept to enable messages to be synced across devices" attachmentIds:[NSMutableArray new]

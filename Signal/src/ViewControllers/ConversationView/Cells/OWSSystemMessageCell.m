@@ -431,12 +431,8 @@ typedef void (^SystemMessageActionBlock)(void);
                           }];
         case TSErrorMessageMissingKeyId:
         case TSErrorMessageNoSession:
-            return nil;
         case TSErrorMessageInvalidMessage:
-            return [SystemMessageAction actionWithTitle:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", @"")
-                                                  block:^{
-                                                      [weakSelf.delegate tappedCorruptedMessage:message];
-                                                  }];
+            return nil;
         case TSErrorMessageDuplicateMessage:
         case TSErrorMessageInvalidVersion:
             return nil;

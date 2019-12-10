@@ -2672,3 +2672,5 @@
 "Your device was unlinked successfully" = "Your device was unlinked successfully";
 "Unnamed Device" = "Unnamed Device";
 "Linked device (%@)" = "Linked device (%@)";
+"Restore session" = "Restore session";
+"Would you like to start a new session with %@?" = "Would you like to start a new session with %@?";

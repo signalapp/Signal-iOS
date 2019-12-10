@@ -1723,10 +1723,6 @@ NS_ASSUME_NONNULL_BEGIN
             }];
         }
         message.friendRequestStatus = LKMessageFriendRequestStatusPending; // Don't save yet. This is done in finalizeIncomingMessage:thread:masterThread:envelope:transaction.
-    } else {
-        // This can happen if Alice and Bob have a session, Bob deletes his app, restores from seed, and then sends a friend request to Alice again.
-        // TODO: Re-enable when seed restoration is done
-//        [self handleEndSessionMessageWithEnvelope:envelope dataMessage:data transaction:transaction];
     }
 }
 

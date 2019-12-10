@@ -97,6 +97,7 @@ NS_SWIFT_NAME(MessageSender)
                         success:(void (^)(void))successHandler
                         failure:(void (^)(NSError *error))failureHandler;
 
+- (OWSMessageSend *)getSessionRestoreMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey;
 - (OWSMessageSend *)getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:(NSString *)hexEncodedPublicKey;
 - (void)sendMessage:(OWSMessageSend *)messageSend;
 
