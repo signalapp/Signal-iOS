@@ -74,12 +74,12 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    [self commontInit];
+    [self commonInit];
 
     return self;
 }
 
-- (void)commontInit
+- (void)commonInit
 {
     // Ensure only called once.
     OWSAssertDebug(!self.bodyTextView);
@@ -633,7 +633,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)quotedReplyTopMargin
 {
-    return 6.f;
+    return 22.f;
 }
 
 - (nullable LinkPreviewSent *)linkPreviewState
@@ -1153,7 +1153,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [NSValue valueWithCGSize:CGSizeCeil(result)];
 }
 
-- (DisplayableText *)getDisplayableQuotedText
+- (DisplayableText *_Nullable)getDisplayableQuotedText
 {
     if (!self.viewItem.hasQuotedText) { return nil; }
     NSString *rawText = self.viewItem.displayableQuotedText.fullText;

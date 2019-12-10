@@ -166,6 +166,7 @@ const CGFloat kMaxTextViewHeight = 120;
     self.userInteractionEnabled = YES;
 
     _quotedReplyWrapper = [UIView containerView];
+    self.quotedReplyWrapper.backgroundColor = LKColors.composeViewTextFieldBackground;
     self.quotedReplyWrapper.hidden = YES;
     [self.quotedReplyWrapper setContentHuggingHorizontalLow];
     [self.quotedReplyWrapper setCompressionResistanceHorizontalLow];

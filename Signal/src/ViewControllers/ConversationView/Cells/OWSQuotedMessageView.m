@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 const CGFloat kRemotelySourcedContentGlyphLength = 16;
 const CGFloat kRemotelySourcedContentRowMargin = 4;
-const CGFloat kRemotelySourcedContentRowSpacing = 3;
+const CGFloat kRemotelySourcedContentRowSpacing = 4;
 
 @interface OWSQuotedMessageView ()
 
@@ -162,7 +162,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     self.userInteractionEnabled = YES;
     self.layoutMargins = UIEdgeInsetsZero;
     self.clipsToBounds = YES;
-
+    
     CAShapeLayer *maskLayer = [CAShapeLayer new];
     OWSDirectionalRectCorner sharpCorners = self.sharpCorners;
 
@@ -176,7 +176,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
             const CGFloat bubbleTop = 0.f;
             const CGFloat bubbleBottom = layerFrame.size.height;
 
-            const CGFloat sharpCornerRadius = self.isForPreview ? 4 : 2;
+            const CGFloat sharpCornerRadius = 2;
             const CGFloat wideCornerRadius = self.isForPreview ? 14 : 4;
 
             UIBezierPath *bezierPath = [OWSBubbleView roundedBezierRectWithBubbleTop:bubbleTop
@@ -321,22 +321,21 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     if (self.isForPreview) {
         UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [cancelButton setImage:[UIImage imageNamed:@"X"] forState:UIControlStateNormal];
+        cancelButton.contentMode = UIViewContentModeScaleAspectFit;
         [cancelButton addTarget:self action:@selector(didTapCancel) forControlEvents:UIControlEventTouchUpInside];
-        [cancelButton setContentHuggingHorizontalHigh];
-        [cancelButton setCompressionResistanceHorizontalHigh];
+        [cancelButton autoSetDimension:ALDimensionWidth toSize:14.f];
+        [cancelButton autoSetDimension:ALDimensionHeight toSize:14.f];
 
         UIStackView *cancelStack = [[UIStackView alloc] initWithArrangedSubviews:@[ cancelButton ]];
         cancelStack.axis = UILayoutConstraintAxisHorizontal;
         cancelStack.alignment = UIStackViewAlignmentTop;
         cancelStack.layoutMarginsRelativeArrangement = YES;
-        CGFloat hMarginLeading = 0;
-        CGFloat hMarginTrailing = 6;
-        cancelStack.layoutMargins = UIEdgeInsetsMake(6,
+        CGFloat hMarginLeading = 8;
+        CGFloat hMarginTrailing = 8;
+        cancelStack.layoutMargins = UIEdgeInsetsMake(8,
             CurrentAppContext().isRTL ? hMarginTrailing : hMarginLeading,
             0,
             CurrentAppContext().isRTL ? hMarginLeading : hMarginTrailing);
-        [cancelStack setContentHuggingHorizontalHigh];
-        [cancelStack setCompressionResistanceHorizontalHigh];
 
         UIStackView *cancelWrapper = [[UIStackView alloc] initWithArrangedSubviews:@[
             contentView,
@@ -361,7 +360,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     OWSAssertDebug(CGSizeEqualToSize(
         CGSizeMake(kRemotelySourcedContentGlyphLength, kRemotelySourcedContentGlyphLength), glyphImage.size));
     UIImageView *glyphView = [[UIImageView alloc] initWithImage:glyphImage];
-    glyphView.tintColor = UIColor.whiteColor;
+    glyphView.tintColor = LKColors.text;
     [glyphView
         autoSetDimensionsToSize:CGSizeMake(kRemotelySourcedContentGlyphLength, kRemotelySourcedContentGlyphLength)];
 
@@ -373,13 +372,13 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     sourceRow.spacing = kRemotelySourcedContentRowSpacing;
     sourceRow.layoutMarginsRelativeArrangement = YES;
 
-    const CGFloat leftMargin = 8;
+    const CGFloat leftMargin = 4;
     sourceRow.layoutMargins = UIEdgeInsetsMake(kRemotelySourcedContentRowMargin,
         leftMargin,
         kRemotelySourcedContentRowMargin,
         kRemotelySourcedContentRowMargin);
 
-    UIColor *backgroundColor = [UIColor.whiteColor colorWithAlphaComponent:0.4];
+    UIColor *backgroundColor = [LKColors.text colorWithAlphaComponent:LKValues.unimportantElementOpacity];
     [sourceRow addBackgroundViewWithBackgroundColor:backgroundColor];
 
     return sourceRow;
@@ -476,8 +475,8 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 {
     OWSAssertDebug(self.quoteContentSourceLabel);
 
-    self.quoteContentSourceLabel.font = UIFont.ows_dynamicTypeFootnoteFont;
-    self.quoteContentSourceLabel.textColor = Theme.primaryColor;
+    self.quoteContentSourceLabel.font = [UIFont systemFontOfSize:LKValues.smallFontSize];
+    self.quoteContentSourceLabel.textColor = LKColors.text;
     self.quoteContentSourceLabel.text = NSLocalizedString(@"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE",
         @"Footer label that appears below quoted messages when the quoted content was not derived locally. When the "
         @"local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead "
@@ -541,11 +540,9 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     if ([localNumber isEqualToString:self.quotedMessage.authorId]) {
 
         if (self.isOutgoing) {
-            quotedAuthorText = NSLocalizedString(
-                @"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF", @"message header label when quoting yourself");
+            quotedAuthorText = NSLocalizedString(@"You", @"");
         } else {
-            quotedAuthorText = NSLocalizedString(
-                @"QUOTED_REPLY_AUTHOR_INDICATOR_YOU", @"message header label when someone else is quoting you");
+            quotedAuthorText = NSLocalizedString(@"You", @"");
         }
     } else {
         OWSContactsManager *contactsManager = Environment.shared.contactsManager;

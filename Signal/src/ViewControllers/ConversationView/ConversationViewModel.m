@@ -1540,7 +1540,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 // the next message has the same sender avatar and
                 // no "date break" separates us.
                 shouldShowSenderAvatar = YES;
-                if (previousViewItem && previousViewItem.interaction.interactionType == interactionType) {
+                if (viewItem.isRSSFeed) {
+                    shouldShowSenderAvatar = NO;
+                } else if (previousViewItem && previousViewItem.interaction.interactionType == interactionType) {
                     shouldShowSenderAvatar = (![NSObject isNullableObject:previousIncomingSenderId equalTo:incomingSenderId]);
                 }
             }

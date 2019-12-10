@@ -685,11 +685,10 @@ typedef enum : NSUInteger {
     [self updateInputToolbar];
     
     self.loadMoreHeader = [UILabel new];
-    self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
-        @"Indicates that the app is loading more messages in this conversation.");
-    self.loadMoreHeader.textColor = [UIColor ows_materialBlueColor];
+    self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES", @"Indicates that the app is loading more messages in this conversation.");
+    self.loadMoreHeader.textColor = [LKColors.text colorWithAlphaComponent:0.8];
     self.loadMoreHeader.textAlignment = NSTextAlignmentCenter;
-    self.loadMoreHeader.font = [UIFont ows_mediumFontWithSize:16.f];
+    self.loadMoreHeader.font = [UIFont boldSystemFontOfSize:LKValues.verySmallFontSize];
     [self.collectionView addSubview:self.loadMoreHeader];
     [self.loadMoreHeader autoPinWidthToWidthOfView:self.view];
     [self.loadMoreHeader autoPinEdgeToSuperviewEdge:ALEdgeTop];
@@ -2574,7 +2573,7 @@ typedef enum : NSUInteger {
 
 - (void)createConversationScrollButtons
 {
-    self.scrollDownButton = [[ConversationScrollButton alloc] initWithIconText:@"\uf103"];
+    self.scrollDownButton = [[ConversationScrollButton alloc] initWithIconText:@"\uf107"];
     [self.scrollDownButton addTarget:self
                               action:@selector(scrollDownButtonTapped)
                     forControlEvents:UIControlEventTouchUpInside];

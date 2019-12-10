@@ -91,8 +91,13 @@ public class ConversationStyle: NSObject {
     @objc
     public func updateProperties() {
         if thread.isGroupThread() {
-            gutterLeading = 16 + 35 + 24 // Values.mediumSpacing + Values.smallProfilePictureSize + Values.largeSpacing
-            gutterTrailing = 16
+            if let thread = thread as? TSGroupThread, thread.isRSSFeed {
+                gutterLeading = 16
+                gutterTrailing = 16
+            } else {
+                gutterLeading = 16 + 35 + 24 // Values.mediumSpacing + Values.smallProfilePictureSize + Values.largeSpacing
+                gutterTrailing = 16
+            }
         } else {
             gutterLeading = 16
             gutterTrailing = 16
@@ -103,7 +108,11 @@ public class ConversationStyle: NSObject {
         headerGutterTrailing = 16
         errorGutterTrailing = 16
 
-        maxMessageWidth = floor(contentWidth - 32)
+        if let thread = thread as? TSGroupThread, thread.isRSSFeed {
+            maxMessageWidth = floor(contentWidth)
+        } else {
+            maxMessageWidth = floor(contentWidth - 32)
+        }
 
         let messageTextFont = UIFont.systemFont(ofSize: 13) // Values.smallFontSize
 
@@ -232,8 +241,7 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func quotingSelfHighlightColor() -> UIColor {
-        // TODO:
-        return UIColor.init(rgbHex: 0xFF0000)
+        return UIColor.init(rgbHex: 0xB5B5B5)
     }
 
     @objc

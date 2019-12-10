@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 16;
+const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 16; // Values.mediumSpacing
 
 @interface OWSMessageHeaderView ()
 
@@ -80,8 +80,8 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 16;
     OWSAssertDebug(conversationStyle);
     OWSAssertDebug(viewItem.unreadIndicator || viewItem.shouldShowDate);
 
-    self.titleLabel.textColor = Theme.primaryColor;
-    self.subtitleLabel.textColor = Theme.primaryColor;
+    self.titleLabel.textColor = [LKColors.text colorWithAlphaComponent:0.8];
+    self.subtitleLabel.textColor = [LKColors.text colorWithAlphaComponent:0.8];
 
     [self configureLabelsWithViewItem:viewItem];
 
