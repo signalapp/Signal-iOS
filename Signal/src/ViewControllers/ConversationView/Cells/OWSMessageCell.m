@@ -233,7 +233,7 @@ NS_ASSUME_NONNULL_BEGIN
             // last line of the text (if any, or where it
             // would be).
             [self.messageBubbleView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:8],
-            [self.messageBubbleView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.avatarView],
+            [self.messageBubbleView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.avatarView],
         ]];
         
         [self.viewConstraints addObjectsFromArray:@[

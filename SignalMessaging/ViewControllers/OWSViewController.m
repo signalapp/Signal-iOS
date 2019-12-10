@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 BOOL IsLandscapeOrientationEnabled(void)
 {
-    return YES;
+    return NO;
 }
 
 UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
