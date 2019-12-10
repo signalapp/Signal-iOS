@@ -131,7 +131,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (CGFloat)bubbleHMargin
 {
-    return (self.isForPreview ? 0.f : 6.f);
+    return (self.isForPreview ? 0.f : LKValues.largeSpacing);
 }
 
 - (CGFloat)hSpacing
@@ -141,12 +141,12 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (CGFloat)vSpacing
 {
-    return 2.f;
+    return 4.f;
 }
 
 - (CGFloat)stripeThickness
 {
-    return 4.f;
+    return LKValues.accentLineThickness;
 }
 
 - (UIColor *)quoteBubbleBackgroundColor
@@ -176,8 +176,8 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
             const CGFloat bubbleTop = 0.f;
             const CGFloat bubbleBottom = layerFrame.size.height;
 
-            const CGFloat sharpCornerRadius = 4;
-            const CGFloat wideCornerRadius = 12;
+            const CGFloat sharpCornerRadius = self.isForPreview ? 4 : 2;
+            const CGFloat wideCornerRadius = self.isForPreview ? 14 : 4;
 
             UIBezierPath *bezierPath = [OWSBubbleView roundedBezierRectWithBubbleTop:bubbleTop
                                                                           bubbleLeft:bubbleLeft
@@ -191,7 +191,9 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         }];
     innerBubbleView.layer.mask = maskLayer;
     if (self.isForPreview) {
-        innerBubbleView.backgroundColor = [UIColor.lokiGreen colorWithAlphaComponent:0.4f];
+        NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        BOOL wasSentByUser = [self.quotedMessage.authorId isEqual:userHexEncodedPublicKey];
+        innerBubbleView.backgroundColor = [self.conversationStyle quotedReplyBubbleColorWithIsIncoming:wasSentByUser];
     } else {
         innerBubbleView.backgroundColor = self.quoteBubbleBackgroundColor;
     }
@@ -209,7 +211,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
     UIView *stripeView = [UIView new];
     if (self.isForPreview) {
-        stripeView.backgroundColor = UIColor.lokiGreen;
+        stripeView.backgroundColor = LKColors.accent;
     } else {
         stripeView.backgroundColor = [self.conversationStyle quotedReplyStripeColorWithIsIncoming:!self.isOutgoing];
     }
@@ -318,10 +320,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
     if (self.isForPreview) {
         UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [cancelButton
-            setImage:[[UIImage imageNamed:@"compose-cancel"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
-            forState:UIControlStateNormal];
-        cancelButton.imageView.tintColor = Theme.secondaryColor;
+        [cancelButton setImage:[UIImage imageNamed:@"X"] forState:UIControlStateNormal];
         [cancelButton addTarget:self action:@selector(didTapCancel) forControlEvents:UIControlEventTouchUpInside];
         [cancelButton setContentHuggingHorizontalHigh];
         [cancelButton setCompressionResistanceHorizontalHigh];
@@ -563,11 +562,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
             }];
         }
         
-        quotedAuthorText = [NSString
-            stringWithFormat:
-                NSLocalizedString(@"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT",
-                    @"Indicates the author of a quoted message. Embeds {{the author's name or phone number}}."),
-            quotedAuthor];
+        quotedAuthorText = quotedAuthor;
     }
 
     self.quotedAuthorLabel.text = quotedAuthorText;
@@ -638,7 +633,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (UIFont *)quotedAuthorFont
 {
-    return UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
+    return [UIFont boldSystemFontOfSize:LKValues.smallFontSize];
 }
 
 - (UIColor *)quotedAuthorColor
@@ -653,7 +648,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (UIFont *)quotedTextFont
 {
-    return [UIFont ows_dynamicTypeBodyFont];
+    return [UIFont systemFontOfSize:LKValues.mediumFontSize];
 }
 
 - (UIColor *)fileTypeTextColor

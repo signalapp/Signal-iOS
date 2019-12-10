@@ -218,57 +218,36 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func quotedReplyBubbleColor(isIncoming: Bool) -> UIColor {
-        if Theme.isDarkThemeEnabled {
-            if isIncoming {
-                return UIColor.lokiGreen().withAlphaComponent(0.75)
-            } else {
-                return UIColor.lokiDarkestGray().withAlphaComponent(0.4)
-            }
-        } else if isIncoming {
-            return bubbleColorOutgoingSent.withAlphaComponent(0.25)
+        if isIncoming {
+            return UIColor(rgbHex: 0x3F4146) // Colors.sentMessageBackgroundColor
         } else {
-            return ConversationStyle.defaultBubbleColorIncoming.withAlphaComponent(0.75)
+            return UIColor(rgbHex: 0x222325) // Colors.receivedMessageBackgroundColor
         }
     }
 
     @objc
     public func quotedReplyStripeColor(isIncoming: Bool) -> UIColor {
-        if Theme.isDarkThemeEnabled {
-            if isIncoming {
-                return UIColor.lokiGreen()
-            } else {
-                return UIColor.lokiDarkestGray()
-            }
-        } else if isIncoming {
-            return bubbleColorOutgoingSent
-        } else {
-            return UIColor.white
-        }
+        return UIColor(rgbHex: 0x00F782) // Colors.accent
     }
 
     @objc
     public func quotingSelfHighlightColor() -> UIColor {
         // TODO:
-        return UIColor.init(rgbHex: 0xB5B5B5)
+        return UIColor.init(rgbHex: 0xFF0000)
     }
 
     @objc
     public func quotedReplyAuthorColor() -> UIColor {
-        return quotedReplyTextColor()
+        return UIColor(rgbHex: 0xFFFFFF) // Colors.text
     }
 
     @objc
     public func quotedReplyTextColor() -> UIColor {
-        if Theme.isDarkThemeEnabled {
-            return UIColor.ows_gray05
-        } else {
-            return UIColor.ows_gray90
-        }
+        return UIColor(rgbHex: 0xFFFFFF) // Colors.text
     }
 
     @objc
     public func quotedReplyAttachmentColor() -> UIColor {
-        // TODO:
-        return UIColor.white
+        return UIColor(rgbHex: 0xFFFFFF) // Colors.text
     }
 }
