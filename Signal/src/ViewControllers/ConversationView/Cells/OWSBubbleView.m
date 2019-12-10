@@ -5,6 +5,7 @@
 #import "OWSBubbleView.h"
 #import "MainAppContext.h"
 #import <SignalMessaging/UIView+OWS.h>
+#import "Session-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -37,7 +38,7 @@ UIRectCorner UIRectCornerForOWSDirectionalRectCorner(OWSDirectionalRectCorner co
     return rectCorner;
 }
 
-const CGFloat kOWSMessageCellCornerRadius_Large = 18;
+const CGFloat kOWSMessageCellCornerRadius_Large = 10; // LKValues.messageBubbleCornerRadius
 const CGFloat kOWSMessageCellCornerRadius_Small = 4;
 
 @interface OWSBubbleView ()

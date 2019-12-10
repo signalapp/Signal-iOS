@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
+const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 16;
 
 @interface OWSMessageHeaderView ()
 
@@ -55,6 +55,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     self.titleLabel = [UILabel new];
     self.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.titleLabel.textColor = [LKColors.text colorWithAlphaComponent:0.8];
 
     self.subtitleLabel = [UILabel new];
     // The subtitle may wrap to a second line.
@@ -87,7 +88,8 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     CGFloat strokeThickness = [self strokeThicknessWithViewItem:viewItem];
     self.strokeView.layer.cornerRadius = strokeThickness * 0.5f;
     self.strokeView.backgroundColor = [self strokeColorWithViewItem:viewItem];
-
+    self.strokeView.hidden = viewItem.unreadIndicator == nil;
+    
     self.subtitleLabel.hidden = self.subtitleLabel.text.length < 1;
 
     [NSLayoutConstraint deactivateConstraints:self.layoutConstraints];
@@ -105,9 +107,9 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     OWSAssertDebug(viewItem);
 
     if (viewItem.unreadIndicator) {
-        return 4.f;
-    } else {
         return 1.f;
+    } else {
+        return 0.f;
     }
 }
 
@@ -127,18 +129,18 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     OWSAssertDebug(viewItem);
 
     NSDate *date = viewItem.interaction.receivedAtDate;
-    NSString *dateString = [DateUtil formatDateForConversationDateBreaks:date].localizedUppercaseString;
+    NSString *dateString = [DateUtil formatDateForConversationDateBreaks:date];
 
     // Update cell to reflect changes in dynamic text.
     if (viewItem.unreadIndicator) {
-        self.titleLabel.font = UIFont.ows_dynamicTypeCaption1Font.ows_mediumWeight;
+        self.titleLabel.font = [UIFont boldSystemFontOfSize:LKValues.verySmallFontSize];
 
         NSString *title = NSLocalizedString(
             @"MESSAGES_VIEW_UNREAD_INDICATOR", @"Indicator that separates read from unread messages.");
         if (viewItem.shouldShowDate) {
             title = [[dateString rtlSafeAppend:@" \u00B7 "] rtlSafeAppend:title];
         }
-        self.titleLabel.text = title.localizedUppercaseString;
+        self.titleLabel.text = title;
 
         if (!viewItem.unreadIndicator.hasMoreUnseenMessages) {
             self.subtitleLabel.text = nil;
@@ -152,7 +154,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
                           @"changes."));
         }
     } else {
-        self.titleLabel.font = UIFont.ows_dynamicTypeCaption1Font;
+        self.titleLabel.font = [UIFont boldSystemFontOfSize:LKValues.verySmallFontSize];
         self.titleLabel.text = dateString;
         self.subtitleLabel.text = nil;
     }
@@ -172,13 +174,17 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     CGFloat strokeThickness = [self strokeThicknessWithViewItem:viewItem];
     result.height += strokeThickness;
 
+    if (strokeThickness != 0) {
+        result.height += self.stackView.spacing;
+    }
+    
     CGFloat maxTextWidth = conversationStyle.headerViewContentWidth;
     CGSize titleSize = [self.titleLabel sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)];
-    result.height += titleSize.height + self.stackView.spacing;
+    result.height += titleSize.height;
 
     if (self.subtitleLabel.text.length > 0) {
         CGSize subtitleSize = [self.subtitleLabel sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)];
-        result.height += subtitleSize.height + self.stackView.spacing;
+        result.height += self.stackView.spacing + subtitleSize.height;
     }
     result.height += OWSMessageHeaderViewDateHeaderVMargin;
 

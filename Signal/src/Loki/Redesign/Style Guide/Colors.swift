@@ -33,4 +33,6 @@ final class Colors : NSObject {
     @objc static let fakeChatBubbleText = UIColor(hex: 0x000000)
     @objc static let composeViewBackground = UIColor(hex: 0x1B1B1B)
     @objc static let composeViewTextFieldBackground = UIColor(hex: 0x141414)
+    @objc static let receivedMessageBackgroundColor = UIColor(hex: 0x222325)
+    @objc static let sentMessageBackgroundColor = UIColor(hex: 0x3F4146)
 }

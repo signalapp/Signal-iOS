@@ -1,10 +1,11 @@
 
+@objc(LKProfilePictureView)
 final class ProfilePictureView : UIView {
     private var imageViewWidthConstraint: NSLayoutConstraint!
     private var imageViewHeightConstraint: NSLayoutConstraint!
-    var size: CGFloat!
-    var hexEncodedPublicKey: String!
-    var additionalHexEncodedPublicKey: String?
+    @objc var size: CGFloat = 0 // Not an implicitly unwrapped optional due to Obj-C limitations
+    @objc var hexEncodedPublicKey: String!
+    @objc var additionalHexEncodedPublicKey: String?
     
     // MARK: Components
     private lazy var imageView = getImageView()
@@ -37,7 +38,7 @@ final class ProfilePictureView : UIView {
     }
     
     // MARK: Updating
-    func update() {
+    @objc func update() {
         if let imageViewWidthConstraint = imageViewWidthConstraint, let imageViewHeightConstraint = imageViewHeightConstraint {
             imageView.removeConstraint(imageViewWidthConstraint)
             imageView.removeConstraint(imageViewHeightConstraint)

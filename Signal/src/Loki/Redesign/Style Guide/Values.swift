@@ -42,6 +42,7 @@ final class Values : NSObject {
     @objc static let fakeChatBubbleCornerRadius = CGFloat(10)
     @objc static let fakeChatViewHeight = CGFloat(234)
     @objc static var composeViewTextFieldBorderThickness: CGFloat { return 1 / UIScreen.main.scale }
+    @objc static let messageBubbleCornerRadius: CGFloat = 10
     
     // MARK: - Distances
     @objc static let verySmallSpacing = CGFloat(4)
