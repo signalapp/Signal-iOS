@@ -118,7 +118,7 @@ NSString *const TSContactThreadPrefix = @"c";
     [self setSessionRestoreDevices:[set allObjects] transaction:transaction];
 }
 
-- (void)removeAllRessionRestoreDevicesWithTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
+- (void)removeAllSessionRestoreDevicesWithTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
 {
     [self setSessionRestoreDevices:@[] transaction:transaction];
 }

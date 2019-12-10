@@ -52,7 +52,7 @@ extern NSString *const TSContactThreadPrefix;
 
 - (void)addSessionRestoreDevice:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 
-- (void)removeAllRessionRestoreDevicesWithTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
+- (void)removeAllSessionRestoreDevicesWithTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 
 @end
 

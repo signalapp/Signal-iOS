@@ -980,7 +980,7 @@ typedef enum : NSUInteger {
                     [self restoreSession];
                 }];
                 [bannerView setOnDismiss:^{
-                    [thread removeAllRessionRestoreDevicesWithTransaction:nil];
+                    [thread removeAllSessionRestoreDevicesWithTransaction:nil];
                 }];
             }
         } else {
@@ -1000,11 +1000,11 @@ typedef enum : NSUInteger {
     // rebuild the indicator view every time.
     [self.bannerView removeFromSuperview];
     self.bannerView = nil;
-    
+
     if (self.userHasScrolled) {
         return;
     }
-    
+
     NSArray<NSString *> *noLongerVerifiedRecipientIds = [self noLongerVerifiedRecipientIds];
 
     if (noLongerVerifiedRecipientIds.count > 0) {
@@ -1182,7 +1182,7 @@ typedef enum : NSUInteger {
         [[[TSInfoMessage alloc] initWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageType:TSInfoMessageTypeLokiSessionResetInProgress] save];
         thread.sessionResetState = TSContactThreadSessionResetStateRequestReceived;
         [thread save];
-        [thread removeAllRessionRestoreDevicesWithTransaction:nil];
+        [thread removeAllSessionRestoreDevicesWithTransaction:nil];
     }
 }
 

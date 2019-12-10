@@ -1335,7 +1335,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                 [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSent withTransaction:transaction];
                                 [message.thread removeOldOutgoingFriendRequestMessagesIfNeededWithTransaction:transaction];
                                 if ([message.thread isKindOfClass:[TSContactThread class]]) {
-                                    [((TSContactThread *) message.thread) removeAllRessionRestoreDevicesWithTransaction:transaction];
+                                    [((TSContactThread *) message.thread) removeAllSessionRestoreDevicesWithTransaction:transaction];
                                 }
                                 // Update the message
                                 [message saveFriendRequestStatus:LKMessageFriendRequestStatusPending withTransaction:transaction];
