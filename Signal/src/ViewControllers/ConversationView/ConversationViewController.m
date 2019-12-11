@@ -150,6 +150,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, readonly) ConversationInputToolbar *inputToolbar;
 @property (nonatomic, readonly) ConversationCollectionView *collectionView;
+@property (nonatomic, readonly) UIProgressView *progressIndicatorView;
 @property (nonatomic, readonly) ConversationViewLayout *layout;
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
 
@@ -417,6 +418,26 @@ typedef enum : NSUInteger {
                                              selector:@selector(handleThreadFriendRequestStatusChangedNotification:)
                                                  name:NSNotification.threadFriendRequestStatusChanged
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleCalculatingPoWNotification:)
+                                                 name:NSNotification.calculatingPoW
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleContactingNetworkNotification:)
+                                                 name:NSNotification.contactingNetwork
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleSendingMessageNotification:)
+                                                 name:NSNotification.sendingMessage
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleMessageSentNotification:)
+                                                 name:NSNotification.messageSent
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleMessageFailedNotification:)
+                                                 name:NSNotification.messageFailed
+                                               object:nil];
 }
 
 - (BOOL)isGroupConversation
@@ -675,6 +696,17 @@ typedef enum : NSUInteger {
     [self.collectionView autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
     [self.collectionView autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
 
+    _progressIndicatorView = [UIProgressView new];
+    [self.progressIndicatorView autoSetDimension:ALDimensionHeight toSize:LKValues.messageProgressBarThickness];
+    self.progressIndicatorView.progressViewStyle = UIProgressViewStyleBar;
+    self.progressIndicatorView.progressTintColor = LKColors.accent;
+    self.progressIndicatorView.trackTintColor = UIColor.clearColor;
+    self.progressIndicatorView.alpha = 0;
+    [self.view addSubview:self.progressIndicatorView];
+    [self.progressIndicatorView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [self.progressIndicatorView autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
+    [self.progressIndicatorView autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
+    
     [self.collectionView applyScrollViewInsetsFix];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _collectionView);
 
@@ -5241,6 +5273,73 @@ typedef enum : NSUInteger {
 
     // Scroll button layout depends on input toolbar size.
     [self updateScrollDownButtonLayout];
+}
+
+- (void)handleCalculatingPoWNotification:(NSNotification *)notification
+{
+    NSNumber *timestamp = (NSNumber *)notification.object;
+    [self setProgressIfNeededTo:0.25f forMessageWithTimestamp:timestamp];
+}
+
+- (void)handleContactingNetworkNotification:(NSNotification *)notification
+{
+    NSNumber *timestamp = (NSNumber *)notification.object;
+    [self setProgressIfNeededTo:0.50f forMessageWithTimestamp:timestamp];
+}
+
+- (void)handleSendingMessageNotification:(NSNotification *)notification
+{
+    NSNumber *timestamp = (NSNumber *)notification.object;
+    [self setProgressIfNeededTo:0.75f forMessageWithTimestamp:timestamp];
+}
+
+- (void)handleMessageSentNotification:(NSNotification *)notification
+{
+    NSNumber *timestamp = (NSNumber *)notification.object;
+    [self setProgressIfNeededTo:1.0f forMessageWithTimestamp:timestamp];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+        [self hideProgressIndicatorViewForMessageWithTimestamp:timestamp];
+    });
+}
+
+- (void)handleMessageFailedNotification:(NSNotification *)notification
+{
+    NSNumber *timestamp = (NSNumber *)notification.object;
+    [self hideProgressIndicatorViewForMessageWithTimestamp:timestamp];
+}
+
+- (void)setProgressIfNeededTo:(float)progress forMessageWithTimestamp:(NSNumber *)timestamp
+{
+    __block TSInteraction *targetInteraction;
+    [self.thread enumerateInteractionsUsingBlock:^(TSInteraction *interaction) {
+        if (interaction.timestamp == timestamp.unsignedLongLongValue) {
+            targetInteraction = interaction;
+        }
+    }];
+    if (targetInteraction == nil || targetInteraction.interactionType != OWSInteractionType_OutgoingMessage) { return; }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (progress <= self.progressIndicatorView.progress) { return; }
+        self.progressIndicatorView.alpha = 1;
+        [self.progressIndicatorView setProgress:progress animated:YES];
+    });
+}
+
+- (void)hideProgressIndicatorViewForMessageWithTimestamp:(NSNumber *)timestamp
+{
+    __block TSInteraction *targetInteraction;
+    [self.thread enumerateInteractionsUsingBlock:^(TSInteraction *interaction) {
+        if (interaction.timestamp == timestamp.unsignedLongLongValue) {
+            targetInteraction = interaction;
+        }
+    }];
+    if (targetInteraction == nil || targetInteraction.interactionType != OWSInteractionType_OutgoingMessage) { return; }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [UIView animateWithDuration:0.25 animations:^{
+            self.progressIndicatorView.alpha = 0;
+        } completion:^(BOOL finished) {
+            [self.progressIndicatorView setProgress:0.0f];
+        }];
+    });
 }
 
 @end

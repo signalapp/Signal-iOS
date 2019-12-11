@@ -1308,7 +1308,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 [promise
                 .thenOn(OWSDispatch.sendingQueue, ^(id result) {
                     if (isSuccess) { return; } // Succeed as soon as the first promise succeeds
-                    [LKAnalytics.shared track:@"Sent Message Using Swarm API"];
+                    [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.messageSent object:[[NSNumber alloc] initWithUnsignedLongLong:signalMessage.timestamp]];
                     isSuccess = YES;
                     if (signalMessage.type == TSFriendRequestMessageType) {
                         if (!message.skipSave) {
@@ -1330,7 +1330,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
                     errorCount += 1;
                     if (errorCount != promiseCount) { return; } // Only error out if all promises failed
-                    [LKAnalytics.shared track:@"Failed to Send Message Using Swarm API"];
+                    [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.messageFailed object:[[NSNumber alloc] initWithUnsignedLongLong:signalMessage.timestamp]];
                     handleError(error);
                 }) retainUntilComplete];
             }

@@ -2776,6 +2776,7 @@
 			children = (
 				B8B5BCEB2394D869003823C9 /* Button.swift */,
 				B8BB82AA238F669C00BA5194 /* ConversationCell.swift */,
+				B82B4093239DF15900A248E7 /* ConversationTitleView.swift */,
 				B82B40892399EC0600A248E7 /* FakeChatView.swift */,
 				B8B26C8E234D629C004ED98C /* MentionCandidateSelectionView.swift */,
 				B8B26C90234D8CBD004ED98C /* MentionCandidateSelectionViewDelegate.swift */,
@@ -2801,7 +2802,6 @@
 		B8CCF63D2397580E0091D419 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				B82B4093239DF15900A248E7 /* ConversationTitleView.swift */,
 				B885D5F3233491AB00EE0D8E /* DeviceLinkingModal.swift */,
 				B894D0702339D6F300B4D94D /* DeviceLinkingModalDelegate.swift */,
 				B80C6B562384A56D00FDBC8B /* DeviceLinksVC.swift */,
