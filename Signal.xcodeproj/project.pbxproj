@@ -2725,7 +2725,6 @@
 		B86BD0882339A253000F5AE3 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				B84664F4235022F30083A1CD /* MentionUtilities.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -2757,8 +2756,6 @@
 				B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */,
 				24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */,
 				B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */,
-				B8B26C8E234D629C004ED98C /* MentionCandidateSelectionView.swift */,
-				B8B26C90234D8CBD004ED98C /* MentionCandidateSelectionViewDelegate.swift */,
 			);
 			path = Messaging;
 			sourceTree = "<group>";
@@ -2780,6 +2777,8 @@
 				B8B5BCEB2394D869003823C9 /* Button.swift */,
 				B8BB82AA238F669C00BA5194 /* ConversationCell.swift */,
 				B82B40892399EC0600A248E7 /* FakeChatView.swift */,
+				B8B26C8E234D629C004ED98C /* MentionCandidateSelectionView.swift */,
+				B8B26C90234D8CBD004ED98C /* MentionCandidateSelectionViewDelegate.swift */,
 				B8BB82AC238F734800BA5194 /* ProfilePictureView.swift */,
 				B8BB82B02390C37000BA5194 /* SearchBar.swift */,
 				B8BB82B82394911B00BA5194 /* Separator.swift */,
@@ -2792,6 +2791,7 @@
 		B8CCF63C239757DB0091D419 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				B84664F4235022F30083A1CD /* MentionUtilities.swift */,
 				B885D5F52334A32100EE0D8E /* UIView+Constraints.swift */,
 				B886B4A82398BA1500211ABE /* QRCode.swift */,
 			);

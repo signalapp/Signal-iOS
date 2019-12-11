@@ -9,21 +9,23 @@ public final class MentionUtilities : NSObject {
     }
     
     @objc public static func highlightMentions(in string: String, isOutgoingMessage: Bool, threadID: String, attributes: [NSAttributedString.Key:Any]) -> NSAttributedString {
+        let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
         var publicChat: LokiPublicChat?
+        var userLinkedDeviceHexEncodedPublicKeys: Set<String>!
         OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
             publicChat = LokiDatabaseUtilities.getPublicChat(for: threadID, in: transaction)
+            userLinkedDeviceHexEncodedPublicKeys = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userHexEncodedPublicKey, in: transaction)
         }
         var string = string
         let regex = try! NSRegularExpression(pattern: "@[0-9a-fA-F]*", options: [])
         let knownHexEncodedPublicKeys = LokiAPI.userHexEncodedPublicKeyCache[threadID] ?? [] // Should always be populated at this point
-        var mentions: [NSRange] = []
+        var mentions: [(range: NSRange, hexEncodedPublicKey: String)] = []
         var outerMatch = regex.firstMatch(in: string, options: .withoutAnchoringBounds, range: NSRange(location: 0, length: string.count))
         while let match = outerMatch {
             let hexEncodedPublicKey = String((string as NSString).substring(with: match.range).dropFirst()) // Drop the @
             let matchEnd: Int
             if knownHexEncodedPublicKeys.contains(hexEncodedPublicKey) {
                 var displayName: String?
-                let userHexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
                 if hexEncodedPublicKey == userHexEncodedPublicKey {
                     displayName = OWSProfileManager.shared().localProfileName()
                 } else {
@@ -35,7 +37,7 @@ public final class MentionUtilities : NSObject {
                 }
                 if let displayName = displayName {
                     string = (string as NSString).replacingCharacters(in: match.range, with: "@\(displayName)")
-                    mentions.append(NSRange(location: match.range.location, length: displayName.count + 1)) // + 1 to include the @
+                    mentions.append((range: NSRange(location: match.range.location, length: displayName.count + 1), hexEncodedPublicKey: hexEncodedPublicKey)) // + 1 to include the @
                     matchEnd = match.range.location + displayName.count
                 } else {
                     matchEnd = match.range.location + match.range.length
@@ -47,8 +49,9 @@ public final class MentionUtilities : NSObject {
         }
         let result = NSMutableAttributedString(string: string, attributes: attributes)
         mentions.forEach { mention in
-            let color: UIColor = isOutgoingMessage ? .lokiDarkGray() : .lokiGreen()
-            result.addAttribute(.backgroundColor, value: color, range: mention)
+            guard userLinkedDeviceHexEncodedPublicKeys.contains(mention.hexEncodedPublicKey) else { return }
+            result.addAttribute(.foregroundColor, value: Colors.accent, range: mention.range)
+            result.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.mediumFontSize), range: mention.range)
         }
         return result
     }

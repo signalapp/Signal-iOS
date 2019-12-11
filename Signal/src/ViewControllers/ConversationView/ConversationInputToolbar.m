@@ -205,6 +205,7 @@ const CGFloat kMaxTextViewHeight = 120;
     [self.mentionCandidateSelectionView autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [self.mentionCandidateSelectionView autoPinWidthToSuperview];
     self.mentionCandidateSelectionViewSizeConstraint = [self.mentionCandidateSelectionView autoSetDimension:ALDimensionHeight toSize:0];
+    self.mentionCandidateSelectionView.alpha = 0;
     self.mentionCandidateSelectionView.delegate = self;
     
     // Button Container
@@ -1098,15 +1099,16 @@ const CGFloat kMaxTextViewHeight = 120;
         [self.mentionCandidateSelectionView setPublicChatChannel:publicChat.channel];
     }
     self.mentionCandidateSelectionView.mentionCandidates = mentionCandidates;
-    self.mentionCandidateSelectionViewSizeConstraint.constant = 6 + MIN(mentionCandidates.count, 4) * 52;
+    self.mentionCandidateSelectionViewSizeConstraint.constant = MIN(mentionCandidates.count, 4) * 42;
+    self.mentionCandidateSelectionView.alpha = 1;
     [self setNeedsLayout];
     [self layoutIfNeeded];
-    [self.mentionCandidateSelectionView.tableView setContentOffset:CGPointMake(0, -6)]; // TODO: Workaround for content offset bug
 }
 
 - (void)hideMentionCandidateSelectionView
 {
     self.mentionCandidateSelectionViewSizeConstraint.constant = 0;
+    self.mentionCandidateSelectionView.alpha = 0;
     [self setNeedsLayout];
     [self layoutIfNeeded];
     [self.mentionCandidateSelectionView.tableView setContentOffset:CGPointMake(0, 0)];

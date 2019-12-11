@@ -22,7 +22,7 @@ final class MentionCandidateSelectionView : UIView, UITableViewDataSource, UITab
         result.register(Cell.self, forCellReuseIdentifier: "Cell")
         result.separatorStyle = .none
         result.backgroundColor = .clear
-        result.contentInset = UIEdgeInsets(top: 6, leading: 0, bottom: 0, trailing: 0)
+        result.showsVerticalScrollIndicator = false
         return result
     }()
     
@@ -40,6 +40,20 @@ final class MentionCandidateSelectionView : UIView, UITableViewDataSource, UITab
     private func setUpViewHierarchy() {
         addSubview(tableView)
         tableView.pin(to: self)
+        let topSeparator = UIView()
+        topSeparator.backgroundColor = Colors.separator
+        topSeparator.set(.height, to: Values.separatorThickness)
+        addSubview(topSeparator)
+        topSeparator.pin(.leading, to: .leading, of: self)
+        topSeparator.pin(.top, to: .top, of: self)
+        topSeparator.pin(.trailing, to: .trailing, of: self)
+        let bottomSeparator = UIView()
+        bottomSeparator.backgroundColor = Colors.separator
+        bottomSeparator.set(.height, to: Values.separatorThickness)
+        addSubview(bottomSeparator)
+        bottomSeparator.pin(.leading, to: .leading, of: self)
+        bottomSeparator.pin(.trailing, to: .trailing, of: self)
+        bottomSeparator.pin(.bottom, to: .bottom, of: self)
     }
     
     // MARK: Data
@@ -53,6 +67,7 @@ final class MentionCandidateSelectionView : UIView, UITableViewDataSource, UITab
         cell.mentionCandidate = mentionCandidate
         cell.publicChatServer = publicChatServer
         cell.publicChatChannel = publicChatChannel
+        cell.separator.isHidden = (indexPath.row == (mentionCandidates.count - 1))
         return cell
     }
     
@@ -73,7 +88,7 @@ private extension MentionCandidateSelectionView {
         var publicChatChannel: UInt64?
         
         // MARK: Components
-        private lazy var profilePictureImageView = AvatarImageView()
+        private lazy var profilePictureView = ProfilePictureView()
         
         private lazy var moderatorIconImageView: UIImageView = {
             let result = UIImageView(image: #imageLiteral(resourceName: "Crown"))
@@ -82,9 +97,16 @@ private extension MentionCandidateSelectionView {
         
         private lazy var displayNameLabel: UILabel = {
             let result = UILabel()
-            result.textColor = Theme.primaryColor
-            result.font = UIFont.ows_dynamicTypeSubheadlineClamped
+            result.textColor = Colors.text
+            result.font = .systemFont(ofSize: Values.smallFontSize)
             result.lineBreakMode = .byTruncatingTail
+            return result
+        }()
+        
+        lazy var separator: UIView = {
+            let result = UIView()
+            result.backgroundColor = Colors.separator
+            result.set(.height, to: Values.separatorThickness)
             return result
         }()
         
@@ -100,36 +122,47 @@ private extension MentionCandidateSelectionView {
         }
         
         private func setUpViewHierarchy() {
-            // Make the cell transparent
-            backgroundColor = .clear
+            // Set the cell background color
+            backgroundColor = Colors.cellBackground
+            // Set up the highlight color
+            let selectedBackgroundView = UIView()
+            selectedBackgroundView.backgroundColor = Colors.cellBackground // Intentionally not Colors.cellSelected
+            self.selectedBackgroundView = selectedBackgroundView
             // Set up the profile picture image view
-            profilePictureImageView.set(.width, to: 36)
-            profilePictureImageView.set(.height, to: 36)
+            let profilePictureViewSize = Values.verySmallProfilePictureSize
+            profilePictureView.set(.width, to: profilePictureViewSize)
+            profilePictureView.set(.height, to: profilePictureViewSize)
+            profilePictureView.size = profilePictureViewSize
             // Set up the main stack view
-            let stackView = UIStackView(arrangedSubviews: [ profilePictureImageView, displayNameLabel ])
+            let stackView = UIStackView(arrangedSubviews: [ profilePictureView, displayNameLabel ])
             stackView.axis = .horizontal
             stackView.alignment = .center
-            stackView.spacing = 16
-            stackView.set(.height, to: 36)
+            stackView.spacing = Values.mediumSpacing
+            stackView.set(.height, to: profilePictureViewSize)
             contentView.addSubview(stackView)
-            stackView.pin(.leading, to: .leading, of: contentView, withInset: 16)
-            stackView.pin(.top, to: .top, of: contentView, withInset: 8)
-            contentView.pin(.trailing, to: .trailing, of: stackView, withInset: 16)
-            contentView.pin(.bottom, to: .bottom, of: stackView, withInset: 8)
-            stackView.set(.width, to: UIScreen.main.bounds.width - 2 * 16)
+            stackView.pin(.leading, to: .leading, of: contentView, withInset: Values.mediumSpacing)
+            stackView.pin(.top, to: .top, of: contentView, withInset: Values.smallSpacing)
+            contentView.pin(.trailing, to: .trailing, of: stackView, withInset: Values.mediumSpacing)
+            contentView.pin(.bottom, to: .bottom, of: stackView, withInset: Values.smallSpacing)
+            stackView.set(.width, to: UIScreen.main.bounds.width - 2 * Values.mediumSpacing)
             // Set up the moderator icon image view
             moderatorIconImageView.set(.width, to: 20)
             moderatorIconImageView.set(.height, to: 20)
             contentView.addSubview(moderatorIconImageView)
-            moderatorIconImageView.pin(.trailing, to: .trailing, of: profilePictureImageView)
-            moderatorIconImageView.pin(.bottom, to: .bottom, of: profilePictureImageView, withInset: 3.5)
+            moderatorIconImageView.pin(.trailing, to: .trailing, of: profilePictureView)
+            moderatorIconImageView.pin(.bottom, to: .bottom, of: profilePictureView, withInset: 3.5)
+            // Set up the separator
+            addSubview(separator)
+            separator.pin(.leading, to: .leading, of: self)
+            separator.pin(.trailing, to: .trailing, of: self)
+            separator.pin(.bottom, to: .bottom, of: self)
         }
         
         // MARK: Updating
         private func update() {
             displayNameLabel.text = mentionCandidate.displayName
-            let profilePicture = OWSContactAvatarBuilder(signalId: mentionCandidate.hexEncodedPublicKey, colorName: .blue, diameter: 36).build()
-            profilePictureImageView.image = profilePicture
+            profilePictureView.hexEncodedPublicKey = mentionCandidate.hexEncodedPublicKey
+            profilePictureView.update()
             if let server = publicChatServer, let channel = publicChatChannel {
                 let isUserModerator = LokiPublicChatAPI.isUserModerator(mentionCandidate.hexEncodedPublicKey, for: channel, on: server)
                 moderatorIconImageView.isHidden = !isUserModerator

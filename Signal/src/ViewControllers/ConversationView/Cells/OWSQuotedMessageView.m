@@ -655,7 +655,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 4;
 
 - (UIFont *)fileTypeFont
 {
-    return self.quotedTextFont.ows_italic;
+    return self.quotedTextFont;
 }
 
 - (UIColor *)filenameTextColor
