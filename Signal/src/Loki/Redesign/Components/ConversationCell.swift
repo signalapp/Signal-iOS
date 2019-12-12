@@ -117,9 +117,10 @@ final class ConversationCell : UITableViewCell {
             let randomUsers = users.sorted().prefix(2) // Sort to provide a level of stability
             if !randomUsers.isEmpty {
                 profilePictureView.hexEncodedPublicKey = randomUsers[0]
-                profilePictureView.additionalHexEncodedPublicKey = randomUsers.count == 2 ? randomUsers[1] : nil
+                profilePictureView.additionalHexEncodedPublicKey = randomUsers.count == 2 ? randomUsers[1] : ""
             } else {
-                // TODO: Handle
+                profilePictureView.hexEncodedPublicKey = ""
+                profilePictureView.additionalHexEncodedPublicKey = ""
             }
             profilePictureView.isRSSFeed = (threadViewModel.threadRecord as? TSGroupThread)?.isRSSFeed ?? false
         } else {

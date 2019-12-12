@@ -154,8 +154,10 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
             let playButton = UIButton()
             self.playVideoButton = playButton
             playButton.accessibilityLabel = NSLocalizedString("PLAY_BUTTON_ACCESSABILITY_LABEL", comment: "Accessibility label for button to start media playback")
-            playButton.setBackgroundImage(#imageLiteral(resourceName: "play_button"), for: .normal)
+            playButton.setBackgroundImage(#imageLiteral(resourceName: "CirclePlay"), for: .normal)
             playButton.contentMode = .scaleAspectFit
+            playButton.autoSetDimension(.width, toSize: 72)
+            playButton.autoSetDimension(.height, toSize: 72)
 
             let playButtonWidth = ScaleFromIPhone5(70)
             playButton.autoSetDimensions(to: CGSize(width: playButtonWidth, height: playButtonWidth))

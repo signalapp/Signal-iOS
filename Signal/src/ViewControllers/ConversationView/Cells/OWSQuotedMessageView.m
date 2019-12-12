@@ -251,11 +251,13 @@ const CGFloat kRemotelySourcedContentRowSpacing = 4;
             quotedAttachmentView.backgroundColor = [UIColor whiteColor];
 
             if (self.isVideoAttachment) {
-                UIImage *contentIcon = [UIImage imageNamed:@"attachment_play_button"];
+                UIImage *contentIcon = [UIImage imageNamed:@"Play"];
                 contentIcon = [contentIcon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
                 UIImageView *contentImageView = [self imageViewForImage:contentIcon];
-                contentImageView.tintColor = [UIColor whiteColor];
+                contentImageView.tintColor = LKColors.text;
                 [quotedAttachmentView addSubview:contentImageView];
+                [contentImageView autoSetDimension:ALDimensionWidth toSize:16];
+                [contentImageView autoSetDimension:ALDimensionHeight toSize:16];
                 [contentImageView autoCenterInSuperview];
             }
         } else if (self.quotedMessage.thumbnailDownloadFailed) {

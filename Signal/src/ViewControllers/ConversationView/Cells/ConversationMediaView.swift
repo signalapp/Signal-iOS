@@ -326,8 +326,10 @@ public class ConversationMediaView: UIView {
         stillImageView.autoPinEdgesToSuperviewEdges()
 
         if !addUploadProgressIfNecessary(stillImageView) {
-            let videoPlayIcon = UIImage(named: "play_button")
+            let videoPlayIcon = UIImage(named: "CirclePlay")
             let videoPlayButton = UIImageView(image: videoPlayIcon)
+            videoPlayButton.set(.width, to: 72)
+            videoPlayButton.set(.height, to: 72)
             stillImageView.addSubview(videoPlayButton)
             videoPlayButton.autoCenterInSuperview()
         }

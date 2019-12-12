@@ -59,7 +59,8 @@ final class ProfilePictureView : UIView {
             imageView.removeConstraint(imageViewWidthConstraint)
             imageView.removeConstraint(imageViewHeightConstraint)
         }
-        func getProfilePicture(of size: CGFloat, for hexEncodedPublicKey: String) -> UIImage {
+        func getProfilePicture(of size: CGFloat, for hexEncodedPublicKey: String) -> UIImage? {
+            guard !hexEncodedPublicKey.isEmpty else { return nil }
             return OWSProfileManager.shared().profileAvatar(forRecipientId: hexEncodedPublicKey) ?? Identicon.generateIcon(string: hexEncodedPublicKey, size: size)
         }
         let size: CGFloat
