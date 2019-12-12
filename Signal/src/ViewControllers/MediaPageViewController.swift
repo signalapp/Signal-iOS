@@ -163,11 +163,15 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         let footerBar = self.makeClearToolbar()
         self.footerBar = footerBar
-        footerBar.tintColor = .white
+        footerBar.tintColor = Colors.text
+        footerBar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: UIBarMetrics.default)
+        footerBar.setShadowImage(UIImage(), forToolbarPosition: .any)
+        footerBar.isTranslucent = false
+        footerBar.barTintColor = Colors.navigationBarBackground
 
         let bottomContainer = UIView()
         self.bottomContainer = bottomContainer
-        bottomContainer.backgroundColor = UIColor.ows_black.withAlphaComponent(0.4)
+        bottomContainer.backgroundColor = Colors.navigationBarBackground
 
         let bottomStack = UIStackView(arrangedSubviews: [captionContainerView, galleryRailView, footerBar])
         bottomStack.axis = .vertical
@@ -190,6 +194,12 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let verticalSwipe = UISwipeGestureRecognizer(target: self, action: #selector(didSwipeView))
         verticalSwipe.direction = [.up, .down]
         view.addGestureRecognizer(verticalSwipe)
+        
+        let navigationBar = navigationController!.navigationBar
+        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+        navigationBar.shadowImage = UIImage()
+        navigationBar.isTranslucent = false
+        navigationBar.barTintColor = Colors.navigationBarBackground
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -239,10 +249,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     private func makeClearToolbar() -> UIToolbar {
         let toolbar = UIToolbar()
 
-        toolbar.backgroundColor = UIColor.clear
-
-        // Making a toolbar transparent requires setting an empty uiimage
-        toolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
+        toolbar.backgroundColor = Colors.navigationBarBackground
 
         // hide 1px top-border
         toolbar.clipsToBounds = true
@@ -701,8 +708,8 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     lazy private var portraitHeaderNameLabel: UILabel = {
         let label = UILabel()
-        label.textColor = Theme.darkThemePrimaryColor
-        label.font = UIFont.ows_regularFont(withSize: 17)
+        label.textColor = Colors.text
+        label.font = .systemFont(ofSize: Values.mediumFontSize)
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.8
@@ -712,8 +719,8 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     lazy private var portraitHeaderDateLabel: UILabel = {
         let label = UILabel()
-        label.textColor = Theme.darkThemePrimaryColor
-        label.font = UIFont.ows_regularFont(withSize: 12)
+        label.textColor = Colors.text
+        label.font = .systemFont(ofSize: Values.verySmallFontSize)
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.8
