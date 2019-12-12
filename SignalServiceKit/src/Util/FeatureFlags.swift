@@ -230,10 +230,7 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
-    public static let tryToCreateNewGroupsV2 = false
-
-    @objc
-    public static let incomingGroupsV2 = false
+    public static let tryToCreateGroupsV2 = false
 
     @objc
     public static let linkedPhones = build.includes(.internalPreview)
@@ -246,10 +243,4 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let isUsingProductionService = true
-
-    @objc
-    public static let versionedProfiledFetches = false
-
-    @objc
-    public static let versionedProfiledUpdate = false
 }

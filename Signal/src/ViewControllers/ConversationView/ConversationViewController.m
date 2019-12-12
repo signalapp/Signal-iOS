@@ -3625,31 +3625,73 @@ typedef enum : NSUInteger {
     [OWSReadReceiptManager.sharedManager markAsReadLocallyBeforeSortId:self.lastVisibleSortId thread:self.thread];
 }
 
-- (void)updateGroupWithId:(NSData *)groupId
-                  members:(NSArray<SignalServiceAddress *> *)members
-                     name:(nullable NSString *)name
-               avatarData:(nullable NSData *)avatarData
+// GRDB TODO: Revisit this method.
+- (void)updateGroupModelTo:(TSGroupModel *)newGroupModel successCompletion:(void (^_Nullable)(void))successCompletion
 {
-    OWSAssertDebug(groupId.length > 0);
-    OWSAssertDebug(members.count > 0);
+    __block TSGroupThread *groupThread;
+    __block TSOutgoingMessage *message;
 
-    __block NSError *_Nullable error;
-    __block TSGroupThread *_Nullable newThread;
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        newThread = [GroupManager updateExistingGroupWithGroupId:groupId
-                                                         members:members
-                                                            name:name
-                                                      avatarData:avatarData
-                                               shouldSendMessage:YES
-                                                     transaction:transaction
-                                                           error:&error];
+        groupThread = [TSGroupThread getOrCreateThreadWithGroupModel:newGroupModel transaction:transaction];
+
+        NSString *updateGroupInfo =
+            [groupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel contactsManager:self.contactsManager];
+
+        [groupThread anyUpdateGroupThreadWithTransaction:transaction
+                                                   block:^(TSGroupThread *thread) {
+                                                       thread.groupModel = newGroupModel;
+                                                   }];
+
+        uint32_t expiresInSeconds = [groupThread disappearingMessagesDurationWithTransaction:transaction];
+        message = [TSOutgoingMessage outgoingMessageInThread:groupThread
+                                            groupMetaMessage:TSGroupMetaMessageUpdate
+                                            expiresInSeconds:expiresInSeconds];
+        [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
     }];
-    if (error != nil || newThread == nil) {
-        OWSFailDebug(@"Error: %@", error);
-        return;
+
+    [groupThread fireAvatarChangedNotification];
+
+    NSData *_Nullable groupAvatarData;
+    if (newGroupModel.groupAvatarData.length > 0) {
+        groupAvatarData = newGroupModel.groupAvatarData;
+    }
+    _Nullable id<DataSource> groupAvatarDataSource;
+    if (groupAvatarData.length > 0) {
+        groupAvatarDataSource = [DataSourceValue dataSourceWithData:groupAvatarData fileExtension:@"png"];
+    }
+    if (groupAvatarDataSource != nil) {
+        // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
+        // which causes this code to be called. Once we're more aggressive about durable sending retry,
+        // we could get rid of this "retryable tappable error message".
+        [self.messageSender sendTemporaryAttachment:groupAvatarDataSource
+            contentType:OWSMimeTypeImagePng
+            inMessage:message
+            success:^{
+                OWSLogDebug(@"Successfully sent group update with avatar");
+                if (successCompletion) {
+                    successCompletion();
+                }
+            }
+            failure:^(NSError *error) {
+                OWSLogError(@"Failed to send group avatar update with error: %@", error);
+            }];
+    } else {
+        // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
+        // which causes this code to be called. Once we're more aggressive about durable sending retry,
+        // we could get rid of this "retryable tappable error message".
+        [self.messageSender sendMessage:message.asPreparer
+            success:^{
+                OWSLogDebug(@"Successfully sent group update");
+                if (successCompletion) {
+                    successCompletion();
+                }
+            }
+            failure:^(NSError *error) {
+                OWSLogError(@"Failed to send group update with error: %@", error);
+            }];
     }
 
-    self.thread = newThread;
+    self.thread = groupThread;
 }
 
 - (void)popKeyBoard
@@ -4045,19 +4087,15 @@ typedef enum : NSUInteger {
     OWSAssertDebug(message);
 
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [[GroupManager sendGroupUpdateMessageObjcWithThread:groupThread
-                                              oldGroupModel:groupThread.groupModel
-                                              newGroupModel:groupThread.groupModel
-                                                transaction:transaction]
-                .thenOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    OWSLogInfo(@"Group updated, removing group creation error.");
+    TSGroupModel *groupModel = groupThread.groupModel;
+    [self updateGroupModelTo:groupModel
+           successCompletion:^{
+               OWSLogInfo(@"Group updated, removing group creation error.");
 
-                    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                        [message anyRemoveWithTransaction:transaction];
-                    }];
-                }) retainUntilComplete];
-    }];
+               [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                   [message anyRemoveWithTransaction:transaction];
+               }];
+           }];
 }
 
 - (void)conversationColorWasUpdated
@@ -4065,6 +4103,16 @@ typedef enum : NSUInteger {
     [self.conversationStyle updateProperties];
     [self.headerView updateAvatar];
     [self resetContentAndLayoutWithSneakyTransaction];
+}
+
+- (void)groupWasUpdated:(TSGroupModel *)groupModel
+{
+    OWSAssertDebug(groupModel);
+
+    NSMutableSet *groupMembers = [NSMutableSet setWithArray:groupModel.groupMembers];
+    [groupMembers addObject:self.tsAccountManager.localAddress];
+    groupModel.groupMembers = [NSMutableArray arrayWithArray:[groupMembers allObjects]];
+    [self updateGroupModelTo:groupModel successCompletion:nil];
 }
 
 - (void)popAllConversationSettingsViewsWithCompletion:(void (^_Nullable)(void))completionBlock

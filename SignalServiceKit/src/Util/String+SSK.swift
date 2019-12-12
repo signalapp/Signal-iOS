@@ -43,7 +43,7 @@ public extension String {
 
         guard size > 0 else { return nil }
 
-        var value = [CChar](repeating: 0, count: size)
+        var value = Array<CChar>(repeating: 0, count: size)
         sysctlbyname(key, &value, &size, nil, 0)
 
         self.init(cString: value)
@@ -352,27 +352,5 @@ public extension NSString {
 
     var containsOnlyEmoji: Bool {
         return (self as String).containsOnlyEmoji
-    }
-}
-
-// MARK: - encodeURIComponent
-
-public extension String {
-    var encodeURIComponent: String? {
-        return (self as NSString).encodeURIComponent
-    }
-}
-
-@objc
-public extension NSString {
-    var encodeURIComponent: String? {
-        // Match behavior of encodeURIComponent used by desktop.
-        //
-        // Removes any "/" in the base64. All other base64 chars are URL safe.
-        // Apple's built-in `stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URL*]]`
-        // doesn't offer a flavor for encoding "/".
-        var characterSet = CharacterSet.alphanumerics
-        characterSet.insert(charactersIn: "-_.!~*'()")
-        return addingPercentEncoding(withAllowedCharacters: characterSet)
     }
 }

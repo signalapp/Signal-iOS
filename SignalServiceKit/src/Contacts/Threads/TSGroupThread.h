@@ -40,12 +40,15 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
 
 @property (nonatomic, strong) TSGroupModel *groupModel;
 
-// This method should only be called by GroupManager.
-- (instancetype)initWithGroupModelPrivate:(TSGroupModel *)groupModel;
+// TODO: We might want to make this initializer private once we
+//       convert getOrCreateThreadWithContactId to take "any" transaction.
+- (instancetype)initWithGroupModel:(TSGroupModel *)groupModel;
 
-+ (nullable instancetype)fetchWithGroupId:(NSData *)groupId
-                              transaction:(SDSAnyReadTransaction *)transaction
-    NS_SWIFT_NAME(fetch(groupId:transaction:));
++ (nullable instancetype)getThreadWithGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction;
++ (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
+                                    transaction:(SDSAnyWriteTransaction *)transaction;
+
++ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId transaction:(SDSAnyWriteTransaction *)transaction;
 
 + (NSString *)threadIdFromGroupId:(NSData *)groupId;
 
@@ -58,22 +61,16 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived
 + (NSArray<TSGroupThread *> *)groupThreadsWithAddress:(SignalServiceAddress *)address
                                           transaction:(SDSAnyReadTransaction *)transaction;
 
-// GroupsV2 TODO: Remove.
 - (void)leaveGroupWithSneakyTransaction;
 - (void)leaveGroupWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Avatar
 
-// GroupsV2 TODO: Remove.
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream;
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream
                              transaction:(SDSAnyWriteTransaction *)transaction;
 
-#pragma mark - Update With...
-
-- (void)updateWithGroupModel:(TSGroupModel *)groupModel transaction:(SDSAnyWriteTransaction *)transaction;
-
-#pragma mark -
+- (void)fireAvatarChangedNotification;
 
 + (ConversationColorName)defaultConversationColorNameForGroupId:(NSData *)groupId;
 

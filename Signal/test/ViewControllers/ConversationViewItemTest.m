@@ -8,7 +8,6 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
@@ -28,8 +27,6 @@
 - (void)setUp
 {
     [super setUp];
-
-    [[TSAccountManager sharedInstance] registerForTestsWithLocalNumber:@"+13231231234" uuid:[NSUUID new]];
 
     __block TSThread *thread;
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {

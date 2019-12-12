@@ -146,44 +146,12 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/messages"] method:@"GET" parameters:@{}];
 }
 
-+ (TSRequest *)getUnversionedProfileRequestWithAddress:(SignalServiceAddress *)address
-                                           udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
++ (TSRequest *)getProfileRequestWithAddress:(SignalServiceAddress *)address
+                                udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
 {
     OWSAssertDebug(address.isValid);
 
-    NSString *path = [NSString stringWithFormat:@"v1/profile/%@", address.serviceIdentifier];
-    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
-    if (udAccessKey != nil) {
-        [self useUDAuthWithRequest:request accessKey:udAccessKey];
-    }
-    return request;
-}
-
-+ (TSRequest *)getVersionedProfileRequestWithAddress:(SignalServiceAddress *)address
-                                   profileKeyVersion:(nullable NSData *)profileKeyVersion
-                                   credentialRequest:(nullable NSData *)credentialRequest
-                                         udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
-{
-    OWSAssertDebug(address.isValid);
-    OWSAssertDebug(address.uuid != nil);
-
-    NSString *uuidParam = address.uuid.UUIDString.lowercaseString;
-    NSString *_Nullable profileKeyVersionParam = profileKeyVersion.base64EncodedString.encodeURIComponent;
-    NSString *_Nullable credentialRequestParam = credentialRequest.hexadecimalString.lowercaseString;
-
-    // GET /v1/profile/{uuid}/{version}/{profile_key_credential_request}
-    NSString *path;
-    if (profileKeyVersion.length > 0 && credentialRequest.length > 0) {
-        path = [NSString stringWithFormat:@"v1/profile/%@/%@/%@",
-                         uuidParam,
-                         profileKeyVersionParam,
-                         credentialRequestParam];
-    } else if (profileKeyVersion.length > 0) {
-        path = [NSString stringWithFormat:@"v1/profile/%@/%@", uuidParam, profileKeyVersionParam];
-    } else {
-        path = [NSString stringWithFormat:@"v1/profile/%@", uuidParam];
-    }
-
+    NSString *path = [NSString stringWithFormat:textSecureProfileAPIFormat, address.serviceIdentifier];
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
     if (udAccessKey != nil) {
         [self useUDAuthWithRequest:request accessKey:udAccessKey];
@@ -792,72 +760,14 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 + (TSRequest *)getProfileRequestWithUsername:(NSString *)username
 {
     OWSAssertDebug(username.length > 0);
-    
+
     NSString *urlEncodedUsername =
-    [username stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLUserAllowedCharacterSet]];
-    
+        [username stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLUserAllowedCharacterSet]];
+
     OWSAssertDebug(urlEncodedUsername.length > 0);
-    
+
     NSString *path = [NSString stringWithFormat:@"v1/profile/username/%@", urlEncodedUsername];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
-}
-
-#pragma mark - Profiles
-
-+ (TSRequest *)profileNameSetRequestWithEncryptedPaddedName:(nullable NSData *)encryptedPaddedName
-{
-    const NSUInteger kEncodedNameLength = 72;
-    
-    NSString *urlString;
-    
-    NSString *base64EncodedName = [encryptedPaddedName base64EncodedString];
-    // name length must match exactly
-    if (base64EncodedName.length == kEncodedNameLength) {
-        NSString *_Nullable urlEncodedName = base64EncodedName.encodeURIComponent;
-        urlString = [NSString stringWithFormat:textSecureSetProfileNameAPIFormat, urlEncodedName];
-    } else {
-        // if name length doesn't match exactly, assume blank name
-        OWSFailDebug(@"Couldn't encode name.");
-        OWSAssertDebug(encryptedPaddedName == nil);
-        urlString = [NSString stringWithFormat:textSecureSetProfileNameAPIFormat, @""];
-    }
-    
-    NSURL *url = [NSURL URLWithString:urlString];
-    TSRequest *request = [[TSRequest alloc] initWithURL:url];
-    request.HTTPMethod = @"PUT";
-    
-    return request;
-}
-
-#pragma mark - Versioned Profiles
-
-+ (TSRequest *)versionedProfileSetRequestWithName:(nullable NSData *)name
-                                        hasAvatar:(BOOL)hasAvatar
-                                          version:(NSData *)version
-                                       commitment:(NSData *)commitment
-{
-    OWSAssertDebug(version.length > 0);
-    OWSAssertDebug(commitment.length > 0);
-    
-    NSString *base64EncodedVersion = [version base64EncodedString];
-    NSString *base64EncodedCommitment = [commitment base64EncodedString];
-
-    NSMutableDictionary<NSString *, NSObject *> *parameters = [@{
-                                                                 @"version" : base64EncodedVersion,
-                                                                 @"avatar" : @(hasAvatar),
-                                                                 @"commitment" : base64EncodedCommitment,
-                                                                 } mutableCopy];
-    if (name.length > 0) {
-        // TODO: Do we need check padded length as we used to with profileNameSetRequestWithEncryptedPaddedName?
-        // TODO: Do we need remove "/" from name as we used to with profileNameSetRequestWithEncryptedPaddedName?
-        NSString *base64EncodedName = [name base64EncodedString];
-        parameters[@"name"] = base64EncodedName;
-    }
-
-    NSURL *url = [NSURL URLWithString:textSecureVersionedProfileAPI];
-    return [TSRequest requestWithUrl:url
-                              method:@"PUT"
-                          parameters:parameters];
 }
 
 @end

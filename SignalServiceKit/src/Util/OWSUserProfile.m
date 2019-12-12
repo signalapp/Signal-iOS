@@ -381,6 +381,23 @@ NSUInteger const kUserProfileSchemaVersion = 1;
           completion:completion];
 }
 
+- (void)updateWithAvatarUrlPath:(nullable NSString *)avatarUrlPath
+                 avatarFileName:(nullable NSString *)avatarFileName
+                    transaction:(SDSAnyWriteTransaction *)transaction
+                     completion:(nullable OWSUserProfileCompletion)completion
+{
+    [self
+        applyChanges:^(OWSUserProfile *userProfile) {
+            // Always setAvatarUrlPath: before you setAvatarFileName: since
+            // setAvatarUrlPath: may clear the avatar filename.
+            [userProfile setAvatarUrlPath:avatarUrlPath];
+            [userProfile setAvatarFileName:avatarFileName];
+        }
+        functionName:__PRETTY_FUNCTION__
+         transaction:transaction
+          completion:completion];
+}
+
 - (void)updateWithAvatarFileName:(nullable NSString *)avatarFileName
                      transaction:(SDSAnyWriteTransaction *)transaction
                       completion:(nullable OWSUserProfileCompletion)completion

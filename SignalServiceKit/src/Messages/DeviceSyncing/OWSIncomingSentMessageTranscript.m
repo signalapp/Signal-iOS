@@ -25,17 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSIncomingSentMessageTranscript
 
-#pragma mark - Dependencies
-
-+ (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-#pragma mark -
-
 - (nullable instancetype)initWithProto:(SSKProtoSyncMessageSent *)sentProto transaction:(SDSAnyWriteTransaction *)transaction
 {
     self = [super init];
@@ -58,8 +47,6 @@ NS_ASSUME_NONNULL_BEGIN
     _expirationDuration = _dataMessage.expireTimer;
     _body = _dataMessage.body;
     _dataMessageTimestamp = _dataMessage.timestamp;
-
-    // GroupsV2 TODO: Assert and abort if the group v2 is unknown.
     SSKProtoGroupContext *_Nullable group = _dataMessage.group;
     if (group != nil) {
         if (group.id.length < 1) {
@@ -90,39 +77,14 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.isRecipientUpdate) {
         // Fetch, don't create.  We don't want recipient updates to resurrect messages or threads.
         if (_groupId != nil) {
-            _thread = [TSGroupThread fetchWithGroupId:_groupId transaction:transaction];
+            _thread = [TSGroupThread getThreadWithGroupId:_groupId transaction:transaction];
         } else {
             OWSFailDebug(@"We should never receive a 'recipient update' for messages in contact threads.");
         }
         // Skip the other processing for recipient updates.
     } else {
         if (_groupId != nil) {
-            _thread = [TSGroupThread fetchWithGroupId:_groupId transaction:transaction];
-
-            if (_thread == nil) {
-                SignalServiceAddress *_Nullable localAddress
-                    = OWSIncomingSentMessageTranscript.tsAccountManager.localAddress;
-                if (localAddress == nil) {
-                    OWSFailDebug(@"Missing localAddress.");
-                    return nil;
-                }
-                NSArray<SignalServiceAddress *> *members = @[ localAddress ];
-                NSError *_Nullable groupError;
-                _thread = [GroupManager upsertExistingGroupWithMembers:members
-                                                                  name:nil
-                                                            avatarData:nil
-                                                               groupId:_groupId
-                                                         groupsVersion:GroupsVersionV1
-                                                 groupSecretParamsData:nil
-                                                     shouldSendMessage:NO
-                                                           transaction:transaction
-                                                                 error:&groupError]
-                              .thread;
-                if (groupError != nil || _thread == nil) {
-                    OWSFailDebug(@"Could not create group: %@", groupError);
-                    return nil;
-                }
-            }
+            _thread = [TSGroupThread getOrCreateThreadWithGroupId:_groupId transaction:transaction];
         } else {
             _thread = [TSContactThread getOrCreateThreadWithContactAddress:_recipientAddress transaction:transaction];
         }

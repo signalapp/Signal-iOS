@@ -19,6 +19,7 @@
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSProfileKeyMessage.h>
+#import <SignalServiceKit/OWSRequestBuilder.h>
 #import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/OWSUploadV2.h>
 #import <SignalServiceKit/OWSUserProfile.h>
@@ -40,6 +41,8 @@ NSString *const kNSNotificationName_ProfileKeyDidChange = @"kNSNotificationName_
 // Before encrypting and submitting we NULL pad the name data to this length.
 const NSUInteger kOWSProfileManager_NameDataLength = 26;
 const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
+
+typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 @interface OWSProfileManager ()
 
@@ -87,12 +90,16 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     OWSAssertIsOnMainThread();
     OWSAssertDebug(databaseStorage);
 
+    NSString *const kOWSProfileManager_UserPhoneNumberWhitelistCollection
+        = @"kOWSProfileManager_UserWhitelistCollection";
+    NSString *const kOWSProfileManager_UserUUIDWhitelistCollection = @"kOWSProfileManager_UserUUIDWhitelistCollection";
+    NSString *const kOWSProfileManager_GroupWhitelistCollection = @"kOWSProfileManager_GroupWhitelistCollection";
+
     _whitelistedPhoneNumbersStore =
-        [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_UserWhitelistCollection"];
+        [[SDSKeyValueStore alloc] initWithCollection:kOWSProfileManager_UserPhoneNumberWhitelistCollection];
     _whitelistedUUIDsStore =
-        [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_UserUUIDWhitelistCollection"];
-    _whitelistedGroupsStore =
-        [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_GroupWhitelistCollection"];
+        [[SDSKeyValueStore alloc] initWithCollection:kOWSProfileManager_UserUUIDWhitelistCollection];
+    _whitelistedGroupsStore = [[SDSKeyValueStore alloc] initWithCollection:kOWSProfileManager_GroupWhitelistCollection];
 
     _profileAvatarImageCache = [NSCache new];
     _currentAvatarDownloads = [NSMutableSet new];
@@ -102,7 +109,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         if (TSAccountManager.sharedInstance.isRegistered) {
             [self rotateLocalProfileKeyIfNecessary];
-            [OWSProfileManager updateProfileOnServiceIfNecessaryObjc];
         }
     }];
 
@@ -121,10 +127,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
                                                  name:OWSApplicationDidBecomeActiveNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(reachabilityChanged:)
-                                                 name:kReachabilityChangedNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(blockListDidChange:)
@@ -278,6 +280,134 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     return self.localUserProfile.username;
 }
 
+- (void)updateLocalProfileName:(nullable NSString *)profileName
+                   avatarImage:(nullable UIImage *)avatarImage
+                       success:(void (^)(void))successBlockParameter
+                       failure:(void (^)(void))failureBlockParameter
+{
+    OWSAssertDebug(successBlockParameter);
+    OWSAssertDebug(failureBlockParameter);
+
+    // Ensure that the success and failure blocks are called on the main thread.
+    void (^failureBlock)(void) = ^{
+        OWSLogError(@"Updating service with profile failed.");
+
+        // We use a "self-only" contact sync to indicate to desktop
+        // that we've changed our profile and that it should do a
+        // profile fetch for "self".
+        //
+        // NOTE: We also inform the desktop in the failure case,
+        //       since that _may have_ affected service state.
+        if (self.tsAccountManager.isRegisteredPrimaryDevice) {
+            [[self.syncManager syncLocalContact] retainUntilComplete];
+        }
+
+        // Notify all our devices that the profile has changed.
+        // Older linked devices may not handle this message.
+        [self.syncManager sendFetchLatestProfileSyncMessage];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            failureBlockParameter();
+        });
+    };
+    void (^successBlock)(void) = ^{
+        OWSLogInfo(@"Successfully updated service with profile.");
+
+        // We use a "self-only" contact sync to indicate to desktop
+        // that we've changed our profile and that it should do a
+        // profile fetch for "self".
+        if (self.tsAccountManager.isRegisteredPrimaryDevice) {
+            [[self.syncManager syncLocalContact] retainUntilComplete];
+        }
+
+        // Notify all our devices that the profile has changed.
+        // Older linked devices may not handle this message.
+        [self.syncManager sendFetchLatestProfileSyncMessage];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            successBlockParameter();
+        });
+    };
+
+    // The final steps are to:
+    //
+    // * Try to update the service.
+    // * Update client state on success.
+    void (^tryToUpdateService)(NSString *_Nullable, NSString *_Nullable) = ^(
+        NSString *_Nullable avatarUrlPath, NSString *_Nullable avatarFileName) {
+        [self updateServiceWithProfileName:profileName
+            success:^{
+                OWSUserProfile *userProfile = self.localUserProfile;
+                OWSAssertDebug(userProfile);
+
+                [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                    [userProfile updateWithProfileName:profileName
+                                         avatarUrlPath:avatarUrlPath
+                                        avatarFileName:avatarFileName
+                                           transaction:transaction
+                                            completion:^{
+                                                if (avatarFileName) {
+                                                    [self updateProfileAvatarCache:avatarImage filename:avatarFileName];
+                                                }
+
+                                                successBlock();
+                                            }];
+                }];
+            }
+            failure:^(NSError *error) {
+                failureBlock();
+            }];
+    };
+
+    OWSUserProfile *userProfile = self.localUserProfile;
+    OWSAssertDebug(userProfile);
+
+    if (avatarImage) {
+        // If we have a new avatar image, we must first:
+        //
+        // * Encode it to JPEG.
+        // * Write it to disk.
+        // * Encrypt it
+        // * Upload it to asset service
+        // * Send asset service info to Signal Service
+        if (self.localProfileAvatarImage == avatarImage) {
+            OWSAssertDebug(userProfile.avatarUrlPath.length > 0);
+            OWSAssertDebug(userProfile.avatarFileName.length > 0);
+
+            OWSLogVerbose(@"Updating local profile on service with unchanged avatar.");
+            // If the avatar hasn't changed, reuse the existing metadata.
+            tryToUpdateService(userProfile.avatarUrlPath, userProfile.avatarFileName);
+        } else {
+            OWSLogVerbose(@"Updating local profile on service with new avatar.");
+            [self writeAvatarToDisk:avatarImage
+                success:^(NSData *data, NSString *fileName) {
+                    [self uploadAvatarToService:data
+                        success:^(NSString *_Nullable avatarUrlPath) {
+                            tryToUpdateService(avatarUrlPath, fileName);
+                        }
+                        failure:^(NSError *error) {
+                            failureBlock();
+                        }];
+                }
+                failure:^(NSError *error) {
+                    failureBlock();
+                }];
+        }
+    } else if (userProfile.avatarUrlPath) {
+        OWSLogVerbose(@"Updating local profile on service with cleared avatar.");
+        [self uploadAvatarToService:nil
+            success:^(NSString *_Nullable avatarUrlPath) {
+                tryToUpdateService(nil, nil);
+            }
+            failure:^(NSError *error) {
+                failureBlock();
+            }];
+    } else {
+        OWSLogVerbose(@"Updating local profile on service with no avatar.");
+        tryToUpdateService(nil, nil);
+    }
+}
+
 - (void)updateLocalUsername:(nullable NSString *)username transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(username == nil || username.length > 0);
@@ -288,27 +418,32 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     [userProfile updateWithUsername:username transaction:transaction];
 }
 
-- (void)writeAvatarToDiskWithData:(NSData *)avatarData
-                          success:(void (^)(NSString *fileName))successBlock
-                          failure:(ProfileManagerFailureBlock)failureBlock
-{
-    OWSAssertDebug(avatarData);
+- (void)writeAvatarToDisk:(UIImage *)avatar
+                  success:(void (^)(NSData *data, NSString *fileName))successBlock
+                  failure:(ProfileManagerFailureBlock)failureBlock {
+    OWSAssertDebug(avatar);
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *fileName = [self generateAvatarFilename];
-        NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:fileName];
-        BOOL success = [avatarData writeToFile:filePath atomically:YES];
-        OWSAssertDebug(success);
-        if (success) {
-            return successBlock(fileName);
+        if (avatar) {
+            NSData *data = [self processedImageDataForRawAvatar:avatar];
+            OWSAssertDebug(data);
+            if (data) {
+                NSString *fileName = [self generateAvatarFilename];
+                NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:fileName];
+                BOOL success = [data writeToFile:filePath atomically:YES];
+                OWSAssertDebug(success);
+                if (success) {
+                    return successBlock(data, fileName);
+                }
+            }
         }
         failureBlock(OWSErrorWithCodeDescription(OWSErrorCodeAvatarWriteFailed, @"Avatar write failed."));
     });
 }
 
-+ (NSData *)avatarDataForAvatarImage:(UIImage *)image
+- (NSData *)processedImageDataForRawAvatar:(UIImage *)image
 {
     NSUInteger kMaxAvatarBytes = 5 * 1000 * 1000;
 
@@ -332,13 +467,26 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 }
 
 // If avatarData is nil, we are clearing the avatar.
-- (void)updateServiceWithUnversionedProfileAvatarData:(nullable NSData *)avatarData
-                                              success:(void (^)(NSString *_Nullable avatarUrlPath))successBlock
-                                              failure:(ProfileManagerFailureBlock)failureBlock
-{
+- (void)uploadAvatarToService:(NSData *_Nullable)avatarData
+                      success:(void (^)(NSString *_Nullable avatarUrlPath))successBlock
+                      failure:(ProfileManagerFailureBlock)failureBlock {
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
     OWSAssertDebug(avatarData == nil || avatarData.length > 0);
+
+    // We want to clear the local user's profile avatar as soon as
+    // we request the upload form, since that request clears our
+    // avatar on the service.
+    //
+    // TODO: Revisit this so that failed profile updates don't leave
+    // the profile avatar blank, etc.
+    void (^clearLocalAvatar)(void) = ^{
+        // This completion block will never be called within a transaction.
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            OWSUserProfile *userProfile = self.localUserProfile;
+            [userProfile updateWithAvatarUrlPath:nil avatarFileName:nil transaction:transaction completion:nil];
+        }];
+    };
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSData *_Nullable encryptedAvatarData;
@@ -349,6 +497,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
         OWSAvatarUploadV2 *upload = [OWSAvatarUploadV2 new];
         [[upload uploadAvatarToService:encryptedAvatarData
+                      clearLocalAvatar:clearLocalAvatar
                          progressBlock:^(NSProgress *progress){
                              // Do nothing.
                          }]
@@ -365,18 +514,16 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     });
 }
 
-// If profileName is nil, we are clearing the profileName.
-- (void)updateServiceWithUnversionedProfileName:(nullable NSString *)profileName
-                                        success:(void (^)(void))successBlock
-                                        failure:(ProfileManagerFailureBlock)failureBlock
-{
+- (void)updateServiceWithProfileName:(nullable NSString *)localProfileName
+                             success:(void (^)(void))successBlock
+                             failure:(ProfileManagerFailureBlock)failureBlock {
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSData *_Nullable encryptedPaddedName = [self encryptProfileNameWithUnpaddedName:profileName];
+        NSData *_Nullable encryptedPaddedName = [self encryptProfileNameWithUnpaddedName:localProfileName];
 
-        TSRequest *request = [OWSRequestFactory profileNameSetRequestWithEncryptedPaddedName:encryptedPaddedName];
+        TSRequest *request = [OWSRequestBuilder profileNameSetRequestWithEncryptedPaddedName:encryptedPaddedName];
         [self.networkManager makeRequest:request
             success:^(NSURLSessionDataTask *task, id responseObject) {
                 successBlock();
@@ -569,6 +716,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         // Make copies of the current local profile state.
         OWSUserProfile *localUserProfile = self.localUserProfile;
         NSString *_Nullable oldProfileName = localUserProfile.profileName;
+        NSString *_Nullable oldAvatarFileName = localUserProfile.avatarFileName;
         __block NSData *_Nullable oldAvatarData;
 
         // Rotate the stored profile key.
@@ -587,17 +735,68 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             }];
         }];
 
-        // Try to re-upload our profile name and avatar, if any.
+        // Try to re-upload our profile name, if any.
         //
         // This may fail.
         promise = promise.thenInBackground(^(id value) {
             if (oldProfileName.length < 1) {
                 return [AnyPromise promiseWithValue:@(1)];
             }
-            return [OWSProfileManager updateLocalProfilePromiseObjWithProfileName:oldProfileName
-                                                                profileAvatarData:oldAvatarData];
+            return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+                [self updateServiceWithProfileName:oldProfileName
+                    success:^{
+                        OWSLogInfo(@"Update to profile name succeeded.");
+
+                        // The value doesn't matter, we just need any non-NSError value.
+                        resolve(@(1));
+                    }
+                    failure:^(NSError *error) {
+                        resolve(error);
+                    }];
+            }];
         });
 
+        // Try to re-upload our profile avatar, if any.
+        //
+        // This may fail.
+        promise = promise.thenInBackground(^(id value) {
+            if (oldAvatarData.length < 1 || oldAvatarFileName.length < 1) {
+                return [AnyPromise promiseWithValue:@(1)];
+            }
+            return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+                [self uploadAvatarToService:oldAvatarData
+                    success:^(NSString *_Nullable avatarUrlPath) {
+                        OWSLogInfo(@"Update to profile avatar after profile key rotation succeeded.");
+                        // The profile manager deletes the underlying file when updating a profile URL
+                        // So we need to copy the underlying file to a new location.
+                        NSString *oldPath = [OWSUserProfile profileAvatarFilepathWithFilename:oldAvatarFileName];
+                        NSString *newAvatarFilename = [self generateAvatarFilename];
+                        NSString *newPath = [OWSUserProfile profileAvatarFilepathWithFilename:newAvatarFilename];
+                        NSError *error;
+                        [NSFileManager.defaultManager copyItemAtPath:oldPath toPath:newPath error:&error];
+                        OWSAssertDebug(!error);
+
+                        [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                            [self.localUserProfile updateWithAvatarUrlPath:avatarUrlPath
+                                                            avatarFileName:newAvatarFilename
+                                                               transaction:transaction
+                                                                completion:^{
+                                                                    // The value doesn't matter, we just need any
+                                                                    // non-NSError value.
+                                                                    resolve(@(1));
+                                                                }];
+                        }];
+                    }
+                    failure:^(NSError *error) {
+                        OWSLogInfo(@"Update to profile avatar after profile key rotation failed.");
+                        resolve(error);
+                    }];
+            }];
+        });
+
+        // Try to re-upload our profile avatar, if any.
+        //
+        // This may fail.
         promise = promise.thenInBackground(^(id value) {
             // Remove blocked users and groups from profile whitelist.
             //
@@ -673,20 +872,17 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 - (void)logProfileWhitelist
 {
     [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        OWSLogError(@"%@: %lu",
-            self.whitelistedPhoneNumbersStore.collection,
+        OWSLogError(@"kOWSProfileManager_UserPhoneNumberWhitelistCollection: %lu",
             (unsigned long)[self.whitelistedPhoneNumbersStore numberOfKeysWithTransaction:transaction]);
         for (NSString *key in [self.whitelistedPhoneNumbersStore allKeysWithTransaction:transaction]) {
             OWSLogError(@"\t profile whitelist user phone number: %@", key);
         }
-        OWSLogError(@"%@: %lu",
-            self.whitelistedUUIDsStore.collection,
+        OWSLogError(@"kOWSProfileManager_UserUUIDWhitelistCollection: %lu",
             (unsigned long)[self.whitelistedUUIDsStore numberOfKeysWithTransaction:transaction]);
         for (NSString *key in [self.whitelistedUUIDsStore allKeysWithTransaction:transaction]) {
             OWSLogError(@"\t profile whitelist user uuid: %@", key);
         }
-        OWSLogError(@"%@: %lu",
-            self.whitelistedGroupsStore.collection,
+        OWSLogError(@"kOWSProfileManager_GroupWhitelistCollection: %lu",
             (unsigned long)[self.whitelistedGroupsStore numberOfKeysWithTransaction:transaction]);
         for (NSString *key in [self.whitelistedGroupsStore allKeysWithTransaction:transaction]) {
             OWSLogError(@"\t profile whitelist group: %@", key);
@@ -1355,7 +1551,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 #pragma mark - Profile Encryption
 
-+ (nullable NSData *)encryptProfileData:(nullable NSData *)encryptedData profileKey:(OWSAES256Key *)profileKey
+- (nullable NSData *)encryptProfileData:(nullable NSData *)encryptedData profileKey:(OWSAES256Key *)profileKey
 {
     OWSAssertDebug(profileKey.keyData.length == kAES256_KeyByteLength);
 
@@ -1386,6 +1582,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         return nil;
     }
 
+
     // Unpad profile name.
     NSUInteger unpaddedLength = 0;
     const char *bytes = decryptedData.bytes;
@@ -1406,7 +1603,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 - (nullable NSData *)encryptProfileData:(nullable NSData *)data
 {
-    return [OWSProfileManager encryptProfileData:data profileKey:self.localProfileKey];
+    return [self encryptProfileData:data profileKey:self.localProfileKey];
 }
 
 - (BOOL)isProfileNameTooLong:(nullable NSString *)profileName
@@ -1418,13 +1615,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 }
 
 - (nullable NSData *)encryptProfileNameWithUnpaddedName:(NSString *)name
-{
-    return [OWSProfileManager encryptProfileNameWithUnpaddedName:name
-                                                 localProfileKey:self.localProfileKey];
-}
-
-+ (nullable NSData *)encryptProfileNameWithUnpaddedName:(NSString *)name
-                                        localProfileKey:(OWSAES256Key *)localProfileKey
 {
     NSData *nameData = [name dataUsingEncoding:NSUTF8StringEncoding];
     if (nameData.length > kOWSProfileManager_NameDataLength) {
@@ -1440,7 +1630,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     [paddedNameData increaseLengthBy:paddingByteCount];
     OWSAssertDebug(paddedNameData.length == kOWSProfileManager_NameDataLength);
 
-    return [self encryptProfileData:[paddedNameData copy] profileKey:localProfileKey];
+    return [self encryptProfileData:[paddedNameData copy] profileKey:self.localProfileKey];
 }
 
 #pragma mark - Avatar Disk Cache
@@ -1544,15 +1734,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     OWSAssertIsOnMainThread();
 
     // TODO: Sync if necessary.
-
-    [OWSProfileManager updateProfileOnServiceIfNecessaryObjc];
-}
-
-- (void)reachabilityChanged:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    [OWSProfileManager updateProfileOnServiceIfNecessaryObjc];
 }
 
 - (void)blockListDidChange:(NSNotification *)notification {

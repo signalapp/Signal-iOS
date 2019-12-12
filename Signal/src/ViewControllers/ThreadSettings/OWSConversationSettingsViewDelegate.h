@@ -5,18 +5,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSConversationSettingsViewController;
-@class SignalServiceAddress;
 @class TSGroupModel;
 
 @protocol OWSConversationSettingsViewDelegate <NSObject>
 
 - (void)conversationColorWasUpdated;
-
-- (void)updateGroupWithId:(NSData *)groupId
-                  members:(NSArray<SignalServiceAddress *> *)members
-                     name:(nullable NSString *)name
-               avatarData:(nullable NSData *)avatarData;
-
+- (void)groupWasUpdated:(TSGroupModel *)groupModel;
 - (void)conversationSettingsDidRequestConversationSearch:(OWSConversationSettingsViewController *)conversationSettingsViewController;
 
 - (void)popAllConversationSettingsViewsWithCompletion:(void (^_Nullable)(void))completionBlock;

@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern const int32_t kGroupIdLength;
 
-typedef NS_CLOSED_ENUM(uint32_t, GroupsVersion) { GroupsVersionV1 = 0, GroupsVersionV2 };
+typedef NS_CLOSED_ENUM(NSUInteger, GroupsVersion) { GroupsVersionV1 = 0, GroupsVersionV2 };
 
 @interface TSGroupModel : MTLModel
 
@@ -26,7 +26,6 @@ typedef NS_CLOSED_ENUM(uint32_t, GroupsVersion) { GroupsVersionV1 = 0, GroupsVer
 @property (nullable, nonatomic) NSData *groupAvatarData;
 
 @property (nonatomic) GroupsVersion groupsVersion;
-@property (nullable, nonatomic) NSData *groupSecretParamsData;
 
 - (void)setGroupAvatarDataWithImage:(nullable UIImage *)image;
 
@@ -41,8 +40,7 @@ typedef NS_CLOSED_ENUM(uint32_t, GroupsVersion) { GroupsVersionV1 = 0, GroupsVer
                            name:(nullable NSString *)name
                      avatarData:(nullable NSData *)avatarData
                         members:(NSArray<SignalServiceAddress *> *)members
-                  groupsVersion:(GroupsVersion)groupsVersion
-          groupSecretParamsData:(nullable NSData *)groupSecretParamsData NS_DESIGNATED_INITIALIZER;
+                  groupsVersion:(GroupsVersion)groupsVersion NS_DESIGNATED_INITIALIZER;
 
 - (BOOL)isEqual:(id)other;
 - (BOOL)isEqualToGroupModel:(TSGroupModel *)model;

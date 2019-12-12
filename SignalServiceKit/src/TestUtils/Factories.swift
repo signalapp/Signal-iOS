@@ -373,12 +373,12 @@ public class GroupThreadFactory: NSObject, Factory {
 
     @objc
     public func create(transaction: SDSAnyWriteTransaction) -> TSGroupThread {
-        let thread = try! GroupManager.createGroupForTests(members: memberAddressesBuilder(),
-                                                           name: titleBuilder(),
-                                                           avatarData: groupAvatarDataBuilder(),
-                                                           groupId: groupIdBuilder(),
-                                                           groupsVersion: groupsVersionBuilder(),
-                                                           transaction: transaction)
+        let thread = try! GroupManager.createGroupForTests(transaction: transaction,
+                                                      members: memberAddressesBuilder(),
+                                                      name: titleBuilder(),
+                                                      avatarData: groupAvatarDataBuilder(),
+                                                      groupId: groupIdBuilder(),
+                                                      groupsVersion: groupsVersionBuilder())
 
         let incomingMessageFactory = IncomingMessageFactory()
         incomingMessageFactory.threadCreator = { _ in return thread }
