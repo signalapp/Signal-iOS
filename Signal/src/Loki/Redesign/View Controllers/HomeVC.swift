@@ -1,5 +1,5 @@
 
-final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIViewControllerPreviewingDelegate {
+final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIViewControllerPreviewingDelegate, SeedReminderViewDelegate {
     private var threadViewModelCache: [String:ThreadViewModel] = [:]
     private var isObservingDatabase = true
     private var isViewVisible = false { didSet { updateIsObservingDatabase() } }
@@ -22,6 +22,18 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
     
     // MARK: Components
+    private lazy var seedReminderView: SeedReminderView = {
+        let result = SeedReminderView()
+        let title = "You're almost finished! 80%"
+        let attributedTitle = NSMutableAttributedString(string: title)
+        attributedTitle.addAttribute(.foregroundColor, value: Colors.accent, range: (title as NSString).range(of: "80%"))
+        result.title = attributedTitle
+        result.subtitle = NSLocalizedString("Secure your account by saving your seed", comment: "")
+        result.setProgress(0.8, animated: false)
+        result.delegate = self
+        return result
+    }()
+    
     private lazy var searchBar = SearchBar()
     
     private lazy var tableView: UITableView = {
@@ -74,11 +86,19 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = titleLabel
+        // Set up seed reminder view
+        view.addSubview(seedReminderView)
+        seedReminderView.pin(.leading, to: .leading, of: view)
+        seedReminderView.pin(.top, to: .top, of: view)
+        seedReminderView.pin(.trailing, to: .trailing, of: view)
         // Set up table view
         tableView.dataSource = self
         tableView.delegate = self
         view.addSubview(tableView)
-        tableView.pin(to: view)
+        tableView.pin(.leading, to: .leading, of: view)
+        tableView.pin(.top, to: .bottom, of: seedReminderView)
+        tableView.pin(.trailing, to: .trailing, of: view)
+        tableView.pin(.bottom, to: .bottom, of: view)
         // Set up search bar
         tableView.tableHeaderView = searchBar
         searchBar.sizeToFit()
@@ -219,6 +239,10 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     }
     
     // MARK: Interaction
+    func handleContinueButtonTapped(from seedReminderView: SeedReminderView) {
+        // TODO: Implement
+    }
+    
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         searchBar.resignFirstResponder()
     }

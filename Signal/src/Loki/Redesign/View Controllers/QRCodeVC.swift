@@ -170,6 +170,14 @@ private final class ViewMyQRCodeVC : UIViewController {
         let qrCode = QRCode.generate(for: userHexEncodedPublicKey)
         qrCodeImageView.image = qrCode
         qrCodeImageView.contentMode = .scaleAspectFit
+        qrCodeImageView.set(.height, to: 240)
+        qrCodeImageView.set(.width, to: 240)
+        // Set up QR code image view container
+        let qrCodeImageViewContainer = UIView()
+        qrCodeImageViewContainer.addSubview(qrCodeImageView)
+        qrCodeImageView.center(.horizontal, in: qrCodeImageViewContainer)
+        qrCodeImageView.pin(.top, to: .top, of: qrCodeImageViewContainer)
+        qrCodeImageView.pin(.bottom, to: .bottom, of: qrCodeImageViewContainer)
         // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
@@ -193,7 +201,7 @@ private final class ViewMyQRCodeVC : UIViewController {
         shareButtonContainer.pin(.trailing, to: .trailing, of: shareButton, withInset: 80)
         shareButtonContainer.pin(.bottom, to: .bottom, of: shareButton)
         // Set up stack view
-        let stackView = UIStackView(arrangedSubviews: [ titleLabel, qrCodeImageView, explanationLabel, shareButtonContainer, UIView.vStretchingSpacer() ])
+        let stackView = UIStackView(arrangedSubviews: [ titleLabel, qrCodeImageViewContainer, explanationLabel, shareButtonContainer, UIView.vStretchingSpacer() ])
         stackView.axis = .vertical
         stackView.spacing = Values.largeSpacing
         stackView.alignment = .fill
@@ -215,7 +223,7 @@ private final class ViewMyQRCodeVC : UIViewController {
     
     // MARK: Interaction
     @objc private func shareQRCode() {
-        let qrCode = QRCode.generate(for: userHexEncodedPublicKey, isInverted: false)
+        let qrCode = QRCode.generate(for: userHexEncodedPublicKey, hasBackground: true)
         let shareVC = UIActivityViewController(activityItems: [ qrCode ], applicationActivities: nil)
         qrCodeVC.navigationController!.present(shareVC, animated: true, completion: nil)
     }

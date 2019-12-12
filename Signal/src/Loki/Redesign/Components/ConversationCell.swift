@@ -121,9 +121,11 @@ final class ConversationCell : UITableViewCell {
             } else {
                 // TODO: Handle
             }
+            profilePictureView.isRSSFeed = (threadViewModel.threadRecord as? TSGroupThread)?.isRSSFeed ?? false
         } else {
             profilePictureView.hexEncodedPublicKey = threadViewModel.contactIdentifier!
             profilePictureView.additionalHexEncodedPublicKey = nil
+            profilePictureView.isRSSFeed = false
         }
         profilePictureView.update()
         displayNameLabel.text = getDisplayName()

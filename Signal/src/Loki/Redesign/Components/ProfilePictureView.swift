@@ -4,12 +4,22 @@ final class ProfilePictureView : UIView {
     private var imageViewWidthConstraint: NSLayoutConstraint!
     private var imageViewHeightConstraint: NSLayoutConstraint!
     @objc var size: CGFloat = 0 // Not an implicitly unwrapped optional due to Obj-C limitations
+    @objc var isRSSFeed = false
     @objc var hexEncodedPublicKey: String!
     @objc var additionalHexEncodedPublicKey: String?
     
     // MARK: Components
     private lazy var imageView = getImageView()
     private lazy var additionalImageView = getImageView()
+    
+    private lazy var rssLabel: UILabel = {
+        let result = UILabel()
+        result.textColor = Colors.text
+        result.font = .systemFont(ofSize: Values.smallFontSize)
+        result.textAlignment = .center
+        result.text = "RSS"
+        return result
+    }()
     
     // MARK: Lifecycle
     override init(frame: CGRect) {
@@ -35,6 +45,12 @@ final class ProfilePictureView : UIView {
         additionalImageView.set(.width, to: additionalImageViewSize)
         additionalImageView.set(.height, to: additionalImageViewSize)
         additionalImageView.layer.cornerRadius = additionalImageViewSize / 2
+        // Set up RSS label
+        addSubview(rssLabel)
+        rssLabel.pin(.leading, to: .leading, of: self)
+        rssLabel.pin(.top, to: .top, of: self)
+        rssLabel.autoPinWidth(toWidthOf: imageView)
+        rssLabel.autoPinHeight(toHeightOf: imageView)
     }
     
     // MARK: Updating
@@ -47,7 +63,7 @@ final class ProfilePictureView : UIView {
             return OWSProfileManager.shared().profileAvatar(forRecipientId: hexEncodedPublicKey) ?? Identicon.generateIcon(string: hexEncodedPublicKey, size: size)
         }
         let size: CGFloat
-        if let additionalHexEncodedPublicKey = additionalHexEncodedPublicKey {
+        if let additionalHexEncodedPublicKey = additionalHexEncodedPublicKey, !isRSSFeed {
             size = Values.smallProfilePictureSize
             imageViewWidthConstraint = imageView.set(.width, to: size)
             imageViewHeightConstraint = imageView.set(.height, to: size)
@@ -60,8 +76,10 @@ final class ProfilePictureView : UIView {
             additionalImageView.isHidden = true
             additionalImageView.image = nil
         }
-        imageView.image = getProfilePicture(of: size, for: hexEncodedPublicKey)
+        imageView.image = isRSSFeed ? nil : getProfilePicture(of: size, for: hexEncodedPublicKey)
+        imageView.backgroundColor = isRSSFeed ? UIColor(hex: 0x353535) : Colors.unimportant
         imageView.layer.cornerRadius = size / 2
+        rssLabel.isHidden = !isRSSFeed
     }
     
     // MARK: Convenience

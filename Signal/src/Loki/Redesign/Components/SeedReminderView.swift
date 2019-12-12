@@ -1,0 +1,84 @@
+
+final class SeedReminderView : UIView {
+    var title = NSAttributedString(string: "") { didSet { titleLabel.attributedText = title } }
+    var subtitle = "" { didSet { subtitleLabel.text = subtitle } }
+    var delegate: SeedReminderViewDelegate?
+    
+    // MARK: Components
+    private lazy var progressIndicatorView: UIProgressView = {
+        let result = UIProgressView()
+        result.progressViewStyle = .bar
+        result.progressTintColor = Colors.accent
+        result.backgroundColor = UIColor(hex: 0xFFFFFF).withAlphaComponent(0.1)
+        result.set(.height, to: Values.progressBarThickness)
+        return result
+    }()
+    
+    private lazy var titleLabel: UILabel = {
+        let result = UILabel()
+        result.textColor = Colors.text
+        result.font = .boldSystemFont(ofSize: Values.smallFontSize)
+        result.lineBreakMode = .byTruncatingTail
+        return result
+    }()
+    
+    private lazy var subtitleLabel: UILabel = {
+        let result = UILabel()
+        result.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        result.font = .systemFont(ofSize: Values.verySmallFontSize)
+        result.lineBreakMode = .byTruncatingTail
+        return result
+    }()
+    
+    // MARK: Lifecycle
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setUpViewHierarchy()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setUpViewHierarchy()
+    }
+    
+    private func setUpViewHierarchy() {
+        // Set background color
+        backgroundColor = Colors.cellBackground
+        // Set up label stack view
+        let labelStackView = UIStackView(arrangedSubviews: [ titleLabel, subtitleLabel ])
+        labelStackView.axis = .vertical
+        labelStackView.spacing = 4
+        // Set up button
+        let button = Button(style: .prominentOutline, size: .small)
+        button.setTitle(NSLocalizedString("Continue", comment: ""), for: UIControl.State.normal)
+        button.set(.width, to: 80)
+        button.addTarget(self, action: #selector(handleContinueButtonTapped), for: UIControl.Event.touchUpInside)
+        // Set up content stack view
+        let contentStackView = UIStackView(arrangedSubviews: [ labelStackView, UIView.hStretchingSpacer(), button ])
+        contentStackView.axis = .horizontal
+        contentStackView.spacing = 4
+        contentStackView.alignment = .center
+        contentStackView.layoutMargins = UIEdgeInsets(top: 0, leading: Values.mediumSpacing + Values.accentLineThickness, bottom: 0, trailing: Values.mediumSpacing)
+        contentStackView.isLayoutMarginsRelativeArrangement = true
+        // Set up separator
+        let separator = UIView()
+        separator.set(.height, to: Values.separatorThickness)
+        separator.backgroundColor = Colors.separator
+        // Set up stack view
+        let stackView = UIStackView(arrangedSubviews: [ progressIndicatorView, contentStackView, separator ])
+        stackView.axis = .vertical
+        stackView.spacing = Values.mediumSpacing
+        addSubview(stackView)
+        stackView.pin(to: self)
+    }
+    
+    // MARK: Updating
+    func setProgress(_ progress: Float, animated isAnimated: Bool) {
+        progressIndicatorView.setProgress(progress, animated: isAnimated)
+    }
+    
+    // MARK: Updating
+    @objc private func handleContinueButtonTapped() {
+        delegate?.handleContinueButtonTapped(from: self)
+    }
+}

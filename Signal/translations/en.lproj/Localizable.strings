@@ -2740,3 +2740,10 @@
 "Enter your seed" = "Enter your seed";
 "Message" = "Message";
 "You" = "You";
+"Encrypting message" = "Encrypting message";
+"Tracing a path" = "Tracing a path";
+"Sending message" = "Sending message";
+"Message sent securely" = "Message sent securely";
+"Message failed to send" = "Message failed to send";
+"Secure your account by saving your seed" = "Secure your account by saving your seed";
+"Continue" = "Continue";

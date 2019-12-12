@@ -1,13 +1,19 @@
 
 enum QRCode {
     
-    static func generate(for string: String, isInverted: Bool = true) -> UIImage {
+    static func generate(for string: String, hasBackground: Bool = false) -> UIImage {
         let data = string.data(using: .utf8)
         var qrCodeAsCIImage: CIImage
         let filter1 = CIFilter(name: "CIQRCodeGenerator")!
         filter1.setValue(data, forKey: "inputMessage")
         qrCodeAsCIImage = filter1.outputImage!
-        if isInverted {
+        if hasBackground {
+            let filter2 = CIFilter(name: "CIFalseColor")!
+            filter2.setValue(qrCodeAsCIImage, forKey: "inputImage")
+            filter2.setValue(CIColor(color: UIColor(hex: 0xFFFFFF)), forKey: "inputColor0")
+            filter2.setValue(CIColor(color: UIColor(hex: 0x1B1B1B)), forKey: "inputColor1")
+            qrCodeAsCIImage = filter2.outputImage!
+        } else {
             let filter2 = CIFilter(name: "CIColorInvert")!
             filter2.setValue(qrCodeAsCIImage, forKey: "inputImage")
             qrCodeAsCIImage = filter2.outputImage!

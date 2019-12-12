@@ -19,6 +19,7 @@ final class Values : NSObject {
     @objc static let massiveFontSize = CGFloat(50)
     
     // MARK: - Element Sizes
+    @objc static let smallButtonHeight = CGFloat(27)
     @objc static let mediumButtonHeight = CGFloat(34)
     @objc static let largeButtonHeight = CGFloat(45)
     @objc static let accentLineThickness = CGFloat(4)
@@ -43,7 +44,7 @@ final class Values : NSObject {
     @objc static let fakeChatViewHeight = CGFloat(234)
     @objc static var composeViewTextFieldBorderThickness: CGFloat { return 1 / UIScreen.main.scale }
     @objc static let messageBubbleCornerRadius: CGFloat = 10
-    @objc static let messageProgressBarThickness: CGFloat = 2
+    @objc static let progressBarThickness: CGFloat = 2
     
     // MARK: - Distances
     @objc static let verySmallSpacing = CGFloat(4)

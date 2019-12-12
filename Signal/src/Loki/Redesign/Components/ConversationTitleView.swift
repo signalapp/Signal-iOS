@@ -144,11 +144,11 @@
     private func updateSubtitleForCurrentStatus() {
         DispatchQueue.main.async {
             switch self.currentStatus {
-            case .calculatingPoW: self.subtitleLabel.text = "Calculating proof of work"
-            case .contactingNetwork: self.subtitleLabel.text = "Contacting service node network"
-            case .sendingMessage: self.subtitleLabel.text = "Sending message"
-            case .messageSent: self.subtitleLabel.text = "Message sent securely"
-            case .messageFailed: self.subtitleLabel.text = "Message failed to send"
+            case .calculatingPoW: self.subtitleLabel.text = NSLocalizedString("Encrypting message", comment: "")
+            case .contactingNetwork: self.subtitleLabel.text = NSLocalizedString("Tracing a path", comment: "")
+            case .sendingMessage: self.subtitleLabel.text = NSLocalizedString("Sending message", comment: "")
+            case .messageSent: self.subtitleLabel.text = NSLocalizedString("Message sent securely", comment: "")
+            case .messageFailed: self.subtitleLabel.text = NSLocalizedString("Message failed to send", comment: "")
             case nil:
                 let subtitle = NSMutableAttributedString()
                 if self.thread.isMuted {

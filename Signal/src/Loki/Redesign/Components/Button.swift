@@ -8,7 +8,7 @@ final class Button : UIButton {
     }
     
     enum Size {
-        case medium, large
+        case medium, large, small
     }
     
     init(style: Style, size: Size) {
@@ -50,6 +50,7 @@ final class Button : UIButton {
         }
         let height: CGFloat
         switch size {
+        case .small: height = Values.smallButtonHeight
         case .medium: height = Values.mediumButtonHeight
         case .large: height = Values.largeButtonHeight
         }
@@ -58,7 +59,8 @@ final class Button : UIButton {
         backgroundColor = fillColor
         layer.borderColor = borderColor.cgColor
         layer.borderWidth = Values.borderThickness
-        titleLabel!.font = Fonts.spaceMono(ofSize: Values.mediumFontSize)
+        let fontSize = (size == .small) ? Values.smallFontSize : Values.mediumFontSize
+        titleLabel!.font = Fonts.spaceMono(ofSize: fontSize)
         setTitleColor(textColor, for: UIControl.State.normal)
     }
 }

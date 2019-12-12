@@ -697,7 +697,7 @@ typedef enum : NSUInteger {
     [self.collectionView autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
 
     _progressIndicatorView = [UIProgressView new];
-    [self.progressIndicatorView autoSetDimension:ALDimensionHeight toSize:LKValues.messageProgressBarThickness];
+    [self.progressIndicatorView autoSetDimension:ALDimensionHeight toSize:LKValues.progressBarThickness];
     self.progressIndicatorView.progressViewStyle = UIProgressViewStyleBar;
     self.progressIndicatorView.progressTintColor = LKColors.accent;
     self.progressIndicatorView.trackTintColor = UIColor.clearColor;
