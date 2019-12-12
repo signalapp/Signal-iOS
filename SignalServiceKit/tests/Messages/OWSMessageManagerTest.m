@@ -78,7 +78,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
 {
     XCTestExpectation *messageWasSent = [self expectationWithDescription:@"message was sent"];
 
-    OWSAssertDebug([SSKEnvironment.shared.syncManager isKindOfClass:[OWSMockSyncManager class]]);
+    OWSAssertDebug([((NSObject *) SSKEnvironment.shared.syncManager) isKindOfClass:[OWSMockSyncManager class]]);
     OWSMockSyncManager *mockSyncManager = (OWSMockSyncManager *)SSKEnvironment.shared.syncManager;
     mockSyncManager.syncGroupsHook = ^{
         [messageWasSent fulfill];
