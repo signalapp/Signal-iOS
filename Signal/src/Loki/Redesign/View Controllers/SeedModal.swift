@@ -61,6 +61,9 @@ final class SeedModal : Modal {
         stackView.pin(.top, to: .top, of: contentView, withInset: Values.largeSpacing)
         contentView.pin(.trailing, to: .trailing, of: stackView, withInset: Values.largeSpacing)
         contentView.pin(.bottom, to: .bottom, of: stackView, withInset: Values.largeSpacing)
+        // Mark seed as viewed
+        UserDefaults.standard.set(true, forKey: "hasViewedSeed")
+        NotificationCenter.default.post(name: .seedViewed, object: nil)
     }
     
     // MARK: Interaction

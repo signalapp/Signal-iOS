@@ -1,5 +1,6 @@
 
 final class SeedReminderView : UIView {
+    private let hasContinueButton: Bool
     var title = NSAttributedString(string: "") { didSet { titleLabel.attributedText = title } }
     var subtitle = "" { didSet { subtitleLabel.text = subtitle } }
     var delegate: SeedReminderViewDelegate?
@@ -14,7 +15,7 @@ final class SeedReminderView : UIView {
         return result
     }()
     
-    private lazy var titleLabel: UILabel = {
+    lazy var titleLabel: UILabel = {
         let result = UILabel()
         result.textColor = Colors.text
         result.font = .boldSystemFont(ofSize: Values.smallFontSize)
@@ -22,7 +23,7 @@ final class SeedReminderView : UIView {
         return result
     }()
     
-    private lazy var subtitleLabel: UILabel = {
+    lazy var subtitleLabel: UILabel = {
         let result = UILabel()
         result.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         result.font = .systemFont(ofSize: Values.verySmallFontSize)
@@ -31,14 +32,18 @@ final class SeedReminderView : UIView {
     }()
     
     // MARK: Lifecycle
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(hasContinueButton: Bool) {
+        self.hasContinueButton = hasContinueButton
+        super.init(frame: CGRect.zero)
         setUpViewHierarchy()
     }
     
+    override init(frame: CGRect) {
+        preconditionFailure("Use init(hasContinueButton:) instead.")
+    }
+    
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setUpViewHierarchy()
+        preconditionFailure("Use init(hasContinueButton:) instead.")
     }
     
     private func setUpViewHierarchy() {
@@ -54,7 +59,11 @@ final class SeedReminderView : UIView {
         button.set(.width, to: 80)
         button.addTarget(self, action: #selector(handleContinueButtonTapped), for: UIControl.Event.touchUpInside)
         // Set up content stack view
-        let contentStackView = UIStackView(arrangedSubviews: [ labelStackView, UIView.hStretchingSpacer(), button ])
+        let contentStackView = UIStackView(arrangedSubviews: [ labelStackView ])
+        if hasContinueButton {
+            contentStackView.addArrangedSubview(UIView.hStretchingSpacer())
+            contentStackView.addArrangedSubview(button)
+        }
         contentStackView.axis = .horizontal
         contentStackView.spacing = 4
         contentStackView.alignment = .center

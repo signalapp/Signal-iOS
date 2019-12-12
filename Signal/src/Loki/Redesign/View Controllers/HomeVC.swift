@@ -3,6 +3,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     private var threadViewModelCache: [String:ThreadViewModel] = [:]
     private var isObservingDatabase = true
     private var isViewVisible = false { didSet { updateIsObservingDatabase() } }
+    private var tableViewTopConstraint: NSLayoutConstraint!
     
     private var threads: YapDatabaseViewMappings = {
         let result = YapDatabaseViewMappings(groups: [ TSInboxGroup ], view: TSThreadDatabaseViewExtensionName)
@@ -23,7 +24,7 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     
     // MARK: Components
     private lazy var seedReminderView: SeedReminderView = {
-        let result = SeedReminderView()
+        let result = SeedReminderView(hasContinueButton: true)
         let title = "You're almost finished! 80%"
         let attributedTitle = NSMutableAttributedString(string: title)
         attributedTitle.addAttribute(.foregroundColor, value: Colors.accent, range: (title as NSString).range(of: "80%"))
@@ -86,17 +87,24 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = titleLabel
-        // Set up seed reminder view
-        view.addSubview(seedReminderView)
-        seedReminderView.pin(.leading, to: .leading, of: view)
-        seedReminderView.pin(.top, to: .top, of: view)
-        seedReminderView.pin(.trailing, to: .trailing, of: view)
+        // Set up seed reminder view if needed
+        let hasViewedSeed = UserDefaults.standard.bool(forKey: "hasViewedSeed")
+        if !hasViewedSeed {
+            view.addSubview(seedReminderView)
+            seedReminderView.pin(.leading, to: .leading, of: view)
+            seedReminderView.pin(.top, to: .top, of: view)
+            seedReminderView.pin(.trailing, to: .trailing, of: view)
+        }
         // Set up table view
         tableView.dataSource = self
         tableView.delegate = self
         view.addSubview(tableView)
         tableView.pin(.leading, to: .leading, of: view)
-        tableView.pin(.top, to: .bottom, of: seedReminderView)
+        if !hasViewedSeed {
+            tableViewTopConstraint = tableView.pin(.top, to: .bottom, of: seedReminderView)
+        } else {
+            tableViewTopConstraint = tableView.pin(.top, to: .top, of: view)
+        }
         tableView.pin(.trailing, to: .trailing, of: view)
         tableView.pin(.bottom, to: .bottom, of: view)
         // Set up search bar
@@ -118,7 +126,9 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         notificationCenter.addObserver(self, selector: #selector(handleYapDatabaseModifiedExternallyNotification(_:)), name: .YapDatabaseModifiedExternally, object: OWSPrimaryStorage.shared().dbNotificationObject)
         notificationCenter.addObserver(self, selector: #selector(handleApplicationDidBecomeActiveNotification(_:)), name: .OWSApplicationDidBecomeActive, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleApplicationWillResignActiveNotification(_:)), name: .OWSApplicationWillResignActive, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleProfileDidChangeNotification(_:)), name: NSNotification.Name(rawValue: kNSNotificationName_OtherUsersProfileDidChange), object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleLocalProfileDidChangeNotification(_:)), name: Notification.Name(kNSNotificationName_LocalProfileDidChange), object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleSeedViewedNotification(_:)), name: .seedViewed, object: nil)
         // Set up public chats and RSS feeds if needed
         if OWSIdentityManager.shared().identityKeyPair() != nil {
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -215,8 +225,18 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
         updateIsObservingDatabase()
     }
     
+    @objc private func handleProfileDidChangeNotification(_ notification: Notification) {
+        tableView.reloadData() // TODO: Just reload the affected cell
+    }
+    
     @objc private func handleLocalProfileDidChangeNotification(_ notification: Notification) {
         updateNavigationBarButtons()
+    }
+    
+    @objc private func handleSeedViewedNotification(_ notification: Notification) {
+        tableViewTopConstraint.isActive = false
+        tableViewTopConstraint = tableView.pin(.top, to: .top, of: view)
+        seedReminderView.removeFromSuperview()
     }
     
     private func updateNavigationBarButtons() {
@@ -240,7 +260,9 @@ final class HomeVC : UIViewController, UITableViewDataSource, UITableViewDelegat
     
     // MARK: Interaction
     func handleContinueButtonTapped(from seedReminderView: SeedReminderView) {
-        // TODO: Implement
+        let seedVC = SeedVCV2()
+        let navigationController = OWSNavigationController(rootViewController: seedVC)
+        present(navigationController, animated: true, completion: nil)
     }
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
