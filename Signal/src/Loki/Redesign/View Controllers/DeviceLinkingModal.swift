@@ -107,13 +107,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         case .master:
             qrCodeImageView.set(.height, to: 128)
             let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
-            let data = hexEncodedPublicKey.data(using: .utf8)
-            let filter = CIFilter(name: "CIQRCodeGenerator")!
-            filter.setValue(data, forKey: "inputMessage")
-            let qrCodeAsCIImage = filter.outputImage!
-            let scaledQRCodeAsCIImage = qrCodeAsCIImage.transformed(by: CGAffineTransform(scaleX: 4.8, y: 4.8))
-            let qrCode = UIImage(ciImage: scaledQRCodeAsCIImage)
-            qrCodeImageView.image = qrCode
+            qrCodeImageView.image = QRCode.generate(for: hexEncodedPublicKey)
         case .slave:
             spinner.set(.height, to: 64)
             spinner.startAnimating()
@@ -126,7 +120,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         }()
         subtitleLabel.text = {
             switch mode {
-            case .master: return NSLocalizedString("Create a new account on your other device and click \"Link Device\" when you're at the \"Create Your Loki Messenger Account\" step to start the linking process", comment: "")
+            case .master: return NSLocalizedString("Create a new account on your other device and click \"Link to an existing account\" to start the linking process", comment: "")
             case .slave: return NSLocalizedString("Please check that the words below match the ones shown on your other device", comment: "")
             }
         }()
@@ -190,8 +184,9 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
             print("[Loki] Failed to add device link due to error: \(error).")
         }
         Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
-            self.delegate?.handleDeviceLinkAuthorized(deviceLink)
-            self.dismiss(animated: true, completion: nil)
+            self.dismiss(animated: true) {
+                self.delegate?.handleDeviceLinkAuthorized(deviceLink)
+            }
         }
     }
     

@@ -4,7 +4,7 @@ final class Button : UIButton {
     private let size: Size
     
     enum Style {
-        case unimportant, regular, prominentOutline, prominentFilled
+        case unimportant, regular, prominentOutline, prominentFilled, regularBorderless
     }
     
     enum Size {
@@ -33,6 +33,7 @@ final class Button : UIButton {
         case .regular: fillColor = UIColor.clear
         case .prominentOutline: fillColor = UIColor.clear
         case .prominentFilled: fillColor = Colors.accent
+        case .regularBorderless: fillColor = UIColor.clear
         }
         let borderColor: UIColor
         switch style {
@@ -40,6 +41,7 @@ final class Button : UIButton {
         case .regular: borderColor = Colors.text
         case .prominentOutline: borderColor = Colors.accent
         case .prominentFilled: borderColor = Colors.accent
+        case .regularBorderless: borderColor = UIColor.clear
         }
         let textColor: UIColor
         switch style {
@@ -47,6 +49,7 @@ final class Button : UIButton {
         case .regular: textColor = Colors.text
         case .prominentOutline: textColor = Colors.accent
         case .prominentFilled: textColor = Colors.text
+        case .regularBorderless: textColor = Colors.text
         }
         let height: CGFloat
         switch size {

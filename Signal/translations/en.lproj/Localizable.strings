@@ -2753,3 +2753,7 @@
 "Press the covered words to view your seed and secure your account" = "Press the covered words to view your seed and secure your account";
 "Hold to reveal" = "Hold to reveal";
 "Make sure to store your seed in a safe place" = "Make sure to store your seed in a safe place";
+"Link to an existing account" = "Link to an existing account";
+"Enter your public key" = "Enter your public key";
+"Link to your existing device by going into your in-app settings and clicking \"Linked Devices\"." = "Link to your existing device by going into your in-app settings and clicking \"Linked Devices\".";
+"Create a new account on your other device and click \"Link to an existing account\" to start the linking process" = "Create a new account on your other device and click \"Link to an existing account\" to start the linking process";
