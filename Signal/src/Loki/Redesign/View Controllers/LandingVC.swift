@@ -99,6 +99,13 @@ final class LandingVC : UIViewController, LinkDeviceVCDelegate, DeviceLinkingMod
         view.addSubview(mainStackView)
         mainStackView.pin(to: view)
         topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor, multiplier: 1).isActive = true
+        // Show device unlinked alert if needed
+        if UserDefaults.standard.bool(forKey: "wasUnlinked") {
+            let alert = UIAlertController(title: NSLocalizedString("Device Unlinked", comment: ""), message: NSLocalizedString("Your device was unlinked successfully", comment: ""), preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), accessibilityIdentifier: nil, style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+            UserDefaults.removeAll()
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {

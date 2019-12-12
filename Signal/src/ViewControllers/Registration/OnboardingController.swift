@@ -116,9 +116,9 @@ public class OnboardingController: NSObject {
     }
     
     public func pushSeedVC(from viewController: UIViewController) {
-        AssertIsOnMainThread()
-        let seedVC = SeedVC(onboardingController: self)
-        viewController.navigationController?.pushViewController(seedVC, animated: true)
+//        AssertIsOnMainThread()
+//        let seedVC = SeedVC(onboardingController: self)
+//        viewController.navigationController?.pushViewController(seedVC, animated: true)
     }
     
     public func pushDisplayNameVC(from viewController: UIViewController) {
