@@ -99,9 +99,11 @@ class GroupAndContactStreamTest: SignalBaseTest {
 
             var thread: TSGroupThread!
             write { transaction in
-                thread = try! GroupManager.createGroupForTests(members: groupMembers,
-                                                               groupId: groupId,
-                                                               transaction: transaction)
+                thread = try! GroupManager.createGroupForTests(transaction: transaction,
+                                                               members: groupMembers,
+                                                               groupId: groupId)
+
+                thread.anyInsert(transaction: transaction)
                 thread.updateConversationColorName(.burlap, transaction: transaction)
             }
             return thread
@@ -116,10 +118,10 @@ class GroupAndContactStreamTest: SignalBaseTest {
 
             var thread: TSGroupThread!
             write {
-                thread = try! GroupManager.createGroupForTests(members: groupMembers,
+                thread = try! GroupManager.createGroupForTests(transaction: $0,
+                                                               members: groupMembers,
                                                                name: "Book Club",
-                                                               groupId: groupId,
-                                                               transaction: $0)
+                                                               groupId: groupId)
                 thread.shouldThreadBeVisible = true
                 thread.anyOverwritingUpdate(transaction: $0)
                 thread.updateConversationColorName(.taupe, transaction: $0)
@@ -137,10 +139,10 @@ class GroupAndContactStreamTest: SignalBaseTest {
 
             var thread: TSGroupThread!
             write { transaction in
-                thread = try! GroupManager.createGroupForTests(members: groupMembers,
+                thread = try! GroupManager.createGroupForTests(transaction: transaction,
+                                                               members: groupMembers,
                                                                name: "Cook Blub",
-                                                               groupId: groupId,
-                                                               transaction: transaction)
+                                                               groupId: groupId)
                 thread.shouldThreadBeVisible = true
                 thread.anyOverwritingUpdate(transaction: transaction)
                 thread.updateConversationColorName(.blue, transaction: transaction)
@@ -185,9 +187,9 @@ class GroupAndContactStreamTest: SignalBaseTest {
             XCTAssertEqual(group.name, nil)
             XCTAssertEqual(group.memberAddresses, [
                 SignalServiceAddress(phoneNumber: "+13213214321"),
-                SignalServiceAddress(uuidString: "1d4ab045-88fb-4c4e-9f6a-f921124bd529", phoneNumber: "+13213214323"),
-                SignalServiceAddress(uuidString: "31ce1412-9a28-4e6f-b4ee-a25c3179d085")
-                ])
+                SignalServiceAddress(uuidString: "31ce1412-9a28-4e6f-b4ee-a25c3179d085"),
+                SignalServiceAddress(uuidString: "1d4ab045-88fb-4c4e-9f6a-f921124bd529", phoneNumber: "+13213214323")
+            ])
 
             XCTAssertEqual(group.conversationColorName, ConversationColorName.burlap.rawValue)
             XCTAssertEqual(group.isBlocked, false)
@@ -204,7 +206,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
             XCTAssertEqual(group.memberAddresses, [
                 SignalServiceAddress(phoneNumber: "+13213214321"),
                 SignalServiceAddress(uuidString: "55555555-88fb-4c4e-9f6a-f921124bd529", phoneNumber: "+15553214323")
-                ])
+            ])
             XCTAssertEqual(group.conversationColorName, ConversationColorName.taupe.rawValue)
             XCTAssertEqual(group.isBlocked, false)
             XCTAssertEqual(group.expireTimer, 0)

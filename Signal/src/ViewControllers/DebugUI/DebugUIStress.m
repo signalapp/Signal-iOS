@@ -518,17 +518,15 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)hallucinateTwinGroup:(TSGroupThread *)groupThread
 {
     NSString *groupName = [groupThread.groupModel.groupName stringByAppendingString:@" Copy"];
-    [GroupManager createNewGroupObjcWithMembers:groupThread.groupModel.groupMembers
-        groupId:nil
-        name:groupName
-        avatarData:groupThread.groupModel.groupAvatarData
-        shouldSendMessage:NO
-        success:^(TSGroupThread *thread) {
-            [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
-        }
-        failure:^(NSError *error) {
-            OWSFailDebug(@"Error: %@", error);
-        }];
+    [GroupManager createGroupObjcWithMembers:groupThread.groupModel.groupMembers
+                                     groupId:nil
+                                        name:groupName
+                                  avatarData:groupThread.groupModel.groupAvatarData
+                                     success:^(TSGroupThread * thread) {
+                                         [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
+                                     } failure:^(NSError * error) {
+                                         OWSFailDebug(@"Error: %@", error);
+                                     }];
 }
 
 + (void)makeUnregisteredGroup
@@ -551,17 +549,15 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    [GroupManager createNewGroupObjcWithMembers:recipientAddresses
-        groupId:nil
-        name:NSUUID.UUID.UUIDString
-        avatarData:nil
-        shouldSendMessage:NO
-        success:^(TSGroupThread *thread) {
-            [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
-        }
-        failure:^(NSError *error) {
-            OWSFailDebug(@"Error: %@", error);
-        }];
+    [GroupManager createGroupObjcWithMembers:recipientAddresses
+                                     groupId:nil
+                                        name:NSUUID.UUID.UUIDString
+                                  avatarData:nil
+                                     success:^(TSGroupThread * thread) {
+                                         [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
+                                     } failure:^(NSError * error) {
+                                         OWSFailDebug(@"Error: %@", error);
+                                     }];
 }
 
 @end

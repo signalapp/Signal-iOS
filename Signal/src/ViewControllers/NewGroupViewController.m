@@ -115,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    @"The title for the 'create group' button.")
                                          style:UIBarButtonItemStylePlain
                                         target:self
-                                        action:@selector(createNewGroup)
+                                        action:@selector(createGroup)
                        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"create")];
     self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(0, -10, 0, 10);
     self.navigationItem.rightBarButtonItem.accessibilityLabel
@@ -281,7 +281,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Actions
 
-- (void)createNewGroup
+- (void)createGroup
 {
     OWSAssertIsOnMainThread();
 
@@ -299,20 +299,12 @@ NS_ASSUME_NONNULL_BEGIN
         presentFromViewController:self
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      [GroupManager createNewGroupObjcWithMembers:members
+                      [GroupManager createGroupObjcWithMembers:members
                           groupId:self.groupId
                           name:groupName
                           avatarImage:self.groupAvatar
-                          shouldSendMessage:YES
                           success:^(TSGroupThread *thread) {
-                              [self.presentingViewController
-                                  dismissViewControllerAnimated:YES
-                                                     completion:^{
-                                                         [SignalApp.sharedApp
-                                                             presentConversationForThread:thread
-                                                                                   action:ConversationViewActionCompose
-                                                                                 animated:NO];
-                                                     }];
+                              [self groupWasCreated:thread modalActivityIndicator:modalActivityIndicator];
                           }
                           failure:^(NSError *error) {
                               OWSFailDebug(@"Error: %@", error);
@@ -323,6 +315,50 @@ NS_ASSUME_NONNULL_BEGIN
                               }];
                           }];
                   }];
+}
+
+- (void)groupWasCreated:(TSGroupThread *)thread
+    modalActivityIndicator:(ModalActivityIndicatorViewController *)modalActivityIndicator
+{
+    void (^successHandler)(void) = ^{
+        OWSLogError(@"Group creation successful.");
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.presentingViewController dismissViewControllerAnimated:YES completion:^{
+                [SignalApp.sharedApp presentConversationForThread:thread
+                                                           action:ConversationViewActionCompose
+                                                         animated:NO];
+            }];
+        });
+    };
+
+    void (^failureHandler)(NSError *error) = ^(NSError *error) {
+        OWSLogError(@"Group creation failed: %@", error);
+
+        // Add an error message to the new group indicating
+        // that group creation didn't succeed.
+        // MJK TODO should be safe to remove senderTimestamp and just save immediately
+        TSErrorMessage *errorMessage = [[TSErrorMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                        inThread:thread
+                                                               failedMessageType:TSErrorMessageGroupCreationFailed];
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [errorMessage anyInsertWithTransaction:transaction];
+        }];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.presentingViewController dismissViewControllerAnimated:YES completion:^{
+                [SignalApp.sharedApp presentConversationForThread:thread
+                                                           action:ConversationViewActionCompose
+                                                         animated:NO];
+            }];
+        });
+    };
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+
+        [GroupManager sendTemporaryNewGroupMessageObjcForThread:thread success:successHandler failure:failureHandler];
+    });
 }
 
 #pragma mark - Group Avatar

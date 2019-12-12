@@ -54,17 +54,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation UpdateGroupViewController
 
-#pragma mark - Dependencies
-
-- (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-#pragma mark -
-
 - (instancetype)init
 {
     self = [super init];
@@ -287,16 +276,18 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.groupNameTextField acceptAutocorrectSuggestion];
 
-    NSArray<SignalServiceAddress *> *memberList = [self.memberRecipients.allObjects map:^(PickedRecipient *recipient) {
+    NSArray *newMembersList = [self.memberRecipients.allObjects map:^(PickedRecipient *recipient) {
         OWSAssertDebug(recipient.address.isValid);
         return recipient.address;
     }];
-    NSMutableSet<SignalServiceAddress *> *memberSet = [NSMutableSet setWithArray:memberList];
-    [memberSet addObject:self.tsAccountManager.localAddress];
-    [self.conversationSettingsViewDelegate updateGroupWithId:self.thread.groupModel.groupId
-                                                     members:memberSet.allObjects
-                                                        name:self.groupNameTextField.text
-                                                  avatarData:self.groupAvatarData];
+
+    // GroupsV2 TODO: Use GroupManager.
+    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithGroupId:self.thread.groupModel.groupId
+                                                                name:self.groupNameTextField.text
+                                                          avatarData:self.groupAvatarData
+                                                             members:newMembersList
+                                                       groupsVersion:self.thread.groupModel.groupsVersion];
+    [self.conversationSettingsViewDelegate groupWasUpdated:groupModel];
 }
 
 #pragma mark - Group Avatar

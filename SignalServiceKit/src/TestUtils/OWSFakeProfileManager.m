@@ -96,17 +96,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.threadWhitelist addObject:groupId.hexadecimalString];
 }
 
-- (void)addThreadToProfileWhitelist:(TSThread *)thread
-{
-    if (thread.isGroupThread) {
-        TSGroupThread *groupThread = (TSGroupThread *)thread;
-        [self addGroupIdToProfileWhitelist:groupThread.groupModel.groupId];
-    } else {
-        TSContactThread *contactThread = (TSContactThread *)thread;
-        [self addUserToProfileWhitelist:contactThread.contactAddress];
-    }
-}
-
 - (void)fetchAndUpdateLocalUsersProfile
 {
     // Do nothing.

@@ -12,11 +12,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 const int32_t kGroupIdLength = 16;
-
 NSUInteger const TSGroupModelSchemaVersion = 1;
 
 @interface TSGroupModel ()
 
+@property (nullable, nonatomic) NSString *groupName;
 @property (nonatomic, readonly) NSUInteger groupModelSchemaVersion;
 
 @end
@@ -25,8 +25,6 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
 
 @implementation TSGroupModel
 
-@synthesize groupName = _groupName;
-
 #if TARGET_OS_IOS
 
 - (instancetype)initWithGroupId:(NSData *)groupId
@@ -34,15 +32,9 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
                      avatarData:(nullable NSData *)avatarData
                         members:(NSArray<SignalServiceAddress *> *)members
                   groupsVersion:(GroupsVersion)groupsVersion
-          groupSecretParamsData:(nullable NSData *)groupSecretParamsData
 {
     OWSAssertDebug(members != nil);
     OWSAssertDebug(groupId.length == kGroupIdLength);
-    if (groupsVersion == GroupsVersionV1) {
-        OWSAssertDebug(groupSecretParamsData == nil);
-    } else {
-        OWSAssertDebug(groupSecretParamsData.length > 0);
-    }
 
     self = [super init];
     if (!self) {
@@ -55,7 +47,6 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     _groupId = groupId;
     _groupModelSchemaVersion = TSGroupModelSchemaVersion;
     _groupsVersion = groupsVersion;
-    _groupSecretParamsData = groupSecretParamsData;
 
     return self;
 }
@@ -165,7 +156,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     if (![_groupId isEqualToData:other.groupId]) {
         return NO;
     }
-    if (![NSObject isNullableObject:self.groupName equalTo:other.groupName]) {
+    if (![_groupName isEqual:other.groupName]) {
         return NO;
     }
     if (![NSObject isNullableObject:self.groupAvatarData equalTo:other.groupAvatarData]) {
@@ -179,9 +170,6 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     if (_groupsVersion != other.groupsVersion) {
         return NO;
     }
-    if (![NSObject isNullableObject:self.groupSecretParamsData equalTo:other.groupSecretParamsData]) {
-        return NO;
-    }
     return YES;
 }
 
@@ -190,10 +178,11 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     if (self == newModel) {
         return NSLocalizedString(@"GROUP_UPDATED", @"");
     }
-    if (![NSObject isNullableObject:_groupName equalTo:newModel.groupName] && newModel.groupName.length > 0) {
+    // TODO: This is false if _groupName is nil.
+    if (![_groupName isEqual:newModel.groupName]) {
         updatedGroupInfoString = [updatedGroupInfoString
             stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_TITLE_CHANGED", @""),
-                                              newModel.groupNameOrDefault]];
+                                                               newModel.groupName]];
     }
     if (![NSObject isNullableObject:self.groupAvatarData equalTo:newModel.groupAvatarData]) {
         // Group avatar changed.

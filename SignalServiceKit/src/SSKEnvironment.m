@@ -44,7 +44,6 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) SDSDatabaseStorage *databaseStorage;
 @property (nonatomic) StorageCoordinator *storageCoordinator;
 @property (nonatomic) SSKPreferences *sskPreferences;
-@property (nonatomic) id<GroupsV2> groupsV2;
 
 @end
 
@@ -92,7 +91,6 @@ static SSKEnvironment *sharedSSKEnvironment;
                   storageServiceManager:(id<StorageServiceManagerProtocol>)storageServiceManager
                      storageCoordinator:(StorageCoordinator *)storageCoordinator
                          sskPreferences:(SSKPreferences *)sskPreferences
-                               groupsV2:(id<GroupsV2>)groupsV2
 {
     self = [super init];
     if (!self) {
@@ -134,7 +132,6 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(storageServiceManager);
     OWSAssertDebug(storageCoordinator);
     OWSAssertDebug(sskPreferences);
-    OWSAssertDebug(groupsV2);
 
     _contactsManager = contactsManager;
     _linkPreviewManager = linkPreviewManager;
@@ -172,7 +169,6 @@ static SSKEnvironment *sharedSSKEnvironment;
     _storageServiceManager = storageServiceManager;
     _storageCoordinator = storageCoordinator;
     _sskPreferences = sskPreferences;
-    _groupsV2 = groupsV2;
 
     return self;
 }

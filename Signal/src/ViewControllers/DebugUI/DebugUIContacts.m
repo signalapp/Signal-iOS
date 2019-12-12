@@ -121,11 +121,10 @@ NS_ASSUME_NONNULL_BEGIN
         TSAccountManager.localAddress,
     ] mutableCopy];
 
-    [GroupManager createNewGroupObjcWithMembers:recipientAddresses
+    [GroupManager createGroupObjcWithMembers:recipientAddresses
         groupId:nil
         name:groupName
         avatarData:nil
-        shouldSendMessage:YES
         success:^(TSGroupThread *thread) {
             [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
         }

@@ -14,7 +14,6 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 @class OWSAES256Key;
 @class OWSMessageSender;
-@class OWSUserProfile;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SDSDatabaseStorage;
@@ -23,19 +22,12 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 @class TSNetworkManager;
 @class TSThread;
 
-typedef void (^ProfileManagerFailureBlock)(NSError *error);
-
 // This class can be safely accessed and used from any thread.
 @interface OWSProfileManager : NSObject <ProfileManagerProtocol>
 
 @property (nonatomic, readonly) SDSKeyValueStore *whitelistedPhoneNumbersStore;
 @property (nonatomic, readonly) SDSKeyValueStore *whitelistedUUIDsStore;
 @property (nonatomic, readonly) SDSKeyValueStore *whitelistedGroupsStore;
-
-// This property is used by the Swift extension to ensure that
-// only one profile update is in flight at a time.  It should
-// only be accessed on the main thread.
-@property (nonatomic) BOOL isUpdatingProfileOnService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -56,11 +48,19 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (nullable UIImage *)localProfileAvatarImage;
 - (nullable NSData *)localProfileAvatarData;
 
+// This method is used to update the "local profile" state on the client
+// and the service.  Client state is only updated if service state is
+// successfully updated.
+//
+// This method should only be called from the main thread.
+- (void)updateLocalProfileName:(nullable NSString *)profileName
+                   avatarImage:(nullable UIImage *)avatarImage
+                       success:(void (^)(void))successBlock
+                       failure:(void (^)(void))failureBlock;
+
 - (void)updateLocalUsername:(nullable NSString *)username transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)isProfileNameTooLong:(nullable NSString *)profileName;
-
-+ (NSData *)avatarDataForAvatarImage:(UIImage *)image;
 
 - (void)fetchAndUpdateLocalUsersProfile;
 
@@ -70,29 +70,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                                 notFound:(void (^)(void))notFoundHandler
                                  failure:(void (^)(NSError *))failureHandler;
 
-#pragma mark - Local Profile Updates
-
-- (void)writeAvatarToDiskWithData:(NSData *)avatarData
-                          success:(void (^)(NSString *fileName))successBlock
-                          failure:(ProfileManagerFailureBlock)failureBlock;
-
-// OWSUserProfile is a private implementation detail of the profile manager.
-//
-// Only use this method in profile manager methods on the swift extension.
-- (OWSUserProfile *)localUserProfile;
-
-// If avatarData is nil, we are clearing the avatar.
-- (void)updateServiceWithUnversionedProfileAvatarData:(nullable NSData *)avatarData
-                                              success:(void (^)(NSString *_Nullable avatarUrlPath))successBlock
-                                              failure:(ProfileManagerFailureBlock)failureBlock
-    NS_SWIFT_NAME(updateService(unversionedProfileAvatarData:success:failure:));
-
-// If profileName is nil, we are clearing the profileName.
-- (void)updateServiceWithUnversionedProfileName:(nullable NSString *)profileName
-                                        success:(void (^)(void))successBlock
-                                        failure:(ProfileManagerFailureBlock)failureBlock
-    NS_SWIFT_NAME(updateService(unversionedProfileName:success:failure:));
-
 #pragma mark - Profile Whitelist
 
 // These methods are for debugging.
@@ -101,6 +78,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (void)debug_regenerateLocalProfileWithSneakyTransaction;
 - (void)setLocalProfileKey:(OWSAES256Key *)key transaction:(SDSAnyWriteTransaction *)transaction;
 
+- (void)addThreadToProfileWhitelist:(TSThread *)thread;
 - (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses;
 
 - (void)setContactAddresses:(NSArray<SignalServiceAddress *> *)contactAddresses;
@@ -138,11 +116,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (void)presentAddThreadToProfileWhitelist:(TSThread *)thread
                         fromViewController:(UIViewController *)fromViewController
                                    success:(void (^)(void))successHandler;
-
-#pragma mark - Misc.
-
-+ (nullable NSData *)encryptProfileNameWithUnpaddedName:(NSString *)name
-                                        localProfileKey:(OWSAES256Key *)localProfileKey;
 
 @end
 
