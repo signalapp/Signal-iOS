@@ -192,7 +192,7 @@ class PhotoCaptureViewController: OWSViewController {
             super.init(frame: .zero)
 
             addSubview(navStack)
-            navStack.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+            navStack.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 16))
 
             addSubview(recordingTimerView)
             recordingTimerView.isHidden = true
@@ -230,7 +230,7 @@ class PhotoCaptureViewController: OWSViewController {
             }
         } else {
             dismissButton = dismissControl.button
-            dismissButton.contentEdgeInsets = UIEdgeInsets(top: -1, leading: 0, bottom: 0, trailing: 20)
+            dismissButton.contentEdgeInsets = UIEdgeInsets(top: 5, leading: 16, bottom: 6, trailing: 20)
         }
 
         return TopBar(navbarItems: [dismissButton,
@@ -362,7 +362,7 @@ class PhotoCaptureViewController: OWSViewController {
     func didTapFocusExpose(tapGesture: UITapGestureRecognizer) {
         let viewLocation = tapGesture.location(in: view)
         let devicePoint = previewView.previewLayer.captureDevicePointConverted(fromLayerPoint: viewLocation)
-        currentlyFocusingAtPoint = devicePoint
+        lastUserFocusTapPoint = devicePoint
         tapToFocusView.center = viewLocation
         startFocusAnimation()
         photoCapture.focus(with: .autoFocus, exposureMode: .autoExpose, at: devicePoint, monitorSubjectAreaChange: true)
@@ -375,10 +375,14 @@ class PhotoCaptureViewController: OWSViewController {
         tapToFocusView.play(fromProgress: 0.0, toProgress: 0.9)
     }
 
-    var currentlyFocusingAtPoint = CGPoint(x: 0.5, y: 0.5)
+    var lastUserFocusTapPoint: CGPoint?
     func completeFocusAnimation(forFocusPoint focusPoint: CGPoint) {
-        guard currentlyFocusingAtPoint.within(0.005, of: focusPoint) else {
-            Logger.verbose("focus completed for obsolete focus point. User has refocused on.")
+        guard let lastUserFocusTapPoint = lastUserFocusTapPoint else {
+            return
+        }
+
+        guard lastUserFocusTapPoint.within(0.005, of: focusPoint) else {
+            Logger.verbose("focus completed for obsolete focus point. User has refocused.")
             return
         }
 
