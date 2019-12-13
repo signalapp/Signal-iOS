@@ -1147,7 +1147,7 @@
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Inviting multiple users at the same time will start a group message and the recipients will be able to see each other.";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "Messages disappear after %@.";
+"KEEP_MESSAGES_DURATION" = "Messages disappear after %@";
 
 /* Slider label when disappearing messages is off */
 "KEEP_MESSAGES_FOREVER" = "Messages do not disappear.";
@@ -1584,7 +1584,7 @@
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ disabled disappearing messages.";
 
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ set disappearing message time to %@.";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ set disappearing message time to %@";
 
 /* Label warning the user that the Loki Messenger service may be down. */
 "OUTAGE_WARNING" = "Loki Messenger is experiencing technical difficulties. We are working hard to restore service as quickly as possible.";
@@ -2541,7 +2541,7 @@
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You disabled disappearing messages.";
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You set disappearing message time to %@.";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You set disappearing message time to %@";
 
 // Loki:
 "Loki Messenger can let you know when you get a message (and who it is from)" = "Loki Messenger can let you know when you get a message (and who it is from)";
@@ -2757,3 +2757,4 @@
 "Enter your public key" = "Enter your public key";
 "Link to your existing device by going into your in-app settings and clicking \"Linked Devices\"." = "Link to your existing device by going into your in-app settings and clicking \"Linked Devices\".";
 "Create a new account on your other device and click \"Link to an existing account\" to start the linking process" = "Create a new account on your other device and click \"Link to an existing account\" to start the linking process";
+"Group Settings" = "Group Settings";

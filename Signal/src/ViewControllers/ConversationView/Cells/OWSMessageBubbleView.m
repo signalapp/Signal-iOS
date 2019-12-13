@@ -717,8 +717,8 @@ NS_ASSUME_NONNULL_BEGIN
         for (NSTextCheckingResult *match in
             [regex matchesInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, text.length)]) {
             OWSAssertDebug(match.range.length >= ConversationSearchController.kMinimumSearchTextLength);
-            [attributedText addAttribute:NSBackgroundColorAttributeName value:UIColor.yellowColor range:match.range];
-            [attributedText addAttribute:NSForegroundColorAttributeName value:UIColor.ows_blackColor range:match.range];
+            [attributedText addAttribute:NSBackgroundColorAttributeName value:UIColor.whiteColor range:match.range];
+            [attributedText addAttribute:NSForegroundColorAttributeName value:UIColor.blackColor range:match.range];
         }
     }
 

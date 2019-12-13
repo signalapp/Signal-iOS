@@ -81,6 +81,7 @@ final class ProfilePictureView : UIView {
         imageView.backgroundColor = isRSSFeed ? UIColor(hex: 0x353535) : Colors.unimportant
         imageView.layer.cornerRadius = size / 2
         rssLabel.isHidden = !isRSSFeed
+        rssLabel.font = size == (Values.largeProfilePictureSize) ? .systemFont(ofSize: Values.largeFontSize) : .systemFont(ofSize: Values.smallFontSize)
     }
     
     // MARK: Convenience

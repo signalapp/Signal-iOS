@@ -191,14 +191,6 @@ const CGFloat kIconViewLength = 24;
     self.thread = thread;
     self.uiDatabaseConnection = uiDatabaseConnection;
 
-    if ([self.thread isKindOfClass:[TSContactThread class]]) {
-        self.title = NSLocalizedString(
-            @"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE", @"Navbar title when viewing settings for a 1-on-1 thread");
-    } else {
-        self.title = NSLocalizedString(
-            @"CONVERSATION_SETTINGS_GROUP_INFO_TITLE", @"Navbar title when viewing settings for a group thread");
-    }
-
     [self updateEditButton];
 }
 
@@ -293,7 +285,34 @@ const CGFloat kIconViewLength = 24;
 
     [self updateTableContents];
     
-    [LKAnalytics.shared track:@"Conversation Settings Opened"];
+    // Loki: Set gradient background
+    self.tableView.backgroundColor = UIColor.clearColor;
+    LKGradient *gradient = LKGradients.defaultLokiBackground;
+    self.view.backgroundColor = UIColor.clearColor;
+    [self.view setGradient:gradient];
+    
+    // Loki: Set navigation bar background color
+    UINavigationBar *navigationBar = self.navigationController.navigationBar;
+    [navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    navigationBar.shadowImage = [UIImage new];
+    [navigationBar setTranslucent:NO];
+    navigationBar.barTintColor = LKColors.navigationBarBackground;
+    
+    // Loki: Customize title
+    UILabel *titleLabel = [UILabel new];
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        titleLabel.text = NSLocalizedString(@"Settings", @"");
+    } else {
+        titleLabel.text = NSLocalizedString(@"Group Settings", @"");
+    }
+    titleLabel.textColor = LKColors.text;
+    titleLabel.font = [UIFont boldSystemFontOfSize:LKValues.veryLargeFontSize];
+    self.navigationItem.titleView = titleLabel;
+    
+    // Loki: Set up back button
+    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Back", "") style:UIBarButtonItemStylePlain target:nil action:nil];
+    backButton.tintColor = LKColors.text;
+    self.navigationItem.backBarButtonItem = backButton;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -324,7 +343,7 @@ const CGFloat kIconViewLength = 24;
     OWSTableSection *mainSection = [OWSTableSection new];
 
     mainSection.customHeaderView = [self mainSectionHeader];
-    mainSection.customHeaderHeight = @(100.f);
+    mainSection.customHeaderHeight = self.isGroupThread ? @(153.f) : @(214.f);
 
     /**
      * Loki: Original code
@@ -466,114 +485,116 @@ const CGFloat kIconViewLength = 24;
      * =======
      */
 
-    [mainSection addItem:[OWSTableItem
-                             itemWithCustomCellBlock:^{
-                                 UITableViewCell *cell = [OWSTableItem newCell];
-                                 OWSConversationSettingsViewController *strongSelf = weakSelf;
-                                 OWSCAssertDebug(strongSelf);
-                                 cell.preservesSuperviewLayoutMargins = YES;
-                                 cell.contentView.preservesSuperviewLayoutMargins = YES;
-                                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    if (!self.thread.isGroupThread) {
+        [mainSection addItem:[OWSTableItem
+                                 itemWithCustomCellBlock:^{
+                                     UITableViewCell *cell = [OWSTableItem newCell];
+                                     OWSConversationSettingsViewController *strongSelf = weakSelf;
+                                     OWSCAssertDebug(strongSelf);
+                                     cell.preservesSuperviewLayoutMargins = YES;
+                                     cell.contentView.preservesSuperviewLayoutMargins = YES;
+                                     cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
-                                 NSString *iconName
-                                     = (strongSelf.disappearingMessagesConfiguration.isEnabled ? @"ic_timer"
-                                                                                               : @"ic_timer_disabled");
-                                 UIImageView *iconView = [strongSelf viewForIconWithName:iconName];
+                                     NSString *iconName
+                                         = (strongSelf.disappearingMessagesConfiguration.isEnabled ? @"ic_timer"
+                                                                                                   : @"ic_timer_disabled");
+                                     UIImageView *iconView = [strongSelf viewForIconWithName:iconName];
 
-                                 UILabel *rowLabel = [UILabel new];
-                                 rowLabel.text = NSLocalizedString(
-                                     @"DISAPPEARING_MESSAGES", @"table cell label in conversation settings");
-                                 rowLabel.textColor = [Theme primaryColor];
-                                 rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
-                                 rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+                                     UILabel *rowLabel = [UILabel new];
+                                     rowLabel.text = NSLocalizedString(
+                                         @"DISAPPEARING_MESSAGES", @"table cell label in conversation settings");
+                                     rowLabel.textColor = LKColors.text;
+                                     rowLabel.font = [UIFont systemFontOfSize:LKValues.mediumFontSize];
+                                     rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
-                                 UISwitch *switchView = [UISwitch new];
-                                 switchView.on = strongSelf.disappearingMessagesConfiguration.isEnabled;
-                                 [switchView addTarget:strongSelf
-                                                action:@selector(disappearingMessagesSwitchValueDidChange:)
-                                      forControlEvents:UIControlEventValueChanged];
+                                     UISwitch *switchView = [UISwitch new];
+                                     switchView.on = strongSelf.disappearingMessagesConfiguration.isEnabled;
+                                     [switchView addTarget:strongSelf
+                                                    action:@selector(disappearingMessagesSwitchValueDidChange:)
+                                          forControlEvents:UIControlEventValueChanged];
 
-                                 UIStackView *topRow =
-                                     [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel, switchView ]];
-                                 topRow.spacing = strongSelf.iconSpacing;
-                                 topRow.alignment = UIStackViewAlignmentCenter;
-                                 [cell.contentView addSubview:topRow];
-                                 [topRow autoPinEdgesToSuperviewMarginsExcludingEdge:ALEdgeBottom];
+                                     UIStackView *topRow =
+                                         [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel, switchView ]];
+                                     topRow.spacing = strongSelf.iconSpacing;
+                                     topRow.alignment = UIStackViewAlignmentCenter;
+                                     [cell.contentView addSubview:topRow];
+                                     [topRow autoPinEdgesToSuperviewMarginsExcludingEdge:ALEdgeBottom];
 
-                                 UILabel *subtitleLabel = [UILabel new];
-                                 subtitleLabel.text = NSLocalizedString(
-                                     @"DISAPPEARING_MESSAGES_DESCRIPTION", @"subheading in conversation settings");
-                                 subtitleLabel.textColor = [Theme primaryColor];
-                                 subtitleLabel.font = [UIFont ows_dynamicTypeCaption1Font];
-                                 subtitleLabel.numberOfLines = 0;
-                                 subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-                                 [cell.contentView addSubview:subtitleLabel];
-                                 [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topRow withOffset:8];
-                                 [subtitleLabel autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:rowLabel];
-                                 [subtitleLabel autoPinTrailingToSuperviewMargin];
-                                 [subtitleLabel autoPinBottomToSuperviewMargin];
+                                     UILabel *subtitleLabel = [UILabel new];
+                                     subtitleLabel.text = NSLocalizedString(
+                                         @"DISAPPEARING_MESSAGES_DESCRIPTION", @"subheading in conversation settings");
+                                     subtitleLabel.textColor = LKColors.text;
+                                     subtitleLabel.font = [UIFont systemFontOfSize:LKValues.smallFontSize];
+                                     subtitleLabel.numberOfLines = 0;
+                                     subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+                                     [cell.contentView addSubview:subtitleLabel];
+                                     [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topRow withOffset:8];
+                                     [subtitleLabel autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:rowLabel];
+                                     [subtitleLabel autoPinTrailingToSuperviewMargin];
+                                     [subtitleLabel autoPinBottomToSuperviewMargin];
 
-                                 cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
+                                     cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
 
-                                 cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                     OWSConversationSettingsViewController, @"disappearing_messages");
+                                     cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                         OWSConversationSettingsViewController, @"disappearing_messages");
 
-                                 return cell;
-                             }
-                                     customRowHeight:UITableViewAutomaticDimension
-                                         actionBlock:nil]];
+                                     return cell;
+                                 }
+                                         customRowHeight:UITableViewAutomaticDimension
+                                             actionBlock:nil]];
 
-    if (self.disappearingMessagesConfiguration.isEnabled) {
-        [mainSection
-            addItem:[OWSTableItem
-                        itemWithCustomCellBlock:^{
-                            UITableViewCell *cell = [OWSTableItem newCell];
-                            OWSConversationSettingsViewController *strongSelf = weakSelf;
-                            OWSCAssertDebug(strongSelf);
-                            cell.preservesSuperviewLayoutMargins = YES;
-                            cell.contentView.preservesSuperviewLayoutMargins = YES;
-                            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        if (self.disappearingMessagesConfiguration.isEnabled) {
+            [mainSection
+                addItem:[OWSTableItem
+                            itemWithCustomCellBlock:^{
+                                UITableViewCell *cell = [OWSTableItem newCell];
+                                OWSConversationSettingsViewController *strongSelf = weakSelf;
+                                OWSCAssertDebug(strongSelf);
+                                cell.preservesSuperviewLayoutMargins = YES;
+                                cell.contentView.preservesSuperviewLayoutMargins = YES;
+                                cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
-                            UIImageView *iconView = [strongSelf viewForIconWithName:@"ic_timer"];
+                                UIImageView *iconView = [strongSelf viewForIconWithName:@"ic_timer"];
 
-                            UILabel *rowLabel = strongSelf.disappearingMessagesDurationLabel;
-                            [strongSelf updateDisappearingMessagesDurationLabel];
-                            rowLabel.textColor = [Theme primaryColor];
-                            rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
-                            // don't truncate useful duration info which is in the tail
-                            rowLabel.lineBreakMode = NSLineBreakByTruncatingHead;
+                                UILabel *rowLabel = strongSelf.disappearingMessagesDurationLabel;
+                                [strongSelf updateDisappearingMessagesDurationLabel];
+                                rowLabel.textColor = LKColors.text;
+                                rowLabel.font = [UIFont systemFontOfSize:LKValues.mediumFontSize];
+                                // don't truncate useful duration info which is in the tail
+                                rowLabel.lineBreakMode = NSLineBreakByTruncatingHead;
 
-                            UIStackView *topRow =
-                                [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
-                            topRow.spacing = strongSelf.iconSpacing;
-                            topRow.alignment = UIStackViewAlignmentCenter;
-                            [cell.contentView addSubview:topRow];
-                            [topRow autoPinEdgesToSuperviewMarginsExcludingEdge:ALEdgeBottom];
+                                UIStackView *topRow =
+                                    [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
+                                topRow.spacing = strongSelf.iconSpacing;
+                                topRow.alignment = UIStackViewAlignmentCenter;
+                                [cell.contentView addSubview:topRow];
+                                [topRow autoPinEdgesToSuperviewMarginsExcludingEdge:ALEdgeBottom];
 
-                            UISlider *slider = [UISlider new];
-                            slider.maximumValue = (float)(strongSelf.disappearingMessagesDurations.count - 1);
-                            slider.minimumValue = 0;
-                            slider.tintColor = UIColor.lokiGreen;
-                            slider.continuous = YES; // NO fires change event only once you let go
-                            slider.value = strongSelf.disappearingMessagesConfiguration.durationIndex;
-                            [slider addTarget:strongSelf
-                                          action:@selector(durationSliderDidChange:)
-                                forControlEvents:UIControlEventValueChanged];
-                            [cell.contentView addSubview:slider];
-                            [slider autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topRow withOffset:6];
-                            [slider autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:rowLabel];
-                            [slider autoPinTrailingToSuperviewMargin];
-                            [slider autoPinBottomToSuperviewMargin];
+                                UISlider *slider = [UISlider new];
+                                slider.maximumValue = (float)(strongSelf.disappearingMessagesDurations.count - 1);
+                                slider.minimumValue = 0;
+                                slider.tintColor = LKColors.accent;
+                                slider.continuous = YES; // NO fires change event only once you let go
+                                slider.value = strongSelf.disappearingMessagesConfiguration.durationIndex;
+                                [slider addTarget:strongSelf
+                                              action:@selector(durationSliderDidChange:)
+                                    forControlEvents:UIControlEventValueChanged];
+                                [cell.contentView addSubview:slider];
+                                [slider autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topRow withOffset:6];
+                                [slider autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:rowLabel];
+                                [slider autoPinTrailingToSuperviewMargin];
+                                [slider autoPinBottomToSuperviewMargin];
 
-                            cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
+                                cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
 
-                            cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                OWSConversationSettingsViewController, @"disappearing_messages_duration");
+                                cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                    OWSConversationSettingsViewController, @"disappearing_messages_duration");
 
-                            return cell;
-                        }
-                                customRowHeight:UITableViewAutomaticDimension
-                                    actionBlock:nil]];
+                                return cell;
+                            }
+                                    customRowHeight:UITableViewAutomaticDimension
+                                        actionBlock:nil]];
+        }
     }
 #ifdef SHOW_COLOR_PICKER
     [mainSection
@@ -675,15 +696,14 @@ const CGFloat kIconViewLength = 24;
                             OWSCAssertDebug(strongSelf);
                             cell.preservesSuperviewLayoutMargins = YES;
                             cell.contentView.preservesSuperviewLayoutMargins = YES;
-                            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
                             UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_notification_sound"];
 
                             UILabel *rowLabel = [UILabel new];
                             rowLabel.text = NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
                                 @"Label for settings view that allows user to change the notification sound.");
-                            rowLabel.textColor = [Theme primaryColor];
-                            rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
+                            rowLabel.textColor = LKColors.text;
+                            rowLabel.font = [UIFont systemFontOfSize:LKValues.mediumFontSize];
                             rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
                             UIStackView *contentRow =
@@ -707,81 +727,77 @@ const CGFloat kIconViewLength = 24;
                             vc.thread = weakSelf.thread;
                             [weakSelf.navigationController pushViewController:vc animated:YES];
                         }]];
+        [mainSection
+            addItem:
+                [OWSTableItem
+                    itemWithCustomCellBlock:^{
+                        UITableViewCell *cell =
+                            [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
+                        [OWSTableItem configureCell:cell];
+                        OWSConversationSettingsViewController *strongSelf = weakSelf;
+                        OWSCAssertDebug(strongSelf);
+                        cell.preservesSuperviewLayoutMargins = YES;
+                        cell.contentView.preservesSuperviewLayoutMargins = YES;
 
-        if (!self.thread.isGroupThread) {
-            [mainSection
-                addItem:
-                    [OWSTableItem
-                        itemWithCustomCellBlock:^{
-                            UITableViewCell *cell =
-                                [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
-                            [OWSTableItem configureCell:cell];
-                            OWSConversationSettingsViewController *strongSelf = weakSelf;
-                            OWSCAssertDebug(strongSelf);
-                            cell.preservesSuperviewLayoutMargins = YES;
-                            cell.contentView.preservesSuperviewLayoutMargins = YES;
-                            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                        UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_mute_thread"];
 
-                            UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_mute_thread"];
+                        UILabel *rowLabel = [UILabel new];
+                        rowLabel.text = NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_LABEL",
+                            @"label for 'mute thread' cell in conversation settings");
+                        rowLabel.textColor = LKColors.text;
+                        rowLabel.font = [UIFont systemFontOfSize:LKValues.mediumFontSize];
+                        rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
-                            UILabel *rowLabel = [UILabel new];
-                            rowLabel.text = NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_LABEL",
-                                @"label for 'mute thread' cell in conversation settings");
-                            rowLabel.textColor = [Theme primaryColor];
-                            rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
-                            rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+                        NSString *muteStatus = NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_NOT_MUTED",
+                            @"Indicates that the current thread is not muted.");
+                        NSDate *mutedUntilDate = strongSelf.thread.mutedUntilDate;
+                        NSDate *now = [NSDate date];
+                        if (mutedUntilDate != nil && [mutedUntilDate timeIntervalSinceDate:now] > 0) {
+                            NSCalendar *calendar = [NSCalendar currentCalendar];
+                            NSCalendarUnit calendarUnits = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
+                            NSDateComponents *muteUntilComponents =
+                                [calendar components:calendarUnits fromDate:mutedUntilDate];
+                            NSDateComponents *nowComponents = [calendar components:calendarUnits fromDate:now];
+                            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                            if (nowComponents.year != muteUntilComponents.year
+                                || nowComponents.month != muteUntilComponents.month
+                                || nowComponents.day != muteUntilComponents.day) {
 
-                            NSString *muteStatus = NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_NOT_MUTED",
-                                @"Indicates that the current thread is not muted.");
-                            NSDate *mutedUntilDate = strongSelf.thread.mutedUntilDate;
-                            NSDate *now = [NSDate date];
-                            if (mutedUntilDate != nil && [mutedUntilDate timeIntervalSinceDate:now] > 0) {
-                                NSCalendar *calendar = [NSCalendar currentCalendar];
-                                NSCalendarUnit calendarUnits = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
-                                NSDateComponents *muteUntilComponents =
-                                    [calendar components:calendarUnits fromDate:mutedUntilDate];
-                                NSDateComponents *nowComponents = [calendar components:calendarUnits fromDate:now];
-                                NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-                                if (nowComponents.year != muteUntilComponents.year
-                                    || nowComponents.month != muteUntilComponents.month
-                                    || nowComponents.day != muteUntilComponents.day) {
-
-                                    [dateFormatter setDateStyle:NSDateFormatterShortStyle];
-                                    [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
-                                } else {
-                                    [dateFormatter setDateStyle:NSDateFormatterNoStyle];
-                                    [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
-                                }
-
-                                muteStatus = [NSString
-                                    stringWithFormat:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT",
-                                                         @"Indicates that this thread is muted until a given date or time. "
-                                                         @"Embeds {{The date or time which the thread is muted until}}."),
-                                    [dateFormatter stringFromDate:mutedUntilDate]];
+                                [dateFormatter setDateStyle:NSDateFormatterShortStyle];
+                                [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
+                            } else {
+                                [dateFormatter setDateStyle:NSDateFormatterNoStyle];
+                                [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
                             }
 
-                            UIStackView *contentRow =
-                                [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
-                            contentRow.spacing = strongSelf.iconSpacing;
-                            contentRow.alignment = UIStackViewAlignmentCenter;
-                            [cell.contentView addSubview:contentRow];
-                            [contentRow autoPinEdgesToSuperviewMargins];
-
-                            cell.detailTextLabel.text = muteStatus;
-
-                            cell.accessibilityIdentifier
-                                = ACCESSIBILITY_IDENTIFIER_WITH_NAME(OWSConversationSettingsViewController, @"mute");
-
-                            return cell;
+                            muteStatus = [NSString
+                                stringWithFormat:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT",
+                                                     @"Indicates that this thread is muted until a given date or time. "
+                                                     @"Embeds {{The date or time which the thread is muted until}}."),
+                                [dateFormatter stringFromDate:mutedUntilDate]];
                         }
-                        customRowHeight:UITableViewAutomaticDimension
-                        actionBlock:^{
-                            [weakSelf showMuteUnmuteActionSheet];
-                        }]];
-            mainSection.footerTitle = NSLocalizedString(
-                @"MUTE_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of muting a thread.");
+
+                        UIStackView *contentRow =
+                            [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
+                        contentRow.spacing = strongSelf.iconSpacing;
+                        contentRow.alignment = UIStackViewAlignmentCenter;
+                        [cell.contentView addSubview:contentRow];
+                        [contentRow autoPinEdgesToSuperviewMargins];
+
+                        cell.detailTextLabel.text = muteStatus;
+
+                        cell.accessibilityIdentifier
+                            = ACCESSIBILITY_IDENTIFIER_WITH_NAME(OWSConversationSettingsViewController, @"mute");
+
+                        return cell;
+                    }
+                    customRowHeight:UITableViewAutomaticDimension
+                    actionBlock:^{
+                        [weakSelf showMuteUnmuteActionSheet];
+                    }]];
+//        mainSection.footerTitle = NSLocalizedString(
+//            @"MUTE_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of muting a thread.");
 //            [contents addSection:notificationsSection];
-        }
     }
     // Block Conversation section.
 
@@ -875,8 +891,8 @@ const CGFloat kIconViewLength = 24;
 
     UILabel *rowLabel = [UILabel new];
     rowLabel.text = name;
-    rowLabel.textColor = [Theme primaryColor];
-    rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
+    rowLabel.textColor = LKColors.text;
+    rowLabel.font = [UIFont systemFontOfSize:LKValues.mediumFontSize];
     rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
     UIStackView *contentRow = [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
@@ -893,7 +909,6 @@ const CGFloat kIconViewLength = 24;
                     accessibilityIdentifier:(NSString *)accessibilityIdentifier
 {
     UITableViewCell *cell = [self cellWithName:name iconName:iconName];
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     cell.accessibilityIdentifier = accessibilityIdentifier;
     return cell;
 }
@@ -910,105 +925,53 @@ const CGFloat kIconViewLength = 24;
 
 - (UIView *)mainSectionHeader
 {
-    UIView *mainSectionHeader = [UIView new];
-    UIView *threadInfoView = [UIView containerView];
-    [mainSectionHeader addSubview:threadInfoView];
-    [threadInfoView autoPinWidthToSuperviewWithMargin:16.f];
-    [threadInfoView autoPinHeightToSuperviewWithMargin:16.f];
-
-    UIImage *avatarImage = [OWSAvatarBuilder buildImageForThread:self.thread diameter:kLargeAvatarSize];
-    OWSAssertDebug(avatarImage);
-
-    AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatarImage];
-    _avatarView = avatarView;
-    [threadInfoView addSubview:avatarView];
-    [avatarView autoVCenterInSuperview];
-    [avatarView autoPinLeadingToSuperviewMargin];
-    [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
-    [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
-    avatarView.contactID = self.thread.contactIdentifier;
-
-    UIView *threadNameView = [UIView containerView];
-    [threadInfoView addSubview:threadNameView];
-    [threadNameView autoVCenterInSuperview];
-    [threadNameView autoPinTrailingToSuperviewMargin];
-    [threadNameView autoPinLeadingToTrailingEdgeOfView:avatarView offset:16.f];
-
-    UILabel *threadTitleLabel = [UILabel new];
-    threadTitleLabel.text = self.threadName;
-    threadTitleLabel.textColor = [Theme primaryColor];
-    threadTitleLabel.font = [UIFont ows_dynamicTypeTitle2Font];
-    threadTitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    [threadNameView addSubview:threadTitleLabel];
-    [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [threadTitleLabel autoPinWidthToSuperview];
-
-    __block UIView *lastTitleView = threadTitleLabel;
-
-    if (![self isGroupThread]) {
-        const CGFloat kSubtitlePointSize = 12.f;
-        void (^addSubtitle)(NSString *) = ^(NSString *subtitle) {
-            UILabel *subtitleLabel = [UILabel new];
-            subtitleLabel.textColor = [Theme secondaryColor];
-            subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
-            subtitleLabel.text = subtitle;
-            subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-            [threadNameView addSubview:subtitleLabel];
-            [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastTitleView];
-            [subtitleLabel autoPinLeadingToSuperviewMargin];
-            [subtitleLabel autoPinTrailingToSuperviewMargin];
-            lastTitleView = subtitleLabel;
-        };
-
-        NSString *recipientId = self.thread.contactIdentifier;
-        addSubtitle(recipientId);
+    LKProfilePictureView *profilePictureView = [LKProfilePictureView new];
+    CGFloat size = LKValues.largeProfilePictureSize;
+    profilePictureView.size = size;
+    [profilePictureView autoSetDimension:ALDimensionWidth toSize:size];
+    [profilePictureView autoSetDimension:ALDimensionHeight toSize:size];
+    
+    UILabel *titleView = [UILabel new];
+    titleView.textColor = LKColors.text;
+    titleView.font = [UIFont boldSystemFontOfSize:LKValues.veryLargeFontSize];
+    titleView.lineBreakMode = NSLineBreakByTruncatingTail;
+    titleView.text = self.threadName;
+    
+    UIStackView *stackView = [[UIStackView alloc] initWithArrangedSubviews:@[ profilePictureView, titleView ]];
+    stackView.axis = UILayoutConstraintAxisVertical;
+    stackView.spacing = LKValues.mediumSpacing;
+    stackView.distribution = UIStackViewDistributionEqualCentering; 
+    stackView.alignment = UIStackViewAlignmentCenter;
+    stackView.layoutMargins = UIEdgeInsetsMake(LKValues.mediumSpacing, LKValues.veryLargeSpacing, LKValues.mediumSpacing, LKValues.veryLargeSpacing);
+    [stackView setLayoutMarginsRelativeArrangement:YES];
+    
+    if (self.isGroupThread) {
+        NSMutableArray<NSString *> *sortedUsers = @[].mutableCopy;
+        NSSet<NSString *> *users = LKAPI.userHexEncodedPublicKeyCache[self.thread.uniqueId];
+        if (users != nil) {
+            for (NSString *user in users) {
+                [sortedUsers addObject:user];
+            }
+        }
+        sortedUsers = [sortedUsers sortedArrayUsingSelector:@selector(compare:)].mutableCopy;
+        profilePictureView.hexEncodedPublicKey = (sortedUsers.count > 0) ? sortedUsers[0] : @"";
+        profilePictureView.isRSSFeed = ((TSGroupThread *)self.thread).isRSSFeed;
+    } else {
+        profilePictureView.hexEncodedPublicKey = self.thread.contactIdentifier;
         
-        // Loki: Original code
-        // ========
-//        BOOL hasName = ![self.thread.name isEqualToString:recipientId];
-//        if (hasName) {
-//            NSAttributedString *subtitle = [[NSAttributedString alloc]
-//                initWithString:[PhoneNumber
-//                                   bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId]];
-//            addSubtitle(subtitle);
-//        } else {
-//            NSString *_Nullable profileName = [self.contactsManager formattedProfileNameForRecipientId:recipientId];
-//            if (profileName) {
-//                addSubtitle([[NSAttributedString alloc] initWithString:profileName]);
-//            }
-//        }
-//
-//        BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
-//            == OWSVerificationStateVerified;
-//        if (isVerified) {
-//            NSMutableAttributedString *subtitle = [NSMutableAttributedString new];
-//            // "checkmark"
-//            [subtitle appendAttributedString:[[NSAttributedString alloc]
-//                                                 initWithString:LocalizationNotNeeded(@"\uf00c ")
-//                                                     attributes:@{
-//                                                         NSFontAttributeName :
-//                                                             [UIFont ows_fontAwesomeFont:kSubtitlePointSize],
-//                                                     }]];
-//            [subtitle appendAttributedString:[[NSAttributedString alloc]
-//                                                 initWithString:NSLocalizedString(@"PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
-//                                                                    @"Badge indicating that the user is verified.")]];
-//            addSubtitle(subtitle);
-//        }
-        // ========
+        UILabel *subtitleView = [UILabel new];
+        subtitleView.textColor = LKColors.text;
+        subtitleView.font = [LKFonts spaceMonoOfSize:LKValues.mediumFontSize];
+        subtitleView.lineBreakMode = NSLineBreakByCharWrapping;
+        subtitleView.numberOfLines = 2;
+        subtitleView.text = self.thread.contactIdentifier;
+        subtitleView.textAlignment = NSTextAlignmentCenter;
+        [stackView addArrangedSubview:subtitleView];
     }
-
-    [lastTitleView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-
-    if (!self.thread.isGroupThread) {
-        [mainSectionHeader
-            addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                         action:@selector(conversationNameTouched:)]];
-        mainSectionHeader.userInteractionEnabled = YES;
-    }
-
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, mainSectionHeader);
-
-    return mainSectionHeader;
+    
+    [profilePictureView update];
+    
+    return stackView;
 }
 
 - (void)conversationNameTouched:(UIGestureRecognizer *)sender
@@ -1036,7 +999,7 @@ const CGFloat kIconViewLength = 24;
     OWSAssertDebug(icon);
     UIImageView *iconView = [UIImageView new];
     iconView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    iconView.tintColor = [Theme secondaryColor];
+    iconView.tintColor = [LKColors.text colorWithAlphaComponent:LKValues.unimportantElementOpacity];
     iconView.contentMode = UIViewContentModeScaleAspectFit;
     iconView.layer.minificationFilter = kCAFilterTrilinear;
     iconView.layer.magnificationFilter = kCAFilterTrilinear;

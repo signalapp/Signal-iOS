@@ -4226,11 +4226,27 @@ typedef enum : NSUInteger {
 {
     self.isShowingSearchUI = YES;
 
-    UIView *searchBar = self.searchController.uiSearchController.searchBar;
+    UISearchBar *searchBar = self.searchController.uiSearchController.searchBar;
 
+    searchBar.searchBarStyle = UISearchBarStyleMinimal;
+    searchBar.barStyle = UIBarStyleBlack;
+    searchBar.tintColor = LKColors.accent;
+    UIImage *searchImage = [[UIImage imageNamed:@"searchbar_search"] asTintedImageWithColor:LKColors.searchBarPlaceholder];
+    [searchBar setImage:searchImage forSearchBarIcon:UISearchBarIconSearch state:UIControlStateNormal];
+    UIImage *clearImage = [[UIImage imageNamed:@"searchbar_clear"] asTintedImageWithColor:LKColors.searchBarPlaceholder];
+    [searchBar setImage:clearImage forSearchBarIcon:UISearchBarIconClear state:UIControlStateNormal];
+    searchBar.searchTextField.backgroundColor = LKColors.searchBarBackground;
+    searchBar.searchTextField.textColor = LKColors.text;
+    searchBar.searchTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"Search", @"") attributes:@{ NSForegroundColorAttributeName : LKColors.searchBarPlaceholder }];
+    searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
+    [searchBar setPositionAdjustment:UIOffsetMake(4, 0) forSearchBarIcon:UISearchBarIconSearch];
+    [searchBar setSearchTextPositionAdjustment:UIOffsetMake(2, 0)];
+    [searchBar setPositionAdjustment:UIOffsetMake(-4, 0) forSearchBarIcon:UISearchBarIconClear];
+    
     // Note: setting a searchBar as the titleView causes UIKit to render the navBar
     // *slightly* taller (44pt -> 56pt)
     self.navigationItem.titleView = searchBar;
+    
     [self updateBarButtonItems];
 
     // Hack so that the ResultsBar stays on the screen when dismissing the search field
