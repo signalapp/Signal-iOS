@@ -110,7 +110,7 @@ public class StickerPackViewController: OWSViewController {
         defaultPackIconView.isHidden = true
 
         if FeatureFlags.stickerSharing {
-            shareButton.setTemplateImageName(Theme.iconName(.messageActionForward), tintColor: Theme.darkThemePrimaryColor)
+            shareButton.setTemplateImageName("forward-solid-24", tintColor: Theme.darkThemePrimaryColor)
             shareButton.addTarget(self, action: #selector(shareButtonPressed(sender:)), for: .touchUpInside)
             shareButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "shareButton")
         }
