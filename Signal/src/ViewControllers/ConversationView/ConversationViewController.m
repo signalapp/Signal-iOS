@@ -2753,6 +2753,22 @@ typedef enum : NSUInteger {
         return;
     }
 
+    if (SSKFeatureFlags.stickerAutoEnable && SSKFeatureFlags.stickerSend) {
+        if ([StickerPackInfo isStickerPackShareUrl:url]) {
+            StickerPackInfo *_Nullable stickerPackInfo = [StickerPackInfo parseStickerPackShareUrl:url];
+
+            if (stickerPackInfo == nil) {
+                OWSFailDebug(@"Could not parse sticker pack share URL: %@", url);
+            } else {
+                StickerPackViewController *packView =
+                    [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
+
+                [packView presentFrom:self animated:NO];
+                return;
+            }
+        }
+    }
+
     [UIApplication.sharedApplication openURL:url];
 }
 
