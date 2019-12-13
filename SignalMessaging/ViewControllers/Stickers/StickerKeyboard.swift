@@ -90,6 +90,8 @@ public class StickerKeyboard: CustomKeyboard {
     }
 
     private func reloadStickers() {
+        let oldStickerPacks = stickerPacks
+
         databaseStorage.read { (transaction) in
             self.stickerPacks = StickerManager.installedStickerPacks(transaction: transaction).sorted {
                 $0.dateCreated > $1.dateCreated
@@ -117,8 +119,14 @@ public class StickerKeyboard: CustomKeyboard {
             return
         }
 
-        // Update paging to reflect any potentially new ordering of sticker packs
-        selectedPackChanged(oldSelectedPack: nil)
+        guard oldStickerPacks != stickerPacks else { return }
+
+        // If the selected pack was uninstalled, select the first pack.
+        if let selectedStickerPack = selectedStickerPack, !stickerPacks.contains(selectedStickerPack) {
+            self.selectedStickerPack = stickerPacks.first
+        }
+
+        resetStickerPages()
     }
 
     private static let packCoverSize: CGFloat = 32
@@ -356,6 +364,18 @@ public class StickerKeyboard: CustomKeyboard {
         updatePageConstraints()
 
         // Update the selected pack in the top bar.
+        packsCollectionView.updateSelections()
+    }
+
+    private func resetStickerPages() {
+        currentPageCollectionView.showInstalledPackOrRecents(stickerPack: selectedStickerPack)
+        previousPageCollectionView.showInstalledPackOrRecents(stickerPack: previousPageStickerPack)
+        nextPageCollectionView.showInstalledPackOrRecents(stickerPack: nextPageStickerPack)
+
+        pendingPageChangeUpdates = nil
+
+        updatePageConstraints()
+
         packsCollectionView.updateSelections()
     }
 
