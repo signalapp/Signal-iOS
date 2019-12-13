@@ -7,6 +7,14 @@ import PromiseKit
 
 class DownloadStickerOperation: CDNDownloadOperation {
 
+    private static let cache: NSCache<NSString, NSData> = {
+        let cache = NSCache<NSString, NSData>()
+        // Limits are imprecise/not strict.
+        cache.countLimit = 50
+        return cache
+    }()
+    private static let maxCacheDataLength: UInt = 100 * 1000
+
     private let stickerInfo: StickerInfo
     private let success: (Data) -> Void
     private let failure: (Error) -> Void
@@ -38,6 +46,13 @@ class DownloadStickerOperation: CDNDownloadOperation {
             }
         }
 
+        if let stickerData = DownloadStickerOperation.cache.object(forKey: stickerInfo.asKey() as NSString) {
+            Logger.verbose("Using cached value: \(stickerInfo).")
+            success(stickerData as Data)
+            self.reportSuccess()
+            return
+        }
+
         Logger.verbose("Downloading sticker: \(stickerInfo).")
 
         // https://cdn.signal.org/stickers/<pack_id>/full/<sticker_id>
@@ -53,7 +68,12 @@ class DownloadStickerOperation: CDNDownloadOperation {
             do {
                 let plaintext = try StickerManager.decrypt(ciphertext: data, packKey: self.stickerInfo.packKey)
 
+                if plaintext.count <= DownloadStickerOperation.maxCacheDataLength {
+                    DownloadStickerOperation.cache.setObject(plaintext as NSData, forKey: self.stickerInfo.asKey() as NSString)
+                }
+
                 self.success(plaintext)
+
                 self.reportSuccess()
             } catch let error as NSError {
                 owsFailDebug("Decryption failed: \(error)")
