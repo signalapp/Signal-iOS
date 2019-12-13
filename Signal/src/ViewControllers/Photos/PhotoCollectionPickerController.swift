@@ -34,8 +34,8 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = Theme.darkThemeBackgroundColor
-        tableView.backgroundColor = Theme.darkThemeBackgroundColor
+        view.backgroundColor = Colors.navigationBarBackground
+        tableView.backgroundColor = Colors.navigationBarBackground
         tableView.separatorColor = .clear
 
         library.add(delegate: self)

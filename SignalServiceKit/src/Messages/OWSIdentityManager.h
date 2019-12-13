@@ -7,6 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSString *const OWSPrimaryStorageIdentityKeyStoreIdentityKey;
 extern NSString *const OWSPrimaryStorageIdentityKeyStoreCollection;
 
 extern NSString *const OWSPrimaryStorageTrustedKeysCollection;

@@ -877,7 +877,7 @@ static NSTimeInterval launchStartedAt;
             return;
         }
 
-        [SignalApp.sharedApp.homeViewController showNewConversationVC];
+        [SignalApp.sharedApp.homeViewController createPrivateChat];
 
         completionHandler(YES);
     }];
@@ -1418,11 +1418,11 @@ static NSTimeInterval launchStartedAt;
         if (self.backup.hasPendingRestoreDecision) {
             rootViewController = [BackupRestoreViewController new];
         } else {
-            rootViewController = [HomeViewController new];
+            rootViewController = [HomeVC new];
         }
     } else {
         rootViewController = [[OnboardingController new] initialViewController];
-        navigationBarHidden = YES;
+        navigationBarHidden = NO;
     }
     OWSAssertDebug(rootViewController);
     OWSNavigationController *navigationController =
@@ -1565,13 +1565,6 @@ static NSTimeInterval launchStartedAt;
             __block TSGroupThread *thread;
             [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 thread = [TSGroupThread getOrCreateThreadWithGroupModel:group transaction:transaction];
-                NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
-                NSCalendar *calendar = NSCalendar.currentCalendar;
-                [calendar setTimeZone:timeZone];
-                NSDateComponents *dateComponents = [NSDateComponents new];
-                [dateComponents setYear:999];
-                NSDate *date = [calendar dateByAddingComponents:dateComponents toDate:[NSDate new] options:0];
-                [thread updateWithMutedUntilDate:date transaction:transaction];
             }];
             [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
             [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];

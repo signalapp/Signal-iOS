@@ -57,14 +57,13 @@ NS_ASSUME_NONNULL_BEGIN
     [leftStackView addArrangedSubview:self.messageTimerView];
 
     self.statusIndicatorImageView = [UIImageView new];
-    [self addArrangedSubview:self.statusIndicatorImageView];
 
     self.userInteractionEnabled = NO;
 }
 
 - (void)configureFonts
 {
-    self.timestampLabel.font = UIFont.ows_dynamicTypeCaption1Font;
+    self.timestampLabel.font = [UIFont systemFontOfSize:LKValues.verySmallFontSize];
 }
 
 - (CGFloat)hSpacing
@@ -97,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIColor *textColor;
     if (isOverlayingMedia) {
-        textColor = [UIColor whiteColor];
+        textColor = LKColors.text;
     } else {
         textColor = [conversationStyle bubbleSecondaryTextColorWithIsIncoming:isIncoming];
     }
@@ -117,34 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
-
         UIImage *_Nullable statusIndicatorImage = nil;
-        MessageReceiptStatus messageStatus =
-            [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
-        switch (messageStatus) {
-            case MessageReceiptStatusCalculatingPoW:
-                statusIndicatorImage = [UIImage imageNamed:@"Cog"];
-                [self animateSpinningIcon];
-                break;
-            case MessageReceiptStatusUploading:
-            case MessageReceiptStatusSending:
-                statusIndicatorImage = [UIImage imageNamed:@"message_status_sending"];
-                [self animateSpinningIcon];
-                break;
-            case MessageReceiptStatusSent:
-            case MessageReceiptStatusSkipped:
-                statusIndicatorImage = [UIImage imageNamed:@"message_status_sent"];
-                break;
-            case MessageReceiptStatusDelivered:
-                statusIndicatorImage = [UIImage imageNamed:@"message_status_delivered"];
-                break;
-            case MessageReceiptStatusRead:
-                statusIndicatorImage = [UIImage imageNamed:@"message_status_read"];
-                break;
-            case MessageReceiptStatusFailed:
-                // No status indicator icon.
-                break;
-        }
 
         __block BOOL isNoteToSelf = NO;
         [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -253,11 +225,6 @@ NS_ASSUME_NONNULL_BEGIN
     CGFloat timestampLabelWidth = [self.timestampLabel sizeThatFits:CGSizeZero].width;
 
     result.width = timestampLabelWidth;
-    if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
-        if (![self isFailedOutgoingMessage:viewItem]) {
-            result.width += (self.maxImageWidth + self.hSpacing);
-        }
-    }
 
     if (viewItem.isExpiringMessage) {
         result.width += ([OWSMessageTimerView measureSize].width + self.hSpacing);

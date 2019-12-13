@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) OWSMessageHeaderView *headerView;
 @property (nonatomic) OWSMessageBubbleView *messageBubbleView;
 @property (nonatomic) NSLayoutConstraint *messageBubbleViewBottomConstraint;
-@property (nonatomic) AvatarImageView *avatarView;
+@property (nonatomic) LKProfilePictureView *avatarView;
 @property (nonatomic) UIImageView *moderatorIconImageView;
 @property (nonatomic, nullable) LKFriendRequestView *friendRequestView;
 @property (nonatomic, nullable) UIImageView *sendFailureBadgeView;
@@ -38,13 +38,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame
 {
     if (self = [super initWithFrame:frame]) {
-        [self commontInit];
+        [self commonInit];
     }
 
     return self;
 }
 
-- (void)commontInit
+- (void)commonInit
 {
     // Ensure only called once.
     OWSAssertDebug(!self.messageBubbleView);
@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.headerView = [OWSMessageHeaderView new];
 
-    self.avatarView = [[AvatarImageView alloc] init];
+    self.avatarView = [[LKProfilePictureView alloc] init];
     [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
     [self.avatarView autoSetDimension:ALDimensionHeight toSize:self.avatarSize];
 
@@ -179,7 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
             self.sendFailureBadgeView = [UIImageView new];
             self.sendFailureBadgeView.image =
                 [self.sendFailureBadge imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-            self.sendFailureBadgeView.tintColor = [UIColor ows_destructiveRedColor];
+            self.sendFailureBadgeView.tintColor = LKColors.destructive;
             [self.contentView addSubview:self.sendFailureBadgeView];
 
             CGFloat sendFailureBadgeBottomMargin
@@ -229,11 +229,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([self updateAvatarView]) {
         [self.viewConstraints addObjectsFromArray:@[
-            // V-align the "group sender" avatar with the
-            // last line of the text (if any, or where it
-            // would be).
-            [self.messageBubbleView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:8],
-            [self.messageBubbleView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.avatarView],
+            [self.messageBubbleView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:LKValues.largeSpacing],
+            [self.messageBubbleView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.avatarView],
         ]];
         
         [self.viewConstraints addObjectsFromArray:@[
@@ -292,12 +289,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.viewItem.interaction;
-    UIImage *_Nullable authorAvatarImage =
-        [[[OWSContactAvatarBuilder alloc] initWithSignalId:incomingMessage.authorId
-                                                 colorName:self.viewItem.authorConversationColorName
-                                                  diameter:self.avatarSize] build];
-    self.avatarView.image = authorAvatarImage;
+    
     [self.contentView addSubview:self.avatarView];
+    self.avatarView.size = self.avatarSize;
+    self.avatarView.hexEncodedPublicKey = incomingMessage.authorId;
+    [self.avatarView update];
     
     // Loki: Show the moderator icon if needed
     if (self.viewItem.isGroupThread && !self.viewItem.isRSSFeed) {
@@ -323,9 +319,9 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (NSUInteger)avatarSize
+- (CGFloat)avatarSize
 {
-    return 36.f;
+    return LKValues.smallProfilePictureSize;
 }
 
 - (void)otherUsersProfileDidChange:(NSNotification *)notification
@@ -412,7 +408,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.friendRequestView removeFromSuperview];
     self.friendRequestView = nil;
     
-    self.avatarView.image = nil;
     [self.avatarView removeFromSuperview];
 
     self.moderatorIconImageView.image = nil;

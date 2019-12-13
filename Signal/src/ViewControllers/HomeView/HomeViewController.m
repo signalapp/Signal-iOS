@@ -276,7 +276,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
     // TODO: Remove this.
     if (self.homeViewMode == HomeViewMode_Inbox) {
-        [SignalApp.sharedApp setHomeViewController:self];
+//        [SignalApp.sharedApp setHomeViewController:self];
     }
 
     UIStackView *reminderStackView = [UIStackView new];
@@ -841,9 +841,9 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
 - (void)showNewConversationVC
 {
-    LKNewConversationVC *newConversationVC = [LKNewConversationVC new];
-    OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:newConversationVC];
-    [self.navigationController presentViewController:navigationController animated:YES completion:nil];
+//    LKNewConversationVC *newConversationVC = [LKNewConversationVC new];
+//    OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:newConversationVC];
+//    [self.navigationController presentViewController:navigationController animated:YES completion:nil];
     
     /**
     OWSAssertIsOnMainThread();
@@ -869,9 +869,9 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
 - (void)showNewPublicChatVC
 {
-    LKNewPublicChatVC *newPublicChatVC = [LKNewPublicChatVC new];
-    OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:newPublicChatVC];
-    [self.navigationController presentViewController:navigationController animated:YES completion:nil];
+//    LKJoinPublicChatVC *joinPublicChatVC = [LKJoinPublicChatVC new];
+//    OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:joinPublicChatVC];
+//    [self.navigationController presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated

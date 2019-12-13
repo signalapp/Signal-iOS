@@ -110,6 +110,19 @@ NS_ASSUME_NONNULL_BEGIN
     self.view.backgroundColor = [UIColor clearColor];
 
     [self updateContents];
+    
+    // Loki: Set gradient background
+    self.view.backgroundColor = UIColor.clearColor;
+    LKGradient *gradient = LKGradients.defaultLokiBackground;
+    self.view.backgroundColor = UIColor.clearColor;
+    [self.view setGradient:gradient];
+    
+    // Loki: Set navigation bar background color
+    UINavigationBar *navigationBar = self.navigationController.navigationBar;
+    [navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    navigationBar.shadowImage = [UIImage new];
+    [navigationBar setTranslucent:NO];
+    navigationBar.barTintColor = LKColors.navigationBarBackground;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -261,13 +274,13 @@ NS_ASSUME_NONNULL_BEGIN
 
         [playVideoButton addTarget:self action:@selector(playVideo) forControlEvents:UIControlEventTouchUpInside];
 
-        UIImage *playImage = [UIImage imageNamed:@"play_button"];
+        UIImage *playImage = [UIImage imageNamed:@"CirclePlay"];
         [playVideoButton setBackgroundImage:playImage forState:UIControlStateNormal];
         playVideoButton.contentMode = UIViewContentModeScaleAspectFill;
 
         [self.view addSubview:playVideoButton];
 
-        CGFloat playVideoButtonWidth = ScaleFromIPhone5(70);
+        CGFloat playVideoButtonWidth = 72.f;
         [playVideoButton autoSetDimensionsToSize:CGSizeMake(playVideoButtonWidth, playVideoButtonWidth)];
         [playVideoButton autoCenterInSuperview];
     }

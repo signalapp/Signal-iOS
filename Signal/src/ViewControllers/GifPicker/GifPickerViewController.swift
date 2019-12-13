@@ -37,7 +37,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     let thread: TSThread
     let messageSender: MessageSender
 
-    let searchBar: UISearchBar
+    let searchBar: SearchBar
     let layout: GifPickerLayout
     let collectionView: UICollectionView
     var noResultsView: UILabel?
@@ -64,7 +64,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         self.thread = thread
         self.messageSender = messageSender
 
-        self.searchBar = OWSSearchBar()
+        self.searchBar = SearchBar()
         self.layout = GifPickerLayout()
         self.collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: self.layout)
 
@@ -148,9 +148,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     private func createViews() {
 
-        let backgroundColor = (Theme.isDarkThemeEnabled
-            ? UIColor(white: 0.08, alpha: 1.0)
-            : Theme.backgroundColor)
+        let backgroundColor = Colors.navigationBarBackground
         self.view.backgroundColor = backgroundColor
 
         // Block UIKit from adjust insets of collection view which screws up
@@ -159,8 +157,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         // Search
         searchBar.delegate = self
-        searchBar.placeholder = NSLocalizedString("GIF_VIEW_SEARCH_PLACEHOLDER_TEXT",
-                                                  comment: "Placeholder text for the search field in GIF view")
 
         self.view.addSubview(searchBar)
         searchBar.autoPinWidthToSuperview()
@@ -179,7 +175,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         // for iPhoneX devices, extends the black background to the bottom edge of the view.
         let bottomBannerContainer = UIView()
-        bottomBannerContainer.backgroundColor = UIColor.black
+        bottomBannerContainer.backgroundColor = Colors.navigationBarBackground
         self.view.addSubview(bottomBannerContainer)
         bottomBannerContainer.autoPinWidthToSuperview()
         bottomBannerContainer.autoPinEdge(.top, to: .bottom, of: self.collectionView)
@@ -216,12 +212,18 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         searchErrorView.isUserInteractionEnabled = true
         searchErrorView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(retryTapped)))
 
-        let activityIndicator = UIActivityIndicatorView(style: .gray)
+        let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
         self.activityIndicator = activityIndicator
         self.view.addSubview(activityIndicator)
         activityIndicator.autoHCenterInSuperview()
         activityIndicator.autoAlignAxis(.horizontal, toSameAxisOf: self.collectionView)
 
+        let navigationBar = navigationController!.navigationBar
+        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+        navigationBar.shadowImage = UIImage()
+        navigationBar.isTranslucent = false
+        navigationBar.barTintColor = Colors.navigationBarBackground
+        
         self.updateContents()
     }
 

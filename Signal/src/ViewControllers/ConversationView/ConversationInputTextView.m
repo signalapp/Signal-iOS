@@ -28,16 +28,17 @@ NS_ASSUME_NONNULL_BEGIN
         self.delegate = self;
         self.backgroundColor = nil;
 
-        self.scrollIndicatorInsets = UIEdgeInsetsMake(4, 4, 4, 4);
+        self.showsHorizontalScrollIndicator = NO;
+        self.showsVerticalScrollIndicator = NO;
 
         self.scrollEnabled = YES;
         self.scrollsToTop = NO;
         self.userInteractionEnabled = YES;
 
-        self.font = [UIFont ows_dynamicTypeBodyFont];
-        self.textColor = Theme.primaryColor;
+        self.font = [UIFont systemFontOfSize:LKValues.mediumFontSize];
+        self.textColor = LKColors.text;
         self.textAlignment = NSTextAlignmentNatural;
-        self.tintColor = UIColor.lokiGreen;
+        self.tintColor = LKColors.accent;
 
         self.contentMode = UIViewContentModeRedraw;
         self.dataDetectorTypes = UIDataDetectorTypeNone;
@@ -45,18 +46,18 @@ NS_ASSUME_NONNULL_BEGIN
         self.text = nil;
 
         self.placeholderView = [UILabel new];
-        self.placeholderView.text = NSLocalizedString(@"New Message", @"");
-        self.placeholderView.textColor = Theme.placeholderColor;
+        self.placeholderView.text = NSLocalizedString(@"Message", @"");
+        self.placeholderView.textColor = [LKColors.text colorWithAlphaComponent:LKValues.composeViewTextFieldPlaceholderOpacity];
         self.placeholderView.userInteractionEnabled = NO;
         [self addSubview:self.placeholderView];
 
         // We need to do these steps _after_ placeholderView is configured.
-        self.font = [UIFont ows_dynamicTypeBodyFont];
-        CGFloat hMarginLeading = 12.f;
-        CGFloat hMarginTrailing = 24.f;
-        self.textContainerInset = UIEdgeInsetsMake(7.f,
+        self.font = [UIFont systemFontOfSize:LKValues.mediumFontSize];
+        CGFloat hMarginLeading = 16.f;
+        CGFloat hMarginTrailing = 16.f;
+        self.textContainerInset = UIEdgeInsetsMake(11.f,
             CurrentAppContext().isRTL ? hMarginTrailing : hMarginLeading,
-            7.f,
+            11.f,
             CurrentAppContext().isRTL ? hMarginLeading : hMarginTrailing);
         self.textContainer.lineFragmentPadding = 0;
         self.contentInset = UIEdgeInsetsZero;

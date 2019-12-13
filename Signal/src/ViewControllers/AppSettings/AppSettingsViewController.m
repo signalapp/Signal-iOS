@@ -541,9 +541,9 @@
 
 - (void)showQRCode
 {
-    LKQRCodeModal *qrCodeModal = [LKQRCodeModal new];
-    qrCodeModal.modalPresentationStyle = UIModalPresentationOverFullScreen;
-    [self presentViewController:qrCodeModal animated:YES completion:nil];
+//    LKQRCodeModal *qrCodeModal = [LKQRCodeModal new];
+//    qrCodeModal.modalPresentationStyle = UIModalPresentationOverFullScreen;
+//    [self presentViewController:qrCodeModal animated:YES completion:nil];
 }
 
 - (void)showSeed

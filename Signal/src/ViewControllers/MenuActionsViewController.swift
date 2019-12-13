@@ -404,23 +404,21 @@ class MenuActionView: UIButton {
         }
         let imageView = UIImageView(image: image)
         if Theme.isDarkThemeEnabled {
-            imageView.tintColor = UIColor.ows_gray25
+            imageView.tintColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         }
         let imageWidth: CGFloat = 24
         imageView.autoSetDimensions(to: CGSize(width: imageWidth, height: imageWidth))
         imageView.isUserInteractionEnabled = false
 
         let titleLabel = UILabel()
-        titleLabel.font = UIFont.ows_dynamicTypeBody
-        titleLabel.textColor = Theme.primaryColor
+        titleLabel.font = .systemFont(ofSize: Values.mediumFontSize)
+        titleLabel.textColor = Colors.text
         titleLabel.text = action.title
         titleLabel.isUserInteractionEnabled = false
 
         let subtitleLabel = UILabel()
-        subtitleLabel.font = UIFont.ows_dynamicTypeSubheadline
-        subtitleLabel.textColor = (Theme.isDarkThemeEnabled
-            ? UIColor.ows_gray25
-            : Theme.secondaryColor)
+        subtitleLabel.font = .systemFont(ofSize: Values.smallFontSize)
+        subtitleLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         subtitleLabel.text = action.subtitle
         subtitleLabel.isUserInteractionEnabled = false
 
@@ -445,15 +443,11 @@ class MenuActionView: UIButton {
     }
 
     private var defaultBackgroundColor: UIColor {
-        return (Theme.isDarkThemeEnabled
-            ? UIColor.ows_gray75
-            : UIColor.white)
+        return Colors.cellBackground
     }
 
     private var highlightedBackgroundColor: UIColor {
-        return (Theme.isDarkThemeEnabled
-            ? UIColor.ows_gray75
-            : UIColor.ows_gray05)
+        return Colors.cellSelected
     }
 
     override var isHighlighted: Bool {

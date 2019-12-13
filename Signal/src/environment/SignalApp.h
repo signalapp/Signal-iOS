@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class AccountManager;
 @class CallService;
 @class CallUIAdapter;
-@class HomeViewController;
+@class HomeVC;
 @class OWSMessageFetcherJob;
 @class OWSNavigationController;
 @class OWSWebRTCCallMessageHandler;
@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SignalApp : NSObject
 
-@property (nonatomic, nullable, weak) HomeViewController *homeViewController;
+@property (nonatomic, nullable, weak) HomeVC *homeViewController;
 @property (nonatomic, nullable, weak) OWSNavigationController *signUpFlowNavigationController;
 
 - (instancetype)init NS_UNAVAILABLE;
