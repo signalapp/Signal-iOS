@@ -343,7 +343,7 @@ const CGFloat kIconViewLength = 24;
     OWSTableSection *mainSection = [OWSTableSection new];
 
     mainSection.customHeaderView = [self mainSectionHeader];
-    mainSection.customHeaderHeight = self.isGroupThread ? @(153.f) : @(214.f);
+    mainSection.customHeaderHeight = self.isGroupThread ? @(147.f) : @(208.f);
 
     /**
      * Loki: Original code
@@ -933,9 +933,9 @@ const CGFloat kIconViewLength = 24;
     
     UILabel *titleView = [UILabel new];
     titleView.textColor = LKColors.text;
-    titleView.font = [UIFont boldSystemFontOfSize:LKValues.veryLargeFontSize];
+    titleView.font = [UIFont boldSystemFontOfSize:LKValues.largeFontSize];
     titleView.lineBreakMode = NSLineBreakByTruncatingTail;
-    titleView.text = self.threadName;
+    titleView.text = (self.threadName != nil && self.threadName.length > 0) ? self.threadName : @"Anonymous";
     
     UIStackView *stackView = [[UIStackView alloc] initWithArrangedSubviews:@[ profilePictureView, titleView ]];
     stackView.axis = UILayoutConstraintAxisVertical;

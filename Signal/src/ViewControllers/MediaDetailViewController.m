@@ -274,13 +274,13 @@ NS_ASSUME_NONNULL_BEGIN
 
         [playVideoButton addTarget:self action:@selector(playVideo) forControlEvents:UIControlEventTouchUpInside];
 
-        UIImage *playImage = [UIImage imageNamed:@"play_button"];
+        UIImage *playImage = [UIImage imageNamed:@"CirclePlay"];
         [playVideoButton setBackgroundImage:playImage forState:UIControlStateNormal];
         playVideoButton.contentMode = UIViewContentModeScaleAspectFill;
 
         [self.view addSubview:playVideoButton];
 
-        CGFloat playVideoButtonWidth = ScaleFromIPhone5(70);
+        CGFloat playVideoButtonWidth = 72.f;
         [playVideoButton autoSetDimensionsToSize:CGSizeMake(playVideoButtonWidth, playVideoButtonWidth)];
         [playVideoButton autoCenterInSuperview];
     }

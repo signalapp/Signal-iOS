@@ -99,8 +99,22 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
         self.conversationStyle.viewWidth = view.width()
 
-        self.navigationItem.title = NSLocalizedString("MESSAGE_METADATA_VIEW_TITLE",
-                                                      comment: "Title for the 'message metadata' view.")
+        // Loki: Set gradient background
+        view.backgroundColor = .clear
+        let gradient = Gradients.defaultLokiBackground
+        view.setGradient(gradient)
+        // Loki: Set navigation bar background color
+        let navigationBar = navigationController!.navigationBar
+        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+        navigationBar.shadowImage = UIImage()
+        navigationBar.isTranslucent = false
+        navigationBar.barTintColor = Colors.navigationBarBackground
+        // Loki: Customize title
+        let titleLabel = UILabel()
+        titleLabel.text = NSLocalizedString("MESSAGE_METADATA_VIEW_TITLE", comment: "Title for the 'message metadata' view.")
+        titleLabel.textColor = Colors.text
+        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        navigationItem.titleView = titleLabel
 
         createViews()
 
@@ -154,7 +168,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     // MARK: - Create Views
 
     private func createViews() {
-        view.backgroundColor = Theme.backgroundColor
+        view.backgroundColor = .clear
 
         let scrollView = UIScrollView()
         self.scrollView = scrollView

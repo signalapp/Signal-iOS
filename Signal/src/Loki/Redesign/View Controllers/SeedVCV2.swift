@@ -30,7 +30,7 @@ final class SeedVCV2 : UIViewController {
         let attributedTitle = NSMutableAttributedString(string: title)
         attributedTitle.addAttribute(.foregroundColor, value: Colors.accent, range: (title as NSString).range(of: "90%"))
         result.title = attributedTitle
-        result.subtitle = NSLocalizedString("Press the covered words to view your seed and secure your account", comment: "")
+        result.subtitle = NSLocalizedString("Press the redacted words to view your seed and secure your account", comment: "")
         result.setProgress(0.9, animated: false)
         return result
     }()
@@ -88,7 +88,7 @@ final class SeedVCV2 : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Think of this as the crypto-equivalent of a social security number. This allows whomever has it complete access to your personal information and crypto wallet.", comment: "")
+        explanationLabel.text = NSLocalizedString("Think of this as the crypto-equivalent of a social security number. This allows whomever has it complete access to your account.", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Set up mnemonic label

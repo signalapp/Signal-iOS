@@ -98,24 +98,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setAudioIcon:(UIImage *)icon
 {
-    OWSAssertDebug(icon.size.height == self.iconSize);
-
-    icon = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    icon = [icon resizedImageToSize:CGSizeMake(self.iconSize, self.iconSize)];
     [_audioPlayPauseButton setImage:icon forState:UIControlStateNormal];
     [_audioPlayPauseButton setImage:icon forState:UIControlStateDisabled];
-    _audioPlayPauseButton.imageView.tintColor = [UIColor ows_signalBlueColor];
-    _audioPlayPauseButton.backgroundColor = [UIColor colorWithWhite:1.f alpha:0.92f];
-    _audioPlayPauseButton.layer.cornerRadius = self.iconSize * 0.5f;
 }
 
 - (void)setAudioIconToPlay
 {
-    [self setAudioIcon:[UIImage imageNamed:@"audio_play_black_48"]];
+    [self setAudioIcon:[UIImage imageNamed:@"CirclePlay"]];
 }
 
 - (void)setAudioIconToPause
 {
-    [self setAudioIcon:[UIImage imageNamed:@"audio_pause_black_48"]];
+    [self setAudioIcon:[UIImage imageNamed:@"CirclePause"]];
 }
 
 - (void)updateAudioProgressView
@@ -181,7 +176,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (CGFloat)vMargin
 {
-    return 5.f;
+    return 0.f;
 }
 
 - (CGFloat)vMargin
@@ -205,7 +200,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (CGFloat)iconSize
 {
-    return kStandardAvatarSize;
+    return 72.f;
 }
 
 - (CGFloat)iconSize
@@ -229,7 +224,12 @@ NS_ASSUME_NONNULL_BEGIN
     _audioPlayPauseButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.audioPlayPauseButton.enabled = NO;
     [self addArrangedSubview:self.audioPlayPauseButton];
-    [self.audioPlayPauseButton setContentHuggingHigh];
+    self.audioPlayPauseButton.imageView.contentMode = UIViewContentModeCenter;
+    [self.audioPlayPauseButton autoSetDimension:ALDimensionWidth toSize:56.f];
+    [self.audioPlayPauseButton autoSetDimension:ALDimensionHeight toSize:56.f];
+    self.audioPlayPauseButton.imageView.clipsToBounds = NO;
+    self.audioPlayPauseButton.clipsToBounds = NO;
+    self.clipsToBounds = NO;
 
     [self replaceIconWithDownloadProgressIfNecessary:self.audioPlayPauseButton];
 

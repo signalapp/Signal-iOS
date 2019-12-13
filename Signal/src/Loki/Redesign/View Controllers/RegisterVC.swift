@@ -16,7 +16,7 @@ final class RegisterVC : UIViewController {
     
     private lazy var copyPublicKeyButton: Button = {
         let result = Button(style: .prominentOutline, size: .large)
-        result.setTitle(NSLocalizedString("Copy Public Key", comment: ""), for: UIControl.State.normal)
+        result.setTitle(NSLocalizedString("Copy", comment: ""), for: UIControl.State.normal)
         result.addTarget(self, action: #selector(copyPublicKey), for: UIControl.Event.touchUpInside)
         return result
     }()
@@ -62,14 +62,14 @@ final class RegisterVC : UIViewController {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
-        titleLabel.text = NSLocalizedString("Say hello to your unique public key", comment: "")
+        titleLabel.text = NSLocalizedString("Say hello to your Loki Messenger ID", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = "explanation explanation explanation explanation explanation explanation explanation explanation explanation explanation explanation explanation explanation explanation explanation explanation"
+        explanationLabel.text = NSLocalizedString("Your Loki Messenger ID is the unique address that people can use to contact you on Loki Messenger. With no connection to your real identity, your Loki Messenger ID is totally anonymous and private by design.", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Set up public key label container
@@ -138,7 +138,7 @@ final class RegisterVC : UIViewController {
     @objc private func enableCopyButton() {
         copyPublicKeyButton.isUserInteractionEnabled = true
         UIView.transition(with: copyPublicKeyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
-            self.copyPublicKeyButton.setTitle(NSLocalizedString("Copy Public Key", comment: ""), for: UIControl.State.normal)
+            self.copyPublicKeyButton.setTitle(NSLocalizedString("Copy", comment: ""), for: UIControl.State.normal)
         }, completion: nil)
     }
     

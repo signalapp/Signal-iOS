@@ -2743,8 +2743,6 @@
 		B8BFFF392355426100102A27 /* Messaging */ = {
 			isa = PBXGroup;
 			children = (
-				B8162F0222891AD600D46544 /* FriendRequestView.swift */,
-				B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */,
 				24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */,
 				B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */,
 			);
@@ -2769,6 +2767,8 @@
 				B8BB82AA238F669C00BA5194 /* ConversationCell.swift */,
 				B82B4093239DF15900A248E7 /* ConversationTitleView.swift */,
 				B82B40892399EC0600A248E7 /* FakeChatView.swift */,
+				B8162F0222891AD600D46544 /* FriendRequestView.swift */,
+				B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */,
 				B8B26C8E234D629C004ED98C /* MentionCandidateSelectionView.swift */,
 				B8B26C90234D8CBD004ED98C /* MentionCandidateSelectionViewDelegate.swift */,
 				B8BB82AC238F734800BA5194 /* ProfilePictureView.swift */,

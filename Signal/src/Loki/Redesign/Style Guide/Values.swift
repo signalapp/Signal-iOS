@@ -59,6 +59,6 @@ final class Values : NSObject {
     // MARK: - Animation Values
     @objc static let fakeChatStartDelay: TimeInterval = 2
     @objc static let fakeChatAnimationDuration: TimeInterval = 0.4
-    @objc static let fakeChatDelay: TimeInterval = 2
+    @objc static let fakeChatDelay: TimeInterval = 2.5
     @objc static let fakeChatMessagePopAnimationStartScale: CGFloat = 0.6
 }

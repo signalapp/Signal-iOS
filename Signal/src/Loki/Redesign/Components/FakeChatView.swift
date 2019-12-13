@@ -8,10 +8,11 @@ final class FakeChatView : UIView {
     }
     
     private lazy var chatBubbles = [
-        getChatBubble(withText: NSLocalizedString("What is Loki Messenger? A completely decentralised private messaging application for all platforms.", comment: ""), wasSentByCurrentUser: true),
-        getChatBubble(withText: NSLocalizedString("So no metadata collection, or personally identifiable information? How does it work?", comment: ""), wasSentByCurrentUser: false),
-        getChatBubble(withText: NSLocalizedString("Through a combination of advanced blockchain techniques including onion routing through Lokinet's private servers.", comment: ""), wasSentByCurrentUser: true),
-        getChatBubble(withText: NSLocalizedString("Friends don't let friends use compromised messengers. You're welcome.", comment: ""), wasSentByCurrentUser: true)
+        getChatBubble(withText: NSLocalizedString("What's Loki Messenger?", comment: ""), wasSentByCurrentUser: true),
+        getChatBubble(withText: NSLocalizedString("It's a secure, decentralized cross-platform private messaging app", comment: ""), wasSentByCurrentUser: false),
+        getChatBubble(withText: NSLocalizedString("So it doesn't collect my personal information or my conversation metadata? How's it work?", comment: ""), wasSentByCurrentUser: true),
+        getChatBubble(withText: NSLocalizedString("Using a combination of advanced anonymous routing and end-to-end encryption technologies.", comment: ""), wasSentByCurrentUser: false),
+        getChatBubble(withText: NSLocalizedString("Friends don't let friends use compromised messengers. You're welcome.", comment: ""), wasSentByCurrentUser: false)
     ]
     
     private lazy var scrollView: UIScrollView = {
@@ -55,10 +56,10 @@ final class FakeChatView : UIView {
         bubbleView.layer.shadowColor = UIColor.black.cgColor
         bubbleView.layer.shadowRadius = 8
         bubbleView.layer.shadowOpacity = 0.64
-        let backgroundColor = wasSentByCurrentUser ? Colors.accent : Colors.fakeChatBubbleBackground
+        let backgroundColor = wasSentByCurrentUser ? Colors.fakeChatBubbleBackground : Colors.accent
         bubbleView.backgroundColor = backgroundColor
         let label = UILabel()
-        let textColor = wasSentByCurrentUser ? Colors.fakeChatBubbleText : Colors.text
+        let textColor = wasSentByCurrentUser ? Colors.text : Colors.fakeChatBubbleText
         label.textColor = textColor
         label.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         label.numberOfLines = 0
@@ -70,9 +71,9 @@ final class FakeChatView : UIView {
         bubbleView.pin(.top, to: .top, of: result)
         result.pin(.bottom, to: .bottom, of: bubbleView)
         if wasSentByCurrentUser {
-            bubbleView.pin(.leading, to: .leading, of: result)
+            bubbleView.pin(.trailing, to: .trailing, of: result)
         } else {
-            result.pin(.trailing, to: .trailing, of: bubbleView)
+            result.pin(.leading, to: .leading, of: bubbleView)
         }
         return result
     }
@@ -83,7 +84,7 @@ final class FakeChatView : UIView {
         chatBubbles.forEach { $0.alpha = 0 }
         Timer.scheduledTimer(withTimeInterval: Values.fakeChatStartDelay, repeats: false) { [weak self] _ in
             self?.showChatBubble(at: 0)
-            Timer.scheduledTimer(withTimeInterval: delayBetweenMessages, repeats: false) { _ in
+            Timer.scheduledTimer(withTimeInterval: 1.5 * delayBetweenMessages, repeats: false) { _ in
                 self?.showChatBubble(at: 1)
                 Timer.scheduledTimer(withTimeInterval: 1.5 * delayBetweenMessages, repeats: false) { _ in
                     self?.showChatBubble(at: 2)
@@ -91,11 +92,18 @@ final class FakeChatView : UIView {
                         guard let self = self else { return }
                         self.scrollView.contentOffset = CGPoint(x: 0, y: self.chatBubbles[0].height() + self.spacing)
                     }
-                    Timer.scheduledTimer(withTimeInterval: delayBetweenMessages, repeats: false) { _ in
+                    Timer.scheduledTimer(withTimeInterval: 1.5 * delayBetweenMessages, repeats: false) { _ in
                         self?.showChatBubble(at: 3)
                         UIView.animate(withDuration: animationDuration) {
                             guard let self = self else { return }
                             self.scrollView.contentOffset = CGPoint(x: 0, y: self.chatBubbles[0].height() + self.spacing + self.chatBubbles[1].height() + self.spacing)
+                        }
+                        Timer.scheduledTimer(withTimeInterval: delayBetweenMessages, repeats: false) { _ in
+                            self?.showChatBubble(at: 4)
+                            UIView.animate(withDuration: animationDuration) {
+                                guard let self = self else { return }
+                                self.scrollView.contentOffset = CGPoint(x: 0, y: self.chatBubbles[0].height() + self.spacing + self.chatBubbles[1].height() + self.spacing + self.chatBubbles[2].height() + self.spacing)
+                            }
                         }
                     }
                 }
