@@ -2753,7 +2753,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    if (SSKFeatureFlags.stickerAutoEnable && SSKFeatureFlags.stickerSend) {
+    if (SSKFeatureFlags.stickerAutoEnable) {
         if ([StickerPackInfo isStickerPackShareUrl:url]) {
             StickerPackInfo *_Nullable stickerPackInfo = [StickerPackInfo parseStickerPackShareUrl:url];
 
