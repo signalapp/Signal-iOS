@@ -216,6 +216,8 @@ public class StickerPackViewController: OWSViewController {
     private var loadTimerHasFired = false
 
     private func updateContent() {
+        guard !isDismissing else { return }
+
         updateCover()
         updateInsets()
 
@@ -312,11 +314,15 @@ public class StickerPackViewController: OWSViewController {
 
     // - MARK: Events
 
+    private var isDismissing = false
+
     @objc
     private func didTapInstall(sender: UIButton) {
         AssertIsOnMainThread()
 
         Logger.verbose("")
+
+        isDismissing = true
 
         guard let stickerPack = dataSource.getStickerPack() else {
             owsFailDebug("Missing sticker pack.")
@@ -356,6 +362,8 @@ public class StickerPackViewController: OWSViewController {
 
         Logger.verbose("")
 
+        isDismissing = true
+
         databaseStorage.write { (transaction) in
             StickerManager.uninstallStickerPack(stickerPackInfo: self.stickerPackInfo,
                                                 wasLocallyInitiated: true,
@@ -368,6 +376,8 @@ public class StickerPackViewController: OWSViewController {
     @objc
     private func dismissButtonPressed(sender: UIButton) {
         AssertIsOnMainThread()
+
+        isDismissing = true
 
         dismiss(animated: true)
     }
