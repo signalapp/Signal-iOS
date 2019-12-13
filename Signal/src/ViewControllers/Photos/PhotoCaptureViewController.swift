@@ -172,10 +172,12 @@ class PhotoCaptureViewController: OWSViewController {
     @available(iOS 11.0, *)
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
-        // we pin to a constant rather than margin, because on notched devices the
-        // safeAreaInsets/margins change as the device rotates *EVEN THOUGH* the interface
-        // is locked to portrait.
-        topBarOffset.constant = max(view.safeAreaInsets.top, view.safeAreaInsets.left, view.safeAreaInsets.bottom)
+        if !UIDevice.current.isIPad {
+            // we pin to a constant rather than margin, because on notched devices the
+            // safeAreaInsets/margins change as the device rotates *EVEN THOUGH* the interface
+            // is locked to portrait.
+            topBarOffset.constant = max(view.safeAreaInsets.top, view.safeAreaInsets.left, view.safeAreaInsets.bottom)
+        }
     }
 
     // MARK: -
@@ -192,7 +194,7 @@ class PhotoCaptureViewController: OWSViewController {
             super.init(frame: .zero)
 
             addSubview(navStack)
-            navStack.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 16))
+            navStack.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 4, leading: 0, bottom: 0, trailing: 16))
 
             addSubview(recordingTimerView)
             recordingTimerView.isHidden = true
@@ -228,9 +230,10 @@ class PhotoCaptureViewController: OWSViewController {
             dismissButton = OWSButton.shadowedCancelButton { [weak self] in
                 self?.didTapClose()
             }
+            dismissButton.contentEdgeInsets = UIEdgeInsets(top: 7, leading: 20, bottom: 6, trailing: 20)
         } else {
             dismissButton = dismissControl.button
-            dismissButton.contentEdgeInsets = UIEdgeInsets(top: 5, leading: 16, bottom: 6, trailing: 20)
+            dismissButton.contentEdgeInsets = UIEdgeInsets(top: 1, leading: 16, bottom: 6, trailing: 20)
         }
 
         return TopBar(navbarItems: [dismissButton,
@@ -268,7 +271,7 @@ class PhotoCaptureViewController: OWSViewController {
             button.layer.shadowOffset = CGSize.zero
             button.layer.shadowOpacity = 0.35
             button.layer.shadowRadius = 4
-            button.contentEdgeInsets = UIEdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4)
+            button.contentEdgeInsets = UIEdgeInsets(top: 6, leading: 4, bottom: 0, trailing: 4)
         }
 
         func setImage(imageName: String) {
@@ -608,8 +611,8 @@ class CaptureButton: UIView {
 
     weak var delegate: CaptureButtonDelegate?
 
-    let defaultDiameter: CGFloat = ScaleFromIPhone5To7Plus(60, 80)
-    static let recordingDiameter: CGFloat = ScaleFromIPhone5To7Plus(68, 120)
+    let defaultDiameter: CGFloat = min(ScaleFromIPhone5To7Plus(60, 80), 80)
+    static let recordingDiameter: CGFloat = min(ScaleFromIPhone5To7Plus(68, 120), 120)
     var innerButtonSizeConstraints: [NSLayoutConstraint]!
     var zoomIndicatorSizeConstraints: [NSLayoutConstraint]!
 
