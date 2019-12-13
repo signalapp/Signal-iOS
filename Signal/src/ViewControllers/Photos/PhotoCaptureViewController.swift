@@ -42,7 +42,7 @@ class PhotoCaptureViewController: OWSViewController {
 
     lazy var tapToFocusView: AnimationView = {
         let view = AnimationView(name: "tap_to_focus")
-        view.animationSpeed = 3
+        view.animationSpeed = 1
         view.backgroundBehavior = .forceFinish
         view.contentMode = .scaleAspectFit
         view.autoSetDimensions(to: CGSize(square: 150))
