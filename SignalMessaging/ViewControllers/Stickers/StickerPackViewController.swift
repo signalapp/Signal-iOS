@@ -335,25 +335,7 @@ public class StickerPackViewController: OWSViewController {
                                               transaction: transaction)
         }
 
-        updateContent()
-
-        ModalActivityIndicatorViewController.present(fromViewController: self,
-                                                     canCancel: false) { modal in
-                                                        // Downloads for this sticker pack will already be enqueued by
-                                                        // StickerManager.saveStickerPack above.  We just use this
-                                                        // method to determine whether all sticker downloads succeeded.
-                                                        // Re-enqueuing should be cheap since already-downloaded stickers
-                                                        // will succeed immediately and failed stickers will fail again
-                                                        // quickly... or succeed this time.
-                                                        StickerManager.ensureDownloadsAsync(forStickerPack: stickerPack)
-                                                            .done {
-                                                                self.presentingViewController?.dismiss(animated: true)
-                                                            }.catch { (_) in
-                                                                modal.dismiss {
-                                                                    OWSActionSheets.showErrorAlert(message: NSLocalizedString("STICKERS_PACK_INSTALL_FAILED", comment: "Error message shown when a sticker pack failed to install."))
-                                                                }
-                                                            }.retainUntilComplete()
-        }
+        dismiss(animated: true)
     }
 
     @objc
