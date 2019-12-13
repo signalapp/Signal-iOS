@@ -342,6 +342,16 @@ public extension CGPoint {
         return sqrt(x * x + y * y)
     }
 
+    @inlinable
+    func distance(_ other: CGPoint) -> CGFloat {
+        return sqrt(pow(x - other.x, 2) + pow(y - other.y, 2))
+    }
+
+    @inlinable
+    func within(_ delta: CGFloat, of other: CGPoint) -> Bool {
+        return distance(other) <= delta
+    }
+
     static let unit: CGPoint = CGPoint(x: 1.0, y: 1.0)
 
     static let unitMidpoint: CGPoint = CGPoint(x: 0.5, y: 0.5)
