@@ -192,7 +192,7 @@ class PhotoCaptureViewController: OWSViewController {
             super.init(frame: .zero)
 
             addSubview(navStack)
-            navStack.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+            navStack.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 16))
 
             addSubview(recordingTimerView)
             recordingTimerView.isHidden = true
@@ -230,7 +230,7 @@ class PhotoCaptureViewController: OWSViewController {
             }
         } else {
             dismissButton = dismissControl.button
-            dismissButton.contentEdgeInsets = UIEdgeInsets(top: -1, leading: 0, bottom: 0, trailing: 20)
+            dismissButton.contentEdgeInsets = UIEdgeInsets(top: 5, leading: 16, bottom: 6, trailing: 20)
         }
 
         return TopBar(navbarItems: [dismissButton,
