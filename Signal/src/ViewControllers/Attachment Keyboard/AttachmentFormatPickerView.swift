@@ -166,6 +166,10 @@ extension AttachmentFormatPickerView: PhotoCaptureDelegate {
     func endCaptureButtonAnimation(_ duration: TimeInterval) {
         owsFailDebug("\(#function) should never be called")
     }
+
+    func photoCapture(_ photoCapture: PhotoCapture, didCompleteFocusingAtPoint focusPoint: CGPoint) {
+        owsFailDebug("\(#function) should never be called")
+    }
 }
 
 // MARK: - UICollectionViewDataSource

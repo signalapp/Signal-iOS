@@ -42,7 +42,7 @@ class PhotoCaptureViewController: OWSViewController {
 
     lazy var tapToFocusView: AnimationView = {
         let view = AnimationView(name: "tap_to_focus")
-        view.animationSpeed = 3
+        view.animationSpeed = 1
         view.backgroundBehavior = .forceFinish
         view.contentMode = .scaleAspectFit
         view.autoSetDimensions(to: CGSize(square: 150))
@@ -65,19 +65,7 @@ class PhotoCaptureViewController: OWSViewController {
 
         view.addSubview(previewView)
 
-        previewView.autoPinWidthToSuperview()
-
-        if UIDevice.current.hasIPhoneXNotch {
-            previewView.autoPinEdge(toSuperviewEdge: .bottom, withInset: fixedBottomSafeAreaInset)
-        } else {
-            previewView.autoPinEdge(toSuperviewEdge: .bottom)
-        }
-        previewView.autoPin(toAspectRatio: 9/16, relation: .greaterThanOrEqual)
-        previewView.autoPin(toAspectRatio: 3/4, relation: .lessThanOrEqual)
-        previewView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
-        NSLayoutConstraint.autoSetPriority(.defaultLow) {
-            previewView.autoPinEdge(toSuperviewEdge: .top)
-        }
+        previewView.autoPinEdgesToSuperviewEdges()
 
         view.addSubview(captureButton)
         if UIDevice.current.isIPad {
@@ -374,11 +362,27 @@ class PhotoCaptureViewController: OWSViewController {
     func didTapFocusExpose(tapGesture: UITapGestureRecognizer) {
         let viewLocation = tapGesture.location(in: view)
         let devicePoint = previewView.previewLayer.captureDevicePointConverted(fromLayerPoint: viewLocation)
-
+        currentlyFocusingAtPoint = devicePoint
         tapToFocusView.center = viewLocation
-        tapToFocusView.play()
-
+        startFocusAnimation()
         photoCapture.focus(with: .autoFocus, exposureMode: .autoExpose, at: devicePoint, monitorSubjectAreaChange: true)
+    }
+
+    // MARK: - Focus Animations
+
+    func startFocusAnimation() {
+        tapToFocusView.stop()
+        tapToFocusView.play(fromProgress: 0.0, toProgress: 0.9)
+    }
+
+    var currentlyFocusingAtPoint = CGPoint(x: 0.5, y: 0.5)
+    func completeFocusAnimation(forFocusPoint focusPoint: CGPoint) {
+        guard currentlyFocusingAtPoint.within(0.005, of: focusPoint) else {
+            Logger.verbose("focus completed for obsolete focus point. User has refocused on.")
+            return
+        }
+
+        tapToFocusView.play(toProgress: 1.0)
     }
 
     // MARK: - Orientation
@@ -554,6 +558,10 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
         if UIDevice.current.isIPad {
             photoCapture.updateVideoPreviewConnection(toOrientation: orientation)
         }
+    }
+
+    func photoCapture(_ photoCapture: PhotoCapture, didCompleteFocusingAtPoint focusPoint: CGPoint) {
+        completeFocusAnimation(forFocusPoint: focusPoint)
     }
 }
 

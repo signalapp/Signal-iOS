@@ -13,7 +13,7 @@ protocol PhotoCaptureDelegate: AnyObject {
     func photoCapture(_ photoCapture: PhotoCapture, didFinishProcessingAttachment attachment: SignalAttachment)
     func photoCapture(_ photoCapture: PhotoCapture, processingDidError error: Error)
 
-    // MARK: Video
+    // MARK: Movie
 
     func photoCaptureDidBeginMovie(_ photoCapture: PhotoCapture)
     func photoCaptureDidCompleteMovie(_ photoCapture: PhotoCapture)
@@ -28,6 +28,9 @@ protocol PhotoCaptureDelegate: AnyObject {
 
     func beginCaptureButtonAnimation(_ duration: TimeInterval)
     func endCaptureButtonAnimation(_ duration: TimeInterval)
+
+    func photoCapture(_ photoCapture: PhotoCapture, didCompleteFocusingAtPoint focusPoint: CGPoint)
+
 }
 
 @objc
@@ -61,9 +64,23 @@ class PhotoCapture: NSObject {
 
     private let recordingAudioActivity = AudioActivity(audioDescription: "PhotoCapture", behavior: .playAndRecord)
 
+    var focusObservation: NSKeyValueObservation?
     override init() {
         self.session = AVCaptureSession()
         self.captureOutput = CaptureOutput()
+    }
+
+    func didCompleteFocusing() {
+        Logger.debug("")
+        guard let currentCaptureInput = currentCaptureInput else {
+            return
+        }
+
+        let focusPoint = currentCaptureInput.device.focusPointOfInterest
+
+        DispatchQueue.main.async {
+            self.delegate?.photoCapture(self, didCompleteFocusingAtPoint: focusPoint)
+        }
     }
 
     // MARK: - Dependencies
@@ -264,6 +281,26 @@ class PhotoCapture: NSObject {
         }
         session.addInput(newInput)
         NotificationCenter.default.addObserver(self, selector: #selector(subjectAreaDidChange), name: .AVCaptureDeviceSubjectAreaDidChange, object: newInput.device)
+
+        if let focusObservation = focusObservation {
+            focusObservation.invalidate()
+        }
+        self.focusObservation = newInput.observe(\.device.isAdjustingFocus,
+                                                 options: [.old, .new]) { [weak self] _, change in
+                                                    guard let self = self else { return }
+
+                                                    guard let oldValue = change.oldValue else {
+                                                        return
+                                                    }
+
+                                                    guard let newValue = change.newValue else {
+                                                        return
+                                                    }
+
+                                                    if oldValue == true && newValue == false {
+                                                        self.didCompleteFocusing()
+                                                    }
+        }
 
         currentCaptureInput = newInput
 
