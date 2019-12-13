@@ -164,7 +164,7 @@ public enum PushRegistrationError: Error {
         }
 
         guard notificationSettings.types == [] else {
-            Logger.info("notificationSettings was not empty, not susceptible to push registration failure"")
+            Logger.info("notificationSettings was not empty, not susceptible to push registration failure.")
             return false
         }
 
