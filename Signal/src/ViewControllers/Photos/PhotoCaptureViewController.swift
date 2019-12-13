@@ -362,7 +362,7 @@ class PhotoCaptureViewController: OWSViewController {
     func didTapFocusExpose(tapGesture: UITapGestureRecognizer) {
         let viewLocation = tapGesture.location(in: view)
         let devicePoint = previewView.previewLayer.captureDevicePointConverted(fromLayerPoint: viewLocation)
-        currentlyFocusingAtPoint = devicePoint
+        lastUserFocusTapPoint = devicePoint
         tapToFocusView.center = viewLocation
         startFocusAnimation()
         photoCapture.focus(with: .autoFocus, exposureMode: .autoExpose, at: devicePoint, monitorSubjectAreaChange: true)
@@ -375,10 +375,14 @@ class PhotoCaptureViewController: OWSViewController {
         tapToFocusView.play(fromProgress: 0.0, toProgress: 0.9)
     }
 
-    var currentlyFocusingAtPoint = CGPoint(x: 0.5, y: 0.5)
+    var lastUserFocusTapPoint: CGPoint?
     func completeFocusAnimation(forFocusPoint focusPoint: CGPoint) {
-        guard currentlyFocusingAtPoint.within(0.005, of: focusPoint) else {
-            Logger.verbose("focus completed for obsolete focus point. User has refocused on.")
+        guard let lastUserFocusTapPoint = lastUserFocusTapPoint else {
+            return
+        }
+
+        guard lastUserFocusTapPoint.within(0.005, of: focusPoint) else {
+            Logger.verbose("focus completed for obsolete focus point. User has refocused.")
             return
         }
 
