@@ -7,6 +7,8 @@ import PromiseKit
 
 class DownloadStickerOperation: CDNDownloadOperation {
 
+    // MARK: - Cache
+
     private static let cache: NSCache<NSString, NSData> = {
         let cache = NSCache<NSString, NSData>()
         // Limits are imprecise/not strict.
@@ -14,6 +16,23 @@ class DownloadStickerOperation: CDNDownloadOperation {
         return cache
     }()
     private static let maxCacheDataLength: UInt = 100 * 1000
+
+    public class func cachedData(for stickerInfo: StickerInfo) -> Data? {
+        guard let stickerData = cache.object(forKey: stickerInfo.asKey() as NSString) else {
+            return nil
+        }
+        return stickerData as Data
+    }
+
+    private class func setCachedData(_ data: Data,
+                                     for stickerInfo: StickerInfo) {
+        guard data.count <= maxCacheDataLength else {
+            return
+        }
+        cache.setObject(data as NSData, forKey: stickerInfo.asKey() as NSString)
+    }
+
+    // MARK: -
 
     private let stickerInfo: StickerInfo
     private let success: (Data) -> Void
@@ -46,9 +65,9 @@ class DownloadStickerOperation: CDNDownloadOperation {
             }
         }
 
-        if let stickerData = DownloadStickerOperation.cache.object(forKey: stickerInfo.asKey() as NSString) {
+        if let stickerData = DownloadStickerOperation.cachedData(for: stickerInfo) {
             Logger.verbose("Using cached value: \(stickerInfo).")
-            success(stickerData as Data)
+            success(stickerData)
             self.reportSuccess()
             return
         }
@@ -68,9 +87,7 @@ class DownloadStickerOperation: CDNDownloadOperation {
             do {
                 let plaintext = try StickerManager.decrypt(ciphertext: data, packKey: self.stickerInfo.packKey)
 
-                if plaintext.count <= DownloadStickerOperation.maxCacheDataLength {
-                    DownloadStickerOperation.cache.setObject(plaintext as NSData, forKey: self.stickerInfo.asKey() as NSString)
-                }
+                DownloadStickerOperation.setCachedData(plaintext, for: self.stickerInfo)
 
                 self.success(plaintext)
 

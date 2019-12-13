@@ -648,6 +648,9 @@ public class StickerManager: NSObject {
     // This method is public so that we can download "transient" (uninstalled) stickers.
     public class func tryToDownloadSticker(stickerPack: StickerPack,
                                            stickerInfo: StickerInfo) -> Promise<Data> {
+        if let data = DownloadStickerOperation.cachedData(for: stickerInfo) {
+            return Promise.value(data)
+        }
         let (promise, resolver) = Promise<Data>.pending()
         let operation = DownloadStickerOperation(stickerInfo: stickerInfo,
                                                  success: resolver.fulfill,
