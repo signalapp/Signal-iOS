@@ -159,6 +159,8 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
             return @"BlockedRequest";
         } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeConfiguration) {
             return @"ConfigurationRequest";
+        } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeKeys) {
+            return @"KeysRequest";
         } else {
             OWSFailDebug(@"Unknown sync message request type");
             return @"UnknownRequest";
