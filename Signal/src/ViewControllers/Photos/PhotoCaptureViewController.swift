@@ -65,19 +65,7 @@ class PhotoCaptureViewController: OWSViewController {
 
         view.addSubview(previewView)
 
-        previewView.autoPinWidthToSuperview()
-
-        if UIDevice.current.hasIPhoneXNotch {
-            previewView.autoPinEdge(toSuperviewEdge: .bottom, withInset: fixedBottomSafeAreaInset)
-        } else {
-            previewView.autoPinEdge(toSuperviewEdge: .bottom)
-        }
-        previewView.autoPin(toAspectRatio: 9/16, relation: .greaterThanOrEqual)
-        previewView.autoPin(toAspectRatio: 3/4, relation: .lessThanOrEqual)
-        previewView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
-        NSLayoutConstraint.autoSetPriority(.defaultLow) {
-            previewView.autoPinEdge(toSuperviewEdge: .top)
-        }
+        previewView.autoPinEdgesToSuperviewEdges()
 
         view.addSubview(captureButton)
         if UIDevice.current.isIPad {
