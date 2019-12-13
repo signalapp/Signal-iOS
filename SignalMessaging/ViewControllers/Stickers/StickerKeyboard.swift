@@ -115,7 +115,7 @@ public class StickerKeyboard: CustomKeyboard {
         packsCollectionView.items = items
 
         guard stickerPacks.count > 0 else {
-            selectedStickerPack = nil
+            _ = resignFirstResponder()
             return
         }
 
