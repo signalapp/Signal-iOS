@@ -55,6 +55,7 @@
 		340FC8BC204DAC8D007AEB0F /* FingerprintViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8A2204DAC8D007AEB0F /* FingerprintViewController.m */; };
 		340FC8BD204DAC8D007AEB0F /* ShowGroupMembersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8A6204DAC8D007AEB0F /* ShowGroupMembersViewController.m */; };
 		340FC8C5204DE223007AEB0F /* DebugUIBackup.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8C4204DE223007AEB0F /* DebugUIBackup.m */; };
+		34123C62239AB71600782788 /* stickerSplashComplete.json in Resources */ = {isa = PBXBuildFile; fileRef = 34123C61239AB71600782788 /* stickerSplashComplete.json */; };
 		34129B8621EF877A005457A8 /* LinkPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34129B8521EF8779005457A8 /* LinkPreviewView.swift */; };
 		3412F9BB2350D0840022EDAA /* ThreadPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3412F9BA2350D0840022EDAA /* ThreadPerformanceTest.swift */; };
 		341341EF2187467A00192D59 /* ConversationViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 341341EE2187467900192D59 /* ConversationViewModel.m */; };
@@ -820,6 +821,7 @@
 		340FC8A6204DAC8D007AEB0F /* ShowGroupMembersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowGroupMembersViewController.m; sourceTree = "<group>"; };
 		340FC8C3204DE223007AEB0F /* DebugUIBackup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIBackup.h; sourceTree = "<group>"; };
 		340FC8C4204DE223007AEB0F /* DebugUIBackup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIBackup.m; sourceTree = "<group>"; };
+		34123C61239AB71600782788 /* stickerSplashComplete.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = stickerSplashComplete.json; sourceTree = "<group>"; };
 		34129B8521EF8779005457A8 /* LinkPreviewView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkPreviewView.swift; sourceTree = "<group>"; };
 		3412F9BA2350D0840022EDAA /* ThreadPerformanceTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadPerformanceTest.swift; sourceTree = "<group>"; };
 		341341ED2187467900192D59 /* ConversationViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationViewModel.h; sourceTree = "<group>"; };
@@ -2827,6 +2829,7 @@
 				4C9D34942369EFC7006A4307 /* launchApp.json */,
 				4C9D34842369EA3E006A4307 /* NotificationPermission */,
 				880C0FF6233D3F7C00386FB8 /* playPauseButton.json */,
+				34123C61239AB71600782788 /* stickerSplashComplete.json */,
 				4C0CF6F92386295400C9F818 /* tap_to_focus.json */,
 				88BFD4722335C2B3001797D7 /* waveformLoading.json */,
 			);
@@ -3465,6 +3468,7 @@
 				45B74A852044AAB600CD42F8 /* bamboo.aifc in Resources */,
 				45B74A782044AAB600CD42F8 /* bamboo-quiet.aifc in Resources */,
 				45B74A7B2044AAB600CD42F8 /* chord.aifc in Resources */,
+				34123C62239AB71600782788 /* stickerSplashComplete.json in Resources */,
 				45B74A812044AAB600CD42F8 /* chord-quiet.aifc in Resources */,
 				4C9D34952369EFC7006A4307 /* launchApp.json in Resources */,
 				45B74A832044AAB600CD42F8 /* circles.aifc in Resources */,

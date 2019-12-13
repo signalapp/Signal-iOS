@@ -5,29 +5,33 @@
 import Foundation
 import SignalMessaging
 import SafariServices
+import Lottie
 
 private class IntroducingStickersExperienceUpgradeViewController: ExperienceUpgradeViewController {
 
+    private let animationView = AnimationView(name: "stickerSplashComplete")
+
     // MARK: - View lifecycle
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        animationView.play()
+    }
 
     override func loadView() {
         self.view = UIView.container()
         self.view.backgroundColor = Theme.backgroundColor
 
-        let heroImageView = UIImageView()
-        heroImageView.setImage(imageName: "introducing-link-previews-dark")
-        if let heroImage = heroImageView.image {
-            heroImageView.autoPinToAspectRatio(with: heroImage.size)
-        } else {
-            owsFailDebug("Missing hero image.")
-        }
-        view.addSubview(heroImageView)
-        heroImageView.autoPinTopToSuperviewMargin(withInset: 20)
-        // TODO: Depending on the final asset, we might autoPinWidthToSuperview()
-        // and add spacing  with the content below.
-        heroImageView.autoHCenterInSuperview()
-        heroImageView.setContentHuggingLow()
-        heroImageView.setCompressionResistanceLow()
+        animationView.backgroundBehavior = .forceFinish
+        animationView.loopMode = .playOnce
+        animationView.contentMode = .scaleAspectFit
+
+        view.addSubview(animationView)
+        animationView.autoPinTopToSuperviewMargin(withInset: 20)
+        animationView.autoPinWidthToSuperview()
+        animationView.setContentHuggingLow()
+        animationView.setCompressionResistanceLow()
 
         let title = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE", comment: "Header for stickers splash screen")
         let body = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION", comment: "Body text for stickers splash screen")
@@ -43,7 +47,7 @@ private class IntroducingStickersExperienceUpgradeViewController: ExperienceUpgr
         titleLabel.adjustsFontSizeToFitWidth = true
         view.addSubview(titleLabel)
         titleLabel.autoPinWidthToSuperview(withMargin: hMargin)
-        titleLabel.autoPinEdge(.top, to: .bottom, of: heroImageView, withOffset: 20)
+        titleLabel.autoPinEdge(.top, to: .bottom, of: animationView, withOffset: 20)
         titleLabel.setContentHuggingVerticalHigh()
 
         // Body label
