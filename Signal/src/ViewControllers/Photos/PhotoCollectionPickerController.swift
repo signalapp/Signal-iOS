@@ -74,7 +74,6 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         let cell = OWSTableItem.newCell()
 
         cell.backgroundColor = Theme.darkThemeBackgroundColor
-        cell.contentView.backgroundColor = Theme.darkThemeBackgroundColor
         cell.selectedBackgroundView?.backgroundColor = UIColor(white: 0.2, alpha: 1)
 
         let contents = collection.contents()
