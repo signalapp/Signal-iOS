@@ -268,6 +268,11 @@ NS_ASSUME_NONNULL_BEGIN
     self.grdbId = @(rowId);
 }
 
+- (void)clearRowId
+{
+    self.grdbId = nil;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
