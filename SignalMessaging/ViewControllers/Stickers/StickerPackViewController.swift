@@ -329,13 +329,22 @@ public class StickerPackViewController: OWSViewController {
             return
         }
 
-        databaseStorage.write { (transaction) in
-            StickerManager.installStickerPack(stickerPack: stickerPack,
-                                              wasLocallyInitiated: true,
-                                              transaction: transaction)
-        }
+        ModalActivityIndicatorViewController.present(fromViewController: self,
+                                                     canCancel: false,
+                                                     presentationDelay: 0) { modal in
 
-        dismiss(animated: true)
+                                                        self.databaseStorage.write { (transaction) in
+                                                            StickerManager.installStickerPack(stickerPack: stickerPack,
+                                                                                              wasLocallyInitiated: true,
+                                                                                              transaction: transaction)
+                                                        }
+
+                                                        DispatchQueue.main.async {
+                                                            modal.dismiss {
+                                                                self.dismiss(animated: true)
+                                                            }
+                                                        }
+        }
     }
 
     @objc
@@ -346,13 +355,23 @@ public class StickerPackViewController: OWSViewController {
 
         isDismissing = true
 
-        databaseStorage.write { (transaction) in
-            StickerManager.uninstallStickerPack(stickerPackInfo: self.stickerPackInfo,
-                                                wasLocallyInitiated: true,
-                                                transaction: transaction)
-        }
+        let stickerPackInfo = self.stickerPackInfo
+        ModalActivityIndicatorViewController.present(fromViewController: self,
+                                                     canCancel: false,
+                                                     presentationDelay: 0) { modal in
 
-        dismiss(animated: true)
+                                                        self.databaseStorage.write { (transaction) in
+                                                            StickerManager.uninstallStickerPack(stickerPackInfo: stickerPackInfo,
+                                                                                                wasLocallyInitiated: true,
+                                                                                                transaction: transaction)
+                                                        }
+
+                                                        DispatchQueue.main.async {
+                                                            modal.dismiss {
+                                                                self.dismiss(animated: true)
+                                                            }
+                                                        }
+        }
     }
 
     @objc

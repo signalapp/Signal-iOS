@@ -22,6 +22,9 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
     var wasDimissed: Bool = false
 
+    private static let kPresentationDelayDefault: TimeInterval = 1
+    private let presentationDelay: TimeInterval
+
     // MARK: Initializers
 
     @available(*, unavailable, message:"use other constructor instead.")
@@ -29,17 +32,31 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         notImplemented()
     }
 
-    public required init(canCancel: Bool) {
+    public required init(canCancel: Bool, presentationDelay: TimeInterval) {
         self.canCancel = canCancel
+        self.presentationDelay = presentationDelay
+
         super.init(nibName: nil, bundle: nil)
     }
 
     @objc
     public class func present(fromViewController: UIViewController,
-                              canCancel: Bool, backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
+                              canCancel: Bool,
+                              backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
+        present(fromViewController: fromViewController,
+                canCancel: canCancel,
+                presentationDelay: kPresentationDelayDefault,
+                backgroundBlock: backgroundBlock)
+    }
+
+    @objc
+    public class func present(fromViewController: UIViewController,
+                              canCancel: Bool,
+                              presentationDelay: TimeInterval,
+                              backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
         AssertIsOnMainThread()
 
-        let view = ModalActivityIndicatorViewController(canCancel: canCancel)
+        let view = ModalActivityIndicatorViewController(canCancel: canCancel, presentationDelay: presentationDelay)
         // Present this modal _over_ the current view contents.
         view.modalPresentationStyle = .overFullScreen
         fromViewController.present(view,
@@ -98,6 +115,10 @@ public class ModalActivityIndicatorViewController: OWSViewController {
             cancelButton.autoSetDimension(.height, toSize: buttonHeight)
         }
 
+        guard presentationDelay > 0 else {
+            return
+        }
+
         // Hide the modal until the presentation animation completes.
         self.view.layer.opacity = 0.0
     }
@@ -107,14 +128,17 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
         self.activityIndicator?.startAnimating()
 
+        guard presentationDelay > 0 else {
+            return
+        }
+
         // Hide the the modal and wait for a second before revealing it,
         // to avoid "blipping" in the modal during short blocking operations.
         //
         // NOTE: It will still intercept user interactions while hidden, as it
         //       should.
-        let kPresentationDelaySeconds = TimeInterval(1)
         self.presentTimer?.invalidate()
-        self.presentTimer = Timer.weakScheduledTimer(withTimeInterval: kPresentationDelaySeconds, target: self, selector: #selector(presentTimerFired), userInfo: nil, repeats: false)
+        self.presentTimer = Timer.weakScheduledTimer(withTimeInterval: presentationDelay, target: self, selector: #selector(presentTimerFired), userInfo: nil, repeats: false)
     }
 
     public override func viewWillDisappear(_ animated: Bool) {

@@ -498,10 +498,21 @@ public class ManageStickersViewController: OWSTableViewController {
 
         Logger.verbose("")
 
-        databaseStorage.write { (transaction) in
-            StickerManager.installStickerPack(stickerPack: stickerPack,
-                                              wasLocallyInitiated: true,
-                                              transaction: transaction)
+        ModalActivityIndicatorViewController.present(fromViewController: self,
+                                                     canCancel: false,
+                                                     presentationDelay: 0) { modal in
+
+                                                        self.databaseStorage.write { (transaction) in
+                                                            StickerManager.installStickerPack(stickerPack: stickerPack,
+                                                                                              wasLocallyInitiated: true,
+                                                                                              transaction: transaction)
+                                                        }
+
+                                                        DispatchQueue.main.async {
+                                                            modal.dismiss {
+                                                                // Do nothing.
+                                                            }
+                                                        }
         }
     }
 
