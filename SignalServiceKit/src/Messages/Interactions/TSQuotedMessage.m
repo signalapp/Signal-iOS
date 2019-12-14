@@ -171,7 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *_Nullable body = nil;
     BOOL hasAttachment = NO;
-    TSQuotedMessageContentSource bodySource = TSQuotedMessageContentSourceUnknown;
+    TSQuotedMessageContentSource contentSource = TSQuotedMessageContentSourceUnknown;
 
     // Prefer to generate the text snippet locally if available.
     TSMessage *_Nullable quotedMessage = [InteractionFinder findMessageWithTimestamp:timestamp
@@ -180,7 +180,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                          transaction:transaction];
 
     if (quotedMessage) {
-        bodySource = TSQuotedMessageContentSourceLocal;
+        contentSource = TSQuotedMessageContentSourceLocal;
 
         if (quotedMessage.isViewOnceMessage) {
             // We construct a quote that does not include any of the
@@ -201,16 +201,13 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else {
         OWSLogWarn(@"Could not find quoted message: %llu", timestamp);
-    }
-
-    if (body.length == 0) {
+        contentSource = TSQuotedMessageContentSourceRemote;
         if (quoteProto.text.length > 0) {
-            bodySource = TSQuotedMessageContentSourceRemote;
             body = quoteProto.text;
         }
     }
 
-    OWSAssertDebug(bodySource != TSQuotedMessageContentSourceUnknown);
+    OWSAssertDebug(contentSource != TSQuotedMessageContentSourceUnknown);
 
     NSMutableArray<OWSAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
     for (SSKProtoDataMessageQuoteQuotedAttachment *quotedAttachment in quoteProto.attachments) {
@@ -229,6 +226,9 @@ NS_ASSUME_NONNULL_BEGIN
 
         if (localThumbnail) {
             OWSLogDebug(@"Generated local thumbnail for quoted quoted message: %@:%llu", thread.uniqueId, timestamp);
+            // It would be surprising if we could derive a local thumbnail when
+            // the body had to be derived remotely.
+            OWSAssertDebug(contentSource == TSQuotedMessageContentSourceLocal);
 
             [localThumbnail anyInsertWithTransaction:transaction];
 
@@ -238,6 +238,7 @@ NS_ASSUME_NONNULL_BEGIN
                 thread.uniqueId,
                 timestamp);
 
+            contentSource = TSQuotedMessageContentSourceRemote;
             SSKProtoAttachmentPointer *thumbnailAttachmentProto = quotedAttachment.thumbnail;
             TSAttachmentPointer *_Nullable thumbnailPointer =
                 [TSAttachmentPointer attachmentPointerFromProto:thumbnailAttachmentProto albumMessage:nil];
@@ -267,7 +268,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [[TSQuotedMessage alloc] initWithTimestamp:timestamp
                                         authorAddress:authorAddress
                                                  body:body
-                                           bodySource:bodySource
+                                           bodySource:contentSource
                         receivedQuotedAttachmentInfos:attachmentInfos];
 }
 
