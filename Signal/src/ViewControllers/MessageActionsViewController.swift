@@ -146,17 +146,24 @@ class MessageActionsViewController: UIViewController {
             return owsFailDebug("trying to dismiss when not presented")
         }
 
-        reactionPicker?.playDismissalAnimation(duration: 0.2) {
+        var alreadyRanCompletion = false
+        let completeOnce = {
+            guard !alreadyRanCompletion else { return }
+            AssertIsOnMainThread()
+            alreadyRanCompletion = true
             self.view.removeFromSuperview()
             completion?()
         }
 
-        UIView.animate(withDuration: 0.2) {
-            self.backdropView.alpha = 0
-            self.bottomBar.alpha = 0
-            self.snapshotFocusedView?.alpha = 0
-            animateAlongside?()
-        }
+        reactionPicker?.playDismissalAnimation(duration: 0.2, completion: completeOnce)
+
+        UIView.animate(withDuration: 0.2,
+                       animations: {
+                        self.backdropView.alpha = 0
+                        self.bottomBar.alpha = 0
+                        self.snapshotFocusedView?.alpha = 0
+                        animateAlongside?()
+        }, completion: { _ in completeOnce() })
     }
 
     // MARK: - Reaction handling
