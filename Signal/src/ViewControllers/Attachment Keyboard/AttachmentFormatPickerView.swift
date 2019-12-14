@@ -168,7 +168,7 @@ extension AttachmentFormatPickerView: PhotoCaptureDelegate {
     }
 
     func photoCapture(_ photoCapture: PhotoCapture, didCompleteFocusingAtPoint focusPoint: CGPoint) {
-        owsFailDebug("\(#function) should never be called")
+        // no-op
     }
 }
 

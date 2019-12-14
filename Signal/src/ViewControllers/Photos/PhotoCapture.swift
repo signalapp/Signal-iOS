@@ -333,7 +333,9 @@ class PhotoCapture: NSObject {
         sessionQueue.async {
             Logger.debug("focusMode: \(focusMode), exposureMode: \(exposureMode), devicePoint: \(devicePoint), monitorSubjectAreaChange:\(monitorSubjectAreaChange)")
             guard let device = self.captureDevice else {
-                owsFailDebug("device was unexpectedly nil")
+                if !Platform.isSimulator {
+                    owsFailDebug("device was unexpectedly nil")
+                }
                 return
             }
             do {
