@@ -59,7 +59,7 @@ public class ReturnToCallViewController: UIViewController {
     public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         coordinator.animate(alongsideTransition: { _ in
-            OWSWindowManager.shared().ensureReturnToCallWindowFrame()
+            OWSWindowManager.shared.ensureReturnToCallWindowFrame()
         }, completion: nil)
     }
 

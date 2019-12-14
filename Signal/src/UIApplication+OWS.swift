@@ -7,17 +7,20 @@ import Foundation
 @objc public extension UIApplication {
 
     var frontmostViewControllerIgnoringAlerts: UIViewController? {
-        return findFrontmostViewController(ignoringAlerts: true)
-    }
-
-    var frontmostViewController: UIViewController? {
-        return findFrontmostViewController(ignoringAlerts: false)
-    }
-
-    internal func findFrontmostViewController(ignoringAlerts: Bool) -> UIViewController? {
         guard let window = CurrentAppContext().mainWindow else {
             return nil
         }
+        return findFrontmostViewController(ignoringAlerts: true, window: window)
+    }
+
+    var frontmostViewController: UIViewController? {
+        guard let window = CurrentAppContext().mainWindow else {
+            return nil
+        }
+        return findFrontmostViewController(ignoringAlerts: false, window: window)
+    }
+
+    func findFrontmostViewController(ignoringAlerts: Bool, window: UIWindow) -> UIViewController? {
         Logger.verbose("findFrontmostViewController: \(window)")
         guard let viewController = window.rootViewController else {
             owsFailDebug("Missing root view controller.")
@@ -29,5 +32,4 @@ import Foundation
     func openSystemSettings() {
         openURL(URL(string: UIApplication.openSettingsURLString)!)
     }
-
 }

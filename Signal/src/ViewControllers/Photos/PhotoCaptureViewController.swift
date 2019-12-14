@@ -142,7 +142,7 @@ class PhotoCaptureViewController: OWSViewController {
     }
 
     override var prefersStatusBarHidden: Bool {
-        guard !OWSWindowManager.shared().hasCall() else {
+        guard !OWSWindowManager.shared.hasCall else {
             return false
         }
 

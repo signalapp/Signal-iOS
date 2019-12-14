@@ -947,7 +947,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         dismissIfPossible(shouldDelay: false, ignoreNag: true, completion: {
             // Find the frontmost presented UIViewController from which to present the
             // settings views.
-            let fromViewController = UIApplication.shared.findFrontmostViewController(ignoringAlerts: true)
+            let fromViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts
             assert(fromViewController != nil)
 
             // Construct the "settings" view & push the "privacy settings" view.
@@ -982,7 +982,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     @objc func didTapLeaveCall(sender: UIButton) {
-        OWSWindowManager.shared().leaveCallView()
+        OWSWindowManager.shared.leaveCallView()
     }
 
     // MARK: - CallObserver
@@ -1167,7 +1167,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     internal func dismissImmediately(completion: (() -> Void)?) {
         if CallViewController.kShowCallViewOnSeparateWindow {
-            OWSWindowManager.shared().endCall(self)
+            OWSWindowManager.shared.endCall(self)
             completion?()
         } else {
             self.dismiss(animated: true, completion: completion)

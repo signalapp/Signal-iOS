@@ -2061,7 +2061,7 @@ private class SignalCallData: NSObject {
             return
         }
 
-        if !OWSWindowManager.shared().hasCall() {
+        if !OWSWindowManager.shared.hasCall {
             owsFailDebug("Call terminated due to missing call view.")
             self.handleFailedCall(failedCall: call, error: CallError.assertionError(description: "Call view didn't present after \(kMaxViewPresentationDelay) seconds"))
             return
