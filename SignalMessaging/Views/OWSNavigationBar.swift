@@ -181,7 +181,7 @@ public class OWSNavigationBar: UINavigationBar {
     }
 
     public override func sizeThatFits(_ size: CGSize) -> CGSize {
-        guard OWSWindowManager.shared().hasCall() else {
+        guard OWSWindowManager.shared.hasCall else {
             return super.sizeThatFits(size)
         }
 
@@ -207,7 +207,7 @@ public class OWSNavigationBar: UINavigationBar {
             super.layoutSubviews()
             return
         }
-        guard OWSWindowManager.shared().hasCall() else {
+        guard OWSWindowManager.shared.hasCall else {
             super.layoutSubviews()
             return
         }
