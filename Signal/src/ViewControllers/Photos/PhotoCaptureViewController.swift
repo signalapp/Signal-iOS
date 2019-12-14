@@ -998,10 +998,11 @@ public class MovieLockView: UIView {
 
         addSubview(stopButton)
         stopButton.autoVCenterInSuperview()
-        self.stopButton.alpha = 0
+        stopButton.alpha = 0
 
         addSubview(highlightView)
         highlightView.autoVCenterInSuperview()
+        highlightView.alpha = 0
 
         addSubview(lockIconView)
         lockIconView.autoVCenterInSuperview()
