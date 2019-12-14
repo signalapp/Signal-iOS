@@ -422,10 +422,12 @@ public class StickerManager: NSObject {
     }
 
     private class func tryToDownloadDefaultStickerPacks(shouldInstall: Bool) {
-        tryToDownloadStickerPacks(stickerPacks: DefaultStickerPack.packsToAutoInstall,
-                                  installMode: .installIfUnsaved)
-        tryToDownloadStickerPacks(stickerPacks: DefaultStickerPack.packsToNotAutoInstall,
-                                  installMode: .doNotInstall)
+        DispatchQueue.global().async {
+            self.tryToDownloadStickerPacks(stickerPacks: DefaultStickerPack.packsToAutoInstall,
+                                           installMode: .installIfUnsaved)
+            self.tryToDownloadStickerPacks(stickerPacks: DefaultStickerPack.packsToNotAutoInstall,
+                                           installMode: .doNotInstall)
+        }
     }
 
     @objc
