@@ -91,7 +91,7 @@ open class CustomKeyboard: UIInputView {
     public func updateSystemKeyboardHeight(_ height: CGFloat) {
         // Only respect this height if it's reasonable, we don't want
         // to have a tiny keyboard.
-        guard height > 100 else { return }
+        guard height > 170 else { return }
         cachedSystemKeyboardHeight.current = height
         resizeToSystemKeyboard()
     }

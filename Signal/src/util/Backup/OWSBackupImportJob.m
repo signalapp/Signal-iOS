@@ -316,23 +316,28 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     }
 
     NSString *_Nullable localProfileName = self.manifest.localProfileName;
-    NSData *_Nullable localProfileAvatarData = [self tryToLoadLocalProfileAvatarData];
+    UIImage *_Nullable localProfileAvatar = [self tryToLoadLocalProfileAvatar];
 
-    OWSLogVerbose(@"local profile name: %@, avatar: %d", localProfileName, localProfileAvatarData != nil);
+    OWSLogVerbose(@"local profile name: %@, avatar: %d", localProfileName, localProfileAvatar != nil);
 
-    if (localProfileName.length < 1 && !localProfileAvatarData) {
+    if (localProfileName.length < 1 && !localProfileAvatar) {
         return [AnyPromise promiseWithValue:@(1)];
     }
 
-    return [OWSProfileManager updateLocalProfilePromiseObjWithProfileName:localProfileName
-                                                        profileAvatarData:localProfileAvatarData]
-        .catch(^(NSError *error) {
-            OWSFailDebug(@"Error: %@", error);
-            // Ignore errors related to local profile.
-        });
+    return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+        [self.profileManager updateLocalProfileName:localProfileName
+            avatarImage:localProfileAvatar
+            success:^{
+                resolve(@(1));
+            }
+            failure:^{
+                // Ignore errors related to local profile.
+                resolve(@(1));
+            }];
+    }];
 }
 
-- (nullable NSData *)tryToLoadLocalProfileAvatarData
+- (nullable UIImage *)tryToLoadLocalProfileAvatar
 {
     if (!self.manifest.localProfileAvatarItem) {
         return nil;
@@ -357,7 +362,14 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
             // Ignore errors related to local profile.
             return nil;
         }
-        return data;
+        // TODO: Verify that we're not compressing the profile avatar data.
+        UIImage *_Nullable image = [UIImage imageWithData:data];
+        if (!image) {
+            OWSLogError(@"could not decrypt local profile avatar.");
+            // Ignore errors related to local profile.
+            return nil;
+        }
+        return image;
     }
 }
 

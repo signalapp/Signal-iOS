@@ -111,6 +111,8 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
                                             primaryAttributes:(NSDictionary *)primaryAttributes
                                           secondaryAttributes:(NSDictionary *)secondaryAttributes;
 - (nullable NSString *)formattedProfileNameForAddress:(SignalServiceAddress *)address;
+- (nullable NSString *)formattedProfileNameForAddress:(SignalServiceAddress *)address
+                                          transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable NSString *)contactOrProfileNameForAddress:(SignalServiceAddress *)address;
 

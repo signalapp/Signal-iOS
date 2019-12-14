@@ -39,7 +39,7 @@ extension CallUIAdaptee {
         callViewController.modalTransitionStyle = .crossDissolve
 
         if CallViewController.kShowCallViewOnSeparateWindow {
-            OWSWindowManager.shared().startCall(callViewController)
+            OWSWindowManager.shared.startCall(callViewController)
         } else {
             guard let presentingViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts else {
                 owsFailDebug("view controller unexpectedly nil")

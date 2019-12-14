@@ -45,9 +45,9 @@ class GRDBFinderTest: SignalBaseTest {
         let createGroupThread: () -> TSGroupThread = {
             var groupThread: TSGroupThread!
             self.write { transaction in
-                groupThread = try! GroupManager.createGroupForTests(members: [address1],
-                                                                    name: "Test Group",
-                                                                    transaction: transaction)
+                groupThread = try! GroupManager.createGroupForTests(transaction: transaction,
+                                                                    members: [address1],
+                                                                    name: "Test Group")
             }
             return groupThread
         }

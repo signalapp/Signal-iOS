@@ -111,14 +111,14 @@ class YDBFullTextSearcherTest: SignalBaseTest {
         SSKEnvironment.shared.contactsManager = YDBFullTextSearcherContactsManager()
 
         self.yapWrite { transaction in
-            let bookClubGroupThread = try! GroupManager.createGroupForTests(members: [aliceRecipient, bobRecipient],
-                                                                            name: "Book Club",
-                                                                            transaction: transaction.asAnyWrite)
+            let bookClubGroupThread = try! GroupManager.createGroupForTests(transaction: transaction.asAnyWrite,
+                                                                            members: [aliceRecipient, bobRecipient],
+                                                                            name: "Book Club")
             self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction.asAnyRead)
 
-            let snackClubGroupThread = try! GroupManager.createGroupForTests(members: [aliceRecipient],
-                                                                             name: "Snack Club",
-                                                                             transaction: transaction.asAnyWrite)
+            let snackClubGroupThread = try! GroupManager.createGroupForTests(transaction: transaction.asAnyWrite,
+                                                                             members: [aliceRecipient],
+                                                                             name: "Snack Club")
             self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction.asAnyRead)
 
             let aliceContactThread = TSContactThread.getOrCreateThread(withContactAddress: aliceRecipient, transaction: transaction.asAnyWrite)
@@ -338,9 +338,9 @@ class YDBFullTextSearcherTest: SignalBaseTest {
 
         Bench(title: "Populate Index", memorySamplerRatio: 1) { _ in
             self.yapWrite { transaction in
-                let thread = try! GroupManager.createGroupForTests(members: [aliceRecipient, bobRecipient],
-                                                                   name: "Perf",
-                                                                   transaction: transaction.asAnyWrite)
+                let thread = try! GroupManager.createGroupForTests(transaction: transaction.asAnyWrite,
+                                                                   members: [aliceRecipient, bobRecipient],
+                                                                   name: "Perf")
 
                 TSOutgoingMessage(in: thread, messageBody: string1, attachmentId: nil).anyInsert(transaction: transaction.asAnyWrite)
 

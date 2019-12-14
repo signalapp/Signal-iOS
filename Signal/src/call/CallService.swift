@@ -1327,7 +1327,11 @@ private class SignalCallData: NSObject {
     func setHasLocalVideo(hasLocalVideo: Bool) {
         AssertIsOnMainThread()
 
-        guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
+        // This method can be initiated either from the CallViewController.videoButton or via CallKit
+        // in either case we want to show the alert on the callViewWindow.
+        guard let frontmostViewController =
+                UIApplication.shared.findFrontmostViewController(ignoringAlerts: true,
+                                                                 window: OWSWindowManager.shared.callViewWindow) else {
             owsFailDebug("could not identify frontmostViewController")
             return
         }
@@ -1345,14 +1349,6 @@ private class SignalCallData: NSObject {
             if granted {
                 // Success callback; camera permissions are granted.
                 self.setHasLocalVideoWithCameraPermissions(hasLocalVideo: hasLocalVideo)
-            } else {
-                // Failed callback; camera permissions are _NOT_ granted.
-
-                // We don't need to worry about the user granting or remoting this permission
-                // during a call while the app is in the background, because changing this
-                // permission kills the app.
-                OWSActionSheets.showActionSheet(title: NSLocalizedString("MISSING_CAMERA_PERMISSION_TITLE", comment: "Alert title when camera is not authorized"),
-                                    message: NSLocalizedString("MISSING_CAMERA_PERMISSION_MESSAGE", comment: "Alert body when camera is not authorized"))
             }
         }
     }
@@ -2061,7 +2057,7 @@ private class SignalCallData: NSObject {
             return
         }
 
-        if !OWSWindowManager.shared().hasCall() {
+        if !OWSWindowManager.shared.hasCall {
             owsFailDebug("Call terminated due to missing call view.")
             self.handleFailedCall(failedCall: call, error: CallError.assertionError(description: "Call view didn't present after \(kMaxViewPresentationDelay) seconds"))
             return

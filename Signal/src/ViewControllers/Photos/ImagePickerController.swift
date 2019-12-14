@@ -47,7 +47,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     // MARK: - View Lifecycle
 
     override var prefersStatusBarHidden: Bool {
-        guard !OWSWindowManager.shared().hasCall() else {
+        guard !OWSWindowManager.shared.hasCall else {
             return false
         }
 

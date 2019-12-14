@@ -88,8 +88,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
                 } else if error != nil {
                     Logger.error("failed with error: \(error!)")
                 } else {
-                    owsFailDebug("error was unexpectedly nil")
-                    Logger.error("failed without error.")
+                    Logger.info("failed without error. User denied notification permissions.")
                 }
 
                 // Note that the promise is fulfilled regardless of if notification permssions were

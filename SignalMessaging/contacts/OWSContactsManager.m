@@ -1321,25 +1321,19 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [[NSAttributedString alloc] initWithString:address.stringForDisplay attributes:primaryAttributes];
 }
 
-- (nullable NSString *)profileNameForAddress:(SignalServiceAddress *)address
+- (nullable NSString *)formattedProfileNameForAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(address.isValid);
-
     __block NSString *_Nullable profileName;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        profileName = [self.profileManager profileNameForAddress:address transaction:transaction];
+        profileName = [self formattedProfileNameForAddress:address transaction:transaction];
     }];
-
-    if (profileName.length > 0) {
-        return profileName;
-    }
-
-    return nil;
+    return profileName;
 }
 
 - (nullable NSString *)formattedProfileNameForAddress:(SignalServiceAddress *)address
+                                          transaction:(SDSAnyReadTransaction *)transaction
 {
-    NSString *_Nullable profileName = [self profileNameForAddress:address];
+    NSString *_Nullable profileName = [self.profileManager profileNameForAddress:address transaction:transaction];
 
     if (profileName.length > 0) {
         return [@"~" stringByAppendingString:profileName];
@@ -1355,7 +1349,14 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     NSString *_Nullable name = [self cachedContactNameForAddress:address];
 
     if (name.length == 0) {
-        name = [self profileNameForAddress:address];
+        __block NSString *_Nullable profileName;
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            profileName = [self.profileManager profileNameForAddress:address transaction:transaction];
+        }];
+
+        if (profileName.length > 0) {
+            name = profileName;
+        }
     }
 
     return name;

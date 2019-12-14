@@ -154,17 +154,21 @@ public enum PushRegistrationError: Error {
 
         // Only affects users who have disabled both: background refresh *and* notifications
         guard UIApplication.shared.backgroundRefreshStatus == .denied else {
+            Logger.info("has backgroundRefreshStatus != .denied, not susceptible to push registration failure")
             return false
         }
 
         guard let notificationSettings = UIApplication.shared.currentUserNotificationSettings else {
+            owsFailDebug("notificationSettings was unexpectedly nil.")
             return false
         }
 
         guard notificationSettings.types == [] else {
+            Logger.info("notificationSettings was not empty, not susceptible to push registration failure.")
             return false
         }
 
+        Logger.info("background refresh and notifications were disabled. Device is susceptible to push registration failure.")
         return true
     }
 
@@ -198,6 +202,7 @@ public enum PushRegistrationError: Error {
                     // so the user doesn't remain indefinitely hung for no good reason.
                     throw PushRegistrationError.pushNotSupported(description: "Device configuration disallows push notifications")
                 } else {
+                    Logger.info("Push registration is taking a while. Continuing to wait since this configuration is not known to fail push registration.")
                     // Sometimes registration can just take a while.
                     // If we're not on a device known to be susceptible to push registration failure,
                     // just return the original promise.

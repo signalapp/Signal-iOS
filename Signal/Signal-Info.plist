@@ -5,11 +5,11 @@
 	<key>BuildDetails</key>
 	<dict>
 		<key>CarthageVersion</key>
-		<string>0.33.0</string>
+		<string>0.34.0</string>
 		<key>OSXVersion</key>
-		<string>10.15.1</string>
+		<string>10.14.6</string>
 		<key>WebRTCCommit</key>
-		<string>cd1885e8e42ebc893b521fef5e27a05bf90f1a9f v0.1.9</string>
+		<string>f9af10871584439f9fe9505ef767680797690326 Production build of v0.3.0</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
@@ -47,7 +47,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>3.1.0.6</string>
+	<string>3.1.0.9</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LOGS_EMAIL</key>

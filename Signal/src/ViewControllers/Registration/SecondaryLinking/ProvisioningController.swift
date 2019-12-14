@@ -183,7 +183,12 @@ public class ProvisioningController: NSObject {
             .secondaryDevicePublicKey
             .serialized
             .base64EncodedString()
-        guard let encodedPubKey = base64PubKey.encodeURIComponent else {
+
+        // Match behavior of encodeURIComponent used by desktop.
+        var characterSet = CharacterSet.alphanumerics
+        characterSet.insert(charactersIn: "-_.!~*'()")
+
+        guard let encodedPubKey = base64PubKey.addingPercentEncoding(withAllowedCharacters: characterSet) else {
             throw OWSAssertionError("Failed to url encode query params")
         }
 

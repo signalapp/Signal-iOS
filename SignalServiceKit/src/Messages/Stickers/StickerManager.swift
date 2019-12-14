@@ -322,10 +322,15 @@ public class StickerManager: NSObject {
         }
     }
 
-    private class func upsertStickerPack(stickerPack: StickerPack,
+    private class func upsertStickerPack(stickerPack stickerPackParam: StickerPack,
                                          installMode: InstallMode,
                                          wasLocallyInitiated: Bool,
                                          transaction: SDSAnyWriteTransaction) {
+
+        // If we re-insert a sticker pack, make sure that it
+        // has a new row id.
+        let stickerPack = stickerPackParam.copy() as! StickerPack
+        stickerPack.clearRowId()
 
         let oldCopy = fetchStickerPack(stickerPackInfo: stickerPack.info, transaction: transaction)
         let wasSaved = oldCopy != nil
@@ -643,6 +648,9 @@ public class StickerManager: NSObject {
     // This method is public so that we can download "transient" (uninstalled) stickers.
     public class func tryToDownloadSticker(stickerPack: StickerPack,
                                            stickerInfo: StickerInfo) -> Promise<Data> {
+        if let data = DownloadStickerOperation.cachedData(for: stickerInfo) {
+            return Promise.value(data)
+        }
         let (promise, resolver) = Promise<Data>.pending()
         let operation = DownloadStickerOperation(stickerInfo: stickerInfo,
                                                  success: resolver.fulfill,

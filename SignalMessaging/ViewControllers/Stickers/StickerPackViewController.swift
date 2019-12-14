@@ -94,11 +94,13 @@ public class StickerPackViewController: OWSViewController {
         dismissButton.contentEdgeInsets = UIEdgeInsets(top: 20, leading: hMargin, bottom: 20, trailing: hMargin)
         dismissButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "dismissButton")
 
-        coverView.autoSetDimensions(to: CGSize(width: 48, height: 48))
+        coverView.autoSetDimensions(to: CGSize(width: 64, height: 64))
         coverView.setCompressionResistanceHigh()
         coverView.setContentHuggingHigh()
 
         titleLabel.textColor = Theme.darkThemePrimaryColor
+        titleLabel.numberOfLines = 2
+        titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_semibold()
 
         authorLabel.textColor = Theme.darkThemePrimaryColor
@@ -108,7 +110,7 @@ public class StickerPackViewController: OWSViewController {
         defaultPackIconView.isHidden = true
 
         if FeatureFlags.stickerSharing {
-            shareButton.setTemplateImageName("forward-outline-24", tintColor: Theme.darkThemePrimaryColor)
+            shareButton.setTemplateImageName("forward-solid-24", tintColor: Theme.darkThemePrimaryColor)
             shareButton.addTarget(self, action: #selector(shareButtonPressed(sender:)), for: .touchUpInside)
             shareButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "shareButton")
         }
@@ -214,6 +216,8 @@ public class StickerPackViewController: OWSViewController {
     private var loadTimerHasFired = false
 
     private func updateContent() {
+        guard !isDismissing else { return }
+
         updateCover()
         updateInsets()
 
@@ -262,31 +266,25 @@ public class StickerPackViewController: OWSViewController {
     }
 
     private func updateCover() {
-        guard let stickerPack = dataSource.getStickerPack() else {
-            coverView.isHidden = true
-            return
-        }
+        guard let stickerPack = dataSource.getStickerPack() else { return }
+
         let coverInfo = stickerPack.coverInfo
         guard let filePath = dataSource.filePath(forSticker: coverInfo) else {
             // This can happen if the pack hasn't been saved yet, e.g.
             // this view was opened from a sticker pack URL or share.
             Logger.warn("Missing sticker data file path.")
-            coverView.isHidden = true
             return
         }
         guard NSData.ows_isValidImage(atPath: filePath, mimeType: OWSMimeTypeImageWebp) else {
             owsFailDebug("Invalid sticker.")
-            coverView.isHidden = true
             return
         }
         guard let stickerImage = YYImage(contentsOfFile: filePath) else {
             owsFailDebug("Sticker could not be parsed.")
-            coverView.isHidden = true
             return
         }
 
         coverView.image = stickerImage
-        coverView.isHidden = false
     }
 
     private func updateInsets() {
@@ -295,7 +293,7 @@ public class StickerPackViewController: OWSViewController {
         if #available(iOS 11.0, *) {
             if (!CurrentAppContext().isMainApp) {
                 self.additionalSafeAreaInsets = .zero
-            } else if (OWSWindowManager.shared().hasCall()) {
+            } else if OWSWindowManager.shared.hasCall {
                 self.additionalSafeAreaInsets = UIEdgeInsets(top: 20, leading: 0, bottom: 0, trailing: 0)
             } else {
                 self.additionalSafeAreaInsets = .zero
@@ -316,11 +314,15 @@ public class StickerPackViewController: OWSViewController {
 
     // - MARK: Events
 
+    private var isDismissing = false
+
     @objc
     private func didTapInstall(sender: UIButton) {
         AssertIsOnMainThread()
 
         Logger.verbose("")
+
+        isDismissing = true
 
         guard let stickerPack = dataSource.getStickerPack() else {
             owsFailDebug("Missing sticker pack.")
@@ -333,27 +335,7 @@ public class StickerPackViewController: OWSViewController {
                                               transaction: transaction)
         }
 
-        updateContent()
-
-        ModalActivityIndicatorViewController.present(fromViewController: self,
-                                                     canCancel: false) { modal in
-                                                        // Downloads for this sticker pack will already be enqueued by
-                                                        // StickerManager.saveStickerPack above.  We just use this
-                                                        // method to determine whether all sticker downloads succeeded.
-                                                        // Re-enqueuing should be cheap since already-downloaded stickers
-                                                        // will succeed immediately and failed stickers will fail again
-                                                        // quickly... or succeed this time.
-                                                        StickerManager.ensureDownloadsAsync(forStickerPack: stickerPack)
-                                                            .done {
-                                                                modal.dismiss {
-                                                                    // Do nothing.
-                                                                }
-                                                            }.catch { (_) in
-                                                                modal.dismiss {
-                                                                    OWSActionSheets.showErrorAlert(message: NSLocalizedString("STICKERS_PACK_INSTALL_FAILED", comment: "Error message shown when a sticker pack failed to install."))
-                                                                }
-                                                            }.retainUntilComplete()
-        }
+        dismiss(animated: true)
     }
 
     @objc
@@ -362,18 +344,22 @@ public class StickerPackViewController: OWSViewController {
 
         Logger.verbose("")
 
+        isDismissing = true
+
         databaseStorage.write { (transaction) in
             StickerManager.uninstallStickerPack(stickerPackInfo: self.stickerPackInfo,
                                                 wasLocallyInitiated: true,
                                                 transaction: transaction)
         }
 
-        updateContent()
+        dismiss(animated: true)
     }
 
     @objc
     private func dismissButtonPressed(sender: UIButton) {
         AssertIsOnMainThread()
+
+        isDismissing = true
 
         dismiss(animated: true)
     }

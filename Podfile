@@ -24,10 +24,6 @@ def shared_pods
   pod 'SignalMetadataKit', git: 'git@github.com:signalapp/SignalMetadataKit', testspecs: ["Tests"]
   # pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
 
-  # pod 'ZKGroup', git: 'git@github.com:signalapp/signal-zkgroup-swift', branch: 'trevor/ios1', testspecs: ["Tests"]
-  pod 'ZKGroup', git: 'git@github.com:signalapp/signal-zkgroup-swift', branch: 'charlesmchen/ios1', testspecs: ["Tests"]
-  # pod 'ZKGroup', path: '../signal-zkgroup-swift', testspecs: ["Tests"]
-
   pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'addPodspec'
 
   pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]

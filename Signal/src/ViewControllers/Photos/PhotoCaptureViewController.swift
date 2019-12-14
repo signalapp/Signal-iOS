@@ -42,7 +42,7 @@ class PhotoCaptureViewController: OWSViewController {
 
     lazy var tapToFocusView: AnimationView = {
         let view = AnimationView(name: "tap_to_focus")
-        view.animationSpeed = 3
+        view.animationSpeed = 1
         view.backgroundBehavior = .forceFinish
         view.contentMode = .scaleAspectFit
         view.autoSetDimensions(to: CGSize(square: 150))
@@ -65,19 +65,7 @@ class PhotoCaptureViewController: OWSViewController {
 
         view.addSubview(previewView)
 
-        previewView.autoPinWidthToSuperview()
-
-        if UIDevice.current.hasIPhoneXNotch {
-            previewView.autoPinEdge(toSuperviewEdge: .bottom, withInset: fixedBottomSafeAreaInset)
-        } else {
-            previewView.autoPinEdge(toSuperviewEdge: .bottom)
-        }
-        previewView.autoPin(toAspectRatio: 9/16, relation: .greaterThanOrEqual)
-        previewView.autoPin(toAspectRatio: 3/4, relation: .lessThanOrEqual)
-        previewView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
-        NSLayoutConstraint.autoSetPriority(.defaultLow) {
-            previewView.autoPinEdge(toSuperviewEdge: .top)
-        }
+        previewView.autoPinEdgesToSuperviewEdges()
 
         view.addSubview(captureButton)
         if UIDevice.current.isIPad {
@@ -154,7 +142,7 @@ class PhotoCaptureViewController: OWSViewController {
     }
 
     override var prefersStatusBarHidden: Bool {
-        guard !OWSWindowManager.shared().hasCall() else {
+        guard !OWSWindowManager.shared.hasCall else {
             return false
         }
 
@@ -184,10 +172,12 @@ class PhotoCaptureViewController: OWSViewController {
     @available(iOS 11.0, *)
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
-        // we pin to a constant rather than margin, because on notched devices the
-        // safeAreaInsets/margins change as the device rotates *EVEN THOUGH* the interface
-        // is locked to portrait.
-        topBarOffset.constant = max(view.safeAreaInsets.top, view.safeAreaInsets.left, view.safeAreaInsets.bottom)
+        if !UIDevice.current.isIPad {
+            // we pin to a constant rather than margin, because on notched devices the
+            // safeAreaInsets/margins change as the device rotates *EVEN THOUGH* the interface
+            // is locked to portrait.
+            topBarOffset.constant = max(view.safeAreaInsets.top, view.safeAreaInsets.left, view.safeAreaInsets.bottom)
+        }
     }
 
     // MARK: -
@@ -204,7 +194,7 @@ class PhotoCaptureViewController: OWSViewController {
             super.init(frame: .zero)
 
             addSubview(navStack)
-            navStack.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+            navStack.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 4, leading: 0, bottom: 0, trailing: 16))
 
             addSubview(recordingTimerView)
             recordingTimerView.isHidden = true
@@ -240,9 +230,10 @@ class PhotoCaptureViewController: OWSViewController {
             dismissButton = OWSButton.shadowedCancelButton { [weak self] in
                 self?.didTapClose()
             }
+            dismissButton.contentEdgeInsets = UIEdgeInsets(top: 7, leading: 20, bottom: 6, trailing: 20)
         } else {
             dismissButton = dismissControl.button
-            dismissButton.contentEdgeInsets = UIEdgeInsets(top: -1, leading: 0, bottom: 0, trailing: 20)
+            dismissButton.contentEdgeInsets = UIEdgeInsets(top: 1, leading: 16, bottom: 6, trailing: 20)
         }
 
         return TopBar(navbarItems: [dismissButton,
@@ -280,7 +271,7 @@ class PhotoCaptureViewController: OWSViewController {
             button.layer.shadowOffset = CGSize.zero
             button.layer.shadowOpacity = 0.35
             button.layer.shadowRadius = 4
-            button.contentEdgeInsets = UIEdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4)
+            button.contentEdgeInsets = UIEdgeInsets(top: 6, leading: 4, bottom: 0, trailing: 4)
         }
 
         func setImage(imageName: String) {
@@ -374,11 +365,31 @@ class PhotoCaptureViewController: OWSViewController {
     func didTapFocusExpose(tapGesture: UITapGestureRecognizer) {
         let viewLocation = tapGesture.location(in: view)
         let devicePoint = previewView.previewLayer.captureDevicePointConverted(fromLayerPoint: viewLocation)
-
+        lastUserFocusTapPoint = devicePoint
         tapToFocusView.center = viewLocation
-        tapToFocusView.play()
-
+        startFocusAnimation()
         photoCapture.focus(with: .autoFocus, exposureMode: .autoExpose, at: devicePoint, monitorSubjectAreaChange: true)
+    }
+
+    // MARK: - Focus Animations
+
+    func startFocusAnimation() {
+        tapToFocusView.stop()
+        tapToFocusView.play(fromProgress: 0.0, toProgress: 0.9)
+    }
+
+    var lastUserFocusTapPoint: CGPoint?
+    func completeFocusAnimation(forFocusPoint focusPoint: CGPoint) {
+        guard let lastUserFocusTapPoint = lastUserFocusTapPoint else {
+            return
+        }
+
+        guard lastUserFocusTapPoint.within(0.005, of: focusPoint) else {
+            Logger.verbose("focus completed for obsolete focus point. User has refocused.")
+            return
+        }
+
+        tapToFocusView.play(toProgress: 1.0)
     }
 
     // MARK: - Orientation
@@ -555,6 +566,10 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
             photoCapture.updateVideoPreviewConnection(toOrientation: orientation)
         }
     }
+
+    func photoCapture(_ photoCapture: PhotoCapture, didCompleteFocusingAtPoint focusPoint: CGPoint) {
+        completeFocusAnimation(forFocusPoint: focusPoint)
+    }
 }
 
 // MARK: - Views
@@ -587,7 +602,7 @@ extension CaptureButton: MovieLockViewDelegate {
 class CaptureButton: UIView {
 
     let innerButton = CircleView()
-    let movieLockView = MovieLockView()
+    let movieLockView = MovieLockView(swipeDirectionToLock: UIDevice.current.isIPad ? .leading : .trailing)
 
     var longPressGesture: UILongPressGestureRecognizer!
     let longPressDuration = 0.5
@@ -596,8 +611,8 @@ class CaptureButton: UIView {
 
     weak var delegate: CaptureButtonDelegate?
 
-    let defaultDiameter: CGFloat = ScaleFromIPhone5To7Plus(60, 80)
-    static let recordingDiameter: CGFloat = ScaleFromIPhone5To7Plus(68, 120)
+    let defaultDiameter: CGFloat = min(ScaleFromIPhone5To7Plus(60, 80), 80)
+    static let recordingDiameter: CGFloat = min(ScaleFromIPhone5To7Plus(68, 120), 120)
     var innerButtonSizeConstraints: [NSLayoutConstraint]!
     var zoomIndicatorSizeConstraints: [NSLayoutConstraint]!
 
@@ -745,9 +760,8 @@ class CaptureButton: UIView {
             guard !movieLockView.isLocked else {
                 return
             }
-            let minDistanceBeforeActivatingLockSlider: CGFloat = 30
-            let xDistance = currentLocation.x - initialTouchLocation.x - minDistanceBeforeActivatingLockSlider
-            movieLockView.update(xDistance: xDistance)
+            let xOffset = currentLocation.x - initialTouchLocation.x
+            movieLockView.update(xOffset: xOffset)
         case .ended:
             endRecordingAnimation(duration: 0.2)
             touchTimer?.invalidate()
@@ -971,39 +985,78 @@ public class MovieLockView: UIView {
 
     weak var delegate: MovieLockViewDelegate?
 
-    @objc
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
+    public enum SwipeDirection {
+        case trailing
+        case leading
+    }
+
+    public let swipeDirectionToLock: SwipeDirection
+
+    public init(swipeDirectionToLock: SwipeDirection) {
+        self.swipeDirectionToLock = swipeDirectionToLock
+        super.init(frame: .zero)
 
         addSubview(stopButton)
         stopButton.autoVCenterInSuperview()
-        stopButton.centerXAnchor.constraint(equalTo: leadingAnchor,
-                                            constant: highlightViewWidth/2).isActive = true
-        self.stopButton.alpha = 0
+        stopButton.alpha = 0
 
         addSubview(highlightView)
         highlightView.autoVCenterInSuperview()
-        highlightLeadingConstraint = highlightView.autoPinEdge(toSuperviewEdge: .leading)
+        highlightView.alpha = 0
 
         addSubview(lockIconView)
         lockIconView.autoVCenterInSuperview()
-        lockIconView.centerXAnchor.constraint(equalTo: trailingAnchor,
+
+        let trailingView: UIView
+        let leadingView: UIView
+        switch swipeDirectionToLock {
+        case .trailing:
+            trailingView = lockIconView
+            leadingView = stopButton
+            highlightEdgeConstraint = highlightView.autoPinEdge(toSuperviewEdge: .leading)
+        case .leading:
+            trailingView = stopButton
+            leadingView = lockIconView
+            highlightEdgeConstraint = highlightView.autoPinEdge(toSuperviewEdge: .trailing)
+        }
+
+        trailingView.centerXAnchor.constraint(equalTo: trailingAnchor,
                                               constant: -highlightViewWidth/2).isActive = true
+        leadingView.centerXAnchor.constraint(equalTo: leadingAnchor,
+                                             constant: highlightViewWidth/2).isActive = true
+
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public func update(xDistance: CGFloat) {
-        let max = frame.width - highlightView.frame.width
-        let offset = xDistance.clamp(0, max)
-        let alpha = offset/max
+    public func update(xOffset: CGFloat) {
+        let effectiveDistance: CGFloat
+        let distanceToLock: CGFloat
+        let highlightOffset: CGFloat
+        switch swipeDirectionToLock {
+        case .trailing:
+            let minDistanceBeforeActivatingLockSlider: CGFloat = 30
+            effectiveDistance = xOffset - minDistanceBeforeActivatingLockSlider
+            distanceToLock = frame.width - highlightView.frame.width
+            highlightOffset = effectiveDistance.clamp(0, distanceToLock)
+        case .leading:
+            // On iPad, the gesture already feels right, without applying the additional
+            // minDistanceBeforeActivatingLockSlider padding.
+            effectiveDistance = xOffset
+            distanceToLock = -1 * (frame.width - highlightView.frame.width)
+            highlightOffset = effectiveDistance.clamp(distanceToLock, 0)
+        }
+        highlightEdgeConstraint.constant = highlightOffset
+
+        let alpha = (effectiveDistance/distanceToLock).clamp(0, 1)
         highlightView.alpha = alpha
-        highlightLeadingConstraint.constant = offset
-        if offset == max {
+
+        if alpha == 1.0 {
             lock(isAnimated: true)
         }
+        Logger.verbose("xOffset: \(xOffset), effectiveDistance: \(effectiveDistance),  distanceToLock: \(distanceToLock), highlightOffset: \(highlightOffset), alpha: \(alpha)")
     }
 
     // MARK: -
@@ -1062,7 +1115,7 @@ public class MovieLockView: UIView {
     }()
 
     let highlightViewWidth = SendMediaNavigationController.bottomButtonWidth
-    private var highlightLeadingConstraint: NSLayoutConstraint!
+    private var highlightEdgeConstraint: NSLayoutConstraint!
     private lazy var highlightView: UIView = {
         let view = CircleView(diameter: highlightViewWidth)
         view.backgroundColor = .white

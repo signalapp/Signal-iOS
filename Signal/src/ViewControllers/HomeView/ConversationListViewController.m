@@ -1214,7 +1214,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             OWSFailDebug(@"Could not display experience upgrade.");
             return;
         }
-        [self presentViewController:viewController animated:YES completion:nil];
+        [self presentFormSheetViewController:viewController animated:YES completion:nil];
     } else {
         [OWSActionSheets showIOSUpgradeNagIfNecessary];
     }

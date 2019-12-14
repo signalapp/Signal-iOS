@@ -4439,13 +4439,18 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         member,
         TSAccountManager.localAddress,
     ];
-    [GroupManager createNewGroupObjcWithMembers:members
+    [GroupManager createGroupObjcWithMembers:members
         groupId:nil
         name:groupName
         avatarData:nil
-        shouldSendMessage:YES
         success:^(TSGroupThread *thread) {
-            success(thread);
+            [GroupManager sendDurableNewGroupMessageObjcForThread:thread
+                success:^{
+                    success(thread);
+                }
+                failure:^(NSError *error) {
+                    OWSFailDebug(@"Error: %@", error);
+                }];
         }
         failure:^(NSError *error) {
             OWSFailDebug(@"Error: %@", error);
