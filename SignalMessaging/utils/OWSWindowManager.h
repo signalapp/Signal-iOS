@@ -40,6 +40,7 @@ extern const UIWindowLevel UIWindowLevel_Background;
 #pragma mark - Calls
 
 @property (nonatomic, readonly) BOOL shouldShowCallView;
+@property (nonatomic, readonly) UIWindow *callViewWindow;
 
 - (void)startCall:(UIViewController *)callViewController;
 - (void)endCall:(UIViewController *)callViewController;
