@@ -808,9 +808,8 @@ private class DoneButton: UIView {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(tapGesture:)))
         addGestureRecognizer(tapGesture)
 
-        let container = UIView()
+        let container = PillView()
         container.backgroundColor = .ows_white
-        container.layer.cornerRadius = 20
         container.layoutMargins = UIEdgeInsets(top: 7, leading: 8, bottom: 7, trailing: 8)
 
         addSubview(container)
@@ -842,17 +841,11 @@ private class DoneButton: UIView {
     // MARK: - Subviews
 
     private lazy var badge: UIView = {
-        let badge = CircleView()
+        let badge = PillView()
         badge.layoutMargins = UIEdgeInsets(top: 4, leading: 4, bottom: 4, trailing: 4)
         badge.backgroundColor = .ows_signalBlue
         badge.addSubview(badgeLabel)
         badgeLabel.autoPinEdgesToSuperviewMargins()
-
-        // Constrain to be a pill that is at least a circle, and maybe wider.
-        badgeLabel.autoPin(toAspectRatio: 1.0, relation: .greaterThanOrEqual)
-        NSLayoutConstraint.autoSetPriority(.defaultLow) {
-            badgeLabel.autoPinToSquareAspectRatio()
-        }
 
         return badge
     }()
