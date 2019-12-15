@@ -88,6 +88,10 @@ class PhotoCaptureViewController: OWSViewController {
 
         view.addSubview(tapToFocusView)
         tapToFocusView.isUserInteractionEnabled = false
+        tapToFocusLeftConstraint = tapToFocusView.centerXAnchor.constraint(equalTo: view.leftAnchor)
+        tapToFocusLeftConstraint.isActive = true
+        tapToFocusTopConstraint = tapToFocusView.centerYAnchor.constraint(equalTo: view.topAnchor)
+        tapToFocusTopConstraint.isActive = true
 
         view.addSubview(topBar)
         topBar.autoPinWidthToSuperview()
@@ -365,13 +369,33 @@ class PhotoCaptureViewController: OWSViewController {
     func didTapFocusExpose(tapGesture: UITapGestureRecognizer) {
         let viewLocation = tapGesture.location(in: view)
         let devicePoint = previewView.previewLayer.captureDevicePointConverted(fromLayerPoint: viewLocation)
-        lastUserFocusTapPoint = devicePoint
-        tapToFocusView.center = viewLocation
-        startFocusAnimation()
+
         photoCapture.focus(with: .autoFocus, exposureMode: .autoExpose, at: devicePoint, monitorSubjectAreaChange: true)
+
+        // Don't show animation if it's in the bottom row.
+        let captureButtonOrigin = captureButton.superview!.convert(captureButton.frame.origin, to: view)
+        guard viewLocation.y < captureButtonOrigin.y else {
+            Logger.verbose("Skipping animation for bottom row")
+            return
+        }
+
+        lastUserFocusTapPoint = devicePoint
+        do {
+            let convertedPoint = tapToFocusView.superview!.convert(viewLocation, from: view)
+            positionTapToFocusView(center: convertedPoint)
+            tapToFocusView.superview?.layoutIfNeeded()
+            startFocusAnimation()
+        }
     }
 
     // MARK: - Focus Animations
+
+    var tapToFocusLeftConstraint: NSLayoutConstraint!
+    var tapToFocusTopConstraint: NSLayoutConstraint!
+    func positionTapToFocusView(center: CGPoint) {
+        tapToFocusLeftConstraint.constant = center.x
+        tapToFocusTopConstraint.constant = center.y
+    }
 
     func startFocusAnimation() {
         tapToFocusView.stop()
