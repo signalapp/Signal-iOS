@@ -457,7 +457,7 @@ class MediaGallery {
                     // For perf we only want to fetch a substantially full batch...
                     let isSubstantialRequest = unfetchedSet.count > (requestSet.count / 2)
                     // ...but we always fulfill even small requests if we're getting just the tail end of a gallery.
-                    let isFetchingEdgeOfGallery = (self.fetchedIndexSet.count - unfetchedSet.count) < requestSet.count
+                    let isFetchingEdge = unfetchedSet.contains(0) || unfetchedSet.contains(Int(mediaCount - 1))
 
                     // If we're trying to load a complete album, and some of that album is unfetched...
                     let isLoadingAlbumRemainder: Bool
@@ -467,7 +467,7 @@ class MediaGallery {
                         isLoadingAlbumRemainder = false
                     }
 
-                    guard isSubstantialRequest || isFetchingEdgeOfGallery || isLoadingAlbumRemainder else {
+                    guard isSubstantialRequest || isFetchingEdge || isLoadingAlbumRemainder else {
                         Logger.debug("ignoring small fetch request: \(unfetchedSet.count)")
                         return
                     }
