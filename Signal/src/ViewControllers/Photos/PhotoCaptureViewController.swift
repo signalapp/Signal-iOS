@@ -372,6 +372,13 @@ class PhotoCaptureViewController: OWSViewController {
 
         photoCapture.focus(with: .autoFocus, exposureMode: .autoExpose, at: devicePoint, monitorSubjectAreaChange: true)
 
+        // Don't show animation if it's in the bottom row.
+        let captureButtonOrigin = captureButton.superview!.convert(captureButton.frame.origin, to: view)
+        guard viewLocation.y < captureButtonOrigin.y else {
+            Logger.verbose("Skipping animation for bottom row")
+            return
+        }
+
         lastUserFocusTapPoint = devicePoint
         do {
             let convertedPoint = tapToFocusView.superview!.convert(viewLocation, from: view)
