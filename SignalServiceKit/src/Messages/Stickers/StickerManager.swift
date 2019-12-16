@@ -370,7 +370,9 @@ public class StickerManager: NSObject {
             }
         }
 
-        NotificationCenter.default.postNotificationNameAsync(stickersOrPacksDidChange, object: nil)
+        DispatchQueue.main.async {
+            StickerManager.shared.fireStickersOrPacksDidChange()
+        }
     }
 
     private class func markSavedStickerPackAsInstalled(stickerPack: StickerPack,
@@ -420,10 +422,12 @@ public class StickerManager: NSObject {
     }
 
     private class func tryToDownloadDefaultStickerPacks(shouldInstall: Bool) {
-        tryToDownloadStickerPacks(stickerPacks: DefaultStickerPack.packsToAutoInstall,
-                                  installMode: .installIfUnsaved)
-        tryToDownloadStickerPacks(stickerPacks: DefaultStickerPack.packsToNotAutoInstall,
-                                  installMode: .doNotInstall)
+        DispatchQueue.global().async {
+            self.tryToDownloadStickerPacks(stickerPacks: DefaultStickerPack.packsToAutoInstall,
+                                           installMode: .installIfUnsaved)
+            self.tryToDownloadStickerPacks(stickerPacks: DefaultStickerPack.packsToNotAutoInstall,
+                                           installMode: .doNotInstall)
+        }
     }
 
     @objc
@@ -439,9 +443,13 @@ public class StickerManager: NSObject {
     @objc
     public class func installedStickers(forStickerPack stickerPack: StickerPack,
                                         transaction: SDSAnyReadTransaction) -> [StickerInfo] {
+
+        let allInstalledUniqueIds = Set(InstalledSticker.anyAllUniqueIds(transaction: transaction))
         var result = [StickerInfo]()
         for stickerInfo in stickerPack.stickerInfos {
-            if isStickerInstalled(stickerInfo: stickerInfo, transaction: transaction) {
+            let uniqueId = InstalledSticker.uniqueId(for: stickerInfo)
+            let isStickerInstalled = allInstalledUniqueIds.contains(uniqueId)
+            if isStickerInstalled {
                 #if DEBUG
                 if nil == self.filepathForInstalledSticker(stickerInfo: stickerInfo, transaction: transaction) {
                     owsFailDebug("Missing sticker data for installed sticker.")
@@ -526,7 +534,8 @@ public class StickerManager: NSObject {
     @objc
     public class func isStickerInstalled(stickerInfo: StickerInfo,
                                          transaction: SDSAnyReadTransaction) -> Bool {
-        return nil != fetchInstalledSticker(stickerInfo: stickerInfo, transaction: transaction)
+        let uniqueId = InstalledSticker.uniqueId(for: stickerInfo)
+        return InstalledSticker.anyExists(uniqueId: uniqueId, transaction: transaction)
     }
 
     internal typealias CleanupCompletion = () -> Void
@@ -625,7 +634,9 @@ public class StickerManager: NSObject {
             }
         }
 
-        NotificationCenter.default.postNotificationNameAsync(stickersOrPacksDidChange, object: nil)
+        DispatchQueue.main.async {
+            StickerManager.shared.fireStickersOrPacksDidChange()
+        }
     }
 
     private class func tryToDownloadAndInstallSticker(stickerPack: StickerPack,
@@ -1183,6 +1194,31 @@ public class StickerManager: NSObject {
             owsFailDebug("Unknown type.")
             return
         }
+    }
+
+    // MARK: - Notifications
+
+    private var stickersOrPacksDidChangeTimer: Timer?
+
+    private func fireStickersOrPacksDidChange() {
+        AssertIsOnMainThread()
+
+        guard stickersOrPacksDidChangeTimer == nil else {
+            return
+        }
+
+        // De-bounce the (many) notifications which can be emitted by this manager.
+        stickersOrPacksDidChangeTimer = Timer.weakScheduledTimer(withTimeInterval: 0.1, target: self, selector: #selector(didChangeTimerFired), userInfo: nil, repeats: false)
+    }
+
+    @objc
+    func didChangeTimerFired(_ timer: Timer) {
+        AssertIsOnMainThread()
+
+        stickersOrPacksDidChangeTimer?.invalidate()
+        stickersOrPacksDidChangeTimer = nil
+
+        NotificationCenter.default.postNotificationNameAsync(StickerManager.stickersOrPacksDidChange, object: nil)
     }
 
     // MARK: - Debug

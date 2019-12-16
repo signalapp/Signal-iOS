@@ -816,7 +816,7 @@ extension MessageDetailViewController: MediaGalleryDelegate {
 extension MessageDetailViewController: OWSMessageStickerViewDelegate {
     public func showStickerPack(_ stickerPackInfo: StickerPackInfo) {
         let packView = StickerPackViewController(stickerPackInfo: stickerPackInfo)
-        present(packView, animated: true)
+        packView.present(from: self, animated: true)
     }
 }
 

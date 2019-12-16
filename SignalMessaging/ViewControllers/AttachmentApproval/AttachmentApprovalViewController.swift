@@ -303,7 +303,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     // MARK: - Navigation Bar
 
     lazy var saveButton: UIView = {
-        return OWSButton.navigationBarButton(imageName: "download-outline-28") { [weak self] in
+        return OWSButton.navigationBarButton(imageName: "save-24") { [weak self] in
             self?.didTapSave()
         }
     }()

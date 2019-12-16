@@ -38,12 +38,6 @@ public class StickerPackViewController: OWSViewController {
 
         super.init(nibName: nil, bundle: nil)
 
-        if #available(iOS 13, *) {
-            // do nothing, use automatic style
-        } else {
-            modalPresentationStyle = .overFullScreen
-        }
-
         stickerCollectionView.stickerDelegate = self
         stickerCollectionView.show(dataSource: dataSource)
         dataSource.add(delegate: self)
@@ -67,11 +61,24 @@ public class StickerPackViewController: OWSViewController {
                         animated: Bool) {
         AssertIsOnMainThread()
 
-        fromViewController.presentFormSheet(self, animated: animated)
+        #if swift(>=5.1)
+            if #available(iOS 13, *) {
+                // iOS 13 on the iOS 13 SDK handles the modal blur correctly.
+                fromViewController.presentFormSheet(self, animated: animated)
+                return
+            }
+        #endif
+
+        // Pre-iOS 13, or without the iOS 13 SDK, we need to manualy setup the
+        // form sheet in order to allow it to blur and show through the background.
+
+        modalPresentationStyle = .custom
+        transitioningDelegate = self
+        fromViewController.present(self, animated: animated)
     }
 
     override public func loadView() {
-        super.loadView()
+        view = UIView()
 
         if UIAccessibility.isReduceTransparencyEnabled {
             view.backgroundColor = Theme.darkThemeBackgroundColor
@@ -117,7 +124,7 @@ public class StickerPackViewController: OWSViewController {
 
         view.addSubview(dismissButton)
         dismissButton.autoPinEdge(toSuperviewEdge: .leading)
-        dismissButton.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        dismissButton.autoPinEdge(toSuperviewSafeArea: .top)
 
         let bottomRowView = UIStackView(arrangedSubviews: [ defaultPackIconView, authorLabel ])
         bottomRowView.axis = .horizontal
@@ -139,12 +146,12 @@ public class StickerPackViewController: OWSViewController {
         textRowsView.setCompressionResistanceHorizontalLow()
         textRowsView.setContentHuggingHorizontalLow()
 
-        self.view.addSubview(headerStack)
+        view.addSubview(headerStack)
         headerStack.autoPinEdge(.top, to: .bottom, of: dismissButton)
         headerStack.autoPinWidthToSuperview()
 
         stickerCollectionView.backgroundColor = .clear
-        self.view.addSubview(stickerCollectionView)
+        view.addSubview(stickerCollectionView)
         stickerCollectionView.autoPinWidthToSuperview()
         stickerCollectionView.autoPinEdge(.top, to: .bottom, of: headerStack)
 
@@ -166,7 +173,7 @@ public class StickerPackViewController: OWSViewController {
         uninstallButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "uninstallButton")
         for button in [installButton, uninstallButton] {
             view.addSubview(button)
-            button.autoPin(toBottomLayoutGuideOf: self, withInset: 10)
+            button.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 10)
             button.autoPinEdge(.top, to: .bottom, of: stickerCollectionView)
             button.autoPinWidthToSuperview(withMargin: hMargin)
             button.autoSetHeightUsingFont()
@@ -329,13 +336,22 @@ public class StickerPackViewController: OWSViewController {
             return
         }
 
-        databaseStorage.write { (transaction) in
-            StickerManager.installStickerPack(stickerPack: stickerPack,
-                                              wasLocallyInitiated: true,
-                                              transaction: transaction)
-        }
+        ModalActivityIndicatorViewController.present(fromViewController: self,
+                                                     canCancel: false,
+                                                     presentationDelay: 0) { modal in
 
-        dismiss(animated: true)
+                                                        self.databaseStorage.write { (transaction) in
+                                                            StickerManager.installStickerPack(stickerPack: stickerPack,
+                                                                                              wasLocallyInitiated: true,
+                                                                                              transaction: transaction)
+                                                        }
+
+                                                        DispatchQueue.main.async {
+                                                            modal.dismiss {
+                                                                self.dismiss(animated: true)
+                                                            }
+                                                        }
+        }
     }
 
     @objc
@@ -346,13 +362,23 @@ public class StickerPackViewController: OWSViewController {
 
         isDismissing = true
 
-        databaseStorage.write { (transaction) in
-            StickerManager.uninstallStickerPack(stickerPackInfo: self.stickerPackInfo,
-                                                wasLocallyInitiated: true,
-                                                transaction: transaction)
-        }
+        let stickerPackInfo = self.stickerPackInfo
+        ModalActivityIndicatorViewController.present(fromViewController: self,
+                                                     canCancel: false,
+                                                     presentationDelay: 0) { modal in
 
-        dismiss(animated: true)
+                                                        self.databaseStorage.write { (transaction) in
+                                                            StickerManager.uninstallStickerPack(stickerPackInfo: stickerPackInfo,
+                                                                                                wasLocallyInitiated: true,
+                                                                                                transaction: transaction)
+                                                        }
+
+                                                        DispatchQueue.main.async {
+                                                            modal.dismiss {
+                                                                self.dismiss(animated: true)
+                                                            }
+                                                        }
+        }
     }
 
     @objc
@@ -396,6 +422,90 @@ public class StickerPackViewController: OWSViewController {
         Logger.verbose("")
 
         updateContent()
+    }
+}
+
+// MARK: -
+
+private class StickerPackViewControllerAnimationController: UIPresentationController {
+
+    let backdropView: UIView = UIView()
+
+    override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {
+        super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
+        backdropView.backgroundColor = Theme.backdropColor
+    }
+
+    override func presentationTransitionWillBegin() {
+        guard let containerView = containerView, let presentedView = presentedView else { return }
+        backdropView.alpha = 0
+        containerView.addSubview(backdropView)
+        backdropView.autoPinEdgesToSuperviewEdges()
+
+        containerView.addSubview(presentedView)
+        containerView.layoutIfNeeded()
+
+        updatePresentedViewConstraints(size: containerView.frame.size)
+
+        presentedViewController.transitionCoordinator?.animate(alongsideTransition: { _ in
+            self.backdropView.alpha = 1
+        }, completion: nil)
+    }
+
+    override func dismissalTransitionWillBegin() {
+        presentedViewController.transitionCoordinator?.animate(alongsideTransition: { _ in
+            self.backdropView.alpha = 0
+        }, completion: { _ in
+            self.backdropView.removeFromSuperview()
+        })
+    }
+
+    public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        coordinator.animate(alongsideTransition: { _ in
+            self.updatePresentedViewConstraints(size: size)
+        }, completion: nil)
+    }
+
+    lazy var formSheetConstraints: [NSLayoutConstraint] = {
+        guard let presentedView = presentedView else {
+            owsFailDebug("missing presentedView")
+            return []
+        }
+        return presentedView.autoSetDimensions(to: CGSize(width: 540, height: 620)) + presentedView.autoCenterInSuperview()
+    }()
+
+    lazy var fullScreenConstraints: [NSLayoutConstraint] = {
+        guard let presentedView = presentedView else {
+            owsFailDebug("missing presentedView")
+            return []
+        }
+        return presentedView.autoPinEdgesToSuperviewEdges()
+    }()
+
+    func updatePresentedViewConstraints(size: CGSize) {
+        guard let presentedView = presentedView else {
+            return owsFailDebug("missing presentedView")
+        }
+
+        if UIDevice.current.isIPad, size.width > (max(UIScreen.main.bounds.width, UIScreen.main.bounds.height) / 2) - 5 {
+            NSLayoutConstraint.deactivate(fullScreenConstraints)
+            NSLayoutConstraint.activate(formSheetConstraints)
+            presentedView.clipsToBounds = true
+            presentedView.layer.cornerRadius = 13
+        } else {
+            NSLayoutConstraint.deactivate(formSheetConstraints)
+            NSLayoutConstraint.activate(fullScreenConstraints)
+            presentedView.clipsToBounds = false
+            presentedView.layer.cornerRadius = 0
+        }
+    }
+}
+
+extension StickerPackViewController: UIViewControllerTransitioningDelegate {
+    public func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+        return StickerPackViewControllerAnimationController(presentedViewController: presented, presenting: presenting)
     }
 }
 
