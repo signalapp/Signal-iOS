@@ -224,9 +224,6 @@ public class FeatureFlags: NSObject {
     public static let logSQLQueries = build.includes(.dev)
 
     @objc
-    public static let filterLoggedSQLQueries = !build.includes(.dev)
-
-    @objc
     public static var calling: Bool {
         // TODO MULTIRING
         return TSAccountManager.sharedInstance().isRegisteredPrimaryDevice
