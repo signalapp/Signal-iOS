@@ -1235,10 +1235,10 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     }
 }
 
-- (void)copyMediaAction
+- (void)shareMediaAction:(nullable id)sender
 {
     if (self.attachmentPointer != nil) {
-        OWSFailDebug(@"Can't copy not-yet-downloaded attachment");
+        OWSFailDebug(@"Can't share not-yet-downloaded attachment");
         return;
     }
 
@@ -1246,38 +1246,38 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextOnlyMessage:
         case OWSMessageCellType_ContactShare: {
-            OWSFailDebug(@"No media to copy");
+            OWSFailDebug(@"No media to share");
             break;
         }
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_GenericAttachment: {
-            [self copyAttachmentToPasteboard:self.attachmentStream];
+            [AttachmentSharing showShareUIForAttachment:self.attachmentStream sender:sender];
             break;
         }
         case OWSMessageCellType_MediaMessage: {
-            if (self.mediaAlbumItems.count == 1) {
-                ConversationMediaAlbumItem *mediaAlbumItem = self.mediaAlbumItems.firstObject;
-                if (mediaAlbumItem.attachmentStream && mediaAlbumItem.attachmentStream.isValidVisualMedia) {
-                    [self copyAttachmentToPasteboard:mediaAlbumItem.attachmentStream];
-                    return;
+            NSMutableArray<TSAttachmentStream *> *downloadedAttachments = [NSMutableArray new];
+            for (ConversationMediaAlbumItem *item in self.mediaAlbumItems) {
+                if (item.attachmentStream) {
+                    [downloadedAttachments addObject:item.attachmentStream];
                 }
             }
 
-            OWSFailDebug(@"Can't copy media album");
+            if (downloadedAttachments.count == 0) {
+                OWSFailDebug(@"No attachments downloaded to share.");
+                break;
+            }
+
+            [AttachmentSharing showShareUIForAttachments:downloadedAttachments sender:sender];
             break;
         }
         case OWSMessageCellType_OversizeTextDownloading:
-            OWSFailDebug(@"Can't copy not-yet-downloaded attachment");
+            OWSFailDebug(@"Can't share not-yet-downloaded attachment");
             return;
         case OWSMessageCellType_StickerMessage:
-            if (self.stickerAttachment != nil) {
-                [self copyAttachmentToPasteboard:self.stickerAttachment];
-            } else {
-                OWSFailDebug(@"Sticked not yet downloaded.");
-            }
+            OWSFailDebug(@"Can't share stickers.");
             return;
         case OWSMessageCellType_ViewOnce:
-            OWSFailDebug(@"Can't copy view once message");
+            OWSFailDebug(@"Can't share view once messages");
             return;
     }
 }
@@ -1299,37 +1299,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];
 }
 
-- (BOOL)canCopyMedia
-{
-    if (self.attachmentPointer != nil) {
-        // The attachment is still downloading.
-        return NO;
-    }
-
-    switch (self.messageCellType) {
-        case OWSMessageCellType_Unknown:
-        case OWSMessageCellType_TextOnlyMessage:
-        case OWSMessageCellType_ContactShare:
-        case OWSMessageCellType_Audio:
-            return NO;
-        case OWSMessageCellType_GenericAttachment:
-        case OWSMessageCellType_MediaMessage: {
-            if (self.mediaAlbumItems.count == 1) {
-                ConversationMediaAlbumItem *mediaAlbumItem = self.mediaAlbumItems.firstObject;
-                if (mediaAlbumItem.attachmentStream && mediaAlbumItem.attachmentStream.isValidVisualMedia) {
-                    return YES;
-                }
-            }
-            return NO;
-        }
-        case OWSMessageCellType_OversizeTextDownloading:
-        case OWSMessageCellType_StickerMessage:
-        case OWSMessageCellType_ViewOnce:
-            return NO;
-    }
-}
-
-- (BOOL)canSaveMedia
+- (BOOL)canShareMedia
 {
     if (self.attachmentPointer != nil) {
         // The attachment is still downloading.
@@ -1370,102 +1340,6 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     }
 }
 
-- (void)saveMediaAction
-{
-    if (self.attachmentPointer != nil) {
-        OWSFailDebug(@"Can't save not-yet-downloaded attachment");
-        return;
-    }
-    switch (self.messageCellType) {
-        case OWSMessageCellType_Unknown:
-        case OWSMessageCellType_TextOnlyMessage:
-        case OWSMessageCellType_ContactShare:
-            OWSFailDebug(@"Cannot save text data.");
-            break;
-        case OWSMessageCellType_Audio:
-            OWSFailDebug(@"Cannot save media data.");
-            break;
-        case OWSMessageCellType_GenericAttachment:
-            OWSFailDebug(@"Cannot save media data.");
-            break;
-        case OWSMessageCellType_MediaMessage: {
-            [self saveMediaAlbumItems];
-            break;
-        }
-        case OWSMessageCellType_OversizeTextDownloading:
-            OWSFailDebug(@"Can't save not-yet-downloaded attachment");
-            return;
-        case OWSMessageCellType_StickerMessage:
-            return [self saveSticker];
-        case OWSMessageCellType_ViewOnce:
-            OWSFailDebug(@"Can't save view once message");
-            return;
-    }
-}
-
-- (void)saveMediaAlbumItems
-{
-    // We need to do these writes serially to avoid "write busy" errors
-    // from too many concurrent asset saves.
-    [self saveMediaAlbumItems:[self.mediaAlbumItems mutableCopy]];
-}
-
-- (void)saveMediaAlbumItems:(NSMutableArray<ConversationMediaAlbumItem *> *)mediaAlbumItems
-{
-    if (mediaAlbumItems.count < 1) {
-        return;
-    }
-    ConversationMediaAlbumItem *mediaAlbumItem = mediaAlbumItems.firstObject;
-    [mediaAlbumItems removeObjectAtIndex:0];
-
-    if (!mediaAlbumItem.attachmentStream || !mediaAlbumItem.attachmentStream.isValidVisualMedia) {
-        // Skip this item.
-    } else if (mediaAlbumItem.attachmentStream.isImage || mediaAlbumItem.attachmentStream.isAnimated) {
-        [[PHPhotoLibrary sharedPhotoLibrary]
-            performChanges:^{
-                [PHAssetChangeRequest
-                    creationRequestForAssetFromImageAtFileURL:mediaAlbumItem.attachmentStream.originalMediaURL];
-            }
-            completionHandler:^(BOOL success, NSError *error) {
-                if (error || !success) {
-                    OWSFailDebug(@"Image save failed: %@", error);
-                }
-                [self saveMediaAlbumItems:mediaAlbumItems];
-            }];
-        return;
-    } else if (mediaAlbumItem.attachmentStream.isVideo) {
-        [[PHPhotoLibrary sharedPhotoLibrary]
-            performChanges:^{
-                [PHAssetChangeRequest
-                    creationRequestForAssetFromVideoAtFileURL:mediaAlbumItem.attachmentStream.originalMediaURL];
-            }
-            completionHandler:^(BOOL success, NSError *error) {
-                if (error || !success) {
-                    OWSFailDebug(@"Video save failed: %@", error);
-                }
-                [self saveMediaAlbumItems:mediaAlbumItems];
-            }];
-        return;
-    }
-    return [self saveMediaAlbumItems:mediaAlbumItems];
-}
-
-- (void)saveSticker
-{
-    OWSAssertDebug(self.stickerAttachment != nil);
-    OWSAssertDebug(self.stickerAttachment.isValidImage);
-
-    [[PHPhotoLibrary sharedPhotoLibrary]
-        performChanges:^{
-            [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:self.stickerAttachment.originalMediaURL];
-        }
-        completionHandler:^(BOOL success, NSError *error) {
-            if (error || !success) {
-                OWSFailDebug(@"Image save failed: %@", error);
-            }
-        }];
-}
-
 - (BOOL)canForwardMessage
 {
     switch (self.messageCellType) {
@@ -1479,7 +1353,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         case OWSMessageCellType_GenericAttachment:
             return self.attachmentStream != nil;
         case OWSMessageCellType_MediaMessage:
-            return [self canSaveMedia];
+            return [self canShareMedia];
         case OWSMessageCellType_OversizeTextDownloading:
             return NO;
         case OWSMessageCellType_StickerMessage:

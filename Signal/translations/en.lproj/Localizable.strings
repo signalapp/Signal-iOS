@@ -1417,9 +1417,6 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "This Month";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_MEDIA" = "Copy Media";
-
-/* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Copy Message Text";
 
 /* Action sheet button title */
@@ -1433,6 +1430,9 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Reply to This Message";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";
@@ -1581,12 +1581,10 @@
 /* info message text in conversation view */
 "MISSED_CALL" = "Missed call";
 
-/* Alert body
-   Alert body when camera is not authorized */
+/* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app to make video calls in Signal.";
 
-/* Alert title
-   Alert title when camera is not authorized */
+/* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal needs to access your camera.";
 
 /* Alert body indicating the user has denied location permissios */
@@ -2794,9 +2792,6 @@
 
 /* Default title for sticker packs. */
 "STICKERS_PACK_DEFAULT_TITLE" = "Sticker Pack";
-
-/* Error message shown when a sticker pack failed to install. */
-"STICKERS_PACK_INSTALL_FAILED" = "Sticker pack install failed.";
 
 /* Title of the 'share sticker pack' view. */
 "STICKERS_PACK_SHARE_VIEW_TITLE" = "Share Sticker Pack";

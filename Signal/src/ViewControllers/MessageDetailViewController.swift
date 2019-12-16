@@ -47,8 +47,10 @@ class MessageDetailViewController: OWSViewController {
     var scrollView: UIScrollView!
     var contentView: UIView?
 
-    var attachment: TSAttachment?
-    var attachmentStream: TSAttachmentStream?
+    var attachments: [TSAttachment]?
+    var attachmentStreams: [TSAttachmentStream]? {
+        return attachments?.flatMap { $0 as? TSAttachmentStream }
+    }
     var messageBody: String?
 
     lazy var shouldShowUD: Bool = {
@@ -188,10 +190,16 @@ class MessageDetailViewController: OWSViewController {
             footer.autoPinWidthToSuperview(withMargin: 0)
             footer.autoPinEdge(.top, to: .bottom, of: scrollView)
             footer.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+            footer.tintColor = Theme.primaryIconColor
 
             footer.items = [
                 UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-                UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareButtonPressed)),
+                UIBarButtonItem(
+                    image: Theme.iconImage(.messageActionShare),
+                    style: .plain,
+                    target: self,
+                    action: #selector(shareButtonPressed)
+                ),
                 UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
             ]
         } else {
@@ -433,28 +441,8 @@ class MessageDetailViewController: OWSViewController {
         return rows
     }
 
-    private func fetchAttachment(transaction: SDSAnyReadTransaction) -> TSAttachment? {
-        // TODO: Support multi-image messages.
-        guard let attachmentId = message.attachmentIds.first else {
-            return nil
-        }
-
-        guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) else {
-            Logger.warn("Missing attachment. Was it deleted?")
-            return nil
-        }
-
-        return attachment
-    }
-
     var hasMediaAttachment: Bool {
-        guard let attachment = self.attachment else {
-            return false
-        }
-
-        guard attachment.contentType != OWSMimeTypeOversizeTextMessage else {
-            // to the user, oversized text attachments should behave
-            // just like regular text messages.
+        guard let attachmentStreams = self.attachmentStreams, !attachmentStreams.isEmpty else {
             return false
         }
 
@@ -470,7 +458,7 @@ class MessageDetailViewController: OWSViewController {
 
         var rows = [UIView]()
 
-        if let attachment = self.attachment {
+        if self.attachments?.count == 1, let attachment = self.attachments?.first {
             if let sourceFilename = attachment.sourceFilename {
                 rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SOURCE_FILENAME",
                                                              comment: "Label for the original filename of any attachment in the 'message metadata' view."),
@@ -553,11 +541,11 @@ class MessageDetailViewController: OWSViewController {
     // MARK: - Actions
 
     @objc func shareButtonPressed(_ sender: UIBarButtonItem) {
-        guard let attachmentStream = attachmentStream else {
-            Logger.error("Share button should only be shown with attachment, but no attachment found.")
+        guard let attachmentStreams = attachmentStreams, !attachmentStreams.isEmpty else {
+            Logger.error("Share button should only be shown with attachments, but no attachments found.")
             return
         }
-        AttachmentSharing.showShareUI(forAttachment: attachmentStream, sender: sender)
+        AttachmentSharing.showShareUI(forAttachments: attachmentStreams, sender: sender)
     }
 
     // MARK: - Actions
@@ -578,8 +566,7 @@ class MessageDetailViewController: OWSViewController {
                 throw DetailViewError.messageWasDeleted
             }
             self.message = newMessage
-            self.attachment = self.fetchAttachment(transaction: transaction)
-            self.attachmentStream = self.attachment as? TSAttachmentStream
+            self.attachments = newMessage.mediaAttachments(with: transaction)
         }
     }
 

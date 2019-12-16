@@ -6,6 +6,7 @@
 #import "UIUtil.h"
 #import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/AppContext.h>
+#import <SignalServiceKit/FunctionalUtil.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -17,6 +18,15 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(stream);
 
     [self showShareUIForURL:stream.originalMediaURL sender:sender];
+}
+
++ (void)showShareUIForAttachments:(NSArray<TSAttachmentStream *> *)attachments sender:(nullable id)sender
+{
+    OWSAssertDebug(attachments.count > 0);
+
+    [self showShareUIForURLs:[attachments map:^(TSAttachmentStream *attachment){
+        return attachment.originalMediaURL;
+    }] sender:sender completion:nil];
 }
 
 + (void)showShareUIForURL:(NSURL *)url sender:(nullable id)sender
@@ -114,7 +124,7 @@ NS_ASSUME_NONNULL_BEGIN
             } else if ([sender isKindOfClass:[UIView class]]) {
                 UIView *viewSender = (UIView *)sender;
                 activityViewController.popoverPresentationController.sourceView = viewSender;
-                activityViewController.popoverPresentationController.sourceRect = viewSender.frame;
+                activityViewController.popoverPresentationController.sourceRect = viewSender.bounds;
             } else {
                 if (sender) {
                     OWSFailDebug(@"Unexpected sender of type %@", NSStringFromClass([sender class]));
