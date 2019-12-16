@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -67,7 +67,7 @@ public class IncomingGroupSyncJobQueue: NSObject, JobQueue {
 public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
     public typealias JobRecordType = OWSIncomingGroupSyncJobRecord
     public typealias DurableOperationDelegateType = IncomingGroupSyncJobQueue
-    public var durableOperationDelegate: IncomingGroupSyncJobQueue?
+    public weak var durableOperationDelegate: IncomingGroupSyncJobQueue?
     public var jobRecord: OWSIncomingGroupSyncJobRecord
     public var operation: OWSOperation {
         return self
@@ -175,7 +175,11 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
                 try databaseStorage.write { transaction in
                     while let nextGroup = try groupStream.decodeGroup() {
                         autoreleasepool {
-                            self.process(groupDetails: nextGroup, transaction: transaction)
+                            do {
+                                try self.process(groupDetails: nextGroup, transaction: transaction)
+                            } catch {
+                                owsFailDebug("Error: \(error)")
+                            }
                         }
                     }
                 }
@@ -183,45 +187,37 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
         }
     }
 
-    private func process(groupDetails: GroupDetails, transaction: SDSAnyWriteTransaction) {
-        var threadDidChange = false
+    private func process(groupDetails: GroupDetails, transaction: SDSAnyWriteTransaction) throws {
 
-        // GroupsV2 TODO: Use GroupManager
+        // GroupsV2 TODO: Eventually we might want to default to V2.
+        var groupsVersion: GroupsVersion = .V1
+        if let groupsVersionReceived = groupDetails.groupsVersion {
+            groupsVersion = groupsVersionReceived
+        }
+        let result = try GroupManager.upsertExistingGroup(members: groupDetails.memberAddresses,
+                                                          name: groupDetails.name,
+                                                          avatarData: groupDetails.avatarData,
+                                                          groupId: groupDetails.groupId,
+                                                          groupsVersion: groupsVersion,
+                                                          groupSecretParamsData: groupDetails.groupSecretParamsData,
+                                                          shouldSendMessage: false,
+                                                          transaction: transaction)
 
-        let groupThread: TSGroupThread
-        let isNewThread: Bool
-        let groupModel: TSGroupModel
-        if let existingThread = TSGroupThread.getWithGroupId(groupDetails.groupId, transaction: transaction) {
-            groupModel = TSGroupModel(groupId: groupDetails.groupId,
-                                      name: groupDetails.name,
-                                      avatarData: groupDetails.avatarData,
-                                      members: groupDetails.memberAddresses,
-                                      groupsVersion: existingThread.groupModel.groupsVersion)
-            if !groupModel.isEqual(to: existingThread.groupModel) {
-                threadDidChange = true
-                existingThread.groupModel = groupModel
-            }
+        let groupThread = result.thread
+        let groupModel = groupThread.groupModel
+        let isNewThread = result.action == .inserted
+        var groupNeedsUpdate = false
 
-            groupThread = existingThread
-            isNewThread = false
-        } else {
-            groupModel = TSGroupModel(groupId: groupDetails.groupId,
-                                      name: groupDetails.name,
-                                      avatarData: groupDetails.avatarData,
-                                      members: groupDetails.memberAddresses,
-                                      groupsVersion: GroupManager.defaultGroupsVersion)
-            let newThread = TSGroupThread(groupModel: groupModel)
-            newThread.shouldThreadBeVisible = true
-
-            groupThread = newThread
-            isNewThread = true
+        if isNewThread {
+            groupThread.shouldThreadBeVisible = true
+            groupNeedsUpdate = true
         }
 
         if let rawSyncedColorName = groupDetails.conversationColorName {
             let conversationColorName = ConversationColorName(rawValue: rawSyncedColorName)
             if conversationColorName != groupThread.conversationColorName {
-                threadDidChange = true
                 groupThread.conversationColorName = conversationColorName
+                groupNeedsUpdate = true
             }
         }
 
@@ -236,15 +232,15 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
         }
 
         if isNewThread {
-            groupThread.anyInsert(transaction: transaction)
-
             let inboxSortOrder = groupDetails.inboxSortOrder ?? UInt32.max
             newThreads.append((threadId: groupThread.uniqueId, sortOrder: inboxSortOrder))
 
             if let isArchived = groupDetails.isArchived, isArchived == true {
                 groupThread.archiveThread(with: transaction)
             }
-        } else if threadDidChange {
+        }
+
+        if groupNeedsUpdate {
             groupThread.anyOverwritingUpdate(transaction: transaction)
         }
 

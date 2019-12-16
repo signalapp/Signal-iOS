@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 @class OWSAES256Key;
@@ -27,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
 - (BOOL)isThreadInProfileWhitelist:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
+
+- (void)addThreadToProfileWhitelist:(TSThread *)thread;
 
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address;
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address;

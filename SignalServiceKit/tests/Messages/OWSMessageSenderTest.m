@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDisappearingMessagesConfiguration.h"
@@ -482,20 +482,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     __block TSGroupThread *thread;
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        NSError *error;
-        thread = [GroupManager createGroupForTestsObjcWithTransaction:transaction
-                                                                             members:@[
-                                                                                       successfulRecipient.address,
-                                                                                       successfulRecipient2.address,
-                                                                                       ]
-                                                                 name:@"group title"
-                                                                          avatarData:nil
-                                                                               error:&error];
-        if (error != nil) {
-            OWSFailDebug(@"Error: %@", error);
-        }
+        thread = [GroupManager createGroupForTestsObjcWithMembers:@[
+            successfulRecipient.address,
+            successfulRecipient2.address,
+        ]
+                                                             name:@"group title"
+                                                       avatarData:nil
+                                                      transaction:transaction];
     }];
-        
+
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:1
                                                                      inThread:groupThread
                                                                   messageBody:@"We want punks in the palace."];

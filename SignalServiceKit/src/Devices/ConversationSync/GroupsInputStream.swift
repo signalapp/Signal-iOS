@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -14,6 +14,8 @@ public struct GroupDetails {
     public let avatarData: Data?
     public let isArchived: Bool?
     public let inboxSortOrder: UInt32?
+    public let groupsVersion: GroupsVersion?
+    public let groupSecretParamsData: Data?
 }
 
 public class GroupsInputStream {
@@ -45,6 +47,10 @@ public class GroupsInputStream {
             }
         }
 
+        // GroupsV2 TODO: Send and receive these values.
+        let groupsVersion: GroupsVersion? = GroupsVersion.V1
+        let groupSecretParamsData: Data? = nil
+
         return GroupDetails(groupId: groupDetails.id,
                             name: groupDetails.name,
                             memberAddresses: groupDetails.memberAddresses,
@@ -53,6 +59,8 @@ public class GroupsInputStream {
                             expireTimer: groupDetails.expireTimer,
                             avatarData: avatarData,
                             isArchived: groupDetails.hasArchived ? groupDetails.archived : nil,
-                            inboxSortOrder: groupDetails.hasInboxPosition ? groupDetails.inboxPosition : nil)
+                            inboxSortOrder: groupDetails.hasInboxPosition ? groupDetails.inboxPosition : nil,
+                            groupsVersion: groupsVersion,
+                            groupSecretParamsData: groupSecretParamsData)
     }
 }

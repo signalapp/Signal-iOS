@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -183,12 +183,7 @@ public class ProvisioningController: NSObject {
             .secondaryDevicePublicKey
             .serialized
             .base64EncodedString()
-
-        // Match behavior of encodeURIComponent used by desktop.
-        var characterSet = CharacterSet.alphanumerics
-        characterSet.insert(charactersIn: "-_.!~*'()")
-
-        guard let encodedPubKey = base64PubKey.addingPercentEncoding(withAllowedCharacters: characterSet) else {
+        guard let encodedPubKey = base64PubKey.encodeURIComponent else {
             throw OWSAssertionError("Failed to url encode query params")
         }
 

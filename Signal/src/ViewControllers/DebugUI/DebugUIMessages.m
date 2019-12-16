@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIMessages.h"
@@ -4401,18 +4401,13 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         member,
         TSAccountManager.localAddress,
     ];
-    [GroupManager createGroupObjcWithMembers:members
+    [GroupManager createNewGroupObjcWithMembers:members
         groupId:nil
         name:groupName
         avatarData:nil
+        shouldSendMessage:YES
         success:^(TSGroupThread *thread) {
-            [GroupManager sendDurableNewGroupMessageObjcForThread:thread
-                success:^{
-                    success(thread);
-                }
-                failure:^(NSError *error) {
-                    OWSFailDebug(@"Error: %@", error);
-                }];
+            success(thread);
         }
         failure:^(NSError *error) {
             OWSFailDebug(@"Error: %@", error);

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -12,6 +12,17 @@ public enum ProfileFetchError: Int, Error {
     case missing
     case throttled
     case notMainApp
+    case cantRequestVersionedProfile
+}
+
+// MARK: -
+
+@objc
+public enum ProfileFetchType: UInt {
+    // .default fetches honor FeatureFlag.versionedProfiledFetches
+    case `default`
+    case unversioned
+    case versioned
 }
 
 // MARK: -
@@ -22,15 +33,17 @@ public class ProfileFetchOptions: NSObject {
     fileprivate let ignoreThrottling: Bool
     // TODO: Do we ever want to fetch but not update our local profile store?
     fileprivate let shouldUpdateProfile: Bool
+    fileprivate let fetchType: ProfileFetchType
 
     fileprivate init(mainAppOnly: Bool = true,
                      ignoreThrottling: Bool = false,
-                     shouldUpdateProfile: Bool = true) {
+                     shouldUpdateProfile: Bool = true,
+                     fetchType: ProfileFetchType = .default) {
         self.mainAppOnly = mainAppOnly
         self.ignoreThrottling = ignoreThrottling
         self.shouldUpdateProfile = shouldUpdateProfile
+        self.fetchType = fetchType
     }
-
 }
 
 // MARK: -
@@ -43,7 +56,7 @@ private enum ProfileRequestSubject {
 extension ProfileRequestSubject: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(hashTypeConstant)
-        switch(self) {
+        switch self {
         case .address(let address):
             hasher.combine(address)
         case .username(let username):
@@ -52,7 +65,7 @@ extension ProfileRequestSubject: Hashable {
     }
 
     var hashTypeConstant: String {
-        switch(self) {
+        switch self {
         case .address:
             return "address"
         case .username:
@@ -92,11 +105,13 @@ public class ProfileFetcherJob: NSObject {
     public class func fetchAndUpdateProfilePromise(address: SignalServiceAddress,
                                                    mainAppOnly: Bool = true,
                                                    ignoreThrottling: Bool = false,
-                                                   shouldUpdateProfile: Bool = true) -> Promise<SignalServiceProfile> {
+                                                   shouldUpdateProfile: Bool = true,
+                                                   fetchType: ProfileFetchType = .default) -> Promise<SignalServiceProfile> {
         let subject = ProfileRequestSubject.address(address: address)
         let options = ProfileFetchOptions(mainAppOnly: mainAppOnly,
                                           ignoreThrottling: ignoreThrottling,
-                                          shouldUpdateProfile: shouldUpdateProfile)
+                                          shouldUpdateProfile: shouldUpdateProfile,
+                                          fetchType: fetchType)
         return ProfileFetcherJob(subject: subject, options: options).runAsPromise()
     }
 
@@ -285,14 +300,32 @@ public class ProfileFetcherJob: NSObject {
     private func requestProfileAttempt(username: String) -> Promise<SignalServiceProfile> {
         Logger.info("username")
 
+        guard options.fetchType != .versioned else {
+            return Promise(error: ProfileFetchError.cantRequestVersionedProfile)
+        }
+
         let request = OWSRequestFactory.getProfileRequest(withUsername: username)
         return networkManager.makePromise(request: request)
             .map(on: DispatchQueue.global()) { try SignalServiceProfile(address: nil, responseObject: $1)
         }
     }
 
+    private var shouldUseVersionedFetchForUuids: Bool {
+        switch options.fetchType {
+        case .default:
+            return FeatureFlags.versionedProfiledFetches
+        case .versioned:
+            return true
+        case .unversioned:
+            return false
+        }
+    }
+
     private func requestProfileAttempt(address: SignalServiceAddress) -> Promise<SignalServiceProfile> {
-        Logger.info("address: \(address)")
+        Logger.verbose("address: \(address)")
+
+        let shouldUseVersionedFetch = (shouldUseVersionedFetchForUuids
+            && address.uuid != nil)
 
         // Don't use UD for "self" profile fetches.
         var udAccess: OWSUDAccess?
@@ -302,9 +335,24 @@ public class ProfileFetcherJob: NSObject {
         }
 
         let canFailoverUDAuth = true
+        var currentRequest: VersionedProfileRequest?
         let requestMaker = RequestMaker(label: "Profile Fetch",
-                                        requestFactoryBlock: { (udAccessKeyForRequest) -> TSRequest in
-                                            return OWSRequestFactory.getProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
+                                        requestFactoryBlock: { (udAccessKeyForRequest) -> TSRequest? in
+                                            // Clear out any existing request.
+                                            currentRequest = nil
+
+                                            if shouldUseVersionedFetch {
+                                                do {
+                                                    let request = try VersionedProfiles.versionedProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
+                                                    currentRequest = request
+                                                    return request.request
+                                                } catch {
+                                                    owsFailDebug("Error: \(error)")
+                                                    return nil
+                                                }
+                                            } else {
+                                                return OWSRequestFactory.getUnversionedProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
+                                            }
         }, udAuthFailureBlock: {
             // Do nothing
         }, websocketFailureBlock: {
@@ -315,6 +363,11 @@ public class ProfileFetcherJob: NSObject {
         return requestMaker.makeRequest()
             .map(on: DispatchQueue.global()) { (result: RequestMakerResult) -> SignalServiceProfile in
                 try SignalServiceProfile(address: address, responseObject: result.responseObject)
+        }.map(on: DispatchQueue.global()) { (profile: SignalServiceProfile) -> SignalServiceProfile in
+            if let currentRequest = currentRequest {
+                VersionedProfiles.didFetchProfile(profile: profile, profileRequest: currentRequest)
+            }
+            return profile
         }
     }
 

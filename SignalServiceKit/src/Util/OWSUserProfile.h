@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/BaseModel.h>
@@ -72,18 +72,14 @@ NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:profileKey:profi
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
                avatarFileName:(nullable NSString *)avatarFileName
                   transaction:(SDSAnyWriteTransaction *)transaction
-                   completion:(nullable OWSUserProfileCompletion)completion;
+                   completion:(nullable OWSUserProfileCompletion)completion
+    NS_SWIFT_NAME(update(profileName:avatarUrlPath:avatarFileName:transaction:completion:));
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
                      username:(nullable NSString *)username
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
                   transaction:(SDSAnyWriteTransaction *)transaction
                    completion:(nullable OWSUserProfileCompletion)completion;
-
-- (void)updateWithAvatarUrlPath:(nullable NSString *)avatarUrlPath
-                 avatarFileName:(nullable NSString *)avatarFileName
-                    transaction:(SDSAnyWriteTransaction *)transaction
-                     completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithAvatarFileName:(nullable NSString *)avatarFileName
                      transaction:(SDSAnyWriteTransaction *)transaction

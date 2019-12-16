@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -8,6 +8,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class AnyPromise;
 @class TSAttachmentStream;
+
+@protocol AFMultipartFormData;
+
+void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, NSString *dataString);
+
+@interface OWSUploadForm : NSObject
+
+// These properties will bet set for all uploads.
+@property (nonatomic) NSString *formAcl;
+@property (nonatomic) NSString *formKey;
+@property (nonatomic) NSString *formPolicy;
+@property (nonatomic) NSString *formAlgorithm;
+@property (nonatomic) NSString *formCredential;
+@property (nonatomic) NSString *formDate;
+@property (nonatomic) NSString *formSignature;
+
+// These properties will bet set for all attachment uploads.
+@property (nonatomic, nullable) NSNumber *attachmentId;
+@property (nonatomic, nullable) NSString *attachmentIdString;
+
++ (nullable OWSUploadForm *)parse:(nullable NSDictionary *)formResponseObject;
+
+- (void)appendToForm:(id<AFMultipartFormData>)formData;
+
+@end
+
+#pragma mark -
 
 typedef void (^UploadProgressBlock)(NSProgress *progress);
 
@@ -22,7 +49,6 @@ typedef void (^UploadProgressBlock)(NSProgress *progress);
 @property (nonatomic, nullable) NSString *urlPath;
 
 - (AnyPromise *)uploadAvatarToService:(NSData *_Nullable)avatarData
-                     clearLocalAvatar:(dispatch_block_t)clearLocalAvatar
                         progressBlock:(UploadProgressBlock)progressBlock;
 
 @end

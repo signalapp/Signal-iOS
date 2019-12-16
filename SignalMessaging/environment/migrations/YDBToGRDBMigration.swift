@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -296,12 +296,14 @@ extension YDBToGRDBMigration {
             GRDBKeyValueStoreMigrator<Any>(label: "OWSProfileManager.whitelistedPhoneNumbersStore", keyStore: profileManager.whitelistedPhoneNumbersStore, ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSProfileManager.whitelistedUUIDsStore", keyStore: profileManager.whitelistedUUIDsStore, ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSProfileManager.whitelistedGroupsStore", keyStore: profileManager.whitelistedGroupsStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSProfileManager.settingsStore", keyStore: OWSProfileManager.settingsStore, ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSScreenLock.keyValueStore", keyStore: OWSScreenLock.shared.keyValueStore, ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSSounds", keyStore: OWSSounds.keyValueStore(), ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "Theme", keyStore: Theme.keyValueStore(), ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSSyncManager", keyStore: OWSSyncManager.keyValueStore(), ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSOutgoingReceiptManager.deliveryReceiptStore", keyStore: OWSOutgoingReceiptManager.deliveryReceiptStore(), ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSOutgoingReceiptManager.readReceiptStore", keyStore: OWSOutgoingReceiptManager.readReceiptStore(), ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "VersionedProfiles.credentialStore", keyStore: VersionedProfiles.credentialStore, ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "KeyBackupService.keyValueStore", keyStore: KeyBackupService.keyValueStore, ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "KeyBackupService.tokenStore", keyStore: KeyBackupService.tokenStore, ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "StorageServiceOperation", keyStore: StorageServiceOperation.keyValueStore, ydbTransaction: ydbTransaction)

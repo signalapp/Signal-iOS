@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBlockingManager.h"
@@ -255,6 +255,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     }];
 
     BOOL hasGroupChanges = NO;
+    NSDictionary<NSData *, TSGroupModel *> *oldGroupMap;
 
     @synchronized(self)
     {
@@ -291,6 +292,8 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         if (!hasChanges) {
             return;
         }
+
+        oldGroupMap = [self.blockedGroupMap copy];
     }
 
     // Re-generate the group map only if the groupIds have changed.
@@ -298,8 +301,31 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         NSMutableDictionary<NSData *, TSGroupModel *> *newGroupMap = [NSMutableDictionary new];
 
         for (NSData *groupId in blockedGroupIds) {
-            TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupId:groupId transaction:transaction];
-            newGroupMap[groupId] = groupThread.groupModel;
+            // We store the list of blocked groups as GroupModels (not group ids)
+            // so that we can display the group names in the block list UI, if
+            // possible.
+            //
+            // * If we have an existing group model, we use it to preserve the group name.
+            // * If we can find the group thread, we use it to preserve the group name.
+            // * If we only know the group id, we use a "fake" group model with only the group id.
+            TSGroupModel *_Nullable oldGroupModel = oldGroupMap[groupId];
+            if (oldGroupModel != nil) {
+                newGroupMap[groupId] = oldGroupModel;
+                continue;
+            }
+
+            TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+            if (groupThread != nil) {
+                newGroupMap[groupId] = groupThread.groupModel;
+                continue;
+            }
+
+            TSGroupModel *_Nullable groupModel = [GroupManager fakeGroupModelWithGroupId:groupId];
+            if (groupModel != nil) {
+                newGroupMap[groupId] = groupModel;
+            } else {
+                OWSFailDebug(@"Couldn't block group: %@", groupId);
+            }
         }
 
         @synchronized(self) {
@@ -498,7 +524,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     NSArray<NSString *> *blockedPhoneNumbers = [self blockedPhoneNumbers];
     NSArray<NSString *> *blockedUUIDs = [self blockedUUIDs];
 
-    NSDictionary *blockedGroupMap;
+    NSDictionary<NSData *, TSGroupModel *> *blockedGroupMap;
     @synchronized(self) {
         blockedGroupMap = [self.blockedGroupMap copy];
     }
