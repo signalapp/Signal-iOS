@@ -331,6 +331,12 @@ class PhotoCaptureViewController: OWSViewController {
     @objc
     func didDoubleTapToSwitchCamera(tapGesture: UITapGestureRecognizer) {
         Logger.debug("")
+        guard !isRecordingMovie else {
+            // - Orientation gets out of sync when switching cameras mid movie.
+            // - Audio gets out of sync when switching cameras mid movie
+            // https://stackoverflow.com/questions/13951182/audio-video-out-of-sync-after-switch-camera
+            return
+        }
         switchCamera()
     }
 
