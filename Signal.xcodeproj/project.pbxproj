@@ -2703,8 +2703,11 @@
 		B8439518228510E9000563FE /* Loki */ = {
 			isa = PBXGroup;
 			children = (
+				B8CCF63B239757C10091D419 /* Components */,
 				B8BFFF392355426100102A27 /* Messaging */,
-				B8CCF63A2397572B0091D419 /* Redesign */,
+				B8BB82A3238F356800BA5194 /* Style Guide */,
+				B8CCF63C239757DB0091D419 /* Utilities */,
+				B8CCF63D2397580E0091D419 /* View Controllers */,
 			);
 			path = Loki;
 			sourceTree = "<group>";
@@ -2747,17 +2750,6 @@
 				B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */,
 			);
 			path = Messaging;
-			sourceTree = "<group>";
-		};
-		B8CCF63A2397572B0091D419 /* Redesign */ = {
-			isa = PBXGroup;
-			children = (
-				B8CCF63B239757C10091D419 /* Components */,
-				B8BB82A3238F356800BA5194 /* Style Guide */,
-				B8CCF63C239757DB0091D419 /* Utilities */,
-				B8CCF63D2397580E0091D419 /* View Controllers */,
-			);
-			path = Redesign;
 			sourceTree = "<group>";
 		};
 		B8CCF63B239757C10091D419 /* Components */ = {
