@@ -411,7 +411,11 @@ private struct GRDBStorage {
 
                     return result
                 }
-                Logger.info(filter(logString))
+                if FeatureFlags.filterLoggedSQLQueries {
+                    Logger.info(filter(logString))
+                } else {
+                    Logger.info(logString)
+                }
             }
         }
         configuration.label = "Modern (GRDB) Storage"      // Useful when your app opens multiple databases

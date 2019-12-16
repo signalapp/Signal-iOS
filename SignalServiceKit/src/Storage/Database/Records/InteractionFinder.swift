@@ -1017,6 +1017,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(sqlClauseForAllUnreadInteractions)
+            ORDER BY \(interactionColumn: .id)
         """
         let arguments: StatementArguments = [threadUniqueId]
         let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
