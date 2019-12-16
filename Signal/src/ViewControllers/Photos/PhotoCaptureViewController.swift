@@ -71,12 +71,14 @@ class PhotoCaptureViewController: OWSViewController {
         if UIDevice.current.isIPad {
             captureButton.autoVCenterInSuperview()
             captureButton.centerXAnchor.constraint(equalTo: view.trailingAnchor, constant: SendMediaNavigationController.bottomButtonsCenterOffset).isActive = true
+            captureButton.movieLockView.autoSetDimension(.width, toSize: 120)
         } else {
             captureButton.autoHCenterInSuperview()
             // we pin to edges rather than margin, because on notched devices the margin changes
             // as the device rotates *EVEN THOUGH* the interface is locked to portrait.
             captureButton.centerYAnchor.constraint(equalTo: view.bottomAnchor,
                                                    constant: SendMediaNavigationController.bottomButtonsCenterOffset).isActive = true
+            captureButton.movieLockView.autoPinEdge(.trailing, to: .trailing, of: view, withOffset: -16)
         }
 
         // If the view is already visible, setup the volume button listener
@@ -672,7 +674,7 @@ class CaptureButton: UIView {
         zoomIndicator.autoAlignAxis(.vertical, toSameAxisOf: innerButton)
 
         addSubview(movieLockView)
-        movieLockView.autoSetDimensions(to: CGSize(width: 120, height: 50))
+        movieLockView.autoSetDimension(.height, toSize: 50)
         movieLockView.stopButton.autoAlignAxis(.horizontal, toSameAxisOf: self)
         movieLockView.stopButton.autoAlignAxis(.vertical, toSameAxisOf: self)
         movieLockView.alpha = 0
