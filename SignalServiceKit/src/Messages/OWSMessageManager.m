@@ -43,6 +43,7 @@
 #import "TSOutgoingMessage.h"
 #import "TSQuotedMessage.h"
 #import <SignalCoreKit/Cryptography.h>
+#import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalServiceKit/OWSUnknownProtocolVersionMessage.h>
@@ -52,6 +53,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSMessageManager () <SDSDatabaseStorageObserver>
+
+// This should only be accessed while synchronized on self.
+@property (nonatomic, readonly) NSMutableSet<NSString *> *groupInfoRequestSet;
 
 @end
 
@@ -66,6 +70,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self) {
         return self;
     }
+
+    _groupInfoRequestSet = [NSMutableSet new];
 
     OWSSingletonAssert();
 
@@ -610,6 +616,21 @@ NS_ASSUME_NONNULL_BEGIN
     if (groupId.length < 1) {
         OWSFailDebug(@"Invalid groupId.");
         return;
+    }
+
+    // We don't want to send more than one "group info request"
+    // per group-sender pair per session.  Otherwise, when processing
+    // N incoming messages from Alice in Group X we might send Alice
+    // N "group info requests".
+    NSString *requestKey =
+        [NSString stringWithFormat:@"%@.%@", groupId.hexadecimalString, envelope.sourceAddress.stringForDisplay];
+    @synchronized(self) {
+        BOOL shouldSkipRequest = [self.groupInfoRequestSet containsObject:requestKey];
+        if (shouldSkipRequest) {
+            OWSLogInfo(@"Skipping group info request for: %@", envelope.sourceAddress.stringForDisplay);
+            return;
+        }
+        [self.groupInfoRequestSet addObject:requestKey];
     }
 
     // FIXME: https://github.com/signalapp/Signal-iOS/issues/1340
