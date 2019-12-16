@@ -96,32 +96,32 @@ public extension Theme {
 
         // Input Toolbar
         case .stickerButton:
-            return isDarkThemeEnabled ? "sticker-smiley-solid-24" :  "sticker-smiley-outline-24"
+            return isDarkThemeEnabled ? "sticker-solid-24" : "sticker-outline-24"
         case .cameraButton:
-            return isDarkThemeEnabled ? "camera-solid-24" :  "camera-outline-24"
+            return isDarkThemeEnabled ? "camera-solid-24" : "camera-outline-24"
         case .micButton:
-            return isDarkThemeEnabled ? "mic-solid-24" :  "mic-outline-24"
+            return isDarkThemeEnabled ? "mic-solid-24" : "mic-outline-24"
         case .attachmentButtonSelected:
             return isDarkThemeEnabled ? "x-box-filled-28-dark" : "x-box-filled-28-light"
         case .attachmentCamera:
-            return isDarkThemeEnabled ? "camera-outline-32" :  "camera-outline-32-with-background"
+            return isDarkThemeEnabled ? "camera-outline-32" : "camera-outline-32-with-background"
         case .attachmentContact:
-            return isDarkThemeEnabled ? "contact-outline-32" :  "contact-outline-32-with-background"
+            return isDarkThemeEnabled ? "contact-outline-32" : "contact-outline-32-with-background"
         case .attachmentFile:
-            return isDarkThemeEnabled ? "file-outline-32" :  "file-outline-32-with-background"
+            return isDarkThemeEnabled ? "file-outline-32" : "file-outline-32-with-background"
         case .attachmentGif:
-            return isDarkThemeEnabled ? "gif-outline-32" :  "gif-outline-32-with-background"
+            return isDarkThemeEnabled ? "gif-outline-32" : "gif-outline-32-with-background"
         case .attachmentLocation:
-            return isDarkThemeEnabled ? "location-outline-32" :  "location-outline-32-with-background"
+            return isDarkThemeEnabled ? "location-outline-32" : "location-outline-32-with-background"
 
         case .messageActionReply:
-            return isDarkThemeEnabled ? "reply-filled-24" :  "reply-outline-24"
+            return isDarkThemeEnabled ? "reply-filled-24" : "reply-outline-24"
         case .messageActionForward:
-            return isDarkThemeEnabled ? "forward-solid-24" :  "forward-outline-24"
+            return isDarkThemeEnabled ? "forward-solid-24" : "forward-outline-24"
         case .messageActionCopy:
-            return isDarkThemeEnabled ? "copy-solid-24" :  "ic_copy"
+            return isDarkThemeEnabled ? "copy-solid-24" : "ic_copy"
         case .messageActionDelete:
-            return isDarkThemeEnabled ? "trash-solid-24" :  "trash-outline-24"
+            return isDarkThemeEnabled ? "trash-solid-24" : "trash-outline-24"
         case .messageActionSave:
             // There is no separate dark theme version of this icon, by design.
             return "save-24"
@@ -137,7 +137,7 @@ public extension Theme {
         case .call:
             return isDarkThemeEnabled ? "button_phone_white" : "phone-right-outline-24"
         case .info:
-            return isDarkThemeEnabled ? "info-solid-24" :  "ic_info"
+            return isDarkThemeEnabled ? "info-solid-24" : "ic_info"
         }
     }
 }
