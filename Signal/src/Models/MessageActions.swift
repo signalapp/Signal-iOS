@@ -55,13 +55,13 @@ struct MessageActionBuilder {
         })
     }
 
-    static func copyMedia(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
-        let image = Theme.iconImage(.messageActionCopy)
+    static func shareMedia(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
+        let image = Theme.iconImage(.messageActionShare)
         return MessageAction(image: image,
-                             accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_COPY_MEDIA", comment: "Action sheet button title"),
-                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "copy_media"),
-                             block: { (_) in
-                                conversationViewItem.copyMediaAction()
+                             accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_SHARE_MEDIA", comment: "Action sheet button title"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "share_media"),
+                             block: { sender in
+                                conversationViewItem.shareMediaAction(sender)
         })
     }
 
@@ -117,8 +117,8 @@ class ConversationViewItemActions: NSObject {
         actions.append(deleteAction)
 
         if conversationViewItem.hasMediaActionContent {
-            if conversationViewItem.canCopyMedia() {
-                let copyMediaAction = MessageActionBuilder.copyMedia(conversationViewItem: conversationViewItem, delegate: delegate)
+            if conversationViewItem.canShareMedia() {
+                let copyMediaAction = MessageActionBuilder.shareMedia(conversationViewItem: conversationViewItem, delegate: delegate)
                 actions.append(copyMediaAction)
             }
         }

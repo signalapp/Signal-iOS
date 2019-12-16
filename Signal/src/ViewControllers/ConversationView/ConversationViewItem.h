@@ -174,13 +174,11 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 @property (nonatomic, readonly) BOOL hasBodyTextActionContent;
 @property (nonatomic, readonly) BOOL hasMediaActionContent;
 
-- (void)copyMediaAction;
+- (void)shareMediaAction:(nullable id)sender;
 - (void)copyTextAction;
-- (void)saveMediaAction;
 - (void)deleteAction;
 
-- (BOOL)canCopyMedia;
-- (BOOL)canSaveMedia;
+- (BOOL)canShareMedia;
 - (BOOL)canForwardMessage;
 
 // For view items that correspond to interactions, this is the interaction's unique id.

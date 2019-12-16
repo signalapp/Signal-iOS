@@ -36,6 +36,7 @@ public enum ThemeIcon: UInt {
     case messageActionReply
     case messageActionForward
     case messageActionCopy
+    case messageActionShare
     case messageActionDelete
     case messageActionSave
 
@@ -120,6 +121,9 @@ public extension Theme {
             return isDarkThemeEnabled ? "forward-solid-24" : "forward-outline-24"
         case .messageActionCopy:
             return isDarkThemeEnabled ? "copy-solid-24" : "ic_copy"
+        case .messageActionShare:
+            // There is no separate dark theme version of this icon, by design.
+            return "share-ios-24"
         case .messageActionDelete:
             return isDarkThemeEnabled ? "trash-solid-24" : "trash-outline-24"
         case .messageActionSave:

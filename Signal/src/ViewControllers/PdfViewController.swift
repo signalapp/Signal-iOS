@@ -102,12 +102,11 @@ public class PdfViewController: OWSViewController {
         toolbar.barTintColor = Theme.darkThemeBackgroundColor.withAlphaComponent(0.6)
         toolbar.tintColor = Theme.darkThemePrimaryColor
 
-        let forwardIcon = Theme.iconImage(.messageActionForward)
         setToolbarItems(
             [
-                UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareButtonPressed)),
+                UIBarButtonItem(image: Theme.iconImage(.messageActionShare), style: .plain, target: self, action: #selector(shareButtonPressed)),
                 UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-                UIBarButtonItem(image: forwardIcon, style: .plain, target: self, action: #selector(forwardButtonPressed))
+                UIBarButtonItem(image: Theme.iconImage(.messageActionForward), style: .plain, target: self, action: #selector(forwardButtonPressed))
             ],
             animated: false
         )

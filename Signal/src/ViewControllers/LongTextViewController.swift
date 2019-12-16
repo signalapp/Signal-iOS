@@ -137,12 +137,22 @@ public class LongTextViewController: OWSViewController {
         footer.autoPinWidthToSuperview()
         footer.autoPinEdge(.top, to: .bottom, of: messageTextView)
         footer.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        footer.tintColor = Theme.primaryIconColor
 
-        let forwardIcon = Theme.iconImage(.messageActionForward)
         footer.items = [
-            UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareButtonPressed)),
+            UIBarButtonItem(
+                image: Theme.iconImage(.messageActionShare),
+                style: .plain,
+                target: self,
+                action: #selector(shareButtonPressed)
+            ),
             UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-            UIBarButtonItem(image: forwardIcon, style: .plain, target: self, action: #selector(forwardButtonPressed))
+            UIBarButtonItem(
+                image: Theme.iconImage(.messageActionForward),
+                style: .plain,
+                target: self,
+                action: #selector(forwardButtonPressed)
+            )
         ]
     }
 
