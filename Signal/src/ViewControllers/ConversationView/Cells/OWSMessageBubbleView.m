@@ -1592,11 +1592,17 @@ NS_ASSUME_NONNULL_BEGIN
                     // Treat the tap as a "retry" tap if the user taps on a failed download.
                     [self.delegate didTapFailedIncomingAttachment:self.viewItem];
                     return;
+                } else {
+                    OWSLogWarn(@"Media attachment not yet downloaded.");
+                    return;
                 }
-            } else if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-                OWSLogWarn(@"Media attachment not yet downloaded.");
+            }
+
+            if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+                OWSFailDebug(@"unexpected attachment: %@", attachment);
                 return;
             }
+
             TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
             [self.delegate didTapImageViewItem:self.viewItem attachmentStream:attachmentStream imageView:mediaView];
             break;
