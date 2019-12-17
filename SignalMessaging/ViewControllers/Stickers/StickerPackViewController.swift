@@ -110,7 +110,6 @@ public class StickerPackViewController: OWSViewController {
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_semibold()
 
-        authorLabel.textColor = Theme.darkThemePrimaryColor
         authorLabel.font = UIFont.ows_dynamicTypeBody
 
         defaultPackIconView.setTemplateImageName("check-circle-filled-16", tintColor: UIColor.ows_signalBlue)
@@ -259,7 +258,9 @@ public class StickerPackViewController: OWSViewController {
 
         authorLabel.text = stickerPack.author?.filterForDisplay
 
-        defaultPackIconView.isHidden = !StickerManager.isDefaultStickerPack(stickerPack.info)
+        let isDefaultStickerPack = StickerManager.isDefaultStickerPack(stickerPack.info)
+        authorLabel.textColor = isDefaultStickerPack ? UIColor.ows_signalBlue : Theme.darkThemePrimaryColor
+        defaultPackIconView.isHidden = !isDefaultStickerPack
 
         // We need to consult StickerManager for the latest "isInstalled"
         // state, since the data source may be caching stale state.
