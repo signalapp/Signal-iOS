@@ -83,7 +83,7 @@ public class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
                     // If the initial touch moves too much without a second touch,
                     // this GR needs to fail - the gesture looks like a pan/swipe/etc.,
                     // not a pinch.
-                    let distance = CGPointDistance(location, gestureBeganLocation)
+                    let distance = location.distance(gestureBeganLocation)
                     let maxDistance: CGFloat = 10.0
                     guard distance <= maxDistance else {
                         failAndReset()
@@ -133,7 +133,7 @@ public class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
 
     public enum TouchState {
         case possible
-        case valid(pinchState : ImageEditorPinchState)
+        case valid(pinchState: ImageEditorPinchState)
         case invalid
     }
 
@@ -166,7 +166,7 @@ public class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
         let location1 = location(ofTouch: 1, in: referenceView)
 
         let centroid = CGPointScale(CGPointAdd(location0, location1), 0.5)
-        let distance = CGPointDistance(location0, location1)
+        let distance = location0.distance(location1)
 
         // The valence of the angle doesn't matter; we're only going to be using
         // changes to the angle.

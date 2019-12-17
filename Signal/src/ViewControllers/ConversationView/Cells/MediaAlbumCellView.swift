@@ -269,7 +269,7 @@ public class MediaAlbumCellView: UIStackView {
         var bestDistance: CGFloat = 0
         for itemView in itemViews {
             let itemCenter = convert(itemView.center, from: itemView.superview)
-            let distance = CGPointDistance(location, itemCenter)
+            let distance = location.distance(itemCenter)
             if bestMediaView != nil && distance > bestDistance {
                 continue
             }
