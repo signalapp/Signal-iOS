@@ -2784,7 +2784,7 @@ typedef enum : NSUInteger {
                 StickerPackViewController *packView =
                     [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
 
-                [packView presentFrom:self animated:NO];
+                [packView presentFrom:self animated:YES];
                 return;
             }
         }
