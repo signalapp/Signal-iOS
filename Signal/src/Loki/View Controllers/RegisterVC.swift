@@ -53,7 +53,7 @@ final class RegisterVC : UIViewController {
         navigationBar.barTintColor = Colors.navigationBarBackground
         // Set up logo image view
         let logoImageView = UIImageView()
-        logoImageView.image = #imageLiteral(resourceName: "Loki")
+        logoImageView.image = #imageLiteral(resourceName: "Session")
         logoImageView.contentMode = .scaleAspectFit
         logoImageView.set(.width, to: 32)
         logoImageView.set(.height, to: 32)
@@ -62,14 +62,14 @@ final class RegisterVC : UIViewController {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
-        titleLabel.text = NSLocalizedString("Say hello to your Loki Messenger ID", comment: "")
+        titleLabel.text = NSLocalizedString("Say hello to your Session ID", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Your Loki Messenger ID is the unique address that people can use to contact you on Loki Messenger. With no connection to your real identity, your Loki Messenger ID is totally anonymous and private by design.", comment: "")
+        explanationLabel.text = NSLocalizedString("Your Session ID is the unique address that people can use to contact you on Session. With no connection to your real identity, your Session ID is totally anonymous and private by design.", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Set up public key label container

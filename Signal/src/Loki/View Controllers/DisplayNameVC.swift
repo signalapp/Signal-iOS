@@ -29,7 +29,7 @@ final class DisplayNameVC : UIViewController {
         navigationBar.barTintColor = Colors.navigationBarBackground
         // Set up logo image view
         let logoImageView = UIImageView()
-        logoImageView.image = #imageLiteral(resourceName: "Loki")
+        logoImageView.image = #imageLiteral(resourceName: "Session")
         logoImageView.contentMode = .scaleAspectFit
         logoImageView.set(.width, to: 32)
         logoImageView.set(.height, to: 32)

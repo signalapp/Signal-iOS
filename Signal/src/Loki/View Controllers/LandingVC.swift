@@ -19,7 +19,7 @@ final class LandingVC : UIViewController, LinkDeviceVCDelegate, DeviceLinkingMod
     
     private lazy var restoreButton: Button = {
         let result = Button(style: .prominentOutline, size: .large)
-        result.setTitle(NSLocalizedString("Continue your Loki Messenger", comment: ""), for: UIControl.State.normal)
+        result.setTitle(NSLocalizedString("Continue your Session", comment: ""), for: UIControl.State.normal)
         result.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         result.addTarget(self, action: #selector(restore), for: UIControl.Event.touchUpInside)
         return result
@@ -50,7 +50,7 @@ final class LandingVC : UIViewController, LinkDeviceVCDelegate, DeviceLinkingMod
         navigationBar.barTintColor = Colors.navigationBarBackground
         // Set up logo image view
         let logoImageView = UIImageView()
-        logoImageView.image = #imageLiteral(resourceName: "Loki")
+        logoImageView.image = #imageLiteral(resourceName: "Session")
         logoImageView.contentMode = .scaleAspectFit
         logoImageView.set(.width, to: 32)
         logoImageView.set(.height, to: 32)
@@ -59,7 +59,7 @@ final class LandingVC : UIViewController, LinkDeviceVCDelegate, DeviceLinkingMod
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
-        titleLabel.text = NSLocalizedString("Your Loki Messenger begins here...", comment: "")
+        titleLabel.text = NSLocalizedString("Your Session begins here...", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         // Set up title label container

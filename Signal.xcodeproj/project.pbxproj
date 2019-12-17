@@ -584,7 +584,6 @@
 		B885D5F62334A32100EE0D8E /* UIView+Constraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = B885D5F52334A32100EE0D8E /* UIView+Constraints.swift */; };
 		B886B4A72398B23E00211ABE /* QRCodeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B886B4A62398B23E00211ABE /* QRCodeVC.swift */; };
 		B886B4A92398BA1500211ABE /* QRCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B886B4A82398BA1500211ABE /* QRCode.swift */; };
-		B886B4AB2398BE6800211ABE /* SpaceMono-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B886B4AA2398BE6800211ABE /* SpaceMono-Bold.ttf */; };
 		B891105C2320872800F15FCC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B891105B2320872800F15FCC /* GoogleService-Info.plist */; };
 		B891105E2320872800F15FCC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B891105B2320872800F15FCC /* GoogleService-Info.plist */; };
 		B891105F2320872800F15FCC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B891105B2320872800F15FCC /* GoogleService-Info.plist */; };
@@ -615,6 +614,7 @@
 		C32B08E82322170B007FD6E5 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C32B08E72322170B007FD6E5 /* GoogleService-Info.plist */; };
 		C32B08E92322170B007FD6E5 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C32B08E72322170B007FD6E5 /* GoogleService-Info.plist */; };
 		C32B08EA2322170B007FD6E5 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C32B08E72322170B007FD6E5 /* GoogleService-Info.plist */; };
+		C34C8F7423A7830B00D82669 /* SpaceMono-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */; };
 		CC875800737563D6891B741D /* Pods_SignalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */; };
 		D202868116DBE0E7009068E9 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
 		D202868216DBE0F4009068E9 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */; };
@@ -1423,7 +1423,6 @@
 		B885D5F52334A32100EE0D8E /* UIView+Constraints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Constraints.swift"; sourceTree = "<group>"; };
 		B886B4A62398B23E00211ABE /* QRCodeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeVC.swift; sourceTree = "<group>"; };
 		B886B4A82398BA1500211ABE /* QRCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCode.swift; sourceTree = "<group>"; };
-		B886B4AA2398BE6800211ABE /* SpaceMono-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SpaceMono-Bold.ttf"; path = "../../../../../Downloads/space-mono/SpaceMono-Bold.ttf"; sourceTree = "<group>"; };
 		B891105B2320872800F15FCC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B893063E2383961A005EAA8E /* ScanQRCodeWrapperVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanQRCodeWrapperVC.swift; sourceTree = "<group>"; };
 		B894D0702339D6F300B4D94D /* DeviceLinkingModalDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLinkingModalDelegate.swift; sourceTree = "<group>"; };
@@ -1452,6 +1451,7 @@
 		B97940261832BD2400BD66CB /* UIUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIUtil.m; sourceTree = "<group>"; };
 		B9EB5ABC1884C002007CBB57 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		C32B08E72322170B007FD6E5 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceMono-Bold.ttf"; sourceTree = "<group>"; };
 		D17BB5C25D615AB49813100C /* Pods_Signal.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Signal.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -2737,7 +2737,6 @@
 		B8BB82BA2394D47000BA5194 /* Loki */ = {
 			isa = PBXGroup;
 			children = (
-				B886B4AA2398BE6800211ABE /* SpaceMono-Bold.ttf */,
 				B8CCF6342396005F0091D419 /* SpaceMono-Regular.ttf */,
 			);
 			path = Loki;
@@ -2888,6 +2887,7 @@
 				B67EBF5C19194AC60084CCFD /* Settings.bundle */,
 				B657DDC91911A40500F45B0C /* Signal.entitlements */,
 				C32B08E72322170B007FD6E5 /* GoogleService-Info.plist */,
+				C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */,
 				34074F54203D0722004596AE /* Sounds */,
 				76EB03C118170B33006006FC /* src */,
 				D221A094169C9E5E00537ABF /* Supporting Files */,
@@ -3295,7 +3295,6 @@
 				34C3C78F2040A4F70000134C /* sonarping.mp3 in Resources */,
 				AD83FF431A73426500B5C81A /* audio_play_button@2x.png in Resources */,
 				34661FB820C1C0D60056EDD6 /* message_sent.aiff in Resources */,
-				B886B4AB2398BE6800211ABE /* SpaceMono-Bold.ttf in Resources */,
 				45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */,
 				B633C5C31A1D190B0059AC12 /* mute_off@2x.png in Resources */,
 				AD83FF411A73426500B5C81A /* audio_play_button_blue@2x.png in Resources */,
@@ -3322,6 +3321,7 @@
 				45B74A812044AAB600CD42F8 /* chord-quiet.aifc in Resources */,
 				45B74A832044AAB600CD42F8 /* circles.aifc in Resources */,
 				45B74A892044AAB600CD42F8 /* circles-quiet.aifc in Resources */,
+				C34C8F7423A7830B00D82669 /* SpaceMono-Bold.ttf in Resources */,
 				4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */,
 				4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */,
 				45B74A7E2044AAB600CD42F8 /* complete.aifc in Resources */,

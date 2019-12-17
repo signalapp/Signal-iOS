@@ -2724,15 +2724,15 @@
 "Couldn't Update Profile Picture" = "Couldn't Update Profile Picture";
 "Clear" = "Clear";
 "Enter a display name" = "Enter a display name";
-"Your Loki Messenger begins here..." = "Your Loki Messenger begins here...";
-"What's Loki Messenger?" = "What's Loki Messenger?";
+"Your Session begins here..." = "Your Session begins here...";
+"What's Session?" = "What's Session?";
 "It's a secure, decentralized cross-platform private messaging app" = "It's a secure, decentralized cross-platform private messaging app";
 "So it doesn't collect my personal information or my conversation metadata? How's it work?" = "So it doesn't collect my personal information or my conversation metadata? How's it work?";
 "Using a combination of advanced anonymous routing and end-to-end encryption technologies." = "Using a combination of advanced anonymous routing and end-to-end encryption technologies.";
 "Friends don't let friends use compromised messengers. You're welcome." = "Friends don't let friends use compromised messengers. You're welcome.";
 "Create Account" = "Create Account";
-"Continue your Loki Messenger" = "Continue your Loki Messenger";
-"Say hello to your Loki Messenger ID" = "Say hello to your Loki Messenger ID";
+"Continue your Session" = "Continue your Session";
+"Say hello to your Session ID" = "Say hello to your Session ID";
 "Continue" = "Continue";
 "Copy Public Key" = "Copy Public Key";
 "Pick your display name" = "Pick your display name";
@@ -2759,4 +2759,4 @@
 "Link to your existing account by going into your in-app settings and clicking \"Linked Devices\"." = "Link to your existing account by going into your in-app settings and clicking \"Linked Devices\".";
 "Create a new account on your other device and click \"Link to an existing account\" to start the linking process" = "Create a new account on your other device and click \"Link to an existing account\" to start the linking process";
 "Group Settings" = "Group Settings";
-"Your Loki Messenger ID is the unique address that people can use to contact you on Loki Messenger. With no connection to your real identity, your Loki Messenger ID is totally anonymous and private by design." = "Your Loki Messenger ID is the unique address that people can use to contact you on Loki Messenger. With no connection to your real identity, your Loki Messenger ID is totally anonymous and private by design.";
+"Your Session ID is the unique address that people can use to contact you on Session. With no connection to your real identity, your Session ID is totally anonymous and private by design." = "Your Session ID is the unique address that people can use to contact you on Session. With no connection to your real identity, your Session ID is totally anonymous and private by design.";
