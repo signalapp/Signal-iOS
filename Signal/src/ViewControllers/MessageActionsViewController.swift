@@ -7,14 +7,14 @@ import Foundation
 @objc
 public class MessageAction: NSObject {
     @objc
-    let block: (MessageAction) -> Void
+    let block: (_ sender: Any?) -> Void
     let image: UIImage
     let accessibilityIdentifier: String
 
     public init(image: UIImage,
                 accessibilityLabel: String,
                 accessibilityIdentifier: String,
-                block: @escaping (MessageAction) -> Void) {
+                block: @escaping (_ sender: Any?) -> Void) {
         self.image = image
         self.accessibilityIdentifier = accessibilityIdentifier
         self.block = block

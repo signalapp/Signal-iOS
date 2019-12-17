@@ -404,17 +404,12 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
         owsFailDebug("unexpected invocation")
     }
 
-    func copyMediaAction() {
+    func shareMediaAction(_ sender: Any?) {
         owsFailDebug("unexpected invocation")
         return
     }
 
     func copyTextAction() {
-        owsFailDebug("unexpected invocation")
-        return
-    }
-
-    func saveMediaAction() {
         owsFailDebug("unexpected invocation")
         return
     }
@@ -429,12 +424,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
         return
     }
 
-    func canCopyMedia() -> Bool {
-        owsFailDebug("unexpected invocation")
-        return false
-    }
-
-    func canSaveMedia() -> Bool {
+    func canShareMedia() -> Bool {
         owsFailDebug("unexpected invocation")
         return false
     }

@@ -448,23 +448,19 @@ NS_ASSUME_NONNULL_BEGIN
     //
     // IFF this variable is non-null, there are unseen messages in the thread.
     InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
-    NSNumber *_Nullable firstUnseenSortId = nil;
+    __block NSNumber *_Nullable firstUnseenSortId = nil;
     if (lastUnreadIndicator) {
         firstUnseenSortId = @(lastUnreadIndicator.firstUnseenSortId);
     } else {
         NSError *error;
-        __block TSInteraction *_Nullable firstUnseenInteraction;
         [interactionFinder enumerateUnseenInteractionsWithTransaction:transaction
                                                                 error:&error
                                                                 block:^(TSInteraction *interaction, BOOL *stop) {
-                                                                    firstUnseenInteraction = interaction;
+                                                                    firstUnseenSortId = @(interaction.sortId);
                                                                     *stop = YES;
                                                                 }];
         if (error != nil) {
             OWSFailDebug(@"Error: %@", error);
-        }
-        if (firstUnseenInteraction) {
-            firstUnseenSortId = @(firstUnseenInteraction.sortId);
         }
     }
 

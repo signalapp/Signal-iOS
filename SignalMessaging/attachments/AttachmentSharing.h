@@ -11,6 +11,7 @@ typedef void (^AttachmentSharingCompletion)(void);
 @interface AttachmentSharing : NSObject
 
 + (void)showShareUIForAttachment:(TSAttachmentStream *)stream sender:(nullable id)sender;
++ (void)showShareUIForAttachments:(NSArray<TSAttachmentStream *> *)attachments sender:(nullable id)sender;
 
 + (void)showShareUIForURL:(NSURL *)url sender:(nullable id)sender;
 

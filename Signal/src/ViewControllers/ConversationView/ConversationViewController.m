@@ -2071,10 +2071,31 @@ typedef enum : NSUInteger {
 - (void)messageActionsViewControllerRequestedDismissal:(MessageActionsViewController *)messageActionsViewController
                                             withAction:(nullable MessageAction *)action
 {
+    NSString *_Nullable messageActionInteractionId = messageActionsViewController.focusedInteraction.uniqueId;
+    if (messageActionInteractionId == nil) {
+        OWSFailDebug(@"Missing message action interaction.");
+        return;
+    }
+
+    UIView *_Nullable sender;
+    NSNumber *_Nullable interactionIndex
+        = self.conversationViewModel.viewState.interactionIndexMap[messageActionInteractionId];
+    if (interactionIndex) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:interactionIndex.integerValue inSection:0];
+        if ([self.collectionView.indexPathsForVisibleItems containsObject:indexPath]) {
+            UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:indexPath];
+            if ([cell isKindOfClass:[OWSMessageCell class]]) {
+                sender = [(OWSMessageCell *)cell messageView];
+            } else {
+                sender = cell;
+            }
+        }
+    }
+
     [self dismissMessageActionsAnimated:YES
                              completion:^{
                                  if (action) {
-                                     action.block(action);
+                                     action.block(sender);
                                  }
                              }];
 }
