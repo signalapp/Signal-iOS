@@ -504,10 +504,10 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = " తాత్కాలికంగా  భద్రపరుచు ప్రదేశముతో పోల్చండి";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a conversation with.";
+"COMPOSE_BUTTON_HINT" = "సంభాషణను ప్రారంభించడానికి Signal వినియోగదారుని ఎంచుకోండి లేదా శోధించండి.";
 
 /* Accessibility label from compose button. */
-"COMPOSE_BUTTON_LABEL" = "Compose";
+"COMPOSE_BUTTON_LABEL" = "జాబు";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "పరిచయాలు ";
@@ -1377,6 +1377,9 @@
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "సమూహ సభ్యులు";
 
+/* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
+"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (You)";
+
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "పేరు లేదా చిరునామా ద్వారా శోధించండి";
 
@@ -1414,16 +1417,10 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "ఈ నెల";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_MEDIA" = "మీడియాను కాపీ చేయండి";
-
-/* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "సందేశ వచనాన్ని కాపీ చేయండి";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "ఈ సందేశాన్ని తొలగించండి";
-
-/* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "ఇది ఈ పరికరంలో మాత్రమే తొలగించబడుతుంది.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "మరింత సమాచారం";
@@ -1435,13 +1432,10 @@
 "MESSAGE_ACTION_REPLY" = "ఈ సందేశానికి ప్రత్యుత్తరం ఇవ్వండి";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "మీడియాను భద్రపరచండి ";
+"MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "సందేశం";
-
-/* Label for the recipient name in the 'message approval' dialog. */
-"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "ఎవరికి:";
 
 /* Title for the compose view. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "కొత్త సందేశం";
@@ -1587,12 +1581,10 @@
 /* info message text in conversation view */
 "MISSED_CALL" = "తప్పిన కాల్";
 
-/* Alert body
-   Alert body when camera is not authorized */
+/* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal లో వీడియో కాల్స్ చేయడానికి మీరు iOS సెట్టింగ్‌ల అనువర్తనంలో కెమెరా ప్రాప్యతను ప్రారంభించవచ్చు.";
 
-/* Alert title
-   Alert title when camera is not authorized */
+/* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal మీ కెమెరాను యాక్సెస్ చేయాలి.";
 
 /* Alert body indicating the user has denied location permissios */
@@ -1650,7 +1642,7 @@
 "NEW_GROUP_ADD_PHOTO_ACTION" = "సమూహ ఫోటోను సెట్ చేయండి";
 
 /* Accessibility label for the new group button */
-"NEW_GROUP_BUTTON_LABEL" = "Create a new group";
+"NEW_GROUP_BUTTON_LABEL" = "క్రొత్త సమూహాన్ని సృష్టించండి";
 
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "సృష్టించు";
@@ -2153,6 +2145,9 @@
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "వీడియో";
 
+/* notification body */
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacted %@ to your message";
+
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "నేను పిన్ను మరచిపోయాను.";
 
@@ -2398,9 +2393,6 @@
 
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Signal ఉపయోగించమని మీరు మీ స్నేహితుడిని ఆహ్వానించారు!";
-
-/* alert title when user attempts to leave the send media flow when they have an in-progress album */
-"SEND_MEDIA_ABANDON_TITLE" = "మీడియాను విస్మరించండి?";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "మీడియాను విస్మరించండి";
@@ -2801,9 +2793,6 @@
 /* Default title for sticker packs. */
 "STICKERS_PACK_DEFAULT_TITLE" = "స్టిక్కర్ ప్యాక్";
 
-/* Error message shown when a sticker pack failed to install. */
-"STICKERS_PACK_INSTALL_FAILED" = "స్టిక్కర్ ప్యాక్ ఇన్‌స్టాల్ విఫలమైంది.";
-
 /* Title of the 'share sticker pack' view. */
 "STICKERS_PACK_SHARE_VIEW_TITLE" = "స్టిక్కర్ ప్యాక్‌ను భాగస్వామ్యం చేయండి";
 
@@ -2830,6 +2819,9 @@
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@, %@ మరియు %lu అదనపు సమూహాల సభ్యుడు";
+
+/* Subtitle appearing at the top of the users 'note to self' conversation */
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@ సభ్యుడు";

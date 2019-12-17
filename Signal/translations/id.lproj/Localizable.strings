@@ -1377,6 +1377,9 @@
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Anggota Grup";
 
+/* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
+"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (You)";
+
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Cari dengan nama atau alamat";
 
@@ -1414,16 +1417,10 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Bulan Ini";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_MEDIA" = "Salin media";
-
-/* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Salin teks pesan ";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Hapus Pesan Ini";
-
-/* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Hanya akan terhapus pada perangkat ini.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Info lebih lanjut";
@@ -1435,13 +1432,10 @@
 "MESSAGE_ACTION_REPLY" = "Balas Pesan Ini";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "Simpan media";
+"MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Pesan";
-
-/* Label for the recipient name in the 'message approval' dialog. */
-"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "Kepada:";
 
 /* Title for the compose view. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Pesan Baru";
@@ -1587,12 +1581,10 @@
 /* info message text in conversation view */
 "MISSED_CALL" = "Panggilan tidak terjawab";
 
-/* Alert body
-   Alert body when camera is not authorized */
+/* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Anda dapat mengaktifkan akses kamera pada Pengaturan iOS untuk melakukan panggilan video di Signal.";
 
-/* Alert title
-   Alert title when camera is not authorized */
+/* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal butuh akses ke kamera Anda.";
 
 /* Alert body indicating the user has denied location permissios */
@@ -2153,6 +2145,9 @@
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
+/* notification body */
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacted %@ to your message";
+
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Saya lupa PIN saya.";
 
@@ -2398,9 +2393,6 @@
 
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Anda mengundang teman Anda untuk menggunakan Signal!";
-
-/* alert title when user attempts to leave the send media flow when they have an in-progress album */
-"SEND_MEDIA_ABANDON_TITLE" = "Buang Media?";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Buang Media";
@@ -2801,9 +2793,6 @@
 /* Default title for sticker packs. */
 "STICKERS_PACK_DEFAULT_TITLE" = "Paket Stiker";
 
-/* Error message shown when a sticker pack failed to install. */
-"STICKERS_PACK_INSTALL_FAILED" = "Pemasangan paket stiker gagal.";
-
 /* Title of the 'share sticker pack' view. */
 "STICKERS_PACK_SHARE_VIEW_TITLE" = "Bagikan Paket Stiker";
 
@@ -2830,6 +2819,9 @@
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Anggota dari %@,%@, dan %lu grup tambahan";
+
+/* Subtitle appearing at the top of the users 'note to self' conversation */
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Anggota dari %@";

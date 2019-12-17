@@ -504,10 +504,10 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "Сравнить с буфером обмена";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a conversation with.";
+"COMPOSE_BUTTON_HINT" = "Выберите или найдите пользователя Signal, чтобы начать разговор с ним.";
 
 /* Accessibility label from compose button. */
-"COMPOSE_BUTTON_LABEL" = "Compose";
+"COMPOSE_BUTTON_LABEL" = "Написать";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Контакты";
@@ -1377,6 +1377,9 @@
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Участники группы";
 
+/* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
+"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@ (Вы)";
+
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Поиск по названию или адресу";
 
@@ -1414,16 +1417,10 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "В этом месяце";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_MEDIA" = "Копировать медиа";
-
-/* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Копировать текст сообщения";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Удалить это сообщение";
-
-/* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Оно будет удалено только на этом устройстве.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Подробнее";
@@ -1435,13 +1432,10 @@
 "MESSAGE_ACTION_REPLY" = "Ответить на это сообщение";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "Сохранить медиа";
+"MESSAGE_ACTION_SHARE_MEDIA" = "Поделиться медиа";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Сообщение";
-
-/* Label for the recipient name in the 'message approval' dialog. */
-"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "Кому:";
 
 /* Title for the compose view. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Новое сообщение";
@@ -1587,12 +1581,10 @@
 /* info message text in conversation view */
 "MISSED_CALL" = "Пропущенный звонок";
 
-/* Alert body
-   Alert body when camera is not authorized */
+/* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Вы можете разрешить доступ к камере в приложении «Настройки», чтобы совершать видеозвонки в Signal.";
 
-/* Alert title
-   Alert title when camera is not authorized */
+/* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal необходим доступ к вашей камере.";
 
 /* Alert body indicating the user has denied location permissios */
@@ -1650,7 +1642,7 @@
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Установить фотографию группы";
 
 /* Accessibility label for the new group button */
-"NEW_GROUP_BUTTON_LABEL" = "Create a new group";
+"NEW_GROUP_BUTTON_LABEL" = "Создать новую группу";
 
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "Создать";
@@ -2153,6 +2145,9 @@
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Видео";
 
+/* notification body */
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Отреагировал %@ на ваше сообщение";
+
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Я забыл свой PIN-код.";
 
@@ -2398,9 +2393,6 @@
 
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Вы пригласили своего друга в Signal!";
-
-/* alert title when user attempts to leave the send media flow when they have an in-progress album */
-"SEND_MEDIA_ABANDON_TITLE" = "Не отправлять медиа?";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Не сохранять медиа";
@@ -2801,9 +2793,6 @@
 /* Default title for sticker packs. */
 "STICKERS_PACK_DEFAULT_TITLE" = "Набор стикеров";
 
-/* Error message shown when a sticker pack failed to install. */
-"STICKERS_PACK_INSTALL_FAILED" = "Не удалось установить набор стикеров.";
-
 /* Title of the 'share sticker pack' view. */
 "STICKERS_PACK_SHARE_VIEW_TITLE" = "Поделиться набором стикеров";
 
@@ -2830,6 +2819,9 @@
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Состоит в %@, %@ и ещё %lu группах";
+
+/* Subtitle appearing at the top of the users 'note to self' conversation */
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Вы можете добавлять заметки для себя в этом разговоре. Если у вашей учётной записи есть привязанные устройства, то новые заметки будут синхронизированы.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Состоит в %@";

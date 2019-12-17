@@ -110,7 +110,6 @@ public class StickerPackViewController: OWSViewController {
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_semibold()
 
-        authorLabel.textColor = Theme.darkThemePrimaryColor
         authorLabel.font = UIFont.ows_dynamicTypeBody
 
         defaultPackIconView.setTemplateImageName("check-circle-filled-16", tintColor: UIColor.ows_signalBlue)
@@ -259,7 +258,9 @@ public class StickerPackViewController: OWSViewController {
 
         authorLabel.text = stickerPack.author?.filterForDisplay
 
-        defaultPackIconView.isHidden = !StickerManager.isDefaultStickerPack(stickerPack.info)
+        let isDefaultStickerPack = StickerManager.isDefaultStickerPack(stickerPack.info)
+        authorLabel.textColor = isDefaultStickerPack ? UIColor.ows_signalBlue : Theme.darkThemePrimaryColor
+        defaultPackIconView.isHidden = !isDefaultStickerPack
 
         // We need to consult StickerManager for the latest "isInstalled"
         // state, since the data source may be caching stale state.
@@ -437,15 +438,10 @@ private class StickerPackViewControllerAnimationController: UIPresentationContro
     }
 
     override func presentationTransitionWillBegin() {
-        guard let containerView = containerView, let presentedView = presentedView else { return }
+        guard let containerView = containerView else { return }
         backdropView.alpha = 0
         containerView.addSubview(backdropView)
         backdropView.autoPinEdgesToSuperviewEdges()
-
-        containerView.addSubview(presentedView)
-        containerView.layoutIfNeeded()
-
-        updatePresentedViewConstraints(size: containerView.frame.size)
 
         presentedViewController.transitionCoordinator?.animate(alongsideTransition: { _ in
             self.backdropView.alpha = 1
@@ -460,45 +456,34 @@ private class StickerPackViewControllerAnimationController: UIPresentationContro
         })
     }
 
-    public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-
-        coordinator.animate(alongsideTransition: { _ in
-            self.updatePresentedViewConstraints(size: size)
-        }, completion: nil)
+    var isFullScreen: Bool {
+        guard let containerSize = containerView?.frame.size else { return true }
+        guard UIDevice.current.isIPad, containerSize.width > (max(UIScreen.main.bounds.width, UIScreen.main.bounds.height) / 2) - 5 else { return true }
+        return false
     }
 
-    lazy var formSheetConstraints: [NSLayoutConstraint] = {
-        guard let presentedView = presentedView else {
-            owsFailDebug("missing presentedView")
-            return []
-        }
-        return presentedView.autoSetDimensions(to: CGSize(width: 540, height: 620)) + presentedView.autoCenterInSuperview()
-    }()
+    override var frameOfPresentedViewInContainerView: CGRect {
+        var frame = super.frameOfPresentedViewInContainerView
+        let containerSize = frame.size
 
-    lazy var fullScreenConstraints: [NSLayoutConstraint] = {
-        guard let presentedView = presentedView else {
-            owsFailDebug("missing presentedView")
-            return []
-        }
-        return presentedView.autoPinEdgesToSuperviewEdges()
-    }()
-
-    func updatePresentedViewConstraints(size: CGSize) {
-        guard let presentedView = presentedView else {
-            return owsFailDebug("missing presentedView")
+        if !isFullScreen {
+            frame.size = CGSize(width: 540, height: 620)
+            frame.origin = CGPoint(x: containerSize.width / 2 - frame.size.width / 2, y: containerSize.height / 2 - frame.size.height / 2)
         }
 
-        if UIDevice.current.isIPad, size.width > (max(UIScreen.main.bounds.width, UIScreen.main.bounds.height) / 2) - 5 {
-            NSLayoutConstraint.deactivate(fullScreenConstraints)
-            NSLayoutConstraint.activate(formSheetConstraints)
-            presentedView.clipsToBounds = true
-            presentedView.layer.cornerRadius = 13
+        return frame
+    }
+
+    override func containerViewWillLayoutSubviews() {
+        super.containerViewWillLayoutSubviews()
+        presentedView?.frame = frameOfPresentedViewInContainerView
+
+        if isFullScreen {
+            presentedView?.clipsToBounds = false
+            presentedView?.layer.cornerRadius = 0
         } else {
-            NSLayoutConstraint.deactivate(formSheetConstraints)
-            NSLayoutConstraint.activate(fullScreenConstraints)
-            presentedView.clipsToBounds = false
-            presentedView.layer.cornerRadius = 0
+            presentedView?.clipsToBounds = true
+            presentedView?.layer.cornerRadius = 13
         }
     }
 }

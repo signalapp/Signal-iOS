@@ -504,10 +504,10 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "和剪貼簿比對";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a conversation with.";
+"COMPOSE_BUTTON_HINT" = "選擇或搜尋一個 Signal 聯絡人來開始對話。";
 
 /* Accessibility label from compose button. */
-"COMPOSE_BUTTON_LABEL" = "Compose";
+"COMPOSE_BUTTON_LABEL" = "撰寫";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "聯絡資訊";
@@ -1377,6 +1377,9 @@
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "群組組員";
 
+/* Prepends text indicating that the embedded name is associated with the local user. Embeds {{local name}} */
+"LOCAL_REACTOR_INDICATOR_FORMAT" = "%@(你)";
+
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "以名字或地址來搜尋";
 
@@ -1414,16 +1417,10 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "本月";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_MEDIA" = "複製媒體檔案";
-
-/* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "複製訊息文字";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "刪除此訊息";
-
-/* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "這將只在本裝置上刪除。";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "更多資訊";
@@ -1435,13 +1432,10 @@
 "MESSAGE_ACTION_REPLY" = "回覆這個訊息";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "儲存媒體檔案";
+"MESSAGE_ACTION_SHARE_MEDIA" = "分享多媒體檔案";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "訊息";
-
-/* Label for the recipient name in the 'message approval' dialog. */
-"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "致：";
 
 /* Title for the compose view. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "新訊息";
@@ -1587,12 +1581,10 @@
 /* info message text in conversation view */
 "MISSED_CALL" = "未接來電";
 
-/* Alert body
-   Alert body when camera is not authorized */
+/* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "你可以在 iOS 設定中允許取用相機以在 Signal 中使用影像電話。";
 
-/* Alert title
-   Alert title when camera is not authorized */
+/* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal要求使用你的相機";
 
 /* Alert body indicating the user has denied location permissios */
@@ -1650,7 +1642,7 @@
 "NEW_GROUP_ADD_PHOTO_ACTION" = "設定群組照片";
 
 /* Accessibility label for the new group button */
-"NEW_GROUP_BUTTON_LABEL" = "Create a new group";
+"NEW_GROUP_BUTTON_LABEL" = "開啟一個新群組";
 
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "建立";
@@ -2153,6 +2145,9 @@
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "影片";
 
+/* notification body */
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "%@對你的訊息回應";
+
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "我忘了 PIN 碼。";
 
@@ -2398,9 +2393,6 @@
 
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "你已邀請你的朋友來使用 Signal！";
-
-/* alert title when user attempts to leave the send media flow when they have an in-progress album */
-"SEND_MEDIA_ABANDON_TITLE" = "放棄媒體檔案？";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "放棄媒體檔案。";
@@ -2801,9 +2793,6 @@
 /* Default title for sticker packs. */
 "STICKERS_PACK_DEFAULT_TITLE" = "貼圖包";
 
-/* Error message shown when a sticker pack failed to install. */
-"STICKERS_PACK_INSTALL_FAILED" = "貼圖包安裝失敗。";
-
 /* Title of the 'share sticker pack' view. */
 "STICKERS_PACK_SHARE_VIEW_TITLE" = "分享貼圖包";
 
@@ -2830,6 +2819,9 @@
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@、%@的組員及 %lu 其他群組";
+
+/* Subtitle appearing at the top of the users 'note to self' conversation */
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "你可以在此對話中為自己增加筆記。 如果你的帳號有任何連結的裝置，則新的筆記將被同步。";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@的組員";

@@ -48,7 +48,7 @@ public class StickerSharingViewController: SelectThreadViewController {
 
         let view = StickerSharingViewController(stickerPackInfo: stickerPackInfo)
         let modal = OWSNavigationController(rootViewController: view)
-        fromViewController.present(modal, animated: true)
+        fromViewController.presentFormSheet(modal, animated: true)
     }
 
     private func shareTo(thread: TSThread) {
