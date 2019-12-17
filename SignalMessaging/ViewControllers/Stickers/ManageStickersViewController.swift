@@ -125,7 +125,7 @@ public class ManageStickersViewController: OWSTableViewController {
             }
         }
         updateMapWithOldSources(&oldInstalledSources, installedStickerPackSources)
-        updateMapWithOldSources(&oldInstalledSources, availableBuiltInStickerPackSources)
+        updateMapWithOldSources(&oldTransientSources, availableBuiltInStickerPackSources)
         updateMapWithOldSources(&oldTransientSources, knownStickerPackSources)
 
         var installedStickerPacks = [StickerPack]()
@@ -177,7 +177,7 @@ public class ManageStickersViewController: OWSTableViewController {
             $0.dateCreated > $1.dateCreated
             }.map { installedSource($0.info) }
         self.availableBuiltInStickerPackSources = availableBuiltInStickerPacks.sorted(by: sortAvailablePacks)
-            .map { installedSource($0.info) }
+            .map { transientSource($0.info) }
         self.knownStickerPackSources = availableKnownStickerPacks.sorted(by: sortKnownPacks)
             .map { transientSource($0.info) }
 
