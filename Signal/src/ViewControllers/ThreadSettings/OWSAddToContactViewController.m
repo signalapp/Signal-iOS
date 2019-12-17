@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSAddToContactViewController () <ContactsViewHelperDelegate>
+@interface OWSAddToContactViewController () <CNContactViewControllerDelegate, ContactsViewHelperDelegate>
 
 @property (nonatomic) SignalServiceAddress *address;
 
